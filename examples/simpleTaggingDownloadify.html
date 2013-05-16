@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Docxgen.js - simple Tagging example with Downloadify</title>
+</head>
+<body>
+
+  <!-- Include dependencies -->
+  <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
+  <script src="../libs/downloadify/js/downloadify.min.js"></script>
+  <script src="../libs/downloadify/js/swfobject.js"></script>
+
+
+  <!-- Include docxgen js lib -->
+  <script type="text/javascript" src="../js/docxgen.js"></script>
+<script>
+
+
+  var xhr1= new XMLHttpRequest();
+  xhr1.open('GET', './tagExample.docx', true);
+  if (xhr1.overrideMimeType) {
+    xhr1.overrideMimeType('text/plain; charset=x-user-defined');
+  }
+
+  xhr1.onreadystatechange = function(e) {
+    if (this.readyState == 4 && this.status == 200) {
+      window.docData=this.response;
+      }
+  };
+  xhr1.send();
+
+generateDoc= function(docData)
+{
+      var doc= new DocxGen(docData)
+
+      doc.setTemplateVars(
+        {"first_name":"Hipp",
+        "last_name":"Edgar",
+        "phone":"0652455478",
+        "description":"New Website"
+        }
+      )
+      doc.applyTemplateVars()
+      doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',
+                   "taggedDoc.docx")
+}
+</script>
+
+<h1>Generating a tagged document with downloadify</h1>
+
+<p>If you want to name your downloaded file, you will have to use Downloadify.js, as described in method download of the Readme file</p>
+
+<p>
+  <a href="#" onClick="generateDoc(window.docData)">Generate Tagged document</a>
+<br>
+<a href="tagExample.docx">View original document</a>
+</p>
+
+<p id="downloadify">
+        You must have Flash 10 installed to download this file.
+</p>
+
+<p>
+  <code>
+      var doc= new DocxGen(docData) //Create Docxgen object from docxdata, in base64<br>
+      doc.setTemplateVars(   //Set the template variables: {first_name} will be replaced by "Hipp",...<br>
+        {"first_name":"Hipp", <br>
+        "last_name":"Edgar",<br>
+        "phone":"0652455478",<br>
+        "description":"New Website"<br>
+        } <br> 
+      ) <br> 
+      doc.applyTemplateVars() //apply the template variables<br> 
+      doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',
+                   "taggedDoc.docx") //arguments are path to swf, path to image and defaultFileName<br>
+  </code>
+</p>
+
+</body>
+</html>
