@@ -65,30 +65,30 @@ Created by Edgar HIPP
       return this.templateVars = templateVars;
     };
 
-    DocxGen.prototype.regexTest = function(rules, file_data) {
-      var current_char, i, match, output, replacement, rule, rule_replacement_length, _i, _len;
+    DocxGen.prototype.regexTest = function(rules, fileData) {
+      var currentChar, i, match, output, replacement, rule, ruleReplacementLength, _i, _len;
 
-      output = file_data;
+      output = fileData;
       for (i = _i = 0, _len = rules.length; _i < _len; i = ++_i) {
         rule = rules[i];
         while (output.match(rule.regex)) {
           match = rule.regex.exec(output);
-          current_char = 0;
-          rule_replacement_length = rule.replacement.length;
+          currentChar = 0;
+          ruleReplacementLength = rule.replacement.length;
           replacement = "";
-          while (current_char <= rule_replacement_length) {
-            if (rule.replacement.charAt(current_char) === '$') {
-              current_char++;
-              i = parseInt(rule.replacement.charAt(current_char));
+          while (currentChar <= ruleReplacementLength) {
+            if (rule.replacement.charAt(currentChar) === '$') {
+              currentChar++;
+              i = parseInt(rule.replacement.charAt(currentChar));
               replacement += match[i];
-            } else if (rule.replacement.charAt(current_char) === '#') {
-              current_char++;
-              i = parseInt(rule.replacement.charAt(current_char));
+            } else if (rule.replacement.charAt(currentChar) === '#') {
+              currentChar++;
+              i = parseInt(rule.replacement.charAt(currentChar));
               replacement += this.templateVars[match[i]];
             } else {
-              replacement += rule.replacement.charAt(current_char);
+              replacement += rule.replacement.charAt(currentChar);
             }
-            current_char++;
+            currentChar++;
           }
           output = output.replace(match[0], replacement);
         }
@@ -97,16 +97,16 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.applyTemplateVars = function() {
-      var file_data, file_name, rules, _i, _len, _ref, _results;
+      var fileData, fileName, rules, _i, _len, _ref, _results;
 
       _ref = this.templatedFiles;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        file_name = _ref[_i];
-        if (!(this.files[file_name] != null)) {
+        fileName = _ref[_i];
+        if (!(this.files[fileName] != null)) {
           continue;
         }
-        file_data = this.files[file_name].data;
+        fileData = this.files[fileName].data;
         rules = [
           {
             'regex': /(<w:t[^>]*>)([^<>]*)\{([a-zA-Z_éèàê0-9]+)\}([^}])/,
@@ -119,18 +119,17 @@ Created by Edgar HIPP
             'replacement': '$1<w:t$2>#3$4<w:t xml:space="preserve">'
           }
         ];
-        _results.push(this.files[file_name].data = this.regexTest(rules, file_data));
+        _results.push(this.files[fileName].data = this.regexTest(rules, fileData));
       }
       return _results;
     };
 
     DocxGen.prototype.output = function(download) {
-      var doOutput, file, file_count, index, outputFile, zip, _ref;
+      var doOutput, file, index, outputFile, zip, _ref;
 
       if (download == null) {
         download = true;
       }
-      file_count = Object.size(this.files);
       zip = new JSZip();
       doOutput = function() {
         return document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + outputFile;
