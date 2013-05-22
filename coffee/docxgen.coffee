@@ -47,6 +47,7 @@ window.DocxGen = class DocxGen
 		output= fileData
 		for rule,i in rules
 			while output.match(rule.regex)
+				console.log "rule"+i+"-->#{rule.regex}";
 				match= rule.regex.exec(output);
 				currentChar=0
 				ruleReplacementLength= rule.replacement.length
@@ -54,15 +55,19 @@ window.DocxGen = class DocxGen
 				while (currentChar<=ruleReplacementLength)
 					if rule.replacement.charAt(currentChar)=='$'
 						currentChar++;
-						i= parseInt rule.replacement.charAt(currentChar)
-						replacement+=match[i]
+						j= parseInt rule.replacement.charAt(currentChar)
+						replacement+=match[j]
 					else if rule.replacement.charAt(currentChar)=='#'
 						currentChar++;
-						i= parseInt rule.replacement.charAt(currentChar)
-						replacement+=@templateVars[match[i]]
+						j= parseInt rule.replacement.charAt(currentChar)
+						replacement+=@templateVars[match[j]]
 					else
 						replacement+=rule.replacement.charAt(currentChar)
 					currentChar++
+				console.log ("#{match[0]}")
+				console.log "--------->>>>>"
+				console.log match
+				console.log(replacement)
 				output= output.replace match[0],replacement
 		output
 	applyTemplateVars:()->
@@ -85,13 +90,13 @@ window.DocxGen = class DocxGen
 			///,'replacement':'$1<w:t$2>#3'},
 			{'regex':///
 			\{					#Opening brakcket
-			([^}]*?)			#Formating in between
+			((?:.(?!<w:t))*)>	#Formating in between
 			<w:t([^>]*)>		#begin of text element
 			([a-zA-Z_éèàê0-9]+) #tagName
-			(.*?)				#Formating in between
+			((?:.(?!<w:t))*)>	#Formating in between
 			<w:t([^>]*)>		#begin of text element
 			\}					#Closing bracket
-			///,'replacement':'$1<w:t$2>#3$4<w:t xml:space="preserve">'}]
+			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">'}]
 			@files[fileName].data= @regexTest(rules,fileData)
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->

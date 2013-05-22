@@ -66,12 +66,13 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.regexTest = function(rules, fileData) {
-      var currentChar, i, match, output, replacement, rule, ruleReplacementLength, _i, _len;
+      var currentChar, i, j, match, output, replacement, rule, ruleReplacementLength, _i, _len;
 
       output = fileData;
       for (i = _i = 0, _len = rules.length; _i < _len; i = ++_i) {
         rule = rules[i];
         while (output.match(rule.regex)) {
+          console.log("rule" + i + ("-->" + rule.regex));
           match = rule.regex.exec(output);
           currentChar = 0;
           ruleReplacementLength = rule.replacement.length;
@@ -79,17 +80,21 @@ Created by Edgar HIPP
           while (currentChar <= ruleReplacementLength) {
             if (rule.replacement.charAt(currentChar) === '$') {
               currentChar++;
-              i = parseInt(rule.replacement.charAt(currentChar));
-              replacement += match[i];
+              j = parseInt(rule.replacement.charAt(currentChar));
+              replacement += match[j];
             } else if (rule.replacement.charAt(currentChar) === '#') {
               currentChar++;
-              i = parseInt(rule.replacement.charAt(currentChar));
-              replacement += this.templateVars[match[i]];
+              j = parseInt(rule.replacement.charAt(currentChar));
+              replacement += this.templateVars[match[j]];
             } else {
               replacement += rule.replacement.charAt(currentChar);
             }
             currentChar++;
           }
+          console.log("" + match[0]);
+          console.log("--------->>>>>");
+          console.log(match);
+          console.log(replacement);
           output = output.replace(match[0], replacement);
         }
       }
@@ -115,8 +120,8 @@ Created by Edgar HIPP
             'regex': /\{([^}]*?)<w:t([^>]*)>([a-zA-Z_éèàê0-9]+)\}/,
             'replacement': '$1<w:t$2>#3'
           }, {
-            'regex': /\{([^}]*?)<w:t([^>]*)>([a-zA-Z_éèàê0-9]+)(.*?)<w:t([^>]*)>\}/,
-            'replacement': '$1<w:t$2>#3$4<w:t xml:space="preserve">'
+            'regex': /\{((?:.(?!<w:t))*)><w:t([^>]*)>([a-zA-Z_éèàê0-9]+)((?:.(?!<w:t))*)><w:t([^>]*)>\}/,
+            'replacement': '$1><w:t$2>#3$4><w:t xml:space="preserve">'
           }
         ];
         _results.push(this.files[fileName].data = this.regexTest(rules, fileData));
