@@ -70,6 +70,8 @@ Internet explorer is not yet supported
         This function creates the docx file and downloads it on the user's computer. The name of the file is download.docx for Chrome, and some akward file names for Firefox: VEeTHCfS.docx.part.docx, and can't be changed because it is handled by the browser.
         For more informations about how to solve this problem, see the **Filename Problems** section on [http://stuk.github.io/jszip/](http://stuk.github.io/jszip/)
 
+        Note: All browsers don't support the download of big files with Data URI, so you **should** use the `download` method for files bigger than 100kB [Details](http://stackoverflow.com/questions/695151/data-protocol-url-size-limitations)
+
     download(swfpath,imgpath[,fileName])
 
         swfpath
