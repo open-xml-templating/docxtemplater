@@ -3,6 +3,16 @@ Docxgen.coffee
 Created by Edgar HIPP
 ###
 
+preg_match_all= (regex, haystack) ->
+	globalRegex = new RegExp(regex, 'g');
+	globalMatch = haystack.match(globalRegex);
+	matchArray = new Array();
+	for match,i in globalMatch
+		nonGlobalRegex = new RegExp(regex);
+		nonGlobalMatch = globalMatch[i].match(nonGlobalRegex)
+		matchArray.push(nonGlobalMatch[1])
+	matchArray
+
 Object.size = (obj) ->
 	size=0
 	log = 0
@@ -113,11 +123,17 @@ window.DocxGen = class DocxGen
 		outputFile= zip.generate()
 		if download==true then doOutput()
 		outputFile
+	getFullText:(path="document.xml") ->
+		filePath= "word/#{path}";
+		regex= "<w:t[^>]*>([^<>]*)?</w:t>"
+		file= @files[filePath]
+		output= preg_match_all(regex,file.data)
+		output.join("")
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)
 		Downloadify.create 'downloadify',
 			filename: () ->	return filename
-			data: () -> 
+			data: () ->
 				return outputFile
 			# onComplete: () ->  alert 'Your File Has Been Saved!'
 			onCancel: () -> alert 'You have cancelled the saving of this file.'
@@ -129,4 +145,3 @@ window.DocxGen = class DocxGen
 			transparent: true
 			append: false
 			dataType:'base64'
-		

@@ -5,8 +5,23 @@ Created by Edgar HIPP
 
 
 (function() {
-  var DocxGen,
+  var DocxGen, preg_match_all,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  preg_match_all = function(regex, haystack) {
+    var globalMatch, globalRegex, i, match, matchArray, nonGlobalMatch, nonGlobalRegex, _i, _len;
+
+    globalRegex = new RegExp(regex, 'g');
+    globalMatch = haystack.match(globalRegex);
+    matchArray = new Array();
+    for (i = _i = 0, _len = globalMatch.length; _i < _len; i = ++_i) {
+      match = globalMatch[i];
+      nonGlobalRegex = new RegExp(regex);
+      nonGlobalMatch = globalMatch[i].match(nonGlobalRegex);
+      matchArray.push(nonGlobalMatch[1]);
+    }
+    return matchArray;
+  };
 
   Object.size = function(obj) {
     var key, log, size;
@@ -154,6 +169,19 @@ Created by Edgar HIPP
         doOutput();
       }
       return outputFile;
+    };
+
+    DocxGen.prototype.getFullText = function(path) {
+      var file, filePath, output, regex;
+
+      if (path == null) {
+        path = "document.xml";
+      }
+      filePath = "word/" + path;
+      regex = "<w:t[^>]*>([^<>]*)?</w:t>";
+      file = this.files[filePath];
+      output = preg_match_all(regex, file.data);
+      return output.join("");
     };
 
     DocxGen.prototype.download = function(swfpath, imgpath, filename) {
