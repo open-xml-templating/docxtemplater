@@ -145,7 +145,7 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.output = function(download) {
-      var doOutput, file, index, outputFile, zip, _ref;
+      var doOutput, file, index, outputFile, zip;
 
       if (download == null) {
         download = true;
@@ -156,13 +156,7 @@ Created by Edgar HIPP
       };
       for (index in this.files) {
         file = this.files[index];
-        if (file.name.slice(-1) !== '/') {
-          if ((_ref = file.name.slice(-4)) === ".png" || _ref === ".emf" || _ref === ".jpg" || _ref === "jpeg") {
-            zip.file(file.name, file.data, file.options);
-          } else {
-            zip.file(file.name, file.data);
-          }
-        }
+        zip.file(file.name, file.data, file.options);
       }
       outputFile = zip.generate();
       if (download === true) {

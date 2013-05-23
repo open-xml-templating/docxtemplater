@@ -115,11 +115,7 @@ window.DocxGen = class DocxGen
 			document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{outputFile}"
 		for index of @files
 			file=@files[index]
-			if file.name.slice(-1)!='/'
-				if file.name.slice(-4) in [".png",".emf",".jpg","jpeg"]
-					zip.file file.name,file.data,file.options
-				else
-					zip.file file.name,file.data#,file.options
+			zip.file file.name,file.data,file.options
 		outputFile= zip.generate()
 		if download==true then doOutput()
 		outputFile
