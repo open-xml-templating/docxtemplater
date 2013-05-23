@@ -104,6 +104,13 @@ Internet explorer is not yet supported
             Type:"String"
             imgData in txt/plain
 
+    getFullText:([path])
+
+        path
+            Type:"String"
+            Default:"document.xml"
+            This argument determines from which document you want to get the text. The main document is called document.xml, but they are other documents: "header1.xml", "footer1.xml"
+
 ## Known issues ##
 
 Todo:
