@@ -47,9 +47,7 @@ describe "DocxGenLoading", () ->
 			expect(docData.length).toEqual(729580)
 			expect(imgData.length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
-			console.log docx.files
-			window.aaaaaa= docx.files
-			expect(docx.files.size).toEqual(15)
+			expect(Object.size(docx.files)).toEqual(22)
 
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->

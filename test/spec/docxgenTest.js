@@ -60,9 +60,7 @@
         return expect(imgData.length).toEqual(18062);
       });
       return it("should have the right number of files (the docx unzipped)", function() {
-        console.log(docx.files);
-        window.aaaaaa = docx.files;
-        return expect(docx.files.size).toEqual(15);
+        return expect(Object.size(docx.files)).toEqual(22);
       });
     });
     describe("basic loading", function() {
