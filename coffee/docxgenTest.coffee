@@ -54,7 +54,7 @@ describe "DocxGenLoading", () ->
 			expect(typeof docx).toBe('object');
 	describe "content_loading", () ->
 		it "should load the right content for the footer", () ->
-			fullText=(docx.getFullText("footer1.xml"))
+			fullText=(docx.getFullText("word/footer1.xml"))
 			expect(fullText.length).not.toBe(0)
 			expect(fullText).toBe('{last_name}{first_name}{phone}')
 		it "should load the right content for the document", () ->
@@ -107,8 +107,8 @@ describe "DocxGenTemplating", () ->
 			taggedDocx.setTemplateVars templateVars
 			taggedDocx.applyTemplateVars()
 			expect(taggedDocx.getFullText()).toEqual('Edgar Hipp')
-			expect(taggedDocx.getFullText("header1.xml")).toEqual('Edgar Hipp0652455478undefined')
-			expect(taggedDocx.getFullText("footer1.xml")).toEqual('EdgarHipp0652455478')
+			expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478undefined')
+			expect(taggedDocx.getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478')
 		it "should export the good file", () ->
 			outputExpected= new DocxGen(docDataExpected)
 			for i of taggedDocx.files
@@ -121,3 +121,38 @@ describe "DocxGenTemplating", () ->
 				expect(taggedDocx.files[i].options.dir).toBe(outputExpected.files[i].options.dir)
 				#creation date should be different
 				expect(taggedDocx.files[i].options.date).not.toBe(outputExpected.files[i].options.date)
+
+describe "DocxGenTemplatingForLoop", () ->
+	callbackLoadedTaggedDocx = jasmine.createSpy();
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET', '../examples/tagLoopExample.docx', true)
+	if xhrDoc.overrideMimeType
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.taggedForDocx= new DocxGen(docData)
+			callbackLoadedTaggedDocx()
+	xhrDoc.send()
+
+	waitsFor () ->
+		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
+
+
+	describe "textLoop templating", () ->
+		it "should replace all the tags", () ->
+			templateVars={}
+			console.log taggedForDocx
+			taggedForDocx.setTemplateVars templateVars
+			taggedForDocx.applyTemplateVars()
+			expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialeundefinedMon titreTitre undefinedBonjourLe prix total est de undefined, et le nombre de semaines de undefinedLala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolorLes avantages sont:La rapiditÃ©La simplicitÃ©Lalasit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit ametundefinedundefinedundefined')
+			window.content= taggedForDocx.files["word/document.xml"].data
+
+
+	# describe "loading of the file", () ->
+	# 	it "should have the expected content", () ->
+	# 		console.log taggedForDocx
+	# 		console.log (taggedForDocx.files["word/document.xml"].data)
+	# 		window.content= taggedForDocx.files["word/document.xml"].data
+
+

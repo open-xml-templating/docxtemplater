@@ -19,7 +19,7 @@ Created by Edgar HIPP
         match = globalMatch[i];
         nonGlobalRegex = new RegExp(regex);
         nonGlobalMatch = globalMatch[i].match(nonGlobalRegex);
-        matchArray.push(nonGlobalMatch[1]);
+        matchArray.push(nonGlobalMatch);
       }
     }
     return matchArray;
@@ -103,7 +103,7 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.applyTemplateVars = function() {
-      var fileData, fileName, rules, _i, _len, _ref, _results;
+      var fileData, fileName, matches, rules, _i, _len, _ref, _results;
 
       _ref = this.templatedFiles;
       _results = [];
@@ -112,17 +112,26 @@ Created by Edgar HIPP
         if (!(this.files[fileName] != null)) {
           continue;
         }
+        console.log(fileName);
+        matches = this.getFullTextMatches(fileName);
         fileData = this.files[fileName].data;
         rules = [
           {
+            'regex': /\{\#((?:.(?!<w:t))*)><w:t([^>]*)>([a-zA-Z_éèàê0-9]+)((?:.(?!<w:t))*)><w:t([^>]*)>\}/,
+            'replacement': '$1><w:t$2>#3$4><w:t xml:space="preserve">',
+            'forstart': true
+          }, {
             'regex': /(<w:t[^>]*>)([^<>]*)\{([a-zA-Z_éèàê0-9]+)\}([^}])/,
-            'replacement': '$1$2#3$4'
+            'replacement': '$1$2#3$4',
+            'forstart': false
           }, {
             'regex': /\{([^}]*?)<w:t([^>]*)>([a-zA-Z_éèàê0-9]+)\}/,
-            'replacement': '$1<w:t$2>#3'
+            'replacement': '$1<w:t$2>#3',
+            'forstart': false
           }, {
             'regex': /\{((?:.(?!<w:t))*)><w:t([^>]*)>([a-zA-Z_éèàê0-9]+)((?:.(?!<w:t))*)><w:t([^>]*)>\}/,
-            'replacement': '$1><w:t$2>#3$4><w:t xml:space="preserve">'
+            'replacement': '$1><w:t$2>#3$4><w:t xml:space="preserve">',
+            'forstart': false
           }
         ];
         _results.push(this.files[fileName].data = this.regexTest(rules, fileData));
@@ -152,16 +161,34 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.getFullText = function(path) {
-      var file, filePath, output, regex;
+      var match, matches, output;
 
       if (path == null) {
-        path = "document.xml";
+        path = "word/document.xml";
       }
-      filePath = "word/" + path;
-      regex = "<w:t[^>]*>([^<>]*)?</w:t>";
-      file = this.files[filePath];
-      output = preg_match_all(regex, file.data);
+      matches = this.getFullTextMatches(path);
+      output = (function() {
+        var _i, _len, _results;
+
+        _results = [];
+        for (_i = 0, _len = matches.length; _i < _len; _i++) {
+          match = matches[_i];
+          _results.push(match[1]);
+        }
+        return _results;
+      })();
       return output.join("");
+    };
+
+    DocxGen.prototype.getFullTextMatches = function(path) {
+      var file, matches, regex;
+
+      if (path == null) {
+        path = "word/document.xml";
+      }
+      regex = "<w:t[^>]*>([^<>]*)?</w:t>";
+      file = this.files[path];
+      return matches = preg_match_all(regex, file.data);
     };
 
     DocxGen.prototype.download = function(swfpath, imgpath, filename) {

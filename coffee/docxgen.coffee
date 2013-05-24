@@ -11,7 +11,7 @@ preg_match_all= (regex, haystack) ->
 		for match,i in globalMatch
 			nonGlobalRegex = new RegExp(regex);
 			nonGlobalMatch = globalMatch[i].match(nonGlobalRegex)
-			matchArray.push(nonGlobalMatch[1])
+			matchArray.push(nonGlobalMatch)
 	matchArray
 	
 window.DocxGen = class DocxGen
@@ -71,31 +71,42 @@ window.DocxGen = class DocxGen
 		output
 	applyTemplateVars:()->
 		for fileName in @templatedFiles when @files[fileName]?
+			console.log fileName
+			matches = @getFullTextMatches(fileName)
 			fileData= @files[fileName].data
 			rules=[{'regex':///
-			(<w:t[^>]*>)		#Begin of text element
-			([^<>]*)			#Any text (not formating)
-			\{					#opening bracket
-			([a-zA-Z_éèàê0-9]+) #tagName
-			\} 					#closing bracket
-			([^}])/// 			#anything but a closing bracket
-			,'replacement':'$1$2#3$4'},
-			{'regex':///
-			\{					#Opening bracket
-			([^}]*?)			#Formating in betweent
-			<w:t([^>]*)> 		#begin of text element
-			([a-zA-Z_éèàê0-9]+) #tagName
-			\}					#Closing Bracket
-			///,'replacement':'$1<w:t$2>#3'},
-			{'regex':///
-			\{					#Opening brakcket
+			\{\#				#Opening bracket and opening for
 			((?:.(?!<w:t))*)>	#Formating in between
 			<w:t([^>]*)>		#begin of text element
 			([a-zA-Z_éèàê0-9]+) #tagName
 			((?:.(?!<w:t))*)>	#Formating in between
 			<w:t([^>]*)>		#begin of text element
 			\}					#Closing bracket
-			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">'}]
+			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">','forstart':true},
+			{'regex':///
+			(<w:t[^>]*>)		#Begin of text element
+			([^<>]*)			#Any text (not formating)
+			\{					#opening bracket
+			([a-zA-Z_éèàê0-9]+) #tagName
+			\} 					#closing bracket
+			([^}])/// 			#anything but a closing bracket
+			,'replacement':'$1$2#3$4','forstart':false},
+			{'regex':///
+			\{					#Opening bracket
+			([^}]*?)			#Formating in betweent
+			<w:t([^>]*)> 		#begin of text element
+			([a-zA-Z_éèàê0-9]+) #tagName
+			\}					#Closing Bracket
+			///,'replacement':'$1<w:t$2>#3','forstart':false},
+			{'regex':///
+			\{					#Opening bracket
+			((?:.(?!<w:t))*)>	#Formating in between
+			<w:t([^>]*)>		#begin of text element
+			([a-zA-Z_éèàê0-9]+) #tagName
+			((?:.(?!<w:t))*)>	#Formating in between
+			<w:t([^>]*)>		#begin of text element
+			\}					#Closing bracket
+			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">','forstart':false}]
 			@files[fileName].data= @regexTest(rules,fileData)
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->
@@ -108,19 +119,20 @@ window.DocxGen = class DocxGen
 		outputFile= zip.generate()
 		if download==true then doOutput()
 		outputFile
-	getFullText:(path="document.xml") ->
-		filePath= "word/#{path}";
-		regex= "<w:t[^>]*>([^<>]*)?</w:t>"
-		file= @files[filePath]
-		output= preg_match_all(regex,file.data)
+	getFullText:(path="word/document.xml") ->
+		matches= @getFullTextMatches(path)
+		output= (match[1] for match in matches)
 		output.join("")
+	getFullTextMatches: (path="word/document.xml") ->
+		regex= "<w:t[^>]*>([^<>]*)?</w:t>"
+		file= @files[path]
+		matches= preg_match_all(regex,file.data)
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)
 		Downloadify.create 'downloadify',
 			filename: () ->	return filename
 			data: () ->
 				return outputFile
-			# onComplete: () ->  alert 'Your File Has Been Saved!'
 			onCancel: () -> alert 'You have cancelled the saving of this file.'
 			onError: () -> alert 'You must put something in the File Contents or there will be nothing to save!'
 			swf: swfpath

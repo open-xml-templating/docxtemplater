@@ -72,7 +72,7 @@
       it("should load the right content for the footer", function() {
         var fullText;
 
-        fullText = docx.getFullText("footer1.xml");
+        fullText = docx.getFullText("word/footer1.xml");
         expect(fullText.length).not.toBe(0);
         return expect(fullText).toBe('{last_name}{first_name}{phone}');
       });
@@ -148,8 +148,8 @@
         taggedDocx.setTemplateVars(templateVars);
         taggedDocx.applyTemplateVars();
         expect(taggedDocx.getFullText()).toEqual('Edgar Hipp');
-        expect(taggedDocx.getFullText("header1.xml")).toEqual('Edgar Hipp0652455478undefined');
-        return expect(taggedDocx.getFullText("footer1.xml")).toEqual('EdgarHipp0652455478');
+        expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478undefined');
+        return expect(taggedDocx.getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478');
       });
       return it("should export the good file", function() {
         var i, outputExpected, _results;
@@ -166,6 +166,42 @@
           _results.push(expect(taggedDocx.files[i].options.date).not.toBe(outputExpected.files[i].options.date));
         }
         return _results;
+      });
+    });
+  });
+
+  describe("DocxGenTemplatingForLoop", function() {
+    var callbackLoadedTaggedDocx, xhrDoc;
+
+    callbackLoadedTaggedDocx = jasmine.createSpy();
+    xhrDoc = new XMLHttpRequest();
+    xhrDoc.open('GET', '../examples/tagLoopExample.docx', true);
+    if (xhrDoc.overrideMimeType) {
+      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDoc.onreadystatechange = function(e) {
+      var docData;
+
+      if (this.readyState === 4 && this.status === 200) {
+        docData = this.response;
+        window.taggedForDocx = new DocxGen(docData);
+        return callbackLoadedTaggedDocx();
+      }
+    };
+    xhrDoc.send();
+    waitsFor(function() {
+      return callbackLoadedTaggedDocx.callCount >= 1;
+    });
+    return describe("textLoop templating", function() {
+      return it("should replace all the tags", function() {
+        var templateVars;
+
+        templateVars = {};
+        console.log(taggedForDocx);
+        taggedForDocx.setTemplateVars(templateVars);
+        taggedForDocx.applyTemplateVars();
+        expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialeundefinedMon titreTitre undefinedBonjourLe prix total est de undefined, et le nombre de semaines de undefinedLala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolorLes avantages sont:La rapiditÃ©La simplicitÃ©Lalasit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit ametundefinedundefinedundefined');
+        return window.content = taggedForDocx.files["word/document.xml"].data;
       });
     });
   });
