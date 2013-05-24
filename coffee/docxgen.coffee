@@ -7,19 +7,13 @@ preg_match_all= (regex, haystack) ->
 	globalRegex = new RegExp(regex, 'g');
 	globalMatch = haystack.match(globalRegex);
 	matchArray = new Array();
-	for match,i in globalMatch
-		nonGlobalRegex = new RegExp(regex);
-		nonGlobalMatch = globalMatch[i].match(nonGlobalRegex)
-		matchArray.push(nonGlobalMatch[1])
+	if globalMatch!=null
+		for match,i in globalMatch
+			nonGlobalRegex = new RegExp(regex);
+			nonGlobalMatch = globalMatch[i].match(nonGlobalRegex)
+			matchArray.push(nonGlobalMatch[1])
 	matchArray
-
-Object.size = (obj) ->
-	size=0
-	log = 0
-	for key of obj
-		size++
-	size
-
+	
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={}) ->
@@ -57,7 +51,6 @@ window.DocxGen = class DocxGen
 		output= fileData
 		for rule,i in rules
 			while output.match(rule.regex)
-				console.log "rule"+i+"-->#{rule.regex}";
 				match= rule.regex.exec(output);
 				currentChar=0
 				ruleReplacementLength= rule.replacement.length
@@ -74,10 +67,6 @@ window.DocxGen = class DocxGen
 					else
 						replacement+=rule.replacement.charAt(currentChar)
 					currentChar++
-				console.log ("#{match[0]}")
-				console.log "--------->>>>>"
-				console.log match
-				console.log(replacement)
 				output= output.replace match[0],replacement
 		output
 	applyTemplateVars:()->

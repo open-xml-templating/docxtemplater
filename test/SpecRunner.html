@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.3.1/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css">
+  <script type="text/javascript" src="lib/jasmine-1.3.1/jasmine.js"></script>
+  <script type="text/javascript" src="lib/jasmine-1.3.1/jasmine-html.js"></script>
+  <!-- Include dependencies -->
+  <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="../js/docxgen.js"></script>
+
+  <!-- include spec files here... -->
+
+  <script>
+  function clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+
+
+}
+function string2Bin(s) {
+    var b = new Array();
+    var last = s.length;
+
+    for (var i = 0; i < last; i++) {
+        var d = s.charCodeAt(i);
+        if (d < 128)
+            b[i] = dec2Bin(d);
+        else {
+            var c = s.charAt(i);
+            alert(c + ' is NOT an ASCII character');
+            b[i] = -1;
+        }
+    }
+    return b;
+}
+
+function dec2Bin(d) {
+    var b = '';
+
+    for (var i = 0; i < 8; i++) {
+        b = (d%2) + b;
+        d = Math.floor(d/2);
+    }
+
+    return b;
+}
+</script>
+
+  <script type="text/javascript" src="spec/docxgenTest.js"></script>
+
+  <script type="text/javascript">
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+    })();
+  </script>
+
+</head>
+
+<body>
+</body>
+</html>

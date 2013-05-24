@@ -14,24 +14,15 @@ Created by Edgar HIPP
     globalRegex = new RegExp(regex, 'g');
     globalMatch = haystack.match(globalRegex);
     matchArray = new Array();
-    for (i = _i = 0, _len = globalMatch.length; _i < _len; i = ++_i) {
-      match = globalMatch[i];
-      nonGlobalRegex = new RegExp(regex);
-      nonGlobalMatch = globalMatch[i].match(nonGlobalRegex);
-      matchArray.push(nonGlobalMatch[1]);
+    if (globalMatch !== null) {
+      for (i = _i = 0, _len = globalMatch.length; _i < _len; i = ++_i) {
+        match = globalMatch[i];
+        nonGlobalRegex = new RegExp(regex);
+        nonGlobalMatch = globalMatch[i].match(nonGlobalRegex);
+        matchArray.push(nonGlobalMatch[1]);
+      }
     }
     return matchArray;
-  };
-
-  Object.size = function(obj) {
-    var key, log, size;
-
-    size = 0;
-    log = 0;
-    for (key in obj) {
-      size++;
-    }
-    return size;
   };
 
   window.DocxGen = DocxGen = (function() {
@@ -87,7 +78,6 @@ Created by Edgar HIPP
       for (i = _i = 0, _len = rules.length; _i < _len; i = ++_i) {
         rule = rules[i];
         while (output.match(rule.regex)) {
-          console.log("rule" + i + ("-->" + rule.regex));
           match = rule.regex.exec(output);
           currentChar = 0;
           ruleReplacementLength = rule.replacement.length;
@@ -106,10 +96,6 @@ Created by Edgar HIPP
             }
             currentChar++;
           }
-          console.log("" + match[0]);
-          console.log("--------->>>>>");
-          console.log(match);
-          console.log(replacement);
           output = output.replace(match[0], replacement);
         }
       }
