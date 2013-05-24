@@ -138,11 +138,9 @@ describe "DocxGenTemplatingForLoop", () ->
 	waitsFor () ->
 		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
 
-
 	describe "textLoop templating", () ->
 		it "should replace all the tags", () ->
 			templateVars={}
-			console.log taggedForDocx
 			taggedForDocx.setTemplateVars templateVars
 			taggedForDocx.applyTemplateVars()
 			expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialeundefinedMon titreTitre undefinedBonjourLe prix total est de undefined, et le nombre de semaines de undefinedLala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolorLes avantages sont:La rapiditÃ©La simplicitÃ©Lalasit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit ametundefinedundefinedundefined')

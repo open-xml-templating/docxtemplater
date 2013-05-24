@@ -71,10 +71,45 @@ window.DocxGen = class DocxGen
 		output
 	applyTemplateVars:()->
 		for fileName in @templatedFiles when @files[fileName]?
-			console.log fileName
 			matches = @getFullTextMatches(fileName)
 			fileData= @files[fileName].data
-			rules=[{'regex':///
+			scopes=[@templateVars]
+			currentScope= @templateVars
+			inBracket= false
+			
+			for match,i in matches
+				innerText= match[2]  #text inside the <w:t>
+
+				for char,j in innerText
+					if char=='{'
+						if inBracket is true then throw "Bracket already open"
+						inBracket= true
+						textInsideBracket= ""
+						startMatch= i
+						startj=j
+					else if char == '}'
+						if inBracket is false then throw "Bracket already closed"
+						inBracket= false
+						endMatch = i
+						endj=j+1
+						starti= i
+						if endMatch==startMatch #<w>{aaaaa}</w>
+							console.log "start==end"
+							console.log "foundinside--"+startMatch+"----"+endMatch+"===="+startj+"<->"+endj+"---"+textInsideBracket+"---"+fileName
+							console.log textInsideBracket
+							match[2]=match[2].replace "{#{textInsideBracket}}", currentScope[innerText]
+							replacer= "<w:t"+match[1]+">"+match[2]+"</w:t>"
+							fileData = fileData.replace match[0], replacer
+							match[0]=replacer
+							console.log match[0]
+						if endMatch>startMatch    # <w>{aaa</w><w>bbb}</w>
+							#startmatch first
+							fileData = fileData.replace matches[startMatch][0],  "<w:t"+match[1]+">"+match[2].substr(startj).substr(0,endj)+"</w:t>" 
+					else
+						if inBracket is true then textInsideBracket+=char
+
+			@files[fileName].data= fileData
+			###rules=[{'regex':///
 			\{\#				#Opening bracket and opening for
 			((?:.(?!<w:t))*)>	#Formating in between
 			<w:t([^>]*)>		#begin of text element
@@ -107,7 +142,8 @@ window.DocxGen = class DocxGen
 			<w:t([^>]*)>		#begin of text element
 			\}					#Closing bracket
 			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">','forstart':false}]
-			@files[fileName].data= @regexTest(rules,fileData)
+			@files[fileName].data= @regexTest(rules,fileData)###
+
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->
 		zip = new JSZip()
@@ -121,10 +157,10 @@ window.DocxGen = class DocxGen
 		outputFile
 	getFullText:(path="word/document.xml") ->
 		matches= @getFullTextMatches(path)
-		output= (match[1] for match in matches)
+		output= (match[2] for match in matches)
 		output.join("")
 	getFullTextMatches: (path="word/document.xml") ->
-		regex= "<w:t[^>]*>([^<>]*)?</w:t>"
+		regex= "<w:t([^>]*)>([^<>]*)?</w:t>"
 		file= @files[path]
 		matches= preg_match_all(regex,file.data)
 	download: (swfpath, imgpath, filename="default.docx") ->
