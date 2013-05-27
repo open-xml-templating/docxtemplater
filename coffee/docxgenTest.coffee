@@ -114,6 +114,9 @@ describe "DocxGenTemplating", () ->
 			outputExpected= new DocxGen(docDataExpected)
 			for i of taggedDocx.files
 				#Everything but the date should be different
+				# console.log typeof taggedDocx.files[i].data
+				# console.log taggedDocx.files[i].data
+
 				expect(taggedDocx.files[i].data).toBe(outputExpected.files[i].data)
 				expect(taggedDocx.files[i].name).toBe(outputExpected.files[i].name)
 				expect(taggedDocx.files[i].options.base64).toBe(outputExpected.files[i].options.base64)

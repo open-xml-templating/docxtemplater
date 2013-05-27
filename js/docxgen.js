@@ -71,39 +71,101 @@ Created by Edgar HIPP
       return this.templateVars = templateVars;
     };
 
-    DocxGen.prototype.regexTest = function(rules, fileData) {
-      var currentChar, i, j, match, output, replacement, rule, ruleReplacementLength, _i, _len;
+    /*
+    	content is the whole content to be tagged
+    	scope is the current scope
+    	returns the new content of the
+    */
 
-      output = fileData;
-      for (i = _i = 0, _len = rules.length; _i < _len; i = ++_i) {
-        rule = rules[i];
-        while (output.match(rule.regex)) {
-          match = rule.regex.exec(output);
-          currentChar = 0;
-          ruleReplacementLength = rule.replacement.length;
-          replacement = "";
-          while (currentChar <= ruleReplacementLength) {
-            if (rule.replacement.charAt(currentChar) === '$') {
-              currentChar++;
-              j = parseInt(rule.replacement.charAt(currentChar));
-              replacement += match[j];
-            } else if (rule.replacement.charAt(currentChar) === '#') {
-              currentChar++;
-              j = parseInt(rule.replacement.charAt(currentChar));
-              replacement += this.templateVars[match[j]];
-            } else {
-              replacement += rule.replacement.charAt(currentChar);
+
+    DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
+      var character, copyContent, endMatch, endj, i, inBracket, inForLoop, innerText, j, k, match, matches, regexLeft, regexRight, replacer, startMatch, starti, startj, subMatches, textInsideBracket, _i, _j, _k, _len, _len1, _ref;
+
+      inForLoop = false;
+      inBracket = false;
+      matches = this._getFullTextMatchesFromData(content);
+      for (i = _i = 0, _len = matches.length; _i < _len; i = ++_i) {
+        match = matches[i];
+        innerText = match[2];
+        for (j = _j = 0, _len1 = innerText.length; _j < _len1; j = ++_j) {
+          character = innerText[j];
+          if (character === '{') {
+            if (inBracket === true) {
+              throw "Bracket already open";
             }
-            currentChar++;
+            inBracket = true;
+            textInsideBracket = "";
+            startMatch = i;
+            startj = j;
+          } else if (character === '}') {
+            if (textInsideBracket[0] === '#') {
+              inForLoop = true;
+            }
+            if (textInsideBracket[0] === '/') {
+              inForLoop = false;
+            }
+            /*
+            						<w:t>{#forTag}</w:t>
+            						.....
+            						.....
+            						<w:t>{/forTag}</w:t>
+            						Let A be what is in between the first closing bracket and the second opening bracket
+            						We replace the data by:
+            						<w:t>AAAAAA</w:t>
+            */
+
+            if (inBracket === false) {
+              throw "Bracket already closed";
+            }
+            inBracket = false;
+            endMatch = i;
+            endj = j + 1;
+            starti = i;
+            if (endMatch === startMatch) {
+              match[2] = match[2].replace("{" + textInsideBracket + "}", currentScope[textInsideBracket]);
+              replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
+              content = content.replace(match[0], replacer);
+              match[0] = replacer;
+            } else if (endMatch > startMatch) {
+              /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
+              						1. for the first (startMatch): replace {.. by the value
+              						2. for in between (startMatch+1...endMatch) replace whole by ""
+              						3. for the last (endMatch) replace ..} by ""
+              */
+
+              regexRight = /^([^{]*){.*$/;
+              subMatches = matches[startMatch][2].match(regexRight);
+              matches[startMatch][2] = subMatches[1] + currentScope[textInsideBracket];
+              replacer = '<w:t xml:space="preserve">' + matches[startMatch][2] + "</w:t>";
+              copyContent = content;
+              content = content.replace(matches[startMatch][0], replacer);
+              if (copyContent === content) {
+                throw 'didnt changed the value';
+              }
+              for (k = _k = _ref = startMatch + 1; _ref <= endMatch ? _k < endMatch : _k > endMatch; k = _ref <= endMatch ? ++_k : --_k) {
+                replacer = matches[k][1] + '</w:t>';
+                content = content.replace(matches[k][0], replacer);
+              }
+              regexLeft = /^[^}]*}(.*)$/;
+              matches[endMatch][2] = matches[endMatch][2].replace(regexLeft, '$1');
+              replacer = '<w:t xml:space="preserve">' + matches[endMatch][2] + "</w:t>";
+              content = content.replace(matches[endMatch][0], replacer);
+              matches[endMatch][0] = replacer;
+            } else {
+              throw "Bracket closed before opening";
+            }
+          } else {
+            if (inBracket === true) {
+              textInsideBracket += character;
+            }
           }
-          output = output.replace(match[0], replacement);
         }
       }
-      return output;
+      return content;
     };
 
     DocxGen.prototype.applyTemplateVars = function() {
-      var char, currentScope, endMatch, endj, fileData, fileName, glou, i, inBracket, innerText, j, k, match, matches, regexLeft, regexRight, replacer, scopes, startMatch, starti, startj, subMatches, textInsideBracket, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _results;
+      var fileData, fileName, scope, _i, _len, _ref, _results;
 
       _ref = this.templatedFiles;
       _results = [];
@@ -112,78 +174,9 @@ Created by Edgar HIPP
         if (!(this.files[fileName] != null)) {
           continue;
         }
-        matches = this.getFullTextMatches(fileName);
         fileData = this.files[fileName].data;
-        scopes = [this.templateVars];
-        currentScope = this.templateVars;
-        console.log(currentScope);
-        inBracket = false;
-        for (i = _j = 0, _len1 = matches.length; _j < _len1; i = ++_j) {
-          match = matches[i];
-          innerText = match[2];
-          for (j = _k = 0, _len2 = innerText.length; _k < _len2; j = ++_k) {
-            char = innerText[j];
-            if (char === '{') {
-              if (inBracket === true) {
-                throw "Bracket already open";
-              }
-              inBracket = true;
-              textInsideBracket = "";
-              startMatch = i;
-              startj = j;
-            } else if (char === '}') {
-              if (inBracket === false) {
-                throw "Bracket already closed";
-              }
-              inBracket = false;
-              endMatch = i;
-              endj = j + 1;
-              starti = i;
-              if (endMatch === startMatch) {
-                match[2] = match[2].replace("{" + textInsideBracket + "}", currentScope[innerText]);
-                replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
-                fileData = fileData.replace(match[0], replacer);
-                console.log("match0->" + match[0] + "---replacer:" + replacer);
-                match[0] = replacer;
-              } else if (endMatch > startMatch) {
-                /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-                							1. for the first ($startMatch): replace {.. by the value
-                							2. for in between ($startMatch+1..$endMatch$) replace whole by ""
-                							3. for the last ($endMatch) replace ..} by ""
-                */
-
-                regexRight = /^([^{]*){.*$/;
-                subMatches = matches[startMatch][2].match(regexRight);
-                matches[startMatch][2] = subMatches[1] + currentScope[textInsideBracket];
-                replacer = '<w:t xml:space="preserve">' + matches[startMatch][2] + "</w:t>";
-                console.log("match0->" + matches[startMatch][0] + "---replacer:" + replacer);
-                glou = fileData;
-                fileData = fileData.replace(matches[startMatch][0], replacer);
-                if (glou === fileData) {
-                  throw 'didnt changed the value';
-                }
-                for (k = _l = _ref1 = startMatch + 1; _ref1 <= endMatch ? _l < endMatch : _l > endMatch; k = _ref1 <= endMatch ? ++_l : --_l) {
-                  replacer = matches[k][1] + '</w:t>';
-                  fileData = fileData.replace(matches[k][0], replacer);
-                  console.log("match0->" + matches[k][0] + "---replacer:" + replacer);
-                }
-                regexLeft = /^[^}]*}(.*)$/;
-                matches[endMatch][2] = matches[endMatch][2].replace(regexLeft, '$1');
-                replacer = '<w:t xml:space="preserve">' + matches[endMatch][2] + "</w:t>";
-                fileData = fileData.replace(matches[endMatch][0], replacer);
-                console.log("match0->" + matches[endMatch][0] + "---replacer:" + replacer);
-                matches[endMatch][0] = replacer;
-              } else {
-                throw "Bracket closed before opening";
-              }
-            } else {
-              if (inBracket === true) {
-                textInsideBracket += char;
-              }
-            }
-          }
-        }
-        _results.push(this.files[fileName].data = fileData);
+        scope = this.templateVars;
+        _results.push(this.files[fileName].data = this._applyTemplateVars(fileData, scope));
       }
       return _results;
     };
@@ -216,7 +209,6 @@ Created by Edgar HIPP
         path = "word/document.xml";
       }
       matches = this.getFullTextMatches(path);
-      console.log(matches);
       output = (function() {
         var _i, _len, _results;
 
@@ -231,14 +223,20 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.getFullTextMatches = function(path) {
-      var file, matches, regex;
+      var file;
 
       if (path == null) {
         path = "word/document.xml";
       }
-      regex = "(<w:t[^>]*>)([^<>]*)?</w:t>";
       file = this.files[path];
-      return matches = preg_match_all(regex, file.data);
+      return this._getFullTextMatchesFromData(file.data);
+    };
+
+    DocxGen.prototype._getFullTextMatchesFromData = function(data) {
+      var matches, regex;
+
+      regex = "(<w:t[^>]*>)([^<>]*)?</w:t>";
+      return matches = preg_match_all(regex, data);
     };
 
     DocxGen.prototype.download = function(swfpath, imgpath, filename) {
