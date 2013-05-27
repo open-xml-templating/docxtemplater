@@ -4,16 +4,15 @@ Created by Edgar HIPP
 ###
 
 preg_match_all= (regex, haystack) ->
-	globalRegex = new RegExp(regex, 'g');
-	globalMatch = haystack.match(globalRegex);
-	matchArray = new Array();
-	if globalMatch!=null
-		for match,i in globalMatch
-			nonGlobalRegex = new RegExp(regex);
-			nonGlobalMatch = globalMatch[i].match(nonGlobalRegex)
-			matchArray.push(nonGlobalMatch)
+	testRegex= new RegExp(regex,'g');
+	matchArray= []
+	replacer = (match,pn ..., offset, string)->
+		pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+		pn.offset=offset
+		matchArray.push pn
+	unused= haystack.replace testRegex,replacer
 	matchArray
-	
+
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={}) ->
@@ -52,78 +51,120 @@ window.DocxGen = class DocxGen
 	content is the whole content to be tagged
 	scope is the current scope
 	returns the new content of the###
-	_applyTemplateVars:(content,currentScope)-> 
+	_applyTemplateVars:(content,currentScope)->
 		inForLoop= false;
 		inBracket= false
 		matches = @_getFullTextMatchesFromData(content)
-
+		textInsideBracket= ""
+		console.log matches
 		for match,i in matches
-			innerText= match[2]  #text inside the <w:t>
-
+			innerText= match[2] || "" #text inside the <w:t>
+			console.log match
+			console.log innerText
 			for character,j in innerText
 				if character=='{'
 					if inBracket is true then throw "Bracket already open"
 					inBracket= true
 					textInsideBracket= ""
 					startMatch= i
-					startj=j
 				else if character == '}'
+					console.log "innerText"+textInsideBracket
+					if textInsideBracket[0]=='#' and inForLoop is false
 
-					if textInsideBracket[0]=='#' then inForLoop= true #begin for loop
-					if textInsideBracket[0]=='/' then inForLoop= false #end for loop
+
+						tagForLoop= textInsideBracket.substr 1
+						inForLoop= true #begin for loop
+						startLoop= i
 
 					###
 						<w:t>{#forTag}</w:t>
 						.....
 						.....
 						<w:t>{/forTag}</w:t>
-						Let A be what is in between the first closing bracket and the second opening bracket
+						Let subContent be what is in between the first closing bracket and the second opening bracket
 						We replace the data by:
-						<w:t>AAAAAA</w:t>
+						<w:t>subContent subContent subContent</w:t>
 					###
 
 					if inBracket is false then throw "Bracket already closed"
 					inBracket= false
-					endMatch = i
-					endj=j+1
-					starti= i
-					if endMatch==startMatch #<w>{aaaaa}</w>
-						match[2]=match[2].replace "{#{textInsideBracket}}", currentScope[textInsideBracket]
-						replacer= '<w:t xml:space="preserve">'+match[2]+"</w:t>"
-						content = content.replace match[0], replacer
-						match[0]=replacer
-					else if endMatch>startMatch
-						###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-						1. for the first (startMatch): replace {.. by the value
-						2. for in between (startMatch+1...endMatch) replace whole by ""
-						3. for the last (endMatch) replace ..} by "" ###
+
+					if inForLoop is false
+						endMatch = i
+						if endMatch==startMatch #<w>{aaaaa}</w>
+							match[2]=match[2].replace "{#{textInsideBracket}}", currentScope[textInsideBracket]
+							replacer= '<w:t xml:space="preserve">'+match[2]+"</w:t>"
+							content = content.replace match[0], replacer
+							match[0]=replacer
+						else if endMatch>startMatch
+							###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
+							1. for the first (startMatch): replace {.. by the value
+							2. for in between (startMatch+1...endMatch) replace whole by ""
+							3. for the last (endMatch) replace ..} by "" ###
+
+							# 1.
+							regexRight= /^([^{]*){.*$/
+							subMatches= matches[startMatch][2].match regexRight
+							matches[startMatch][2]=subMatches[1]+currentScope[textInsideBracket]
+							replacer= '<w:t xml:space="preserve">'+matches[startMatch][2]+"</w:t>"
+							copyContent = content
+							content= content.replace matches[startMatch][0],replacer
+
+							if copyContent==content
+								throw 'didnt changed the value'
+
+							#2.
+							for k in [(startMatch+1)...endMatch]
+								replacer = matches[k][1]+'</w:t>'
+								content= content.replace matches[k][0],replacer
+
+							#3.
+							regexLeft= /^[^}]*}(.*)$/;
+							matches[endMatch][2]=matches[endMatch][2].replace regexLeft, '$1'
+							replacer= '<w:t xml:space="preserve">'+matches[endMatch][2]+"</w:t>";
+							content= content.replace matches[endMatch][0], replacer
+							matches[endMatch][0]=replacer
+						else
+							throw "Bracket closed before opening"
+
+					if textInsideBracket[0]=='/' and inForLoop
+						endLoop= i
+						console.log "startloop:#{startLoop}-endLoop:#{endLoop}"
+						startSubContent= matches[startLoop].offset
+						endSubContent= matches[endLoop].offset
+						subContent=content.substr(startSubContent,endSubContent-startSubContent)
+
+						console.log subContent
+						subContent= subContent.substr(subContent.indexOf('}')+1)
+						console.log subContent
+						subContent= subContent.substr(0,subContent.lastIndexOf('{'))
+						console.log subContent
+
+						Bstart= content.lastIndexOf('{',startSubContent)
+						Bend= content.indexOf('}',endSubContent)
 						
-						# 1.
-						regexRight= /^([^{]*){.*$/
-						subMatches= matches[startMatch][2].match regexRight
-						matches[startMatch][2]=subMatches[1]+currentScope[textInsideBracket]
-						replacer= '<w:t xml:space="preserve">'+matches[startMatch][2]+"</w:t>"
-						copyContent = content
-						content= content.replace matches[startMatch][0],replacer
-						
-						if copyContent==content
-							throw 'didnt changed the value'
-						
-						#2.
-						for k in [(startMatch+1)...endMatch]
-							replacer = matches[k][1]+'</w:t>'
-							content= content.replace matches[k][0],replacer
-						
-						#3.
-						regexLeft= /^[^}]*}(.*)$/;
-						matches[endMatch][2]=matches[endMatch][2].replace regexLeft, '$1'
-						replacer= '<w:t xml:space="preserve">'+matches[endMatch][2]+"</w:t>";
-						content= content.replace matches[endMatch][0], replacer
-						matches[endMatch][0]=replacer
-					else
-						throw "Bracket closed before opening"
+						B= content.substr(Bstart,Bend-Bstart+1)
+						console.log "BBBBBBB------#{B}"
+						inForLoop= false #end for loop
+
+						if typeof currentScope[tagForLoop]!='object' then throw '{#'+tagForLoop+"}should be an object (it is a #{typeof currentScope[tagForLoop]})"
+						newContent= "";
+
+						for scope,i in currentScope[tagForLoop]
+							console.log scope
+							newContent+=@_applyTemplateVars subContent,scope
+
+
+						console.log content.length
+						content=content.replace B, newContent
+						console.log content.length
+
+						console.log "nextStep"
+						@_applyTemplateVars content,currentScope
+						break
+
 				else #if character != '{' and character != '}'
-					if inBracket is true then textInsideBracket+=character	
+					if inBracket is true then textInsideBracket+=character
 		content
 
 

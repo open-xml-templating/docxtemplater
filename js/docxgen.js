@@ -6,22 +6,23 @@ Created by Edgar HIPP
 
 (function() {
   var DocxGen, preg_match_all,
+    __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   preg_match_all = function(regex, haystack) {
-    var globalMatch, globalRegex, i, match, matchArray, nonGlobalMatch, nonGlobalRegex, _i, _len;
+    var matchArray, replacer, testRegex, unused;
 
-    globalRegex = new RegExp(regex, 'g');
-    globalMatch = haystack.match(globalRegex);
-    matchArray = new Array();
-    if (globalMatch !== null) {
-      for (i = _i = 0, _len = globalMatch.length; _i < _len; i = ++_i) {
-        match = globalMatch[i];
-        nonGlobalRegex = new RegExp(regex);
-        nonGlobalMatch = globalMatch[i].match(nonGlobalRegex);
-        matchArray.push(nonGlobalMatch);
-      }
-    }
+    testRegex = new RegExp(regex, 'g');
+    matchArray = [];
+    replacer = function() {
+      var match, offset, pn, string, _i;
+
+      match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
+      pn.unshift(match);
+      pn.offset = offset;
+      return matchArray.push(pn);
+    };
+    unused = haystack.replace(testRegex, replacer);
     return matchArray;
   };
 
@@ -79,14 +80,18 @@ Created by Edgar HIPP
 
 
     DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
-      var character, copyContent, endMatch, endj, i, inBracket, inForLoop, innerText, j, k, match, matches, regexLeft, regexRight, replacer, startMatch, starti, startj, subMatches, textInsideBracket, _i, _j, _k, _len, _len1, _ref;
+      var B, Bend, Bstart, character, copyContent, endLoop, endMatch, endSubContent, i, inBracket, inForLoop, innerText, j, k, match, matches, newContent, regexLeft, regexRight, replacer, scope, startLoop, startMatch, startSubContent, subContent, subMatches, tagForLoop, textInsideBracket, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1;
 
       inForLoop = false;
       inBracket = false;
       matches = this._getFullTextMatchesFromData(content);
+      textInsideBracket = "";
+      console.log(matches);
       for (i = _i = 0, _len = matches.length; _i < _len; i = ++_i) {
         match = matches[i];
-        innerText = match[2];
+        innerText = match[2] || "";
+        console.log(match);
+        console.log(innerText);
         for (j = _j = 0, _len1 = innerText.length; _j < _len1; j = ++_j) {
           character = innerText[j];
           if (character === '{') {
@@ -96,63 +101,95 @@ Created by Edgar HIPP
             inBracket = true;
             textInsideBracket = "";
             startMatch = i;
-            startj = j;
           } else if (character === '}') {
-            if (textInsideBracket[0] === '#') {
+            console.log("innerText" + textInsideBracket);
+            if (textInsideBracket[0] === '#' && inForLoop === false) {
+              tagForLoop = textInsideBracket.substr(1);
               inForLoop = true;
-            }
-            if (textInsideBracket[0] === '/') {
-              inForLoop = false;
+              startLoop = i;
             }
             /*
             						<w:t>{#forTag}</w:t>
             						.....
             						.....
             						<w:t>{/forTag}</w:t>
-            						Let A be what is in between the first closing bracket and the second opening bracket
+            						Let subContent be what is in between the first closing bracket and the second opening bracket
             						We replace the data by:
-            						<w:t>AAAAAA</w:t>
+            						<w:t>subContent subContent subContent</w:t>
             */
 
             if (inBracket === false) {
               throw "Bracket already closed";
             }
             inBracket = false;
-            endMatch = i;
-            endj = j + 1;
-            starti = i;
-            if (endMatch === startMatch) {
-              match[2] = match[2].replace("{" + textInsideBracket + "}", currentScope[textInsideBracket]);
-              replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
-              content = content.replace(match[0], replacer);
-              match[0] = replacer;
-            } else if (endMatch > startMatch) {
-              /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-              						1. for the first (startMatch): replace {.. by the value
-              						2. for in between (startMatch+1...endMatch) replace whole by ""
-              						3. for the last (endMatch) replace ..} by ""
-              */
+            if (inForLoop === false) {
+              endMatch = i;
+              if (endMatch === startMatch) {
+                match[2] = match[2].replace("{" + textInsideBracket + "}", currentScope[textInsideBracket]);
+                replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
+                content = content.replace(match[0], replacer);
+                match[0] = replacer;
+              } else if (endMatch > startMatch) {
+                /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
+                							1. for the first (startMatch): replace {.. by the value
+                							2. for in between (startMatch+1...endMatch) replace whole by ""
+                							3. for the last (endMatch) replace ..} by ""
+                */
 
-              regexRight = /^([^{]*){.*$/;
-              subMatches = matches[startMatch][2].match(regexRight);
-              matches[startMatch][2] = subMatches[1] + currentScope[textInsideBracket];
-              replacer = '<w:t xml:space="preserve">' + matches[startMatch][2] + "</w:t>";
-              copyContent = content;
-              content = content.replace(matches[startMatch][0], replacer);
-              if (copyContent === content) {
-                throw 'didnt changed the value';
+                regexRight = /^([^{]*){.*$/;
+                subMatches = matches[startMatch][2].match(regexRight);
+                matches[startMatch][2] = subMatches[1] + currentScope[textInsideBracket];
+                replacer = '<w:t xml:space="preserve">' + matches[startMatch][2] + "</w:t>";
+                copyContent = content;
+                content = content.replace(matches[startMatch][0], replacer);
+                if (copyContent === content) {
+                  throw 'didnt changed the value';
+                }
+                for (k = _k = _ref = startMatch + 1; _ref <= endMatch ? _k < endMatch : _k > endMatch; k = _ref <= endMatch ? ++_k : --_k) {
+                  replacer = matches[k][1] + '</w:t>';
+                  content = content.replace(matches[k][0], replacer);
+                }
+                regexLeft = /^[^}]*}(.*)$/;
+                matches[endMatch][2] = matches[endMatch][2].replace(regexLeft, '$1');
+                replacer = '<w:t xml:space="preserve">' + matches[endMatch][2] + "</w:t>";
+                content = content.replace(matches[endMatch][0], replacer);
+                matches[endMatch][0] = replacer;
+              } else {
+                throw "Bracket closed before opening";
               }
-              for (k = _k = _ref = startMatch + 1; _ref <= endMatch ? _k < endMatch : _k > endMatch; k = _ref <= endMatch ? ++_k : --_k) {
-                replacer = matches[k][1] + '</w:t>';
-                content = content.replace(matches[k][0], replacer);
+            }
+            if (textInsideBracket[0] === '/' && inForLoop) {
+              endLoop = i;
+              console.log("startloop:" + startLoop + "-endLoop:" + endLoop);
+              startSubContent = matches[startLoop].offset;
+              endSubContent = matches[endLoop].offset;
+              subContent = content.substr(startSubContent, endSubContent - startSubContent);
+              console.log(subContent);
+              subContent = subContent.substr(subContent.indexOf('}') + 1);
+              console.log(subContent);
+              subContent = subContent.substr(0, subContent.lastIndexOf('{'));
+              console.log(subContent);
+              Bstart = content.lastIndexOf('{', startSubContent);
+              Bend = content.indexOf('}', endSubContent);
+              B = content.substr(Bstart, Bend - Bstart + 1);
+              console.log("BBBBBBB------" + B);
+              inForLoop = false;
+              if (typeof currentScope[tagForLoop] !== 'object') {
+                throw '{#' + tagForLoop + ("}should be an object (it is a " + (typeof currentScope[tagForLoop]) + ")");
               }
-              regexLeft = /^[^}]*}(.*)$/;
-              matches[endMatch][2] = matches[endMatch][2].replace(regexLeft, '$1');
-              replacer = '<w:t xml:space="preserve">' + matches[endMatch][2] + "</w:t>";
-              content = content.replace(matches[endMatch][0], replacer);
-              matches[endMatch][0] = replacer;
-            } else {
-              throw "Bracket closed before opening";
+              newContent = "";
+              _ref1 = currentScope[tagForLoop];
+              for (i = _l = 0, _len2 = _ref1.length; _l < _len2; i = ++_l) {
+                scope = _ref1[i];
+                console.log(scope);
+                newContent += this._applyTemplateVars(subContent, scope);
+              }
+              console.log(content.length);
+              content = content.replace(B, newContent);
+              console.log(content.length);
+              console.log("nextStep");
+              this._applyTemplateVars(content, currentScope);
+              break;
             }
           } else {
             if (inBracket === true) {
