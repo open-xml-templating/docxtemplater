@@ -104,10 +104,11 @@ describe "DocxGenTemplating", () ->
 				"first_name":"Hipp"
 				"last_name":"Edgar",
 				"phone":"0652455478"
+				"description":"New Website"
 			taggedDocx.setTemplateVars templateVars
 			taggedDocx.applyTemplateVars()
 			expect(taggedDocx.getFullText()).toEqual('Edgar Hipp')
-			expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478undefined')
+			expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website')
 			expect(taggedDocx.getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478')
 		it "should export the good file", () ->
 			outputExpected= new DocxGen(docDataExpected)
@@ -119,38 +120,30 @@ describe "DocxGenTemplating", () ->
 				expect(taggedDocx.files[i].options.binary).toBe(outputExpected.files[i].options.binary)
 				expect(taggedDocx.files[i].options.compression).toBe(outputExpected.files[i].options.compression)
 				expect(taggedDocx.files[i].options.dir).toBe(outputExpected.files[i].options.dir)
-				#creation date should be different
 				expect(taggedDocx.files[i].options.date).not.toBe(outputExpected.files[i].options.date)
 
-describe "DocxGenTemplatingForLoop", () ->
-	callbackLoadedTaggedDocx = jasmine.createSpy();
-	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', '../examples/tagLoopExample.docx', true)
-	if xhrDoc.overrideMimeType
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.taggedForDocx= new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDoc.send()
+# describe "DocxGenTemplatingForLoop", () ->
+# 	callbackLoadedTaggedDocx = jasmine.createSpy();
+# 	xhrDoc= new XMLHttpRequest()
+# 	xhrDoc.open('GET', '../examples/tagLoopExample.docx', true)
+# 	if xhrDoc.overrideMimeType
+# 		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+# 	xhrDoc.onreadystatechange =(e)->
+# 		if this.readyState == 4 and this.status == 200
+# 			docData=this.response
+# 			window.taggedForDocx= new DocxGen(docData)
+# 			callbackLoadedTaggedDocx()
+# 	xhrDoc.send()
 
-	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
+# 	waitsFor () ->
+# 		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
 
-	describe "textLoop templating", () ->
-		it "should replace all the tags", () ->
-			templateVars={}
-			taggedForDocx.setTemplateVars templateVars
-			taggedForDocx.applyTemplateVars()
-			expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialeundefinedMon titreTitre undefinedBonjourLe prix total est de undefined, et le nombre de semaines de undefinedLala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolorLes avantages sont:La rapiditÃ©La simplicitÃ©Lalasit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit ametundefinedundefinedundefined')
-			window.content= taggedForDocx.files["word/document.xml"].data
-
-
-	# describe "loading of the file", () ->
-	# 	it "should have the expected content", () ->
-	# 		console.log taggedForDocx
-	# 		console.log (taggedForDocx.files["word/document.xml"].data)
+	# describe "textLoop templating", () ->
+	# 	it "should replace all the tags", () ->
+	# 		templateVars={}
+	# 		taggedForDocx.setTemplateVars templateVars
+	# 		taggedForDocx.applyTemplateVars()
+	# 		expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialeundefinedMon titreTitre undefinedBonjourLe prix total est de undefined, et le nombre de semaines de undefinedLala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolorLes avantages sont:La rapiditÃ©La simplicitÃ©Lalasit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit ametundefinedundefinedundefined')
 	# 		window.content= taggedForDocx.files["word/document.xml"].data
 
 

@@ -103,7 +103,7 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.applyTemplateVars = function() {
-      var char, currentScope, endMatch, endj, fileData, fileName, i, inBracket, innerText, j, match, matches, replacer, scopes, startMatch, starti, startj, textInsideBracket, _i, _j, _k, _len, _len1, _len2, _ref, _results;
+      var char, currentScope, endMatch, endj, fileData, fileName, glou, i, inBracket, innerText, j, k, match, matches, regexLeft, regexRight, replacer, scopes, startMatch, starti, startj, subMatches, textInsideBracket, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _results;
 
       _ref = this.templatedFiles;
       _results = [];
@@ -116,6 +116,7 @@ Created by Edgar HIPP
         fileData = this.files[fileName].data;
         scopes = [this.templateVars];
         currentScope = this.templateVars;
+        console.log(currentScope);
         inBracket = false;
         for (i = _j = 0, _len1 = matches.length; _j < _len1; i = ++_j) {
           match = matches[i];
@@ -139,17 +140,41 @@ Created by Edgar HIPP
               endj = j + 1;
               starti = i;
               if (endMatch === startMatch) {
-                console.log("start==end");
-                console.log("foundinside--" + startMatch + "----" + endMatch + "====" + startj + "<->" + endj + "---" + textInsideBracket + "---" + fileName);
-                console.log(textInsideBracket);
                 match[2] = match[2].replace("{" + textInsideBracket + "}", currentScope[innerText]);
-                replacer = "<w:t" + match[1] + ">" + match[2] + "</w:t>";
+                replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
                 fileData = fileData.replace(match[0], replacer);
+                console.log("match0->" + match[0] + "---replacer:" + replacer);
                 match[0] = replacer;
-                console.log(match[0]);
-              }
-              if (endMatch > startMatch) {
-                fileData = fileData.replace(matches[startMatch][0], "<w:t" + match[1] + ">" + match[2].substr(startj).substr(0, endj) + "</w:t>");
+              } else if (endMatch > startMatch) {
+                /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
+                							1. for the first ($startMatch): replace {.. by the value
+                							2. for in between ($startMatch+1..$endMatch$) replace whole by ""
+                							3. for the last ($endMatch) replace ..} by ""
+                */
+
+                regexRight = /^([^{]*){.*$/;
+                subMatches = matches[startMatch][2].match(regexRight);
+                matches[startMatch][2] = subMatches[1] + currentScope[textInsideBracket];
+                replacer = '<w:t xml:space="preserve">' + matches[startMatch][2] + "</w:t>";
+                console.log("match0->" + matches[startMatch][0] + "---replacer:" + replacer);
+                glou = fileData;
+                fileData = fileData.replace(matches[startMatch][0], replacer);
+                if (glou === fileData) {
+                  throw 'didnt changed the value';
+                }
+                for (k = _l = _ref1 = startMatch + 1; _ref1 <= endMatch ? _l < endMatch : _l > endMatch; k = _ref1 <= endMatch ? ++_l : --_l) {
+                  replacer = matches[k][1] + '</w:t>';
+                  fileData = fileData.replace(matches[k][0], replacer);
+                  console.log("match0->" + matches[k][0] + "---replacer:" + replacer);
+                }
+                regexLeft = /^[^}]*}(.*)$/;
+                matches[endMatch][2] = matches[endMatch][2].replace(regexLeft, '$1');
+                replacer = '<w:t xml:space="preserve">' + matches[endMatch][2] + "</w:t>";
+                fileData = fileData.replace(matches[endMatch][0], replacer);
+                console.log("match0->" + matches[endMatch][0] + "---replacer:" + replacer);
+                matches[endMatch][0] = replacer;
+              } else {
+                throw "Bracket closed before opening";
               }
             } else {
               if (inBracket === true) {
@@ -159,42 +184,6 @@ Created by Edgar HIPP
           }
         }
         _results.push(this.files[fileName].data = fileData);
-        /*rules=[{'regex':///
-        			\{\#				#Opening bracket and opening for
-        			((?:.(?!<w:t))*)>	#Formating in between
-        			<w:t([^>]*)>		#begin of text element
-        			([a-zA-Z_éèàê0-9]+) #tagName
-        			((?:.(?!<w:t))*)>	#Formating in between
-        			<w:t([^>]*)>		#begin of text element
-        			\}					#Closing bracket
-        			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">','forstart':true},
-        			{'regex':///
-        			(<w:t[^>]*>)		#Begin of text element
-        			([^<>]*)			#Any text (not formating)
-        			\{					#opening bracket
-        			([a-zA-Z_éèàê0-9]+) #tagName
-        			\} 					#closing bracket
-        			([^}])/// 			#anything but a closing bracket
-        			,'replacement':'$1$2#3$4','forstart':false},
-        			{'regex':///
-        			\{					#Opening bracket
-        			([^}]*?)			#Formating in betweent
-        			<w:t([^>]*)> 		#begin of text element
-        			([a-zA-Z_éèàê0-9]+) #tagName
-        			\}					#Closing Bracket
-        			///,'replacement':'$1<w:t$2>#3','forstart':false},
-        			{'regex':///
-        			\{					#Opening bracket
-        			((?:.(?!<w:t))*)>	#Formating in between
-        			<w:t([^>]*)>		#begin of text element
-        			([a-zA-Z_éèàê0-9]+) #tagName
-        			((?:.(?!<w:t))*)>	#Formating in between
-        			<w:t([^>]*)>		#begin of text element
-        			\}					#Closing bracket
-        			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">','forstart':false}]
-        			@files[fileName].data= @regexTest(rules,fileData)
-        */
-
       }
       return _results;
     };
@@ -227,6 +216,7 @@ Created by Edgar HIPP
         path = "word/document.xml";
       }
       matches = this.getFullTextMatches(path);
+      console.log(matches);
       output = (function() {
         var _i, _len, _results;
 
@@ -246,7 +236,7 @@ Created by Edgar HIPP
       if (path == null) {
         path = "word/document.xml";
       }
-      regex = "<w:t([^>]*)>([^<>]*)?</w:t>";
+      regex = "(<w:t[^>]*>)([^<>]*)?</w:t>";
       file = this.files[path];
       return matches = preg_match_all(regex, file.data);
     };

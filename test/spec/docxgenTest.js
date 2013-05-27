@@ -143,12 +143,13 @@
         templateVars = {
           "first_name": "Hipp",
           "last_name": "Edgar",
-          "phone": "0652455478"
+          "phone": "0652455478",
+          "description": "New Website"
         };
         taggedDocx.setTemplateVars(templateVars);
         taggedDocx.applyTemplateVars();
         expect(taggedDocx.getFullText()).toEqual('Edgar Hipp');
-        expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478undefined');
+        expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website');
         return expect(taggedDocx.getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478');
       });
       return it("should export the good file", function() {
@@ -166,41 +167,6 @@
           _results.push(expect(taggedDocx.files[i].options.date).not.toBe(outputExpected.files[i].options.date));
         }
         return _results;
-      });
-    });
-  });
-
-  describe("DocxGenTemplatingForLoop", function() {
-    var callbackLoadedTaggedDocx, xhrDoc;
-
-    callbackLoadedTaggedDocx = jasmine.createSpy();
-    xhrDoc = new XMLHttpRequest();
-    xhrDoc.open('GET', '../examples/tagLoopExample.docx', true);
-    if (xhrDoc.overrideMimeType) {
-      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDoc.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.taggedForDocx = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDoc.send();
-    waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 1;
-    });
-    return describe("textLoop templating", function() {
-      return it("should replace all the tags", function() {
-        var templateVars;
-
-        templateVars = {};
-        taggedForDocx.setTemplateVars(templateVars);
-        taggedForDocx.applyTemplateVars();
-        expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialeundefinedMon titreTitre undefinedBonjourLe prix total est de undefined, et le nombre de semaines de undefinedLala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolorLes avantages sont:La rapiditÃ©La simplicitÃ©Lalasit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit ametundefinedundefinedundefined');
-        return window.content = taggedForDocx.files["word/document.xml"].data;
       });
     });
   });

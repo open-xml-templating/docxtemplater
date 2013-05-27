@@ -75,6 +75,7 @@ window.DocxGen = class DocxGen
 			fileData= @files[fileName].data
 			scopes=[@templateVars]
 			currentScope= @templateVars
+			console.log currentScope
 			inBracket= false
 			
 			for match,i in matches
@@ -94,55 +95,56 @@ window.DocxGen = class DocxGen
 						endj=j+1
 						starti= i
 						if endMatch==startMatch #<w>{aaaaa}</w>
-							console.log "start==end"
-							console.log "foundinside--"+startMatch+"----"+endMatch+"===="+startj+"<->"+endj+"---"+textInsideBracket+"---"+fileName
-							console.log textInsideBracket
+							# console.log "start==end"
+							# console.log "foundinside--"+startMatch+"----"+endMatch+"===="+startj+"<->"+endj+"---"+textInsideBracket+"---"+fileName
+							# console.log textInsideBracket
 							match[2]=match[2].replace "{#{textInsideBracket}}", currentScope[innerText]
-							replacer= "<w:t"+match[1]+">"+match[2]+"</w:t>"
+							replacer= '<w:t xml:space="preserve">'+match[2]+"</w:t>"
 							fileData = fileData.replace match[0], replacer
+							console.log "match0->#{match[0]}---replacer:#{replacer}"
 							match[0]=replacer
-							console.log match[0]
-						if endMatch>startMatch    # <w>{aaa</w><w>bbb}</w>
-							#startmatch first
-							fileData = fileData.replace matches[startMatch][0],  "<w:t"+match[1]+">"+match[2].substr(startj).substr(0,endj)+"</w:t>" 
+						else if endMatch>startMatch
+
+							###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
+							1. for the first ($startMatch): replace {.. by the value
+							2. for in between ($startMatch+1..$endMatch$) replace whole by ""
+							3. for the last ($endMatch) replace ..} by ""###
+							
+							# 1.
+							regexRight= /^([^{]*){.*$/
+							subMatches= matches[startMatch][2].match regexRight
+							matches[startMatch][2]=subMatches[1]+currentScope[textInsideBracket]
+							replacer= '<w:t xml:space="preserve">'+matches[startMatch][2]+"</w:t>"
+							console.log "match0->#{matches[startMatch][0]}---replacer:#{replacer}"
+							glou=fileData
+							fileData=fileData.replace matches[startMatch][0],replacer
+							
+							if glou==fileData
+								throw 'didnt changed the value'
+							#2.
+
+							for k in [(startMatch+1)...endMatch]
+								replacer = matches[k][1]+'</w:t>'
+								fileData= fileData.replace matches[k][0],replacer
+								console.log "match0->#{matches[k][0]}---replacer:#{replacer}"
+							
+							#3.
+							regexLeft= /^[^}]*}(.*)$/;
+							matches[endMatch][2]=matches[endMatch][2].replace regexLeft, '$1'
+							replacer= '<w:t xml:space="preserve">'+matches[endMatch][2]+"</w:t>";
+							fileData= fileData.replace matches[endMatch][0], replacer
+							console.log "match0->#{matches[endMatch][0]}---replacer:#{replacer}"
+							matches[endMatch][0]=replacer
+						else
+							throw "Bracket closed before opening"
+						# if endMatch>startMatch    # <w>{aaa</w><w>bbb}</w>
+						# 	#startmatch first
+							
+						# 	fileData = fileData.replace matches[startMatch][0],  "<w:t"+match[1]+">"+match[2].substr(startj).substr(0,endj)+"</w:t>" 
 					else
 						if inBracket is true then textInsideBracket+=char
 
 			@files[fileName].data= fileData
-			###rules=[{'regex':///
-			\{\#				#Opening bracket and opening for
-			((?:.(?!<w:t))*)>	#Formating in between
-			<w:t([^>]*)>		#begin of text element
-			([a-zA-Z_éèàê0-9]+) #tagName
-			((?:.(?!<w:t))*)>	#Formating in between
-			<w:t([^>]*)>		#begin of text element
-			\}					#Closing bracket
-			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">','forstart':true},
-			{'regex':///
-			(<w:t[^>]*>)		#Begin of text element
-			([^<>]*)			#Any text (not formating)
-			\{					#opening bracket
-			([a-zA-Z_éèàê0-9]+) #tagName
-			\} 					#closing bracket
-			([^}])/// 			#anything but a closing bracket
-			,'replacement':'$1$2#3$4','forstart':false},
-			{'regex':///
-			\{					#Opening bracket
-			([^}]*?)			#Formating in betweent
-			<w:t([^>]*)> 		#begin of text element
-			([a-zA-Z_éèàê0-9]+) #tagName
-			\}					#Closing Bracket
-			///,'replacement':'$1<w:t$2>#3','forstart':false},
-			{'regex':///
-			\{					#Opening bracket
-			((?:.(?!<w:t))*)>	#Formating in between
-			<w:t([^>]*)>		#begin of text element
-			([a-zA-Z_éèàê0-9]+) #tagName
-			((?:.(?!<w:t))*)>	#Formating in between
-			<w:t([^>]*)>		#begin of text element
-			\}					#Closing bracket
-			///,'replacement':'$1><w:t$2>#3$4><w:t xml:space="preserve">','forstart':false}]
-			@files[fileName].data= @regexTest(rules,fileData)###
 
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->
@@ -157,10 +159,11 @@ window.DocxGen = class DocxGen
 		outputFile
 	getFullText:(path="word/document.xml") ->
 		matches= @getFullTextMatches(path)
+		console.log matches
 		output= (match[2] for match in matches)
 		output.join("")
 	getFullTextMatches: (path="word/document.xml") ->
-		regex= "<w:t([^>]*)>([^<>]*)?</w:t>"
+		regex= "(<w:t[^>]*>)([^<>]*)?</w:t>"
 		file= @files[path]
 		matches= preg_match_all(regex,file.data)
 	download: (swfpath, imgpath, filename="default.docx") ->
