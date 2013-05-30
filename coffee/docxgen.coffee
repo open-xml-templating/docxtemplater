@@ -3,10 +3,10 @@ Docxgen.coffee
 Created by Edgar HIPP
 ###
 
-window.encode_utf8 = (s)->
+encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 
-window.decode_utf8= (s) ->
+decode_utf8= (s) ->
 	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ")
 
 
@@ -56,6 +56,28 @@ window.DocxGen = class DocxGen
 	setTemplateVars: (templateVars) ->
 		@templateVars=templateVars;
 
+	calcScopeDifference: (content,start=0,end=content.length-1) ->
+		regex= """<(\/?[^/> ]+)([^>]*)>"""
+
+		tags= preg_match_all(regex,content)
+		result=[]
+
+		for tag,i in tags
+			if tag[1][0]=='/' #closing tag
+				justOpened= false
+				if result.length>0
+					lastTag= result[result.length-1]
+					innerLastTag= lastTag.substr(1,lastTag.length-2)
+					innerCurrentTag= tag[1].substr(1)
+					if innerLastTag==innerCurrentTag then justOpened= true
+				if justOpened then result.pop() else result.push '<'+tag[1]+'>'
+			else if tag[2][tag[2].length-1]=='/' #open/closing tag
+			else	#opening tag
+				result.push '<'+tag[1]+'>'
+		result
+
+
+
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -101,7 +123,7 @@ window.DocxGen = class DocxGen
 						Blabla1
 						Blabla2
 						<w:t>{/forTag}</w:t>
-						
+
 
 						Let A be what is in between the first closing bracket and the second opening bracket
 						Let B what is in between the first opening tag {# and the last closing tag
@@ -186,10 +208,9 @@ window.DocxGen = class DocxGen
 						closeiStartLoop=startiMatch
 						closeiEndLoop= i
 
-
 						throw "For loop not opened" if inForLoop==false
 
-						endLoop=i
+						endLoop= i
 
 						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded+openjStartLoop
 						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded+closejEndLoop+1
@@ -207,8 +228,8 @@ window.DocxGen = class DocxGen
 						startSubContent= matches[openiStartLoop].offset
 						endSubContent= matches[closeiEndLoop].offset
 
-						console.log "AAAAAAA--#{startA}--#{endA}--#{A}"
-						console.log "BBBBBBB--#{startB}--#{endB}--#{B}"
+						# console.log "AAAAAAA--#{startA}--#{endA}--#{A}"
+						# console.log "BBBBBBB--#{startB}--#{endB}--#{B}"
 
 						inForLoop= false #end for loop
 

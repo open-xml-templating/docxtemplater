@@ -114,9 +114,6 @@ describe "DocxGenTemplating", () ->
 			outputExpected= new DocxGen(docDataExpected)
 			for i of taggedDocx.files
 				#Everything but the date should be different
-				# console.log typeof taggedDocx.files[i].data
-				# console.log taggedDocx.files[i].data
-
 				expect(taggedDocx.files[i].data).toBe(outputExpected.files[i].data)
 				expect(taggedDocx.files[i].name).toBe(outputExpected.files[i].name)
 				expect(taggedDocx.files[i].options.base64).toBe(outputExpected.files[i].options.base64)
@@ -146,12 +143,10 @@ describe "DocxGenTemplatingForLoop", () ->
 		if this.readyState == 4 and this.status == 200
 			docData=this.response
 			window.MultipleTaggedDocx= new DocxGen(docData)
-			console.log MultipleTaggedDocx
 			callbackLoadedTaggedDocx()
 	xhrDocMultipleLoop.send()
 
 	waitsFor () ->
-		console.log callbackLoadedTaggedDocx.callCount
 		callbackLoadedTaggedDocx.callCount>=2  #loaded tagLoopExample
 
 	describe "textLoop templating", () ->
@@ -168,7 +163,6 @@ describe "DocxGenTemplatingForLoop", () ->
 			window.content= taggedForDocx.files["word/document.xml"].data
 
 		it "should work with loops inside loops", () ->
-			console.log "test"
 			templateVars = {"products":[{"title":"Microsoft","name":"Windows","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
 			window.MultipleTaggedDocx.setTemplateVars templateVars
 			window.MultipleTaggedDocx.applyTemplateVars()
@@ -177,4 +171,16 @@ describe "DocxGenTemplatingForLoop", () ->
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
 
+describe "scope calculation" , () ->
+	doc= new DocxGen()
+	it "should compute the scope between 2 <w:t>" , () ->
+		scope= doc.calcScopeDifference """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
+		expect(scope).toEqual([ '</w:t>', '</w:r>', '</w:p>', '<w:p>', '<w:r>', '<w:t>' ])
 
+	it "should compute the scope between 2 <w:t> in an Array", () ->
+		scope= doc.calcScopeDifference """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
+		expect(scope).toEqual([ '</w:t>', '</w:r>', '</w:p>', '</w:tc>', '<w:tc>', '<w:p>', '<w:r>', '<w:t>' ])
+
+	it 'should compute the scope between a w:t in an array and the other outside', () ->
+		scope= doc.calcScopeDifference """defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
+		expect(scope).toEqual([ '</w:t>', '</w:r>', '</w:p>', '</w:tc>', '</w:tr>', '</w:tbl>', '<w:p>', '<w:r>', '<w:t>' ])

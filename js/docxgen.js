@@ -5,15 +5,15 @@ Created by Edgar HIPP
 
 
 (function() {
-  var DocxGen, preg_match_all,
+  var DocxGen, decode_utf8, encode_utf8, preg_match_all,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  window.encode_utf8 = function(s) {
+  encode_utf8 = function(s) {
     return unescape(encodeURIComponent(s));
   };
 
-  window.decode_utf8 = function(s) {
+  decode_utf8 = function(s) {
     return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
   };
 
@@ -88,6 +88,44 @@ Created by Edgar HIPP
       return this.templateVars = templateVars;
     };
 
+    DocxGen.prototype.calcScopeDifference = function(content, start, end) {
+      var i, innerCurrentTag, innerLastTag, justOpened, lastTag, regex, result, tag, tags, _i, _len;
+
+      if (start == null) {
+        start = 0;
+      }
+      if (end == null) {
+        end = content.length - 1;
+      }
+      regex = "<(\/?[^/> ]+)([^>]*)>";
+      tags = preg_match_all(regex, content);
+      result = [];
+      for (i = _i = 0, _len = tags.length; _i < _len; i = ++_i) {
+        tag = tags[i];
+        if (tag[1][0] === '/') {
+          justOpened = false;
+          if (result.length > 0) {
+            lastTag = result[result.length - 1];
+            innerLastTag = lastTag.substr(1, lastTag.length - 2);
+            innerCurrentTag = tag[1].substr(1);
+            if (innerLastTag === innerCurrentTag) {
+              justOpened = true;
+            }
+          }
+          if (justOpened) {
+            result.pop();
+          } else {
+            result.push('<' + tag[1] + '>');
+          }
+        } else if (tag[2][tag[2].length - 1] === '/') {
+
+        } else {
+          result.push('<' + tag[1] + '>');
+        }
+      }
+      return result;
+    };
+
     /*
     	content is the whole content to be tagged
     	scope is the current scope
@@ -139,7 +177,7 @@ Created by Edgar HIPP
             						Blabla1
             						Blabla2
             						<w:t>{/forTag}</w:t>
-            						
+            
             
             						Let A be what is in between the first closing bracket and the second opening bracket
             						Let B what is in between the first opening tag {# and the last closing tag
@@ -241,8 +279,6 @@ Created by Edgar HIPP
               }
               startSubContent = matches[openiStartLoop].offset;
               endSubContent = matches[closeiEndLoop].offset;
-              console.log("AAAAAAA--" + startA + "--" + endA + "--" + A);
-              console.log("BBBBBBB--" + startB + "--" + endB + "--" + B);
               inForLoop = false;
               if (currentScope[tagForLoop] != null) {
                 if (typeof currentScope[tagForLoop] !== 'object') {
