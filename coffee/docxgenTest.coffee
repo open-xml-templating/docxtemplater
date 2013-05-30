@@ -125,28 +125,56 @@ describe "DocxGenTemplating", () ->
 				expect(taggedDocx.files[i].options.dir).toBe(outputExpected.files[i].options.dir)
 				expect(taggedDocx.files[i].options.date).not.toBe(outputExpected.files[i].options.date)
 
-# describe "DocxGenTemplatingForLoop", () ->
-# 	callbackLoadedTaggedDocx = jasmine.createSpy();
-# 	xhrDoc= new XMLHttpRequest()
-# 	xhrDoc.open('GET', '../examples/tagLoopExample.docx', true)
-# 	if xhrDoc.overrideMimeType
-# 		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-# 	xhrDoc.onreadystatechange =(e)->
-# 		if this.readyState == 4 and this.status == 200
-# 			docData=this.response
-# 			window.taggedForDocx= new DocxGen(docData)
-# 			callbackLoadedTaggedDocx()
-# 	xhrDoc.send()
+describe "DocxGenTemplatingForLoop", () ->
+	callbackLoadedTaggedDocx = jasmine.createSpy();
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET', '../examples/tagLoopExample.docx', true)
+	if xhrDoc.overrideMimeType
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.taggedForDocx= new DocxGen(docData)
+			callbackLoadedTaggedDocx()
+	xhrDoc.send()
 
-# 	waitsFor () ->
-# 		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
+	xhrDocMultipleLoop= new XMLHttpRequest()
+	xhrDocMultipleLoop.open('GET', '../examples/tagProduitLoop.docx', true)
+	if xhrDocMultipleLoop.overrideMimeType
+		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDocMultipleLoop.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.MultipleTaggedDocx= new DocxGen(docData)
+			console.log MultipleTaggedDocx
+			callbackLoadedTaggedDocx()
+	xhrDocMultipleLoop.send()
 
-	# describe "textLoop templating", () ->
-	# 	it "should replace all the tags", () ->
-	# 		templateVars={}
-	# 		taggedForDocx.setTemplateVars templateVars
-	# 		taggedForDocx.applyTemplateVars()
-	# 		expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialeundefinedMon titreTitre undefinedBonjourLe prix total est de undefined, et le nombre de semaines de undefinedLala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolorLes avantages sont:La rapiditÃ©La simplicitÃ©Lalasit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit amet Lala Lorem ispsum dolor sit ametundefinedundefinedundefined')
-	# 		window.content= taggedForDocx.files["word/document.xml"].data
+	waitsFor () ->
+		console.log callbackLoadedTaggedDocx.callCount
+		callbackLoadedTaggedDocx.callCount>=2  #loaded tagLoopExample
+
+	describe "textLoop templating", () ->
+		it "should replace all the tags", () ->
+			templateVars =
+				"nom":"Hipp"
+				"prenom":"Edgar"
+				"telephone":"0652455478"
+				"description":"New Website"
+				"offre":[{"titre":"titre1","prix":"1250"},{"titre":"titre2","prix":"2000"},{"titre":"titre3","prix":"1400"}]
+			taggedForDocx.setTemplateVars templateVars
+			taggedForDocx.applyTemplateVars()
+			expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar')
+			window.content= taggedForDocx.files["word/document.xml"].data
+
+		it "should work with loops inside loops", () ->
+			console.log "test"
+			templateVars = {"products":[{"title":"Microsoft","name":"Windows","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
+			window.MultipleTaggedDocx.setTemplateVars templateVars
+			window.MultipleTaggedDocx.applyTemplateVars()
+			text= window.MultipleTaggedDocx.getFullText()
+			expectedText= "MicrosoftProduct name : WindowsProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
+			expect(text.length).toEqual(expectedText.length)
+			expect(text).toEqual(expectedText)
 
 

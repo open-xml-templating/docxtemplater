@@ -9,8 +9,16 @@ Created by Edgar HIPP
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
+  window.encode_utf8 = function(s) {
+    return unescape(encodeURIComponent(s));
+  };
+
+  window.decode_utf8 = function(s) {
+    return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
+  };
+
   preg_match_all = function(regex, haystack) {
-    var matchArray, replacer, testRegex, unused;
+    var matchArray, replacer, testRegex;
 
     testRegex = new RegExp(regex, 'g');
     matchArray = [];
@@ -22,7 +30,7 @@ Created by Edgar HIPP
       pn.offset = offset;
       return matchArray.push(pn);
     };
-    unused = haystack.replace(testRegex, replacer);
+    haystack.replace(testRegex, replacer);
     return matchArray;
   };
 
@@ -45,6 +53,14 @@ Created by Edgar HIPP
 
       zip = new JSZip(content);
       return this.files = zip.files;
+    };
+
+    DocxGen.prototype.getValueFromTag = function(tag, scope) {
+      if (scope[tag] != null) {
+        return scope[tag];
+      } else {
+        return "undefined";
+      }
     };
 
     DocxGen.prototype.getImageList = function() {
@@ -75,23 +91,30 @@ Created by Edgar HIPP
     /*
     	content is the whole content to be tagged
     	scope is the current scope
-    	returns the new content of the
+    	returns the new content of the tagged content
     */
 
 
     DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
-      var B, Bend, Bstart, character, copyContent, endLoop, endMatch, endSubContent, i, inBracket, inForLoop, innerText, j, k, match, matches, newContent, regexLeft, regexRight, replacer, scope, startLoop, startMatch, startSubContent, subContent, subMatches, tagForLoop, textInsideBracket, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1;
+      var A, B, character, charactersAdded, closeiEndLoop, closeiStartLoop, closejEndLoop, closejStartLoop, copyContent, endA, endB, endLoop, endSubContent, endiMatch, extendedA, extendedB, i, inBracket, inForLoop, innerText, j, k, match, matches, newContent, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regexLeft, regexRight, replacer, scope, startA, startB, startSubContent, startiMatch, startjMatch, subMatches, tagForLoop, textInsideBracket, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1;
 
+      matches = this._getFullTextMatchesFromData(content);
+      charactersAdded = 0;
+      replacer = function() {
+        var match, offset, pn, string, _i;
+
+        match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
+        pn.unshift(match);
+        pn.offset = offset;
+        return matches.push(pn);
+      };
+      content.replace(/^()([^<]+)/, replacer);
       inForLoop = false;
       inBracket = false;
-      matches = this._getFullTextMatchesFromData(content);
       textInsideBracket = "";
-      console.log(matches);
       for (i = _i = 0, _len = matches.length; _i < _len; i = ++_i) {
         match = matches[i];
         innerText = match[2] || "";
-        console.log(match);
-        console.log(innerText);
         for (j = _j = 0, _len1 = innerText.length; _j < _len1; j = ++_j) {
           character = innerText[j];
           if (character === '{') {
@@ -100,21 +123,38 @@ Created by Edgar HIPP
             }
             inBracket = true;
             textInsideBracket = "";
-            startMatch = i;
+            startiMatch = i;
+            startjMatch = j;
           } else if (character === '}') {
-            console.log("innerText" + textInsideBracket);
             if (textInsideBracket[0] === '#' && inForLoop === false) {
               tagForLoop = textInsideBracket.substr(1);
               inForLoop = true;
-              startLoop = i;
+              openiStartLoop = startiMatch;
+              openjStartLoop = startjMatch;
+              openjEndLoop = j;
+              openiEndLoop = i;
             }
             /*
-            						<w:t>{#forTag}</w:t>
-            						.....
-            						.....
+            						<w:t>{#forTag} blabla</w:t>
+            						Blabla1
+            						Blabla2
             						<w:t>{/forTag}</w:t>
-            						Let subContent be what is in between the first closing bracket and the second opening bracket
-            						We replace the data by:
+            						
+            
+            						Let A be what is in between the first closing bracket and the second opening bracket
+            						Let B what is in between the first opening tag {# and the last closing tag
+            
+            						A=</w:t>
+            						Blabla1
+            						Blabla2
+            						<w:t>
+            
+            						B={#forTag}</w:t>
+            						Blabla1
+            						Blabla2
+            						<w:t>{/forTag}
+            
+            						We replace B by nA, n is equal to the length of the array in scope forTag
             						<w:t>subContent subContent subContent</w:t>
             */
 
@@ -122,74 +162,103 @@ Created by Edgar HIPP
               throw "Bracket already closed";
             }
             inBracket = false;
+            endiMatch = i;
+            closejStartLoop = startjMatch;
+            closejEndLoop = j;
             if (inForLoop === false) {
-              endMatch = i;
-              if (endMatch === startMatch) {
-                match[2] = match[2].replace("{" + textInsideBracket + "}", currentScope[textInsideBracket]);
+              if (endiMatch === startiMatch) {
+                match[2] = match[2].replace("{" + textInsideBracket + "}", this.getValueFromTag(textInsideBracket, currentScope));
                 replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
+                charactersAdded += replacer.length - match[0].length;
+                if (content.indexOf(match[0]) === -1) {
+                  throw "content " + match[0] + " not found in content";
+                }
                 content = content.replace(match[0], replacer);
                 match[0] = replacer;
-              } else if (endMatch > startMatch) {
+              } else if (endiMatch > startiMatch) {
                 /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-                							1. for the first (startMatch): replace {.. by the value
-                							2. for in between (startMatch+1...endMatch) replace whole by ""
-                							3. for the last (endMatch) replace ..} by ""
+                							1. for the first (startiMatch): replace {.. by the value
+                							2. for in between (startiMatch+1...endiMatch) replace whole by ""
+                							3. for the last (endiMatch) replace ..} by ""
                 */
 
                 regexRight = /^([^{]*){.*$/;
-                subMatches = matches[startMatch][2].match(regexRight);
-                matches[startMatch][2] = subMatches[1] + currentScope[textInsideBracket];
-                replacer = '<w:t xml:space="preserve">' + matches[startMatch][2] + "</w:t>";
+                subMatches = matches[startiMatch][2].match(regexRight);
+                if (matches[startiMatch][1] === "") {
+                  matches[startiMatch][2] = this.getValueFromTag(textInsideBracket, currentScope);
+                  replacer = matches[startiMatch][2];
+                } else {
+                  matches[startiMatch][2] = subMatches[1] + this.getValueFromTag(textInsideBracket, currentScope);
+                  replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
+                }
                 copyContent = content;
-                content = content.replace(matches[startMatch][0], replacer);
+                charactersAdded += replacer.length - matches[startiMatch][0].length;
+                if (content.indexOf(matches[startiMatch][0]) === -1) {
+                  throw "content " + matches[startiMatch][0] + " not found in content";
+                }
+                content = content.replace(matches[startiMatch][0], replacer);
                 if (copyContent === content) {
                   throw 'didnt changed the value';
                 }
-                for (k = _k = _ref = startMatch + 1; _ref <= endMatch ? _k < endMatch : _k > endMatch; k = _ref <= endMatch ? ++_k : --_k) {
+                for (k = _k = _ref = startiMatch + 1; _ref <= endiMatch ? _k < endiMatch : _k > endiMatch; k = _ref <= endiMatch ? ++_k : --_k) {
                   replacer = matches[k][1] + '</w:t>';
+                  charactersAdded += replacer.length - matches[k][0].length;
+                  if (content.indexOf(matches[k][0]) === -1) {
+                    throw "content " + matches[k][0] + " not found in content";
+                  }
                   content = content.replace(matches[k][0], replacer);
                 }
                 regexLeft = /^[^}]*}(.*)$/;
-                matches[endMatch][2] = matches[endMatch][2].replace(regexLeft, '$1');
-                replacer = '<w:t xml:space="preserve">' + matches[endMatch][2] + "</w:t>";
-                content = content.replace(matches[endMatch][0], replacer);
-                matches[endMatch][0] = replacer;
+                matches[endiMatch][2] = matches[endiMatch][2].replace(regexLeft, '$1');
+                replacer = '<w:t xml:space="preserve">' + matches[endiMatch][2] + "</w:t>";
+                charactersAdded += replacer.length - matches[endiMatch][0].length;
+                if (content.indexOf(matches[endiMatch][0]) === -1) {
+                  throw "content " + matches[endiMatch][0] + " not found in content";
+                }
+                content = content.replace(matches[endiMatch][0], replacer);
+                matches[endiMatch][0] = replacer;
               } else {
                 throw "Bracket closed before opening";
               }
             }
-            if (textInsideBracket[0] === '/' && inForLoop) {
+            if (textInsideBracket[0] === '/' && ('/' + tagForLoop === textInsideBracket)) {
+              closeiStartLoop = startiMatch;
+              closeiEndLoop = i;
+              if (inForLoop === false) {
+                throw "For loop not opened";
+              }
               endLoop = i;
-              console.log("startloop:" + startLoop + "-endLoop:" + endLoop);
-              startSubContent = matches[startLoop].offset;
-              endSubContent = matches[endLoop].offset;
-              subContent = content.substr(startSubContent, endSubContent - startSubContent);
-              console.log(subContent);
-              subContent = subContent.substr(subContent.indexOf('}') + 1);
-              console.log(subContent);
-              subContent = subContent.substr(0, subContent.lastIndexOf('{'));
-              console.log(subContent);
-              Bstart = content.lastIndexOf('{', startSubContent);
-              Bend = content.indexOf('}', endSubContent);
-              B = content.substr(Bstart, Bend - Bstart + 1);
-              console.log("BBBBBBB------" + B);
+              startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded + openjStartLoop;
+              endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded + closejEndLoop + 1;
+              B = content.substr(startB, endB - startB);
+              startA = matches[openiEndLoop].offset + matches[openiEndLoop][1].length + charactersAdded + openjEndLoop + 1;
+              endA = matches[closeiStartLoop].offset + matches[closeiStartLoop][1].length + charactersAdded + closejStartLoop;
+              A = content.substr(startA, endA - startA);
+              extendedA = content.substr(startA - 100, endA - startA + 200);
+              extendedB = content.substr(startB - 100, endB - startB + 200);
+              if (B.indexOf('{') === -1 || B.indexOf('/') === -1 || B.indexOf('}') === -1 || B.indexOf('#') === -1) {
+                throw "no {,#,/ or } found in B: " + B + " --------------- Context: " + extendedB;
+              }
+              startSubContent = matches[openiStartLoop].offset;
+              endSubContent = matches[closeiEndLoop].offset;
+              console.log("AAAAAAA--" + startA + "--" + endA + "--" + A);
+              console.log("BBBBBBB--" + startB + "--" + endB + "--" + B);
               inForLoop = false;
-              if (typeof currentScope[tagForLoop] !== 'object') {
-                throw '{#' + tagForLoop + ("}should be an object (it is a " + (typeof currentScope[tagForLoop]) + ")");
+              if (currentScope[tagForLoop] != null) {
+                if (typeof currentScope[tagForLoop] !== 'object') {
+                  throw '{#' + tagForLoop + ("}should be an object (it is a " + (typeof currentScope[tagForLoop]) + ")");
+                }
+                newContent = "";
+                _ref1 = currentScope[tagForLoop];
+                for (i = _l = 0, _len2 = _ref1.length; _l < _len2; i = ++_l) {
+                  scope = _ref1[i];
+                  newContent += this._applyTemplateVars(A, scope);
+                }
+                content = content.replace(B, newContent);
+              } else {
+                content = content.replace(B, "");
               }
-              newContent = "";
-              _ref1 = currentScope[tagForLoop];
-              for (i = _l = 0, _len2 = _ref1.length; _l < _len2; i = ++_l) {
-                scope = _ref1[i];
-                console.log(scope);
-                newContent += this._applyTemplateVars(subContent, scope);
-              }
-              console.log(content.length);
-              content = content.replace(B, newContent);
-              console.log(content.length);
-              console.log("nextStep");
-              this._applyTemplateVars(content, currentScope);
-              break;
+              return this._applyTemplateVars(content, currentScope);
             }
           } else {
             if (inBracket === true) {
@@ -256,7 +325,7 @@ Created by Edgar HIPP
         }
         return _results;
       })();
-      return output.join("");
+      return decode_utf8(output.join(""));
     };
 
     DocxGen.prototype.getFullTextMatches = function(path) {

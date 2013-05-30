@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Docxgen.js - simple Tagging example</title>
+</head>
+<body>
+
+  <!-- Include dependencies -->
+  <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
+
+  <!-- Include docxgen js lib -->
+  <script type="text/javascript" src="../js/docxgen.js"></script>
+<script>
+
+
+  var xhr1= new XMLHttpRequest();
+  xhr1.open('GET', './tagProduitLoop.docx', true);
+  if (xhr1.overrideMimeType) {
+    xhr1.overrideMimeType('text/plain; charset=x-user-defined');
+  }
+
+  xhr1.onreadystatechange = function(e) {
+    if (this.readyState == 4 && this.status == 200) {
+      window.docData=this.response;
+      }
+  };
+  xhr1.send();
+
+generateDoc= function(docData)
+{
+      var doc= new DocxGen(docData)
+
+      doc.setTemplateVars(
+          {"products":
+          [{"title":"Microsoft","name":"Windows","reference":"Win7","avantages":
+            [
+            {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
+            ]
+        },
+        {"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":
+            [
+            {"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}
+            ]
+        },
+        {"title":"Apple","name":"Mac","reference":"OSX","avantages":
+            [
+            {"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}
+            ]
+        },
+
+          ]
+        }
+      )
+      doc.applyTemplateVars()
+      doc.output()
+}
+</script>
+
+<h1>Generating a tagged document</h1>
+
+<p>This is the simplest way to generate a tagged document. If using Chrome, your file will automatically be named download.docx. For other browsers, filenames will be more akward, see the output() function in the <b>Usage</b> section on the Readme for more information.</p>
+
+<p>
+  <a href="#" onClick="generateDoc(window.docData)">Generate Tagged document</a>
+<br>
+<a href="tagExample.docx">View original document</a>
+</p>
+
+<p>
+  <code>
+      var doc= new DocxGen(docData) //Create Docxgen object from docxdata, in base64<br>
+      doc.setTemplateVars(   //Set the template variables: {first_name} will be replaced by "Hipp",...<br>
+        {"first_name":"Hipp", <br>
+        "last_name":"Edgar",<br>
+        "phone":"0652455478",<br>
+        "description":"New Website"<br>
+        } <br> 
+      ) <br> 
+      doc.applyTemplateVars() //apply the template variables<br> 
+      doc.output() <br>
+  </code>
+</p>
+
+</body>
+</html>
