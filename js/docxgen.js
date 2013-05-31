@@ -88,7 +88,7 @@ Created by Edgar HIPP
       return this.templateVars = templateVars;
     };
 
-    DocxGen.prototype.calcScopeDifference = function(content, start, end) {
+    DocxGen.prototype.calcScopeContent = function(content, start, end) {
       var i, innerCurrentTag, innerLastTag, justOpened, lastTag, regex, result, tag, tags, _i, _len;
 
       if (start == null) {
@@ -106,7 +106,7 @@ Created by Edgar HIPP
           justOpened = false;
           if (result.length > 0) {
             lastTag = result[result.length - 1];
-            innerLastTag = lastTag.substr(1, lastTag.length - 2);
+            innerLastTag = lastTag.tag.substr(1, lastTag.tag.length - 2);
             innerCurrentTag = tag[1].substr(1);
             if (innerLastTag === innerCurrentTag) {
               justOpened = true;
@@ -115,15 +115,64 @@ Created by Edgar HIPP
           if (justOpened) {
             result.pop();
           } else {
-            result.push('<' + tag[1] + '>');
+            result.push({
+              tag: '<' + tag[1] + '>',
+              offset: tag.offset
+            });
           }
         } else if (tag[2][tag[2].length - 1] === '/') {
 
         } else {
-          result.push('<' + tag[1] + '>');
+          result.push({
+            tag: '<' + tag[1] + '>',
+            offset: tag.offset
+          });
         }
       }
       return result;
+    };
+
+    DocxGen.prototype.calcScopeDifference = function(content, start, end) {
+      var scope;
+
+      if (start == null) {
+        start = 0;
+      }
+      if (end == null) {
+        end = content.length - 1;
+      }
+      scope = this.calcScopeContent(content, start, end);
+      while (1.) {
+        if (scope.length <= 1) {
+          break;
+        }
+        if (scope[0].tag.substr(2) === scope[scope.length - 1].tag.substr(1)) {
+          scope.pop();
+          scope.shift();
+        } else {
+          break;
+        }
+      }
+      return scope;
+    };
+
+    DocxGen.prototype.calcInnerTextScope = function(content, start, end, tag) {
+      var endTag, startTag;
+
+      endTag = content.indexOf('</' + tag + '>', end);
+      if (endTag === -1) {
+        throw "can't find endTag";
+      }
+      endTag += ('</' + tag + '>').length;
+      startTag = Math.max(content.lastIndexOf('<' + tag + '>', start), content.lastIndexOf('<' + tag + ' ', start));
+      if (startTag === -1) {
+        throw "can't find startTag";
+      }
+      return {
+        "text": content.substr(startTag, endTag - startTag),
+        startTag: startTag,
+        endTag: endTag
+      };
     };
 
     /*

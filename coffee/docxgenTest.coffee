@@ -174,13 +174,53 @@ describe "DocxGenTemplatingForLoop", () ->
 describe "scope calculation" , () ->
 	doc= new DocxGen()
 	it "should compute the scope between 2 <w:t>" , () ->
+		scope= doc.calcScopeContent """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
+		expect(scope).toEqual([ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '<w:p>', offset : 27 }, { tag : '<w:r>', offset : 162 }, { tag : '<w:t>', offset : 188 } ])
+
+	it "should compute the scope between 2 <w:t> in an Array", () ->
+		scope= doc.calcScopeContent """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
+		expect(scope).toEqual([ { tag : '</w:t>', offset : 3 }, { tag : '</w:r>', offset : 9 }, { tag : '</w:p>', offset : 15 }, { tag : '</w:tc>', offset : 21 }, { tag : '<w:tc>', offset : 28 }, { tag : '<w:p>', offset : 83 }, { tag : '<w:r>', offset : 268 }, { tag : '<w:t>', offset : 374 } ])
+
+	it 'should compute the scope between a w:t in an array and the other outside', () ->
+		scope= doc.calcScopeContent """defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
+		expect(scope).toEqual( [ { tag : '</w:t>', offset : 11 }, { tag : '</w:r>', offset : 17 }, { tag : '</w:p>', offset : 23 }, { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 }, { tag : '<w:p>', offset : 191 }, { tag : '<w:r>', offset : 260 }, { tag : '<w:t>', offset : 309 } ])
+
+
+describe "scope diff calculation", () ->
+	doc= new DocxGen()
+	it "should compute the scope between 2 <w:t>" , () ->
 		scope= doc.calcScopeDifference """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
-		expect(scope).toEqual([ '</w:t>', '</w:r>', '</w:p>', '<w:p>', '<w:r>', '<w:t>' ])
+		expect(scope).toEqual([])
 
 	it "should compute the scope between 2 <w:t> in an Array", () ->
 		scope= doc.calcScopeDifference """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
-		expect(scope).toEqual([ '</w:t>', '</w:r>', '</w:p>', '</w:tc>', '<w:tc>', '<w:p>', '<w:r>', '<w:t>' ])
+		expect(scope).toEqual([])
 
 	it 'should compute the scope between a w:t in an array and the other outside', () ->
 		scope= doc.calcScopeDifference """defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
-		expect(scope).toEqual([ '</w:t>', '</w:r>', '</w:p>', '</w:tc>', '</w:tr>', '</w:tbl>', '<w:p>', '<w:r>', '<w:t>' ])
+		expect(scope).toEqual([ { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 } ])
+
+describe "scope inner text", () ->
+	callbackLoadedTaggedDocx = jasmine.createSpy();
+	xhrDocMultipleLoop= new XMLHttpRequest()
+	xhrDocMultipleLoop.open('GET', '../examples/tagProduitLoop.docx', true)
+	if xhrDocMultipleLoop.overrideMimeType
+		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDocMultipleLoop.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.taggedProduct= new DocxGen(docData)
+			callbackLoadedTaggedDocx()
+	xhrDocMultipleLoop.send()
+
+	waitsFor () ->
+		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
+
+	it "should find the scope" , () ->	
+		scope= taggedProduct.calcInnerTextScope taggedProduct.files["word/document.xml"].data ,1195,1245,'w:p'
+		obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
+		expect(scope.endTag).toEqual(obj.endTag)
+		expect(scope.startTag).toEqual(obj.startTag)
+		expect(scope.text.length).toEqual(obj.text.length)
+		expect(scope.text).toEqual(obj.text)
+

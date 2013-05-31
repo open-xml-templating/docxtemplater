@@ -56,7 +56,7 @@ window.DocxGen = class DocxGen
 	setTemplateVars: (templateVars) ->
 		@templateVars=templateVars;
 
-	calcScopeDifference: (content,start=0,end=content.length-1) ->
+	calcScopeContent: (content,start=0,end=content.length-1) ->
 		regex= """<(\/?[^/> ]+)([^>]*)>"""
 
 		tags= preg_match_all(regex,content)
@@ -67,16 +67,33 @@ window.DocxGen = class DocxGen
 				justOpened= false
 				if result.length>0
 					lastTag= result[result.length-1]
-					innerLastTag= lastTag.substr(1,lastTag.length-2)
+					innerLastTag= lastTag.tag.substr(1,lastTag.tag.length-2)
 					innerCurrentTag= tag[1].substr(1)
 					if innerLastTag==innerCurrentTag then justOpened= true
-				if justOpened then result.pop() else result.push '<'+tag[1]+'>'
+				if justOpened then result.pop() else result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 			else if tag[2][tag[2].length-1]=='/' #open/closing tag
 			else	#opening tag
-				result.push '<'+tag[1]+'>'
+				result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 		result
 
+	calcScopeDifference: (content,start=0,end=content.length-1) ->
+		scope= @calcScopeContent content,start,end
+		while(1)
+			if (scope.length<=1)
+				break;
+			if ((scope[0]).tag.substr(2)==(scope[scope.length-1]).tag.substr(1))
+				scope.pop()
+				scope.shift()
+			else break;
+		scope
 
+	calcInnerTextScope: (content,start,end,tag) -> #tag: w:t
+		endTag= content.indexOf('</'+tag+'>',end)
+		if endTag==-1 then throw "can't find endTag"
+		endTag+=('</'+tag+'>').length
+		startTag = Math.max content.lastIndexOf('<'+tag+'>',start), content.lastIndexOf('<'+tag+' ',start)
+		if startTag==-1 then throw "can't find startTag"
+		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
 	###
 	content is the whole content to be tagged
@@ -111,6 +128,7 @@ window.DocxGen = class DocxGen
 					startiMatch= i
 					startjMatch= j
 				else if character == '}'
+
 					if textInsideBracket[0]=='#' and inForLoop is false
 						tagForLoop= textInsideBracket.substr 1
 						inForLoop= true #begin for loop
