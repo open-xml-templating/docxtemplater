@@ -224,3 +224,24 @@ describe "scope inner text", () ->
 		expect(scope.text.length).toEqual(obj.text.length)
 		expect(scope.text).toEqual(obj.text)
 
+describe "Dash Loop Testing", () ->
+	callbackLoadedTaggedDocx = jasmine.createSpy();
+	xhrDocMultipleLoop= new XMLHttpRequest()
+	xhrDocMultipleLoop.open('GET', '../examples/tagDashLoop.docx', true)
+	if xhrDocMultipleLoop.overrideMimeType
+		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDocMultipleLoop.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.taggedDashLoop= new DocxGen(docData)
+			callbackLoadedTaggedDocx()
+	xhrDocMultipleLoop.send()
+
+	waitsFor () ->
+		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
+
+	it "should find the scope" , () ->	
+		templateVars=
+			"consommation":[{"prix":220,"nom","TestFirstLine","consommation":"100kW"},{"prix":33,"nom","testSecondLine","consommation":"220kW"}]
+		taggedDashLoop.applyTemplateVars()
+		expect(taggedDashLoop.getFullText()).toBe("blabla")

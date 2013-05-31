@@ -95,6 +95,60 @@ window.DocxGen = class DocxGen
 		if startTag==-1 then throw "can't find startTag"
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
+	replaceTag: (content,endiMatch,startiMatch,match,matches,textInsideBracket,newValue,charactersAdded) ->
+		if endiMatch==startiMatch #<w>{aaaaa}</w>
+			match[2]=match[2].replace "{#{textInsideBracket}}", newValue
+			replacer= '<w:t xml:space="preserve">'+match[2]+"</w:t>"
+			charactersAdded+=replacer.length-match[0].length
+			if content.indexOf(match[0])==-1 then throw "content #{match[0]} not found in content"
+			content = content.replace match[0], replacer
+			match[0]=replacer
+		else if endiMatch>startiMatch
+			###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
+			1. for the first (startiMatch): replace {.. by the value
+			2. for in between (startiMatch+1...endiMatch) replace whole by ""
+			3. for the last (endiMatch) replace ..} by "" ###
+
+			# 1.
+			regexRight= /^([^{]*){.*$/
+			subMatches= matches[startiMatch][2].match regexRight
+
+			if matches[startiMatch][1]=="" #if the content starts not with <w:t>
+				matches[startiMatch][2]=newValue
+				replacer= matches[startiMatch][2]
+			else
+				matches[startiMatch][2]=subMatches[1]+newValue
+				replacer= '<w:t xml:space="preserve">'+matches[startiMatch][2]+"</w:t>"
+
+
+			copyContent = content
+			charactersAdded+=replacer.length-matches[startiMatch][0].length
+			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
+			content= content.replace matches[startiMatch][0],replacer
+
+			if copyContent==content
+				throw 'didnt changed the value'
+
+			#2.
+			for k in [(startiMatch+1)...endiMatch]
+				replacer = matches[k][1]+'</w:t>'
+				charactersAdded+=replacer.length-matches[k][0].length
+				if content.indexOf(matches[k][0])==-1 then throw "content #{matches[k][0]} not found in content"
+				content= content.replace matches[k][0],replacer
+
+			#3.
+			regexLeft= /^[^}]*}(.*)$/;
+			matches[endiMatch][2]=matches[endiMatch][2].replace regexLeft, '$1'
+			replacer= '<w:t xml:space="preserve">'+matches[endiMatch][2]+"</w:t>";
+			charactersAdded+=replacer.length-matches[endiMatch][0].length
+			if content.indexOf(matches[endiMatch][0])==-1 then throw "content #{matches[endiMatch][0]} not found in content"
+			content= content.replace matches[endiMatch][0], replacer
+			matches[endiMatch][0]=replacer
+			# match= matches[endiMatch]
+		else
+			throw "Bracket closed before opening"
+
+		return [content,charactersAdded]
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -113,8 +167,9 @@ window.DocxGen = class DocxGen
 
 		content.replace /^()([^<]+)/,replacer
 
-		inForLoop= false
-		inBracket= false
+		inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
+		inBracket= false # all brackets  {___}
+		inDashLoop = false	# bracket with dash: {-tr dashLoop} {/dashLoop}
 		textInsideBracket= ""
 
 		# console.log matches
@@ -129,13 +184,24 @@ window.DocxGen = class DocxGen
 					startjMatch= j
 				else if character == '}'
 
-					if textInsideBracket[0]=='#' and inForLoop is false
+					if textInsideBracket[0]=='#' and inForLoop is false and inDashLoop is false
 						tagForLoop= textInsideBracket.substr 1
 						inForLoop= true #begin for loop
 						openiStartLoop= startiMatch
 						openjStartLoop= startjMatch
 						openjEndLoop= j
 						openiEndLoop= i
+
+					if textInsideBracket[0]=='-' and inForLoop is false and inDashLoop is false
+						inDashLoop= true
+						openiStartLoop= startiMatch
+						openjStartLoop= startjMatch
+						openjEndLoop = j
+						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
+						elementDashLoop= textInsideBracket.replace regex, '$1'
+						tagDashLoop= textInsideBracket.replace regex, '$2'
+						console.log elementDashLoop
+						console.log tagDashLoop
 					###
 						<w:t>{#forTag} blabla</w:t>
 						Blabla1
@@ -167,66 +233,33 @@ window.DocxGen = class DocxGen
 					closejStartLoop= startjMatch
 					closejEndLoop= j
 
-					if inForLoop is false
-
-						if endiMatch==startiMatch #<w>{aaaaa}</w>
-							match[2]=match[2].replace "{#{textInsideBracket}}", @getValueFromTag(textInsideBracket,currentScope)
-							replacer= '<w:t xml:space="preserve">'+match[2]+"</w:t>"
-							charactersAdded+=replacer.length-match[0].length
-							if content.indexOf(match[0])==-1 then throw "content #{match[0]} not found in content"
-							content = content.replace match[0], replacer
-							match[0]=replacer
-						else if endiMatch>startiMatch
-							###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-							1. for the first (startiMatch): replace {.. by the value
-							2. for in between (startiMatch+1...endiMatch) replace whole by ""
-							3. for the last (endiMatch) replace ..} by "" ###
-
-							# 1.
-							regexRight= /^([^{]*){.*$/
-							subMatches= matches[startiMatch][2].match regexRight
-
-							if matches[startiMatch][1]=="" #if the content starts not with <w:t>
-								matches[startiMatch][2]=@getValueFromTag(textInsideBracket,currentScope)
-								replacer= matches[startiMatch][2]
-							else
-								matches[startiMatch][2]=subMatches[1]+@getValueFromTag(textInsideBracket,currentScope)
-								replacer= '<w:t xml:space="preserve">'+matches[startiMatch][2]+"</w:t>"
+					if inForLoop is false and inDashLoop is false
+						[content,charactersAdded] = @replaceTag(content,endiMatch,startiMatch,match,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
 
 
-							copyContent = content
-							charactersAdded+=replacer.length-matches[startiMatch][0].length
-							if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
-							content= content.replace matches[startiMatch][0],replacer
+					if textInsideBracket[0]=='/' and ('/'+tagDashLoop == textInsideBracket) and inDashLoop is true
+						closeiStartLoop= startiMatch+
+						closeiEndLoop= i
+						endLoop= i
 
-							if copyContent==content
-								throw 'didnt changed the value'
+						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded+openjStartLoop
+						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded+closejEndLoop+1
 
-							#2.
-							for k in [(startiMatch+1)...endiMatch]
-								replacer = matches[k][1]+'</w:t>'
-								charactersAdded+=replacer.length-matches[k][0].length
-								if content.indexOf(matches[k][0])==-1 then throw "content #{matches[k][0]} not found in content"
-								content= content.replace matches[k][0],replacer
+						# startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded+openjEndLoop+1
+						# endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded+closejStartLoop
 
-							#3.
-							regexLeft= /^[^}]*}(.*)$/;
-							matches[endiMatch][2]=matches[endiMatch][2].replace regexLeft, '$1'
-							replacer= '<w:t xml:space="preserve">'+matches[endiMatch][2]+"</w:t>";
-							charactersAdded+=replacer.length-matches[endiMatch][0].length
-							if content.indexOf(matches[endiMatch][0])==-1 then throw "content #{matches[endiMatch][0]} not found in content"
-							content= content.replace matches[endiMatch][0], replacer
-							matches[endiMatch][0]=replacer
-							# match= matches[endiMatch]
-						else
-							throw "Bracket closed before opening"
+						B= @calcInnerTextScope content, startB, endB, elementDashLoop
 
-					if textInsideBracket[0]=='/' and ('/'+tagForLoop == textInsideBracket)
+						# console.log "AAAAAAA--#{startA}--#{endA}--#{A}"
+						console.log "BBBBBBB--"
+						console.log B
+
+
+
+					if textInsideBracket[0]=='/' and ('/'+tagForLoop == textInsideBracket) and inForLoop is true
 
 						closeiStartLoop=startiMatch
 						closeiEndLoop= i
-
-						throw "For loop not opened" if inForLoop==false
 
 						endLoop= i
 

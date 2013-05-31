@@ -175,6 +175,66 @@ Created by Edgar HIPP
       };
     };
 
+    DocxGen.prototype.replaceTag = function(content, endiMatch, startiMatch, match, matches, textInsideBracket, newValue, charactersAdded) {
+      var copyContent, k, regexLeft, regexRight, replacer, subMatches, _i, _ref;
+
+      if (endiMatch === startiMatch) {
+        match[2] = match[2].replace("{" + textInsideBracket + "}", newValue);
+        replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
+        charactersAdded += replacer.length - match[0].length;
+        if (content.indexOf(match[0]) === -1) {
+          throw "content " + match[0] + " not found in content";
+        }
+        content = content.replace(match[0], replacer);
+        match[0] = replacer;
+      } else if (endiMatch > startiMatch) {
+        /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
+        			1. for the first (startiMatch): replace {.. by the value
+        			2. for in between (startiMatch+1...endiMatch) replace whole by ""
+        			3. for the last (endiMatch) replace ..} by ""
+        */
+
+        regexRight = /^([^{]*){.*$/;
+        subMatches = matches[startiMatch][2].match(regexRight);
+        if (matches[startiMatch][1] === "") {
+          matches[startiMatch][2] = newValue;
+          replacer = matches[startiMatch][2];
+        } else {
+          matches[startiMatch][2] = subMatches[1] + newValue;
+          replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
+        }
+        copyContent = content;
+        charactersAdded += replacer.length - matches[startiMatch][0].length;
+        if (content.indexOf(matches[startiMatch][0]) === -1) {
+          throw "content " + matches[startiMatch][0] + " not found in content";
+        }
+        content = content.replace(matches[startiMatch][0], replacer);
+        if (copyContent === content) {
+          throw 'didnt changed the value';
+        }
+        for (k = _i = _ref = startiMatch + 1; _ref <= endiMatch ? _i < endiMatch : _i > endiMatch; k = _ref <= endiMatch ? ++_i : --_i) {
+          replacer = matches[k][1] + '</w:t>';
+          charactersAdded += replacer.length - matches[k][0].length;
+          if (content.indexOf(matches[k][0]) === -1) {
+            throw "content " + matches[k][0] + " not found in content";
+          }
+          content = content.replace(matches[k][0], replacer);
+        }
+        regexLeft = /^[^}]*}(.*)$/;
+        matches[endiMatch][2] = matches[endiMatch][2].replace(regexLeft, '$1');
+        replacer = '<w:t xml:space="preserve">' + matches[endiMatch][2] + "</w:t>";
+        charactersAdded += replacer.length - matches[endiMatch][0].length;
+        if (content.indexOf(matches[endiMatch][0]) === -1) {
+          throw "content " + matches[endiMatch][0] + " not found in content";
+        }
+        content = content.replace(matches[endiMatch][0], replacer);
+        matches[endiMatch][0] = replacer;
+      } else {
+        throw "Bracket closed before opening";
+      }
+      return [content, charactersAdded];
+    };
+
     /*
     	content is the whole content to be tagged
     	scope is the current scope
@@ -183,7 +243,7 @@ Created by Edgar HIPP
 
 
     DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
-      var A, B, character, charactersAdded, closeiEndLoop, closeiStartLoop, closejEndLoop, closejStartLoop, copyContent, endA, endB, endLoop, endSubContent, endiMatch, extendedA, extendedB, i, inBracket, inForLoop, innerText, j, k, match, matches, newContent, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regexLeft, regexRight, replacer, scope, startA, startB, startSubContent, startiMatch, startjMatch, subMatches, tagForLoop, textInsideBracket, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1;
+      var A, B, character, charactersAdded, closeiEndLoop, closeiStartLoop, closejEndLoop, closejStartLoop, elementDashLoop, endA, endB, endLoop, endSubContent, endiMatch, extendedA, extendedB, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, newContent, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, scope, startA, startB, startSubContent, startiMatch, startjMatch, tagDashLoop, tagForLoop, textInsideBracket, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       matches = this._getFullTextMatchesFromData(content);
       charactersAdded = 0;
@@ -198,6 +258,7 @@ Created by Edgar HIPP
       content.replace(/^()([^<]+)/, replacer);
       inForLoop = false;
       inBracket = false;
+      inDashLoop = false;
       textInsideBracket = "";
       for (i = _i = 0, _len = matches.length; _i < _len; i = ++_i) {
         match = matches[i];
@@ -213,13 +274,24 @@ Created by Edgar HIPP
             startiMatch = i;
             startjMatch = j;
           } else if (character === '}') {
-            if (textInsideBracket[0] === '#' && inForLoop === false) {
+            if (textInsideBracket[0] === '#' && inForLoop === false && inDashLoop === false) {
               tagForLoop = textInsideBracket.substr(1);
               inForLoop = true;
               openiStartLoop = startiMatch;
               openjStartLoop = startjMatch;
               openjEndLoop = j;
               openiEndLoop = i;
+            }
+            if (textInsideBracket[0] === '-' && inForLoop === false && inDashLoop === false) {
+              inDashLoop = true;
+              openiStartLoop = startiMatch;
+              openjStartLoop = startjMatch;
+              openjEndLoop = j;
+              regex = /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/;
+              elementDashLoop = textInsideBracket.replace(regex, '$1');
+              tagDashLoop = textInsideBracket.replace(regex, '$2');
+              console.log(elementDashLoop);
+              console.log(tagDashLoop);
             }
             /*
             						<w:t>{#forTag} blabla</w:t>
@@ -252,68 +324,21 @@ Created by Edgar HIPP
             endiMatch = i;
             closejStartLoop = startjMatch;
             closejEndLoop = j;
-            if (inForLoop === false) {
-              if (endiMatch === startiMatch) {
-                match[2] = match[2].replace("{" + textInsideBracket + "}", this.getValueFromTag(textInsideBracket, currentScope));
-                replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
-                charactersAdded += replacer.length - match[0].length;
-                if (content.indexOf(match[0]) === -1) {
-                  throw "content " + match[0] + " not found in content";
-                }
-                content = content.replace(match[0], replacer);
-                match[0] = replacer;
-              } else if (endiMatch > startiMatch) {
-                /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-                							1. for the first (startiMatch): replace {.. by the value
-                							2. for in between (startiMatch+1...endiMatch) replace whole by ""
-                							3. for the last (endiMatch) replace ..} by ""
-                */
-
-                regexRight = /^([^{]*){.*$/;
-                subMatches = matches[startiMatch][2].match(regexRight);
-                if (matches[startiMatch][1] === "") {
-                  matches[startiMatch][2] = this.getValueFromTag(textInsideBracket, currentScope);
-                  replacer = matches[startiMatch][2];
-                } else {
-                  matches[startiMatch][2] = subMatches[1] + this.getValueFromTag(textInsideBracket, currentScope);
-                  replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
-                }
-                copyContent = content;
-                charactersAdded += replacer.length - matches[startiMatch][0].length;
-                if (content.indexOf(matches[startiMatch][0]) === -1) {
-                  throw "content " + matches[startiMatch][0] + " not found in content";
-                }
-                content = content.replace(matches[startiMatch][0], replacer);
-                if (copyContent === content) {
-                  throw 'didnt changed the value';
-                }
-                for (k = _k = _ref = startiMatch + 1; _ref <= endiMatch ? _k < endiMatch : _k > endiMatch; k = _ref <= endiMatch ? ++_k : --_k) {
-                  replacer = matches[k][1] + '</w:t>';
-                  charactersAdded += replacer.length - matches[k][0].length;
-                  if (content.indexOf(matches[k][0]) === -1) {
-                    throw "content " + matches[k][0] + " not found in content";
-                  }
-                  content = content.replace(matches[k][0], replacer);
-                }
-                regexLeft = /^[^}]*}(.*)$/;
-                matches[endiMatch][2] = matches[endiMatch][2].replace(regexLeft, '$1');
-                replacer = '<w:t xml:space="preserve">' + matches[endiMatch][2] + "</w:t>";
-                charactersAdded += replacer.length - matches[endiMatch][0].length;
-                if (content.indexOf(matches[endiMatch][0]) === -1) {
-                  throw "content " + matches[endiMatch][0] + " not found in content";
-                }
-                content = content.replace(matches[endiMatch][0], replacer);
-                matches[endiMatch][0] = replacer;
-              } else {
-                throw "Bracket closed before opening";
-              }
+            if (inForLoop === false && inDashLoop === false) {
+              _ref = this.replaceTag(content, endiMatch, startiMatch, match, matches, textInsideBracket, this.getValueFromTag(textInsideBracket, currentScope), charactersAdded), content = _ref[0], charactersAdded = _ref[1];
             }
-            if (textInsideBracket[0] === '/' && ('/' + tagForLoop === textInsideBracket)) {
+            if (textInsideBracket[0] === '/' && ('/' + tagDashLoop === textInsideBracket) && inDashLoop === true) {
+              closeiStartLoop = startiMatch + (closeiEndLoop = i);
+              endLoop = i;
+              startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded + openjStartLoop;
+              endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded + closejEndLoop + 1;
+              B = this.calcInnerTextScope(content, startB, endB, elementDashLoop);
+              console.log("BBBBBBB--");
+              console.log(B);
+            }
+            if (textInsideBracket[0] === '/' && ('/' + tagForLoop === textInsideBracket) && inForLoop === true) {
               closeiStartLoop = startiMatch;
               closeiEndLoop = i;
-              if (inForLoop === false) {
-                throw "For loop not opened";
-              }
               endLoop = i;
               startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded + openjStartLoop;
               endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded + closejEndLoop + 1;
@@ -335,7 +360,7 @@ Created by Edgar HIPP
                 }
                 newContent = "";
                 _ref1 = currentScope[tagForLoop];
-                for (i = _l = 0, _len2 = _ref1.length; _l < _len2; i = ++_l) {
+                for (i = _k = 0, _len2 = _ref1.length; _k < _len2; i = ++_k) {
                   scope = _ref1[i];
                   newContent += this._applyTemplateVars(A, scope);
                 }

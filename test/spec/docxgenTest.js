@@ -477,4 +477,49 @@
     });
   });
 
+  describe("Dash Loop Testing", function() {
+    var callbackLoadedTaggedDocx, xhrDocMultipleLoop;
+
+    callbackLoadedTaggedDocx = jasmine.createSpy();
+    xhrDocMultipleLoop = new XMLHttpRequest();
+    xhrDocMultipleLoop.open('GET', '../examples/tagDashLoop.docx', true);
+    if (xhrDocMultipleLoop.overrideMimeType) {
+      xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDocMultipleLoop.onreadystatechange = function(e) {
+      var docData;
+
+      if (this.readyState === 4 && this.status === 200) {
+        docData = this.response;
+        window.taggedDashLoop = new DocxGen(docData);
+        return callbackLoadedTaggedDocx();
+      }
+    };
+    xhrDocMultipleLoop.send();
+    waitsFor(function() {
+      return callbackLoadedTaggedDocx.callCount >= 1;
+    });
+    return it("should find the scope", function() {
+      var templateVars;
+
+      templateVars = {
+        "consommation": [
+          {
+            "prix": 220,
+            "nom": "nom",
+            "TestFirstLine": "TestFirstLine",
+            "consommation": "100kW"
+          }, {
+            "prix": 33,
+            "nom": "nom",
+            "testSecondLine": "testSecondLine",
+            "consommation": "220kW"
+          }
+        ]
+      };
+      taggedDashLoop.applyTemplateVars();
+      return expect(taggedDashLoop.getFullText()).toBe("blabla");
+    });
+  });
+
 }).call(this);
