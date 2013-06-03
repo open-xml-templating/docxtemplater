@@ -101,17 +101,14 @@ window.DocxGen = class DocxGen
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
 	replaceTag: (content,endiMatch,startiMatch,matches,textInsideBracket,newValue,charactersAdded) ->
-
 		if (matches[endiMatch][2].indexOf ('}'))==-1 then throw "no closing bracket at endiMatch #{matches[endiMatch][2]}"
 		if (matches[startiMatch][2].indexOf ('{'))==-1 then throw "no opening bracket at startiMatch #{matches[startiMatch][2]}"
-
-
 
 		if endiMatch==startiMatch #<w>{aaaaa}</w>
 			matches[startiMatch][2]=matches[startiMatch][2].replace "{#{textInsideBracket}}", newValue
 			replacer= '<w:t xml:space="preserve">'+matches[startiMatch][2]+"</w:t>"
 			startB= matches[startiMatch].offset+charactersAdded[startiMatch]
-			charactersAdded[startiMatch+1]=charactersAdded[startiMatch]+replacer.length-matches[startiMatch][0].length
+			charactersAdded[startiMatch+1]+=replacer.length-matches[startiMatch][0].length
 			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
 			copyContent= content
 			content = content.replaceFirstFrom matches[startiMatch][0], replacer, startB
@@ -144,7 +141,7 @@ window.DocxGen = class DocxGen
 
 			copyContent = content
 			startB= matches[startiMatch].offset+charactersAdded[startiMatch]
-			charactersAdded[startiMatch+1]=charactersAdded[startiMatch]+replacer.length-matches[startiMatch][0].length
+			charactersAdded[startiMatch+1]+=replacer.length-matches[startiMatch][0].length
 			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
 
 			console.log matches[startiMatch][0]+"=>"+replacer
@@ -195,9 +192,7 @@ window.DocxGen = class DocxGen
 				console.log content.substr(startB)
 				console.log "#{startB}= #{matches[startiMatch].offset}"
 				throw "offset problem3: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
-
 			matches[endiMatch][0]=replacer
-			# match= matches[endiMatch]
 		else
 			throw "Bracket closed before opening"
 
@@ -213,27 +208,8 @@ window.DocxGen = class DocxGen
 	scope is the current scope
 	returns the new content of the tagged content###
 	_applyTemplateVars:(content,currentScope)->
-		# console.log "new turn"
-		# console.log content
 		matches = @_getFullTextMatchesFromData(content)
 		charactersAdded= (0 for i in [0...matches.length])
-
-		for glou,u in matches
-			if content[glou.offset+charactersAdded[u]]!=glou[0][0]
-				console.log "********no < at the beginning of #{glou[0]}: #{content[glou.offset+charactersAdded[u]]}*******"
-				for n in matches
-					console.log n
-				console.log matches.length
-				console.log u
-				console.log glou
-				console.log "charAdded: #{charactersAdded.join(',')}"
-				console.log content.substr(glou.offset,100)+"..."
-				console.log content.substr(glou.offset+charactersAdded[u],100)+"..."
-				console.log "no < at the beginning of #{glou[0]}"
-				throw "no < at the beginning of #{glou[0]} (0)"
-
-		# console.log matches
-		# console.log @getFullText("",content)
 
 		replacer = (match,pn ..., offset, string)->
 			console.log arguments
@@ -242,22 +218,7 @@ window.DocxGen = class DocxGen
 			matches.unshift pn #add at the beginning
 			charactersAdded.unshift 0
 
-
 		content.replace /^()([^<]+)/,replacer
-
-		for glou,u in matches
-			if content[glou.offset+charactersAdded[u]]!=glou[0][0]
-				console.log "********no < at the beginning of #{glou[0]}: #{content[glou.offset+charactersAdded[u]]}*******"
-				for n in matches
-					console.log n
-				console.log matches.length
-				console.log u
-				console.log glou
-				console.log "charAdded: #{charactersAdded.join(',')}"
-				console.log content.substr(glou.offset,100)+"..."
-				console.log content.substr(glou.offset+charactersAdded[u],100)+"..."
-				console.log "no < at the beginning of #{glou[0]}"
-				throw "no < at the beginning of #{glou[0]} (1)"
 
 		inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		inBracket= false # all brackets  {___}
@@ -266,7 +227,8 @@ window.DocxGen = class DocxGen
 
 		for match,i in matches
 			innerText= match[2] || "" #text inside the <w:t>
-			charactersAdded[i+1]=charactersAdded[i]
+			for t in [i...matches.length]
+				charactersAdded[t+1]=charactersAdded[t]
 			for character,j in innerText
 				for glou,u in matches when u<=i
 					if content[glou.offset+charactersAdded[u]]!=glou[0][0]
@@ -337,8 +299,10 @@ window.DocxGen = class DocxGen
 					closejEndLoop= j
 
 					if inForLoop is false and inDashLoop is false
+						console.log 'start'
+						console.log charactersAdded
 						[content,charactersAdded,matches] = @replaceTag(content,endiMatch,startiMatch,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
-
+						console.log charactersAdded
 						
 					if textInsideBracket[0]=='/' and ('/'+tagDashLoop == textInsideBracket) and inDashLoop is true
 						closeiStartLoop= startiMatch

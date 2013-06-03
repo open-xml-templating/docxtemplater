@@ -194,7 +194,7 @@ Created by Edgar HIPP
         matches[startiMatch][2] = matches[startiMatch][2].replace("{" + textInsideBracket + "}", newValue);
         replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
         startB = matches[startiMatch].offset + charactersAdded[startiMatch];
-        charactersAdded[startiMatch + 1] = charactersAdded[startiMatch] + replacer.length - matches[startiMatch][0].length;
+        charactersAdded[startiMatch + 1] += replacer.length - matches[startiMatch][0].length;
         if (content.indexOf(matches[startiMatch][0]) === -1) {
           throw "content " + matches[startiMatch][0] + " not found in content";
         }
@@ -226,7 +226,7 @@ Created by Edgar HIPP
         }
         copyContent = content;
         startB = matches[startiMatch].offset + charactersAdded[startiMatch];
-        charactersAdded[startiMatch + 1] = charactersAdded[startiMatch] + replacer.length - matches[startiMatch][0].length;
+        charactersAdded[startiMatch + 1] += replacer.length - matches[startiMatch][0].length;
         if (content.indexOf(matches[startiMatch][0]) === -1) {
           throw "content " + matches[startiMatch][0] + " not found in content";
         }
@@ -299,7 +299,7 @@ Created by Edgar HIPP
 
 
     DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
-      var A, B, character, charactersAdded, closeiEndLoop, closeiStartLoop, closejEndLoop, closejStartLoop, copyA, elementDashLoop, endA, endB, endLoop, endSubContent, endiMatch, extendedA, extendedB, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, n, newContent, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, resultFullScope, scope, startA, startB, startSubContent, startiMatch, startjMatch, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _len7, _len8, _m, _n, _o, _p, _q, _ref, _ref1, _ref2, _ref3, _ref4;
+      var A, B, character, charactersAdded, closeiEndLoop, closeiStartLoop, closejEndLoop, closejStartLoop, copyA, elementDashLoop, endA, endB, endLoop, endSubContent, endiMatch, extendedA, extendedB, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, newContent, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, resultFullScope, scope, startA, startB, startSubContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
 
       matches = this._getFullTextMatchesFromData(content);
       charactersAdded = (function() {
@@ -311,28 +311,10 @@ Created by Edgar HIPP
         }
         return _results;
       })();
-      for (u = _i = 0, _len = matches.length; _i < _len; u = ++_i) {
-        glou = matches[u];
-        if (content[glou.offset + charactersAdded[u]] !== glou[0][0]) {
-          console.log("********no < at the beginning of " + glou[0] + ": " + content[glou.offset + charactersAdded[u]] + "*******");
-          for (_j = 0, _len1 = matches.length; _j < _len1; _j++) {
-            n = matches[_j];
-            console.log(n);
-          }
-          console.log(matches.length);
-          console.log(u);
-          console.log(glou);
-          console.log("charAdded: " + (charactersAdded.join(',')));
-          console.log(content.substr(glou.offset, 100) + "...");
-          console.log(content.substr(glou.offset + charactersAdded[u], 100) + "...");
-          console.log("no < at the beginning of " + glou[0]);
-          throw "no < at the beginning of " + glou[0] + " (0)";
-        }
-      }
       replacer = function() {
-        var match, offset, pn, string, _k;
+        var match, offset, pn, string, _i;
 
-        match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _k = arguments.length - 2) : (_k = 1, []), offset = arguments[_k++], string = arguments[_k++];
+        match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
         console.log(arguments);
         pn.unshift(match);
         pn.offset = offset;
@@ -340,35 +322,19 @@ Created by Edgar HIPP
         return charactersAdded.unshift(0);
       };
       content.replace(/^()([^<]+)/, replacer);
-      for (u = _k = 0, _len2 = matches.length; _k < _len2; u = ++_k) {
-        glou = matches[u];
-        if (content[glou.offset + charactersAdded[u]] !== glou[0][0]) {
-          console.log("********no < at the beginning of " + glou[0] + ": " + content[glou.offset + charactersAdded[u]] + "*******");
-          for (_l = 0, _len3 = matches.length; _l < _len3; _l++) {
-            n = matches[_l];
-            console.log(n);
-          }
-          console.log(matches.length);
-          console.log(u);
-          console.log(glou);
-          console.log("charAdded: " + (charactersAdded.join(',')));
-          console.log(content.substr(glou.offset, 100) + "...");
-          console.log(content.substr(glou.offset + charactersAdded[u], 100) + "...");
-          console.log("no < at the beginning of " + glou[0]);
-          throw "no < at the beginning of " + glou[0] + " (1)";
-        }
-      }
       inForLoop = false;
       inBracket = false;
       inDashLoop = false;
       textInsideBracket = "";
-      for (i = _m = 0, _len4 = matches.length; _m < _len4; i = ++_m) {
+      for (i = _i = 0, _len = matches.length; _i < _len; i = ++_i) {
         match = matches[i];
         innerText = match[2] || "";
-        charactersAdded[i + 1] = charactersAdded[i];
-        for (j = _n = 0, _len5 = innerText.length; _n < _len5; j = ++_n) {
+        for (t = _j = i, _ref = matches.length; i <= _ref ? _j < _ref : _j > _ref; t = i <= _ref ? ++_j : --_j) {
+          charactersAdded[t + 1] = charactersAdded[t];
+        }
+        for (j = _k = 0, _len1 = innerText.length; _k < _len1; j = ++_k) {
           character = innerText[j];
-          for (u = _o = 0, _len6 = matches.length; _o < _len6; u = ++_o) {
+          for (u = _l = 0, _len2 = matches.length; _l < _len2; u = ++_l) {
             glou = matches[u];
             if (u <= i) {
               if (content[glou.offset + charactersAdded[u]] !== glou[0][0]) {
@@ -443,7 +409,10 @@ Created by Edgar HIPP
             closejStartLoop = startjMatch;
             closejEndLoop = j;
             if (inForLoop === false && inDashLoop === false) {
-              _ref = this.replaceTag(content, endiMatch, startiMatch, matches, textInsideBracket, this.getValueFromTag(textInsideBracket, currentScope), charactersAdded), content = _ref[0], charactersAdded = _ref[1], matches = _ref[2];
+              console.log('start');
+              console.log(charactersAdded);
+              _ref1 = this.replaceTag(content, endiMatch, startiMatch, matches, textInsideBracket, this.getValueFromTag(textInsideBracket, currentScope), charactersAdded), content = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
+              console.log(charactersAdded);
             }
             if (textInsideBracket[0] === '/' && ('/' + tagDashLoop === textInsideBracket) && inDashLoop === true) {
               closeiStartLoop = startiMatch;
@@ -459,12 +428,12 @@ Created by Edgar HIPP
               }
               A = B;
               copyA = A;
-              _ref1 = this.replaceTag(A, openiEndLoop, openiStartLoop, matches, "-" + elementDashLoop + " " + tagDashLoop, "", charactersAdded), A = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
+              _ref2 = this.replaceTag(A, openiEndLoop, openiStartLoop, matches, "-" + elementDashLoop + " " + tagDashLoop, "", charactersAdded), A = _ref2[0], charactersAdded = _ref2[1], matches = _ref2[2];
               if (copyA === A) {
                 throw "A should have changed after deleting the opening tag";
               }
               copyA = A;
-              _ref2 = this.replaceTag(A, closeiEndLoop, closeiStartLoop, matches, '/' + tagDashLoop, "", charactersAdded), A = _ref2[0], charactersAdded = _ref2[1], matches = _ref2[2];
+              _ref3 = this.replaceTag(A, closeiEndLoop, closeiStartLoop, matches, '/' + tagDashLoop, "", charactersAdded), A = _ref3[0], charactersAdded = _ref3[1], matches = _ref3[2];
               if (copyA === A) {
                 throw "A should have changed after deleting the opening tag";
               }
@@ -473,9 +442,9 @@ Created by Edgar HIPP
                   throw '{#' + tagDashLoop + ("}should be an object (it is a " + (typeof currentScope[tagDashLoop]) + ")");
                 }
                 newContent = "";
-                _ref3 = currentScope[tagDashLoop];
-                for (i = _p = 0, _len7 = _ref3.length; _p < _len7; i = ++_p) {
-                  scope = _ref3[i];
+                _ref4 = currentScope[tagDashLoop];
+                for (i = _m = 0, _len3 = _ref4.length; _m < _len3; i = ++_m) {
+                  scope = _ref4[i];
                   newContent += this._applyTemplateVars(A, scope);
                 }
                 content = content.replace(B, newContent);
@@ -514,9 +483,9 @@ Created by Edgar HIPP
                   throw '{#' + tagForLoop + ("}should be an object (it is a " + (typeof currentScope[tagForLoop]) + ")");
                 }
                 newContent = "";
-                _ref4 = currentScope[tagForLoop];
-                for (i = _q = 0, _len8 = _ref4.length; _q < _len8; i = ++_q) {
-                  scope = _ref4[i];
+                _ref5 = currentScope[tagForLoop];
+                for (i = _n = 0, _len4 = _ref5.length; _n < _len4; i = ++_n) {
+                  scope = _ref5[i];
                   newContent += this._applyTemplateVars(A, scope);
                 }
                 content = content.replace(B, newContent);
