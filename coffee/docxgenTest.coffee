@@ -248,8 +248,19 @@ describe "Dash Loop Testing", () ->
 			callbackLoadedTaggedDocx()
 	xhrDashLoopTable.send()
 
+	xhrDashLoopList= new XMLHttpRequest()
+	xhrDashLoopList.open('GET', '../examples/tagDashLoopList.docx', true)
+	if xhrDashLoopList.overrideMimeType
+		xhrDashLoopList.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDashLoopList.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.taggedDashLoopList= new DocxGen(docData)
+			callbackLoadedTaggedDocx()
+	xhrDashLoopList.send()
+
 	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=2  #loaded tagLoopExample
+		callbackLoadedTaggedDocx.callCount>=3  #loaded tagLoopExample
 
 	it "dash loop ok on simple table -> w:tr" , () ->	
 		templateVars=
@@ -267,4 +278,13 @@ describe "Dash Loop Testing", () ->
 		taggedDashLoopTable.applyTemplateVars()
 		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
 		text=taggedDashLoopTable.getFullText()
+		expect(text).toBe(expectedText)
+
+	it "dash loop ok on simple list -> w:p" , () ->	
+		templateVars=
+			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
+		taggedDashLoopList.setTemplateVars(templateVars)
+		taggedDashLoopList.applyTemplateVars()
+		expectedText= 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX '
+		text=taggedDashLoopList.getFullText()
 		expect(text).toBe(expectedText)

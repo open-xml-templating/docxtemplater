@@ -96,6 +96,69 @@ window.DocxGen = class DocxGen
 		if startTag==-1 then throw "can't find startTag"
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
+	forLoop: (content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop) ->
+
+		closeiStartLoop= startiMatch
+		closeiEndLoop= i
+		endLoop= i
+		startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
+		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
+		B= content.substr(startB,endB-startB)
+		startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded[openiEndLoop]+openjEndLoop+1
+		endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded[closeiStartLoop]+closejStartLoop
+		A= content.substr(startA,endA-startA)
+		extendedA= content.substr(startA-100,endA-startA+200)
+		extendedB= content.substr(startB-100,endB-startB+200)
+		if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B} --------------- Context: #{extendedB}"
+		startSubContent= matches[openiStartLoop].offset
+		endSubContent= matches[closeiEndLoop].offset
+
+
+		inForLoop= false #end for loop
+
+		if currentScope[tagForLoop]?
+			if typeof currentScope[tagForLoop]!='object' then throw '{#'+tagForLoop+"}should be an object (it is a #{typeof currentScope[tagForLoop]})"
+			newContent= "";
+
+			for scope,i in currentScope[tagForLoop]
+				newContent+=@_applyTemplateVars A,scope
+
+			content=content.replace B, newContent
+		else content= content.replace B, ""
+
+		return @_applyTemplateVars content,currentScope
+
+	dashLoop: (tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop) ->
+		closeiStartLoop= startiMatch
+		closeiEndLoop= i
+		endLoop= i
+		startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
+		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
+		resultFullScope = (@calcInnerTextScope content, startB, endB, elementDashLoop)
+		for t in [0..matches.length]
+			charactersAdded[t]-=resultFullScope.startTag
+		B= resultFullScope.text
+		if (content.indexOf B)==-1 then throw "couln't find B in content"
+		A = B
+		copyA= A
+		#for deleting the opening tag
+		[A,charactersAdded,matches]= @replaceTag(A,openiEndLoop,openiStartLoop,matches,"-#{elementDashLoop} #{tagDashLoop}","",charactersAdded)
+		if copyA==A then throw "A should have changed after deleting the opening tag"
+		copyA= A
+		#for deleting the closing tag
+		[A,charactersAdded,matches]= @replaceTag(A,closeiEndLoop,closeiStartLoop,matches,'/'+tagDashLoop,"",charactersAdded)
+		if copyA==A then throw "A should have changed after deleting the opening tag"
+		if currentScope[tagDashLoop]?
+			if typeof currentScope[tagDashLoop]!='object' then throw '{#'+tagDashLoop+"}should be an object (it is a #{typeof currentScope[tagDashLoop]})"
+			newContent= "";
+
+			for scope,i in currentScope[tagDashLoop]
+				newContent+=@_applyTemplateVars A,scope
+
+			content= content.replace B, newContent
+		else content= content.replace B, ""
+		return @_applyTemplateVars content,currentScope	
+	
 	replaceTag: (content,endiMatch,startiMatch,matches,textInsideBracket,newValue,charactersAdded) ->
 		if (matches[endiMatch][2].indexOf ('}'))==-1 then throw "no closing bracket at endiMatch #{matches[endiMatch][2]}"
 		if (matches[startiMatch][2].indexOf ('{'))==-1 then throw "no opening bracket at startiMatch #{matches[startiMatch][2]}"
@@ -260,87 +323,10 @@ window.DocxGen = class DocxGen
 						[content,charactersAdded,matches] = @replaceTag(content,endiMatch,startiMatch,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
 						
 					if textInsideBracket[0]=='/' and ('/'+tagDashLoop == textInsideBracket) and inDashLoop is true
-						closeiStartLoop= startiMatch
-						closeiEndLoop= i
-						endLoop= i
-
-						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
-						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
-
-						resultFullScope = (@calcInnerTextScope content, startB, endB, elementDashLoop)
-
-						for t in [0..matches.length]
-							charactersAdded[t]-=resultFullScope.startTag
-						B= resultFullScope.text
-
-						if (content.indexOf B)==-1 then throw "couln't find B in content"
-
-						A = B
-
-						copyA= A
-
-						#for deleting the opening tag
-						[A,charactersAdded,matches]= @replaceTag(A,openiEndLoop,openiStartLoop,matches,"-#{elementDashLoop} #{tagDashLoop}","",charactersAdded)
-
-						if copyA==A then throw "A should have changed after deleting the opening tag"
-						copyA= A
-						#for deleting the closing tag
-						[A,charactersAdded,matches]= @replaceTag(A,closeiEndLoop,closeiStartLoop,matches,'/'+tagDashLoop,"",charactersAdded)
-
-						if copyA==A then throw "A should have changed after deleting the opening tag"
-
-
-						if currentScope[tagDashLoop]?
-							if typeof currentScope[tagDashLoop]!='object' then throw '{#'+tagDashLoop+"}should be an object (it is a #{typeof currentScope[tagDashLoop]})"
-							newContent= "";
-
-							for scope,i in currentScope[tagDashLoop]
-								newContent+=@_applyTemplateVars A,scope
-
-							content= content.replace B, newContent
-						else content= content.replace B, ""
-
-						return @_applyTemplateVars content,currentScope
-
+						return @dashLoop(tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
 
 					if textInsideBracket[0]=='/' and ('/'+tagForLoop == textInsideBracket) and inForLoop is true
-
-						closeiStartLoop= startiMatch
-						closeiEndLoop= i
-
-						endLoop= i
-
-						
-						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
-						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
-						B= content.substr(startB,endB-startB)
-
-						startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded[openiEndLoop]+openjEndLoop+1
-						endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded[closeiStartLoop]+closejStartLoop
-
-						A= content.substr(startA,endA-startA)
-
-						extendedA= content.substr(startA-100,endA-startA+200)
-						extendedB= content.substr(startB-100,endB-startB+200)
-
-						if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B} --------------- Context: #{extendedB}"
-						startSubContent= matches[openiStartLoop].offset
-						endSubContent= matches[closeiEndLoop].offset
-
-
-						inForLoop= false #end for loop
-
-						if currentScope[tagForLoop]?
-							if typeof currentScope[tagForLoop]!='object' then throw '{#'+tagForLoop+"}should be an object (it is a #{typeof currentScope[tagForLoop]})"
-							newContent= "";
-
-							for scope,i in currentScope[tagForLoop]
-								newContent+=@_applyTemplateVars A,scope
-
-							content=content.replace B, newContent
-						else content= content.replace B, ""
-
-						return @_applyTemplateVars content,currentScope
+						return @forLoop(content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
 
 				else #if character != '{' and character != '}'
 					if inBracket is true then textInsideBracket+=character

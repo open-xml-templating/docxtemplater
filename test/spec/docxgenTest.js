@@ -479,7 +479,7 @@
   });
 
   describe("Dash Loop Testing", function() {
-    var callbackLoadedTaggedDocx, xhrDashLoopTable, xhrDocMultipleLoop;
+    var callbackLoadedTaggedDocx, xhrDashLoopList, xhrDashLoopTable, xhrDocMultipleLoop;
 
     callbackLoadedTaggedDocx = jasmine.createSpy();
     xhrDocMultipleLoop = new XMLHttpRequest();
@@ -512,8 +512,23 @@
       }
     };
     xhrDashLoopTable.send();
+    xhrDashLoopList = new XMLHttpRequest();
+    xhrDashLoopList.open('GET', '../examples/tagDashLoopList.docx', true);
+    if (xhrDashLoopList.overrideMimeType) {
+      xhrDashLoopList.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDashLoopList.onreadystatechange = function(e) {
+      var docData;
+
+      if (this.readyState === 4 && this.status === 200) {
+        docData = this.response;
+        window.taggedDashLoopList = new DocxGen(docData);
+        return callbackLoadedTaggedDocx();
+      }
+    };
+    xhrDashLoopList.send();
     waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 2;
+      return callbackLoadedTaggedDocx.callCount >= 3;
     });
     it("dash loop ok on simple table -> w:tr", function() {
       var expectedText, templateVars, text;
@@ -541,7 +556,7 @@
       text = taggedDashLoop.getFullText();
       return expect(text).toBe(expectedText);
     });
-    return it("dash loop ok on simple table -> w:table", function() {
+    it("dash loop ok on simple table -> w:table", function() {
       var expectedText, templateVars, text;
 
       templateVars = {
@@ -565,6 +580,32 @@
       taggedDashLoopTable.applyTemplateVars();
       expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
       text = taggedDashLoopTable.getFullText();
+      return expect(text).toBe(expectedText);
+    });
+    return it("dash loop ok on simple list -> w:p", function() {
+      var expectedText, templateVars, text;
+
+      templateVars = {
+        "os": [
+          {
+            "type": "linux",
+            "price": "0",
+            "reference": "Ubuntu10"
+          }, {
+            "type": "windows",
+            "price": "500",
+            "reference": "Win7"
+          }, {
+            "type": "apple",
+            "price": "1200",
+            "reference": "MACOSX"
+          }
+        ]
+      };
+      taggedDashLoopList.setTemplateVars(templateVars);
+      taggedDashLoopList.applyTemplateVars();
+      expectedText = 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX ';
+      text = taggedDashLoopList.getFullText();
       return expect(text).toBe(expectedText);
     });
   });
