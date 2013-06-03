@@ -479,7 +479,7 @@
   });
 
   describe("Dash Loop Testing", function() {
-    var callbackLoadedTaggedDocx, xhrDocMultipleLoop;
+    var callbackLoadedTaggedDocx, xhrDashLoopTable, xhrDocMultipleLoop;
 
     callbackLoadedTaggedDocx = jasmine.createSpy();
     xhrDocMultipleLoop = new XMLHttpRequest();
@@ -497,10 +497,25 @@
       }
     };
     xhrDocMultipleLoop.send();
+    xhrDashLoopTable = new XMLHttpRequest();
+    xhrDashLoopTable.open('GET', '../examples/tagDashLoopTable.docx', true);
+    if (xhrDashLoopTable.overrideMimeType) {
+      xhrDashLoopTable.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDashLoopTable.onreadystatechange = function(e) {
+      var docData;
+
+      if (this.readyState === 4 && this.status === 200) {
+        docData = this.response;
+        window.taggedDashLoopTable = new DocxGen(docData);
+        return callbackLoadedTaggedDocx();
+      }
+    };
+    xhrDashLoopTable.send();
     waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 1;
+      return callbackLoadedTaggedDocx.callCount >= 2;
     });
-    return it("should find the scope", function() {
+    it("dash loop ok on simple table -> w:tr", function() {
       var expectedText, templateVars, text;
 
       templateVars = {
@@ -524,6 +539,32 @@
       taggedDashLoop.applyTemplateVars();
       expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
       text = taggedDashLoop.getFullText();
+      return expect(text).toBe(expectedText);
+    });
+    return it("dash loop ok on simple table -> w:table", function() {
+      var expectedText, templateVars, text;
+
+      templateVars = {
+        "os": [
+          {
+            "type": "linux",
+            "price": "0",
+            "reference": "Ubuntu10"
+          }, {
+            "type": "windows",
+            "price": "500",
+            "reference": "Win7"
+          }, {
+            "type": "apple",
+            "price": "1200",
+            "reference": "MACOSX"
+          }
+        ]
+      };
+      taggedDashLoopTable.setTemplateVars(templateVars);
+      taggedDashLoopTable.applyTemplateVars();
+      expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
+      text = taggedDashLoopTable.getFullText();
       return expect(text).toBe(expectedText);
     });
   });
