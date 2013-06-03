@@ -101,7 +101,6 @@ window.DocxGen = class DocxGen
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
 	replaceTag: (content,endiMatch,startiMatch,matches,textInsideBracket,newValue,charactersAdded) ->
-		# console.log "**toreplace: #{textInsideBracket}**, current charAdded: #{charactersAdded}"
 
 		if (matches[endiMatch][2].indexOf ('}'))==-1 then throw "no closing bracket at endiMatch #{matches[endiMatch][2]}"
 		if (matches[startiMatch][2].indexOf ('{'))==-1 then throw "no opening bracket at startiMatch #{matches[startiMatch][2]}"
@@ -116,7 +115,6 @@ window.DocxGen = class DocxGen
 			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
 			copyContent= content
 			content = content.replaceFirstFrom matches[startiMatch][0], replacer, startB
-			# console.log matches[startiMatch][0]+"=>"+replacer
 			matches[startiMatch][0]=replacer
 
 			if copyContent==content
@@ -149,7 +147,7 @@ window.DocxGen = class DocxGen
 			charactersAdded[startiMatch+1]=charactersAdded[startiMatch]+replacer.length-matches[startiMatch][0].length
 			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
 
-			# console.log matches[startiMatch][0]+"=>"+replacer
+			console.log matches[startiMatch][0]+"=>"+replacer
 
 			content= content.replaceFirstFrom matches[startiMatch][0],replacer, startB
 
@@ -189,7 +187,7 @@ window.DocxGen = class DocxGen
 			if content.indexOf(matches[endiMatch][0])==-1 then throw "content #{matches[endiMatch][0]} not found in content"
 			copyContent=content
 			content= content.replaceFirstFrom matches[endiMatch][0], replacer,startB
-			# console.log matches[endiMatch][0]+"=>"+replacer
+			console.log matches[endiMatch][0]+"=>"+replacer
 
 			if copyContent==content# or copyContent.length+replacer.length-matches[endiMatch][0].length!=content.length
 				console.log content
@@ -205,7 +203,7 @@ window.DocxGen = class DocxGen
 
 		# if startContent.length+charactersAdded!=content.length+startCharactersAdded then throw "startContent and endContent have not different characters"
 
-		for match, j in matches when j>=endiMatch
+		for match, j in matches when j>endiMatch
 			charactersAdded[j+1]=charactersAdded[j]
 
 		# console.log charactersAdded.join(',')
@@ -215,17 +213,51 @@ window.DocxGen = class DocxGen
 	scope is the current scope
 	returns the new content of the tagged content###
 	_applyTemplateVars:(content,currentScope)->
-
+		# console.log "new turn"
+		# console.log content
 		matches = @_getFullTextMatchesFromData(content)
-		console.log @getFullText("",content)
 		charactersAdded= (0 for i in [0...matches.length])
 
+		for glou,u in matches
+			if content[glou.offset+charactersAdded[u]]!=glou[0][0]
+				console.log "********no < at the beginning of #{glou[0]}: #{content[glou.offset+charactersAdded[u]]}*******"
+				for n in matches
+					console.log n
+				console.log matches.length
+				console.log u
+				console.log glou
+				console.log "charAdded: #{charactersAdded.join(',')}"
+				console.log content.substr(glou.offset,100)+"..."
+				console.log content.substr(glou.offset+charactersAdded[u],100)+"..."
+				console.log "no < at the beginning of #{glou[0]}"
+				throw "no < at the beginning of #{glou[0]} (0)"
+
+		# console.log matches
+		# console.log @getFullText("",content)
+
 		replacer = (match,pn ..., offset, string)->
+			console.log arguments
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
-			matches.push pn
+			matches.unshift pn #add at the beginning
+			charactersAdded.unshift 0
+
 
 		content.replace /^()([^<]+)/,replacer
+
+		for glou,u in matches
+			if content[glou.offset+charactersAdded[u]]!=glou[0][0]
+				console.log "********no < at the beginning of #{glou[0]}: #{content[glou.offset+charactersAdded[u]]}*******"
+				for n in matches
+					console.log n
+				console.log matches.length
+				console.log u
+				console.log glou
+				console.log "charAdded: #{charactersAdded.join(',')}"
+				console.log content.substr(glou.offset,100)+"..."
+				console.log content.substr(glou.offset+charactersAdded[u],100)+"..."
+				console.log "no < at the beginning of #{glou[0]}"
+				throw "no < at the beginning of #{glou[0]} (1)"
 
 		inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		inBracket= false # all brackets  {___}
@@ -235,19 +267,17 @@ window.DocxGen = class DocxGen
 		for match,i in matches
 			innerText= match[2] || "" #text inside the <w:t>
 			charactersAdded[i+1]=charactersAdded[i]
-			#console.log charactersAdded.join(',')
 			for character,j in innerText
-
-				# for glou,u in matches when u>=i
-				# 	if content[glou.offset+charactersAdded-lastAddedLength]!='<'
-				# 		console.log "no < at the beginning of #{glou[0]}: #{content[glou.offset+charactersAdded-lastAddedLength]}"
-				# 		console.log u
-				# 		console.log i
-				# 		console.log glou
-				# 		console.log "charAdded: #{charactersAdded} - #{lastAddedLength}"
-				# 		console.log content.substr(glou.offset+charactersAdded)
-				# 		console.log "no < at the beginning of #{glou[0]}"
-				# 		throw "no < at the beginning of #{glou[0]}"
+				for glou,u in matches when u<=i
+					if content[glou.offset+charactersAdded[u]]!=glou[0][0]
+						console.log "********no < at the beginning of #{glou[0]}: #{content[glou.offset+charactersAdded[u]]}*******"
+						console.log u
+						console.log glou
+						console.log "charAdded: #{charactersAdded.join(',')}"
+						console.log content.substr(glou.offset,100)+"..."
+						console.log content.substr(glou.offset+charactersAdded[u],100)+"..."
+						console.log "no < at the beginning of #{glou[0]}"
+						throw "no < at the beginning of #{glou[0]} (2)"
 
 				if character=='{'
 					if inBracket is true then throw "Bracket already open with text: #{textInsideBracket}"
@@ -359,6 +389,7 @@ window.DocxGen = class DocxGen
 
 						endLoop= i
 
+						
 						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
 						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
 						B= content.substr(startB,endB-startB)
@@ -371,7 +402,15 @@ window.DocxGen = class DocxGen
 						extendedA= content.substr(startA-100,endA-startA+200)
 						extendedB= content.substr(startB-100,endB-startB+200)
 
-						if B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1then throw "no {,#,/ or } found in B: #{B} --------------- Context: #{extendedB}"
+						if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1
+							console.log matches[openiStartLoop]
+							console.log "openiStartLoop:#{openiStartLoop},closeiEndLoop:#{closeiEndLoop},openiEndLoop:#{openiEndLoop},closeiStartLoop:#{closeiStartLoop}"
+							console.log charactersAdded[openiStartLoop]
+							console.log charactersAdded.join(';')
+							console.log B
+							console.log "=============>>>"
+							console.log A
+							throw "no {,#,/ or } found in B: #{B} --------------- Context: #{extendedB}"
 						startSubContent= matches[openiStartLoop].offset
 						endSubContent= matches[closeiEndLoop].offset
 
