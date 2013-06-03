@@ -242,6 +242,9 @@ describe "Dash Loop Testing", () ->
 
 	it "should find the scope" , () ->	
 		templateVars=
-			"consommation":[{"prix":220,"nom","TestFirstLine","consommation":"100kW"},{"prix":33,"nom","testSecondLine","consommation":"220kW"}]
+			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
+		taggedDashLoop.setTemplateVars(templateVars)
 		taggedDashLoop.applyTemplateVars()
-		expect(taggedDashLoop.getFullText()).toBe("blabla")
+		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
+		text=taggedDashLoop.getFullText()
+		expect(text).toBe(expectedText)

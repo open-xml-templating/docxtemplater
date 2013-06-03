@@ -1,6 +1,7 @@
 ###
 Docxgen.coffee
 Created by Edgar HIPP
+03/06/2013
 ###
 
 encode_utf8 = (s)->
@@ -8,6 +9,10 @@ encode_utf8 = (s)->
 
 decode_utf8= (s) ->
 	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ")
+
+
+String.prototype.replaceFirstFrom = (search,replace,from) ->
+	this.substr(0,from)+this.substr(from).replace(search,replace)
 
 
 preg_match_all= (regex, haystack) ->
@@ -95,14 +100,35 @@ window.DocxGen = class DocxGen
 		if startTag==-1 then throw "can't find startTag"
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
-	replaceTag: (content,endiMatch,startiMatch,match,matches,textInsideBracket,newValue,charactersAdded) ->
+	replaceTag: (content,endiMatch,startiMatch,matches,textInsideBracket,newValue,charactersAdded) ->
+		startContent=content
+		startCharactersAdded=charactersAdded
+		console.log "**toreplace: #{textInsideBracket}**"
+
+
+		if (matches[endiMatch][2].indexOf ('}'))==-1 then throw "no closing bracket at endiMatch #{matches[endiMatch][2]}"
+		if (matches[startiMatch][2].indexOf ('{'))==-1 then throw "no opening bracket at startiMatch #{matches[startiMatch][2]}"
+
+
+
 		if endiMatch==startiMatch #<w>{aaaaa}</w>
-			match[2]=match[2].replace "{#{textInsideBracket}}", newValue
-			replacer= '<w:t xml:space="preserve">'+match[2]+"</w:t>"
-			charactersAdded+=replacer.length-match[0].length
-			if content.indexOf(match[0])==-1 then throw "content #{match[0]} not found in content"
-			content = content.replace match[0], replacer
-			match[0]=replacer
+			matches[startiMatch][2]=matches[startiMatch][2].replace "{#{textInsideBracket}}", newValue
+			replacer= '<w:t xml:space="preserve">'+matches[startiMatch][2]+"</w:t>"
+			startB= matches[startiMatch].offset+charactersAdded
+			charactersAdded+=replacer.length-matches[startiMatch][0].length
+			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
+			copyContent= content
+			content = content.replaceFirstFrom matches[startiMatch][0], replacer, startB
+			console.log matches[startiMatch][0]+"=>"+replacer
+			matches[startiMatch][0]=replacer
+
+			if copyContent==content
+				console.log content
+				console.log "Substr====>>>"
+				console.log content.substr(startB)
+				console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
+				throw "offset problem0: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
+
 		else if endiMatch>startiMatch
 			###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
 			1. for the first (startiMatch): replace {.. by the value
@@ -113,7 +139,7 @@ window.DocxGen = class DocxGen
 			regexRight= /^([^{]*){.*$/
 			subMatches= matches[startiMatch][2].match regexRight
 
-			if matches[startiMatch][1]=="" #if the content starts not with <w:t>
+			if matches[startiMatch][1]=="" #if the content starts with:  {tag</w:t>
 				matches[startiMatch][2]=newValue
 				replacer= matches[startiMatch][2]
 			else
@@ -122,33 +148,70 @@ window.DocxGen = class DocxGen
 
 
 			copyContent = content
+			startB= matches[startiMatch].offset+charactersAdded
+			oldC=charactersAdded
 			charactersAdded+=replacer.length-matches[startiMatch][0].length
 			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
-			content= content.replace matches[startiMatch][0],replacer
 
-			if copyContent==content
-				throw 'didnt changed the value'
+			console.log matches[startiMatch][0]+"=>"+replacer
+
+			content= content.replaceFirstFrom matches[startiMatch][0],replacer, startB
+
+			matches[startiMatch][0]=replacer
+
+			if copyContent==content# or copyContent.length+replacer.length-matches[startiMatch][0].length!=content.length
+				console.log content
+				console.log "Substr====>>>"
+				console.log content.substr(startB)
+				console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
+				console.log "new charactersAdded: #{charactersAdded}"
+				throw "offset problem1: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
 
 			#2.
 			for k in [(startiMatch+1)...endiMatch]
 				replacer = matches[k][1]+'</w:t>'
+				startB= matches[k].offset+charactersAdded
 				charactersAdded+=replacer.length-matches[k][0].length
 				if content.indexOf(matches[k][0])==-1 then throw "content #{matches[k][0]} not found in content"
-				content= content.replace matches[k][0],replacer
-
+				copyContent= content
+				console.log matches[k][0]+"=>"+replacer
+				content= content.replaceFirstFrom matches[k][0],replacer,startB
+				matches[k][0]=replacer
+				if copyContent==content #or copyContent.length+replacer.length-matches[k][0].length!=content.length
+					console.log content
+					console.log "Substr====>>>"
+					console.log content.substr(startB)
+					console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
+					console.log "new charactersAdded: #{charactersAdded}"
+					throw "offset problem2: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
 			#3.
 			regexLeft= /^[^}]*}(.*)$/;
 			matches[endiMatch][2]=matches[endiMatch][2].replace regexLeft, '$1'
 			replacer= '<w:t xml:space="preserve">'+matches[endiMatch][2]+"</w:t>";
+			startB= matches[endiMatch].offset+charactersAdded
 			charactersAdded+=replacer.length-matches[endiMatch][0].length
+			# charactersAdded+=replacer.length-matches[endiMatch][0].length
 			if content.indexOf(matches[endiMatch][0])==-1 then throw "content #{matches[endiMatch][0]} not found in content"
-			content= content.replace matches[endiMatch][0], replacer
+			copyContent=content
+			content= content.replaceFirstFrom matches[endiMatch][0], replacer,startB
+			console.log matches[endiMatch][0]+"=>"+replacer
+
+			if copyContent==content# or copyContent.length+replacer.length-matches[endiMatch][0].length!=content.length
+				console.log content
+				console.log "Substr====>>>"
+				console.log content.substr(startB)
+				console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
+				console.log "new charactersAdded: #{charactersAdded}"
+				throw "offset problem3: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
+
 			matches[endiMatch][0]=replacer
 			# match= matches[endiMatch]
 		else
 			throw "Bracket closed before opening"
 
-		return [content,charactersAdded]
+		if startContent.length+charactersAdded!=content.length+startCharactersAdded then throw "startContent and endContent have not different characters"
+
+		return [content,charactersAdded,matches]
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -156,7 +219,6 @@ window.DocxGen = class DocxGen
 	_applyTemplateVars:(content,currentScope)->
 
 		matches = @_getFullTextMatchesFromData(content)
-
 
 		charactersAdded=0
 
@@ -172,12 +234,23 @@ window.DocxGen = class DocxGen
 		inDashLoop = false	# bracket with dash: {-tr dashLoop} {/dashLoop}
 		textInsideBracket= ""
 
-		# console.log matches
 		for match,i in matches
 			innerText= match[2] || "" #text inside the <w:t>
+
 			for character,j in innerText
+
+				for glou,u in matches when u>=i
+					if content[glou.offset+charactersAdded]!='<'
+						console.log "no < at the beginning of #{glou[0]}"
+						console.log u
+						console.log i
+						console.log glou
+						console.log content.substr(glou.offset+charactersAdded)
+
+						throw "no < at the beginning of #{glou[0]}"
+
 				if character=='{'
-					if inBracket is true then throw "Bracket already open"
+					if inBracket is true then throw "Bracket already open with text: #{textInsideBracket}"
 					inBracket= true
 					textInsideBracket= ""
 					startiMatch= i
@@ -193,15 +266,15 @@ window.DocxGen = class DocxGen
 						openiEndLoop= i
 
 					if textInsideBracket[0]=='-' and inForLoop is false and inDashLoop is false
+						tagDashLoop= textInsideBracket.substr 1
 						inDashLoop= true
 						openiStartLoop= startiMatch
 						openjStartLoop= startjMatch
 						openjEndLoop = j
+						openiEndLoop= i
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						elementDashLoop= textInsideBracket.replace regex, '$1'
 						tagDashLoop= textInsideBracket.replace regex, '$2'
-						console.log elementDashLoop
-						console.log tagDashLoop
 					###
 						<w:t>{#forTag} blabla</w:t>
 						Blabla1
@@ -234,31 +307,53 @@ window.DocxGen = class DocxGen
 					closejEndLoop= j
 
 					if inForLoop is false and inDashLoop is false
-						[content,charactersAdded] = @replaceTag(content,endiMatch,startiMatch,match,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
-
+						[content,charactersAdded,matches] = @replaceTag(content,endiMatch,startiMatch,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
 
 					if textInsideBracket[0]=='/' and ('/'+tagDashLoop == textInsideBracket) and inDashLoop is true
-						closeiStartLoop= startiMatch+
+						closeiStartLoop= startiMatch
 						closeiEndLoop= i
 						endLoop= i
 
 						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded+openjStartLoop
 						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded+closejEndLoop+1
 
-						# startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded+openjEndLoop+1
-						# endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded+closejStartLoop
+						resultFullScope = (@calcInnerTextScope content, startB, endB, elementDashLoop)
+						charactersAdded-=resultFullScope.startTag
+						B= resultFullScope.text
 
-						B= @calcInnerTextScope content, startB, endB, elementDashLoop
+						if (content.indexOf B)==-1 then throw "couln't find B in content"
 
-						# console.log "AAAAAAA--#{startA}--#{endA}--#{A}"
-						console.log "BBBBBBB--"
-						console.log B
+						A = B
 
+						copyA= A
+
+						#for deleting the opening tag
+						[A,charactersAdded,matches]= @replaceTag(A,openiEndLoop,openiStartLoop,matches,"-#{elementDashLoop} #{tagDashLoop}","",charactersAdded)
+
+						if copyA==A then throw "A should have changed after deleting the opening tag"
+						copyA= A
+						#for deleting the closing tag
+						[A,charactersAdded,matches]= @replaceTag(A,closeiEndLoop,closeiStartLoop,matches,'/'+tagDashLoop,"",charactersAdded)
+
+						if copyA==A then throw "A should have changed after deleting the opening tag"
+
+
+						if currentScope[tagDashLoop]?
+							if typeof currentScope[tagDashLoop]!='object' then throw '{#'+tagDashLoop+"}should be an object (it is a #{typeof currentScope[tagDashLoop]})"
+							newContent= "";
+
+							for scope,i in currentScope[tagDashLoop]
+								newContent+=@_applyTemplateVars A,scope
+
+							content= content.replace B, newContent
+						else content= content.replace B, ""
+
+						return @_applyTemplateVars content,currentScope
 
 
 					if textInsideBracket[0]=='/' and ('/'+tagForLoop == textInsideBracket) and inForLoop is true
 
-						closeiStartLoop=startiMatch
+						closeiStartLoop= startiMatch
 						closeiEndLoop= i
 
 						endLoop= i
@@ -279,8 +374,6 @@ window.DocxGen = class DocxGen
 						startSubContent= matches[openiStartLoop].offset
 						endSubContent= matches[closeiEndLoop].offset
 
-						# console.log "AAAAAAA--#{startA}--#{endA}--#{A}"
-						# console.log "BBBBBBB--#{startB}--#{endB}--#{B}"
 
 						inForLoop= false #end for loop
 
@@ -317,13 +410,15 @@ window.DocxGen = class DocxGen
 		outputFile= zip.generate()
 		if download==true then doOutput()
 		outputFile
-	getFullText:(path="word/document.xml") ->
-		matches= @getFullTextMatches(path)
+	getFullText:(path="word/document.xml",data="") ->
+		matches= @getFullTextMatches(path,data)
 		output= (match[2] for match in matches)
 		decode_utf8(output.join(""))
-	getFullTextMatches: (path="word/document.xml") ->
-		file= @files[path]
-		@_getFullTextMatchesFromData(file.data)
+	getFullTextMatches: (path="word/document.xml",data="") ->
+		if data== ""
+			file= @files[path]
+			return @_getFullTextMatchesFromData(file.data)
+		else return @_getFullTextMatchesFromData(data)
 	_getFullTextMatchesFromData: (data) ->
 		regex= "(<w:t[^>]*>)([^<>]*)?</w:t>"
 		matches= preg_match_all(regex,data)

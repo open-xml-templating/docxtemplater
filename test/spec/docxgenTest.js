@@ -1,3 +1,4 @@
+//@ sourceMappingURL=docxgenTest.map
 (function() {
   Object.size = function(obj) {
     var key, log, size;
@@ -500,25 +501,30 @@
       return callbackLoadedTaggedDocx.callCount >= 1;
     });
     return it("should find the scope", function() {
-      var templateVars;
+      var expectedText, templateVars, text;
 
       templateVars = {
-        "consommation": [
+        "os": [
           {
-            "prix": 220,
-            "nom": "nom",
-            "TestFirstLine": "TestFirstLine",
-            "consommation": "100kW"
+            "type": "linux",
+            "price": "0",
+            "reference": "Ubuntu10"
           }, {
-            "prix": 33,
-            "nom": "nom",
-            "testSecondLine": "testSecondLine",
-            "consommation": "220kW"
+            "type": "windows",
+            "price": "500",
+            "reference": "Win7"
+          }, {
+            "type": "apple",
+            "price": "1200",
+            "reference": "MACOSX"
           }
         ]
       };
+      taggedDashLoop.setTemplateVars(templateVars);
       taggedDashLoop.applyTemplateVars();
-      return expect(taggedDashLoop.getFullText()).toBe("blabla");
+      expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
+      text = taggedDashLoop.getFullText();
+      return expect(text).toBe(expectedText);
     });
   });
 

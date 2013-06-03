@@ -1,6 +1,8 @@
+//@ sourceMappingURL=docxgen.map
 /*
 Docxgen.coffee
 Created by Edgar HIPP
+03/06/2013
 */
 
 
@@ -15,6 +17,10 @@ Created by Edgar HIPP
 
   decode_utf8 = function(s) {
     return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
+  };
+
+  String.prototype.replaceFirstFrom = function(search, replace, from) {
+    return this.substr(0, from) + this.substr(from).replace(search, replace);
   };
 
   preg_match_all = function(regex, haystack) {
@@ -175,18 +181,37 @@ Created by Edgar HIPP
       };
     };
 
-    DocxGen.prototype.replaceTag = function(content, endiMatch, startiMatch, match, matches, textInsideBracket, newValue, charactersAdded) {
-      var copyContent, k, regexLeft, regexRight, replacer, subMatches, _i, _ref;
+    DocxGen.prototype.replaceTag = function(content, endiMatch, startiMatch, matches, textInsideBracket, newValue, charactersAdded) {
+      var copyContent, k, oldC, regexLeft, regexRight, replacer, startB, startCharactersAdded, startContent, subMatches, _i, _ref;
 
+      startContent = content;
+      startCharactersAdded = charactersAdded;
+      console.log("**toreplace: " + textInsideBracket + "**");
+      if ((matches[endiMatch][2].indexOf('}')) === -1) {
+        throw "no closing bracket at endiMatch " + matches[endiMatch][2];
+      }
+      if ((matches[startiMatch][2].indexOf('{')) === -1) {
+        throw "no opening bracket at startiMatch " + matches[startiMatch][2];
+      }
       if (endiMatch === startiMatch) {
-        match[2] = match[2].replace("{" + textInsideBracket + "}", newValue);
-        replacer = '<w:t xml:space="preserve">' + match[2] + "</w:t>";
-        charactersAdded += replacer.length - match[0].length;
-        if (content.indexOf(match[0]) === -1) {
-          throw "content " + match[0] + " not found in content";
+        matches[startiMatch][2] = matches[startiMatch][2].replace("{" + textInsideBracket + "}", newValue);
+        replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
+        startB = matches[startiMatch].offset + charactersAdded;
+        charactersAdded += replacer.length - matches[startiMatch][0].length;
+        if (content.indexOf(matches[startiMatch][0]) === -1) {
+          throw "content " + matches[startiMatch][0] + " not found in content";
         }
-        content = content.replace(match[0], replacer);
-        match[0] = replacer;
+        copyContent = content;
+        content = content.replaceFirstFrom(matches[startiMatch][0], replacer, startB);
+        console.log(matches[startiMatch][0] + "=>" + replacer);
+        matches[startiMatch][0] = replacer;
+        if (copyContent === content) {
+          console.log(content);
+          console.log("Substr====>>>");
+          console.log(content.substr(startB));
+          console.log("" + startB + "= " + matches[startiMatch].offset + "+" + oldC);
+          throw "offset problem0: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
+        }
       } else if (endiMatch > startiMatch) {
         /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
         			1. for the first (startiMatch): replace {.. by the value
@@ -204,35 +229,70 @@ Created by Edgar HIPP
           replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
         }
         copyContent = content;
+        startB = matches[startiMatch].offset + charactersAdded;
+        oldC = charactersAdded;
         charactersAdded += replacer.length - matches[startiMatch][0].length;
         if (content.indexOf(matches[startiMatch][0]) === -1) {
           throw "content " + matches[startiMatch][0] + " not found in content";
         }
-        content = content.replace(matches[startiMatch][0], replacer);
+        console.log(matches[startiMatch][0] + "=>" + replacer);
+        content = content.replaceFirstFrom(matches[startiMatch][0], replacer, startB);
+        matches[startiMatch][0] = replacer;
         if (copyContent === content) {
-          throw 'didnt changed the value';
+          console.log(content);
+          console.log("Substr====>>>");
+          console.log(content.substr(startB));
+          console.log("" + startB + "= " + matches[startiMatch].offset + "+" + oldC);
+          console.log("new charactersAdded: " + charactersAdded);
+          throw "offset problem1: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
         }
         for (k = _i = _ref = startiMatch + 1; _ref <= endiMatch ? _i < endiMatch : _i > endiMatch; k = _ref <= endiMatch ? ++_i : --_i) {
           replacer = matches[k][1] + '</w:t>';
+          startB = matches[k].offset + charactersAdded;
           charactersAdded += replacer.length - matches[k][0].length;
           if (content.indexOf(matches[k][0]) === -1) {
             throw "content " + matches[k][0] + " not found in content";
           }
-          content = content.replace(matches[k][0], replacer);
+          copyContent = content;
+          console.log(matches[k][0] + "=>" + replacer);
+          content = content.replaceFirstFrom(matches[k][0], replacer, startB);
+          matches[k][0] = replacer;
+          if (copyContent === content) {
+            console.log(content);
+            console.log("Substr====>>>");
+            console.log(content.substr(startB));
+            console.log("" + startB + "= " + matches[startiMatch].offset + "+" + oldC);
+            console.log("new charactersAdded: " + charactersAdded);
+            throw "offset problem2: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
+          }
         }
         regexLeft = /^[^}]*}(.*)$/;
         matches[endiMatch][2] = matches[endiMatch][2].replace(regexLeft, '$1');
         replacer = '<w:t xml:space="preserve">' + matches[endiMatch][2] + "</w:t>";
+        startB = matches[endiMatch].offset + charactersAdded;
         charactersAdded += replacer.length - matches[endiMatch][0].length;
         if (content.indexOf(matches[endiMatch][0]) === -1) {
           throw "content " + matches[endiMatch][0] + " not found in content";
         }
-        content = content.replace(matches[endiMatch][0], replacer);
+        copyContent = content;
+        content = content.replaceFirstFrom(matches[endiMatch][0], replacer, startB);
+        console.log(matches[endiMatch][0] + "=>" + replacer);
+        if (copyContent === content) {
+          console.log(content);
+          console.log("Substr====>>>");
+          console.log(content.substr(startB));
+          console.log("" + startB + "= " + matches[startiMatch].offset + "+" + oldC);
+          console.log("new charactersAdded: " + charactersAdded);
+          throw "offset problem3: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
+        }
         matches[endiMatch][0] = replacer;
       } else {
         throw "Bracket closed before opening";
       }
-      return [content, charactersAdded];
+      if (startContent.length + charactersAdded !== content.length + startCharactersAdded) {
+        throw "startContent and endContent have not different characters";
+      }
+      return [content, charactersAdded, matches];
     };
 
     /*
@@ -243,7 +303,7 @@ Created by Edgar HIPP
 
 
     DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
-      var A, B, character, charactersAdded, closeiEndLoop, closeiStartLoop, closejEndLoop, closejStartLoop, elementDashLoop, endA, endB, endLoop, endSubContent, endiMatch, extendedA, extendedB, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, newContent, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, scope, startA, startB, startSubContent, startiMatch, startjMatch, tagDashLoop, tagForLoop, textInsideBracket, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var A, B, character, charactersAdded, closeiEndLoop, closeiStartLoop, closejEndLoop, closejStartLoop, copyA, elementDashLoop, endA, endB, endLoop, endSubContent, endiMatch, extendedA, extendedB, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, newContent, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, resultFullScope, scope, startA, startB, startSubContent, startiMatch, startjMatch, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
 
       matches = this._getFullTextMatchesFromData(content);
       charactersAdded = 0;
@@ -265,9 +325,22 @@ Created by Edgar HIPP
         innerText = match[2] || "";
         for (j = _j = 0, _len1 = innerText.length; _j < _len1; j = ++_j) {
           character = innerText[j];
+          for (u = _k = 0, _len2 = matches.length; _k < _len2; u = ++_k) {
+            glou = matches[u];
+            if (u >= i) {
+              if (content[glou.offset + charactersAdded] !== '<') {
+                console.log("no < at the beginning of " + glou[0]);
+                console.log(u);
+                console.log(i);
+                console.log(glou);
+                console.log(content.substr(glou.offset + charactersAdded));
+                throw "no < at the beginning of " + glou[0];
+              }
+            }
+          }
           if (character === '{') {
             if (inBracket === true) {
-              throw "Bracket already open";
+              throw "Bracket already open with text: " + textInsideBracket;
             }
             inBracket = true;
             textInsideBracket = "";
@@ -283,15 +356,15 @@ Created by Edgar HIPP
               openiEndLoop = i;
             }
             if (textInsideBracket[0] === '-' && inForLoop === false && inDashLoop === false) {
+              tagDashLoop = textInsideBracket.substr(1);
               inDashLoop = true;
               openiStartLoop = startiMatch;
               openjStartLoop = startjMatch;
               openjEndLoop = j;
+              openiEndLoop = i;
               regex = /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/;
               elementDashLoop = textInsideBracket.replace(regex, '$1');
               tagDashLoop = textInsideBracket.replace(regex, '$2');
-              console.log(elementDashLoop);
-              console.log(tagDashLoop);
             }
             /*
             						<w:t>{#forTag} blabla</w:t>
@@ -325,16 +398,46 @@ Created by Edgar HIPP
             closejStartLoop = startjMatch;
             closejEndLoop = j;
             if (inForLoop === false && inDashLoop === false) {
-              _ref = this.replaceTag(content, endiMatch, startiMatch, match, matches, textInsideBracket, this.getValueFromTag(textInsideBracket, currentScope), charactersAdded), content = _ref[0], charactersAdded = _ref[1];
+              _ref = this.replaceTag(content, endiMatch, startiMatch, matches, textInsideBracket, this.getValueFromTag(textInsideBracket, currentScope), charactersAdded), content = _ref[0], charactersAdded = _ref[1], matches = _ref[2];
             }
             if (textInsideBracket[0] === '/' && ('/' + tagDashLoop === textInsideBracket) && inDashLoop === true) {
-              closeiStartLoop = startiMatch + (closeiEndLoop = i);
+              closeiStartLoop = startiMatch;
+              closeiEndLoop = i;
               endLoop = i;
               startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded + openjStartLoop;
               endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded + closejEndLoop + 1;
-              B = this.calcInnerTextScope(content, startB, endB, elementDashLoop);
-              console.log("BBBBBBB--");
-              console.log(B);
+              resultFullScope = this.calcInnerTextScope(content, startB, endB, elementDashLoop);
+              charactersAdded -= resultFullScope.startTag;
+              B = resultFullScope.text;
+              if ((content.indexOf(B)) === -1) {
+                throw "couln't find B in content";
+              }
+              A = B;
+              copyA = A;
+              _ref1 = this.replaceTag(A, openiEndLoop, openiStartLoop, matches, "-" + elementDashLoop + " " + tagDashLoop, "", charactersAdded), A = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
+              if (copyA === A) {
+                throw "A should have changed after deleting the opening tag";
+              }
+              copyA = A;
+              _ref2 = this.replaceTag(A, closeiEndLoop, closeiStartLoop, matches, '/' + tagDashLoop, "", charactersAdded), A = _ref2[0], charactersAdded = _ref2[1], matches = _ref2[2];
+              if (copyA === A) {
+                throw "A should have changed after deleting the opening tag";
+              }
+              if (currentScope[tagDashLoop] != null) {
+                if (typeof currentScope[tagDashLoop] !== 'object') {
+                  throw '{#' + tagDashLoop + ("}should be an object (it is a " + (typeof currentScope[tagDashLoop]) + ")");
+                }
+                newContent = "";
+                _ref3 = currentScope[tagDashLoop];
+                for (i = _l = 0, _len3 = _ref3.length; _l < _len3; i = ++_l) {
+                  scope = _ref3[i];
+                  newContent += this._applyTemplateVars(A, scope);
+                }
+                content = content.replace(B, newContent);
+              } else {
+                content = content.replace(B, "");
+              }
+              return this._applyTemplateVars(content, currentScope);
             }
             if (textInsideBracket[0] === '/' && ('/' + tagForLoop === textInsideBracket) && inForLoop === true) {
               closeiStartLoop = startiMatch;
@@ -359,9 +462,9 @@ Created by Edgar HIPP
                   throw '{#' + tagForLoop + ("}should be an object (it is a " + (typeof currentScope[tagForLoop]) + ")");
                 }
                 newContent = "";
-                _ref1 = currentScope[tagForLoop];
-                for (i = _k = 0, _len2 = _ref1.length; _k < _len2; i = ++_k) {
-                  scope = _ref1[i];
+                _ref4 = currentScope[tagForLoop];
+                for (i = _m = 0, _len4 = _ref4.length; _m < _len4; i = ++_m) {
+                  scope = _ref4[i];
                   newContent += this._applyTemplateVars(A, scope);
                 }
                 content = content.replace(B, newContent);
@@ -418,13 +521,16 @@ Created by Edgar HIPP
       return outputFile;
     };
 
-    DocxGen.prototype.getFullText = function(path) {
+    DocxGen.prototype.getFullText = function(path, data) {
       var match, matches, output;
 
       if (path == null) {
         path = "word/document.xml";
       }
-      matches = this.getFullTextMatches(path);
+      if (data == null) {
+        data = "";
+      }
+      matches = this.getFullTextMatches(path, data);
       output = (function() {
         var _i, _len, _results;
 
@@ -438,14 +544,21 @@ Created by Edgar HIPP
       return decode_utf8(output.join(""));
     };
 
-    DocxGen.prototype.getFullTextMatches = function(path) {
+    DocxGen.prototype.getFullTextMatches = function(path, data) {
       var file;
 
       if (path == null) {
         path = "word/document.xml";
       }
-      file = this.files[path];
-      return this._getFullTextMatchesFromData(file.data);
+      if (data == null) {
+        data = "";
+      }
+      if (data === "") {
+        file = this.files[path];
+        return this._getFullTextMatchesFromData(file.data);
+      } else {
+        return this._getFullTextMatchesFromData(data);
+      }
     };
 
     DocxGen.prototype._getFullTextMatchesFromData = function(data) {
