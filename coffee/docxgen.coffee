@@ -101,10 +101,7 @@ window.DocxGen = class DocxGen
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
 	replaceTag: (content,endiMatch,startiMatch,matches,textInsideBracket,newValue,charactersAdded) ->
-		startContent=content
-		startCharactersAdded=charactersAdded
-		console.log "**toreplace: #{textInsideBracket}**"
-
+		# console.log "**toreplace: #{textInsideBracket}**, current charAdded: #{charactersAdded}"
 
 		if (matches[endiMatch][2].indexOf ('}'))==-1 then throw "no closing bracket at endiMatch #{matches[endiMatch][2]}"
 		if (matches[startiMatch][2].indexOf ('{'))==-1 then throw "no opening bracket at startiMatch #{matches[startiMatch][2]}"
@@ -114,19 +111,19 @@ window.DocxGen = class DocxGen
 		if endiMatch==startiMatch #<w>{aaaaa}</w>
 			matches[startiMatch][2]=matches[startiMatch][2].replace "{#{textInsideBracket}}", newValue
 			replacer= '<w:t xml:space="preserve">'+matches[startiMatch][2]+"</w:t>"
-			startB= matches[startiMatch].offset+charactersAdded
-			charactersAdded+=replacer.length-matches[startiMatch][0].length
+			startB= matches[startiMatch].offset+charactersAdded[startiMatch]
+			charactersAdded[startiMatch+1]=charactersAdded[startiMatch]+replacer.length-matches[startiMatch][0].length
 			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
 			copyContent= content
 			content = content.replaceFirstFrom matches[startiMatch][0], replacer, startB
-			console.log matches[startiMatch][0]+"=>"+replacer
+			# console.log matches[startiMatch][0]+"=>"+replacer
 			matches[startiMatch][0]=replacer
 
 			if copyContent==content
 				console.log content
 				console.log "Substr====>>>"
 				console.log content.substr(startB)
-				console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
+				console.log "#{startB}= #{matches[startiMatch].offset}"
 				throw "offset problem0: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
 
 		else if endiMatch>startiMatch
@@ -148,12 +145,11 @@ window.DocxGen = class DocxGen
 
 
 			copyContent = content
-			startB= matches[startiMatch].offset+charactersAdded
-			oldC=charactersAdded
-			charactersAdded+=replacer.length-matches[startiMatch][0].length
+			startB= matches[startiMatch].offset+charactersAdded[startiMatch]
+			charactersAdded[startiMatch+1]=charactersAdded[startiMatch]+replacer.length-matches[startiMatch][0].length
 			if content.indexOf(matches[startiMatch][0])==-1 then throw "content #{matches[startiMatch][0]} not found in content"
 
-			console.log matches[startiMatch][0]+"=>"+replacer
+			# console.log matches[startiMatch][0]+"=>"+replacer
 
 			content= content.replaceFirstFrom matches[startiMatch][0],replacer, startB
 
@@ -163,15 +159,14 @@ window.DocxGen = class DocxGen
 				console.log content
 				console.log "Substr====>>>"
 				console.log content.substr(startB)
-				console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
-				console.log "new charactersAdded: #{charactersAdded}"
+				console.log "#{startB}= #{matches[startiMatch].offset}"
 				throw "offset problem1: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
 
 			#2.
 			for k in [(startiMatch+1)...endiMatch]
 				replacer = matches[k][1]+'</w:t>'
-				startB= matches[k].offset+charactersAdded
-				charactersAdded+=replacer.length-matches[k][0].length
+				startB= matches[k].offset+charactersAdded[k]
+				charactersAdded[k+1]=charactersAdded[k]+replacer.length-matches[k][0].length
 				if content.indexOf(matches[k][0])==-1 then throw "content #{matches[k][0]} not found in content"
 				copyContent= content
 				console.log matches[k][0]+"=>"+replacer
@@ -181,27 +176,26 @@ window.DocxGen = class DocxGen
 					console.log content
 					console.log "Substr====>>>"
 					console.log content.substr(startB)
-					console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
+					console.log "#{startB}= #{matches[startiMatch].offset}"
 					console.log "new charactersAdded: #{charactersAdded}"
 					throw "offset problem2: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
 			#3.
 			regexLeft= /^[^}]*}(.*)$/;
 			matches[endiMatch][2]=matches[endiMatch][2].replace regexLeft, '$1'
 			replacer= '<w:t xml:space="preserve">'+matches[endiMatch][2]+"</w:t>";
-			startB= matches[endiMatch].offset+charactersAdded
-			charactersAdded+=replacer.length-matches[endiMatch][0].length
-			# charactersAdded+=replacer.length-matches[endiMatch][0].length
+			startB= matches[endiMatch].offset+charactersAdded[endiMatch]
+			charactersAdded[endiMatch+1]=charactersAdded[endiMatch]+replacer.length-matches[endiMatch][0].length
+
 			if content.indexOf(matches[endiMatch][0])==-1 then throw "content #{matches[endiMatch][0]} not found in content"
 			copyContent=content
 			content= content.replaceFirstFrom matches[endiMatch][0], replacer,startB
-			console.log matches[endiMatch][0]+"=>"+replacer
+			# console.log matches[endiMatch][0]+"=>"+replacer
 
 			if copyContent==content# or copyContent.length+replacer.length-matches[endiMatch][0].length!=content.length
 				console.log content
 				console.log "Substr====>>>"
 				console.log content.substr(startB)
-				console.log "#{startB}= #{matches[startiMatch].offset}+#{oldC}"
-				console.log "new charactersAdded: #{charactersAdded}"
+				console.log "#{startB}= #{matches[startiMatch].offset}"
 				throw "offset problem3: didnt changed the value (should have changed from #{matches[startiMatch][0]} to #{replacer}"
 
 			matches[endiMatch][0]=replacer
@@ -209,8 +203,12 @@ window.DocxGen = class DocxGen
 		else
 			throw "Bracket closed before opening"
 
-		if startContent.length+charactersAdded!=content.length+startCharactersAdded then throw "startContent and endContent have not different characters"
+		# if startContent.length+charactersAdded!=content.length+startCharactersAdded then throw "startContent and endContent have not different characters"
 
+		for match, j in matches when j>=endiMatch
+			charactersAdded[j+1]=charactersAdded[j]
+
+		# console.log charactersAdded.join(',')
 		return [content,charactersAdded,matches]
 	###
 	content is the whole content to be tagged
@@ -219,8 +217,8 @@ window.DocxGen = class DocxGen
 	_applyTemplateVars:(content,currentScope)->
 
 		matches = @_getFullTextMatchesFromData(content)
-
-		charactersAdded=0
+		console.log @getFullText("",content)
+		charactersAdded= (0 for i in [0...matches.length])
 
 		replacer = (match,pn ..., offset, string)->
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
@@ -236,18 +234,20 @@ window.DocxGen = class DocxGen
 
 		for match,i in matches
 			innerText= match[2] || "" #text inside the <w:t>
-
+			charactersAdded[i+1]=charactersAdded[i]
+			#console.log charactersAdded.join(',')
 			for character,j in innerText
 
-				for glou,u in matches when u>=i
-					if content[glou.offset+charactersAdded]!='<'
-						console.log "no < at the beginning of #{glou[0]}"
-						console.log u
-						console.log i
-						console.log glou
-						console.log content.substr(glou.offset+charactersAdded)
-
-						throw "no < at the beginning of #{glou[0]}"
+				# for glou,u in matches when u>=i
+				# 	if content[glou.offset+charactersAdded-lastAddedLength]!='<'
+				# 		console.log "no < at the beginning of #{glou[0]}: #{content[glou.offset+charactersAdded-lastAddedLength]}"
+				# 		console.log u
+				# 		console.log i
+				# 		console.log glou
+				# 		console.log "charAdded: #{charactersAdded} - #{lastAddedLength}"
+				# 		console.log content.substr(glou.offset+charactersAdded)
+				# 		console.log "no < at the beginning of #{glou[0]}"
+				# 		throw "no < at the beginning of #{glou[0]}"
 
 				if character=='{'
 					if inBracket is true then throw "Bracket already open with text: #{textInsideBracket}"
@@ -309,16 +309,17 @@ window.DocxGen = class DocxGen
 					if inForLoop is false and inDashLoop is false
 						[content,charactersAdded,matches] = @replaceTag(content,endiMatch,startiMatch,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
 
+						
 					if textInsideBracket[0]=='/' and ('/'+tagDashLoop == textInsideBracket) and inDashLoop is true
 						closeiStartLoop= startiMatch
 						closeiEndLoop= i
 						endLoop= i
 
-						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded+openjStartLoop
-						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded+closejEndLoop+1
+						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
+						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
 
 						resultFullScope = (@calcInnerTextScope content, startB, endB, elementDashLoop)
-						charactersAdded-=resultFullScope.startTag
+						charactersAdded[openiStartLoop]-=resultFullScope.startTag
 						B= resultFullScope.text
 
 						if (content.indexOf B)==-1 then throw "couln't find B in content"
@@ -358,12 +359,12 @@ window.DocxGen = class DocxGen
 
 						endLoop= i
 
-						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded+openjStartLoop
-						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded+closejEndLoop+1
+						startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
+						endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
 						B= content.substr(startB,endB-startB)
 
-						startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded+openjEndLoop+1
-						endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded+closejStartLoop
+						startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded[openiEndLoop]+openjEndLoop+1
+						endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded[closeiStartLoop]+closejStartLoop
 
 						A= content.substr(startA,endA-startA)
 
