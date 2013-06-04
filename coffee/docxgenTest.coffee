@@ -288,3 +288,30 @@ describe "Dash Loop Testing", () ->
 		expectedText= 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX '
 		text=taggedDashLoopList.getFullText()
 		expect(text).toBe(expectedText)
+
+describe "Intelligent Loop Tagging", () ->
+	callbackLoadedTaggedDocx = jasmine.createSpy();
+	
+	xhrDocMultipleLoop= new XMLHttpRequest()
+	xhrDocMultipleLoop.open('GET', '../examples/tagIntelligentLoopTable.docx', true)
+	if xhrDocMultipleLoop.overrideMimeType
+		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDocMultipleLoop.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.tagIntelligentTableDocx= new DocxGen(docData,{},true)
+			callbackLoadedTaggedDocx()
+	xhrDocMultipleLoop.send()
+
+	waitsFor () ->
+		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
+
+	it "table tagging" , () ->	
+		templateVars=
+			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
+		tagIntelligentTableDocx.setTemplateVars(templateVars)
+		tagIntelligentTableDocx.applyTemplateVars()
+		expectedText= 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX '
+		tagIntelligentTableDocx.output()
+		text=tagIntelligentTableDocx.getFullText()
+		expect(text).toBe(expectedText)

@@ -64,7 +64,7 @@ Created by Edgar HIPP
 
     DocxGen.prototype.getValueFromTag = function(tag, scope) {
       if (scope[tag] != null) {
-        return scope[tag];
+        return encode_utf8(scope[tag]);
       } else {
         return "undefined";
       }
@@ -105,7 +105,7 @@ Created by Edgar HIPP
         end = content.length - 1;
       }
       regex = "<(\/?[^/> ]+)([^>]*)>";
-      tags = preg_match_all(regex, content);
+      tags = preg_match_all(regex, content.substr(start, end));
       result = [];
       for (i = _i = 0, _len = tags.length; _i < _len; i = ++_i) {
         tag = tags[i];
@@ -184,25 +184,43 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.forLoop = function(content, currentScope, tagForLoop, charactersAdded, startiMatch, i, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop) {
-      var A, B, closeiEndLoop, closeiStartLoop, endA, endB, endLoop, endSubContent, extendedA, extendedB, inForLoop, newContent, scope, startA, startB, startSubContent, _i, _len, _ref;
+      /*
+      			<w:t>{#forTag} blabla</w:t>
+      			Blabla1
+      			Blabla2
+      			<w:t>{/forTag}</w:t>
+      
+      
+      			Let A be what is in between the first closing bracket and the second opening bracket
+      			Let B what is in between the first opening tag {# and the last closing tag
+      
+      			A=</w:t>
+      			Blabla1
+      			Blabla2
+      			<w:t>
+      
+      			B={#forTag}</w:t>
+      			Blabla1
+      			Blabla2
+      			<w:t>{/forTag}
+      
+      			We replace B by nA, n is equal to the length of the array in scope forTag
+      			<w:t>subContent subContent subContent</w:t>
+      */
+
+      var A, B, closeiEndLoop, closeiStartLoop, endA, endB, newContent, scope, startA, startB, _i, _len, _ref;
 
       closeiStartLoop = startiMatch;
       closeiEndLoop = i;
-      endLoop = i;
       startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded[openiStartLoop] + openjStartLoop;
       endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded[closeiEndLoop] + closejEndLoop + 1;
       B = content.substr(startB, endB - startB);
       startA = matches[openiEndLoop].offset + matches[openiEndLoop][1].length + charactersAdded[openiEndLoop] + openjEndLoop + 1;
       endA = matches[closeiStartLoop].offset + matches[closeiStartLoop][1].length + charactersAdded[closeiStartLoop] + closejStartLoop;
       A = content.substr(startA, endA - startA);
-      extendedA = content.substr(startA - 100, endA - startA + 200);
-      extendedB = content.substr(startB - 100, endB - startB + 200);
       if (B[0] !== '{' || B.indexOf('{') === -1 || B.indexOf('/') === -1 || B.indexOf('}') === -1 || B.indexOf('#') === -1) {
-        throw "no {,#,/ or } found in B: " + B + " --------------- Context: " + extendedB;
+        throw "no {,#,/ or } found in B: " + B;
       }
-      startSubContent = matches[openiStartLoop].offset;
-      endSubContent = matches[closeiEndLoop].offset;
-      inForLoop = false;
       if (currentScope[tagForLoop] != null) {
         if (typeof currentScope[tagForLoop] !== 'object') {
           throw '{#' + tagForLoop + ("}should be an object (it is a " + (typeof currentScope[tagForLoop]) + ")");
@@ -220,12 +238,11 @@ Created by Edgar HIPP
       return this._applyTemplateVars(content, currentScope);
     };
 
-    DocxGen.prototype.dashLoop = function(tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop) {
-      var A, B, closeiEndLoop, closeiStartLoop, copyA, endB, endLoop, newContent, resultFullScope, scope, startB, t, _i, _j, _len, _ref, _ref1, _ref2, _ref3;
+    DocxGen.prototype.dashLoop = function(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop) {
+      var A, B, closeiEndLoop, closeiStartLoop, copyA, endB, newContent, resultFullScope, scope, startB, t, _i, _j, _len, _ref, _ref1, _ref2, _ref3;
 
       closeiStartLoop = startiMatch;
       closeiEndLoop = i;
-      endLoop = i;
       startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded[openiStartLoop] + openjStartLoop;
       endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded[closeiEndLoop] + closejEndLoop + 1;
       resultFullScope = this.calcInnerTextScope(content, startB, endB, elementDashLoop);
@@ -238,7 +255,7 @@ Created by Edgar HIPP
       }
       A = B;
       copyA = A;
-      _ref1 = this.replaceTag(A, openiEndLoop, openiStartLoop, matches, "-" + elementDashLoop + " " + tagDashLoop, "", charactersAdded), A = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
+      _ref1 = this.replaceTag(A, openiEndLoop, openiStartLoop, matches, "" + textInsideBracket, "", charactersAdded), A = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
@@ -362,7 +379,7 @@ Created by Edgar HIPP
 
 
     DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
-      var character, charactersAdded, closejEndLoop, closejStartLoop, elementDashLoop, endiMatch, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1;
+      var character, charactersAdded, closejEndLoop, closejStartLoop, dashLooping, elementDashLoop, endiMatch, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1;
 
       matches = this._getFullTextMatchesFromData(content);
       charactersAdded = (function() {
@@ -432,30 +449,6 @@ Created by Edgar HIPP
               elementDashLoop = textInsideBracket.replace(regex, '$1');
               tagDashLoop = textInsideBracket.replace(regex, '$2');
             }
-            /*
-            						<w:t>{#forTag} blabla</w:t>
-            						Blabla1
-            						Blabla2
-            						<w:t>{/forTag}</w:t>
-            
-            
-            						Let A be what is in between the first closing bracket and the second opening bracket
-            						Let B what is in between the first opening tag {# and the last closing tag
-            
-            						A=</w:t>
-            						Blabla1
-            						Blabla2
-            						<w:t>
-            
-            						B={#forTag}</w:t>
-            						Blabla1
-            						Blabla2
-            						<w:t>{/forTag}
-            
-            						We replace B by nA, n is equal to the length of the array in scope forTag
-            						<w:t>subContent subContent subContent</w:t>
-            */
-
             if (inBracket === false) {
               throw "Bracket already closed";
             }
@@ -467,10 +460,28 @@ Created by Edgar HIPP
               _ref1 = this.replaceTag(content, endiMatch, startiMatch, matches, textInsideBracket, this.getValueFromTag(textInsideBracket, currentScope), charactersAdded), content = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
             }
             if (textInsideBracket[0] === '/' && ('/' + tagDashLoop === textInsideBracket) && inDashLoop === true) {
-              return this.dashLoop(tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop);
+              return this.dashLoop(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop);
             }
             if (textInsideBracket[0] === '/' && ('/' + tagForLoop === textInsideBracket) && inForLoop === true) {
-              return this.forLoop(content, currentScope, tagForLoop, charactersAdded, startiMatch, i, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
+              dashLooping = false;
+              if (this.intelligentTagging === true) {
+                console.log(content);
+                scopeContent = this.calcScopeContent(content, matches[openiStartLoop].offset + charactersAdded[openiStartLoop], matches[i].offset + charactersAdded[i] - (matches[openiStartLoop].offset + charactersAdded[openiStartLoop]));
+                console.log(scopeContent);
+                for (_m = 0, _len3 = scopeContent.length; _m < _len3; _m++) {
+                  t = scopeContent[_m];
+                  if (t.tag === '<w:tr>') {
+                    dashLooping = true;
+                    elementDashLoop = '<w:tc>';
+                  }
+                }
+              }
+              if (dashLooping === false) {
+                return this.forLoop(content, currentScope, tagForLoop, charactersAdded, startiMatch, i, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
+              } else {
+                console.log("intelligentTagging!!");
+                return this.dashLoop(textInsideBracket, textInsideBracket, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop);
+              }
             }
           } else {
             if (inBracket === true) {

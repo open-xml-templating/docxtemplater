@@ -41,7 +41,7 @@ window.DocxGen = class DocxGen
 		zip = new JSZip(content);
 		@files=zip.files
 	getValueFromTag: (tag,scope) ->
-		if scope[tag]? then return scope[tag] else return "undefined"
+		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
 	getImageList: () ->
 		regex= ///
 		[^.]*  #name
@@ -60,7 +60,7 @@ window.DocxGen = class DocxGen
 		@templateVars=templateVars;
 	calcScopeContent: (content,start=0,end=content.length-1) -> #get the different closing and opening tags between two texts
 		regex= """<(\/?[^/> ]+)([^>]*)>"""
-		tags= preg_match_all(regex,content)
+		tags= preg_match_all(regex,content.substr(start,end))
 		result=[]
 		for tag,i in tags
 			if tag[1][0]=='/' #closing tag
@@ -75,7 +75,6 @@ window.DocxGen = class DocxGen
 			else	#opening tag
 				result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 		result
-
 	calcScopeDifference: (content,start=0,end=content.length-1) ->
 		scope= @calcScopeContent content,start,end
 		while(1)
@@ -97,41 +96,51 @@ window.DocxGen = class DocxGen
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
 	forLoop: (content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop) ->
+		###
+			<w:t>{#forTag} blabla</w:t>
+			Blabla1
+			Blabla2
+			<w:t>{/forTag}</w:t>
 
+
+			Let A be what is in between the first closing bracket and the second opening bracket
+			Let B what is in between the first opening tag {# and the last closing tag
+
+			A=</w:t>
+			Blabla1
+			Blabla2
+			<w:t>
+
+			B={#forTag}</w:t>
+			Blabla1
+			Blabla2
+			<w:t>{/forTag}
+
+			We replace B by nA, n is equal to the length of the array in scope forTag
+			<w:t>subContent subContent subContent</w:t>
+		###
 		closeiStartLoop= startiMatch
 		closeiEndLoop= i
-		endLoop= i
 		startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
 		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
 		B= content.substr(startB,endB-startB)
 		startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded[openiEndLoop]+openjEndLoop+1
 		endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded[closeiStartLoop]+closejStartLoop
 		A= content.substr(startA,endA-startA)
-		extendedA= content.substr(startA-100,endA-startA+200)
-		extendedB= content.substr(startB-100,endB-startB+200)
-		if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B} --------------- Context: #{extendedB}"
-		startSubContent= matches[openiStartLoop].offset
-		endSubContent= matches[closeiEndLoop].offset
-
-
-		inForLoop= false #end for loop
+		if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
 		if currentScope[tagForLoop]?
 			if typeof currentScope[tagForLoop]!='object' then throw '{#'+tagForLoop+"}should be an object (it is a #{typeof currentScope[tagForLoop]})"
 			newContent= "";
-
 			for scope,i in currentScope[tagForLoop]
 				newContent+=@_applyTemplateVars A,scope
-
 			content=content.replace B, newContent
 		else content= content.replace B, ""
-
 		return @_applyTemplateVars content,currentScope
 
-	dashLoop: (tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop) ->
+	dashLoop: (textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop) ->
 		closeiStartLoop= startiMatch
 		closeiEndLoop= i
-		endLoop= i
 		startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
 		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
 		resultFullScope = (@calcInnerTextScope content, startB, endB, elementDashLoop)
@@ -142,7 +151,7 @@ window.DocxGen = class DocxGen
 		A = B
 		copyA= A
 		#for deleting the opening tag
-		[A,charactersAdded,matches]= @replaceTag(A,openiEndLoop,openiStartLoop,matches,"-#{elementDashLoop} #{tagDashLoop}","",charactersAdded)
+		[A,charactersAdded,matches]= @replaceTag(A,openiEndLoop,openiStartLoop,matches,"#{textInsideBracket}","",charactersAdded)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
 		#for deleting the closing tag
@@ -151,10 +160,8 @@ window.DocxGen = class DocxGen
 		if currentScope[tagDashLoop]?
 			if typeof currentScope[tagDashLoop]!='object' then throw '{#'+tagDashLoop+"}should be an object (it is a #{typeof currentScope[tagDashLoop]})"
 			newContent= "";
-
 			for scope,i in currentScope[tagDashLoop]
 				newContent+=@_applyTemplateVars A,scope
-
 			content= content.replace B, newContent
 		else content= content.replace B, ""
 		return @_applyTemplateVars content,currentScope	
@@ -269,7 +276,6 @@ window.DocxGen = class DocxGen
 					startiMatch= i
 					startjMatch= j
 				else if character == '}'
-
 					if textInsideBracket[0]=='#' and inForLoop is false and inDashLoop is false
 						tagForLoop= textInsideBracket.substr 1
 						inForLoop= true #begin for loop
@@ -288,29 +294,6 @@ window.DocxGen = class DocxGen
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						elementDashLoop= textInsideBracket.replace regex, '$1'
 						tagDashLoop= textInsideBracket.replace regex, '$2'
-					###
-						<w:t>{#forTag} blabla</w:t>
-						Blabla1
-						Blabla2
-						<w:t>{/forTag}</w:t>
-
-
-						Let A be what is in between the first closing bracket and the second opening bracket
-						Let B what is in between the first opening tag {# and the last closing tag
-
-						A=</w:t>
-						Blabla1
-						Blabla2
-						<w:t>
-
-						B={#forTag}</w:t>
-						Blabla1
-						Blabla2
-						<w:t>{/forTag}
-
-						We replace B by nA, n is equal to the length of the array in scope forTag
-						<w:t>subContent subContent subContent</w:t>
-					###
 
 					if inBracket is false then throw "Bracket already closed"
 					inBracket= false
@@ -323,16 +306,27 @@ window.DocxGen = class DocxGen
 						[content,charactersAdded,matches] = @replaceTag(content,endiMatch,startiMatch,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
 						
 					if textInsideBracket[0]=='/' and ('/'+tagDashLoop == textInsideBracket) and inDashLoop is true
-						return @dashLoop(tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
+						return @dashLoop(textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
 
 					if textInsideBracket[0]=='/' and ('/'+tagForLoop == textInsideBracket) and inForLoop is true
-						return @forLoop(content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
+						dashLooping= no
+						if @intelligentTagging==on
+							console.log content
+							scopeContent= @calcScopeContent content, matches[openiStartLoop].offset+charactersAdded[openiStartLoop],matches[i].offset+charactersAdded[i]-(matches[openiStartLoop].offset+charactersAdded[openiStartLoop])
+							console.log scopeContent
+							for t in scopeContent
+								if t.tag=='<w:tr>'
+									dashLooping= yes
+									elementDashLoop= '<w:tc>'
 
+						if dashLooping==no
+							return @forLoop(content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
+						else
+							console.log "intelligentTagging!!"
+							return @dashLoop(textInsideBracket,textInsideBracket,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
 				else #if character != '{' and character != '}'
 					if inBracket is true then textInsideBracket+=character
 		content
-
-
 	applyTemplateVars:()->
 		for fileName in @templatedFiles when @files[fileName]?
 			fileData= @files[fileName].data

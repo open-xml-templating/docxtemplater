@@ -610,4 +610,55 @@
     });
   });
 
+  describe("Intelligent Loop Tagging", function() {
+    var callbackLoadedTaggedDocx, xhrDocMultipleLoop;
+
+    callbackLoadedTaggedDocx = jasmine.createSpy();
+    xhrDocMultipleLoop = new XMLHttpRequest();
+    xhrDocMultipleLoop.open('GET', '../examples/tagIntelligentLoopTable.docx', true);
+    if (xhrDocMultipleLoop.overrideMimeType) {
+      xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDocMultipleLoop.onreadystatechange = function(e) {
+      var docData;
+
+      if (this.readyState === 4 && this.status === 200) {
+        docData = this.response;
+        window.tagIntelligentTableDocx = new DocxGen(docData, {}, true);
+        return callbackLoadedTaggedDocx();
+      }
+    };
+    xhrDocMultipleLoop.send();
+    waitsFor(function() {
+      return callbackLoadedTaggedDocx.callCount >= 1;
+    });
+    return it("table tagging", function() {
+      var expectedText, templateVars, text;
+
+      templateVars = {
+        "os": [
+          {
+            "type": "linux",
+            "price": "0",
+            "reference": "Ubuntu10"
+          }, {
+            "type": "windows",
+            "price": "500",
+            "reference": "Win7"
+          }, {
+            "type": "apple",
+            "price": "1200",
+            "reference": "MACOSX"
+          }
+        ]
+      };
+      tagIntelligentTableDocx.setTemplateVars(templateVars);
+      tagIntelligentTableDocx.applyTemplateVars();
+      expectedText = 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX ';
+      tagIntelligentTableDocx.output();
+      text = tagIntelligentTableDocx.getFullText();
+      return expect(text).toBe(expectedText);
+    });
+  });
+
 }).call(this);
