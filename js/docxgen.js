@@ -247,9 +247,6 @@
           subfile.applyTemplateVars();
           newContent += subfile.content;
           if ((subfile.getFullText().indexOf('{')) !== -1) {
-            console.log(A);
-            console.log(scope);
-            console.log(JSON.stringify(scope));
             throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (1)";
           }
         }
@@ -262,6 +259,7 @@
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
       }
+      this.content = nextFile.content;
       return nextFile;
     };
 
@@ -313,6 +311,7 @@
       }
       nextFile = new XmlTemplater(content, currentScope, this.intelligentTagging);
       nextFile.applyTemplateVars();
+      this.content = nextFile.content;
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (6)";
       }
@@ -441,6 +440,7 @@
         return charactersAdded.unshift(0);
       };
       content.replace(/^()([^<]+)/, replacer);
+      this.matches = matches;
       inForLoop = false;
       inBracket = false;
       inDashLoop = false;
@@ -517,7 +517,6 @@
               if (dashLooping === false) {
                 return this.forLoop(content, currentScope, tagForLoop, charactersAdded, startiMatch, i, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
               } else {
-                console.log("intelligentTagging!!: " + elementDashLoop);
                 return this.dashLoop(textInsideBracket, textInsideBracket.substr(1), startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop);
               }
             }

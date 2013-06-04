@@ -126,17 +126,14 @@ window.XmlTemplater = class XmlTemplater
 				subfile= new XmlTemplater A, scope, @intelligentTagging
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
-				if ((subfile.getFullText().indexOf '{')!=-1)
-					console.log A
-					console.log scope
-					console.log JSON.stringify(scope)
-					throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
+				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			content=content.replace B, newContent
 		else content= content.replace B, ""
 
 		nextFile= new XmlTemplater content, currentScope, @intelligentTagging
 		nextFile.applyTemplateVars()
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
+		this.content=nextFile.content
 		return nextFile
 
 	dashLoop: (textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop) ->
@@ -172,6 +169,7 @@ window.XmlTemplater = class XmlTemplater
 
 		nextFile= new XmlTemplater content, currentScope, @intelligentTagging
 		nextFile.applyTemplateVars()
+		this.content=nextFile.content
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (6)"
 		return nextFile
 	
@@ -260,6 +258,7 @@ window.XmlTemplater = class XmlTemplater
 		content= @content
 		currentScope= @currentScope
 		matches = @_getFullTextMatchesFromData(content)
+
 		charactersAdded= (0 for i in [0...matches.length])
 
 		replacer = (match,pn ..., offset, string)->
@@ -269,7 +268,7 @@ window.XmlTemplater = class XmlTemplater
 			charactersAdded.unshift 0
 
 		content.replace /^()([^<]+)/,replacer
-
+		@matches=matches
 		inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		inBracket= false # all brackets  {___}
 		inDashLoop = false	# bracket with dash: {-tr dashLoop} {/dashLoop}
@@ -335,11 +334,9 @@ window.XmlTemplater = class XmlTemplater
 						if dashLooping==no
 							return @forLoop(content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
 						else
-							console.log "intelligentTagging!!: #{elementDashLoop}"
 							return @dashLoop(textInsideBracket,textInsideBracket.substr(1),startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
 				else #if character != '{' and character != '}'
 					if inBracket is true then textInsideBracket+=character
 		@content=content
-
 		if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
 		this
