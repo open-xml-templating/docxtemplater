@@ -611,7 +611,7 @@
   });
 
   describe("Intelligent Loop Tagging", function() {
-    var callbackLoadedTaggedDocx, xhrDocMultipleLoop;
+    var callbackLoadedTaggedDocx, xhrDocExpected, xhrDocMultipleLoop;
 
     callbackLoadedTaggedDocx = jasmine.createSpy();
     xhrDocMultipleLoop = new XMLHttpRequest();
@@ -629,11 +629,27 @@
       }
     };
     xhrDocMultipleLoop.send();
+    callbackLoadedTaggedDocx = jasmine.createSpy();
+    xhrDocExpected = new XMLHttpRequest();
+    xhrDocExpected.open('GET', '../examples/tagIntelligentLoopTableExpected.docx', true);
+    if (xhrDocExpected.overrideMimeType) {
+      xhrDocExpected.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDocExpected.onreadystatechange = function(e) {
+      var docData;
+
+      if (this.readyState === 4 && this.status === 200) {
+        docData = this.response;
+        window.tagIntelligentTableDocxExpected = new DocxGen(docData, {}, true);
+        return callbackLoadedTaggedDocx();
+      }
+    };
+    xhrDocExpected.send();
     waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 1;
+      return callbackLoadedTaggedDocx.callCount >= 2;
     });
-    return it("table tagging", function() {
-      var expectedText, templateVars, text;
+    return it("should work with tables", function() {
+      var expectedText, i, templateVars, text, _results;
 
       templateVars = {
         "os": [
@@ -654,10 +670,20 @@
       };
       tagIntelligentTableDocx.setTemplateVars(templateVars);
       tagIntelligentTableDocx.applyTemplateVars();
-      expectedText = 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX ';
-      tagIntelligentTableDocx.output();
+      expectedText = 'linux0Ubuntu10windows500Win7apple1200MACOSX';
       text = tagIntelligentTableDocx.getFullText();
-      return expect(text).toBe(expectedText);
+      expect(text).toBe(expectedText);
+      _results = [];
+      for (i in tagIntelligentTableDocx.files) {
+        expect(tagIntelligentTableDocx.files[i].data).toBe(tagIntelligentTableDocxExpected.files[i].data);
+        expect(tagIntelligentTableDocx.files[i].name).toBe(tagIntelligentTableDocxExpected.files[i].name);
+        expect(tagIntelligentTableDocx.files[i].options.base64).toBe(tagIntelligentTableDocxExpected.files[i].options.base64);
+        expect(tagIntelligentTableDocx.files[i].options.binary).toBe(tagIntelligentTableDocxExpected.files[i].options.binary);
+        expect(tagIntelligentTableDocx.files[i].options.compression).toBe(tagIntelligentTableDocxExpected.files[i].options.compression);
+        expect(tagIntelligentTableDocx.files[i].options.dir).toBe(tagIntelligentTableDocxExpected.files[i].options.dir);
+        _results.push(expect(tagIntelligentTableDocx.files[i].options.date).not.toBe(tagIntelligentTableDocxExpected.files[i].options.date));
+      }
+      return _results;
     });
   });
 

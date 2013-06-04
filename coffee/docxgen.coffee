@@ -8,19 +8,23 @@ encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 
 decode_utf8= (s) ->
-	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ")
+	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ") #replace Ascii 160 space by the normal space, Ascii 32
 
-String.prototype.replaceFirstFrom = (search,replace,from) ->
+String.prototype.replaceFirstFrom = (search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	this.substr(0,from)+this.substr(from).replace(search,replace)
 
-preg_match_all= (regex, haystack) ->
-	testRegex= new RegExp(regex,'g');
+preg_match_all= (regex, content) -> 
+	###regex is a string, content is the content. It returns an array of all matches with their offset, for example: 
+	regex=la
+	content=lolalolilala
+	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
+	###
 	matchArray= []
 	replacer = (match,pn ..., offset, string)->
 		pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-		pn.offset=offset
+		pn.offset= offset
 		matchArray.push pn
-	haystack.replace testRegex,replacer
+	content.replace (new RegExp(regex,'g')),replacer
 	matchArray
 
 window.DocxGen = class DocxGen
@@ -38,7 +42,7 @@ window.DocxGen = class DocxGen
 		if typeof content == "string"
 			@load(content)
 	load: (content)->
-		zip = new JSZip(content);
+		zip = new JSZip content
 		@files=zip.files
 	getValueFromTag: (tag,scope) ->
 		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
@@ -58,27 +62,29 @@ window.DocxGen = class DocxGen
 		@files[path].data= data
 	setTemplateVars: (templateVars) ->
 		@templateVars=templateVars;
-	calcScopeContent: (content,start=0,end=content.length-1) -> #get the different closing and opening tags between two texts
-		regex= """<(\/?[^/> ]+)([^>]*)>"""
-		tags= preg_match_all(regex,content.substr(start,end))
+	calcScopeContent: (content,start=0,end=content.length-1) -> 
+		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)): 
+		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}] 
+		###
+		tags= preg_match_all("<(\/?[^/> ]+)([^>]*)>",content.substr(start,end)) #getThemAll!
 		result=[]
 		for tag,i in tags
 			if tag[1][0]=='/' #closing tag
-				justOpened= false
+				justOpened= false 
 				if result.length>0
 					lastTag= result[result.length-1]
 					innerLastTag= lastTag.tag.substr(1,lastTag.tag.length-2)
 					innerCurrentTag= tag[1].substr(1)
-					if innerLastTag==innerCurrentTag then justOpened= true
+					if innerLastTag==innerCurrentTag then justOpened= true #tag was just opened
 				if justOpened then result.pop() else result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
-			else if tag[2][tag[2].length-1]=='/' #open/closing tag
+			else if tag[2][tag[2].length-1]=='/' #open/closing tag aren't taken into account(for example <w:style/>)
 			else	#opening tag
 				result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 		result
-	calcScopeDifference: (content,start=0,end=content.length-1) ->
+	calcScopeDifference: (content,start=0,end=content.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this content, the XML will  break
 		scope= @calcScopeContent content,start,end
 		while(1)
-			if (scope.length<=1)
+			if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closeing tag 
 				break;
 			if ((scope[0]).tag.substr(2)==(scope[scope.length-1]).tag.substr(1))
 				scope.pop()
@@ -87,25 +93,33 @@ window.DocxGen = class DocxGen
 		scope
 
 	calcInnerTextScope: (content,start,end,tag) -> #tag: w:t
-		console.log "calcInnerTextScope"
 		endTag= content.indexOf('</'+tag+'>',end)
-		if endTag==-1 then throw "can't find endTag"
+		if endTag==-1 then throw "can't find endTag #{endTag}"
 		endTag+=('</'+tag+'>').length
 		startTag = Math.max content.lastIndexOf('<'+tag+'>',start), content.lastIndexOf('<'+tag+' ',start)
 		if startTag==-1 then throw "can't find startTag"
 		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
 
-	forLoop: (content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop) ->
+	calcB: (matches,content,openiStartLoop,openjStartLoop,closeiEndLoop,closejEndLoop,charactersAdded) ->
+		startB = matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
+		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
+		{B:content.substr(startB,endB-startB),start:startB,end:endB}
+
+	calcA: (matches,content,openiEndLoop,openjEndLoop,closeiStartLoop,closejStartLoop,charactersAdded) ->
+		startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded[openiEndLoop]+openjEndLoop+1
+		endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded[closeiStartLoop]+closejStartLoop
+		{A:content.substr(startA,endA-startA),start:startA,end:endA}
+
+	forLoop: (content,currentScope,tagForLoop,charactersAdded,closeiStartLoop,closeiEndLoop,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop) ->
 		###
 			<w:t>{#forTag} blabla</w:t>
 			Blabla1
 			Blabla2
 			<w:t>{/forTag}</w:t>
 
-
 			Let A be what is in between the first closing bracket and the second opening bracket
 			Let B what is in between the first opening tag {# and the last closing tag
-
+			
 			A=</w:t>
 			Blabla1
 			Blabla2
@@ -119,14 +133,10 @@ window.DocxGen = class DocxGen
 			We replace B by nA, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-		closeiStartLoop= startiMatch
-		closeiEndLoop= i
-		startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
-		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
-		B= content.substr(startB,endB-startB)
-		startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded[openiEndLoop]+openjEndLoop+1
-		endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded[closeiStartLoop]+closejStartLoop
-		A= content.substr(startA,endA-startA)
+
+		B= (@calcB matches,content,openiStartLoop,openjStartLoop,closeiEndLoop,closejEndLoop,charactersAdded).B
+		A= (@calcA matches,content,openiEndLoop,openjEndLoop,closeiStartLoop,closejStartLoop,charactersAdded).A
+
 		if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
 		if currentScope[tagForLoop]?
@@ -139,6 +149,7 @@ window.DocxGen = class DocxGen
 		return @_applyTemplateVars content,currentScope
 
 	dashLoop: (textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop) ->
+		console.log "tagdashLoop:#{tagDashLoop}"
 		closeiStartLoop= startiMatch
 		closeiEndLoop= i
 		startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
@@ -309,21 +320,20 @@ window.DocxGen = class DocxGen
 						return @dashLoop(textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
 
 					if textInsideBracket[0]=='/' and ('/'+tagForLoop == textInsideBracket) and inForLoop is true
+						#You DashLoop= take the outer scope only if you are in a table
 						dashLooping= no
 						if @intelligentTagging==on
-							console.log content
 							scopeContent= @calcScopeContent content, matches[openiStartLoop].offset+charactersAdded[openiStartLoop],matches[i].offset+charactersAdded[i]-(matches[openiStartLoop].offset+charactersAdded[openiStartLoop])
-							console.log scopeContent
 							for t in scopeContent
-								if t.tag=='<w:tr>'
+								if t.tag=='<w:tc>'
 									dashLooping= yes
-									elementDashLoop= '<w:tc>'
+									elementDashLoop= 'w:tr'
 
 						if dashLooping==no
 							return @forLoop(content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
 						else
-							console.log "intelligentTagging!!"
-							return @dashLoop(textInsideBracket,textInsideBracket,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
+							console.log "intelligentTagging!!: #{elementDashLoop}"
+							return @dashLoop(textInsideBracket,textInsideBracket.substr(1),startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
 				else #if character != '{' and character != '}'
 					if inBracket is true then textInsideBracket+=character
 		content

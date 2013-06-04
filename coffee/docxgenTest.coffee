@@ -303,15 +303,37 @@ describe "Intelligent Loop Tagging", () ->
 			callbackLoadedTaggedDocx()
 	xhrDocMultipleLoop.send()
 
-	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
+	callbackLoadedTaggedDocx = jasmine.createSpy();
+	
+	xhrDocExpected= new XMLHttpRequest()
+	xhrDocExpected.open('GET', '../examples/tagIntelligentLoopTableExpected.docx', true)
+	if xhrDocExpected.overrideMimeType
+		xhrDocExpected.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDocExpected.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			docData=this.response
+			window.tagIntelligentTableDocxExpected= new DocxGen(docData,{},true)
+			callbackLoadedTaggedDocx()
+	xhrDocExpected.send()
 
-	it "table tagging" , () ->	
+	waitsFor () ->
+		callbackLoadedTaggedDocx.callCount>=2  #loaded tagLoopExample
+
+	it "should work with tables" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
 		tagIntelligentTableDocx.setTemplateVars(templateVars)
 		tagIntelligentTableDocx.applyTemplateVars()
-		expectedText= 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX '
-		tagIntelligentTableDocx.output()
+		expectedText= 'linux0Ubuntu10windows500Win7apple1200MACOSX'
 		text=tagIntelligentTableDocx.getFullText()
 		expect(text).toBe(expectedText)
+
+		for i of tagIntelligentTableDocx.files
+			#Everything but the date should be different
+			expect(tagIntelligentTableDocx.files[i].data).toBe(tagIntelligentTableDocxExpected.files[i].data)
+			expect(tagIntelligentTableDocx.files[i].name).toBe(tagIntelligentTableDocxExpected.files[i].name)
+			expect(tagIntelligentTableDocx.files[i].options.base64).toBe(tagIntelligentTableDocxExpected.files[i].options.base64)
+			expect(tagIntelligentTableDocx.files[i].options.binary).toBe(tagIntelligentTableDocxExpected.files[i].options.binary)
+			expect(tagIntelligentTableDocx.files[i].options.compression).toBe(tagIntelligentTableDocxExpected.files[i].options.compression)
+			expect(tagIntelligentTableDocx.files[i].options.dir).toBe(tagIntelligentTableDocxExpected.files[i].options.dir)
+			expect(tagIntelligentTableDocx.files[i].options.date).not.toBe(tagIntelligentTableDocxExpected.files[i].options.date)
