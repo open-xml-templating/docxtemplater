@@ -1,13 +1,6 @@
 //@ sourceMappingURL=docxgen.map
-/*
-Docxgen.coffee
-Created by Edgar HIPP
-03/06/2013
-*/
-
-
 (function() {
-  var DocxGen, decode_utf8, encode_utf8, preg_match_all,
+  var DocxGen, XmlTemplater, decode_utf8, encode_utf8, preg_match_all,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -45,29 +38,26 @@ Created by Edgar HIPP
     return matchArray;
   };
 
-  window.DocxGen = DocxGen = (function() {
-    var imageExtensions;
-
-    imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
-
-    function DocxGen(content, templateVars, intelligentTagging) {
+  window.XmlTemplater = XmlTemplater = (function() {
+    function XmlTemplater(content, templateVars, intelligentTagging) {
+      if (content == null) {
+        content = "";
+      }
       this.templateVars = templateVars != null ? templateVars : {};
       this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
-      this.files = {};
-      this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
       if (typeof content === "string") {
         this.load(content);
+      } else {
+        throw "content must be string!";
       }
+      this.currentScope = this.templateVars;
     }
 
-    DocxGen.prototype.load = function(content) {
-      var zip;
-
-      zip = new JSZip(content);
-      return this.files = zip.files;
+    XmlTemplater.prototype.load = function(content) {
+      this.content = content;
     };
 
-    DocxGen.prototype.getValueFromTag = function(tag, scope) {
+    XmlTemplater.prototype.getValueFromTag = function(tag, scope) {
       if (scope[tag] != null) {
         return encode_utf8(scope[tag]);
       } else {
@@ -75,32 +65,7 @@ Created by Edgar HIPP
       }
     };
 
-    DocxGen.prototype.getImageList = function() {
-      var extension, imageList, index, regex;
-
-      regex = /[^.]*\.([^.]*)/;
-      imageList = [];
-      for (index in this.files) {
-        extension = index.replace(regex, '$1');
-        if (__indexOf.call(imageExtensions, extension) >= 0) {
-          imageList.push({
-            "path": index,
-            files: this.files[index]
-          });
-        }
-      }
-      return imageList;
-    };
-
-    DocxGen.prototype.setImage = function(path, data) {
-      return this.files[path].data = data;
-    };
-
-    DocxGen.prototype.setTemplateVars = function(templateVars) {
-      return this.templateVars = templateVars;
-    };
-
-    DocxGen.prototype.calcScopeContent = function(content, start, end) {
+    XmlTemplater.prototype.calcScopeContent = function(content, start, end) {
       var i, innerCurrentTag, innerLastTag, justOpened, lastTag, result, tag, tags, _i, _len;
 
       if (start == null) {
@@ -147,7 +112,7 @@ Created by Edgar HIPP
       return result;
     };
 
-    DocxGen.prototype.calcScopeDifference = function(content, start, end) {
+    XmlTemplater.prototype.calcScopeDifference = function(content, start, end) {
       var scope;
 
       if (start == null) {
@@ -171,7 +136,32 @@ Created by Edgar HIPP
       return scope;
     };
 
-    DocxGen.prototype.calcInnerTextScope = function(content, start, end, tag) {
+    XmlTemplater.prototype.getFullText = function() {
+      var match, matches, output;
+
+      matches = this._getFullTextMatchesFromData();
+      output = (function() {
+        var _i, _len, _results;
+
+        _results = [];
+        for (_i = 0, _len = matches.length; _i < _len; _i++) {
+          match = matches[_i];
+          _results.push(match[2]);
+        }
+        return _results;
+      })();
+      return decode_utf8(output.join(""));
+    };
+
+    XmlTemplater.prototype._getFullTextMatchesFromData = function() {
+      var data, matches, regex;
+
+      data = this.content;
+      regex = "(<w:t[^>]*>)([^<>]*)?</w:t>";
+      return matches = preg_match_all(regex, data);
+    };
+
+    XmlTemplater.prototype.calcInnerTextScope = function(content, start, end, tag) {
       var endTag, startTag;
 
       endTag = content.indexOf('</' + tag + '>', end);
@@ -190,7 +180,7 @@ Created by Edgar HIPP
       };
     };
 
-    DocxGen.prototype.calcB = function(matches, content, openiStartLoop, openjStartLoop, closeiEndLoop, closejEndLoop, charactersAdded) {
+    XmlTemplater.prototype.calcB = function(matches, content, openiStartLoop, openjStartLoop, closeiEndLoop, closejEndLoop, charactersAdded) {
       var endB, startB;
 
       startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded[openiStartLoop] + openjStartLoop;
@@ -202,7 +192,7 @@ Created by Edgar HIPP
       };
     };
 
-    DocxGen.prototype.calcA = function(matches, content, openiEndLoop, openjEndLoop, closeiStartLoop, closejStartLoop, charactersAdded) {
+    XmlTemplater.prototype.calcA = function(matches, content, openiEndLoop, openjEndLoop, closeiStartLoop, closejStartLoop, charactersAdded) {
       var endA, startA;
 
       startA = matches[openiEndLoop].offset + matches[openiEndLoop][1].length + charactersAdded[openiEndLoop] + openjEndLoop + 1;
@@ -214,7 +204,7 @@ Created by Edgar HIPP
       };
     };
 
-    DocxGen.prototype.forLoop = function(content, currentScope, tagForLoop, charactersAdded, closeiStartLoop, closeiEndLoop, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop) {
+    XmlTemplater.prototype.forLoop = function(content, currentScope, tagForLoop, charactersAdded, closeiStartLoop, closeiEndLoop, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop) {
       /*
       			<w:t>{#forTag} blabla</w:t>
       			Blabla1
@@ -238,7 +228,7 @@ Created by Edgar HIPP
       			<w:t>subContent subContent subContent</w:t>
       */
 
-      var A, B, i, newContent, scope, _i, _len, _ref;
+      var A, B, i, newContent, nextFile, scope, subfile, _i, _len, _ref;
 
       B = (this.calcB(matches, content, openiStartLoop, openjStartLoop, closeiEndLoop, closejEndLoop, charactersAdded)).B;
       A = (this.calcA(matches, content, openiEndLoop, openjEndLoop, closeiStartLoop, closejStartLoop, charactersAdded)).A;
@@ -253,17 +243,30 @@ Created by Edgar HIPP
         _ref = currentScope[tagForLoop];
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           scope = _ref[i];
-          newContent += this._applyTemplateVars(A, scope);
+          subfile = new XmlTemplater(A, scope, this.intelligentTagging);
+          subfile.applyTemplateVars();
+          newContent += subfile.content;
+          if ((subfile.getFullText().indexOf('{')) !== -1) {
+            console.log(A);
+            console.log(scope);
+            console.log(JSON.stringify(scope));
+            throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (1)";
+          }
         }
         content = content.replace(B, newContent);
       } else {
         content = content.replace(B, "");
       }
-      return this._applyTemplateVars(content, currentScope);
+      nextFile = new XmlTemplater(content, currentScope, this.intelligentTagging);
+      nextFile.applyTemplateVars();
+      if ((nextFile.getFullText().indexOf('{')) !== -1) {
+        throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
+      }
+      return nextFile;
     };
 
-    DocxGen.prototype.dashLoop = function(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop) {
-      var A, B, closeiEndLoop, closeiStartLoop, copyA, endB, newContent, resultFullScope, scope, startB, t, _i, _j, _len, _ref, _ref1, _ref2, _ref3;
+    XmlTemplater.prototype.dashLoop = function(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop) {
+      var A, B, closeiEndLoop, closeiStartLoop, copyA, endB, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1, _ref2, _ref3;
 
       console.log("tagdashLoop:" + tagDashLoop);
       closeiStartLoop = startiMatch;
@@ -297,16 +300,26 @@ Created by Edgar HIPP
         _ref3 = currentScope[tagDashLoop];
         for (i = _j = 0, _len = _ref3.length; _j < _len; i = ++_j) {
           scope = _ref3[i];
-          newContent += this._applyTemplateVars(A, scope);
+          subfile = new XmlTemplater(A, scope, this.intelligentTagging);
+          subfile.applyTemplateVars();
+          newContent += subfile.content;
+          if ((subfile.getFullText().indexOf('{')) !== -1) {
+            throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (5)";
+          }
         }
         content = content.replace(B, newContent);
       } else {
         content = content.replace(B, "");
       }
-      return this._applyTemplateVars(content, currentScope);
+      nextFile = new XmlTemplater(content, currentScope, this.intelligentTagging);
+      nextFile.applyTemplateVars();
+      if ((nextFile.getFullText().indexOf('{')) !== -1) {
+        throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (6)";
+      }
+      return nextFile;
     };
 
-    DocxGen.prototype.replaceTag = function(content, endiMatch, startiMatch, matches, textInsideBracket, newValue, charactersAdded) {
+    XmlTemplater.prototype.replaceTag = function(content, endiMatch, startiMatch, matches, textInsideBracket, newValue, charactersAdded) {
       var copyContent, j, k, match, regexLeft, regexRight, replacer, startB, subMatches, _i, _j, _len, _ref;
 
       if ((matches[endiMatch][2].indexOf('}')) === -1) {
@@ -403,9 +416,11 @@ Created by Edgar HIPP
     */
 
 
-    DocxGen.prototype._applyTemplateVars = function(content, currentScope) {
+    XmlTemplater.prototype.applyTemplateVars = function(content, currentScope) {
       var character, charactersAdded, closejEndLoop, closejStartLoop, dashLooping, elementDashLoop, endiMatch, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1;
 
+      content = this.content;
+      currentScope = this.currentScope;
       matches = this._getFullTextMatchesFromData(content);
       charactersAdded = (function() {
         var _i, _ref, _results;
@@ -513,11 +528,69 @@ Created by Edgar HIPP
           }
         }
       }
-      return content;
+      this.content = content;
+      if ((this.getFullText().indexOf('{')) !== -1) {
+        throw "they shouln't be a { in replaced file: " + (this.getFullText()) + " (2)";
+      }
+      return this;
+    };
+
+    return XmlTemplater;
+
+  })();
+
+  /*
+  Docxgen.coffee
+  Created by Edgar HIPP
+  03/06/2013
+  */
+
+
+  window.DocxGen = DocxGen = (function() {
+    var imageExtensions;
+
+    imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
+
+    function DocxGen(content, templateVars, intelligentTagging) {
+      this.templateVars = templateVars != null ? templateVars : {};
+      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
+      this.files = {};
+      this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
+      if (typeof content === "string") {
+        this.load(content);
+      }
+    }
+
+    DocxGen.prototype.load = function(content) {
+      var zip;
+
+      zip = new JSZip(content);
+      return this.files = zip.files;
+    };
+
+    DocxGen.prototype.getImageList = function() {
+      var extension, imageList, index, regex;
+
+      regex = /[^.]*\.([^.]*)/;
+      imageList = [];
+      for (index in this.files) {
+        extension = index.replace(regex, '$1');
+        if (__indexOf.call(imageExtensions, extension) >= 0) {
+          imageList.push({
+            "path": index,
+            files: this.files[index]
+          });
+        }
+      }
+      return imageList;
+    };
+
+    DocxGen.prototype.setImage = function(path, data) {
+      return this.files[path].data = data;
     };
 
     DocxGen.prototype.applyTemplateVars = function() {
-      var fileData, fileName, scope, _i, _len, _ref, _results;
+      var currentFile, fileName, _i, _len, _ref, _results;
 
       _ref = this.templatedFiles;
       _results = [];
@@ -526,11 +599,14 @@ Created by Edgar HIPP
         if (!(this.files[fileName] != null)) {
           continue;
         }
-        fileData = this.files[fileName].data;
-        scope = this.templateVars;
-        _results.push(this.files[fileName].data = this._applyTemplateVars(fileData, scope));
+        currentFile = new XmlTemplater(this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        _results.push(this.files[fileName].data = currentFile.applyTemplateVars().content);
       }
       return _results;
+    };
+
+    DocxGen.prototype.setTemplateVars = function(templateVars) {
+      this.templateVars = templateVars;
     };
 
     DocxGen.prototype.output = function(download) {
@@ -555,7 +631,7 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.getFullText = function(path, data) {
-      var match, matches, output;
+      var currentFile;
 
       if (path == null) {
         path = "word/document.xml";
@@ -563,42 +639,8 @@ Created by Edgar HIPP
       if (data == null) {
         data = "";
       }
-      matches = this.getFullTextMatches(path, data);
-      output = (function() {
-        var _i, _len, _results;
-
-        _results = [];
-        for (_i = 0, _len = matches.length; _i < _len; _i++) {
-          match = matches[_i];
-          _results.push(match[2]);
-        }
-        return _results;
-      })();
-      return decode_utf8(output.join(""));
-    };
-
-    DocxGen.prototype.getFullTextMatches = function(path, data) {
-      var file;
-
-      if (path == null) {
-        path = "word/document.xml";
-      }
-      if (data == null) {
-        data = "";
-      }
-      if (data === "") {
-        file = this.files[path];
-        return this._getFullTextMatchesFromData(file.data);
-      } else {
-        return this._getFullTextMatchesFromData(data);
-      }
-    };
-
-    DocxGen.prototype._getFullTextMatchesFromData = function(data) {
-      var matches, regex;
-
-      regex = "(<w:t[^>]*>)([^<>]*)?</w:t>";
-      return matches = preg_match_all(regex, data);
+      currentFile = new XmlTemplater(this.files[path].data, this.templateVars, this.intelligentTagging);
+      return currentFile.getFullText();
     };
 
     DocxGen.prototype.download = function(swfpath, imgpath, filename) {

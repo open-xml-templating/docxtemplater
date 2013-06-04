@@ -307,13 +307,13 @@
   });
 
   describe("scope calculation", function() {
-    var doc;
+    var xmlTemplater;
 
-    doc = new DocxGen();
+    xmlTemplater = new XmlTemplater();
     it("should compute the scope between 2 <w:t>", function() {
       var scope;
 
-      scope = doc.calcScopeContent("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
+      scope = xmlTemplater.calcScopeContent("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
       return expect(scope).toEqual([
         {
           tag: '</w:t>',
@@ -339,7 +339,7 @@
     it("should compute the scope between 2 <w:t> in an Array", function() {
       var scope;
 
-      scope = doc.calcScopeContent("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
+      scope = xmlTemplater.calcScopeContent("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
       return expect(scope).toEqual([
         {
           tag: '</w:t>',
@@ -371,7 +371,7 @@
     return it('should compute the scope between a w:t in an array and the other outside', function() {
       var scope;
 
-      scope = doc.calcScopeContent("defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
+      scope = xmlTemplater.calcScopeContent("defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
       return expect(scope).toEqual([
         {
           tag: '</w:t>',
@@ -406,25 +406,25 @@
   });
 
   describe("scope diff calculation", function() {
-    var doc;
+    var xmlTemplater;
 
-    doc = new DocxGen();
+    xmlTemplater = new XmlTemplater();
     it("should compute the scope between 2 <w:t>", function() {
       var scope;
 
-      scope = doc.calcScopeDifference("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
+      scope = xmlTemplater.calcScopeDifference("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
       return expect(scope).toEqual([]);
     });
     it("should compute the scope between 2 <w:t> in an Array", function() {
       var scope;
 
-      scope = doc.calcScopeDifference("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
+      scope = xmlTemplater.calcScopeDifference("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
       return expect(scope).toEqual([]);
     });
     return it('should compute the scope between a w:t in an array and the other outside', function() {
       var scope;
 
-      scope = doc.calcScopeDifference("defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
+      scope = xmlTemplater.calcScopeDifference("defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
       return expect(scope).toEqual([
         {
           tag: '</w:tc>',
@@ -463,9 +463,10 @@
       return callbackLoadedTaggedDocx.callCount >= 1;
     });
     return it("should find the scope", function() {
-      var obj, scope;
+      var obj, scope, xmlTemplater;
 
-      scope = taggedProduct.calcInnerTextScope(taggedProduct.files["word/document.xml"].data, 1195, 1245, 'w:p');
+      xmlTemplater = new XmlTemplater();
+      scope = xmlTemplater.calcInnerTextScope(taggedProduct.files["word/document.xml"].data, 1195, 1245, 'w:p');
       obj = {
         text: "<w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>",
         startTag: 1134,
@@ -684,6 +685,70 @@
         _results.push(expect(tagIntelligentTableDocx.files[i].options.date).not.toBe(tagIntelligentTableDocxExpected.files[i].options.date));
       }
       return _results;
+    });
+  });
+
+  describe("xmlTemplater", function() {
+    it("should work with simpleContent", function() {
+      var content, scope, xmlTemplater;
+
+      content = "<w:t>Hello {name}</w:t>";
+      scope = {
+        "name": "Edgar"
+      };
+      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
+    });
+    it("should work with tag in two elements", function() {
+      var content, scope, xmlTemplater;
+
+      content = "<w:t>Hello {</w:t><w:t>name}</w:t>";
+      scope = {
+        "name": "Edgar"
+      };
+      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
+    });
+    it("should work with simple Loop", function() {
+      var content, scope, xmlTemplater;
+
+      content = "<w:t>Hello {#names}{name},{/names}</w:t>";
+      scope = {
+        "names": [
+          {
+            "name": "Edgar"
+          }, {
+            "name": "Mary"
+          }, {
+            "name": "John"
+          }
+        ]
+      };
+      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
+    });
+    return it("should work with innerContent", function() {
+      var content, scope, xmlTemplater;
+
+      content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t> ";
+      scope = {
+        "title": "Everyone uses it",
+        "proof": [
+          {
+            "reason": "it is quite cheap"
+          }, {
+            "reason": "it is quit simple"
+          }, {
+            "reason": "it works on a lot of different Hardware"
+          }
+        ]
+      };
+      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.getFullText()).toBe('');
     });
   });
 
