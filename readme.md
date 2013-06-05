@@ -2,6 +2,10 @@
 
 **docxgen.js** is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images.
 
+## Demo ##
+
+A simple Demo can be found here: http://javascript-ninja.fr/docxgenjs/examples/simpleTagging.html#
+
 ## Dependencies ##
 
 1. **docxgen.js** uses [jszip.js](http://stuk.github.io/jszip/) to zip and unzip the docx files. Jszip uses: 
