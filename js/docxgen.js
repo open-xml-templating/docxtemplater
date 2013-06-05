@@ -203,8 +203,8 @@
     XmlTemplater.prototype.calcB = function(matches, content, openiStartLoop, openjStartLoop, closeiEndLoop, closejEndLoop, charactersAdded) {
       var endB, startB;
 
-      startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded[openiStartLoop] + openjStartLoop;
-      endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded[closeiEndLoop] + closejEndLoop + 1;
+      startB = this.matches[openiStartLoop].offset + this.matches[openiStartLoop][1].length + charactersAdded[openiStartLoop] + openjStartLoop;
+      endB = this.matches[closeiEndLoop].offset + this.matches[closeiEndLoop][1].length + charactersAdded[closeiEndLoop] + closejEndLoop + 1;
       return {
         B: content.substr(startB, endB - startB),
         start: startB,
@@ -283,43 +283,52 @@
       return this;
     };
 
-    XmlTemplater.prototype.dashLoop = function(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop) {
-      var A, B, closeiEndLoop, closeiStartLoop, copyA, endB, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1;
+    XmlTemplater.prototype.dashLoop = function(elementDashLoop) {
+      var A, B, copyA, endB, i, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1;
 
-      console.log("tagdashLoop:" + tagDashLoop);
-      closeiStartLoop = startiMatch;
-      closeiEndLoop = i;
-      startB = matches[openiStartLoop].offset + matches[openiStartLoop][1].length + charactersAdded[openiStartLoop] + openjStartLoop;
-      endB = matches[closeiEndLoop].offset + matches[closeiEndLoop][1].length + charactersAdded[closeiEndLoop] + closejEndLoop + 1;
-      resultFullScope = this.calcInnerTextScope(content, startB, endB, elementDashLoop);
-      for (t = _i = 0, _ref = matches.length; 0 <= _ref ? _i <= _ref : _i >= _ref; t = 0 <= _ref ? ++_i : --_i) {
-        charactersAdded[t] -= resultFullScope.startTag;
+      startB = this.matches[this.loopOpen.start.i].offset + this.matches[this.loopOpen.start.i][1].length + this.charactersAdded[this.loopOpen.start.i] + this.loopOpen.start.j;
+      endB = this.matches[this.loopClose.end.i].offset + this.matches[this.loopClose.end.i][1].length + this.charactersAdded[this.loopClose.end.i] + this.loopClose.end.j + 1;
+      resultFullScope = this.calcInnerTextScope(this.content, startB, endB, elementDashLoop);
+      for (t = _i = 0, _ref = this.matches.length; 0 <= _ref ? _i <= _ref : _i >= _ref; t = 0 <= _ref ? ++_i : --_i) {
+        this.charactersAdded[t] -= resultFullScope.startTag;
       }
       B = resultFullScope.text;
-      if ((content.indexOf(B)) === -1) {
-        throw "couln't find B in content";
+      if ((this.content.indexOf(B)) === -1) {
+        throw "couln't find B in @content";
       }
       A = B;
       copyA = A;
-      this.bracketEnd.i = openiEndLoop;
-      this.bracketStart.i = openiStartLoop;
+      this.bracketEnd = {
+        "i": this.loopOpen.end.i,
+        "j": this.loopOpen.end.j
+      };
+      this.bracketStart = {
+        "i": this.loopOpen.start.i,
+        "j": this.loopOpen.start.j
+      };
       A = this.replaceTag("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
       copyA = A;
-      this.bracketEnd.i = closeiEndLoop;
-      this.bracketStart.i = closeiStartLoop;
+      this.bracketEnd = {
+        "i": this.loopClose.end.i,
+        "j": this.loopClose.end.j
+      };
+      this.bracketStart = {
+        "i": this.loopClose.start.i,
+        "j": this.loopClose.start.j
+      };
       A = this.replaceTag("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
-      if (currentScope[tagDashLoop] != null) {
-        if (typeof currentScope[tagDashLoop] !== 'object') {
-          throw '{#' + tagDashLoop + ("}should be an object (it is a " + (typeof currentScope[tagDashLoop]) + ")");
+      if (this.currentScope[this.loopOpen.tag] != null) {
+        if (typeof this.currentScope[this.loopOpen.tag] !== 'object') {
+          throw '{#' + this.loopOpen.tag + ("}should be an object (it is a " + (typeof this.currentScope[this.loopOpen.tag]) + ")");
         }
         newContent = "";
-        _ref1 = currentScope[tagDashLoop];
+        _ref1 = this.currentScope[this.loopOpen.tag];
         for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
           scope = _ref1[i];
           subfile = new XmlTemplater(A, scope, this.intelligentTagging);
@@ -329,11 +338,11 @@
             throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (5)";
           }
         }
-        content = content.replace(B, newContent);
+        this.content = this.content.replace(B, newContent);
       } else {
-        content = content.replace(B, "");
+        this.content = this.content.replace(B, "");
       }
-      nextFile = new XmlTemplater(content, currentScope, this.intelligentTagging);
+      nextFile = new XmlTemplater(this.content, this.currentScope, this.intelligentTagging);
       nextFile.applyTemplateVars();
       this.content = nextFile.content;
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
@@ -512,9 +521,8 @@
               this.loopOpen = {
                 'start': this.bracketStart,
                 'end': this.bracketEnd,
-                'tag': this.textInsideBracket.replace(regex, '$2', {
-                  'element': this.textInsideBracket.replace(regex, '$1')
-                })
+                'tag': this.textInsideBracket.replace(regex, '$2'),
+                'element': this.textInsideBracket.replace(regex, '$1')
               };
             }
             if (this.inBracket === false) {
@@ -533,10 +541,7 @@
               closejEndLoop = j;
             }
             if (this.textInsideBracket[0] === '/' && ('/' + tagDashLoop === this.textInsideBracket) && this.inDashLoop === true) {
-              console.log("openiStartLoop " + openiStartLoop + " ");
-              console.log(this.loopOpen);
-              console.log(this.loopClose);
-              return this.dashLoop(this.textInsideBracket, this.loopOpen.tag, this.loopClose.start.i, this.loopClose.end.i, this.loopOpen.start.i, this.loopOpen.start.j, this.loopOpen.end.i, this.loopOpen.end.j, this.content, this.charactersAdded, this.matches, this.currentScope, elementDashLoop);
+              return this.dashLoop(this.loopOpen.element);
             }
             if (this.textInsideBracket[0] === '/' && ('/' + tagForLoop === this.textInsideBracket) && this.inForLoop === true) {
               dashLooping = false;
@@ -551,9 +556,9 @@
                 }
               }
               if (dashLooping === false) {
-                return this.forLoop(this.content, this.currentScope, this.loopOpen.tag, this.charactersAdded, startiMatch, i, this.matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
+                return this.forLoop(this.content, this.currentScope, this.loopOpen.tag, this.charactersAdded, this.loopClose.start.i, this.loopClose.end.i, this.matches, this.loopOpen.start.i, this.loopOpen.start.j, this.loopClose.end.j, this.loopOpen.end.i, this.loopOpen.end.j, this.loopClose.start.j);
               } else {
-                return this.dashLoop(this.textInsideBracket, this.textInsideBracket.substr(1), startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, this.content, this.charactersAdded, this.matches, this.currentScope, elementDashLoop);
+                return this.dashLoop(elementDashLoop);
               }
             }
           } else {

@@ -80,8 +80,8 @@ window.XmlTemplater = class XmlTemplater
 		if startTag==-1 then throw "can't find startTag"
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 	calcB: (matches,content,openiStartLoop,openjStartLoop,closeiEndLoop,closejEndLoop,charactersAdded) ->
-		startB = matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
-		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
+		startB = @matches[openiStartLoop].offset+@matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
+		endB= @matches[closeiEndLoop].offset+@matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
 		{B:content.substr(startB,endB-startB),start:startB,end:endB}
 
 	calcA: (matches,content,openiEndLoop,openjEndLoop,closeiStartLoop,closejStartLoop,charactersAdded) ->
@@ -136,51 +136,49 @@ window.XmlTemplater = class XmlTemplater
 		this.content=nextFile.content
 		return this
 
-	dashLoop: (textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop) ->
-		console.log "tagdashLoop:#{tagDashLoop}"
-		closeiStartLoop= startiMatch
-		closeiEndLoop= i
-		startB= matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
-		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
-		resultFullScope = (@calcInnerTextScope content, startB, endB, elementDashLoop)
-		for t in [0..matches.length]
-			charactersAdded[t]-=resultFullScope.startTag
+	dashLoop: (elementDashLoop) ->
+		#@textInsideBracket,@loopOpen.tag,@loopClose.start.i,@loopClose.end.i,@loopOpen.start.i,@loopOpen.start.j,@loopOpen.end.i,@loopOpen.end.j,@content,@charactersAdded,@matches,@currentScope,@loopOpen.element
+		startB= @matches[@loopOpen.start.i].offset+@matches[@loopOpen.start.i][1].length+@charactersAdded[@loopOpen.start.i]+@loopOpen.start.j
+		endB= @matches[@loopClose.end.i].offset+@matches[@loopClose.end.i][1].length+@charactersAdded[@loopClose.end.i]+@loopClose.end.j+1
+		resultFullScope = (@calcInnerTextScope @content, startB, endB, elementDashLoop)
+		for t in [0..@matches.length]
+			@charactersAdded[t]-=resultFullScope.startTag
 		B= resultFullScope.text
-		if (content.indexOf B)==-1 then throw "couln't find B in content"
+		if (@content.indexOf B)==-1 then throw "couln't find B in @content"
 		A = B
 		copyA= A
+		
 		#for deleting the opening tag
-		# @bracketStart={"i":openiStartLoop,"j":openjStartLoop}
-		@bracketEnd.i=openiEndLoop
-		@bracketStart.i=openiStartLoop
+		@bracketEnd= {"i":@loopOpen.end.i,"j":@loopOpen.end.j}
+		@bracketStart= {"i":@loopOpen.start.i,"j":@loopOpen.start.j}
 		A= @replaceTag("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
+
 		#for deleting the closing tag
-		# @bracketStart.i= closeiEndLoop
-		@bracketEnd.i=closeiEndLoop
-		@bracketStart.i= closeiStartLoop
+		@bracketEnd= {"i":@loopClose.end.i,"j":@loopClose.end.j}
+		@bracketStart= {"i":@loopClose.start.i,"j":@loopClose.start.j}
 		A= @replaceTag("",A)
+
 		if copyA==A then throw "A should have changed after deleting the opening tag"
-		if currentScope[tagDashLoop]?
-			if typeof currentScope[tagDashLoop]!='object' then throw '{#'+tagDashLoop+"}should be an object (it is a #{typeof currentScope[tagDashLoop]})"
+		
+		if @currentScope[@loopOpen.tag]?
+			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
-			for scope,i in currentScope[tagDashLoop]
+			for scope,i in @currentScope[@loopOpen.tag]
 				subfile= new XmlTemplater A, scope, @intelligentTagging
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (5)"
-			content= content.replace B, newContent
-		else content= content.replace B, ""
+			@content= @content.replace B, newContent
+		else @content= @content.replace B, ""
 
-		nextFile= new XmlTemplater content, currentScope, @intelligentTagging
+		nextFile= new XmlTemplater @content, @currentScope, @intelligentTagging
 		nextFile.applyTemplateVars()
-		this.content=nextFile.content
+		@content=nextFile.content
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (6)"
 		return this
 	
-
-
 	replaceTag: (newValue,content=@content) ->
 		#@content,@bracketEnd.i,@bracketStart.i,@matches,@textInsideBracket,@getValueFromTag(@textInsideBracket,@currentScope),@charactersAdded
 		if (@matches[@bracketEnd.i][2].indexOf ('}'))==-1 then throw "no closing bracket at @bracketEnd.i #{@matches[@bracketEnd.i][2]}"
@@ -305,7 +303,7 @@ window.XmlTemplater = class XmlTemplater
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						elementDashLoop= @textInsideBracket.replace regex, '$1'
 						tagDashLoop= @textInsideBracket.replace regex, '$2'
-						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.replace regex, '$2','element':@textInsideBracket.replace regex, '$1'}
+						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace regex, '$2'),'element':(@textInsideBracket.replace regex, '$1')}
 
 					if @inBracket is false then throw "Bracket already closed"
 					@inBracket= false
@@ -319,10 +317,7 @@ window.XmlTemplater = class XmlTemplater
 						closejEndLoop= j
 						
 					if @textInsideBracket[0]=='/' and ('/'+tagDashLoop == @textInsideBracket) and @inDashLoop is true
-						console.log "openiStartLoop #{openiStartLoop} "
-						console.log @loopOpen
-						console.log @loopClose
-						return @dashLoop(@textInsideBracket,@loopOpen.tag,@loopClose.start.i,@loopClose.end.i,@loopOpen.start.i,@loopOpen.start.j,@loopOpen.end.i,@loopOpen.end.j,@content,@charactersAdded,@matches,@currentScope,elementDashLoop)
+						return @dashLoop(@loopOpen.element)
 
 					if @textInsideBracket[0]=='/' and ('/'+tagForLoop == @textInsideBracket) and @inForLoop is true
 						#You DashLoop= take the outer scope only if you are in a table
@@ -335,9 +330,9 @@ window.XmlTemplater = class XmlTemplater
 									elementDashLoop= 'w:tr'
 
 						if dashLooping==no
-							return @forLoop(@content,@currentScope,@loopOpen.tag,@charactersAdded,startiMatch,i,@matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
+							return @forLoop(@content,@currentScope,@loopOpen.tag,@charactersAdded,@loopClose.start.i,@loopClose.end.i,@matches,@loopOpen.start.i,@loopOpen.start.j,@loopClose.end.j,@loopOpen.end.i,@loopOpen.end.j,@loopClose.start.j)
 						else
-							return @dashLoop(@textInsideBracket,@textInsideBracket.substr(1),startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,@content,@charactersAdded,@matches,@currentScope,elementDashLoop)
+							return @dashLoop(elementDashLoop)
 				else #if character != '{' and character != '}'
 					if @inBracket is true then @textInsideBracket+=character
 		if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
