@@ -301,11 +301,15 @@
       }
       A = B;
       copyA = A;
+      this.bracketEnd.i = openiEndLoop;
+      this.bracketStart.i = openiStartLoop;
       _ref1 = this.replaceTag(A, openiEndLoop, openiStartLoop, matches, "" + textInsideBracket, "", charactersAdded), A = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
       copyA = A;
+      this.bracketEnd.i = closeiEndLoop;
+      this.bracketStart.i = closeiStartLoop;
       _ref2 = this.replaceTag(A, closeiEndLoop, closeiStartLoop, matches, '/' + tagDashLoop, "", charactersAdded), A = _ref2[0], charactersAdded = _ref2[1], matches = _ref2[2];
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
@@ -339,93 +343,97 @@
     };
 
     XmlTemplater.prototype.replaceTag = function(content, endiMatch, startiMatch, matches, textInsideBracket, newValue, charactersAdded) {
-      var copyContent, j, k, match, regexLeft, regexRight, replacer, startB, subMatches, _i, _j, _len, _ref;
+      var copyContent, j, k, match, regexLeft, regexRight, replacer, startB, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
 
-      if ((matches[endiMatch][2].indexOf('}')) === -1) {
-        throw "no closing bracket at endiMatch " + matches[endiMatch][2];
+      console.log(this.bracketEnd.i);
+      console.log(endiMatch);
+      console.log(endiMatch === this.bracketEnd.i);
+      if ((this.matches[this.bracketEnd.i][2].indexOf('}')) === -1) {
+        throw "no closing bracket at @bracketEnd.i " + this.matches[this.bracketEnd.i][2];
       }
-      if ((matches[startiMatch][2].indexOf('{')) === -1) {
-        throw "no opening bracket at startiMatch " + matches[startiMatch][2];
+      if ((this.matches[this.bracketStart.i][2].indexOf('{')) === -1) {
+        throw "no opening bracket at @bracketStart.i " + this.matches[this.bracketStart.i][2];
       }
-      if (endiMatch === startiMatch) {
-        matches[startiMatch][2] = matches[startiMatch][2].replace("{" + textInsideBracket + "}", newValue);
-        replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
-        startB = matches[startiMatch].offset + charactersAdded[startiMatch];
-        charactersAdded[startiMatch + 1] += replacer.length - matches[startiMatch][0].length;
-        if (content.indexOf(matches[startiMatch][0]) === -1) {
-          throw "content " + matches[startiMatch][0] + " not found in content";
+      if (this.bracketEnd.i === this.bracketStart.i) {
+        this.matches[this.bracketStart.i][2] = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
+        replacer = '<w:t xml:space="preserve">' + this.matches[this.bracketStart.i][2] + "</w:t>";
+        startB = this.matches[this.bracketStart.i].offset + this.charactersAdded[this.bracketStart.i];
+        this.charactersAdded[this.bracketStart.i + 1] += replacer.length - this.matches[this.bracketStart.i][0].length;
+        if (content.indexOf(this.matches[this.bracketStart.i][0]) === -1) {
+          throw "content " + this.matches[this.bracketStart.i][0] + " not found in content";
         }
         copyContent = content;
-        content = content.replaceFirstFrom(matches[startiMatch][0], replacer, startB);
-        matches[startiMatch][0] = replacer;
+        content = content.replaceFirstFrom(this.matches[this.bracketStart.i][0], replacer, startB);
+        this.matches[this.bracketStart.i][0] = replacer;
         if (copyContent === content) {
-          throw "offset problem0: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
+          throw "offset problem0: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
         }
-      } else if (endiMatch > startiMatch) {
+      } else if (this.bracketEnd.i > this.bracketStart.i) {
         /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-        			1. for the first (startiMatch): replace {.. by the value
-        			2. for in between (startiMatch+1...endiMatch) replace whole by ""
-        			3. for the last (endiMatch) replace ..} by ""
+        			1. for the first (@bracketStart.i): replace {.. by the value
+        			2. for in between (@bracketStart.i+1...@bracketEnd.i) replace whole by ""
+        			3. for the last (@bracketEnd.i) replace ..} by ""
         */
 
         regexRight = /^([^{]*){.*$/;
-        subMatches = matches[startiMatch][2].match(regexRight);
-        if (matches[startiMatch][1] === "") {
-          matches[startiMatch][2] = newValue;
-          replacer = matches[startiMatch][2];
+        subMatches = this.matches[this.bracketStart.i][2].match(regexRight);
+        if (this.matches[this.bracketStart.i][1] === "") {
+          this.matches[this.bracketStart.i][2] = newValue;
+          replacer = this.matches[this.bracketStart.i][2];
         } else {
-          matches[startiMatch][2] = subMatches[1] + newValue;
-          replacer = '<w:t xml:space="preserve">' + matches[startiMatch][2] + "</w:t>";
+          this.matches[this.bracketStart.i][2] = subMatches[1] + newValue;
+          replacer = '<w:t xml:space="preserve">' + this.matches[this.bracketStart.i][2] + "</w:t>";
         }
         copyContent = content;
-        startB = matches[startiMatch].offset + charactersAdded[startiMatch];
-        charactersAdded[startiMatch + 1] += replacer.length - matches[startiMatch][0].length;
-        if (content.indexOf(matches[startiMatch][0]) === -1) {
-          throw "content " + matches[startiMatch][0] + " not found in content";
+        startB = this.matches[this.bracketStart.i].offset + this.charactersAdded[this.bracketStart.i];
+        this.charactersAdded[this.bracketStart.i + 1] += replacer.length - this.matches[this.bracketStart.i][0].length;
+        if (content.indexOf(this.matches[this.bracketStart.i][0]) === -1) {
+          throw "content " + this.matches[this.bracketStart.i][0] + " not found in content";
         }
-        content = content.replaceFirstFrom(matches[startiMatch][0], replacer, startB);
-        matches[startiMatch][0] = replacer;
+        content = content.replaceFirstFrom(this.matches[this.bracketStart.i][0], replacer, startB);
+        this.matches[this.bracketStart.i][0] = replacer;
         if (copyContent === content) {
-          throw "offset problem1: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
+          throw "offset problem1: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
         }
-        for (k = _i = _ref = startiMatch + 1; _ref <= endiMatch ? _i < endiMatch : _i > endiMatch; k = _ref <= endiMatch ? ++_i : --_i) {
-          replacer = matches[k][1] + '</w:t>';
-          startB = matches[k].offset + charactersAdded[k];
-          charactersAdded[k + 1] = charactersAdded[k] + replacer.length - matches[k][0].length;
-          if (content.indexOf(matches[k][0]) === -1) {
-            throw "content " + matches[k][0] + " not found in content";
+        for (k = _i = _ref = this.bracketStart.i + 1, _ref1 = this.bracketEnd.i; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; k = _ref <= _ref1 ? ++_i : --_i) {
+          replacer = this.matches[k][1] + '</w:t>';
+          startB = this.matches[k].offset + this.charactersAdded[k];
+          this.charactersAdded[k + 1] = this.charactersAdded[k] + replacer.length - this.matches[k][0].length;
+          if (content.indexOf(this.matches[k][0]) === -1) {
+            throw "content " + this.matches[k][0] + " not found in content";
           }
           copyContent = content;
-          content = content.replaceFirstFrom(matches[k][0], replacer, startB);
-          matches[k][0] = replacer;
+          content = content.replaceFirstFrom(this.matches[k][0], replacer, startB);
+          this.matches[k][0] = replacer;
           if (copyContent === content) {
-            throw "offset problem2: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
+            throw "offset problem2: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
           }
         }
         regexLeft = /^[^}]*}(.*)$/;
-        matches[endiMatch][2] = matches[endiMatch][2].replace(regexLeft, '$1');
-        replacer = '<w:t xml:space="preserve">' + matches[endiMatch][2] + "</w:t>";
-        startB = matches[endiMatch].offset + charactersAdded[endiMatch];
-        charactersAdded[endiMatch + 1] = charactersAdded[endiMatch] + replacer.length - matches[endiMatch][0].length;
-        if (content.indexOf(matches[endiMatch][0]) === -1) {
-          throw "content " + matches[endiMatch][0] + " not found in content";
+        this.matches[this.bracketEnd.i][2] = this.matches[this.bracketEnd.i][2].replace(regexLeft, '$1');
+        replacer = '<w:t xml:space="preserve">' + this.matches[this.bracketEnd.i][2] + "</w:t>";
+        startB = this.matches[this.bracketEnd.i].offset + this.charactersAdded[this.bracketEnd.i];
+        this.charactersAdded[this.bracketEnd.i + 1] = this.charactersAdded[this.bracketEnd.i] + replacer.length - this.matches[this.bracketEnd.i][0].length;
+        if (content.indexOf(this.matches[this.bracketEnd.i][0]) === -1) {
+          throw "content " + this.matches[this.bracketEnd.i][0] + " not found in content";
         }
         copyContent = content;
-        content = content.replaceFirstFrom(matches[endiMatch][0], replacer, startB);
+        content = content.replaceFirstFrom(this.matches[this.bracketEnd.i][0], replacer, startB);
         if (copyContent === content) {
-          throw "offset problem3: didnt changed the value (should have changed from " + matches[startiMatch][0] + " to " + replacer;
+          throw "offset problem3: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
         }
-        matches[endiMatch][0] = replacer;
+        this.matches[this.bracketEnd.i][0] = replacer;
       } else {
         throw "Bracket closed before opening";
       }
-      for (j = _j = 0, _len = matches.length; _j < _len; j = ++_j) {
-        match = matches[j];
-        if (j > endiMatch) {
-          charactersAdded[j + 1] = charactersAdded[j];
+      _ref2 = this.matches;
+      for (j = _j = 0, _len = _ref2.length; _j < _len; j = ++_j) {
+        match = _ref2[j];
+        if (j > this.bracketEnd.i) {
+          this.charactersAdded[j + 1] = this.charactersAdded[j];
         }
       }
-      return [content, charactersAdded, matches];
+      return [content, this.charactersAdded, this.matches];
     };
 
     /*
@@ -504,7 +512,9 @@
               this.loopOpen = {
                 'start': this.bracketStart,
                 'end': this.bracketEnd,
-                'tag': this.textInsideBracket.replace(regex, '$2')
+                'tag': this.textInsideBracket.replace(regex, '$2', {
+                  'element': this.textInsideBracket.replace(regex, '$1')
+                })
               };
             }
             if (this.inBracket === false) {
@@ -523,7 +533,10 @@
               closejEndLoop = j;
             }
             if (this.textInsideBracket[0] === '/' && ('/' + tagDashLoop === this.textInsideBracket) && this.inDashLoop === true) {
-              return this.dashLoop(this.textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, this.content, this.charactersAdded, this.matches, this.currentScope, elementDashLoop);
+              console.log("openiStartLoop " + openiStartLoop + " ");
+              console.log(this.loopOpen);
+              console.log(this.loopClose);
+              return this.dashLoop(this.textInsideBracket, this.loopOpen.tag, this.loopClose.start.i, this.loopClose.end.i, this.loopOpen.start.i, this.loopOpen.start.j, this.loopOpen.end.i, this.loopOpen.end.j, this.content, this.charactersAdded, this.matches, this.currentScope, elementDashLoop);
             }
             if (this.textInsideBracket[0] === '/' && ('/' + tagForLoop === this.textInsideBracket) && this.inForLoop === true) {
               dashLooping = false;
@@ -538,7 +551,7 @@
                 }
               }
               if (dashLooping === false) {
-                return this.forLoop(this.content, this.currentScope, tagForLoop, this.charactersAdded, startiMatch, i, this.matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
+                return this.forLoop(this.content, this.currentScope, this.loopOpen.tag, this.charactersAdded, startiMatch, i, this.matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
               } else {
                 return this.dashLoop(this.textInsideBracket, this.textInsideBracket.substr(1), startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, this.content, this.charactersAdded, this.matches, this.currentScope, elementDashLoop);
               }
