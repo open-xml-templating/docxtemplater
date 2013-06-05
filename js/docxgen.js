@@ -88,20 +88,20 @@
       }
     };
 
-    XmlTemplater.prototype.calcScopeContent = function(content, start, end) {
+    XmlTemplater.prototype.calcScopeText = function(text, start, end) {
       var i, innerCurrentTag, innerLastTag, justOpened, lastTag, result, tag, tags, _i, _len;
 
       if (start == null) {
         start = 0;
       }
       if (end == null) {
-        end = content.length - 1;
+        end = text.length - 1;
       }
       /*get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)): 
       		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
       */
 
-      tags = preg_match_all("<(\/?[^/> ]+)([^>]*)>", content.substr(start, end));
+      tags = preg_match_all("<(\/?[^/> ]+)([^>]*)>", text.substr(start, end));
       result = [];
       for (i = _i = 0, _len = tags.length; _i < _len; i = ++_i) {
         tag = tags[i];
@@ -135,16 +135,16 @@
       return result;
     };
 
-    XmlTemplater.prototype.calcScopeDifference = function(content, start, end) {
+    XmlTemplater.prototype.calcScopeDifference = function(text, start, end) {
       var scope;
 
       if (start == null) {
         start = 0;
       }
       if (end == null) {
-        end = content.length - 1;
+        end = text.length - 1;
       }
-      scope = this.calcScopeContent(content, start, end);
+      scope = this.calcScopeText(text, start, end);
       while (1.) {
         if (scope.length <= 1) {
           break;
@@ -178,27 +178,23 @@
     };
 
     XmlTemplater.prototype._getFullTextMatchesFromData = function() {
-      var data, matches, regex;
-
-      data = this.content;
-      regex = "(<w:t[^>]*>)([^<>]*)?</w:t>";
-      return matches = preg_match_all(regex, data);
+      return this.matches = preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>", this.content);
     };
 
-    XmlTemplater.prototype.calcInnerTextScope = function(content, start, end, tag) {
+    XmlTemplater.prototype.calcInnerTextScope = function(text, start, end, tag) {
       var endTag, startTag;
 
-      endTag = content.indexOf('</' + tag + '>', end);
+      endTag = text.indexOf('</' + tag + '>', end);
       if (endTag === -1) {
         throw "can't find endTag " + endTag;
       }
       endTag += ('</' + tag + '>').length;
-      startTag = Math.max(content.lastIndexOf('<' + tag + '>', start), content.lastIndexOf('<' + tag + ' ', start));
+      startTag = Math.max(text.lastIndexOf('<' + tag + '>', start), text.lastIndexOf('<' + tag + ' ', start));
       if (startTag === -1) {
         throw "can't find startTag";
       }
       return {
-        "text": content.substr(startTag, endTag - startTag),
+        "text": text.substr(startTag, endTag - startTag),
         startTag: startTag,
         endTag: endTag
       };
@@ -440,77 +436,99 @@
 
 
     XmlTemplater.prototype.applyTemplateVars = function() {
-      var character, charactersAdded, closejEndLoop, closejStartLoop, content, currentScope, dashLooping, elementDashLoop, endiMatch, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1;
+      var character, closejEndLoop, closejStartLoop, dashLooping, elementDashLoop, i, innerText, j, m, match, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2, _ref3;
 
-      matches = this.matches;
-      charactersAdded = this.charactersAdded;
-      content = this.content;
-      currentScope = this.currentScope;
-      inForLoop = false;
-      inBracket = false;
-      inDashLoop = false;
-      textInsideBracket = "";
-      for (i = _i = 0, _len = matches.length; _i < _len; i = ++_i) {
-        match = matches[i];
+      this.charactersAdded = this.charactersAdded;
+      this.currentScope = this.currentScope;
+      this.inForLoop = false;
+      this.inBracket = false;
+      this.inDashLoop = false;
+      this.textInsideBracket = "";
+      _ref = this.matches;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        match = _ref[i];
         innerText = match[2] || "";
-        for (t = _j = i, _ref = matches.length; i <= _ref ? _j < _ref : _j > _ref; t = i <= _ref ? ++_j : --_j) {
-          charactersAdded[t + 1] = charactersAdded[t];
+        for (t = _j = i, _ref1 = this.matches.length; i <= _ref1 ? _j < _ref1 : _j > _ref1; t = i <= _ref1 ? ++_j : --_j) {
+          this.charactersAdded[t + 1] = this.charactersAdded[t];
         }
         for (j = _k = 0, _len1 = innerText.length; _k < _len1; j = ++_k) {
           character = innerText[j];
-          for (u = _l = 0, _len2 = matches.length; _l < _len2; u = ++_l) {
-            glou = matches[u];
-            if (u <= i) {
-              if (content[glou.offset + charactersAdded[u]] !== glou[0][0]) {
+          _ref2 = this.matches;
+          for (t = _l = 0, _len2 = _ref2.length; _l < _len2; t = ++_l) {
+            m = _ref2[t];
+            if (t <= i) {
+              if (this.content[m.offset + this.charactersAdded[t]] !== m[0][0]) {
                 throw "no < at the beginning of " + glou[0] + " (2)";
               }
             }
           }
           if (character === '{') {
-            if (inBracket === true) {
-              throw "Bracket already open with text: " + textInsideBracket;
+            if (this.inBracket === true) {
+              throw "Bracket already open with text: " + this.textInsideBracket;
             }
-            inBracket = true;
-            textInsideBracket = "";
+            this.inBracket = true;
+            this.textInsideBracket = "";
             startiMatch = i;
             startjMatch = j;
+            this.bracketStart = {
+              "i": i,
+              "j": j
+            };
           } else if (character === '}') {
-            if (textInsideBracket[0] === '#' && inForLoop === false && inDashLoop === false) {
-              tagForLoop = textInsideBracket.substr(1);
-              inForLoop = true;
+            this.bracketEnd = {
+              "i": i,
+              "j": j
+            };
+            if (this.textInsideBracket[0] === '#' && this.inForLoop === false && this.inDashLoop === false) {
+              tagForLoop = this.textInsideBracket.substr(1);
+              this.inForLoop = true;
               openiStartLoop = startiMatch;
               openjStartLoop = startjMatch;
               openjEndLoop = j;
               openiEndLoop = i;
+              this.loopOpen = {
+                'start': this.bracketStart,
+                'end': this.bracketEnd,
+                'tag': this.textInsideBracket.substr(1)
+              };
             }
-            if (textInsideBracket[0] === '-' && inForLoop === false && inDashLoop === false) {
-              tagDashLoop = textInsideBracket.substr(1);
-              inDashLoop = true;
+            if (this.textInsideBracket[0] === '-' && this.inForLoop === false && this.inDashLoop === false) {
+              this.inDashLoop = true;
               openiStartLoop = startiMatch;
               openjStartLoop = startjMatch;
               openjEndLoop = j;
               openiEndLoop = i;
               regex = /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/;
-              elementDashLoop = textInsideBracket.replace(regex, '$1');
-              tagDashLoop = textInsideBracket.replace(regex, '$2');
+              elementDashLoop = this.textInsideBracket.replace(regex, '$1');
+              tagDashLoop = this.textInsideBracket.replace(regex, '$2');
+              this.loopOpen = {
+                'start': this.bracketStart,
+                'end': this.bracketEnd,
+                'tag': this.textInsideBracket.replace(regex, '$2')
+              };
             }
-            if (inBracket === false) {
+            if (this.inBracket === false) {
               throw "Bracket already closed";
             }
-            inBracket = false;
-            endiMatch = i;
-            closejStartLoop = startjMatch;
-            closejEndLoop = j;
-            if (inForLoop === false && inDashLoop === false) {
-              _ref1 = this.replaceTag(content, endiMatch, startiMatch, matches, textInsideBracket, this.getValueFromTag(textInsideBracket, currentScope), charactersAdded), content = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
+            this.inBracket = false;
+            if (this.inForLoop === false && this.inDashLoop === false) {
+              _ref3 = this.replaceTag(this.content, this.bracketEnd.i, this.bracketStart.i, this.matches, this.textInsideBracket, this.getValueFromTag(this.textInsideBracket, this.currentScope), this.charactersAdded), this.content = _ref3[0], this.charactersAdded = _ref3[1], this.matches = _ref3[2];
             }
-            if (textInsideBracket[0] === '/' && ('/' + tagDashLoop === textInsideBracket) && inDashLoop === true) {
-              return this.dashLoop(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop);
+            if (this.textInsideBracket[0] === '/') {
+              this.loopClose = {
+                'start': this.bracketStart,
+                'end': this.bracketEnd
+              };
+              closejStartLoop = startjMatch;
+              closejEndLoop = j;
             }
-            if (textInsideBracket[0] === '/' && ('/' + tagForLoop === textInsideBracket) && inForLoop === true) {
+            if (this.textInsideBracket[0] === '/' && ('/' + tagDashLoop === this.textInsideBracket) && this.inDashLoop === true) {
+              return this.dashLoop(this.textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, this.content, this.charactersAdded, this.matches, this.currentScope, elementDashLoop);
+            }
+            if (this.textInsideBracket[0] === '/' && ('/' + tagForLoop === this.textInsideBracket) && this.inForLoop === true) {
               dashLooping = false;
               if (this.intelligentTagging === true) {
-                scopeContent = this.calcScopeContent(content, matches[openiStartLoop].offset + charactersAdded[openiStartLoop], matches[i].offset + charactersAdded[i] - (matches[openiStartLoop].offset + charactersAdded[openiStartLoop]));
+                scopeContent = this.calcScopeText(this.content, this.matches[openiStartLoop].offset + this.charactersAdded[openiStartLoop], this.matches[i].offset + this.charactersAdded[i] - (this.matches[openiStartLoop].offset + this.charactersAdded[openiStartLoop]));
                 for (_m = 0, _len3 = scopeContent.length; _m < _len3; _m++) {
                   t = scopeContent[_m];
                   if (t.tag === '<w:tc>') {
@@ -520,19 +538,18 @@
                 }
               }
               if (dashLooping === false) {
-                return this.forLoop(content, currentScope, tagForLoop, charactersAdded, startiMatch, i, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
+                return this.forLoop(this.content, this.currentScope, tagForLoop, this.charactersAdded, startiMatch, i, this.matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop);
               } else {
-                return this.dashLoop(textInsideBracket, textInsideBracket.substr(1), startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop);
+                return this.dashLoop(this.textInsideBracket, this.textInsideBracket.substr(1), startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, this.content, this.charactersAdded, this.matches, this.currentScope, elementDashLoop);
               }
             }
           } else {
-            if (inBracket === true) {
-              textInsideBracket += character;
+            if (this.inBracket === true) {
+              this.textInsideBracket += character;
             }
           }
         }
       }
-      this.content = content;
       if ((this.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (this.getFullText()) + " (2)";
       }

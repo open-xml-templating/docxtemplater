@@ -36,11 +36,11 @@ window.XmlTemplater = class XmlTemplater
 		@content.replace /^()([^<]+)/,replacer
 	getValueFromTag: (tag,scope) ->
 		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
-	calcScopeContent: (content,start=0,end=content.length-1) -> 
+	calcScopeText: (text,start=0,end=text.length-1) -> 
 		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)): 
 		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}] 
 		###
-		tags= preg_match_all("<(\/?[^/> ]+)([^>]*)>",content.substr(start,end)) #getThemAll!
+		tags= preg_match_all("<(\/?[^/> ]+)([^>]*)>",text.substr(start,end)) #getThemAll!
 		result=[]
 		for tag,i in tags
 			if tag[1][0]=='/' #closing tag
@@ -56,8 +56,8 @@ window.XmlTemplater = class XmlTemplater
 				result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 		result
 
-	calcScopeDifference: (content,start=0,end=content.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this content, the XML will  break
-		scope= @calcScopeContent content,start,end
+	calcScopeDifference: (text,start=0,end=text.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this text, the XML will  break
+		scope= @calcScopeText text,start,end
 		while(1)
 			if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closeing tag 
 				break;
@@ -70,23 +70,15 @@ window.XmlTemplater = class XmlTemplater
 		@matches= @_getFullTextMatchesFromData()
 		output= (match[2] for match in @matches)
 		decode_utf8(output.join(""))
-	# getFullTextMatches: (path="word/document.xml",data="") ->
-	# 	if data== ""
-	# 		file= @files[path]
-	# 		return @_getFullTextMatchesFromData(file.data)
-	# 	else return @_getFullTextMatchesFromData(data)
 	_getFullTextMatchesFromData: () ->
-		data= @content
-		regex= "(<w:t[^>]*>)([^<>]*)?</w:t>"
-		matches= preg_match_all(regex,data)
-	calcInnerTextScope: (content,start,end,tag) -> #tag: w:t
-		endTag= content.indexOf('</'+tag+'>',end)
+		@matches= preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>",@content)
+	calcInnerTextScope: (text,start,end,tag) -> #tag: w:t
+		endTag= text.indexOf('</'+tag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
 		endTag+=('</'+tag+'>').length
-		startTag = Math.max content.lastIndexOf('<'+tag+'>',start), content.lastIndexOf('<'+tag+' ',start)
+		startTag = Math.max text.lastIndexOf('<'+tag+'>',start), text.lastIndexOf('<'+tag+' ',start)
 		if startTag==-1 then throw "can't find startTag"
-		{"text":content.substr(startTag,endTag-startTag),startTag,endTag}
-
+		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 	calcB: (matches,content,openiStartLoop,openjStartLoop,closeiEndLoop,closejEndLoop,charactersAdded) ->
 		startB = matches[openiStartLoop].offset+matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
 		endB= matches[closeiEndLoop].offset+matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
@@ -262,79 +254,80 @@ window.XmlTemplater = class XmlTemplater
 	scope is the current scope
 	returns the new content of the tagged content###
 	applyTemplateVars:()->
-		matches=@matches
-		charactersAdded=@charactersAdded
-		content= @content
-		currentScope= @currentScope
+		@charactersAdded=@charactersAdded
+		@currentScope= @currentScope
+		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
+		@inBracket= false # all brackets  {___}
+		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
+		@textInsideBracket= ""
 
-		inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
-		inBracket= false # all brackets  {___}
-		inDashLoop = false	# bracket with dash: {-tr dashLoop} {/dashLoop}
-		textInsideBracket= ""
-
-		for match,i in matches
+		for match,i in @matches
 			innerText= match[2] || "" #text inside the <w:t>
-			for t in [i...matches.length]
-				charactersAdded[t+1]=charactersAdded[t]
+			for t in [i...@matches.length]
+				@charactersAdded[t+1]=@charactersAdded[t]
 			for character,j in innerText
-				for glou,u in matches when u<=i
-					if content[glou.offset+charactersAdded[u]]!=glou[0][0] then throw "no < at the beginning of #{glou[0]} (2)"
-
+				for m,t in @matches when t<=i
+					if @content[m.offset+@charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{glou[0]} (2)"
 				if character=='{'
-					if inBracket is true then throw "Bracket already open with text: #{textInsideBracket}"
-					inBracket= true
-					textInsideBracket= ""
+					if @inBracket is true then throw "Bracket already open with text: #{@textInsideBracket}"
+					@inBracket= true
+					@textInsideBracket= ""
 					startiMatch= i
 					startjMatch= j
+					@bracketStart={"i":i,"j":j}
 				else if character == '}'
-					if textInsideBracket[0]=='#' and inForLoop is false and inDashLoop is false
-						tagForLoop= textInsideBracket.substr 1
-						inForLoop= true #begin for loop
-						openiStartLoop= startiMatch
+					@bracketEnd={"i":i,"j":j}
+					if @textInsideBracket[0]=='#' and @inForLoop is false and @inDashLoop is false
+						tagForLoop= @textInsideBracket.substr 1
+						@inForLoop= true #begin for loop
+						openiStartLoop= startiMatch # open: for "{#tag}" iStart=iEnd, jStart=0, jEnd=5
 						openjStartLoop= startjMatch
 						openjEndLoop= j
 						openiEndLoop= i
-
-					if textInsideBracket[0]=='-' and inForLoop is false and inDashLoop is false
-						tagDashLoop= textInsideBracket.substr 1
-						inDashLoop= true
+						
+						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
+					if @textInsideBracket[0]=='-' and @inForLoop is false and @inDashLoop is false
+						# tagDashLoop= @textInsideBracket.substr 1
+						@inDashLoop= true
 						openiStartLoop= startiMatch
 						openjStartLoop= startjMatch
 						openjEndLoop = j
 						openiEndLoop= i
-						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
-						elementDashLoop= textInsideBracket.replace regex, '$1'
-						tagDashLoop= textInsideBracket.replace regex, '$2'
-
-					if inBracket is false then throw "Bracket already closed"
-					inBracket= false
-
-					endiMatch = i
-					closejStartLoop= startjMatch
-					closejEndLoop= j
-
-					if inForLoop is false and inDashLoop is false
-						[content,charactersAdded,matches] = @replaceTag(content,endiMatch,startiMatch,matches,textInsideBracket,@getValueFromTag(textInsideBracket,currentScope),charactersAdded)
 						
-					if textInsideBracket[0]=='/' and ('/'+tagDashLoop == textInsideBracket) and inDashLoop is true
-						return @dashLoop(textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
+						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
+						elementDashLoop= @textInsideBracket.replace regex, '$1'
+						tagDashLoop= @textInsideBracket.replace regex, '$2'
+						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.replace regex, '$2'}
 
-					if textInsideBracket[0]=='/' and ('/'+tagForLoop == textInsideBracket) and inForLoop is true
+					if @inBracket is false then throw "Bracket already closed"
+					@inBracket= false
+
+					if @inForLoop is false and @inDashLoop is false
+						[@content,@charactersAdded,@matches] = @replaceTag(@content,@bracketEnd.i,@bracketStart.i,@matches,@textInsideBracket,@getValueFromTag(@textInsideBracket,@currentScope),@charactersAdded)
+
+					if @textInsideBracket[0]=='/'
+						@loopClose={'start':@bracketStart,'end':@bracketEnd}
+						closejStartLoop= startjMatch
+						closejEndLoop= j
+						
+					if @textInsideBracket[0]=='/' and ('/'+tagDashLoop == @textInsideBracket) and @inDashLoop is true
+						return @dashLoop(@textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,@content,@charactersAdded,@matches,@currentScope,elementDashLoop)
+
+					if @textInsideBracket[0]=='/' and ('/'+tagForLoop == @textInsideBracket) and @inForLoop is true
 						#You DashLoop= take the outer scope only if you are in a table
 						dashLooping= no
 						if @intelligentTagging==on
-							scopeContent= @calcScopeContent content, matches[openiStartLoop].offset+charactersAdded[openiStartLoop],matches[i].offset+charactersAdded[i]-(matches[openiStartLoop].offset+charactersAdded[openiStartLoop])
+							scopeContent= @calcScopeText @content, @matches[openiStartLoop].offset+@charactersAdded[openiStartLoop],@matches[i].offset+@charactersAdded[i]-(@matches[openiStartLoop].offset+@charactersAdded[openiStartLoop])
 							for t in scopeContent
 								if t.tag=='<w:tc>'
 									dashLooping= yes
 									elementDashLoop= 'w:tr'
 
 						if dashLooping==no
-							return @forLoop(content,currentScope,tagForLoop,charactersAdded,startiMatch,i,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
+							return @forLoop(@content,@currentScope,tagForLoop,@charactersAdded,startiMatch,i,@matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop)
 						else
-							return @dashLoop(textInsideBracket,textInsideBracket.substr(1),startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop)
+							return @dashLoop(@textInsideBracket,@textInsideBracket.substr(1),startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,@content,@charactersAdded,@matches,@currentScope,elementDashLoop)
 				else #if character != '{' and character != '}'
-					if inBracket is true then textInsideBracket+=character
-		@content=content
+					if @inBracket is true then @textInsideBracket+=character
 		if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
 		this
