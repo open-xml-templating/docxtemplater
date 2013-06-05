@@ -284,7 +284,7 @@
     };
 
     XmlTemplater.prototype.dashLoop = function(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop) {
-      var A, B, closeiEndLoop, closeiStartLoop, copyA, endB, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1, _ref2, _ref3;
+      var A, B, closeiEndLoop, closeiStartLoop, copyA, endB, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1;
 
       console.log("tagdashLoop:" + tagDashLoop);
       closeiStartLoop = startiMatch;
@@ -303,14 +303,14 @@
       copyA = A;
       this.bracketEnd.i = openiEndLoop;
       this.bracketStart.i = openiStartLoop;
-      _ref1 = this.replaceTag(A, openiEndLoop, openiStartLoop, matches, "" + textInsideBracket, "", charactersAdded), A = _ref1[0], charactersAdded = _ref1[1], matches = _ref1[2];
+      A = this.replaceTag("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
       copyA = A;
       this.bracketEnd.i = closeiEndLoop;
       this.bracketStart.i = closeiStartLoop;
-      _ref2 = this.replaceTag(A, closeiEndLoop, closeiStartLoop, matches, '/' + tagDashLoop, "", charactersAdded), A = _ref2[0], charactersAdded = _ref2[1], matches = _ref2[2];
+      A = this.replaceTag("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
@@ -319,9 +319,9 @@
           throw '{#' + tagDashLoop + ("}should be an object (it is a " + (typeof currentScope[tagDashLoop]) + ")");
         }
         newContent = "";
-        _ref3 = currentScope[tagDashLoop];
-        for (i = _j = 0, _len = _ref3.length; _j < _len; i = ++_j) {
-          scope = _ref3[i];
+        _ref1 = currentScope[tagDashLoop];
+        for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
+          scope = _ref1[i];
           subfile = new XmlTemplater(A, scope, this.intelligentTagging);
           subfile.applyTemplateVars();
           newContent += subfile.content;
@@ -342,12 +342,12 @@
       return this;
     };
 
-    XmlTemplater.prototype.replaceTag = function(content, endiMatch, startiMatch, matches, textInsideBracket, newValue, charactersAdded) {
+    XmlTemplater.prototype.replaceTag = function(newValue, content) {
       var copyContent, j, k, match, regexLeft, regexRight, replacer, startB, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
 
-      console.log(this.bracketEnd.i);
-      console.log(endiMatch);
-      console.log(endiMatch === this.bracketEnd.i);
+      if (content == null) {
+        content = this.content;
+      }
       if ((this.matches[this.bracketEnd.i][2].indexOf('}')) === -1) {
         throw "no closing bracket at @bracketEnd.i " + this.matches[this.bracketEnd.i][2];
       }
@@ -433,7 +433,7 @@
           this.charactersAdded[j + 1] = this.charactersAdded[j];
         }
       }
-      return [content, this.charactersAdded, this.matches];
+      return content;
     };
 
     /*
@@ -444,7 +444,7 @@
 
 
     XmlTemplater.prototype.applyTemplateVars = function() {
-      var character, closejEndLoop, closejStartLoop, dashLooping, elementDashLoop, i, innerText, j, m, match, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2, _ref3;
+      var character, closejEndLoop, closejStartLoop, dashLooping, elementDashLoop, i, innerText, j, m, match, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2;
 
       this.charactersAdded = this.charactersAdded;
       this.currentScope = this.currentScope;
@@ -522,7 +522,7 @@
             }
             this.inBracket = false;
             if (this.inForLoop === false && this.inDashLoop === false) {
-              _ref3 = this.replaceTag(this.content, this.bracketEnd.i, this.bracketStart.i, this.matches, this.textInsideBracket, this.getValueFromTag(this.textInsideBracket, this.currentScope), this.charactersAdded), this.content = _ref3[0], this.charactersAdded = _ref3[1], this.matches = _ref3[2];
+              this.content = this.replaceTag(this.getValueFromTag(this.textInsideBracket, this.currentScope));
             }
             if (this.textInsideBracket[0] === '/') {
               this.loopClose = {

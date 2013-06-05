@@ -153,14 +153,14 @@ window.XmlTemplater = class XmlTemplater
 		# @bracketStart={"i":openiStartLoop,"j":openjStartLoop}
 		@bracketEnd.i=openiEndLoop
 		@bracketStart.i=openiStartLoop
-		[A,charactersAdded,matches]= @replaceTag(A,openiEndLoop,openiStartLoop,matches,"#{textInsideBracket}","",charactersAdded)
+		A= @replaceTag("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
 		#for deleting the closing tag
 		# @bracketStart.i= closeiEndLoop
 		@bracketEnd.i=closeiEndLoop
 		@bracketStart.i= closeiStartLoop
-		[A,charactersAdded,matches]= @replaceTag(A,closeiEndLoop,closeiStartLoop,matches,'/'+tagDashLoop,"",charactersAdded)
+		A= @replaceTag("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		if currentScope[tagDashLoop]?
 			if typeof currentScope[tagDashLoop]!='object' then throw '{#'+tagDashLoop+"}should be an object (it is a #{typeof currentScope[tagDashLoop]})"
@@ -181,11 +181,8 @@ window.XmlTemplater = class XmlTemplater
 	
 
 
-	replaceTag: (content,endiMatch,startiMatch,matches,textInsideBracket,newValue,charactersAdded) ->
+	replaceTag: (newValue,content=@content) ->
 		#@content,@bracketEnd.i,@bracketStart.i,@matches,@textInsideBracket,@getValueFromTag(@textInsideBracket,@currentScope),@charactersAdded
-		console.log @bracketEnd.i
-		console.log endiMatch
-		console.log endiMatch==@bracketEnd.i
 		if (@matches[@bracketEnd.i][2].indexOf ('}'))==-1 then throw "no closing bracket at @bracketEnd.i #{@matches[@bracketEnd.i][2]}"
 		if (@matches[@bracketStart.i][2].indexOf ('{'))==-1 then throw "no opening bracket at @bracketStart.i #{@matches[@bracketStart.i][2]}"
 
@@ -258,7 +255,7 @@ window.XmlTemplater = class XmlTemplater
 		for match, j in @matches when j>@bracketEnd.i
 			@charactersAdded[j+1]=@charactersAdded[j]
 
-		return [content,@charactersAdded,@matches]
+		return content
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -314,7 +311,7 @@ window.XmlTemplater = class XmlTemplater
 					@inBracket= false
 
 					if @inForLoop is false and @inDashLoop is false
-						[@content,@charactersAdded,@matches] = @replaceTag(@content,@bracketEnd.i,@bracketStart.i,@matches,@textInsideBracket,@getValueFromTag(@textInsideBracket,@currentScope),@charactersAdded)
+						@content = @replaceTag(@getValueFromTag(@textInsideBracket,@currentScope))
 
 					if @textInsideBracket[0]=='/'
 						@loopClose={'start':@bracketStart,'end':@bracketEnd}
