@@ -53,17 +53,6 @@ window.DocxGen = class DocxGen
 	getFullText:(path="word/document.xml",data="") ->
 		currentFile= new XmlTemplater(@files[path].data,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
-		# matches= @getFullTextMatches(path,data)
-		# output= (match[2] for match in matches)
-		# decode_utf8(output.join(""))
-	# getFullTextMatches: (path="word/document.xml",data="") ->
-	# 	if data== ""
-	# 		file= @files[path]
-	# 		return @_getFullTextMatchesFromData(file.data)
-	# 	else return @_getFullTextMatchesFromData(data)
-	# _getFullTextMatchesFromData: (data) ->
-	# 	regex= "(<w:t[^>]*>)([^<>]*)?</w:t>"
-	# 	matches= preg_match_all(regex,data)
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)
 		Downloadify.create 'downloadify',

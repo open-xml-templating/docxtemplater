@@ -26,6 +26,14 @@ window.XmlTemplater = class XmlTemplater
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
 	load: (@content) ->
+		@matches = @_getFullTextMatchesFromData()
+		@charactersAdded= (0 for i in [0...@matches.length])
+		replacer = (match,pn ..., offset, string)=>
+			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+			pn.offset= offset
+			@matches.unshift pn #add at the beginning
+			@charactersAdded.unshift 0
+		@content.replace /^()([^<]+)/,replacer
 	getValueFromTag: (tag,scope) ->
 		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
 	calcScopeContent: (content,start=0,end=content.length-1) -> 
@@ -59,8 +67,8 @@ window.XmlTemplater = class XmlTemplater
 			else break;
 		scope
 	getFullText:() ->
-		matches= @_getFullTextMatchesFromData()
-		output= (match[2] for match in matches)
+		@matches= @_getFullTextMatchesFromData()
+		output= (match[2] for match in @matches)
 		decode_utf8(output.join(""))
 	# getFullTextMatches: (path="word/document.xml",data="") ->
 	# 	if data== ""
@@ -134,7 +142,7 @@ window.XmlTemplater = class XmlTemplater
 		nextFile.applyTemplateVars()
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		this.content=nextFile.content
-		return nextFile
+		return this
 
 	dashLoop: (textInsideBracket,tagDashLoop,startiMatch,i,openiStartLoop,openjStartLoop,openiEndLoop,closejEndLoop,content,charactersAdded,matches,currentScope,elementDashLoop) ->
 		console.log "tagdashLoop:#{tagDashLoop}"
@@ -171,7 +179,7 @@ window.XmlTemplater = class XmlTemplater
 		nextFile.applyTemplateVars()
 		this.content=nextFile.content
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (6)"
-		return nextFile
+		return this
 	
 
 
@@ -253,22 +261,12 @@ window.XmlTemplater = class XmlTemplater
 	content is the whole content to be tagged
 	scope is the current scope
 	returns the new content of the tagged content###
-	applyTemplateVars:(content,currentScope)->
-
+	applyTemplateVars:()->
+		matches=@matches
+		charactersAdded=@charactersAdded
 		content= @content
 		currentScope= @currentScope
-		matches = @_getFullTextMatchesFromData(content)
 
-		charactersAdded= (0 for i in [0...matches.length])
-
-		replacer = (match,pn ..., offset, string)->
-			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-			pn.offset= offset
-			matches.unshift pn #add at the beginning
-			charactersAdded.unshift 0
-
-		content.replace /^()([^<]+)/,replacer
-		@matches=matches
 		inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		inBracket= false # all brackets  {___}
 		inDashLoop = false	# bracket with dash: {-tr dashLoop} {/dashLoop}
@@ -395,17 +393,6 @@ window.DocxGen = class DocxGen
 	getFullText:(path="word/document.xml",data="") ->
 		currentFile= new XmlTemplater(@files[path].data,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
-		# matches= @getFullTextMatches(path,data)
-		# output= (match[2] for match in matches)
-		# decode_utf8(output.join(""))
-	# getFullTextMatches: (path="word/document.xml",data="") ->
-	# 	if data== ""
-	# 		file= @files[path]
-	# 		return @_getFullTextMatchesFromData(file.data)
-	# 	else return @_getFullTextMatchesFromData(data)
-	# _getFullTextMatchesFromData: (data) ->
-	# 	regex= "(<w:t[^>]*>)([^<>]*)?</w:t>"
-	# 	matches= preg_match_all(regex,data)
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)
 		Downloadify.create 'downloadify',

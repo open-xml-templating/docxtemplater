@@ -54,7 +54,30 @@
     }
 
     XmlTemplater.prototype.load = function(content) {
+      var i, replacer,
+        _this = this;
+
       this.content = content;
+      this.matches = this._getFullTextMatchesFromData();
+      this.charactersAdded = (function() {
+        var _i, _ref, _results;
+
+        _results = [];
+        for (i = _i = 0, _ref = this.matches.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+          _results.push(0);
+        }
+        return _results;
+      }).call(this);
+      replacer = function() {
+        var match, offset, pn, string, _i;
+
+        match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
+        pn.unshift(match);
+        pn.offset = offset;
+        _this.matches.unshift(pn);
+        return _this.charactersAdded.unshift(0);
+      };
+      return this.content.replace(/^()([^<]+)/, replacer);
     };
 
     XmlTemplater.prototype.getValueFromTag = function(tag, scope) {
@@ -137,19 +160,20 @@
     };
 
     XmlTemplater.prototype.getFullText = function() {
-      var match, matches, output;
+      var match, output;
 
-      matches = this._getFullTextMatchesFromData();
+      this.matches = this._getFullTextMatchesFromData();
       output = (function() {
-        var _i, _len, _results;
+        var _i, _len, _ref, _results;
 
+        _ref = this.matches;
         _results = [];
-        for (_i = 0, _len = matches.length; _i < _len; _i++) {
-          match = matches[_i];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          match = _ref[_i];
           _results.push(match[2]);
         }
         return _results;
-      })();
+      }).call(this);
       return decode_utf8(output.join(""));
     };
 
@@ -260,7 +284,7 @@
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
       }
       this.content = nextFile.content;
-      return nextFile;
+      return this;
     };
 
     XmlTemplater.prototype.dashLoop = function(textInsideBracket, tagDashLoop, startiMatch, i, openiStartLoop, openjStartLoop, openiEndLoop, closejEndLoop, content, charactersAdded, matches, currentScope, elementDashLoop) {
@@ -315,7 +339,7 @@
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (6)";
       }
-      return nextFile;
+      return this;
     };
 
     XmlTemplater.prototype.replaceTag = function(content, endiMatch, startiMatch, matches, textInsideBracket, newValue, charactersAdded) {
@@ -415,32 +439,13 @@
     */
 
 
-    XmlTemplater.prototype.applyTemplateVars = function(content, currentScope) {
-      var character, charactersAdded, closejEndLoop, closejStartLoop, dashLooping, elementDashLoop, endiMatch, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, replacer, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1;
+    XmlTemplater.prototype.applyTemplateVars = function() {
+      var character, charactersAdded, closejEndLoop, closejStartLoop, content, currentScope, dashLooping, elementDashLoop, endiMatch, glou, i, inBracket, inDashLoop, inForLoop, innerText, j, match, matches, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, textInsideBracket, u, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1;
 
+      matches = this.matches;
+      charactersAdded = this.charactersAdded;
       content = this.content;
       currentScope = this.currentScope;
-      matches = this._getFullTextMatchesFromData(content);
-      charactersAdded = (function() {
-        var _i, _ref, _results;
-
-        _results = [];
-        for (i = _i = 0, _ref = matches.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-          _results.push(0);
-        }
-        return _results;
-      })();
-      replacer = function() {
-        var match, offset, pn, string, _i;
-
-        match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
-        pn.unshift(match);
-        pn.offset = offset;
-        matches.unshift(pn);
-        return charactersAdded.unshift(0);
-      };
-      content.replace(/^()([^<]+)/, replacer);
-      this.matches = matches;
       inForLoop = false;
       inBracket = false;
       inDashLoop = false;
