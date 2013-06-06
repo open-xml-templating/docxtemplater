@@ -17,7 +17,7 @@
   };
 
   preg_match_all = function(regex, content) {
-    /*regex is a string, content is the content. It returns an array of all matches with their offset, for example: 
+    /*regex is a string, content is the content. It returns an array of all matches with their offset, for example:
     	regex=la
     	content=lolalolilala
     	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
@@ -97,7 +97,7 @@
       if (end == null) {
         end = text.length - 1;
       }
-      /*get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)): 
+      /*get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
       		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
       */
 
@@ -241,7 +241,7 @@
       
       			Let A be what is in between the first closing bracket and the second opening bracket
       			Let B what is in between the first opening tag {# and the last closing tag
-      			
+      
       			A=</w:t>
       			Blabla1
       			Blabla2
@@ -423,8 +423,6 @@
         insideValue = this.matches[this.bracketEnd.i][2].replace(regexLeft, '$1');
         this.charactersAdded[this.bracketEnd.i + 1] = this.charactersAdded[this.bracketEnd.i];
         content = this.replaceXmlTag(content, k, insideValue, true);
-      } else {
-        throw "Bracket closed before opening";
       }
       _ref2 = this.matches;
       for (j = _j = 0, _len = _ref2.length; _j < _len; j = ++_j) {
@@ -531,7 +529,7 @@
                 }
               }
               if (dashLooping === false) {
-                return this.forLoop(this.content, this.currentScope, this.loopOpen.tag, this.charactersAdded, this.loopClose.start.i, this.loopClose.end.i, this.matches, this.loopOpen.start.i, this.loopOpen.start.j, this.loopClose.end.j, this.loopOpen.end.i, this.loopOpen.end.j, this.loopClose.start.j);
+                return this.forLoop();
               } else {
                 return this.dashLoop(elementDashLoop);
               }

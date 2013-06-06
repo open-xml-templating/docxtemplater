@@ -7,8 +7,8 @@ decode_utf8= (s) ->
 String.prototype.replaceFirstFrom = (search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	this.substr(0,from)+this.substr(from).replace(search,replace)
 
-preg_match_all= (regex, content) -> 
-	###regex is a string, content is the content. It returns an array of all matches with their offset, for example: 
+preg_match_all= (regex, content) ->
+	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
 	regex=la
 	content=lolalolilala
 	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
@@ -36,15 +36,15 @@ window.XmlTemplater = class XmlTemplater
 		@content.replace /^()([^<]+)/,replacer
 	getValueFromTag: (tag,scope) ->
 		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
-	calcScopeText: (text,start=0,end=text.length-1) -> 
-		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)): 
-		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}] 
+	calcScopeText: (text,start=0,end=text.length-1) ->
+		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
+		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
 		###
 		tags= preg_match_all("<(\/?[^/> ]+)([^>]*)>",text.substr(start,end)) #getThemAll (the opening and closing tags)!
 		result=[]
 		for tag,i in tags
 			if tag[1][0]=='/' #closing tag
-				justOpened= false 
+				justOpened= false
 				if result.length>0
 					lastTag= result[result.length-1]
 					innerLastTag= lastTag.tag.substr(1,lastTag.tag.length-2)
@@ -59,10 +59,10 @@ window.XmlTemplater = class XmlTemplater
 	calcScopeDifference: (text,start=0,end=text.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this text, the XML will  break
 		scope= @calcScopeText text,start,end
 		while(1)
-			if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closing tag 
+			if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closing tag
 				break;
 			if ((scope[0]).tag.substr(2)==(scope[scope.length-1]).tag.substr(1)) #if the first closing is the same than the last opening, ie: [</tag>,...,<tag>]
-				scope.pop() #remove both the first and the last one 
+				scope.pop() #remove both the first and the last one
 				scope.shift()
 			else break;
 		scope
@@ -100,7 +100,7 @@ window.XmlTemplater = class XmlTemplater
 
 			Let A be what is in between the first closing bracket and the second opening bracket
 			Let B what is in between the first opening tag {# and the last closing tag
-			
+
 			A=</w:t>
 			Blabla1
 			Blabla2
@@ -148,7 +148,7 @@ window.XmlTemplater = class XmlTemplater
 		if (@content.indexOf B)==-1 then throw "couln't find B in @content"
 		A = B
 		copyA= A
-		
+
 		#for deleting the opening tag
 		@bracketEnd= {"i":@loopOpen.end.i,"j":@loopOpen.end.j}
 		@bracketStart= {"i":@loopOpen.start.i,"j":@loopOpen.start.j}
@@ -162,7 +162,7 @@ window.XmlTemplater = class XmlTemplater
 		A= @replaceCurly("",A)
 
 		if copyA==A then throw "A should have changed after deleting the opening tag"
-		
+
 		if @currentScope[@loopOpen.tag]?
 			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
@@ -179,7 +179,7 @@ window.XmlTemplater = class XmlTemplater
 		@content=nextFile.content
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (6)"
 		return this
-	
+
 	replaceXmlTag: (content,tagNumber,insideValue,spacePreserve=false,noStartTag=false) ->
 		@matches[tagNumber][2]=insideValue #so that the matches are still correct
 		startTag= @matches[tagNumber].offset+@charactersAdded[tagNumber]  #where the open tag starts: <w:t>
@@ -187,7 +187,7 @@ window.XmlTemplater = class XmlTemplater
 		if noStartTag == true
 			replacer= insideValue
 		else
-			if spacePreserve==true 
+			if spacePreserve==true
 				replacer= '<w:t xml:space="preserve">'+insideValue+"</w:t>"
 			else replacer= @matches[tagNumber][1]+insideValue+"</w:t>"
 		@charactersAdded[tagNumber+1]+=replacer.length-@matches[tagNumber][0].length
@@ -197,7 +197,7 @@ window.XmlTemplater = class XmlTemplater
 		@matches[tagNumber][0]=replacer
 
 		if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
-		content		                                                                     
+		content
 
 	replaceCurly: (newValue,content=@content) ->
 		if (@matches[@bracketEnd.i][2].indexOf ('}'))==-1 then throw "no closing bracket at @bracketEnd.i #{@matches[@bracketEnd.i][2]}"
@@ -228,9 +228,6 @@ window.XmlTemplater = class XmlTemplater
 			insideValue = @matches[@bracketEnd.i][2].replace regexLeft, '$1'
 			@charactersAdded[@bracketEnd.i+1]=@charactersAdded[@bracketEnd.i]
 			content= @replaceXmlTag(content,k, insideValue,true)
-
-		else
-			throw "Bracket closed before opening"
 
 		for match, j in @matches when j>@bracketEnd.i
 			@charactersAdded[j+1]=@charactersAdded[j]
@@ -266,7 +263,6 @@ window.XmlTemplater = class XmlTemplater
 						@inForLoop= true #begin for loop
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
 					if @textInsideBracket[0]=='-' and @inForLoop is false and @inDashLoop is false
-						# tagDashLoop= @textInsideBracket.substr 1
 						@inDashLoop= true
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace regex, '$2'),'element':(@textInsideBracket.replace regex, '$1')}
@@ -279,7 +275,7 @@ window.XmlTemplater = class XmlTemplater
 
 					if @textInsideBracket[0]=='/'
 						@loopClose={'start':@bracketStart,'end':@bracketEnd}
-						
+
 					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @inDashLoop is true
 						return @dashLoop(@loopOpen.element)
 
@@ -295,7 +291,7 @@ window.XmlTemplater = class XmlTemplater
 									elementDashLoop= 'w:tr'
 
 						if dashLooping==no
-							return @forLoop(@content,@currentScope,@loopOpen.tag,@charactersAdded,@loopClose.start.i,@loopClose.end.i,@matches,@loopOpen.start.i,@loopOpen.start.j,@loopClose.end.j,@loopOpen.end.i,@loopOpen.end.j,@loopClose.start.j)
+							return @forLoop()
 						else
 							return @dashLoop(elementDashLoop)
 				else #if character != '{' and character != '}'
