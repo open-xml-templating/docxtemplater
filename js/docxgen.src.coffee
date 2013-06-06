@@ -79,17 +79,19 @@ window.XmlTemplater = class XmlTemplater
 		startTag = Math.max text.lastIndexOf('<'+tag+'>',start), text.lastIndexOf('<'+tag+' ',start)
 		if startTag==-1 then throw "can't find startTag"
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
-	calcB: (matches,content,openiStartLoop,openjStartLoop,closeiEndLoop,closejEndLoop,charactersAdded) ->
-		startB = @matches[openiStartLoop].offset+@matches[openiStartLoop][1].length+charactersAdded[openiStartLoop]+openjStartLoop
-		endB= @matches[closeiEndLoop].offset+@matches[closeiEndLoop][1].length+charactersAdded[closeiEndLoop]+closejEndLoop+1
-		{B:content.substr(startB,endB-startB),start:startB,end:endB}
-
-	calcA: (matches,content,openiEndLoop,openjEndLoop,closeiStartLoop,closejStartLoop,charactersAdded) ->
-		startA= matches[openiEndLoop].offset+matches[openiEndLoop][1].length+charactersAdded[openiEndLoop]+openjEndLoop+1
-		endA= matches[closeiStartLoop].offset+matches[closeiStartLoop][1].length+charactersAdded[closeiStartLoop]+closejStartLoop
-		{A:content.substr(startA,endA-startA),start:startA,end:endA}
-
-	forLoop: (content,currentScope,tagForLoop,charactersAdded,closeiStartLoop,closeiEndLoop,matches,openiStartLoop,openjStartLoop,closejEndLoop,openiEndLoop,openjEndLoop,closejStartLoop) ->
+	calcB: () ->
+		startB = @calcStartBracket @loopOpen
+		endB= @calcEndBracket @loopClose
+		{B:@content.substr(startB,endB-startB),startB,endB}
+	calcA: () ->
+		startA= @calcEndBracket @loopOpen
+		endA= @calcStartBracket @loopClose
+		{A:@content.substr(startA,endA-startA),startA,endA}
+	calcStartBracket: (bracket) ->
+		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
+	calcEndBracket: (bracket)->
+		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
+	forLoop: () ->
 		###
 			<w:t>{#forTag} blabla</w:t>
 			Blabla1
@@ -113,33 +115,32 @@ window.XmlTemplater = class XmlTemplater
 			<w:t>subContent subContent subContent</w:t>
 		###
 
-		B= (@calcB matches,content,openiStartLoop,openjStartLoop,closeiEndLoop,closejEndLoop,charactersAdded).B
-		A= (@calcA matches,content,openiEndLoop,openjEndLoop,closeiStartLoop,closejStartLoop,charactersAdded).A
+		B= @calcB().B
+		A= @calcA().A
 
 		if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
-
-		if currentScope[tagForLoop]?
-			if typeof currentScope[tagForLoop]!='object' then throw '{#'+tagForLoop+"}should be an object (it is a #{typeof currentScope[tagForLoop]})"
+		if @currentScope[@loopOpen.tag]?
+			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
-			for scope,i in currentScope[tagForLoop]
+			for scope,i in @currentScope[@loopOpen.tag]
 				subfile= new XmlTemplater A, scope, @intelligentTagging
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
-			content=content.replace B, newContent
-		else content= content.replace B, ""
+			@content=@content.replace B, newContent
+		else @content= @content.replace B, ""
 
-		nextFile= new XmlTemplater content, currentScope, @intelligentTagging
+		nextFile= new XmlTemplater @content,@currentScope,@intelligentTagging
 		nextFile.applyTemplateVars()
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
-		this.content=nextFile.content
+		@content=nextFile.content
 		return this
 
 	dashLoop: (elementDashLoop) ->
-		#@textInsideBracket,@loopOpen.tag,@loopClose.start.i,@loopClose.end.i,@loopOpen.start.i,@loopOpen.start.j,@loopOpen.end.i,@loopOpen.end.j,@content,@charactersAdded,@matches,@currentScope,@loopOpen.element
-		startB= @matches[@loopOpen.start.i].offset+@matches[@loopOpen.start.i][1].length+@charactersAdded[@loopOpen.start.i]+@loopOpen.start.j
-		endB= @matches[@loopClose.end.i].offset+@matches[@loopClose.end.i][1].length+@charactersAdded[@loopClose.end.i]+@loopClose.end.j+1
+
+		{B,startB,endB}= @calcB()
+		# endB= @matches[@loopClose.end.i].offset+@matches[@loopClose.end.i][1].length+@charactersAdded[@loopClose.end.i]+@loopClose.end.j+1
 		resultFullScope = (@calcInnerTextScope @content, startB, endB, elementDashLoop)
 		for t in [0..@matches.length]
 			@charactersAdded[t]-=resultFullScope.startTag
@@ -187,11 +188,11 @@ window.XmlTemplater = class XmlTemplater
 		if @bracketEnd.i==@bracketStart.i #<w>{aaaaa}</w>
 			@matches[@bracketStart.i][2]=@matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
 			replacer= '<w:t xml:space="preserve">'+@matches[@bracketStart.i][2]+"</w:t>"
-			startB= @matches[@bracketStart.i].offset+@charactersAdded[@bracketStart.i]
+			startBracket= @matches[@bracketStart.i].offset+@charactersAdded[@bracketStart.i]
 			@charactersAdded[@bracketStart.i+1]+=replacer.length-@matches[@bracketStart.i][0].length
 			if content.indexOf(@matches[@bracketStart.i][0])==-1 then throw "content #{@matches[@bracketStart.i][0]} not found in content"
 			copyContent= content
-			content = content.replaceFirstFrom @matches[@bracketStart.i][0], replacer, startB
+			content = content.replaceFirstFrom @matches[@bracketStart.i][0], replacer, startBracket
 			@matches[@bracketStart.i][0]=replacer
 
 			if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"

@@ -200,31 +200,39 @@
       };
     };
 
-    XmlTemplater.prototype.calcB = function(matches, content, openiStartLoop, openjStartLoop, closeiEndLoop, closejEndLoop, charactersAdded) {
+    XmlTemplater.prototype.calcB = function() {
       var endB, startB;
 
-      startB = this.matches[openiStartLoop].offset + this.matches[openiStartLoop][1].length + charactersAdded[openiStartLoop] + openjStartLoop;
-      endB = this.matches[closeiEndLoop].offset + this.matches[closeiEndLoop][1].length + charactersAdded[closeiEndLoop] + closejEndLoop + 1;
+      startB = this.calcStartBracket(this.loopOpen);
+      endB = this.calcEndBracket(this.loopClose);
       return {
-        B: content.substr(startB, endB - startB),
-        start: startB,
-        end: endB
+        B: this.content.substr(startB, endB - startB),
+        startB: startB,
+        endB: endB
       };
     };
 
-    XmlTemplater.prototype.calcA = function(matches, content, openiEndLoop, openjEndLoop, closeiStartLoop, closejStartLoop, charactersAdded) {
+    XmlTemplater.prototype.calcA = function() {
       var endA, startA;
 
-      startA = matches[openiEndLoop].offset + matches[openiEndLoop][1].length + charactersAdded[openiEndLoop] + openjEndLoop + 1;
-      endA = matches[closeiStartLoop].offset + matches[closeiStartLoop][1].length + charactersAdded[closeiStartLoop] + closejStartLoop;
+      startA = this.calcEndBracket(this.loopOpen);
+      endA = this.calcStartBracket(this.loopClose);
       return {
-        A: content.substr(startA, endA - startA),
-        start: startA,
-        end: endA
+        A: this.content.substr(startA, endA - startA),
+        startA: startA,
+        endA: endA
       };
     };
 
-    XmlTemplater.prototype.forLoop = function(content, currentScope, tagForLoop, charactersAdded, closeiStartLoop, closeiEndLoop, matches, openiStartLoop, openjStartLoop, closejEndLoop, openiEndLoop, openjEndLoop, closejStartLoop) {
+    XmlTemplater.prototype.calcStartBracket = function(bracket) {
+      return this.matches[bracket.start.i].offset + this.matches[bracket.start.i][1].length + this.charactersAdded[bracket.start.i] + bracket.start.j;
+    };
+
+    XmlTemplater.prototype.calcEndBracket = function(bracket) {
+      return this.matches[bracket.end.i].offset + this.matches[bracket.end.i][1].length + this.charactersAdded[bracket.end.i] + bracket.end.j + 1;
+    };
+
+    XmlTemplater.prototype.forLoop = function() {
       /*
       			<w:t>{#forTag} blabla</w:t>
       			Blabla1
@@ -250,17 +258,17 @@
 
       var A, B, i, newContent, nextFile, scope, subfile, _i, _len, _ref;
 
-      B = (this.calcB(matches, content, openiStartLoop, openjStartLoop, closeiEndLoop, closejEndLoop, charactersAdded)).B;
-      A = (this.calcA(matches, content, openiEndLoop, openjEndLoop, closeiStartLoop, closejStartLoop, charactersAdded)).A;
+      B = this.calcB().B;
+      A = this.calcA().A;
       if (B[0] !== '{' || B.indexOf('{') === -1 || B.indexOf('/') === -1 || B.indexOf('}') === -1 || B.indexOf('#') === -1) {
         throw "no {,#,/ or } found in B: " + B;
       }
-      if (currentScope[tagForLoop] != null) {
-        if (typeof currentScope[tagForLoop] !== 'object') {
-          throw '{#' + tagForLoop + ("}should be an object (it is a " + (typeof currentScope[tagForLoop]) + ")");
+      if (this.currentScope[this.loopOpen.tag] != null) {
+        if (typeof this.currentScope[this.loopOpen.tag] !== 'object') {
+          throw '{#' + this.loopOpen.tag + ("}should be an object (it is a " + (typeof this.currentScope[this.loopOpen.tag]) + ")");
         }
         newContent = "";
-        _ref = currentScope[tagForLoop];
+        _ref = this.currentScope[this.loopOpen.tag];
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           scope = _ref[i];
           subfile = new XmlTemplater(A, scope, this.intelligentTagging);
@@ -270,11 +278,11 @@
             throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (1)";
           }
         }
-        content = content.replace(B, newContent);
+        this.content = this.content.replace(B, newContent);
       } else {
-        content = content.replace(B, "");
+        this.content = this.content.replace(B, "");
       }
-      nextFile = new XmlTemplater(content, currentScope, this.intelligentTagging);
+      nextFile = new XmlTemplater(this.content, this.currentScope, this.intelligentTagging);
       nextFile.applyTemplateVars();
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
@@ -284,12 +292,11 @@
     };
 
     XmlTemplater.prototype.dashLoop = function(elementDashLoop) {
-      var A, B, copyA, endB, i, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1;
+      var A, B, copyA, endB, i, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1, _ref2;
 
-      startB = this.matches[this.loopOpen.start.i].offset + this.matches[this.loopOpen.start.i][1].length + this.charactersAdded[this.loopOpen.start.i] + this.loopOpen.start.j;
-      endB = this.matches[this.loopClose.end.i].offset + this.matches[this.loopClose.end.i][1].length + this.charactersAdded[this.loopClose.end.i] + this.loopClose.end.j + 1;
+      _ref = this.calcB(), B = _ref.B, startB = _ref.startB, endB = _ref.endB;
       resultFullScope = this.calcInnerTextScope(this.content, startB, endB, elementDashLoop);
-      for (t = _i = 0, _ref = this.matches.length; 0 <= _ref ? _i <= _ref : _i >= _ref; t = 0 <= _ref ? ++_i : --_i) {
+      for (t = _i = 0, _ref1 = this.matches.length; 0 <= _ref1 ? _i <= _ref1 : _i >= _ref1; t = 0 <= _ref1 ? ++_i : --_i) {
         this.charactersAdded[t] -= resultFullScope.startTag;
       }
       B = resultFullScope.text;
@@ -328,9 +335,9 @@
           throw '{#' + this.loopOpen.tag + ("}should be an object (it is a " + (typeof this.currentScope[this.loopOpen.tag]) + ")");
         }
         newContent = "";
-        _ref1 = this.currentScope[this.loopOpen.tag];
-        for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
-          scope = _ref1[i];
+        _ref2 = this.currentScope[this.loopOpen.tag];
+        for (i = _j = 0, _len = _ref2.length; _j < _len; i = ++_j) {
+          scope = _ref2[i];
           subfile = new XmlTemplater(A, scope, this.intelligentTagging);
           subfile.applyTemplateVars();
           newContent += subfile.content;
@@ -352,7 +359,7 @@
     };
 
     XmlTemplater.prototype.replaceTag = function(newValue, content) {
-      var copyContent, j, k, match, regexLeft, regexRight, replacer, startB, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
+      var copyContent, j, k, match, regexLeft, regexRight, replacer, startB, startBracket, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
 
       if (content == null) {
         content = this.content;
@@ -366,13 +373,13 @@
       if (this.bracketEnd.i === this.bracketStart.i) {
         this.matches[this.bracketStart.i][2] = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
         replacer = '<w:t xml:space="preserve">' + this.matches[this.bracketStart.i][2] + "</w:t>";
-        startB = this.matches[this.bracketStart.i].offset + this.charactersAdded[this.bracketStart.i];
+        startBracket = this.matches[this.bracketStart.i].offset + this.charactersAdded[this.bracketStart.i];
         this.charactersAdded[this.bracketStart.i + 1] += replacer.length - this.matches[this.bracketStart.i][0].length;
         if (content.indexOf(this.matches[this.bracketStart.i][0]) === -1) {
           throw "content " + this.matches[this.bracketStart.i][0] + " not found in content";
         }
         copyContent = content;
-        content = content.replaceFirstFrom(this.matches[this.bracketStart.i][0], replacer, startB);
+        content = content.replaceFirstFrom(this.matches[this.bracketStart.i][0], replacer, startBracket);
         this.matches[this.bracketStart.i][0] = replacer;
         if (copyContent === content) {
           throw "offset problem0: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
