@@ -1,5 +1,7 @@
 //@ sourceMappingURL=docxgenTest.map
 (function() {
+  var loadDoc;
+
   Object.size = function(obj) {
     var key, log, size;
 
@@ -9,6 +11,38 @@
       size++;
     }
     return size;
+  };
+
+  window.docxCallback = [];
+
+  window.docX = [];
+
+  window.docXData = [];
+
+  loadDoc = function(path, callBack, noDocx) {
+    var xhrDoc;
+
+    if (noDocx == null) {
+      noDocx = false;
+    }
+    xhrDoc = new XMLHttpRequest();
+    window.docxCallback[path] = callBack;
+    xhrDoc.open('GET', "../examples/" + path, true);
+    if (xhrDoc.overrideMimeType) {
+      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDoc.onreadystatechange = function(e) {
+      console.log(e);
+      console.log(this);
+      if (this.readyState === 4 && this.status === 200) {
+        window.docXData[path] = this.response;
+        if (noDocx === false) {
+          window.docX[path] = new DocxGen(this.response);
+        }
+        return window.docxCallback[path]();
+      }
+    };
+    return xhrDoc.send();
   };
 
   describe("DocxGenBasis", function() {
@@ -24,22 +58,10 @@
   });
 
   describe("DocxGenLoading", function() {
-    var callbackLoadedDocxImage, xhrDoc, xhrImage;
+    var callbackLoadedDocxImage, xhrImage;
 
     callbackLoadedDocxImage = jasmine.createSpy();
-    xhrDoc = new XMLHttpRequest();
-    xhrDoc.open('GET', '../examples/imageExample.docx', true);
-    if (xhrDoc.overrideMimeType) {
-      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDoc.onreadystatechange = function(e) {
-      if (this.readyState === 4 && this.status === 200) {
-        window.docData = this.response;
-        window.docx = new DocxGen(docData);
-        return callbackLoadedDocxImage();
-      }
-    };
-    xhrDoc.send();
+    loadDoc('imageExample.docx', callbackLoadedDocxImage);
     xhrImage = new XMLHttpRequest();
     xhrImage.open('GET', '../examples/image.png', true);
     if (xhrImage.overrideMimeType) {
@@ -57,46 +79,46 @@
     });
     describe("ajax done correctly", function() {
       it("doc and img Data should have the expected length", function() {
-        expect(docData.length).toEqual(729580);
+        expect(docXData['imageExample.docx'].length).toEqual(729580);
         return expect(imgData.length).toEqual(18062);
       });
       return it("should have the right number of files (the docx unzipped)", function() {
-        return expect(Object.size(docx.files)).toEqual(22);
+        return expect(Object.size(docX['imageExample.docx'].files)).toEqual(22);
       });
     });
     describe("basic loading", function() {
       return it("should load file imageExample.docx", function() {
-        return expect(typeof docx).toBe('object');
+        return expect(typeof docX['imageExample.docx']).toBe('object');
       });
     });
     describe("content_loading", function() {
       it("should load the right content for the footer", function() {
         var fullText;
 
-        fullText = docx.getFullText("word/footer1.xml");
+        fullText = docX['imageExample.docx'].getFullText("word/footer1.xml");
         expect(fullText.length).not.toBe(0);
         return expect(fullText).toBe('{last_name}{first_name}{phone}');
       });
       return it("should load the right content for the document", function() {
         var fullText;
 
-        fullText = docx.getFullText();
+        fullText = docX['imageExample.docx'].getFullText();
         return expect(fullText).toBe("");
       });
     });
     return describe("image loading", function() {
       it("should find one image (and not more than 1)", function() {
-        return expect(docx.getImageList().length).toEqual(1);
+        return expect(docX['imageExample.docx'].getImageList().length).toEqual(1);
       });
       it("should find the image named with the good name", function() {
-        return expect((docx.getImageList())[0].path).toEqual('word/media/image1.jpeg');
+        return expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg');
       });
       return it("should change the image with another one", function() {
         var newImageData, oldImageData;
 
-        oldImageData = docx.files['word/media/image1.jpeg'].data;
-        docx.setImage('word/media/image1.jpeg', imgData);
-        newImageData = docx.files['word/media/image1.jpeg'].data;
+        oldImageData = docX['imageExample.docx'].files['word/media/image1.jpeg'].data;
+        docX['imageExample.docx'].setImage('word/media/image1.jpeg', imgData);
+        newImageData = docX['imageExample.docx'].files['word/media/image1.jpeg'].data;
         expect(oldImageData).not.toEqual(newImageData);
         return expect(imgData).toEqual(newImageData);
       });

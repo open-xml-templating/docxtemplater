@@ -5,6 +5,26 @@ Object.size = (obj) ->
 		size++
 	size
 
+window.docxCallback=[]
+window.docX=[]
+window.docXData=[]
+
+loadDoc= (path,callBack,noDocx=false) ->
+	xhrDoc= new XMLHttpRequest()
+	window.docxCallback[path]=callBack
+	xhrDoc.open('GET', "../examples/#{path}", true)
+	if xhrDoc.overrideMimeType
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =(e)->
+		console.log e
+		console.log this
+		if this.readyState == 4 and this.status == 200
+			window.docXData[path]=this.response
+			if noDocx==false
+				window.docX[path]=new DocxGen(this.response)
+			window.docxCallback[path]()
+	xhrDoc.send()
+
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
 		expect(DocxGen).not.toBe(undefined);
@@ -16,18 +36,7 @@ describe "DocxGenLoading", () ->
 	#wait till this function has been called twice (once for the docx and once for the image)
 	callbackLoadedDocxImage = jasmine.createSpy();
 
-	#load docx
-	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', '../examples/imageExample.docx', true)
-	if xhrDoc.overrideMimeType
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			window.docData=this.response
-			window.docx=new DocxGen(docData)
-			callbackLoadedDocxImage()
-	xhrDoc.send()
-
+	loadDoc('imageExample.docx',callbackLoadedDocxImage)
 	#load image
 	xhrImage= new XMLHttpRequest()
 	xhrImage.open('GET', '../examples/image.png', true)
@@ -44,31 +53,31 @@ describe "DocxGenLoading", () ->
 
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
-			expect(docData.length).toEqual(729580)
+			expect(docXData['imageExample.docx'].length).toEqual(729580)
 			expect(imgData.length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
-			expect(Object.size(docx.files)).toEqual(22)
+			expect(Object.size(docX['imageExample.docx'].files)).toEqual(22)
 
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
-			expect(typeof docx).toBe('object');
+			expect(typeof docX['imageExample.docx']).toBe('object');
 	describe "content_loading", () ->
 		it "should load the right content for the footer", () ->
-			fullText=(docx.getFullText("word/footer1.xml"))
+			fullText=(docX['imageExample.docx'].getFullText("word/footer1.xml"))
 			expect(fullText.length).not.toBe(0)
 			expect(fullText).toBe('{last_name}{first_name}{phone}')
 		it "should load the right content for the document", () ->
-			fullText=(docx.getFullText()) #default value document.xml
+			fullText=(docX['imageExample.docx'].getFullText()) #default value document.xml
 			expect(fullText).toBe("")
 	describe "image loading", () ->
 		it "should find one image (and not more than 1)", () ->
-				expect(docx.getImageList().length).toEqual(1)
+				expect(docX['imageExample.docx'].getImageList().length).toEqual(1)
 		it "should find the image named with the good name", () ->
-			expect((docx.getImageList())[0].path).toEqual('word/media/image1.jpeg')
+			expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg')
 		it "should change the image with another one", () ->
-			oldImageData=docx.files['word/media/image1.jpeg'].data
-			docx.setImage('word/media/image1.jpeg',imgData)
-			newImageData=docx.files['word/media/image1.jpeg'].data
+			oldImageData=docX['imageExample.docx'].files['word/media/image1.jpeg'].data
+			docX['imageExample.docx'].setImage('word/media/image1.jpeg',imgData)
+			newImageData=docX['imageExample.docx'].files['word/media/image1.jpeg'].data
 			expect(oldImageData).not.toEqual(newImageData)
 			expect(imgData).toEqual(newImageData)
 
