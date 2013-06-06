@@ -444,10 +444,8 @@
 
 
     XmlTemplater.prototype.applyTemplateVars = function() {
-      var character, closejEndLoop, closejStartLoop, dashLooping, elementDashLoop, i, innerText, j, m, match, openiEndLoop, openiStartLoop, openjEndLoop, openjStartLoop, regex, scopeContent, startiMatch, startjMatch, t, tagDashLoop, tagForLoop, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2;
+      var B, character, dashLooping, elementDashLoop, endB, i, innerText, j, m, match, regex, scopeContent, startB, t, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2, _ref3;
 
-      this.charactersAdded = this.charactersAdded;
-      this.currentScope = this.currentScope;
       this.inForLoop = false;
       this.inBracket = false;
       this.inDashLoop = false;
@@ -476,8 +474,6 @@
             }
             this.inBracket = true;
             this.textInsideBracket = "";
-            startiMatch = i;
-            startjMatch = j;
             this.bracketStart = {
               "i": i,
               "j": j
@@ -488,12 +484,7 @@
               "j": j
             };
             if (this.textInsideBracket[0] === '#' && this.inForLoop === false && this.inDashLoop === false) {
-              tagForLoop = this.textInsideBracket.substr(1);
               this.inForLoop = true;
-              openiStartLoop = startiMatch;
-              openjStartLoop = startjMatch;
-              openjEndLoop = j;
-              openiEndLoop = i;
               this.loopOpen = {
                 'start': this.bracketStart,
                 'end': this.bracketEnd,
@@ -502,13 +493,7 @@
             }
             if (this.textInsideBracket[0] === '-' && this.inForLoop === false && this.inDashLoop === false) {
               this.inDashLoop = true;
-              openiStartLoop = startiMatch;
-              openjStartLoop = startjMatch;
-              openjEndLoop = j;
-              openiEndLoop = i;
               regex = /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/;
-              elementDashLoop = this.textInsideBracket.replace(regex, '$1');
-              tagDashLoop = this.textInsideBracket.replace(regex, '$2');
               this.loopOpen = {
                 'start': this.bracketStart,
                 'end': this.bracketEnd,
@@ -528,16 +513,15 @@
                 'start': this.bracketStart,
                 'end': this.bracketEnd
               };
-              closejStartLoop = startjMatch;
-              closejEndLoop = j;
             }
-            if (this.textInsideBracket[0] === '/' && ('/' + tagDashLoop === this.textInsideBracket) && this.inDashLoop === true) {
+            if (this.textInsideBracket[0] === '/' && ('/' + this.loopOpen.tag === this.textInsideBracket) && this.inDashLoop === true) {
               return this.dashLoop(this.loopOpen.element);
             }
-            if (this.textInsideBracket[0] === '/' && ('/' + tagForLoop === this.textInsideBracket) && this.inForLoop === true) {
+            if (this.textInsideBracket[0] === '/' && ('/' + this.loopOpen.tag === this.textInsideBracket) && this.inForLoop === true) {
               dashLooping = false;
               if (this.intelligentTagging === true) {
-                scopeContent = this.calcScopeText(this.content, this.matches[openiStartLoop].offset + this.charactersAdded[openiStartLoop], this.matches[i].offset + this.charactersAdded[i] - (this.matches[openiStartLoop].offset + this.charactersAdded[openiStartLoop]));
+                _ref3 = this.calcB(), B = _ref3.B, startB = _ref3.startB, endB = _ref3.endB;
+                scopeContent = this.calcScopeText(this.content, startB, endB - startB);
                 for (_m = 0, _len3 = scopeContent.length; _m < _len3; _m++) {
                   t = scopeContent[_m];
                   if (t.tag === '<w:tc>') {

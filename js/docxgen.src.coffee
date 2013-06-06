@@ -241,8 +241,6 @@ window.XmlTemplater = class XmlTemplater
 	scope is the current scope
 	returns the new content of the tagged content###
 	applyTemplateVars:()->
-		@charactersAdded=@charactersAdded
-		@currentScope= @currentScope
 		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		@inBracket= false # all brackets  {___}
 		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
@@ -259,32 +257,18 @@ window.XmlTemplater = class XmlTemplater
 					if @inBracket is true then throw "Bracket already open with text: #{@textInsideBracket}"
 					@inBracket= true
 					@textInsideBracket= ""
-					startiMatch= i
-					startjMatch= j
 					@bracketStart={"i":i,"j":j}
 
 				else if character == '}'
 					@bracketEnd={"i":i,"j":j}
 
 					if @textInsideBracket[0]=='#' and @inForLoop is false and @inDashLoop is false
-						tagForLoop= @textInsideBracket.substr 1
 						@inForLoop= true #begin for loop
-						openiStartLoop= startiMatch # open: for "{#tag}" iStart=iEnd, jStart=0, jEnd=5
-						openjStartLoop= startjMatch
-						openjEndLoop= j
-						openiEndLoop= i
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
 					if @textInsideBracket[0]=='-' and @inForLoop is false and @inDashLoop is false
 						# tagDashLoop= @textInsideBracket.substr 1
 						@inDashLoop= true
-						openiStartLoop= startiMatch
-						openjStartLoop= startjMatch
-						openjEndLoop = j
-						openiEndLoop= i
-						
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
-						elementDashLoop= @textInsideBracket.replace regex, '$1'
-						tagDashLoop= @textInsideBracket.replace regex, '$2'
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace regex, '$2'),'element':(@textInsideBracket.replace regex, '$1')}
 
 					if @inBracket is false then throw "Bracket already closed"
@@ -295,17 +279,16 @@ window.XmlTemplater = class XmlTemplater
 
 					if @textInsideBracket[0]=='/'
 						@loopClose={'start':@bracketStart,'end':@bracketEnd}
-						closejStartLoop= startjMatch
-						closejEndLoop= j
 						
-					if @textInsideBracket[0]=='/' and ('/'+tagDashLoop == @textInsideBracket) and @inDashLoop is true
+					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @inDashLoop is true
 						return @dashLoop(@loopOpen.element)
 
-					if @textInsideBracket[0]=='/' and ('/'+tagForLoop == @textInsideBracket) and @inForLoop is true
+					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @inForLoop is true
 						#You DashLoop= take the outer scope only if you are in a table
 						dashLooping= no
 						if @intelligentTagging==on
-							scopeContent= @calcScopeText @content, @matches[openiStartLoop].offset+@charactersAdded[openiStartLoop],@matches[i].offset+@charactersAdded[i]-(@matches[openiStartLoop].offset+@charactersAdded[openiStartLoop])
+							{B,startB,endB}= @calcB()
+							scopeContent= @calcScopeText @content, startB,endB-startB
 							for t in scopeContent
 								if t.tag=='<w:tc>'
 									dashLooping= yes
