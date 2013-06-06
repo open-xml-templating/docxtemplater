@@ -407,12 +407,6 @@
         insideValue = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
         content = this.replaceXmlTag(content, this.bracketStart.i, insideValue, true);
       } else if (this.bracketEnd.i > this.bracketStart.i) {
-        /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-        			1. for the first (@bracketStart.i): replace {.. by the value
-        			2. for in between (@bracketStart.i+1...@bracketEnd.i) replace whole by ""
-        			3. for the last (@bracketEnd.i) replace ..} by ""
-        */
-
         regexRight = /^([^{]*){.*$/;
         subMatches = this.matches[this.bracketStart.i][2].match(regexRight);
         if (this.matches[this.bracketStart.i][1] === "") {

@@ -181,9 +181,9 @@ window.XmlTemplater = class XmlTemplater
 		return this
 	
 	replaceXmlTag: (content,tagNumber,insideValue,spacePreserve=false,noStartTag=false) ->
-		@matches[tagNumber][2]=insideValue
-		startTag= @matches[tagNumber].offset+@charactersAdded[tagNumber]
-		
+		@matches[tagNumber][2]=insideValue #so that the matches are still correct
+		startTag= @matches[tagNumber].offset+@charactersAdded[tagNumber]  #where the open tag starts: <w:t>
+		#calculate the replacer according to the params
 		if noStartTag == true
 			replacer= insideValue
 		else
@@ -191,7 +191,6 @@ window.XmlTemplater = class XmlTemplater
 				replacer= '<w:t xml:space="preserve">'+insideValue+"</w:t>"
 			else replacer= @matches[tagNumber][1]+insideValue+"</w:t>"
 		@charactersAdded[tagNumber+1]+=replacer.length-@matches[tagNumber][0].length
-		#@charactersAdded[tagNumber+1]=@charactersAdded[tagNumber]+replacer.length-@matches[tagNumber][0].length
 		if content.indexOf(@matches[tagNumber][0])==-1 then throw "content #{@matches[tagNumber][0]} not found in content"
 		copyContent= content
 		content = content.replaceFirstFrom @matches[tagNumber][0], replacer, startTag
@@ -208,12 +207,8 @@ window.XmlTemplater = class XmlTemplater
 			insideValue =@matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
 			content= @replaceXmlTag(content,@bracketStart.i,insideValue,true)
 		else if @bracketEnd.i>@bracketStart.i
-			###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
-			1. for the first (@bracketStart.i): replace {.. by the value
-			2. for in between (@bracketStart.i+1...@bracketEnd.i) replace whole by ""
-			3. for the last (@bracketEnd.i) replace ..} by "" ###
 
-			# 1.
+			# 1. for the first (@bracketStart.i): replace __{.. by __value
 			regexRight= /^([^{]*){.*$/
 			subMatches= @matches[@bracketStart.i][2].match regexRight
 
@@ -223,12 +218,12 @@ window.XmlTemplater = class XmlTemplater
 				insideValue=subMatches[1]+newValue
 				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true)
 
-			#2.
+			#2. for in between (@bracketStart.i+1...@bracketEnd.i) replace whole by ""
 			for k in [(@bracketStart.i+1)...@bracketEnd.i]
 				@charactersAdded[k+1]=@charactersAdded[k]
 				content= @replaceXmlTag(content,k,"")
 
-			#3.
+			#3. for the last (@bracketEnd.i) replace ..}__ by ".." ###
 			regexLeft= /^[^}]*}(.*)$/;
 			insideValue = @matches[@bracketEnd.i][2].replace regexLeft, '$1'
 			@charactersAdded[@bracketEnd.i+1]=@charactersAdded[@bracketEnd.i]
