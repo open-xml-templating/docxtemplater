@@ -40,7 +40,7 @@ window.XmlTemplater = class XmlTemplater
 		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)): 
 		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}] 
 		###
-		tags= preg_match_all("<(\/?[^/> ]+)([^>]*)>",text.substr(start,end)) #getThemAll!
+		tags= preg_match_all("<(\/?[^/> ]+)([^>]*)>",text.substr(start,end)) #getThemAll (the opening and closing tags)!
 		result=[]
 		for tag,i in tags
 			if tag[1][0]=='/' #closing tag
@@ -59,17 +59,17 @@ window.XmlTemplater = class XmlTemplater
 	calcScopeDifference: (text,start=0,end=text.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this text, the XML will  break
 		scope= @calcScopeText text,start,end
 		while(1)
-			if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closeing tag 
+			if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closing tag 
 				break;
-			if ((scope[0]).tag.substr(2)==(scope[scope.length-1]).tag.substr(1))
-				scope.pop()
+			if ((scope[0]).tag.substr(2)==(scope[scope.length-1]).tag.substr(1)) #if the first closing is the same than the last opening, ie: [</tag>,...,<tag>]
+				scope.pop() #remove both the first and the last one 
 				scope.shift()
 			else break;
 		scope
 	getFullText:() ->
-		@matches= @_getFullTextMatchesFromData()
-		output= (match[2] for match in @matches)
-		decode_utf8(output.join(""))
+		@matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
+		output= (match[2] for match in @matches) #get only the text
+		decode_utf8(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
 		@matches= preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>",@content)
 	calcInnerTextScope: (text,start,end,tag) -> #tag: w:t
@@ -152,14 +152,14 @@ window.XmlTemplater = class XmlTemplater
 		#for deleting the opening tag
 		@bracketEnd= {"i":@loopOpen.end.i,"j":@loopOpen.end.j}
 		@bracketStart= {"i":@loopOpen.start.i,"j":@loopOpen.start.j}
-		A= @replaceTag("",A)
+		A= @replaceCurly("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
 
 		#for deleting the closing tag
 		@bracketEnd= {"i":@loopClose.end.i,"j":@loopClose.end.j}
 		@bracketStart= {"i":@loopClose.start.i,"j":@loopClose.start.j}
-		A= @replaceTag("",A)
+		A= @replaceCurly("",A)
 
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		
@@ -180,23 +180,40 @@ window.XmlTemplater = class XmlTemplater
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (6)"
 		return this
 	
-	replaceTag: (newValue,content=@content) ->
-		#@content,@bracketEnd.i,@bracketStart.i,@matches,@textInsideBracket,@getValueFromTag(@textInsideBracket,@currentScope),@charactersAdded
+	replaceXmlTag: (content,tagNumber,insideValue,spacePreserve=false,noStartTag=false) ->
+		startTag= @matches[tagNumber].offset+@charactersAdded[tagNumber]
+		if noStartTag == true
+			replacer= insideValue
+		else
+			if spacePreserve==true 
+				replacer= '<w:t xml:space="preserve">'+insideValue+"</w:t>"
+			else replacer= '<w:t>'+insideValue+"</w:t>"
+		@charactersAdded[tagNumber+1]+=replacer.length-@matches[tagNumber][0].length
+		if content.indexOf(@matches[tagNumber][0])==-1 then throw "content #{@matches[tagNumber][0]} not found in content"
+		copyContent= content
+		content = content.replaceFirstFrom @matches[tagNumber][0], replacer, startTag
+		@matches[tagNumber][0]=replacer
+
+		if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
+		content		                                                                     
+
+	replaceCurly: (newValue,content=@content) ->
 		if (@matches[@bracketEnd.i][2].indexOf ('}'))==-1 then throw "no closing bracket at @bracketEnd.i #{@matches[@bracketEnd.i][2]}"
 		if (@matches[@bracketStart.i][2].indexOf ('{'))==-1 then throw "no opening bracket at @bracketStart.i #{@matches[@bracketStart.i][2]}"
 
 		if @bracketEnd.i==@bracketStart.i #<w>{aaaaa}</w>
 			@matches[@bracketStart.i][2]=@matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
-			replacer= '<w:t xml:space="preserve">'+@matches[@bracketStart.i][2]+"</w:t>"
-			startBracket= @matches[@bracketStart.i].offset+@charactersAdded[@bracketStart.i]
+			###replacer= '<w:t xml:space="preserve">'+@matches[@bracketStart.i][2]+"</w:t>"
+			startTag= @matches[@bracketStart.i].offset+@charactersAdded[@bracketStart.i]
 			@charactersAdded[@bracketStart.i+1]+=replacer.length-@matches[@bracketStart.i][0].length
 			if content.indexOf(@matches[@bracketStart.i][0])==-1 then throw "content #{@matches[@bracketStart.i][0]} not found in content"
 			copyContent= content
-			content = content.replaceFirstFrom @matches[@bracketStart.i][0], replacer, startBracket
+			content = content.replaceFirstFrom @matches[@bracketStart.i][0], replacer, startTag
 			@matches[@bracketStart.i][0]=replacer
 
 			if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
-
+			###
+			content= @replaceXmlTag(content,@bracketStart.i,@matches[@bracketStart.i][2],true)
 		else if @bracketEnd.i>@bracketStart.i
 			###replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
 			1. for the first (@bracketStart.i): replace {.. by the value
@@ -216,11 +233,11 @@ window.XmlTemplater = class XmlTemplater
 
 
 			copyContent = content
-			startB= @matches[@bracketStart.i].offset+@charactersAdded[@bracketStart.i]
+			startTag= @matches[@bracketStart.i].offset+@charactersAdded[@bracketStart.i]
 			@charactersAdded[@bracketStart.i+1]+=replacer.length-@matches[@bracketStart.i][0].length
 			if content.indexOf(@matches[@bracketStart.i][0])==-1 then throw "content #{@matches[@bracketStart.i][0]} not found in content"
 
-			content= content.replaceFirstFrom @matches[@bracketStart.i][0],replacer, startB
+			content= content.replaceFirstFrom @matches[@bracketStart.i][0],replacer, startTag
 			@matches[@bracketStart.i][0]=replacer
 
 			if copyContent==content then throw "offset problem1: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
@@ -228,23 +245,23 @@ window.XmlTemplater = class XmlTemplater
 			#2.
 			for k in [(@bracketStart.i+1)...@bracketEnd.i]
 				replacer = @matches[k][1]+'</w:t>'
-				startB= @matches[k].offset+@charactersAdded[k]
+				startTag= @matches[k].offset+@charactersAdded[k]
 				@charactersAdded[k+1]=@charactersAdded[k]+replacer.length-@matches[k][0].length
 				if content.indexOf(@matches[k][0])==-1 then throw "content #{@matches[k][0]} not found in content"
 				copyContent= content
-				content= content.replaceFirstFrom @matches[k][0],replacer,startB
+				content= content.replaceFirstFrom @matches[k][0],replacer,startTag
 				@matches[k][0]=replacer
 				if copyContent==content then throw "offset problem2: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
 			#3.
 			regexLeft= /^[^}]*}(.*)$/;
 			@matches[@bracketEnd.i][2]=@matches[@bracketEnd.i][2].replace regexLeft, '$1'
 			replacer= '<w:t xml:space="preserve">'+@matches[@bracketEnd.i][2]+"</w:t>";
-			startB= @matches[@bracketEnd.i].offset+@charactersAdded[@bracketEnd.i]
+			startTag= @matches[@bracketEnd.i].offset+@charactersAdded[@bracketEnd.i]
 			@charactersAdded[@bracketEnd.i+1]=@charactersAdded[@bracketEnd.i]+replacer.length-@matches[@bracketEnd.i][0].length
 
 			if content.indexOf(@matches[@bracketEnd.i][0])==-1 then throw "content #{@matches[@bracketEnd.i][0]} not found in content"
 			copyContent=content
-			content= content.replaceFirstFrom @matches[@bracketEnd.i][0], replacer,startB
+			content= content.replaceFirstFrom @matches[@bracketEnd.i][0], replacer,startTag
 
 			if copyContent==content then throw "offset problem3: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
 			@matches[@bracketEnd.i][0]=replacer
@@ -310,7 +327,7 @@ window.XmlTemplater = class XmlTemplater
 					@inBracket= false
 
 					if @inForLoop is false and @inDashLoop is false
-						@content = @replaceTag(@getValueFromTag(@textInsideBracket,@currentScope))
+						@content = @replaceCurly(@getValueFromTag(@textInsideBracket,@currentScope))
 
 					if @textInsideBracket[0]=='/'
 						@loopClose={'start':@bracketStart,'end':@bracketEnd}

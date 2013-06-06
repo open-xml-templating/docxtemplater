@@ -313,7 +313,7 @@
         "i": this.loopOpen.start.i,
         "j": this.loopOpen.start.j
       };
-      A = this.replaceTag("", A);
+      A = this.replaceCurly("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
@@ -326,7 +326,7 @@
         "i": this.loopClose.start.i,
         "j": this.loopClose.start.j
       };
-      A = this.replaceTag("", A);
+      A = this.replaceCurly("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
@@ -358,8 +358,40 @@
       return this;
     };
 
-    XmlTemplater.prototype.replaceTag = function(newValue, content) {
-      var copyContent, j, k, match, regexLeft, regexRight, replacer, startB, startBracket, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
+    XmlTemplater.prototype.replaceXmlTag = function(content, tagNumber, insideValue, spacePreserve, noStartTag) {
+      var copyContent, replacer, startTag;
+
+      if (spacePreserve == null) {
+        spacePreserve = false;
+      }
+      if (noStartTag == null) {
+        noStartTag = false;
+      }
+      startTag = this.matches[tagNumber].offset + this.charactersAdded[tagNumber];
+      if (noStartTag === true) {
+        replacer = insideValue;
+      } else {
+        if (spacePreserve === true) {
+          replacer = '<w:t xml:space="preserve">' + insideValue + "</w:t>";
+        } else {
+          replacer = '<w:t>' + insideValue + "</w:t>";
+        }
+      }
+      this.charactersAdded[tagNumber + 1] += replacer.length - this.matches[tagNumber][0].length;
+      if (content.indexOf(this.matches[tagNumber][0]) === -1) {
+        throw "content " + this.matches[tagNumber][0] + " not found in content";
+      }
+      copyContent = content;
+      content = content.replaceFirstFrom(this.matches[tagNumber][0], replacer, startTag);
+      this.matches[tagNumber][0] = replacer;
+      if (copyContent === content) {
+        throw "offset problem0: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
+      }
+      return content;
+    };
+
+    XmlTemplater.prototype.replaceCurly = function(newValue, content) {
+      var copyContent, j, k, match, regexLeft, regexRight, replacer, startTag, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
 
       if (content == null) {
         content = this.content;
@@ -372,18 +404,18 @@
       }
       if (this.bracketEnd.i === this.bracketStart.i) {
         this.matches[this.bracketStart.i][2] = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
-        replacer = '<w:t xml:space="preserve">' + this.matches[this.bracketStart.i][2] + "</w:t>";
-        startBracket = this.matches[this.bracketStart.i].offset + this.charactersAdded[this.bracketStart.i];
-        this.charactersAdded[this.bracketStart.i + 1] += replacer.length - this.matches[this.bracketStart.i][0].length;
-        if (content.indexOf(this.matches[this.bracketStart.i][0]) === -1) {
-          throw "content " + this.matches[this.bracketStart.i][0] + " not found in content";
-        }
-        copyContent = content;
-        content = content.replaceFirstFrom(this.matches[this.bracketStart.i][0], replacer, startBracket);
-        this.matches[this.bracketStart.i][0] = replacer;
-        if (copyContent === content) {
-          throw "offset problem0: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
-        }
+        /*replacer= '<w:t xml:space="preserve">'+@matches[@bracketStart.i][2]+"</w:t>"
+        			startTag= @matches[@bracketStart.i].offset+@charactersAdded[@bracketStart.i]
+        			@charactersAdded[@bracketStart.i+1]+=replacer.length-@matches[@bracketStart.i][0].length
+        			if content.indexOf(@matches[@bracketStart.i][0])==-1 then throw "content #{@matches[@bracketStart.i][0]} not found in content"
+        			copyContent= content
+        			content = content.replaceFirstFrom @matches[@bracketStart.i][0], replacer, startTag
+        			@matches[@bracketStart.i][0]=replacer
+        
+        			if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
+        */
+
+        content = this.replaceXmlTag(content, this.bracketStart.i, this.matches[this.bracketStart.i][2], true);
       } else if (this.bracketEnd.i > this.bracketStart.i) {
         /*replacement:-> <w:t>blabla12</w:t>   <w:t></w:t> <w:t> blabli</w:t>
         			1. for the first (@bracketStart.i): replace {.. by the value
@@ -401,25 +433,25 @@
           replacer = '<w:t xml:space="preserve">' + this.matches[this.bracketStart.i][2] + "</w:t>";
         }
         copyContent = content;
-        startB = this.matches[this.bracketStart.i].offset + this.charactersAdded[this.bracketStart.i];
+        startTag = this.matches[this.bracketStart.i].offset + this.charactersAdded[this.bracketStart.i];
         this.charactersAdded[this.bracketStart.i + 1] += replacer.length - this.matches[this.bracketStart.i][0].length;
         if (content.indexOf(this.matches[this.bracketStart.i][0]) === -1) {
           throw "content " + this.matches[this.bracketStart.i][0] + " not found in content";
         }
-        content = content.replaceFirstFrom(this.matches[this.bracketStart.i][0], replacer, startB);
+        content = content.replaceFirstFrom(this.matches[this.bracketStart.i][0], replacer, startTag);
         this.matches[this.bracketStart.i][0] = replacer;
         if (copyContent === content) {
           throw "offset problem1: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
         }
         for (k = _i = _ref = this.bracketStart.i + 1, _ref1 = this.bracketEnd.i; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; k = _ref <= _ref1 ? ++_i : --_i) {
           replacer = this.matches[k][1] + '</w:t>';
-          startB = this.matches[k].offset + this.charactersAdded[k];
+          startTag = this.matches[k].offset + this.charactersAdded[k];
           this.charactersAdded[k + 1] = this.charactersAdded[k] + replacer.length - this.matches[k][0].length;
           if (content.indexOf(this.matches[k][0]) === -1) {
             throw "content " + this.matches[k][0] + " not found in content";
           }
           copyContent = content;
-          content = content.replaceFirstFrom(this.matches[k][0], replacer, startB);
+          content = content.replaceFirstFrom(this.matches[k][0], replacer, startTag);
           this.matches[k][0] = replacer;
           if (copyContent === content) {
             throw "offset problem2: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
@@ -428,13 +460,13 @@
         regexLeft = /^[^}]*}(.*)$/;
         this.matches[this.bracketEnd.i][2] = this.matches[this.bracketEnd.i][2].replace(regexLeft, '$1');
         replacer = '<w:t xml:space="preserve">' + this.matches[this.bracketEnd.i][2] + "</w:t>";
-        startB = this.matches[this.bracketEnd.i].offset + this.charactersAdded[this.bracketEnd.i];
+        startTag = this.matches[this.bracketEnd.i].offset + this.charactersAdded[this.bracketEnd.i];
         this.charactersAdded[this.bracketEnd.i + 1] = this.charactersAdded[this.bracketEnd.i] + replacer.length - this.matches[this.bracketEnd.i][0].length;
         if (content.indexOf(this.matches[this.bracketEnd.i][0]) === -1) {
           throw "content " + this.matches[this.bracketEnd.i][0] + " not found in content";
         }
         copyContent = content;
-        content = content.replaceFirstFrom(this.matches[this.bracketEnd.i][0], replacer, startB);
+        content = content.replaceFirstFrom(this.matches[this.bracketEnd.i][0], replacer, startTag);
         if (copyContent === content) {
           throw "offset problem3: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
         }
@@ -537,7 +569,7 @@
             }
             this.inBracket = false;
             if (this.inForLoop === false && this.inDashLoop === false) {
-              this.content = this.replaceTag(this.getValueFromTag(this.textInsideBracket, this.currentScope));
+              this.content = this.replaceCurly(this.getValueFromTag(this.textInsideBracket, this.currentScope));
             }
             if (this.textInsideBracket[0] === '/') {
               this.loopClose = {
