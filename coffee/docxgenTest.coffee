@@ -16,8 +16,6 @@ loadDoc= (path,callBack,noDocx=false) ->
 	if xhrDoc.overrideMimeType
 		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
 	xhrDoc.onreadystatechange =(e)->
-		console.log e
-		console.log this
 		if this.readyState == 4 and this.status == 200
 			window.docXData[path]=this.response
 			if noDocx==false
@@ -34,27 +32,17 @@ describe "DocxGenBasis", () ->
 
 describe "DocxGenLoading", () ->
 	#wait till this function has been called twice (once for the docx and once for the image)
-	callbackLoadedDocxImage = jasmine.createSpy();
-
-	loadDoc('imageExample.docx',callbackLoadedDocxImage)
-	#load image
-	xhrImage= new XMLHttpRequest()
-	xhrImage.open('GET', '../examples/image.png', true)
-	if xhrImage.overrideMimeType
-		xhrImage.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrImage.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			window.imgData=this.response
-			callbackLoadedDocxImage()
-	xhrImage.send()
+	callBack = jasmine.createSpy();
+	loadDoc('imageExample.docx',callBack)
+	loadDoc('image.png',callBack,true)
 
 	waitsFor () ->
-		callbackLoadedDocxImage.callCount>=2 #loaded docx and image
+		callBack.callCount>=2 #loaded docx and image
 
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
 			expect(docXData['imageExample.docx'].length).toEqual(729580)
-			expect(imgData.length).toEqual(18062)
+			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
 			expect(Object.size(docX['imageExample.docx'].files)).toEqual(22)
 
@@ -75,37 +63,20 @@ describe "DocxGenLoading", () ->
 		it "should find the image named with the good name", () ->
 			expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg')
 		it "should change the image with another one", () ->
-			oldImageData=docX['imageExample.docx'].files['word/media/image1.jpeg'].data
-			docX['imageExample.docx'].setImage('word/media/image1.jpeg',imgData)
-			newImageData=docX['imageExample.docx'].files['word/media/image1.jpeg'].data
+			oldImageData= docX['imageExample.docx'].files['word/media/image1.jpeg'].data
+			docX['imageExample.docx'].setImage('word/media/image1.jpeg',docXData['image.png'])
+			newImageData= docX['imageExample.docx'].files['word/media/image1.jpeg'].data
 			expect(oldImageData).not.toEqual(newImageData)
-			expect(imgData).toEqual(newImageData)
+			expect(docXData['image.png']).toEqual(newImageData)
 
 describe "DocxGenTemplating", () ->
-	callbackLoadedTaggedDocx = jasmine.createSpy();
-	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', '../examples/tagExample.docx', true)
-	if xhrDoc.overrideMimeType
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.taggedDocx=new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDoc.send()
+	callBack = jasmine.createSpy();
 
-	xhrDocExpected= new XMLHttpRequest()
-	xhrDocExpected.open('GET', '../examples/tagExampleExpected.docx', true)
-	if xhrDocExpected.overrideMimeType
-		xhrDocExpected.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDocExpected.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			window.docDataExpected=this.response
-			callbackLoadedTaggedDocx()
-	xhrDocExpected.send()
+	loadDoc('tagExample.docx',callBack)
+	loadDoc('tagExampleExpected.docx',callBack)
 
 	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=2  #loaded both startDocx and expectedDocx
+		callBack.callCount>=2  #loaded both startDocx and expectedDocx
 
 	describe "text templating", () ->
 		it "should change values with template vars", () ->
@@ -114,22 +85,22 @@ describe "DocxGenTemplating", () ->
 				"last_name":"Edgar",
 				"phone":"0652455478"
 				"description":"New Website"
-			taggedDocx.setTemplateVars templateVars
-			taggedDocx.applyTemplateVars()
-			expect(taggedDocx.getFullText()).toEqual('Edgar Hipp')
-			expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website')
-			expect(taggedDocx.getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478')
+			docX['tagExample.docx'].setTemplateVars templateVars
+			docX['tagExample.docx'].applyTemplateVars()
+			expect(docX['tagExample.docx'].getFullText()).toEqual('Edgar Hipp')
+			expect(docX['tagExample.docx'].getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website')
+			expect(docX['tagExample.docx'].getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478')
 		it "should export the good file", () ->
-			outputExpected= new DocxGen(docDataExpected)
-			for i of taggedDocx.files
+			outputExpected= new DocxGen(docXData['tagExampleExpected.docx'])
+			for i of docX['tagExample.docx'].files
 				#Everything but the date should be different
-				expect(taggedDocx.files[i].data).toBe(outputExpected.files[i].data)
-				expect(taggedDocx.files[i].name).toBe(outputExpected.files[i].name)
-				expect(taggedDocx.files[i].options.base64).toBe(outputExpected.files[i].options.base64)
-				expect(taggedDocx.files[i].options.binary).toBe(outputExpected.files[i].options.binary)
-				expect(taggedDocx.files[i].options.compression).toBe(outputExpected.files[i].options.compression)
-				expect(taggedDocx.files[i].options.dir).toBe(outputExpected.files[i].options.dir)
-				expect(taggedDocx.files[i].options.date).not.toBe(outputExpected.files[i].options.date)
+				expect(docX['tagExample.docx'].files[i].data).toBe(docX['tagExampleExpected.docx'].files[i].data)
+				expect(docX['tagExample.docx'].files[i].name).toBe(docX['tagExampleExpected.docx'].files[i].name)
+				expect(docX['tagExample.docx'].files[i].options.base64).toBe(docX['tagExampleExpected.docx'].files[i].options.base64)
+				expect(docX['tagExample.docx'].files[i].options.binary).toBe(docX['tagExampleExpected.docx'].files[i].options.binary)
+				expect(docX['tagExample.docx'].files[i].options.compression).toBe(docX['tagExampleExpected.docx'].files[i].options.compression)
+				expect(docX['tagExample.docx'].files[i].options.dir).toBe(docX['tagExampleExpected.docx'].files[i].options.dir)
+				expect(docX['tagExample.docx'].files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].files[i].options.date)
 
 describe "DocxGenTemplatingForLoop", () ->
 	callbackLoadedTaggedDocx = jasmine.createSpy();

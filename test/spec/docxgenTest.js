@@ -32,8 +32,6 @@
       xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
     }
     xhrDoc.onreadystatechange = function(e) {
-      console.log(e);
-      console.log(this);
       if (this.readyState === 4 && this.status === 200) {
         window.docXData[path] = this.response;
         if (noDocx === false) {
@@ -58,29 +56,18 @@
   });
 
   describe("DocxGenLoading", function() {
-    var callbackLoadedDocxImage, xhrImage;
+    var callBack;
 
-    callbackLoadedDocxImage = jasmine.createSpy();
-    loadDoc('imageExample.docx', callbackLoadedDocxImage);
-    xhrImage = new XMLHttpRequest();
-    xhrImage.open('GET', '../examples/image.png', true);
-    if (xhrImage.overrideMimeType) {
-      xhrImage.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrImage.onreadystatechange = function(e) {
-      if (this.readyState === 4 && this.status === 200) {
-        window.imgData = this.response;
-        return callbackLoadedDocxImage();
-      }
-    };
-    xhrImage.send();
+    callBack = jasmine.createSpy();
+    loadDoc('imageExample.docx', callBack);
+    loadDoc('image.png', callBack, true);
     waitsFor(function() {
-      return callbackLoadedDocxImage.callCount >= 2;
+      return callBack.callCount >= 2;
     });
     describe("ajax done correctly", function() {
       it("doc and img Data should have the expected length", function() {
         expect(docXData['imageExample.docx'].length).toEqual(729580);
-        return expect(imgData.length).toEqual(18062);
+        return expect(docXData['image.png'].length).toEqual(18062);
       });
       return it("should have the right number of files (the docx unzipped)", function() {
         return expect(Object.size(docX['imageExample.docx'].files)).toEqual(22);
@@ -117,47 +104,22 @@
         var newImageData, oldImageData;
 
         oldImageData = docX['imageExample.docx'].files['word/media/image1.jpeg'].data;
-        docX['imageExample.docx'].setImage('word/media/image1.jpeg', imgData);
+        docX['imageExample.docx'].setImage('word/media/image1.jpeg', docXData['image.png']);
         newImageData = docX['imageExample.docx'].files['word/media/image1.jpeg'].data;
         expect(oldImageData).not.toEqual(newImageData);
-        return expect(imgData).toEqual(newImageData);
+        return expect(docXData['image.png']).toEqual(newImageData);
       });
     });
   });
 
   describe("DocxGenTemplating", function() {
-    var callbackLoadedTaggedDocx, xhrDoc, xhrDocExpected;
+    var callBack;
 
-    callbackLoadedTaggedDocx = jasmine.createSpy();
-    xhrDoc = new XMLHttpRequest();
-    xhrDoc.open('GET', '../examples/tagExample.docx', true);
-    if (xhrDoc.overrideMimeType) {
-      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDoc.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.taggedDocx = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDoc.send();
-    xhrDocExpected = new XMLHttpRequest();
-    xhrDocExpected.open('GET', '../examples/tagExampleExpected.docx', true);
-    if (xhrDocExpected.overrideMimeType) {
-      xhrDocExpected.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDocExpected.onreadystatechange = function(e) {
-      if (this.readyState === 4 && this.status === 200) {
-        window.docDataExpected = this.response;
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDocExpected.send();
+    callBack = jasmine.createSpy();
+    loadDoc('tagExample.docx', callBack);
+    loadDoc('tagExampleExpected.docx', callBack);
     waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 2;
+      return callBack.callCount >= 2;
     });
     return describe("text templating", function() {
       it("should change values with template vars", function() {
@@ -169,25 +131,25 @@
           "phone": "0652455478",
           "description": "New Website"
         };
-        taggedDocx.setTemplateVars(templateVars);
-        taggedDocx.applyTemplateVars();
-        expect(taggedDocx.getFullText()).toEqual('Edgar Hipp');
-        expect(taggedDocx.getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website');
-        return expect(taggedDocx.getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478');
+        docX['tagExample.docx'].setTemplateVars(templateVars);
+        docX['tagExample.docx'].applyTemplateVars();
+        expect(docX['tagExample.docx'].getFullText()).toEqual('Edgar Hipp');
+        expect(docX['tagExample.docx'].getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website');
+        return expect(docX['tagExample.docx'].getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478');
       });
       return it("should export the good file", function() {
         var i, outputExpected, _results;
 
-        outputExpected = new DocxGen(docDataExpected);
+        outputExpected = new DocxGen(docXData['tagExampleExpected.docx']);
         _results = [];
-        for (i in taggedDocx.files) {
-          expect(taggedDocx.files[i].data).toBe(outputExpected.files[i].data);
-          expect(taggedDocx.files[i].name).toBe(outputExpected.files[i].name);
-          expect(taggedDocx.files[i].options.base64).toBe(outputExpected.files[i].options.base64);
-          expect(taggedDocx.files[i].options.binary).toBe(outputExpected.files[i].options.binary);
-          expect(taggedDocx.files[i].options.compression).toBe(outputExpected.files[i].options.compression);
-          expect(taggedDocx.files[i].options.dir).toBe(outputExpected.files[i].options.dir);
-          _results.push(expect(taggedDocx.files[i].options.date).not.toBe(outputExpected.files[i].options.date));
+        for (i in docX['tagExample.docx'].files) {
+          expect(docX['tagExample.docx'].files[i].data).toBe(docX['tagExampleExpected.docx'].files[i].data);
+          expect(docX['tagExample.docx'].files[i].name).toBe(docX['tagExampleExpected.docx'].files[i].name);
+          expect(docX['tagExample.docx'].files[i].options.base64).toBe(docX['tagExampleExpected.docx'].files[i].options.base64);
+          expect(docX['tagExample.docx'].files[i].options.binary).toBe(docX['tagExampleExpected.docx'].files[i].options.binary);
+          expect(docX['tagExample.docx'].files[i].options.compression).toBe(docX['tagExampleExpected.docx'].files[i].options.compression);
+          expect(docX['tagExample.docx'].files[i].options.dir).toBe(docX['tagExampleExpected.docx'].files[i].options.dir);
+          _results.push(expect(docX['tagExample.docx'].files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].files[i].options.date));
         }
         return _results;
       });
