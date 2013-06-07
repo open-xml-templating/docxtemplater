@@ -10,9 +10,10 @@ window.docX=[]
 window.docXData=[]
 
 loadDoc= (path,callBack,noDocx=false) ->
+	docsToload++
 	xhrDoc= new XMLHttpRequest()
-	window.docxCallback[path]=callBack
-	xhrDoc.open('GET', "../examples/#{path}", true)
+	docxCallback[path]=callBack
+	xhrDoc.open('GET', "../examples/#{path}", false)
 	if xhrDoc.overrideMimeType
 		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
 	xhrDoc.onreadystatechange =(e)->
@@ -20,25 +21,48 @@ loadDoc= (path,callBack,noDocx=false) ->
 			window.docXData[path]=this.response
 			if noDocx==false
 				window.docX[path]=new DocxGen(this.response)
-			window.docxCallback[path]()
+			docxCallback[path]()
 	xhrDoc.send()
+
+docsToload=0;
+
+globalcallBack= ()->
+	docsToload--;
+	console.log "docs #{docsToload}"
+
+
+loadDoc('imageExample.docx',globalcallBack)
+loadDoc('image.png',globalcallBack,true)
+loadDoc('tagExample.docx',globalcallBack)
+loadDoc('tagExampleExpected.docx',globalcallBack)
+loadDoc('tagLoopExample.docx',globalcallBack)
+loadDoc('tagProduitLoop.docx',globalcallBack)
+loadDoc('tagDashLoop.docx',globalcallBack)
+loadDoc('tagDashLoopList.docx',globalcallBack)
+loadDoc('tagDashLoopTable.docx',globalcallBack)
+loadDoc('tagIntelligentLoopTable.docx',globalcallBack)
+loadDoc('tagIntelligentLoopTableExpected.docx',globalcallBack)
+loadDoc('tagDashLoop.docx',globalcallBack)
+
+
+endTime= false
+
+count=0
+
+setTimeout (()-> endTime = true; console.log endTime), 5000
+
+count=0
+
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
 		expect(DocxGen).not.toBe(undefined);
+
 	it "should construct", () ->
 		a= new DocxGen();
 		expect(a).not.toBe(undefined);
-
 describe "DocxGenLoading", () ->
 	#wait till this function has been called twice (once for the docx and once for the image)
-	callBack = jasmine.createSpy();
-	loadDoc('imageExample.docx',callBack)
-	loadDoc('image.png',callBack,true)
-
-	waitsFor () ->
-		callBack.callCount>=2 #loaded docx and image
-
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
 			expect(docXData['imageExample.docx'].length).toEqual(729580)
@@ -70,13 +94,6 @@ describe "DocxGenLoading", () ->
 			expect(docXData['image.png']).toEqual(newImageData)
 
 describe "DocxGenTemplating", () ->
-	callBack = jasmine.createSpy();
-
-	loadDoc('tagExample.docx',callBack)
-	loadDoc('tagExampleExpected.docx',callBack)
-
-	waitsFor () ->
-		callBack.callCount>=2  #loaded both startDocx and expectedDocx
 
 	describe "text templating", () ->
 		it "should change values with template vars", () ->
@@ -103,31 +120,6 @@ describe "DocxGenTemplating", () ->
 				expect(docX['tagExample.docx'].files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].files[i].options.date)
 
 describe "DocxGenTemplatingForLoop", () ->
-	callbackLoadedTaggedDocx = jasmine.createSpy();
-	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', '../examples/tagLoopExample.docx', true)
-	if xhrDoc.overrideMimeType
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.taggedForDocx= new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDoc.send()
-
-	xhrDocMultipleLoop= new XMLHttpRequest()
-	xhrDocMultipleLoop.open('GET', '../examples/tagProduitLoop.docx', true)
-	if xhrDocMultipleLoop.overrideMimeType
-		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDocMultipleLoop.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.MultipleTaggedDocx= new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDocMultipleLoop.send()
-
-	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=2  #loaded tagLoopExample
 
 	describe "textLoop templating", () ->
 		it "should replace all the tags", () ->
@@ -137,16 +129,16 @@ describe "DocxGenTemplatingForLoop", () ->
 				"telephone":"0652455478"
 				"description":"New Website"
 				"offre":[{"titre":"titre1","prix":"1250"},{"titre":"titre2","prix":"2000"},{"titre":"titre3","prix":"1400"}]
-			taggedForDocx.setTemplateVars templateVars
-			taggedForDocx.applyTemplateVars()
-			expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar')
-			window.content= taggedForDocx.files["word/document.xml"].data
+			docX['tagLoopExample.docx'].setTemplateVars templateVars
+			docX['tagLoopExample.docx'].applyTemplateVars()
+			expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar')
+			window.content= docX['tagLoopExample.docx'].files["word/document.xml"].data
 
 		it "should work with loops inside loops", () ->
 			templateVars = {"products":[{"title":"Microsoft","name":"Windows","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
-			window.MultipleTaggedDocx.setTemplateVars templateVars
-			window.MultipleTaggedDocx.applyTemplateVars()
-			text= window.MultipleTaggedDocx.getFullText()
+			window.docX['tagProduitLoop.docx'].setTemplateVars templateVars
+			window.docX['tagProduitLoop.docx'].applyTemplateVars()
+			text= window.docX['tagProduitLoop.docx'].getFullText()
 			expectedText= "MicrosoftProduct name : WindowsProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
@@ -181,24 +173,10 @@ describe "scope diff calculation", () ->
 		expect(scope).toEqual([ { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 } ])
 
 describe "scope inner text", () ->
-	callbackLoadedTaggedDocx = jasmine.createSpy();
-	xhrDocMultipleLoop= new XMLHttpRequest()
-	xhrDocMultipleLoop.open('GET', '../examples/tagProduitLoop.docx', true)
-	if xhrDocMultipleLoop.overrideMimeType
-		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDocMultipleLoop.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.taggedProduct= new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDocMultipleLoop.send()
-
-	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=1  #loaded tagLoopExample
-
 	it "should find the scope" , () ->	
 		xmlTemplater= new XmlTemplater()
-		scope= xmlTemplater.calcInnerTextScope taggedProduct.files["word/document.xml"].data ,1195,1245,'w:p'
+		docX['tagProduitLoop.docx']= new DocxGen(docXData['tagProduitLoop.docx'])
+		scope= xmlTemplater.calcInnerTextScope docX['tagProduitLoop.docx'].files["word/document.xml"].data ,1195,1245,'w:p'
 		obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
 		expect(scope.endTag).toEqual(obj.endTag)
 		expect(scope.startTag).toEqual(obj.startTag)
@@ -206,118 +184,63 @@ describe "scope inner text", () ->
 		expect(scope.text).toEqual(obj.text)
 
 describe "Dash Loop Testing", () ->
-	callbackLoadedTaggedDocx = jasmine.createSpy();
-	xhrDocMultipleLoop= new XMLHttpRequest()
-	xhrDocMultipleLoop.open('GET', '../examples/tagDashLoop.docx', true)
-	if xhrDocMultipleLoop.overrideMimeType
-		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDocMultipleLoop.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.taggedDashLoop= new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDocMultipleLoop.send()
-
-	xhrDashLoopTable= new XMLHttpRequest()
-	xhrDashLoopTable.open('GET', '../examples/tagDashLoopTable.docx', true)
-	if xhrDashLoopTable.overrideMimeType
-		xhrDashLoopTable.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDashLoopTable.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.taggedDashLoopTable= new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDashLoopTable.send()
-
-	xhrDashLoopList= new XMLHttpRequest()
-	xhrDashLoopList.open('GET', '../examples/tagDashLoopList.docx', true)
-	if xhrDashLoopList.overrideMimeType
-		xhrDashLoopList.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDashLoopList.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.taggedDashLoopList= new DocxGen(docData)
-			callbackLoadedTaggedDocx()
-	xhrDashLoopList.send()
-
-	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=3  #loaded tagLoopExample
 
 	it "dash loop ok on simple table -> w:tr" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-		taggedDashLoop.setTemplateVars(templateVars)
-		taggedDashLoop.applyTemplateVars()
+		docX['tagDashLoop.docx'].setTemplateVars(templateVars)
+		docX['tagDashLoop.docx'].applyTemplateVars()
 		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
-		text=taggedDashLoop.getFullText()
+		text=docX['tagDashLoop.docx'].getFullText()
 		expect(text).toBe(expectedText)
 
 	it "dash loop ok on simple table -> w:table" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-		taggedDashLoopTable.setTemplateVars(templateVars)
-		taggedDashLoopTable.applyTemplateVars()
+		docX['tagDashLoopTable.docx'].setTemplateVars(templateVars)
+		docX['tagDashLoopTable.docx'].applyTemplateVars()
 		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
-		text=taggedDashLoopTable.getFullText()
+		text=docX['tagDashLoopTable.docx'].getFullText()
 		expect(text).toBe(expectedText)
 
 	it "dash loop ok on simple list -> w:p" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-		taggedDashLoopList.setTemplateVars(templateVars)
-		taggedDashLoopList.applyTemplateVars()
+		docX['tagDashLoopList.docx'].setTemplateVars(templateVars)
+		docX['tagDashLoopList.docx'].applyTemplateVars()
 		expectedText= 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX '
-		text=taggedDashLoopList.getFullText()
+		text=docX['tagDashLoopList.docx'].getFullText()
 		expect(text).toBe(expectedText)
 
 describe "Intelligent Loop Tagging", () ->
-	callbackLoadedTaggedDocx = jasmine.createSpy();
-	
-	xhrDocMultipleLoop= new XMLHttpRequest()
-	xhrDocMultipleLoop.open('GET', '../examples/tagIntelligentLoopTable.docx', true)
-	if xhrDocMultipleLoop.overrideMimeType
-		xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDocMultipleLoop.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.tagIntelligentTableDocx= new DocxGen(docData,{},true)
-			callbackLoadedTaggedDocx()
-	xhrDocMultipleLoop.send()
-
-	callbackLoadedTaggedDocx = jasmine.createSpy();
-	
-	xhrDocExpected= new XMLHttpRequest()
-	xhrDocExpected.open('GET', '../examples/tagIntelligentLoopTableExpected.docx', true)
-	if xhrDocExpected.overrideMimeType
-		xhrDocExpected.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDocExpected.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			docData=this.response
-			window.tagIntelligentTableDocxExpected= new DocxGen(docData,{},true)
-			callbackLoadedTaggedDocx()
-	xhrDocExpected.send()
-
-	waitsFor () ->
-		callbackLoadedTaggedDocx.callCount>=2  #loaded tagLoopExample
-
 	it "should work with tables" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-		tagIntelligentTableDocx.setTemplateVars(templateVars)
-		tagIntelligentTableDocx.applyTemplateVars()
+		docX['tagIntelligentLoopTable.docx'].setTemplateVars(templateVars)
+		docX['tagIntelligentLoopTable.docx'].applyTemplateVars()
 		expectedText= 'linux0Ubuntu10windows500Win7apple1200MACOSX'
-		text=tagIntelligentTableDocx.getFullText()
+		text=docX['tagIntelligentLoopTableExpected.docx'].getFullText()
 		expect(text).toBe(expectedText)
 
-		for i of tagIntelligentTableDocx.files
+		for i of docX['tagIntelligentLoopTableExpected.docx'].files
 			#Everything but the date should be different
-			expect(tagIntelligentTableDocx.files[i].data).toBe(tagIntelligentTableDocxExpected.files[i].data)
-			expect(tagIntelligentTableDocx.files[i].name).toBe(tagIntelligentTableDocxExpected.files[i].name)
-			expect(tagIntelligentTableDocx.files[i].options.base64).toBe(tagIntelligentTableDocxExpected.files[i].options.base64)
-			expect(tagIntelligentTableDocx.files[i].options.binary).toBe(tagIntelligentTableDocxExpected.files[i].options.binary)
-			expect(tagIntelligentTableDocx.files[i].options.compression).toBe(tagIntelligentTableDocxExpected.files[i].options.compression)
-			expect(tagIntelligentTableDocx.files[i].options.dir).toBe(tagIntelligentTableDocxExpected.files[i].options.dir)
-			expect(tagIntelligentTableDocx.files[i].options.date).not.toBe(tagIntelligentTableDocxExpected.files[i].options.date)
+			# if docX['tagIntelligentLoopTable.docx'].files[i].data!=docX['tagIntelligentLoopTableExpected.docx'].files[i].data
+			# 	a= docX['tagIntelligentLoopTable.docx'].files[i].data
+			# 	b=docX['tagIntelligentLoopTableExpected.docx'].files[i].data
+			# 	console.log a
+			# 	console.log b
+			# 	for char,j in docX['tagIntelligentLoopTable.docx'].files[i].data when j<2000
+			# 		a= docX['tagIntelligentLoopTable.docx'].files[i].data[j]
+			# 		b=docX['tagIntelligentLoopTableExpected.docx'].files[i].data[j]
+			# 		if a!=b then console.log "#{a}+#{b}+#{j}"
+			
+			expect(docX['tagIntelligentLoopTable.docx'].files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].data)
+			expect(docX['tagIntelligentLoopTable.docx'].files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].name)
+			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.base64)
+			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.binary).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.binary)
+			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.compression).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.compression)
+			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.dir)
+			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.date)
 
 describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->

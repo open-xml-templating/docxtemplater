@@ -1,6 +1,6 @@
 //@ sourceMappingURL=docxgenTest.map
 (function() {
-  var loadDoc;
+  var count, docsToload, endTime, globalcallBack, loadDoc;
 
   Object.size = function(obj) {
     var key, log, size;
@@ -25,9 +25,10 @@
     if (noDocx == null) {
       noDocx = false;
     }
+    docsToload++;
     xhrDoc = new XMLHttpRequest();
-    window.docxCallback[path] = callBack;
-    xhrDoc.open('GET', "../examples/" + path, true);
+    docxCallback[path] = callBack;
+    xhrDoc.open('GET', "../examples/" + path, false);
     if (xhrDoc.overrideMimeType) {
       xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
     }
@@ -37,11 +38,53 @@
         if (noDocx === false) {
           window.docX[path] = new DocxGen(this.response);
         }
-        return window.docxCallback[path]();
+        return docxCallback[path]();
       }
     };
     return xhrDoc.send();
   };
+
+  docsToload = 0;
+
+  globalcallBack = function() {
+    docsToload--;
+    return console.log("docs " + docsToload);
+  };
+
+  loadDoc('imageExample.docx', globalcallBack);
+
+  loadDoc('image.png', globalcallBack, true);
+
+  loadDoc('tagExample.docx', globalcallBack);
+
+  loadDoc('tagExampleExpected.docx', globalcallBack);
+
+  loadDoc('tagLoopExample.docx', globalcallBack);
+
+  loadDoc('tagProduitLoop.docx', globalcallBack);
+
+  loadDoc('tagDashLoop.docx', globalcallBack);
+
+  loadDoc('tagDashLoopList.docx', globalcallBack);
+
+  loadDoc('tagDashLoopTable.docx', globalcallBack);
+
+  loadDoc('tagIntelligentLoopTable.docx', globalcallBack);
+
+  loadDoc('tagIntelligentLoopTableExpected.docx', globalcallBack);
+
+  loadDoc('tagDashLoop.docx', globalcallBack);
+
+  endTime = false;
+
+  count = 0;
+
+  setTimeout((function() {
+    endTime = true;
+    return console.log(endTime);
+  }), 5000);
+
+  count = 0;
 
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
@@ -56,14 +99,6 @@
   });
 
   describe("DocxGenLoading", function() {
-    var callBack;
-
-    callBack = jasmine.createSpy();
-    loadDoc('imageExample.docx', callBack);
-    loadDoc('image.png', callBack, true);
-    waitsFor(function() {
-      return callBack.callCount >= 2;
-    });
     describe("ajax done correctly", function() {
       it("doc and img Data should have the expected length", function() {
         expect(docXData['imageExample.docx'].length).toEqual(729580);
@@ -113,14 +148,6 @@
   });
 
   describe("DocxGenTemplating", function() {
-    var callBack;
-
-    callBack = jasmine.createSpy();
-    loadDoc('tagExample.docx', callBack);
-    loadDoc('tagExampleExpected.docx', callBack);
-    waitsFor(function() {
-      return callBack.callCount >= 2;
-    });
     return describe("text templating", function() {
       it("should change values with template vars", function() {
         var templateVars;
@@ -157,42 +184,6 @@
   });
 
   describe("DocxGenTemplatingForLoop", function() {
-    var callbackLoadedTaggedDocx, xhrDoc, xhrDocMultipleLoop;
-
-    callbackLoadedTaggedDocx = jasmine.createSpy();
-    xhrDoc = new XMLHttpRequest();
-    xhrDoc.open('GET', '../examples/tagLoopExample.docx', true);
-    if (xhrDoc.overrideMimeType) {
-      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDoc.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.taggedForDocx = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDoc.send();
-    xhrDocMultipleLoop = new XMLHttpRequest();
-    xhrDocMultipleLoop.open('GET', '../examples/tagProduitLoop.docx', true);
-    if (xhrDocMultipleLoop.overrideMimeType) {
-      xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDocMultipleLoop.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.MultipleTaggedDocx = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDocMultipleLoop.send();
-    waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 2;
-    });
     return describe("textLoop templating", function() {
       it("should replace all the tags", function() {
         var templateVars;
@@ -215,10 +206,10 @@
             }
           ]
         };
-        taggedForDocx.setTemplateVars(templateVars);
-        taggedForDocx.applyTemplateVars();
-        expect(taggedForDocx.getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar');
-        return window.content = taggedForDocx.files["word/document.xml"].data;
+        docX['tagLoopExample.docx'].setTemplateVars(templateVars);
+        docX['tagLoopExample.docx'].applyTemplateVars();
+        expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar');
+        return window.content = docX['tagLoopExample.docx'].files["word/document.xml"].data;
       });
       return it("should work with loops inside loops", function() {
         var expectedText, templateVars, text;
@@ -280,9 +271,9 @@
             }
           ]
         };
-        window.MultipleTaggedDocx.setTemplateVars(templateVars);
-        window.MultipleTaggedDocx.applyTemplateVars();
-        text = window.MultipleTaggedDocx.getFullText();
+        window.docX['tagProduitLoop.docx'].setTemplateVars(templateVars);
+        window.docX['tagProduitLoop.docx'].applyTemplateVars();
+        text = window.docX['tagProduitLoop.docx'].getFullText();
         expectedText = "MicrosoftProduct name : WindowsProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
         expect(text.length).toEqual(expectedText.length);
         return expect(text).toEqual(expectedText);
@@ -425,32 +416,12 @@
   });
 
   describe("scope inner text", function() {
-    var callbackLoadedTaggedDocx, xhrDocMultipleLoop;
-
-    callbackLoadedTaggedDocx = jasmine.createSpy();
-    xhrDocMultipleLoop = new XMLHttpRequest();
-    xhrDocMultipleLoop.open('GET', '../examples/tagProduitLoop.docx', true);
-    if (xhrDocMultipleLoop.overrideMimeType) {
-      xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDocMultipleLoop.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.taggedProduct = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDocMultipleLoop.send();
-    waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 1;
-    });
     return it("should find the scope", function() {
       var obj, scope, xmlTemplater;
 
       xmlTemplater = new XmlTemplater();
-      scope = xmlTemplater.calcInnerTextScope(taggedProduct.files["word/document.xml"].data, 1195, 1245, 'w:p');
+      docX['tagProduitLoop.docx'] = new DocxGen(docXData['tagProduitLoop.docx']);
+      scope = xmlTemplater.calcInnerTextScope(docX['tagProduitLoop.docx'].files["word/document.xml"].data, 1195, 1245, 'w:p');
       obj = {
         text: "<w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>",
         startTag: 1134,
@@ -464,57 +435,6 @@
   });
 
   describe("Dash Loop Testing", function() {
-    var callbackLoadedTaggedDocx, xhrDashLoopList, xhrDashLoopTable, xhrDocMultipleLoop;
-
-    callbackLoadedTaggedDocx = jasmine.createSpy();
-    xhrDocMultipleLoop = new XMLHttpRequest();
-    xhrDocMultipleLoop.open('GET', '../examples/tagDashLoop.docx', true);
-    if (xhrDocMultipleLoop.overrideMimeType) {
-      xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDocMultipleLoop.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.taggedDashLoop = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDocMultipleLoop.send();
-    xhrDashLoopTable = new XMLHttpRequest();
-    xhrDashLoopTable.open('GET', '../examples/tagDashLoopTable.docx', true);
-    if (xhrDashLoopTable.overrideMimeType) {
-      xhrDashLoopTable.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDashLoopTable.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.taggedDashLoopTable = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDashLoopTable.send();
-    xhrDashLoopList = new XMLHttpRequest();
-    xhrDashLoopList.open('GET', '../examples/tagDashLoopList.docx', true);
-    if (xhrDashLoopList.overrideMimeType) {
-      xhrDashLoopList.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDashLoopList.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.taggedDashLoopList = new DocxGen(docData);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDashLoopList.send();
-    waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 3;
-    });
     it("dash loop ok on simple table -> w:tr", function() {
       var expectedText, templateVars, text;
 
@@ -535,10 +455,10 @@
           }
         ]
       };
-      taggedDashLoop.setTemplateVars(templateVars);
-      taggedDashLoop.applyTemplateVars();
+      docX['tagDashLoop.docx'].setTemplateVars(templateVars);
+      docX['tagDashLoop.docx'].applyTemplateVars();
       expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
-      text = taggedDashLoop.getFullText();
+      text = docX['tagDashLoop.docx'].getFullText();
       return expect(text).toBe(expectedText);
     });
     it("dash loop ok on simple table -> w:table", function() {
@@ -561,10 +481,10 @@
           }
         ]
       };
-      taggedDashLoopTable.setTemplateVars(templateVars);
-      taggedDashLoopTable.applyTemplateVars();
+      docX['tagDashLoopTable.docx'].setTemplateVars(templateVars);
+      docX['tagDashLoopTable.docx'].applyTemplateVars();
       expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
-      text = taggedDashLoopTable.getFullText();
+      text = docX['tagDashLoopTable.docx'].getFullText();
       return expect(text).toBe(expectedText);
     });
     return it("dash loop ok on simple list -> w:p", function() {
@@ -587,52 +507,15 @@
           }
         ]
       };
-      taggedDashLoopList.setTemplateVars(templateVars);
-      taggedDashLoopList.applyTemplateVars();
+      docX['tagDashLoopList.docx'].setTemplateVars(templateVars);
+      docX['tagDashLoopList.docx'].applyTemplateVars();
       expectedText = 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX ';
-      text = taggedDashLoopList.getFullText();
+      text = docX['tagDashLoopList.docx'].getFullText();
       return expect(text).toBe(expectedText);
     });
   });
 
   describe("Intelligent Loop Tagging", function() {
-    var callbackLoadedTaggedDocx, xhrDocExpected, xhrDocMultipleLoop;
-
-    callbackLoadedTaggedDocx = jasmine.createSpy();
-    xhrDocMultipleLoop = new XMLHttpRequest();
-    xhrDocMultipleLoop.open('GET', '../examples/tagIntelligentLoopTable.docx', true);
-    if (xhrDocMultipleLoop.overrideMimeType) {
-      xhrDocMultipleLoop.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDocMultipleLoop.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.tagIntelligentTableDocx = new DocxGen(docData, {}, true);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDocMultipleLoop.send();
-    callbackLoadedTaggedDocx = jasmine.createSpy();
-    xhrDocExpected = new XMLHttpRequest();
-    xhrDocExpected.open('GET', '../examples/tagIntelligentLoopTableExpected.docx', true);
-    if (xhrDocExpected.overrideMimeType) {
-      xhrDocExpected.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDocExpected.onreadystatechange = function(e) {
-      var docData;
-
-      if (this.readyState === 4 && this.status === 200) {
-        docData = this.response;
-        window.tagIntelligentTableDocxExpected = new DocxGen(docData, {}, true);
-        return callbackLoadedTaggedDocx();
-      }
-    };
-    xhrDocExpected.send();
-    waitsFor(function() {
-      return callbackLoadedTaggedDocx.callCount >= 2;
-    });
     return it("should work with tables", function() {
       var expectedText, i, templateVars, text, _results;
 
@@ -653,20 +536,20 @@
           }
         ]
       };
-      tagIntelligentTableDocx.setTemplateVars(templateVars);
-      tagIntelligentTableDocx.applyTemplateVars();
+      docX['tagIntelligentLoopTable.docx'].setTemplateVars(templateVars);
+      docX['tagIntelligentLoopTable.docx'].applyTemplateVars();
       expectedText = 'linux0Ubuntu10windows500Win7apple1200MACOSX';
-      text = tagIntelligentTableDocx.getFullText();
+      text = docX['tagIntelligentLoopTableExpected.docx'].getFullText();
       expect(text).toBe(expectedText);
       _results = [];
-      for (i in tagIntelligentTableDocx.files) {
-        expect(tagIntelligentTableDocx.files[i].data).toBe(tagIntelligentTableDocxExpected.files[i].data);
-        expect(tagIntelligentTableDocx.files[i].name).toBe(tagIntelligentTableDocxExpected.files[i].name);
-        expect(tagIntelligentTableDocx.files[i].options.base64).toBe(tagIntelligentTableDocxExpected.files[i].options.base64);
-        expect(tagIntelligentTableDocx.files[i].options.binary).toBe(tagIntelligentTableDocxExpected.files[i].options.binary);
-        expect(tagIntelligentTableDocx.files[i].options.compression).toBe(tagIntelligentTableDocxExpected.files[i].options.compression);
-        expect(tagIntelligentTableDocx.files[i].options.dir).toBe(tagIntelligentTableDocxExpected.files[i].options.dir);
-        _results.push(expect(tagIntelligentTableDocx.files[i].options.date).not.toBe(tagIntelligentTableDocxExpected.files[i].options.date));
+      for (i in docX['tagIntelligentLoopTableExpected.docx'].files) {
+        expect(docX['tagIntelligentLoopTable.docx'].files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].data);
+        expect(docX['tagIntelligentLoopTable.docx'].files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].name);
+        expect(docX['tagIntelligentLoopTable.docx'].files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.base64);
+        expect(docX['tagIntelligentLoopTable.docx'].files[i].options.binary).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.binary);
+        expect(docX['tagIntelligentLoopTable.docx'].files[i].options.compression).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.compression);
+        expect(docX['tagIntelligentLoopTable.docx'].files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.dir);
+        _results.push(expect(docX['tagIntelligentLoopTable.docx'].files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.date));
       }
       return _results;
     });

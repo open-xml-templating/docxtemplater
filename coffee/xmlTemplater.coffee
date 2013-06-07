@@ -55,7 +55,6 @@ window.XmlTemplater = class XmlTemplater
 			else	#opening tag
 				result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 		result
-
 	calcScopeDifference: (text,start=0,end=text.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this text, the XML will  break
 		scope= @calcScopeText text,start,end
 		while(1)
@@ -120,6 +119,7 @@ window.XmlTemplater = class XmlTemplater
 
 		if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
+
 		if @currentScope[@loopOpen.tag]?
 			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
@@ -130,7 +130,7 @@ window.XmlTemplater = class XmlTemplater
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
 		else @content= @content.replace B, ""
-
+		
 		nextFile= new XmlTemplater @content,@currentScope,@intelligentTagging
 		nextFile.applyTemplateVars()
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
@@ -140,8 +140,7 @@ window.XmlTemplater = class XmlTemplater
 	dashLoop: (elementDashLoop) ->
 
 		{B,startB,endB}= @calcB()
-		# endB= @matches[@loopClose.end.i].offset+@matches[@loopClose.end.i][1].length+@charactersAdded[@loopClose.end.i]+@loopClose.end.j+1
-		resultFullScope = (@calcInnerTextScope @content, startB, endB, elementDashLoop)
+		resultFullScope = @calcInnerTextScope @content, startB, endB, elementDashLoop
 		for t in [0..@matches.length]
 			@charactersAdded[t]-=resultFullScope.startTag
 		B= resultFullScope.text
