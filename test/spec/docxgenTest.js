@@ -1,6 +1,6 @@
 //@ sourceMappingURL=docxgenTest.map
 (function() {
-  var count, docsToload, endTime, globalcallBack, loadDoc;
+  var globalcallBack, loadDoc;
 
   Object.size = function(obj) {
     var key, log, size;
@@ -19,15 +19,13 @@
 
   window.docXData = [];
 
-  loadDoc = function(path, callBack, noDocx) {
+  loadDoc = function(path, noDocx) {
     var xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
     }
-    docsToload++;
     xhrDoc = new XMLHttpRequest();
-    docxCallback[path] = callBack;
     xhrDoc.open('GET', "../examples/" + path, false);
     if (xhrDoc.overrideMimeType) {
       xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
@@ -36,55 +34,38 @@
       if (this.readyState === 4 && this.status === 200) {
         window.docXData[path] = this.response;
         if (noDocx === false) {
-          window.docX[path] = new DocxGen(this.response);
+          return window.docX[path] = new DocxGen(this.response);
         }
-        return docxCallback[path]();
       }
     };
     return xhrDoc.send();
   };
 
-  docsToload = 0;
+  globalcallBack = function() {};
 
-  globalcallBack = function() {
-    docsToload--;
-    return console.log("docs " + docsToload);
-  };
+  loadDoc('imageExample.docx');
 
-  loadDoc('imageExample.docx', globalcallBack);
+  loadDoc('image.png', true);
 
-  loadDoc('image.png', globalcallBack, true);
+  loadDoc('tagExample.docx');
 
-  loadDoc('tagExample.docx', globalcallBack);
+  loadDoc('tagExampleExpected.docx');
 
-  loadDoc('tagExampleExpected.docx', globalcallBack);
+  loadDoc('tagLoopExample.docx');
 
-  loadDoc('tagLoopExample.docx', globalcallBack);
+  loadDoc('tagProduitLoop.docx');
 
-  loadDoc('tagProduitLoop.docx', globalcallBack);
+  loadDoc('tagDashLoop.docx');
 
-  loadDoc('tagDashLoop.docx', globalcallBack);
+  loadDoc('tagDashLoopList.docx');
 
-  loadDoc('tagDashLoopList.docx', globalcallBack);
+  loadDoc('tagDashLoopTable.docx');
 
-  loadDoc('tagDashLoopTable.docx', globalcallBack);
+  loadDoc('tagIntelligentLoopTable.docx');
 
-  loadDoc('tagIntelligentLoopTable.docx', globalcallBack);
+  loadDoc('tagIntelligentLoopTableExpected.docx');
 
-  loadDoc('tagIntelligentLoopTableExpected.docx', globalcallBack);
-
-  loadDoc('tagDashLoop.docx', globalcallBack);
-
-  endTime = false;
-
-  count = 0;
-
-  setTimeout((function() {
-    endTime = true;
-    return console.log(endTime);
-  }), 5000);
-
-  count = 0;
+  loadDoc('tagDashLoop.docx');
 
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
@@ -543,7 +524,6 @@
       expect(text).toBe(expectedText);
       _results = [];
       for (i in docX['tagIntelligentLoopTableExpected.docx'].files) {
-        expect(docX['tagIntelligentLoopTable.docx'].files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].data);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].name);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.base64);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].options.binary).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.binary);
