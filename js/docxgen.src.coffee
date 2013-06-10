@@ -373,7 +373,10 @@ window.DocxGen = class DocxGen
 		if download==true then doOutput()
 		outputFile
 	getFullText:(path="word/document.xml",data="") ->
-		currentFile= new XmlTemplater(@files[path].data,@templateVars,@intelligentTagging)
+		if data==""
+			currentFile= new XmlTemplater(@files[path].data,@templateVars,@intelligentTagging)
+		else
+			currentFile= new XmlTemplater(data,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)

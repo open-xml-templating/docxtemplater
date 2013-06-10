@@ -679,7 +679,11 @@
       if (data == null) {
         data = "";
       }
-      currentFile = new XmlTemplater(this.files[path].data, this.templateVars, this.intelligentTagging);
+      if (data === "") {
+        currentFile = new XmlTemplater(this.files[path].data, this.templateVars, this.intelligentTagging);
+      } else {
+        currentFile = new XmlTemplater(data, this.templateVars, this.intelligentTagging);
+      }
       return currentFile.getFullText();
     };
 

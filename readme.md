@@ -2,9 +2,39 @@
 
 **docxgen.js** is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images.
 
+## Syntax ##
+
+The *syntax* is highly inspired by [Mustache](http://mustache.github.io/). The template is created in Microsoft Word or an equivalent docx saver.
+
+It uses single brackets {} for variables.
+
+    Hello {name} !
+
+    vars={name:'Edgar'}
+
+will result in:
+
+    Hello Edgar !
+
+Like Mustache, it has the loopopening {#} and loopclosing {/} brackets
+
+    {#products}{name}, {price} €
+    {/products}
+
+    vars={products:[{name:"Windows",price:100},{name:"Mac OSX",price:200},{name:"Ubuntu",price:0}]}
+
+will result in :
+
+    Windows, 100 €
+    Mac OSX, 200 €
+    Ubuntu, 0€
+
 ## Demo ##
 
 A simple Demo can be found here: http://javascript-ninja.fr/docxgenjs/examples/simpleTagging.html#
+
+A simple Demo for replacing images can be found here: http://javascript-ninja.fr/docxgenjs/examples/imageTagging.html#
+
 
 ## Dependencies ##
 
@@ -15,7 +45,7 @@ A simple Demo can be found here: http://javascript-ninja.fr/docxgenjs/examples/s
 - jszip-load.js
 - jszip-inflate.js
 
-2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download
+2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended.
 
 ## Browser support ##
 
@@ -26,7 +56,7 @@ docxgen.js works with
 - Safari
 - Opera
 
-Internet explorer is not yet supported
+Internet explorer is not supported (basically because xhr Requests can't be made on binary files)
 
 ## Usage ##
 
@@ -36,7 +66,7 @@ Internet explorer is not yet supported
 
         This function returns a new DocxGen Object
 
-    new DocxGen(content[,templateVars])
+    new DocxGen(content[,templateVars,intelligentTagging])
 
         content: 
             Type: string
@@ -45,6 +75,11 @@ Internet explorer is not yet supported
         templateVars:
             Type: Object {tag_name:tag_replacement}
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
+
+        intelligentTagging:
+            Type: boolean [false]
+            If intelligent Tagging is not set to true, when using recursive tags ({#tag} and {/tag}), the system will copy paste what is between the start tag and the endtag, this could basically corrupt the files if recursive tags are used inside tables.
+            If intelligent Tagging is set to true, and when using recursive tags inside tables, the whole column will be copy pasted.
 
 ### Docxgen methods ###
 
@@ -112,8 +147,9 @@ Internet explorer is not yet supported
 
         path
             Type:"String"
-            Default:"document.xml"
-            This argument determines from which document you want to get the text. The main document is called document.xml, but they are other documents: "header1.xml", "footer1.xml"
+            Default:"word/document.xml"
+            This argument determines from which document you want to get the text. The main document is called word/document.xml, but they are other documents: "word/header1.xml", "word/footer1.xml"
+
 
 ## Known issues ##
 
