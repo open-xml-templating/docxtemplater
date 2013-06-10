@@ -28,12 +28,22 @@ window.XmlTemplater = class XmlTemplater
 	load: (@content) ->
 		@matches = @_getFullTextMatchesFromData()
 		@charactersAdded= (0 for i in [0...@matches.length])
-		replacer = (match,pn ..., offset, string)=>
+		replacerUnshift = (match,pn ..., offset, string)=>
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
+			pn.first= true
 			@matches.unshift pn #add at the beginning
 			@charactersAdded.unshift 0
-		@content.replace /^()([^<]+)/,replacer
+		@content.replace /^()([^<]+)/,replacerUnshift
+		
+		replacerPush = (match,pn ..., offset, string)=>
+			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+			pn.offset= offset
+			pn.last= true
+			@matches.push pn #add at the beginning
+			@charactersAdded.push 0
+		@content.replace /(<w:t[^>]*>)([^>]+)$/,replacerPush
+
 	getValueFromTag: (tag,scope) ->
 		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
 	calcScopeText: (text,start=0,end=text.length-1) ->
@@ -201,17 +211,30 @@ window.XmlTemplater = class XmlTemplater
 	replaceCurly: (newValue,content=@content) ->
 		if (@matches[@bracketEnd.i][2].indexOf ('}'))==-1 then throw "no closing bracket at @bracketEnd.i #{@matches[@bracketEnd.i][2]}"
 		if (@matches[@bracketStart.i][2].indexOf ('{'))==-1 then throw "no opening bracket at @bracketStart.i #{@matches[@bracketStart.i][2]}"
-
+		copyContent=content
 		if @bracketEnd.i==@bracketStart.i #<w>{aaaaa}</w>
-			insideValue =@matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
-			content= @replaceXmlTag(content,@bracketStart.i,insideValue,true)
+			if (@matches[@bracketStart.i].first?)
+				console.log 'match first'
+				insideValue= @matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
+				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true,true)
+
+			else if (@matches[@bracketStart.i].last?)
+				console.log 'match first'
+				insideValue= @matches[@bracketStart.i][0].replace "{#{@textInsideBracket}}", newValue
+				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true,true)
+			else
+				insideValue= @matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
+				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true)
+
 		else if @bracketEnd.i>@bracketStart.i
 
 			# 1. for the first (@bracketStart.i): replace __{.. by __value
 			regexRight= /^([^{]*){.*$/
 			subMatches= @matches[@bracketStart.i][2].match regexRight
 
-			if @matches[@bracketStart.i][1]=="" #if the content starts with:  {tag</w:t>
+			if @matches[@bracketStart.i].first? #if the content starts with:  {tag</w:t>
+				content= @replaceXmlTag(content,@bracketStart.i,newValue,true,true)
+			else if @matches[@bracketStart.i].last?
 				content= @replaceXmlTag(content,@bracketStart.i,newValue,true,true)
 			else
 				insideValue=subMatches[1]+newValue
@@ -230,7 +253,7 @@ window.XmlTemplater = class XmlTemplater
 
 		for match, j in @matches when j>@bracketEnd.i
 			@charactersAdded[j+1]=@charactersAdded[j]
-
+		if copyContent==content then throw "copycontent=content !!"
 		return content
 	###
 	content is the whole content to be tagged

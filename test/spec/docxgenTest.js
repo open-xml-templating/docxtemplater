@@ -19,11 +19,14 @@
 
   window.docXData = [];
 
-  loadDoc = function(path, noDocx) {
+  loadDoc = function(path, noDocx, intelligentTagging) {
     var xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
+    }
+    if (intelligentTagging == null) {
+      intelligentTagging = false;
     }
     xhrDoc = new XMLHttpRequest();
     xhrDoc.open('GET', "../examples/" + path, false);
@@ -34,7 +37,7 @@
       if (this.readyState === 4 && this.status === 200) {
         window.docXData[path] = this.response;
         if (noDocx === false) {
-          return window.docX[path] = new DocxGen(this.response);
+          return window.docX[path] = new DocxGen(this.response, {}, intelligentTagging);
         }
       }
     };
@@ -61,7 +64,7 @@
 
   loadDoc('tagDashLoopTable.docx');
 
-  loadDoc('tagIntelligentLoopTable.docx');
+  loadDoc('tagIntelligentLoopTable.docx', false, true);
 
   loadDoc('tagIntelligentLoopTableExpected.docx');
 
@@ -151,13 +154,13 @@
         outputExpected = new DocxGen(docXData['tagExampleExpected.docx']);
         _results = [];
         for (i in docX['tagExample.docx'].files) {
-          expect(docX['tagExample.docx'].files[i].data).toBe(docX['tagExampleExpected.docx'].files[i].data);
+          expect(docX['tagExample.docx'].files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].files[i].options.date);
           expect(docX['tagExample.docx'].files[i].name).toBe(docX['tagExampleExpected.docx'].files[i].name);
           expect(docX['tagExample.docx'].files[i].options.base64).toBe(docX['tagExampleExpected.docx'].files[i].options.base64);
           expect(docX['tagExample.docx'].files[i].options.binary).toBe(docX['tagExampleExpected.docx'].files[i].options.binary);
           expect(docX['tagExample.docx'].files[i].options.compression).toBe(docX['tagExampleExpected.docx'].files[i].options.compression);
           expect(docX['tagExample.docx'].files[i].options.dir).toBe(docX['tagExampleExpected.docx'].files[i].options.dir);
-          _results.push(expect(docX['tagExample.docx'].files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].files[i].options.date));
+          _results.push(expect(docX['tagExample.docx'].files[i].data).toBe(docX['tagExampleExpected.docx'].files[i].data));
         }
         return _results;
       });
@@ -498,7 +501,7 @@
 
   describe("Intelligent Loop Tagging", function() {
     return it("should work with tables", function() {
-      var expectedText, i, templateVars, text, _results;
+      var a, b, char, expectedText, i, j, templateVars, text, _i, _len, _ref, _results;
 
       templateVars = {
         "os": [
@@ -523,7 +526,26 @@
       text = docX['tagIntelligentLoopTableExpected.docx'].getFullText();
       expect(text).toBe(expectedText);
       _results = [];
-      for (i in docX['tagIntelligentLoopTableExpected.docx'].files) {
+      for (i in docX['tagIntelligentLoopTable.docx'].files) {
+        if (docX['tagIntelligentLoopTable.docx'].files[i].data !== docX['tagIntelligentLoopTableExpected.docx'].files[i].data) {
+          a = docX['tagIntelligentLoopTable.docx'].files[i].data;
+          b = docX['tagIntelligentLoopTableExpected.docx'].files[i].data;
+          console.log(a);
+          console.log(b);
+          _ref = docX['tagIntelligentLoopTable.docx'].files[i].data;
+          for (j = _i = 0, _len = _ref.length; _i < _len; j = ++_i) {
+            char = _ref[j];
+            if (!(j < 2000)) {
+              continue;
+            }
+            a = docX['tagIntelligentLoopTable.docx'].files[i].data[j];
+            b = docX['tagIntelligentLoopTableExpected.docx'].files[i].data[j];
+            if (a !== b) {
+              console.log("" + a + "+" + b + "+" + j);
+            }
+          }
+        }
+        expect(docX['tagIntelligentLoopTable.docx'].files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].data);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].name);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.base64);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].options.binary).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.binary);
@@ -558,7 +580,46 @@
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
-    return it("should work with loop and innerContent", function() {
+    it("should work with simple Loop", function() {
+      var content, scope, xmlTemplater;
+
+      content = "<w:t>Hello {#names}{name},{/names}</w:t>";
+      scope = {
+        "names": [
+          {
+            "name": "Edgar"
+          }, {
+            "name": "Mary"
+          }, {
+            "name": "John"
+          }
+        ]
+      };
+      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
+    });
+    it("should work with loop and innerContent", function() {
+      var content, scope, xmlTemplater;
+
+      content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t>";
+      scope = {
+        "title": "Everyone uses it",
+        "proof": [
+          {
+            "reason": "it is quite cheap"
+          }, {
+            "reason": "it is quit simple"
+          }, {
+            "reason": "it works on a lot of different Hardware"
+          }
+        ]
+      };
+      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
+    });
+    return it("should work with loop and innerContent (with last)", function() {
       var content, scope, xmlTemplater;
 
       content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t> ";

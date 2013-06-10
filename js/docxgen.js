@@ -54,7 +54,7 @@
     }
 
     XmlTemplater.prototype.load = function(content) {
-      var i, replacer,
+      var i, replacerPush, replacerUnshift,
         _this = this;
 
       this.content = content;
@@ -68,16 +68,28 @@
         }
         return _results;
       }).call(this);
-      replacer = function() {
+      replacerUnshift = function() {
         var match, offset, pn, string, _i;
 
         match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
         pn.unshift(match);
         pn.offset = offset;
+        pn.first = true;
         _this.matches.unshift(pn);
         return _this.charactersAdded.unshift(0);
       };
-      return this.content.replace(/^()([^<]+)/, replacer);
+      this.content.replace(/^()([^<]+)/, replacerUnshift);
+      replacerPush = function() {
+        var match, offset, pn, string, _i;
+
+        match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
+        pn.unshift(match);
+        pn.offset = offset;
+        pn.last = true;
+        _this.matches.push(pn);
+        return _this.charactersAdded.push(0);
+      };
+      return this.content.replace(/(<w:t[^>]*>)([^>]+)$/, replacerPush);
     };
 
     XmlTemplater.prototype.getValueFromTag = function(tag, scope) {
@@ -392,7 +404,7 @@
     };
 
     XmlTemplater.prototype.replaceCurly = function(newValue, content) {
-      var insideValue, j, k, match, regexLeft, regexRight, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
+      var copyContent, insideValue, j, k, match, regexLeft, regexRight, subMatches, _i, _j, _len, _ref, _ref1, _ref2;
 
       if (content == null) {
         content = this.content;
@@ -403,13 +415,26 @@
       if ((this.matches[this.bracketStart.i][2].indexOf('{')) === -1) {
         throw "no opening bracket at @bracketStart.i " + this.matches[this.bracketStart.i][2];
       }
+      copyContent = content;
       if (this.bracketEnd.i === this.bracketStart.i) {
-        insideValue = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
-        content = this.replaceXmlTag(content, this.bracketStart.i, insideValue, true);
+        if ((this.matches[this.bracketStart.i].first != null)) {
+          console.log('match first');
+          insideValue = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
+          content = this.replaceXmlTag(content, this.bracketStart.i, insideValue, true, true);
+        } else if ((this.matches[this.bracketStart.i].last != null)) {
+          console.log('match first');
+          insideValue = this.matches[this.bracketStart.i][0].replace("{" + this.textInsideBracket + "}", newValue);
+          content = this.replaceXmlTag(content, this.bracketStart.i, insideValue, true, true);
+        } else {
+          insideValue = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
+          content = this.replaceXmlTag(content, this.bracketStart.i, insideValue, true);
+        }
       } else if (this.bracketEnd.i > this.bracketStart.i) {
         regexRight = /^([^{]*){.*$/;
         subMatches = this.matches[this.bracketStart.i][2].match(regexRight);
-        if (this.matches[this.bracketStart.i][1] === "") {
+        if (this.matches[this.bracketStart.i].first != null) {
+          content = this.replaceXmlTag(content, this.bracketStart.i, newValue, true, true);
+        } else if (this.matches[this.bracketStart.i].last != null) {
           content = this.replaceXmlTag(content, this.bracketStart.i, newValue, true, true);
         } else {
           insideValue = subMatches[1] + newValue;
@@ -430,6 +455,9 @@
         if (j > this.bracketEnd.i) {
           this.charactersAdded[j + 1] = this.charactersAdded[j];
         }
+      }
+      if (copyContent === content) {
+        throw "copycontent=content !!";
       }
       return content;
     };
