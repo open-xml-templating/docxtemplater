@@ -1,6 +1,6 @@
 //@ sourceMappingURL=docxgenTest.map
 (function() {
-  var globalcallBack, loadDoc;
+  var loadDoc;
 
   Object.size = function(obj) {
     var key, log, size;
@@ -12,8 +12,6 @@
     }
     return size;
   };
-
-  window.docxCallback = [];
 
   window.docX = [];
 
@@ -43,8 +41,6 @@
     };
     return xhrDoc.send();
   };
-
-  globalcallBack = function() {};
 
   loadDoc('imageExample.docx');
 
@@ -368,19 +364,19 @@
     var xmlTemplater;
 
     xmlTemplater = new XmlTemplater();
-    it("should compute the scope between 2 <w:t>", function() {
+    it("should compute the scopeDiff between 2 <w:t>", function() {
       var scope;
 
       scope = xmlTemplater.calcScopeDifference("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
       return expect(scope).toEqual([]);
     });
-    it("should compute the scope between 2 <w:t> in an Array", function() {
+    it("should compute the scopeDiff between 2 <w:t> in an Array", function() {
       var scope;
 
       scope = xmlTemplater.calcScopeDifference("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
       return expect(scope).toEqual([]);
     });
-    return it('should compute the scope between a w:t in an array and the other outside', function() {
+    return it('should compute the scopeDiff between a w:t in an array and the other outside', function() {
       var scope;
 
       scope = xmlTemplater.calcScopeDifference("defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
@@ -645,6 +641,25 @@
       xmlTemplater = new XmlTemplater(content, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
+    });
+    it("should work with dash Loop", function() {
+      var content, scope, xmlTemplater;
+
+      content = "<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>";
+      scope = {
+        "names": [
+          {
+            "name": "Edgar"
+          }, {
+            "name": "Mary"
+          }, {
+            "name": "John"
+          }
+        ]
+      };
+      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,');
     });
     it("should work with loop and innerContent", function() {
       var content, scope, xmlTemplater;

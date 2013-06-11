@@ -349,11 +349,13 @@
         "i": this.loopOpen.start.i,
         "j": this.loopOpen.start.j
       };
+      this.textInsideBracket = "-" + this.loopOpen.element + " " + this.loopOpen.tag;
       A = this.replaceCurly("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
       copyA = A;
+      this.textInsideBracket = "/" + this.loopOpen.tag;
       this.bracketEnd = {
         "i": this.loopClose.end.i,
         "j": this.loopClose.end.j

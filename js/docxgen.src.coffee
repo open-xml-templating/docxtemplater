@@ -168,10 +168,12 @@ window.XmlTemplater = class XmlTemplater
 		#for deleting the opening tag
 		@bracketEnd= {"i":@loopOpen.end.i,"j":@loopOpen.end.j}
 		@bracketStart= {"i":@loopOpen.start.i,"j":@loopOpen.start.j}
+		@textInsideBracket= "-"+@loopOpen.element+" "+@loopOpen.tag
 		A= @replaceCurly("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
 
+		@textInsideBracket= "/"+@loopOpen.tag
 		#for deleting the closing tag
 		@bracketEnd= {"i":@loopClose.end.i,"j":@loopClose.end.j}
 		@bracketStart= {"i":@loopClose.start.i,"j":@loopClose.start.j}

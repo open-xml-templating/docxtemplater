@@ -5,7 +5,6 @@ Object.size = (obj) ->
 		size++
 	size
 
-window.docxCallback=[]
 window.docX=[]
 window.docXData=[]
 
@@ -20,8 +19,6 @@ loadDoc= (path,noDocx=false,intelligentTagging=false) ->
 			if noDocx==false
 				window.docX[path]=new DocxGen(this.response,{},intelligentTagging)
 	xhrDoc.send()
-
-globalcallBack= ()->
 
 loadDoc('imageExample.docx')
 loadDoc('image.png',true)
@@ -39,19 +36,16 @@ loadDoc('tagDashLoop.docx')
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
 		expect(DocxGen).not.toBe(undefined);
-
 	it "should construct", () ->
 		a= new DocxGen();
 		expect(a).not.toBe(undefined);
 describe "DocxGenLoading", () ->
-	#wait till this function has been called twice (once for the docx and once for the image)
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
 			expect(docXData['imageExample.docx'].length).toEqual(729580)
 			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
 			expect(Object.size(docX['imageExample.docx'].files)).toEqual(22)
-
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
 			expect(typeof docX['imageExample.docx']).toBe('object');
@@ -76,7 +70,6 @@ describe "DocxGenLoading", () ->
 			expect(docXData['image.png']).toEqual(newImageData)
 
 describe "DocxGenTemplating", () ->
-
 	describe "text templating", () ->
 		it "should change values with template vars", () ->
 			templateVars=
@@ -102,7 +95,6 @@ describe "DocxGenTemplating", () ->
 				expect(docX['tagExample.docx'].files[i].data).toBe(docX['tagExampleExpected.docx'].files[i].data)
 
 describe "DocxGenTemplatingForLoop", () ->
-
 	describe "textLoop templating", () ->
 		it "should replace all the tags", () ->
 			templateVars =
@@ -115,7 +107,6 @@ describe "DocxGenTemplatingForLoop", () ->
 			docX['tagLoopExample.docx'].applyTemplateVars()
 			expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar')
 			window.content= docX['tagLoopExample.docx'].files["word/document.xml"].data
-
 		it "should work with loops inside loops", () ->
 			templateVars = {"products":[{"title":"Microsoft","name":"Windows","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
 			window.docX['tagProduitLoop.docx'].setTemplateVars templateVars
@@ -124,33 +115,27 @@ describe "DocxGenTemplatingForLoop", () ->
 			expectedText= "MicrosoftProduct name : WindowsProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
-
 describe "scope calculation" , () ->
 	xmlTemplater= new XmlTemplater()
 	it "should compute the scope between 2 <w:t>" , () ->
 		scope= xmlTemplater.calcScopeText """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '<w:p>', offset : 27 }, { tag : '<w:r>', offset : 162 }, { tag : '<w:t>', offset : 188 } ])
-
 	it "should compute the scope between 2 <w:t> in an Array", () ->
 		scope= xmlTemplater.calcScopeText """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 3 }, { tag : '</w:r>', offset : 9 }, { tag : '</w:p>', offset : 15 }, { tag : '</w:tc>', offset : 21 }, { tag : '<w:tc>', offset : 28 }, { tag : '<w:p>', offset : 83 }, { tag : '<w:r>', offset : 268 }, { tag : '<w:t>', offset : 374 } ])
-
 	it 'should compute the scope between a w:t in an array and the other outside', () ->
 		scope= xmlTemplater.calcScopeText """defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
 		expect(scope).toEqual( [ { tag : '</w:t>', offset : 11 }, { tag : '</w:r>', offset : 17 }, { tag : '</w:p>', offset : 23 }, { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 }, { tag : '<w:p>', offset : 191 }, { tag : '<w:r>', offset : 260 }, { tag : '<w:t>', offset : 309 } ])
 
-
 describe "scope diff calculation", () ->
 	xmlTemplater= new XmlTemplater()
-	it "should compute the scope between 2 <w:t>" , () ->
+	it "should compute the scopeDiff between 2 <w:t>" , () ->
 		scope= xmlTemplater.calcScopeDifference """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([])
-
-	it "should compute the scope between 2 <w:t> in an Array", () ->
+	it "should compute the scopeDiff between 2 <w:t> in an Array", () ->
 		scope= xmlTemplater.calcScopeDifference """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
 		expect(scope).toEqual([])
-
-	it 'should compute the scope between a w:t in an array and the other outside', () ->
+	it 'should compute the scopeDiff between a w:t in an array and the other outside', () ->
 		scope= xmlTemplater.calcScopeDifference """defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
 		expect(scope).toEqual([ { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 } ])
 
@@ -166,7 +151,6 @@ describe "scope inner text", () ->
 		expect(scope.text).toEqual(obj.text)
 
 describe "Dash Loop Testing", () ->
-
 	it "dash loop ok on simple table -> w:tr" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
@@ -175,7 +159,6 @@ describe "Dash Loop Testing", () ->
 		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
 		text=docX['tagDashLoop.docx'].getFullText()
 		expect(text).toBe(expectedText)
-
 	it "dash loop ok on simple table -> w:table" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
@@ -184,7 +167,6 @@ describe "Dash Loop Testing", () ->
 		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
 		text=docX['tagDashLoopTable.docx'].getFullText()
 		expect(text).toBe(expectedText)
-
 	it "dash loop ok on simple list -> w:p" , () ->	
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
@@ -203,7 +185,6 @@ describe "Intelligent Loop Tagging", () ->
 		expectedText= 'linux0Ubuntu10windows500Win7apple1200MACOSX'
 		text= docX['tagIntelligentLoopTableExpected.docx'].getFullText()
 		expect(text).toBe(expectedText)
-
 		for i of docX['tagIntelligentLoopTable.docx'].files
 			# Everything but the date should be different
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].data)
@@ -214,18 +195,15 @@ describe "Intelligent Loop Tagging", () ->
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.dir)
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.date)
 
-
 describe "getTemplateVars", () ->
 	it "should work with simple document", () ->
 		docX['tagExample.docx']=new DocxGen docXData['tagExample.docx'],{},false
 		tempVars= docX['tagExample.docx'].getTemplateVars()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { last_name : true, first_name : true } }, { fileName : 'word/footer1.xml', vars : { last_name : true, first_name : true, phone : true } }, { fileName : 'word/header1.xml', vars : { last_name : true, first_name : true, phone : true, description : true } }])
-
 	it "should work with loop document", () ->
 		docX['tagLoopExample.docx']=new DocxGen docXData['tagLoopExample.docx'],{},false
 		tempVars= docX['tagLoopExample.docx'].getTemplateVars()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
-
 
 describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
@@ -234,28 +212,30 @@ describe "xmlTemplater", ()->
 		xmlTemplater= new XmlTemplater(content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
-
 	it "should work with tag in two elements", ()->
 		content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 		scope= {"name":"Edgar"} 
 		xmlTemplater= new XmlTemplater(content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
-
 	it "should work with simple Loop", ()->
 		content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
 		xmlTemplater= new XmlTemplater(content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
-
+	it "should work with dash Loop", ()->
+		content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
+		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
+		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater.applyTemplateVars()
+		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,')
 	it "should work with loop and innerContent", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>"""
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
 		xmlTemplater= new XmlTemplater(content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
-
 	it "should work with loop and innerContent (with last)", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
