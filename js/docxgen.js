@@ -585,6 +585,39 @@
   */
 
 
+  encode_utf8 = function(s) {
+    return unescape(encodeURIComponent(s));
+  };
+
+  decode_utf8 = function(s) {
+    return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
+  };
+
+  preg_match_all = function(regex, content) {
+    /*regex is a string, content is the content. It returns an array of all matches with their offset, for example:
+    	regex=la
+    	content=lolalolilala
+    	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
+    */
+
+    var matchArray, replacer;
+
+    if (!(typeof regex === 'object')) {
+      regex = new RegExp(regex, 'g');
+    }
+    matchArray = [];
+    replacer = function() {
+      var match, offset, pn, string, _i;
+
+      match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
+      pn.unshift(match);
+      pn.offset = offset;
+      return matchArray.push(pn);
+    };
+    content.replace(regex, replacer);
+    return matchArray;
+  };
+
   window.DocxGen = DocxGen = (function() {
     var imageExtensions;
 
@@ -605,6 +638,34 @@
 
       zip = new JSZip(content);
       return this.files = zip.files;
+    };
+
+    DocxGen.prototype.loadImageRels = function() {
+      var content, parser, tag, xmlDoc, _i, _len, _ref;
+
+      content = decode_utf8(this.files["word/_rels/document.xml.rels"].data);
+      if (window.DOMParser) {
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(content, "text/xml");
+      } else {
+        xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+        xmlDoc.async = false;
+        xmlDoc.loadXML(content);
+      }
+      this.maxRid = 0;
+      _ref = xmlDoc.getElementsByTagName('Relationship');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        tag = _ref[_i];
+        if (tag.getAttribute("Type") === "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image") {
+          this.maxRid = Math.max(parseInt(tag.getAttribute("Id").substr(3), this.maxRid));
+        }
+      }
+      this.imageRels = [];
+      return this;
+    };
+
+    DocxGen.prototype.saveImageRels = function() {
+      return this.files["word/_rels/document.xml.rels"].data;
     };
 
     DocxGen.prototype.getImageList = function() {

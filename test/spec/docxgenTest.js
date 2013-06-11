@@ -703,4 +703,13 @@
     });
   });
 
+  describe("image Loop Replacing", function() {
+    return describe('rels', function() {
+      return it('should load', function() {
+        expect(docX['imageExample.docx'].loadImageRels().imageRels).toEqual([]);
+        return expect(docX['imageExample.docx'].maxRid).toEqual(7);
+      });
+    });
+  });
+
 }).call(this);

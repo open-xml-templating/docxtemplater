@@ -317,6 +317,27 @@ Created by Edgar HIPP
 03/06/2013
 ###
 
+encode_utf8 = (s)->
+	unescape(encodeURIComponent(s))
+
+decode_utf8= (s) ->
+	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ") #replace Ascii 160 space by the normal space, Ascii 32
+
+preg_match_all= (regex, content) ->
+	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
+	regex=la
+	content=lolalolilala
+	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
+	###
+	regex= (new RegExp(regex,'g')) unless (typeof regex=='object')
+	matchArray= []
+	replacer = (match,pn ..., offset, string)->
+		pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+		pn.offset= offset
+		matchArray.push pn
+	content.replace regex,replacer
+	matchArray
+
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={},@intelligentTagging=off) ->
@@ -333,6 +354,25 @@ window.DocxGen = class DocxGen
 	load: (content)->
 		zip = new JSZip content
 		@files=zip.files
+	loadImageRels: () ->
+		content= decode_utf8 @files["word/_rels/document.xml.rels"].data
+
+		if window.DOMParser
+			parser=new DOMParser();
+			xmlDoc=parser.parseFromString(content,"text/xml")
+		else # Internet Explorer
+			xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
+			xmlDoc.async=false
+			xmlDoc.loadXML(content)
+		
+		@maxRid=0
+		for tag in xmlDoc.getElementsByTagName('Relationship')
+			if tag.getAttribute("Type")=="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
+				@maxRid= Math.max(parseInt tag.getAttribute("Id").substr(3),@maxRid)
+		@imageRels=[]
+		this
+	saveImageRels: () ->
+		@files["word/_rels/document.xml.rels"].data	
 	getImageList: () ->
 		regex= ///
 		[^.]*  #name

@@ -242,3 +242,9 @@ describe "xmlTemplater", ()->
 		xmlTemplater= new XmlTemplater(content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
+
+describe "image Loop Replacing", () ->
+	describe 'rels', () ->
+		it 'should load', () ->
+			expect(docX['imageExample.docx'].loadImageRels().imageRels).toEqual([])
+			expect(docX['imageExample.docx'].maxRid).toEqual(7)
