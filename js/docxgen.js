@@ -39,12 +39,14 @@
   };
 
   window.XmlTemplater = XmlTemplater = (function() {
-    function XmlTemplater(content, templateVars, intelligentTagging) {
+    function XmlTemplater(content, templateVars, intelligentTagging, scopePath, usedTemplateVars) {
       if (content == null) {
         content = "";
       }
       this.templateVars = templateVars != null ? templateVars : {};
       this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
+      this.scopePath = scopePath != null ? scopePath : [];
+      this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
       if (typeof content === "string") {
         this.load(content);
       } else {
@@ -93,6 +95,18 @@
     };
 
     XmlTemplater.prototype.getValueFromTag = function(tag, scope) {
+      var i, s, u, _i, _len, _ref;
+
+      u = this.usedTemplateVars;
+      _ref = this.scopePath;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        s = _ref[i];
+        if (u[s] == null) {
+          u[s] = {};
+        }
+        u = u[s];
+      }
+      u[tag] = true;
       if (scope[tag] != null) {
         return encode_utf8(scope[tag]);
       } else {
@@ -244,7 +258,15 @@
       return this.matches[bracket.end.i].offset + this.matches[bracket.end.i][1].length + this.charactersAdded[bracket.end.i] + bracket.end.j + 1;
     };
 
-    XmlTemplater.prototype.forLoop = function() {
+    XmlTemplater.prototype.forLoop = function(A, B) {
+      var i, newContent, nextFile, scope, subfile, _i, _len, _ref;
+
+      if (A == null) {
+        A = "";
+      }
+      if (B == null) {
+        B = "";
+      }
       /*
       			<w:t>{#forTag} blabla</w:t>
       			Blabla1
@@ -268,12 +290,12 @@
       			<w:t>subContent subContent subContent</w:t>
       */
 
-      var A, B, i, newContent, nextFile, scope, subfile, _i, _len, _ref;
-
-      B = this.calcB().B;
-      A = this.calcA().A;
-      if (B[0] !== '{' || B.indexOf('{') === -1 || B.indexOf('/') === -1 || B.indexOf('}') === -1 || B.indexOf('#') === -1) {
-        throw "no {,#,/ or } found in B: " + B;
+      if (A === "" && B === "") {
+        B = this.calcB().B;
+        A = this.calcA().A;
+        if (B[0] !== '{' || B.indexOf('{') === -1 || B.indexOf('/') === -1 || B.indexOf('}') === -1 || B.indexOf('#') === -1) {
+          throw "no {,#,/ or } found in B: " + B;
+        }
       }
       if (this.currentScope[this.loopOpen.tag] != null) {
         if (typeof this.currentScope[this.loopOpen.tag] !== 'object') {
@@ -283,7 +305,7 @@
         _ref = this.currentScope[this.loopOpen.tag];
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           scope = _ref[i];
-          subfile = new XmlTemplater(A, scope, this.intelligentTagging);
+          subfile = new XmlTemplater(A, scope, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
           subfile.applyTemplateVars();
           newContent += subfile.content;
           if ((subfile.getFullText().indexOf('{')) !== -1) {
@@ -292,9 +314,11 @@
         }
         this.content = this.content.replace(B, newContent);
       } else {
+        subfile = new XmlTemplater(A, {}, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
+        subfile.applyTemplateVars();
         this.content = this.content.replace(B, "");
       }
-      nextFile = new XmlTemplater(this.content, this.currentScope, this.intelligentTagging);
+      nextFile = new XmlTemplater(this.content, this.currentScope, this.intelligentTagging, this.scopePath, this.usedTemplateVars);
       nextFile.applyTemplateVars();
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
@@ -304,7 +328,7 @@
     };
 
     XmlTemplater.prototype.dashLoop = function(elementDashLoop) {
-      var A, B, copyA, endB, i, newContent, nextFile, resultFullScope, scope, startB, subfile, t, _i, _j, _len, _ref, _ref1, _ref2;
+      var A, B, copyA, endB, resultFullScope, startB, t, _i, _ref, _ref1;
 
       _ref = this.calcB(), B = _ref.B, startB = _ref.startB, endB = _ref.endB;
       resultFullScope = this.calcInnerTextScope(this.content, startB, endB, elementDashLoop);
@@ -342,32 +366,7 @@
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
       }
-      if (this.currentScope[this.loopOpen.tag] != null) {
-        if (typeof this.currentScope[this.loopOpen.tag] !== 'object') {
-          throw '{#' + this.loopOpen.tag + ("}should be an object (it is a " + (typeof this.currentScope[this.loopOpen.tag]) + ")");
-        }
-        newContent = "";
-        _ref2 = this.currentScope[this.loopOpen.tag];
-        for (i = _j = 0, _len = _ref2.length; _j < _len; i = ++_j) {
-          scope = _ref2[i];
-          subfile = new XmlTemplater(A, scope, this.intelligentTagging);
-          subfile.applyTemplateVars();
-          newContent += subfile.content;
-          if ((subfile.getFullText().indexOf('{')) !== -1) {
-            throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (5)";
-          }
-        }
-        this.content = this.content.replace(B, newContent);
-      } else {
-        this.content = this.content.replace(B, "");
-      }
-      nextFile = new XmlTemplater(this.content, this.currentScope, this.intelligentTagging);
-      nextFile.applyTemplateVars();
-      this.content = nextFile.content;
-      if ((nextFile.getFullText().indexOf('{')) !== -1) {
-        throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (6)";
-      }
-      return this;
+      return this.forLoop(A, B);
     };
 
     XmlTemplater.prototype.replaceXmlTag = function(content, tagNumber, insideValue, spacePreserve, noStartTag) {
@@ -418,11 +417,9 @@
       copyContent = content;
       if (this.bracketEnd.i === this.bracketStart.i) {
         if ((this.matches[this.bracketStart.i].first != null)) {
-          console.log('match first');
           insideValue = this.matches[this.bracketStart.i][2].replace("{" + this.textInsideBracket + "}", newValue);
           content = this.replaceXmlTag(content, this.bracketStart.i, insideValue, true, true);
         } else if ((this.matches[this.bracketStart.i].last != null)) {
-          console.log('match first');
           insideValue = this.matches[this.bracketStart.i][0].replace("{" + this.textInsideBracket + "}", newValue);
           content = this.replaceXmlTag(content, this.bracketStart.i, insideValue, true, true);
         } else {
@@ -643,6 +640,25 @@
         _results.push(this.files[fileName].data = currentFile.applyTemplateVars().content);
       }
       return _results;
+    };
+
+    DocxGen.prototype.getTemplateVars = function() {
+      var currentFile, fileName, usedTemplateVars, _i, _len, _ref;
+
+      usedTemplateVars = [];
+      _ref = this.templatedFiles;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        fileName = _ref[_i];
+        if (!(this.files[fileName] != null)) {
+          continue;
+        }
+        currentFile = new XmlTemplater(this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        usedTemplateVars.push({
+          fileName: fileName,
+          vars: currentFile.applyTemplateVars().usedTemplateVars
+        });
+      }
+      return usedTemplateVars;
     };
 
     DocxGen.prototype.setTemplateVars = function(templateVars) {

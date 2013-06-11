@@ -22,7 +22,7 @@ preg_match_all= (regex, content) ->
 	matchArray
 
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",@templateVars={},@intelligentTagging=off) ->
+	constructor: (content="",@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
 	load: (@content) ->
@@ -45,6 +45,11 @@ window.XmlTemplater = class XmlTemplater
 		@content.replace /(<w:t[^>]*>)([^>]+)$/,replacerPush
 
 	getValueFromTag: (tag,scope) ->
+		u = @usedTemplateVars
+		for s,i in @scopePath
+			u[s]={} unless u[s]?
+			u = u[s]
+		u[tag]= true
 		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
 	calcScopeText: (text,start=0,end=text.length-1) ->
 		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
@@ -100,7 +105,7 @@ window.XmlTemplater = class XmlTemplater
 		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
 	calcEndBracket: (bracket)->
 		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
-	forLoop: () ->
+	forLoop: (A="",B="") ->
 		###
 			<w:t>{#forTag} blabla</w:t>
 			Blabla1
@@ -123,32 +128,34 @@ window.XmlTemplater = class XmlTemplater
 			We replace B by nA, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
+		if A=="" and B==""
+			B= @calcB().B
+			A= @calcA().A
 
-		B= @calcB().B
-		A= @calcA().A
-
-		if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
+			if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
 
 		if @currentScope[@loopOpen.tag]?
 			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
 			for scope,i in @currentScope[@loopOpen.tag]
-				subfile= new XmlTemplater A, scope, @intelligentTagging
+				subfile= new XmlTemplater A, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
-		else @content= @content.replace B, ""
+		else 
+			subfile= new XmlTemplater A, {}, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+			subfile.applyTemplateVars()
+			@content= @content.replace B, ""
 		
-		nextFile= new XmlTemplater @content,@currentScope,@intelligentTagging
+		nextFile= new XmlTemplater @content,@currentScope,@intelligentTagging,@scopePath, @usedTemplateVars
 		nextFile.applyTemplateVars()
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		@content=nextFile.content
 		return this
 
 	dashLoop: (elementDashLoop) ->
-
 		{B,startB,endB}= @calcB()
 		resultFullScope = @calcInnerTextScope @content, startB, endB, elementDashLoop
 		for t in [0..@matches.length]
@@ -172,22 +179,7 @@ window.XmlTemplater = class XmlTemplater
 
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 
-		if @currentScope[@loopOpen.tag]?
-			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
-			newContent= "";
-			for scope,i in @currentScope[@loopOpen.tag]
-				subfile= new XmlTemplater A, scope, @intelligentTagging
-				subfile.applyTemplateVars()
-				newContent+=subfile.content #@applyTemplateVars A,scope
-				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (5)"
-			@content= @content.replace B, newContent
-		else @content= @content.replace B, ""
-
-		nextFile= new XmlTemplater @content, @currentScope, @intelligentTagging
-		nextFile.applyTemplateVars()
-		@content=nextFile.content
-		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (6)"
-		return this
+		return @forLoop(A,B)
 
 	replaceXmlTag: (content,tagNumber,insideValue,spacePreserve=false,noStartTag=false) ->
 		@matches[tagNumber][2]=insideValue #so that the matches are still correct
@@ -214,12 +206,10 @@ window.XmlTemplater = class XmlTemplater
 		copyContent=content
 		if @bracketEnd.i==@bracketStart.i #<w>{aaaaa}</w>
 			if (@matches[@bracketStart.i].first?)
-				console.log 'match first'
 				insideValue= @matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
 				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true,true)
 
 			else if (@matches[@bracketStart.i].last?)
-				console.log 'match first'
 				insideValue= @matches[@bracketStart.i][0].replace "{#{@textInsideBracket}}", newValue
 				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true,true)
 			else
@@ -264,7 +254,6 @@ window.XmlTemplater = class XmlTemplater
 		@inBracket= false # all brackets  {___}
 		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
 		@textInsideBracket= ""
-
 		for match,i in @matches
 			innerText= match[2] || "" #text inside the <w:t>
 			for t in [i...@matches.length]

@@ -501,7 +501,7 @@
 
   describe("Intelligent Loop Tagging", function() {
     return it("should work with tables", function() {
-      var a, b, char, expectedText, i, j, templateVars, text, _i, _len, _ref, _results;
+      var expectedText, i, templateVars, text, _results;
 
       templateVars = {
         "os": [
@@ -527,24 +527,6 @@
       expect(text).toBe(expectedText);
       _results = [];
       for (i in docX['tagIntelligentLoopTable.docx'].files) {
-        if (docX['tagIntelligentLoopTable.docx'].files[i].data !== docX['tagIntelligentLoopTableExpected.docx'].files[i].data) {
-          a = docX['tagIntelligentLoopTable.docx'].files[i].data;
-          b = docX['tagIntelligentLoopTableExpected.docx'].files[i].data;
-          console.log(a);
-          console.log(b);
-          _ref = docX['tagIntelligentLoopTable.docx'].files[i].data;
-          for (j = _i = 0, _len = _ref.length; _i < _len; j = ++_i) {
-            char = _ref[j];
-            if (!(j < 2000)) {
-              continue;
-            }
-            a = docX['tagIntelligentLoopTable.docx'].files[i].data[j];
-            b = docX['tagIntelligentLoopTableExpected.docx'].files[i].data[j];
-            if (a !== b) {
-              console.log("" + a + "+" + b + "+" + j);
-            }
-          }
-        }
         expect(docX['tagIntelligentLoopTable.docx'].files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].data);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].name);
         expect(docX['tagIntelligentLoopTable.docx'].files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.base64);
@@ -554,6 +536,71 @@
         _results.push(expect(docX['tagIntelligentLoopTable.docx'].files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.date));
       }
       return _results;
+    });
+  });
+
+  describe("getTemplateVars", function() {
+    it("should work with simple document", function() {
+      var tempVars;
+
+      docX['tagExample.docx'] = new DocxGen(docXData['tagExample.docx'], {}, false);
+      tempVars = docX['tagExample.docx'].getTemplateVars();
+      return expect(tempVars).toEqual([
+        {
+          fileName: 'word/document.xml',
+          vars: {
+            last_name: true,
+            first_name: true
+          }
+        }, {
+          fileName: 'word/footer1.xml',
+          vars: {
+            last_name: true,
+            first_name: true,
+            phone: true
+          }
+        }, {
+          fileName: 'word/header1.xml',
+          vars: {
+            last_name: true,
+            first_name: true,
+            phone: true,
+            description: true
+          }
+        }
+      ]);
+    });
+    return it("should work with loop document", function() {
+      var tempVars;
+
+      docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx'], {}, false);
+      tempVars = docX['tagLoopExample.docx'].getTemplateVars();
+      return expect(tempVars).toEqual([
+        {
+          fileName: 'word/document.xml',
+          vars: {
+            offre: {
+              prix: true,
+              titre: true
+            },
+            nom: true,
+            prenom: true
+          }
+        }, {
+          fileName: 'word/footer1.xml',
+          vars: {
+            nom: true,
+            prenom: true,
+            telephone: true
+          }
+        }, {
+          fileName: 'word/header1.xml',
+          vars: {
+            nom: true,
+            prenom: true
+          }
+        }
+      ]);
     });
   });
 

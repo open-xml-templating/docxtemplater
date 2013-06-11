@@ -38,6 +38,12 @@ window.DocxGen = class DocxGen
 		for fileName in @templatedFiles when @files[fileName]?
 			currentFile= new XmlTemplater(@files[fileName].data,@templateVars,@intelligentTagging)
 			@files[fileName].data= currentFile.applyTemplateVars().content
+	getTemplateVars:()->
+		usedTemplateVars=[]
+		for fileName in @templatedFiles when @files[fileName]?
+			currentFile= new XmlTemplater(@files[fileName].data,@templateVars,@intelligentTagging)
+			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
+		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->

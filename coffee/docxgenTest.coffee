@@ -201,21 +201,11 @@ describe "Intelligent Loop Tagging", () ->
 		docX['tagIntelligentLoopTable.docx'].setTemplateVars(templateVars)
 		docX['tagIntelligentLoopTable.docx'].applyTemplateVars()
 		expectedText= 'linux0Ubuntu10windows500Win7apple1200MACOSX'
-		text=docX['tagIntelligentLoopTableExpected.docx'].getFullText()
+		text= docX['tagIntelligentLoopTableExpected.docx'].getFullText()
 		expect(text).toBe(expectedText)
 
 		for i of docX['tagIntelligentLoopTable.docx'].files
 			# Everything but the date should be different
-			if docX['tagIntelligentLoopTable.docx'].files[i].data!=docX['tagIntelligentLoopTableExpected.docx'].files[i].data
-				a= docX['tagIntelligentLoopTable.docx'].files[i].data
-				b=docX['tagIntelligentLoopTableExpected.docx'].files[i].data
-				console.log a
-				console.log b
-				for char,j in docX['tagIntelligentLoopTable.docx'].files[i].data when j<2000
-					a= docX['tagIntelligentLoopTable.docx'].files[i].data[j]
-					b=docX['tagIntelligentLoopTableExpected.docx'].files[i].data[j]
-					if a!=b then console.log "#{a}+#{b}+#{j}"
-			
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].data)
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].name)
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.base64)
@@ -223,6 +213,19 @@ describe "Intelligent Loop Tagging", () ->
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.compression).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.compression)
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.dir)
 			expect(docX['tagIntelligentLoopTable.docx'].files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].files[i].options.date)
+
+
+describe "getTemplateVars", () ->
+	it "should work with simple document", () ->
+		docX['tagExample.docx']=new DocxGen docXData['tagExample.docx'],{},false
+		tempVars= docX['tagExample.docx'].getTemplateVars()
+		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { last_name : true, first_name : true } }, { fileName : 'word/footer1.xml', vars : { last_name : true, first_name : true, phone : true } }, { fileName : 'word/header1.xml', vars : { last_name : true, first_name : true, phone : true, description : true } }])
+
+	it "should work with loop document", () ->
+		docX['tagLoopExample.docx']=new DocxGen docXData['tagLoopExample.docx'],{},false
+		tempVars= docX['tagLoopExample.docx'].getTemplateVars()
+		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
+
 
 describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
@@ -254,8 +257,8 @@ describe "xmlTemplater", ()->
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 
 	it "should work with loop and innerContent (with last)", ()->
-			content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
-			scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
-			xmlTemplater= new XmlTemplater(content,scope)
-			xmlTemplater.applyTemplateVars()
-			expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
+		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
+		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
+		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater.applyTemplateVars()
+		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
