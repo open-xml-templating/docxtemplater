@@ -22,7 +22,8 @@ preg_match_all= (regex, content) ->
 	matchArray
 
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
+	constructor: (creator,content="",@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
+		@DocxGen=creator
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
 	load: (@content) ->
@@ -139,17 +140,17 @@ window.XmlTemplater = class XmlTemplater
 			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
 			for scope,i in @currentScope[@loopOpen.tag]
-				subfile= new XmlTemplater A, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+				subfile= new XmlTemplater @DocxGen, A, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
 		else 
-			subfile= new XmlTemplater A, {}, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+			subfile= new XmlTemplater @DocxGen, A, {}, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 			subfile.applyTemplateVars()
 			@content= @content.replace B, ""
 		
-		nextFile= new XmlTemplater @content,@currentScope,@intelligentTagging,@scopePath, @usedTemplateVars
+		nextFile= new XmlTemplater @DocxGen, @content,@currentScope,@intelligentTagging,@scopePath, @usedTemplateVars
 		nextFile.applyTemplateVars()
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		@content=nextFile.content
@@ -247,6 +248,24 @@ window.XmlTemplater = class XmlTemplater
 			@charactersAdded[j+1]=@charactersAdded[j]
 		if copyContent==content then throw "copycontent=content !!"
 		return content
+	replaceImages:() ->
+		for match,i in @imgMatches
+			console.log @currentScope
+			if @currentScope["img"]? then if @currentScope["img"][i]?
+				imgName= @currentScope["img"][i].name
+				imgData= @currentScope["img"][i].data
+				console.log this
+				newId= @DocxGen.addImageRels(imgName,imgData)
+				@content=@content.replace(match[0],"<w:drawing>"+match[1]+'<a:blip r:embed="rId'+newId+'">'+match[3]+'</w:drawing>')
+	findImages: () ->
+		@imgMatches= preg_match_all ///
+		<w:drawing>
+		(.*)
+		<a:blip\x20r:embed=
+		"rId([0-9]+)">
+		(.*)
+		</w:drawing>
+		///, @content
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -310,6 +329,8 @@ window.XmlTemplater = class XmlTemplater
 				else #if character != '{' and character != '}'
 					if @inBracket is true then @textInsideBracket+=character
 		if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
+		@findImages()
+		@replaceImages()
 		this
 ###
 Docxgen.coffee
@@ -377,14 +398,12 @@ window.DocxGen = class DocxGen
 	load: (content)->
 		zip = new JSZip content
 		@files=zip.files
+		@loadImageRels()
 	loadImageRels: () ->
 		content= decode_utf8 @files["word/_rels/document.xml.rels"].data
-		console.log content
 		@xmlDoc= Str2xml content
-		console.log @xmlDoc
 		@maxRid=0
 		for tag in @xmlDoc.getElementsByTagName('Relationship')
-			console.log tag.getAttribute("Id").substr(3)
 			@maxRid= Math.max((parseInt tag.getAttribute("Id").substr(3)),@maxRid)
 		@imageRels=[]
 		this
@@ -436,12 +455,12 @@ window.DocxGen = class DocxGen
 		@files[path].data= data
 	applyTemplateVars:()->
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
 			@files[fileName].data= currentFile.applyTemplateVars().content
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
 			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -458,9 +477,9 @@ window.DocxGen = class DocxGen
 		outputFile
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new XmlTemplater(@files[path].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,@files[path].data,@templateVars,@intelligentTagging)
 		else
-			currentFile= new XmlTemplater(data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,data,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)

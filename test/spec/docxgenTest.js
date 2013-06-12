@@ -48,11 +48,19 @@
 
   loadDoc('bootstrap_logo.png', true);
 
+  loadDoc('BMW_logo.png', true);
+
+  loadDoc('Firefox_logo.png', true);
+
+  loadDoc('Volkswagen_logo.png', true);
+
   loadDoc('tagExample.docx');
 
   loadDoc('tagExampleExpected.docx');
 
   loadDoc('tagLoopExample.docx');
+
+  loadDoc('tagLoopExampleImageExpected.docx');
 
   loadDoc('tagProduitLoop.docx');
 
@@ -147,9 +155,8 @@
         return expect(docX['tagExample.docx'].getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478');
       });
       return it("should export the good file", function() {
-        var i, outputExpected, _results;
+        var i, _results;
 
-        outputExpected = new DocxGen(docXData['tagExampleExpected.docx']);
         _results = [];
         for (i in docX['tagExample.docx'].files) {
           expect(docX['tagExample.docx'].files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].files[i].options.date);
@@ -266,7 +273,7 @@
   describe("scope calculation", function() {
     var xmlTemplater;
 
-    xmlTemplater = new XmlTemplater();
+    xmlTemplater = new XmlTemplater(null);
     it("should compute the scope between 2 <w:t>", function() {
       var scope;
 
@@ -365,7 +372,7 @@
   describe("scope diff calculation", function() {
     var xmlTemplater;
 
-    xmlTemplater = new XmlTemplater();
+    xmlTemplater = new XmlTemplater(null);
     it("should compute the scopeDiff between 2 <w:t>", function() {
       var scope;
 
@@ -401,7 +408,7 @@
     return it("should find the scope", function() {
       var obj, scope, xmlTemplater;
 
-      xmlTemplater = new XmlTemplater();
+      xmlTemplater = new XmlTemplater(null);
       docX['tagProduitLoop.docx'] = new DocxGen(docXData['tagProduitLoop.docx']);
       scope = xmlTemplater.calcInnerTextScope(docX['tagProduitLoop.docx'].files["word/document.xml"].data, 1195, 1245, 'w:p');
       obj = {
@@ -610,7 +617,7 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater = new XmlTemplater(null, content, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -621,7 +628,7 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater = new XmlTemplater(null, content, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -640,7 +647,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater = new XmlTemplater(null, content, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
     });
@@ -659,7 +666,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater = new XmlTemplater(null, content, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,');
     });
@@ -679,7 +686,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater = new XmlTemplater(null, content, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
@@ -699,7 +706,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, scope);
+      xmlTemplater = new XmlTemplater(null, content, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
@@ -716,11 +723,58 @@
 
         oldData = docX['imageExample.docx'].files['word/_rels/document.xml.rels'].data;
         expect(docX['imageExample.docx'].addImageRels('image1.png', docXData['bootstrap_logo.png'])).toBe(11);
-        docX['imageExample.docx'].output();
         expect(docX['imageExample.docx'].files['word/_rels/document.xml.rels'].data).not.toBe(oldData);
         expect(docX['imageExample.docx'].files['word/_rels/document.xml.rels'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>');
         return expect(docX['imageExample.docx'].files['[Content_Types].xml'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/stylesWithEffects.xml" ContentType="application/vnd.ms-word.stylesWithEffects+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/><Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/><Override PartName="/word/endnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/><Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Default ContentType="image/png" Extension="png"/></Types>');
       });
+    });
+  });
+
+  describe("loop forTagging images", function() {
+    return it('should work with a simple loop file', function() {
+      var tempVars;
+
+      docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx']);
+      tempVars = {
+        "nom": "Hipp",
+        "prenom": "Edgar",
+        "telephone": "0652455478",
+        "description": "New Website",
+        "offre": [
+          {
+            "titre": "titre1",
+            "prix": "1250",
+            "img": [
+              {
+                data: docXData['Volkswagen_logo.png'],
+                name: "vw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre2",
+            "prix": "2000",
+            "img": [
+              {
+                data: docXData['BMW_logo.png'],
+                name: "bmw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre3",
+            "prix": "1400",
+            "img": [
+              {
+                data: docXData['Firefox_logo.png'],
+                name: "firefox_logo.png"
+              }
+            ]
+          }
+        ]
+      };
+      docX['tagLoopExample.docx'].setTemplateVars(tempVars);
+      docX['tagLoopExample.docx'].applyTemplateVars();
+      console.log(docX['tagLoopExample.docx']);
+      return window.test = docX['tagLoopExample.docx'];
     });
   });
 

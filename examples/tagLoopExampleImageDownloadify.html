@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Docxgen.js - simple Tagging example with Downloadify</title>
+</head>
+<body>
+
+  <!-- Include dependencies -->
+  <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
+  <script src="../libs/downloadify/js/downloadify.min.js"></script>
+  <script src="../libs/downloadify/js/swfobject.js"></script>
+
+
+  <!-- Include docxgen js lib -->
+  <script type="text/javascript" src="../js/docxgen.js"></script>
+<script>
+
+
+  var xhr1= new XMLHttpRequest();
+  xhr1.open('GET', './tagLoopExample.docx', true);
+  if (xhr1.overrideMimeType) {
+    xhr1.overrideMimeType('text/plain; charset=x-user-defined');
+  }
+
+  xhr1.onreadystatechange = function(e) {
+    if (this.readyState == 4 && this.status == 200) {
+      window.docData=this.response;
+      }
+  };
+  xhr1.send();
+
+imgData=[];
+
+    var xhr2= new XMLHttpRequest();
+  xhr2.open('GET', './Volkswagen_logo.png', true);
+  if (xhr2.overrideMimeType) {
+    xhr2.overrideMimeType('text/plain; charset=x-user-defined');
+  }
+
+  xhr2.onreadystatechange = function(e) {
+    if (this.readyState == 4 && this.status == 200) {
+      window.imgData[0]=this.response;
+      }
+  };
+  xhr2.send();
+
+
+    var xhr3= new XMLHttpRequest();
+  xhr3.open('GET', './BMW_logo.png', true);
+  if (xhr3.overrideMimeType) {
+    xhr3.overrideMimeType('text/plain; charset=x-user-defined');
+  }
+
+  xhr3.onreadystatechange = function(e) {
+    if (this.readyState == 4 && this.status == 200) {
+      window.imgData[1]=this.response;
+      }
+  };
+  xhr3.send();
+
+    var xhr4= new XMLHttpRequest();
+  xhr4.open('GET', './Firefox_logo.png', true);
+  if (xhr4.overrideMimeType) {
+    xhr4.overrideMimeType('text/plain; charset=x-user-defined');
+  }
+
+  xhr4.onreadystatechange = function(e) {
+    if (this.readyState == 4 && this.status == 200) {
+      window.imgData[2]=this.response;
+      }
+  };
+  xhr4.send();
+
+
+
+generateDoc= function(docData)
+{
+      var doc= new DocxGen(docData)
+
+      tempVars = {
+        "nom": "Hipp",
+        "prenom": "Edgar",
+        "telephone": "0652455478",
+        "description": "New Website",
+        "offre": [
+          {
+            "titre": "titre1",
+            "prix": "1250",
+            "img": [
+              {
+                data: imgData[0],
+                name: "vw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre2",
+            "prix": "2000",
+            "img": [
+              {
+                data: imgData[1],
+                name: "bmw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre3",
+            "prix": "1400",
+            "img": [
+              {
+                data: imgData[2],
+                name: "firefox_logo.png"
+              }
+            ]
+          }
+        ]
+      };
+      doc.setTemplateVars(tempVars);
+      doc.applyTemplateVars();
+
+
+      doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',
+                   "taggedDoc.docx")
+}
+</script>
+
+<h1>Generating a tagged document with downloadify</h1>
+
+<p>If you want to name your downloaded file, you will have to use Downloadify.js, as described in method download of the Readme file</p>
+
+<p>
+  <a href="#" onClick="generateDoc(window.docData)">Generate Tagged document</a>
+<br>
+<a href="tagExample.docx">View original document</a>
+</p>
+
+<p id="downloadify">
+        You must have Flash 10 installed to download this file.
+</p>
+
+<p>
+  <code>
+      var doc= new DocxGen(docData) //Create Docxgen object from docxdata, in base64<br>
+      doc.setTemplateVars(   //Set the template variables: {first_name} will be replaced by "Hipp",...<br>
+        {"first_name":"Hipp", <br>
+        "last_name":"Edgar",<br>
+        "phone":"0652455478",<br>
+        "description":"New Website"<br>
+        } <br> 
+      ) <br> 
+      doc.applyTemplateVars() //apply the template variables<br> 
+      doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',
+                   "taggedDoc.docx") //arguments are path to swf, path to image and defaultFileName<br>
+  </code>
+</p>
+
+</body>
+</html>

@@ -64,14 +64,12 @@ window.DocxGen = class DocxGen
 	load: (content)->
 		zip = new JSZip content
 		@files=zip.files
+		@loadImageRels()
 	loadImageRels: () ->
 		content= decode_utf8 @files["word/_rels/document.xml.rels"].data
-		console.log content
 		@xmlDoc= Str2xml content
-		console.log @xmlDoc
 		@maxRid=0
 		for tag in @xmlDoc.getElementsByTagName('Relationship')
-			console.log tag.getAttribute("Id").substr(3)
 			@maxRid= Math.max((parseInt tag.getAttribute("Id").substr(3)),@maxRid)
 		@imageRels=[]
 		this
@@ -123,12 +121,12 @@ window.DocxGen = class DocxGen
 		@files[path].data= data
 	applyTemplateVars:()->
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
 			@files[fileName].data= currentFile.applyTemplateVars().content
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
 			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -145,9 +143,9 @@ window.DocxGen = class DocxGen
 		outputFile
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new XmlTemplater(@files[path].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,@files[path].data,@templateVars,@intelligentTagging)
 		else
-			currentFile= new XmlTemplater(data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(this,data,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)

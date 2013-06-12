@@ -39,7 +39,7 @@
   };
 
   window.XmlTemplater = XmlTemplater = (function() {
-    function XmlTemplater(content, templateVars, intelligentTagging, scopePath, usedTemplateVars) {
+    function XmlTemplater(creator, content, templateVars, intelligentTagging, scopePath, usedTemplateVars) {
       if (content == null) {
         content = "";
       }
@@ -47,6 +47,7 @@
       this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
       this.scopePath = scopePath != null ? scopePath : [];
       this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
+      this.DocxGen = creator;
       if (typeof content === "string") {
         this.load(content);
       } else {
@@ -305,7 +306,7 @@
         _ref = this.currentScope[this.loopOpen.tag];
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           scope = _ref[i];
-          subfile = new XmlTemplater(A, scope, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
+          subfile = new XmlTemplater(this.DocxGen, A, scope, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
           subfile.applyTemplateVars();
           newContent += subfile.content;
           if ((subfile.getFullText().indexOf('{')) !== -1) {
@@ -314,11 +315,11 @@
         }
         this.content = this.content.replace(B, newContent);
       } else {
-        subfile = new XmlTemplater(A, {}, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
+        subfile = new XmlTemplater(this.DocxGen, A, {}, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
         subfile.applyTemplateVars();
         this.content = this.content.replace(B, "");
       }
-      nextFile = new XmlTemplater(this.content, this.currentScope, this.intelligentTagging, this.scopePath, this.usedTemplateVars);
+      nextFile = new XmlTemplater(this.DocxGen, this.content, this.currentScope, this.intelligentTagging, this.scopePath, this.usedTemplateVars);
       nextFile.applyTemplateVars();
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
@@ -461,6 +462,35 @@
       return content;
     };
 
+    XmlTemplater.prototype.replaceImages = function() {
+      var i, imgData, imgName, match, newId, _i, _len, _ref, _results;
+
+      _ref = this.imgMatches;
+      _results = [];
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        match = _ref[i];
+        console.log(this.currentScope);
+        if (this.currentScope["img"] != null) {
+          if (this.currentScope["img"][i] != null) {
+            imgName = this.currentScope["img"][i].name;
+            imgData = this.currentScope["img"][i].data;
+            console.log(this);
+            newId = this.DocxGen.addImageRels(imgName, imgData);
+            _results.push(this.content = this.content.replace(match[0], "<w:drawing>" + match[1] + '<a:blip r:embed="rId' + newId + '">' + match[3] + '</w:drawing>'));
+          } else {
+            _results.push(void 0);
+          }
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    };
+
+    XmlTemplater.prototype.findImages = function() {
+      return this.imgMatches = preg_match_all(/<w:drawing>(.*)<a:blip\x20r:embed="rId([0-9]+)">(.*)<\/w:drawing>/, this.content);
+    };
+
     /*
     	content is the whole content to be tagged
     	scope is the current scope
@@ -571,6 +601,8 @@
       if ((this.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (this.getFullText()) + " (2)";
       }
+      this.findImages();
+      this.replaceImages();
       return this;
     };
 
@@ -668,21 +700,19 @@
       var zip;
 
       zip = new JSZip(content);
-      return this.files = zip.files;
+      this.files = zip.files;
+      return this.loadImageRels();
     };
 
     DocxGen.prototype.loadImageRels = function() {
       var content, tag, _i, _len, _ref;
 
       content = decode_utf8(this.files["word/_rels/document.xml.rels"].data);
-      console.log(content);
       this.xmlDoc = Str2xml(content);
-      console.log(this.xmlDoc);
       this.maxRid = 0;
       _ref = this.xmlDoc.getElementsByTagName('Relationship');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         tag = _ref[_i];
-        console.log(tag.getAttribute("Id").substr(3));
         this.maxRid = Math.max(parseInt(tag.getAttribute("Id").substr(3)), this.maxRid);
       }
       this.imageRels = [];
@@ -765,7 +795,7 @@
         if (!(this.files[fileName] != null)) {
           continue;
         }
-        currentFile = new XmlTemplater(this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
         _results.push(this.files[fileName].data = currentFile.applyTemplateVars().content);
       }
       return _results;
@@ -781,7 +811,7 @@
         if (!(this.files[fileName] != null)) {
           continue;
         }
-        currentFile = new XmlTemplater(this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
         usedTemplateVars.push({
           fileName: fileName,
           vars: currentFile.applyTemplateVars().usedTemplateVars
@@ -825,9 +855,9 @@
         data = "";
       }
       if (data === "") {
-        currentFile = new XmlTemplater(this.files[path].data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(this, this.files[path].data, this.templateVars, this.intelligentTagging);
       } else {
-        currentFile = new XmlTemplater(data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(this, data, this.templateVars, this.intelligentTagging);
       }
       return currentFile.getFullText();
     };

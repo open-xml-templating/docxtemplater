@@ -23,9 +23,13 @@ loadDoc= (path,noDocx=false,intelligentTagging=false) ->
 loadDoc('imageExample.docx')
 loadDoc('image.png',true)
 loadDoc('bootstrap_logo.png',true)
+loadDoc('BMW_logo.png',true)
+loadDoc('Firefox_logo.png',true)
+loadDoc('Volkswagen_logo.png',true)
 loadDoc('tagExample.docx')
 loadDoc('tagExampleExpected.docx')
 loadDoc('tagLoopExample.docx')
+loadDoc('tagLoopExampleImageExpected.docx')
 loadDoc('tagProduitLoop.docx')
 loadDoc('tagDashLoop.docx')
 loadDoc('tagDashLoopList.docx')
@@ -84,7 +88,6 @@ describe "DocxGenTemplating", () ->
 			expect(docX['tagExample.docx'].getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website')
 			expect(docX['tagExample.docx'].getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478')
 		it "should export the good file", () ->
-			outputExpected= new DocxGen(docXData['tagExampleExpected.docx'])
 			for i of docX['tagExample.docx'].files
 				#Everything but the date should be different
 				expect(docX['tagExample.docx'].files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].files[i].options.date)
@@ -117,7 +120,7 @@ describe "DocxGenTemplatingForLoop", () ->
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
 describe "scope calculation" , () ->
-	xmlTemplater= new XmlTemplater()
+	xmlTemplater= new XmlTemplater(null,)
 	it "should compute the scope between 2 <w:t>" , () ->
 		scope= xmlTemplater.calcScopeText """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '<w:p>', offset : 27 }, { tag : '<w:r>', offset : 162 }, { tag : '<w:t>', offset : 188 } ])
@@ -129,7 +132,7 @@ describe "scope calculation" , () ->
 		expect(scope).toEqual( [ { tag : '</w:t>', offset : 11 }, { tag : '</w:r>', offset : 17 }, { tag : '</w:p>', offset : 23 }, { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 }, { tag : '<w:p>', offset : 191 }, { tag : '<w:r>', offset : 260 }, { tag : '<w:t>', offset : 309 } ])
 
 describe "scope diff calculation", () ->
-	xmlTemplater= new XmlTemplater()
+	xmlTemplater= new XmlTemplater(null,)
 	it "should compute the scopeDiff between 2 <w:t>" , () ->
 		scope= xmlTemplater.calcScopeDifference """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([])
@@ -142,7 +145,7 @@ describe "scope diff calculation", () ->
 
 describe "scope inner text", () ->
 	it "should find the scope" , () ->	
-		xmlTemplater= new XmlTemplater()
+		xmlTemplater= new XmlTemplater(null,)
 		docX['tagProduitLoop.docx']= new DocxGen(docXData['tagProduitLoop.docx'])
 		scope= xmlTemplater.calcInnerTextScope docX['tagProduitLoop.docx'].files["word/document.xml"].data ,1195,1245,'w:p'
 		obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
@@ -210,37 +213,37 @@ describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
 		content= """<w:t>Hello {name}</w:t>"""
 		scope= {"name":"Edgar"} 
-		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater= new XmlTemplater(null,content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with tag in two elements", ()->
 		content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 		scope= {"name":"Edgar"} 
-		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater= new XmlTemplater(null,content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with simple Loop", ()->
 		content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
-		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater= new XmlTemplater(null,content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
 	it "should work with dash Loop", ()->
 		content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
-		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater= new XmlTemplater(null,content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,')
 	it "should work with loop and innerContent", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>"""
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
-		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater= new XmlTemplater(null,content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 	it "should work with loop and innerContent (with last)", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
-		xmlTemplater= new XmlTemplater(content,scope)
+		xmlTemplater= new XmlTemplater(null,content,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 
@@ -252,7 +255,42 @@ describe "image Loop Replacing", () ->
 		it 'should add', () ->
 			oldData= docX['imageExample.docx'].files['word/_rels/document.xml.rels'].data
 			expect(docX['imageExample.docx'].addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
-			docX['imageExample.docx'].output()
 			expect(docX['imageExample.docx'].files['word/_rels/document.xml.rels'].data).not.toBe(oldData)
 			expect(docX['imageExample.docx'].files['word/_rels/document.xml.rels'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>')
 			expect(docX['imageExample.docx'].files['[Content_Types].xml'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/stylesWithEffects.xml" ContentType="application/vnd.ms-word.stylesWithEffects+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/><Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/><Override PartName="/word/endnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/><Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Default ContentType="image/png" Extension="png"/></Types>')
+
+describe "loop forTagging images", () ->
+	it 'should work with a simple loop file', () ->
+		docX['tagLoopExample.docx']= new DocxGen(docXData['tagLoopExample.docx'])
+		tempVars=
+			"nom":"Hipp"
+			"prenom":"Edgar"
+			"telephone":"0652455478"
+			"description":"New Website"
+			"offre":[
+				"titre":"titre1"
+				"prix":"1250"
+				"img":[{data:docXData['Volkswagen_logo.png'],name:"vw_logo.png"}]
+			,
+				"titre":"titre2"
+				"prix":"2000"
+				"img":[{data:docXData['BMW_logo.png'],name:"bmw_logo.png"}]	
+			,
+				"titre":"titre3"
+				"prix":"1400"
+				"img":[{data:docXData['Firefox_logo.png'],name:"firefox_logo.png"}]
+			]
+		docX['tagLoopExample.docx'].setTemplateVars(tempVars)
+		docX['tagLoopExample.docx'].applyTemplateVars()
+		console.log docX['tagLoopExample.docx']
+		window.test=docX['tagLoopExample.docx']
+
+		# for i of docX['tagLoopExample.docx'].files
+		# 	#Everything but the date should be different
+		# 	expect(docX['tagLoopExample.docx'].files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.date)
+		# 	expect(docX['tagLoopExample.docx'].files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].name)
+		# 	expect(docX['tagLoopExample.docx'].files[i].options.base64).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.base64)
+		# 	expect(docX['tagLoopExample.docx'].files[i].options.binary).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.binary)
+		# 	expect(docX['tagLoopExample.docx'].files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.compression)
+		# 	expect(docX['tagLoopExample.docx'].files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.dir)
+		# 	expect(docX['tagLoopExample.docx'].files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].data)
