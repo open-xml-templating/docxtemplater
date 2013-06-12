@@ -1,6 +1,6 @@
 //@ sourceMappingURL=docxgen.map
 (function() {
-  var DocxGen, XmlTemplater, decode_utf8, encode_utf8, preg_match_all,
+  var DocxGen, Str2xml, XmlTemplater, decode_utf8, encode_utf8, preg_match_all, xml2Str,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -585,6 +585,37 @@
   */
 
 
+  xml2Str = function(xmlNode) {
+    var e;
+
+    try {
+      return (new XMLSerializer()).serializeToString(xmlNode);
+    } catch (_error) {
+      e = _error;
+      try {
+        return xmlNode.xml;
+      } catch (_error) {
+        e = _error;
+        alert('Xmlserializer not supported');
+      }
+    }
+    return false;
+  };
+
+  Str2xml = function(str) {
+    var parser, xmlDoc;
+
+    if (window.DOMParser) {
+      parser = new DOMParser();
+      xmlDoc = parser.parseFromString(str, "text/xml");
+    } else {
+      xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+      xmlDoc.async = false;
+      xmlDoc.loadXML(str);
+    }
+    return xmlDoc;
+  };
+
   encode_utf8 = function(s) {
     return unescape(encodeURIComponent(s));
   };
@@ -641,27 +672,62 @@
     };
 
     DocxGen.prototype.loadImageRels = function() {
-      var content, parser, tag, xmlDoc, _i, _len, _ref;
+      var content, tag, _i, _len, _ref;
 
       content = decode_utf8(this.files["word/_rels/document.xml.rels"].data);
-      if (window.DOMParser) {
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(content, "text/xml");
-      } else {
-        xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async = false;
-        xmlDoc.loadXML(content);
-      }
+      console.log(content);
+      this.xmlDoc = Str2xml(content);
+      console.log(this.xmlDoc);
       this.maxRid = 0;
-      _ref = xmlDoc.getElementsByTagName('Relationship');
+      _ref = this.xmlDoc.getElementsByTagName('Relationship');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         tag = _ref[_i];
-        if (tag.getAttribute("Type") === "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image") {
-          this.maxRid = Math.max(parseInt(tag.getAttribute("Id").substr(3), this.maxRid));
-        }
+        console.log(tag.getAttribute("Id").substr(3));
+        this.maxRid = Math.max(parseInt(tag.getAttribute("Id").substr(3)), this.maxRid);
       }
       this.imageRels = [];
       return this;
+    };
+
+    DocxGen.prototype.addExtensionRels = function(contentType, extension) {
+      var content, newTag, xmlDoc;
+
+      content = decode_utf8(this.files["[Content_Types].xml"].data);
+      xmlDoc = Str2xml(content);
+      newTag = xmlDoc.createElement('Default');
+      newTag.setAttribute('ContentType', contentType);
+      newTag.setAttribute('Extension', extension);
+      xmlDoc.getElementsByTagName("Types")[0].appendChild(newTag);
+      return this.files["[Content_Types].xml"].data = encode_utf8(xml2Str(xmlDoc));
+    };
+
+    DocxGen.prototype.addImageRels = function(imageName, imageData) {
+      var extension, newTag;
+
+      if (this.files["word/media/" + imageName] != null) {
+        return false;
+      }
+      this.maxRid++;
+      this.files["word/media/" + imageName] = {
+        'name': "word/media/" + imageName,
+        'data': imageData,
+        'options': {
+          base64: false,
+          binary: true,
+          compression: null,
+          date: new Date(),
+          dir: false
+        }
+      };
+      extension = imageName.replace(/[^.]+\.([^.]+)/, '$1');
+      this.addExtensionRels("image/" + extension, extension);
+      newTag = this.xmlDoc.createElement('Relationship');
+      newTag.setAttribute('Id', "rId" + this.maxRid);
+      newTag.setAttribute('Type', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image');
+      newTag.setAttribute('Target', "media/" + imageName);
+      this.xmlDoc.getElementsByTagName("Relationships")[0].appendChild(newTag);
+      this.files["word/_rels/document.xml.rels"].data = encode_utf8(xml2Str(this.xmlDoc));
+      return this.maxRid;
     };
 
     DocxGen.prototype.saveImageRels = function() {

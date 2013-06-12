@@ -4,6 +4,29 @@ Created by Edgar HIPP
 03/06/2013
 ###
 
+xml2Str = (xmlNode) ->
+	try
+		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
+		return (new XMLSerializer()).serializeToString(xmlNode);
+	catch e
+		try
+			# Internet Explorer.
+			return xmlNode.xml;
+		catch e
+			#Other browsers without XML Serializer
+			alert('Xmlserializer not supported');
+	return false;
+
+Str2xml= (str) ->
+	if window.DOMParser
+		parser=new DOMParser();
+		xmlDoc=parser.parseFromString(str,"text/xml")
+	else # Internet Explorer
+		xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
+		xmlDoc.async=false
+		xmlDoc.loadXML(str)
+	xmlDoc
+
 encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 
@@ -43,21 +66,45 @@ window.DocxGen = class DocxGen
 		@files=zip.files
 	loadImageRels: () ->
 		content= decode_utf8 @files["word/_rels/document.xml.rels"].data
-
-		if window.DOMParser
-			parser=new DOMParser();
-			xmlDoc=parser.parseFromString(content,"text/xml")
-		else # Internet Explorer
-			xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
-			xmlDoc.async=false
-			xmlDoc.loadXML(content)
-		
+		console.log content
+		@xmlDoc= Str2xml content
+		console.log @xmlDoc
 		@maxRid=0
-		for tag in xmlDoc.getElementsByTagName('Relationship')
-			if tag.getAttribute("Type")=="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
-				@maxRid= Math.max(parseInt tag.getAttribute("Id").substr(3),@maxRid)
+		for tag in @xmlDoc.getElementsByTagName('Relationship')
+			console.log tag.getAttribute("Id").substr(3)
+			@maxRid= Math.max((parseInt tag.getAttribute("Id").substr(3)),@maxRid)
 		@imageRels=[]
 		this
+	addExtensionRels: (contentType,extension) ->
+		content = decode_utf8 @files["[Content_Types].xml"].data
+		xmlDoc= Str2xml content
+		newTag=xmlDoc.createElement('Default')
+		newTag.setAttribute('ContentType',contentType)
+		newTag.setAttribute('Extension',extension)
+		xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
+		@files["[Content_Types].xml"].data= encode_utf8 xml2Str xmlDoc
+	addImageRels: (imageName,imageData) ->
+		if @files["word/media/#{imageName}"]?
+			return false
+		@maxRid++
+		@files["word/media/#{imageName}"]=
+			'name':"word/media/#{imageName}"
+			'data':imageData
+			'options':
+				base64: false
+				binary: true
+				compression: null
+				date: new Date()
+				dir: false
+		extension= imageName.replace(/[^.]+\.([^.]+)/,'$1')
+		@addExtensionRels("image/#{extension}",extension)
+		newTag= (@xmlDoc.createElement 'Relationship')
+		newTag.setAttribute('Id',"rId#{@maxRid}")
+		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
+		newTag.setAttribute('Target',"media/#{imageName}")
+		@xmlDoc.getElementsByTagName("Relationships")[0].appendChild newTag
+		@files["word/_rels/document.xml.rels"].data= encode_utf8 xml2Str @xmlDoc
+		@maxRid
 	saveImageRels: () ->
 		@files["word/_rels/document.xml.rels"].data	
 	getImageList: () ->
