@@ -3,8 +3,8 @@ Docxgen.coffee
 Created by Edgar HIPP
 03/06/2013
 ###
-
-xml2Str = (xmlNode) ->
+window.DocUtils= {}
+DocUtils.xml2Str = (xmlNode) ->
 	try
 		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
 		return (new XMLSerializer()).serializeToString(xmlNode);
@@ -17,7 +17,7 @@ xml2Str = (xmlNode) ->
 			alert('Xmlserializer not supported');
 	return false;
 
-Str2xml= (str) ->
+DocUtils.Str2xml= (str) ->
 	if window.DOMParser
 		parser=new DOMParser();
 		xmlDoc=parser.parseFromString(str,"text/xml")
@@ -27,13 +27,17 @@ Str2xml= (str) ->
 		xmlDoc.loadXML(str)
 	xmlDoc
 
-encode_utf8 = (s)->
+DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
+	string.substr(0,from)+string.substr(from).replace(search,replace)
+
+
+DocUtils.encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 
-decode_utf8= (s) ->
+DocUtils.decode_utf8= (s) ->
 	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ") #replace Ascii 160 space by the normal space, Ascii 32
 
-preg_match_all= (regex, content) ->
+DocUtils.preg_match_all= (regex, content) ->
 	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
 	regex=la
 	content=lolalolilala
@@ -66,21 +70,21 @@ window.DocxGen = class DocxGen
 		@files=zip.files
 		@loadImageRels()
 	loadImageRels: () ->
-		content= decode_utf8 @files["word/_rels/document.xml.rels"].data
-		@xmlDoc= Str2xml content
+		content= DocUtils.decode_utf8 @files["word/_rels/document.xml.rels"].data
+		@xmlDoc= DocUtils.Str2xml content
 		@maxRid=0
 		for tag in @xmlDoc.getElementsByTagName('Relationship')
 			@maxRid= Math.max((parseInt tag.getAttribute("Id").substr(3)),@maxRid)
 		@imageRels=[]
 		this
 	addExtensionRels: (contentType,extension) ->
-		content = decode_utf8 @files["[Content_Types].xml"].data
-		xmlDoc= Str2xml content
+		content = DocUtils.decode_utf8 @files["[Content_Types].xml"].data
+		xmlDoc= DocUtils.Str2xml content
 		newTag=xmlDoc.createElement('Default')
 		newTag.setAttribute('ContentType',contentType)
 		newTag.setAttribute('Extension',extension)
 		xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
-		@files["[Content_Types].xml"].data= encode_utf8 xml2Str xmlDoc
+		@files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) ->
 		if @files["word/media/#{imageName}"]?
 			return false
@@ -101,7 +105,7 @@ window.DocxGen = class DocxGen
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
 		newTag.setAttribute('Target',"media/#{imageName}")
 		@xmlDoc.getElementsByTagName("Relationships")[0].appendChild newTag
-		@files["word/_rels/document.xml.rels"].data= encode_utf8 xml2Str @xmlDoc
+		@files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
 	saveImageRels: () ->
 		@files["word/_rels/document.xml.rels"].data	

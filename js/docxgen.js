@@ -1,22 +1,62 @@
 //@ sourceMappingURL=docxgen.map
+/*
+Docxgen.coffee
+Created by Edgar HIPP
+03/06/2013
+*/
+
+
 (function() {
-  var DocxGen, Str2xml, XmlTemplater, decode_utf8, encode_utf8, preg_match_all, xml2Str,
+  var DocxGen, XmlTemplater,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  encode_utf8 = function(s) {
+  window.DocUtils = {};
+
+  DocUtils.xml2Str = function(xmlNode) {
+    var e;
+
+    try {
+      return (new XMLSerializer()).serializeToString(xmlNode);
+    } catch (_error) {
+      e = _error;
+      try {
+        return xmlNode.xml;
+      } catch (_error) {
+        e = _error;
+        alert('Xmlserializer not supported');
+      }
+    }
+    return false;
+  };
+
+  DocUtils.Str2xml = function(str) {
+    var parser, xmlDoc;
+
+    if (window.DOMParser) {
+      parser = new DOMParser();
+      xmlDoc = parser.parseFromString(str, "text/xml");
+    } else {
+      xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+      xmlDoc.async = false;
+      xmlDoc.loadXML(str);
+    }
+    return xmlDoc;
+  };
+
+  DocUtils.replaceFirstFrom = function(string, search, replace, from) {
+    return string.substr(0, from) + string.substr(from).replace(search, replace);
+  };
+
+  DocUtils.encode_utf8 = function(s) {
     return unescape(encodeURIComponent(s));
   };
 
-  decode_utf8 = function(s) {
+  DocUtils.decode_utf8 = function(s) {
     return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
   };
 
-  String.prototype.replaceFirstFrom = function(search, replace, from) {
-    return this.substr(0, from) + this.substr(from).replace(search, replace);
-  };
-
-  preg_match_all = function(regex, content) {
+  DocUtils.preg_match_all = function(regex, content) {
     /*regex is a string, content is the content. It returns an array of all matches with their offset, for example:
     	regex=la
     	content=lolalolilala
@@ -25,6 +65,9 @@
 
     var matchArray, replacer;
 
+    if (!(typeof regex === 'object')) {
+      regex = new RegExp(regex, 'g');
+    }
     matchArray = [];
     replacer = function() {
       var match, offset, pn, string, _i;
@@ -34,9 +77,224 @@
       pn.offset = offset;
       return matchArray.push(pn);
     };
-    content.replace(new RegExp(regex, 'g'), replacer);
+    content.replace(regex, replacer);
     return matchArray;
   };
+
+  window.DocxGen = DocxGen = (function() {
+    var imageExtensions;
+
+    imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
+
+    function DocxGen(content, templateVars, intelligentTagging) {
+      this.templateVars = templateVars != null ? templateVars : {};
+      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
+      this.files = {};
+      this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
+      if (typeof content === "string") {
+        this.load(content);
+      }
+    }
+
+    DocxGen.prototype.load = function(content) {
+      var zip;
+
+      zip = new JSZip(content);
+      this.files = zip.files;
+      return this.loadImageRels();
+    };
+
+    DocxGen.prototype.loadImageRels = function() {
+      var content, tag, _i, _len, _ref;
+
+      content = DocUtils.decode_utf8(this.files["word/_rels/document.xml.rels"].data);
+      this.xmlDoc = DocUtils.Str2xml(content);
+      this.maxRid = 0;
+      _ref = this.xmlDoc.getElementsByTagName('Relationship');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        tag = _ref[_i];
+        this.maxRid = Math.max(parseInt(tag.getAttribute("Id").substr(3)), this.maxRid);
+      }
+      this.imageRels = [];
+      return this;
+    };
+
+    DocxGen.prototype.addExtensionRels = function(contentType, extension) {
+      var content, newTag, xmlDoc;
+
+      content = DocUtils.decode_utf8(this.files["[Content_Types].xml"].data);
+      xmlDoc = DocUtils.Str2xml(content);
+      newTag = xmlDoc.createElement('Default');
+      newTag.setAttribute('ContentType', contentType);
+      newTag.setAttribute('Extension', extension);
+      xmlDoc.getElementsByTagName("Types")[0].appendChild(newTag);
+      return this.files["[Content_Types].xml"].data = DocUtils.encode_utf8(DocUtils.xml2Str(xmlDoc));
+    };
+
+    DocxGen.prototype.addImageRels = function(imageName, imageData) {
+      var extension, newTag;
+
+      if (this.files["word/media/" + imageName] != null) {
+        return false;
+      }
+      this.maxRid++;
+      this.files["word/media/" + imageName] = {
+        'name': "word/media/" + imageName,
+        'data': imageData,
+        'options': {
+          base64: false,
+          binary: true,
+          compression: null,
+          date: new Date(),
+          dir: false
+        }
+      };
+      extension = imageName.replace(/[^.]+\.([^.]+)/, '$1');
+      this.addExtensionRels("image/" + extension, extension);
+      newTag = this.xmlDoc.createElement('Relationship');
+      newTag.setAttribute('Id', "rId" + this.maxRid);
+      newTag.setAttribute('Type', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image');
+      newTag.setAttribute('Target', "media/" + imageName);
+      this.xmlDoc.getElementsByTagName("Relationships")[0].appendChild(newTag);
+      this.files["word/_rels/document.xml.rels"].data = DocUtils.encode_utf8(DocUtils.xml2Str(this.xmlDoc));
+      return this.maxRid;
+    };
+
+    DocxGen.prototype.saveImageRels = function() {
+      return this.files["word/_rels/document.xml.rels"].data;
+    };
+
+    DocxGen.prototype.getImageList = function() {
+      var extension, imageList, index, regex;
+
+      regex = /[^.]*\.([^.]*)/;
+      imageList = [];
+      for (index in this.files) {
+        extension = index.replace(regex, '$1');
+        if (__indexOf.call(imageExtensions, extension) >= 0) {
+          imageList.push({
+            "path": index,
+            files: this.files[index]
+          });
+        }
+      }
+      return imageList;
+    };
+
+    DocxGen.prototype.setImage = function(path, data) {
+      return this.files[path].data = data;
+    };
+
+    DocxGen.prototype.applyTemplateVars = function() {
+      var currentFile, fileName, _i, _len, _ref, _results;
+
+      _ref = this.templatedFiles;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        fileName = _ref[_i];
+        if (!(this.files[fileName] != null)) {
+          continue;
+        }
+        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        _results.push(this.files[fileName].data = currentFile.applyTemplateVars().content);
+      }
+      return _results;
+    };
+
+    DocxGen.prototype.getTemplateVars = function() {
+      var currentFile, fileName, usedTemplateVars, _i, _len, _ref;
+
+      usedTemplateVars = [];
+      _ref = this.templatedFiles;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        fileName = _ref[_i];
+        if (!(this.files[fileName] != null)) {
+          continue;
+        }
+        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        usedTemplateVars.push({
+          fileName: fileName,
+          vars: currentFile.applyTemplateVars().usedTemplateVars
+        });
+      }
+      return usedTemplateVars;
+    };
+
+    DocxGen.prototype.setTemplateVars = function(templateVars) {
+      this.templateVars = templateVars;
+    };
+
+    DocxGen.prototype.output = function(download) {
+      var doOutput, file, index, outputFile, zip;
+
+      if (download == null) {
+        download = true;
+      }
+      zip = new JSZip();
+      doOutput = function() {
+        return document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + outputFile;
+      };
+      for (index in this.files) {
+        file = this.files[index];
+        zip.file(file.name, file.data, file.options);
+      }
+      outputFile = zip.generate();
+      if (download === true) {
+        doOutput();
+      }
+      return outputFile;
+    };
+
+    DocxGen.prototype.getFullText = function(path, data) {
+      var currentFile;
+
+      if (path == null) {
+        path = "word/document.xml";
+      }
+      if (data == null) {
+        data = "";
+      }
+      if (data === "") {
+        currentFile = new XmlTemplater(this, this.files[path].data, this.templateVars, this.intelligentTagging);
+      } else {
+        currentFile = new XmlTemplater(this, data, this.templateVars, this.intelligentTagging);
+      }
+      return currentFile.getFullText();
+    };
+
+    DocxGen.prototype.download = function(swfpath, imgpath, filename) {
+      var outputFile;
+
+      if (filename == null) {
+        filename = "default.docx";
+      }
+      outputFile = this.output(false);
+      return Downloadify.create('downloadify', {
+        filename: function() {
+          return filename;
+        },
+        data: function() {
+          return outputFile;
+        },
+        onCancel: function() {
+          return alert('You have cancelled the saving of this file.');
+        },
+        onError: function() {
+          return alert('You must put something in the File Contents or there will be nothing to save!');
+        },
+        swf: swfpath,
+        downloadImage: imgpath,
+        width: 100,
+        height: 30,
+        transparent: true,
+        append: false,
+        dataType: 'base64'
+      });
+    };
+
+    return DocxGen;
+
+  })();
 
   window.XmlTemplater = XmlTemplater = (function() {
     function XmlTemplater(creator, content, templateVars, intelligentTagging, scopePath, usedTemplateVars) {
@@ -109,7 +367,7 @@
       }
       u[tag] = true;
       if (scope[tag] != null) {
-        return encode_utf8(scope[tag]);
+        return DocUtils.encode_utf8(scope[tag]);
       } else {
         return "undefined";
       }
@@ -128,7 +386,7 @@
       		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
       */
 
-      tags = preg_match_all("<(\/?[^/> ]+)([^>]*)>", text.substr(start, end));
+      tags = DocUtils.preg_match_all("<(\/?[^/> ]+)([^>]*)>", text.substr(start, end));
       result = [];
       for (i = _i = 0, _len = tags.length; _i < _len; i = ++_i) {
         tag = tags[i];
@@ -201,11 +459,11 @@
         }
         return _results;
       }).call(this);
-      return decode_utf8(output.join(""));
+      return DocUtils.decode_utf8(output.join(""));
     };
 
     XmlTemplater.prototype._getFullTextMatchesFromData = function() {
-      return this.matches = preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>", this.content);
+      return this.matches = DocUtils.preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>", this.content);
     };
 
     XmlTemplater.prototype.calcInnerTextScope = function(text, start, end, tag) {
@@ -397,7 +655,7 @@
         throw "content " + this.matches[tagNumber][0] + " not found in content";
       }
       copyContent = content;
-      content = content.replaceFirstFrom(this.matches[tagNumber][0], replacer, startTag);
+      content = DocUtils.replaceFirstFrom(content, this.matches[tagNumber][0], replacer, startTag);
       this.matches[tagNumber][0] = replacer;
       if (copyContent === content) {
         throw "offset problem0: didnt changed the value (should have changed from " + this.matches[this.bracketStart.i][0] + " to " + replacer;
@@ -488,7 +746,7 @@
     };
 
     XmlTemplater.prototype.findImages = function() {
-      return this.imgMatches = preg_match_all(/<w:drawing>(.*)<a:blip\x20r:embed="rId([0-9]+)">(.*)<\/w:drawing>/, this.content);
+      return this.imgMatches = DocUtils.preg_match_all(/<w:drawing>(.*)<a:blip\x20r:embed="rId([0-9]+)">(.*)<\/w:drawing>/, this.content);
     };
 
     /*
@@ -607,292 +865,6 @@
     };
 
     return XmlTemplater;
-
-  })();
-
-  /*
-  Docxgen.coffee
-  Created by Edgar HIPP
-  03/06/2013
-  */
-
-
-  xml2Str = function(xmlNode) {
-    var e;
-
-    try {
-      return (new XMLSerializer()).serializeToString(xmlNode);
-    } catch (_error) {
-      e = _error;
-      try {
-        return xmlNode.xml;
-      } catch (_error) {
-        e = _error;
-        alert('Xmlserializer not supported');
-      }
-    }
-    return false;
-  };
-
-  Str2xml = function(str) {
-    var parser, xmlDoc;
-
-    if (window.DOMParser) {
-      parser = new DOMParser();
-      xmlDoc = parser.parseFromString(str, "text/xml");
-    } else {
-      xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-      xmlDoc.async = false;
-      xmlDoc.loadXML(str);
-    }
-    return xmlDoc;
-  };
-
-  encode_utf8 = function(s) {
-    return unescape(encodeURIComponent(s));
-  };
-
-  decode_utf8 = function(s) {
-    return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
-  };
-
-  preg_match_all = function(regex, content) {
-    /*regex is a string, content is the content. It returns an array of all matches with their offset, for example:
-    	regex=la
-    	content=lolalolilala
-    	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
-    */
-
-    var matchArray, replacer;
-
-    if (!(typeof regex === 'object')) {
-      regex = new RegExp(regex, 'g');
-    }
-    matchArray = [];
-    replacer = function() {
-      var match, offset, pn, string, _i;
-
-      match = arguments[0], pn = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), offset = arguments[_i++], string = arguments[_i++];
-      pn.unshift(match);
-      pn.offset = offset;
-      return matchArray.push(pn);
-    };
-    content.replace(regex, replacer);
-    return matchArray;
-  };
-
-  window.DocxGen = DocxGen = (function() {
-    var imageExtensions;
-
-    imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
-
-    function DocxGen(content, templateVars, intelligentTagging) {
-      this.templateVars = templateVars != null ? templateVars : {};
-      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
-      this.files = {};
-      this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
-      if (typeof content === "string") {
-        this.load(content);
-      }
-    }
-
-    DocxGen.prototype.load = function(content) {
-      var zip;
-
-      zip = new JSZip(content);
-      this.files = zip.files;
-      return this.loadImageRels();
-    };
-
-    DocxGen.prototype.loadImageRels = function() {
-      var content, tag, _i, _len, _ref;
-
-      content = decode_utf8(this.files["word/_rels/document.xml.rels"].data);
-      this.xmlDoc = Str2xml(content);
-      this.maxRid = 0;
-      _ref = this.xmlDoc.getElementsByTagName('Relationship');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        tag = _ref[_i];
-        this.maxRid = Math.max(parseInt(tag.getAttribute("Id").substr(3)), this.maxRid);
-      }
-      this.imageRels = [];
-      return this;
-    };
-
-    DocxGen.prototype.addExtensionRels = function(contentType, extension) {
-      var content, newTag, xmlDoc;
-
-      content = decode_utf8(this.files["[Content_Types].xml"].data);
-      xmlDoc = Str2xml(content);
-      newTag = xmlDoc.createElement('Default');
-      newTag.setAttribute('ContentType', contentType);
-      newTag.setAttribute('Extension', extension);
-      xmlDoc.getElementsByTagName("Types")[0].appendChild(newTag);
-      return this.files["[Content_Types].xml"].data = encode_utf8(xml2Str(xmlDoc));
-    };
-
-    DocxGen.prototype.addImageRels = function(imageName, imageData) {
-      var extension, newTag;
-
-      if (this.files["word/media/" + imageName] != null) {
-        return false;
-      }
-      this.maxRid++;
-      this.files["word/media/" + imageName] = {
-        'name': "word/media/" + imageName,
-        'data': imageData,
-        'options': {
-          base64: false,
-          binary: true,
-          compression: null,
-          date: new Date(),
-          dir: false
-        }
-      };
-      extension = imageName.replace(/[^.]+\.([^.]+)/, '$1');
-      this.addExtensionRels("image/" + extension, extension);
-      newTag = this.xmlDoc.createElement('Relationship');
-      newTag.setAttribute('Id', "rId" + this.maxRid);
-      newTag.setAttribute('Type', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image');
-      newTag.setAttribute('Target', "media/" + imageName);
-      this.xmlDoc.getElementsByTagName("Relationships")[0].appendChild(newTag);
-      this.files["word/_rels/document.xml.rels"].data = encode_utf8(xml2Str(this.xmlDoc));
-      return this.maxRid;
-    };
-
-    DocxGen.prototype.saveImageRels = function() {
-      return this.files["word/_rels/document.xml.rels"].data;
-    };
-
-    DocxGen.prototype.getImageList = function() {
-      var extension, imageList, index, regex;
-
-      regex = /[^.]*\.([^.]*)/;
-      imageList = [];
-      for (index in this.files) {
-        extension = index.replace(regex, '$1');
-        if (__indexOf.call(imageExtensions, extension) >= 0) {
-          imageList.push({
-            "path": index,
-            files: this.files[index]
-          });
-        }
-      }
-      return imageList;
-    };
-
-    DocxGen.prototype.setImage = function(path, data) {
-      return this.files[path].data = data;
-    };
-
-    DocxGen.prototype.applyTemplateVars = function() {
-      var currentFile, fileName, _i, _len, _ref, _results;
-
-      _ref = this.templatedFiles;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        fileName = _ref[_i];
-        if (!(this.files[fileName] != null)) {
-          continue;
-        }
-        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
-        _results.push(this.files[fileName].data = currentFile.applyTemplateVars().content);
-      }
-      return _results;
-    };
-
-    DocxGen.prototype.getTemplateVars = function() {
-      var currentFile, fileName, usedTemplateVars, _i, _len, _ref;
-
-      usedTemplateVars = [];
-      _ref = this.templatedFiles;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        fileName = _ref[_i];
-        if (!(this.files[fileName] != null)) {
-          continue;
-        }
-        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
-        usedTemplateVars.push({
-          fileName: fileName,
-          vars: currentFile.applyTemplateVars().usedTemplateVars
-        });
-      }
-      return usedTemplateVars;
-    };
-
-    DocxGen.prototype.setTemplateVars = function(templateVars) {
-      this.templateVars = templateVars;
-    };
-
-    DocxGen.prototype.output = function(download) {
-      var doOutput, file, index, outputFile, zip;
-
-      if (download == null) {
-        download = true;
-      }
-      zip = new JSZip();
-      doOutput = function() {
-        return document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + outputFile;
-      };
-      for (index in this.files) {
-        file = this.files[index];
-        zip.file(file.name, file.data, file.options);
-      }
-      outputFile = zip.generate();
-      if (download === true) {
-        doOutput();
-      }
-      return outputFile;
-    };
-
-    DocxGen.prototype.getFullText = function(path, data) {
-      var currentFile;
-
-      if (path == null) {
-        path = "word/document.xml";
-      }
-      if (data == null) {
-        data = "";
-      }
-      if (data === "") {
-        currentFile = new XmlTemplater(this, this.files[path].data, this.templateVars, this.intelligentTagging);
-      } else {
-        currentFile = new XmlTemplater(this, data, this.templateVars, this.intelligentTagging);
-      }
-      return currentFile.getFullText();
-    };
-
-    DocxGen.prototype.download = function(swfpath, imgpath, filename) {
-      var outputFile;
-
-      if (filename == null) {
-        filename = "default.docx";
-      }
-      outputFile = this.output(false);
-      return Downloadify.create('downloadify', {
-        filename: function() {
-          return filename;
-        },
-        data: function() {
-          return outputFile;
-        },
-        onCancel: function() {
-          return alert('You have cancelled the saving of this file.');
-        },
-        onError: function() {
-          return alert('You must put something in the File Contents or there will be nothing to save!');
-        },
-        swf: swfpath,
-        downloadImage: imgpath,
-        width: 100,
-        height: 30,
-        transparent: true,
-        append: false,
-        dataType: 'base64'
-      });
-    };
-
-    return DocxGen;
 
   })();
 

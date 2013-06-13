@@ -1,26 +1,3 @@
-encode_utf8 = (s)->
-	unescape(encodeURIComponent(s))
-
-decode_utf8= (s) ->
-	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ") #replace Ascii 160 space by the normal space, Ascii 32
-
-String.prototype.replaceFirstFrom = (search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
-	this.substr(0,from)+this.substr(from).replace(search,replace)
-
-preg_match_all= (regex, content) ->
-	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
-	regex=la
-	content=lolalolilala
-	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
-	###
-	matchArray= []
-	replacer = (match,pn ..., offset, string)->
-		pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-		pn.offset= offset
-		matchArray.push pn
-	content.replace (new RegExp(regex,'g')),replacer
-	matchArray
-
 window.XmlTemplater = class XmlTemplater
 	constructor: (creator,content="",@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
 		@DocxGen=creator
@@ -51,12 +28,12 @@ window.XmlTemplater = class XmlTemplater
 			u[s]={} unless u[s]?
 			u = u[s]
 		u[tag]= true
-		if scope[tag]? then return encode_utf8 scope[tag] else return "undefined"
+		if scope[tag]? then return DocUtils.encode_utf8 scope[tag] else return "undefined"
 	calcScopeText: (text,start=0,end=text.length-1) ->
 		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
 		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
 		###
-		tags= preg_match_all("<(\/?[^/> ]+)([^>]*)>",text.substr(start,end)) #getThemAll (the opening and closing tags)!
+		tags= DocUtils.preg_match_all("<(\/?[^/> ]+)([^>]*)>",text.substr(start,end)) #getThemAll (the opening and closing tags)!
 		result=[]
 		for tag,i in tags
 			if tag[1][0]=='/' #closing tag
@@ -84,9 +61,9 @@ window.XmlTemplater = class XmlTemplater
 	getFullText:() ->
 		@matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
 		output= (match[2] for match in @matches) #get only the text
-		decode_utf8(output.join("")) #join it
+		DocUtils.decode_utf8(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		@matches= preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>",@content)
+		@matches= DocUtils.preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>",@content)
 	calcInnerTextScope: (text,start,end,tag) -> #tag: w:t
 		endTag= text.indexOf('</'+tag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
@@ -197,7 +174,7 @@ window.XmlTemplater = class XmlTemplater
 		@charactersAdded[tagNumber+1]+=replacer.length-@matches[tagNumber][0].length
 		if content.indexOf(@matches[tagNumber][0])==-1 then throw "content #{@matches[tagNumber][0]} not found in content"
 		copyContent= content
-		content = content.replaceFirstFrom @matches[tagNumber][0], replacer, startTag
+		content = DocUtils.replaceFirstFrom content,@matches[tagNumber][0], replacer, startTag
 		@matches[tagNumber][0]=replacer
 
 		if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@matches[@bracketStart.i][0]} to #{replacer}"
@@ -258,7 +235,7 @@ window.XmlTemplater = class XmlTemplater
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				@content=@content.replace(match[0],"<w:drawing>"+match[1]+'<a:blip r:embed="rId'+newId+'">'+match[3]+'</w:drawing>')
 	findImages: () ->
-		@imgMatches= preg_match_all ///
+		@imgMatches= DocUtils.preg_match_all ///
 		<w:drawing>
 		(.*)
 		<a:blip\x20r:embed=
