@@ -13,6 +13,34 @@ Created by Edgar HIPP
 
   window.DocUtils = {};
 
+  DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async) {
+    var xhrDoc;
+
+    if (noDocx == null) {
+      noDocx = false;
+    }
+    if (intelligentTagging == null) {
+      intelligentTagging = false;
+    }
+    if (async == null) {
+      async = false;
+    }
+    xhrDoc = new XMLHttpRequest();
+    xhrDoc.open('GET', "../examples/" + path, async);
+    if (xhrDoc.overrideMimeType) {
+      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
+    }
+    xhrDoc.onreadystatechange = function(e) {
+      if (this.readyState === 4 && this.status === 200) {
+        window.docXData[path] = this.response;
+        if (noDocx === false) {
+          return window.docX[path] = new DocxGen(this.response, {}, intelligentTagging);
+        }
+      }
+    };
+    return xhrDoc.send();
+  };
+
   DocUtils.xml2Str = function(xmlNode) {
     var e;
 
@@ -195,7 +223,7 @@ Created by Edgar HIPP
         if (!(this.files[fileName] != null)) {
           continue;
         }
-        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(this.files[fileName].data, this, this.templateVars, this.intelligentTagging);
         _results.push(this.files[fileName].data = currentFile.applyTemplateVars().content);
       }
       return _results;
@@ -211,7 +239,7 @@ Created by Edgar HIPP
         if (!(this.files[fileName] != null)) {
           continue;
         }
-        currentFile = new XmlTemplater(this, this.files[fileName].data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(this.files[fileName].data, this, this.templateVars, this.intelligentTagging);
         usedTemplateVars.push({
           fileName: fileName,
           vars: currentFile.applyTemplateVars().usedTemplateVars
@@ -255,9 +283,9 @@ Created by Edgar HIPP
         data = "";
       }
       if (data === "") {
-        currentFile = new XmlTemplater(this, this.files[path].data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(this.files[path].data, this, this.templateVars, this.intelligentTagging);
       } else {
-        currentFile = new XmlTemplater(this, data, this.templateVars, this.intelligentTagging);
+        currentFile = new XmlTemplater(data, this, this.templateVars, this.intelligentTagging);
       }
       return currentFile.getFullText();
     };
@@ -297,7 +325,7 @@ Created by Edgar HIPP
   })();
 
   window.XmlTemplater = XmlTemplater = (function() {
-    function XmlTemplater(creator, content, templateVars, intelligentTagging, scopePath, usedTemplateVars) {
+    function XmlTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars) {
       if (content == null) {
         content = "";
       }
@@ -564,7 +592,7 @@ Created by Edgar HIPP
         _ref = this.currentScope[this.loopOpen.tag];
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           scope = _ref[i];
-          subfile = new XmlTemplater(this.DocxGen, A, scope, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
+          subfile = new XmlTemplater(A, this.DocxGen, scope, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
           subfile.applyTemplateVars();
           newContent += subfile.content;
           if ((subfile.getFullText().indexOf('{')) !== -1) {
@@ -573,11 +601,11 @@ Created by Edgar HIPP
         }
         this.content = this.content.replace(B, newContent);
       } else {
-        subfile = new XmlTemplater(this.DocxGen, A, {}, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
+        subfile = new XmlTemplater(A, this.DocxGen, {}, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
         subfile.applyTemplateVars();
         this.content = this.content.replace(B, "");
       }
-      nextFile = new XmlTemplater(this.DocxGen, this.content, this.currentScope, this.intelligentTagging, this.scopePath, this.usedTemplateVars);
+      nextFile = new XmlTemplater(this.content, this.DocxGen, this.currentScope, this.intelligentTagging, this.scopePath, this.usedTemplateVars);
       nextFile.applyTemplateVars();
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
         throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
@@ -721,20 +749,26 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.replaceImages = function() {
-      var i, imgData, imgName, match, newId, _i, _len, _ref, _results;
+      var imageTag, imgData, imgName, match, newId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results;
 
       _ref = this.imgMatches;
       _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        match = _ref[i];
-        console.log(this.currentScope);
+      for (u = _i = 0, _len = _ref.length; _i < _len; u = ++_i) {
+        match = _ref[u];
         if (this.currentScope["img"] != null) {
-          if (this.currentScope["img"][i] != null) {
-            imgName = this.currentScope["img"][i].name;
-            imgData = this.currentScope["img"][i].data;
-            console.log(this);
+          if (this.currentScope["img"][u] != null) {
+            xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
+            window.lulu = xmlImg;
+            imgName = this.currentScope["img"][u].name;
+            imgData = this.currentScope["img"][u].data;
             newId = this.DocxGen.addImageRels(imgName, imgData);
-            _results.push(this.content = this.content.replace(match[0], "<w:drawing>" + match[1] + '<a:blip r:embed="rId' + newId + '">' + match[3] + '</w:drawing>'));
+            tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
+            tag.setAttribute('id', u);
+            tag.setAttribute('name', "" + imgName);
+            tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
+            tagrId.setAttribute('r:embed', "rId" + newId);
+            imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
+            _results.push(this.content = this.content.replace(match[0], DocUtils.xml2Str(imageTag)));
           } else {
             _results.push(void 0);
           }
@@ -746,7 +780,7 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.findImages = function() {
-      return this.imgMatches = DocUtils.preg_match_all(/<w:drawing>(.*)<a:blip\x20r:embed="rId([0-9]+)">(.*)<\/w:drawing>/, this.content);
+      return this.imgMatches = DocUtils.preg_match_all(/<w:drawing>.*<\/w:drawing>/, this.content);
     };
 
     /*

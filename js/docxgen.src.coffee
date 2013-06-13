@@ -4,6 +4,19 @@ Created by Edgar HIPP
 03/06/2013
 ###
 window.DocUtils= {}
+
+DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET', "../examples/#{path}", async)
+	if xhrDoc.overrideMimeType
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			window.docXData[path]=this.response
+			if noDocx==false
+				window.docX[path]=new DocxGen(this.response,{},intelligentTagging)
+	xhrDoc.send()
+
 DocUtils.xml2Str = (xmlNode) ->
 	try
 		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
@@ -29,7 +42,6 @@ DocUtils.Str2xml= (str) ->
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
-
 
 DocUtils.encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
@@ -125,12 +137,12 @@ window.DocxGen = class DocxGen
 		@files[path].data= data
 	applyTemplateVars:()->
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(@files[fileName].data,this,@templateVars,@intelligentTagging)
 			@files[fileName].data= currentFile.applyTemplateVars().content
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(@files[fileName].data,this,@templateVars,@intelligentTagging)
 			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -147,9 +159,9 @@ window.DocxGen = class DocxGen
 		outputFile
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new XmlTemplater(this,@files[path].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(@files[path].data,this,@templateVars,@intelligentTagging)
 		else
-			currentFile= new XmlTemplater(this,data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(data,this,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)
@@ -167,7 +179,7 @@ window.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
-	constructor: (creator,content="",@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
+	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
 		@DocxGen=creator
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
@@ -285,17 +297,17 @@ window.XmlTemplater = class XmlTemplater
 			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
 			for scope,i in @currentScope[@loopOpen.tag]
-				subfile= new XmlTemplater @DocxGen, A, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+				subfile= new XmlTemplater  A,@DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
 		else 
-			subfile= new XmlTemplater @DocxGen, A, {}, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+			subfile= new XmlTemplater A, @DocxGen, {}, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 			subfile.applyTemplateVars()
 			@content= @content.replace B, ""
 		
-		nextFile= new XmlTemplater @DocxGen, @content,@currentScope,@intelligentTagging,@scopePath, @usedTemplateVars
+		nextFile= new XmlTemplater @content,@DocxGen, @currentScope,@intelligentTagging,@scopePath, @usedTemplateVars
 		nextFile.applyTemplateVars()
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		@content=nextFile.content
@@ -394,21 +406,28 @@ window.XmlTemplater = class XmlTemplater
 		if copyContent==content then throw "copycontent=content !!"
 		return content
 	replaceImages:() ->
-		for match,i in @imgMatches
-			console.log @currentScope
-			if @currentScope["img"]? then if @currentScope["img"][i]?
-				imgName= @currentScope["img"][i].name
-				imgData= @currentScope["img"][i].data
-				console.log this
+		for match,u in @imgMatches
+			
+			if @currentScope["img"]? then if @currentScope["img"][u]?
+				xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
+				window.lulu=xmlImg
+				imgName= @currentScope["img"][u].name
+				imgData= @currentScope["img"][u].data
 				newId= @DocxGen.addImageRels(imgName,imgData)
-				@content=@content.replace(match[0],"<w:drawing>"+match[1]+'<a:blip r:embed="rId'+newId+'">'+match[3]+'</w:drawing>')
+				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
+				tag.setAttribute('id',u)
+				tag.setAttribute('name',"#{imgName}")
+
+				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
+
+				tagrId.setAttribute('r:embed',"rId#{newId}")
+				
+				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
+				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)
 	findImages: () ->
 		@imgMatches= DocUtils.preg_match_all ///
 		<w:drawing>
-		(.*)
-		<a:blip\x20r:embed=
-		"rId([0-9]+)">
-		(.*)
+		.*
 		</w:drawing>
 		///, @content
 	###

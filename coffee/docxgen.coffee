@@ -4,6 +4,19 @@ Created by Edgar HIPP
 03/06/2013
 ###
 window.DocUtils= {}
+
+DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET', "../examples/#{path}", async)
+	if xhrDoc.overrideMimeType
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =(e)->
+		if this.readyState == 4 and this.status == 200
+			window.docXData[path]=this.response
+			if noDocx==false
+				window.docX[path]=new DocxGen(this.response,{},intelligentTagging)
+	xhrDoc.send()
+
 DocUtils.xml2Str = (xmlNode) ->
 	try
 		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
@@ -29,7 +42,6 @@ DocUtils.Str2xml= (str) ->
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
-
 
 DocUtils.encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
@@ -125,12 +137,12 @@ window.DocxGen = class DocxGen
 		@files[path].data= data
 	applyTemplateVars:()->
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(@files[fileName].data,this,@templateVars,@intelligentTagging)
 			@files[fileName].data= currentFile.applyTemplateVars().content
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(this,@files[fileName].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(@files[fileName].data,this,@templateVars,@intelligentTagging)
 			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -147,9 +159,9 @@ window.DocxGen = class DocxGen
 		outputFile
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new XmlTemplater(this,@files[path].data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(@files[path].data,this,@templateVars,@intelligentTagging)
 		else
-			currentFile= new XmlTemplater(this,data,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(data,this,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		outputFile= @output(false)

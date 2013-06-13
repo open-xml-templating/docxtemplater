@@ -8,35 +8,23 @@ Object.size = (obj) ->
 window.docX=[]
 window.docXData=[]
 
-loadDoc= (path,noDocx=false,intelligentTagging=false) ->
-	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', "../examples/#{path}", false)
-	if xhrDoc.overrideMimeType
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			window.docXData[path]=this.response
-			if noDocx==false
-				window.docX[path]=new DocxGen(this.response,{},intelligentTagging)
-	xhrDoc.send()
-
-loadDoc('imageExample.docx')
-loadDoc('image.png',true)
-loadDoc('bootstrap_logo.png',true)
-loadDoc('BMW_logo.png',true)
-loadDoc('Firefox_logo.png',true)
-loadDoc('Volkswagen_logo.png',true)
-loadDoc('tagExample.docx')
-loadDoc('tagExampleExpected.docx')
-loadDoc('tagLoopExample.docx')
-loadDoc('tagLoopExampleImageExpected.docx')
-loadDoc('tagProduitLoop.docx')
-loadDoc('tagDashLoop.docx')
-loadDoc('tagDashLoopList.docx')
-loadDoc('tagDashLoopTable.docx')
-loadDoc('tagIntelligentLoopTable.docx',false,true)
-loadDoc('tagIntelligentLoopTableExpected.docx')
-loadDoc('tagDashLoop.docx')
+DocUtils.loadDoc('imageExample.docx')
+DocUtils.loadDoc('image.png',true)
+DocUtils.loadDoc('bootstrap_logo.png',true)
+DocUtils.loadDoc('BMW_logo.png',true)
+DocUtils.loadDoc('Firefox_logo.png',true)
+DocUtils.loadDoc('Volkswagen_logo.png',true)
+DocUtils.loadDoc('tagExample.docx')
+DocUtils.loadDoc('tagExampleExpected.docx')
+DocUtils.loadDoc('tagLoopExample.docx')
+DocUtils.loadDoc('tagLoopExampleImageExpected.docx')
+DocUtils.loadDoc('tagProduitLoop.docx')
+DocUtils.loadDoc('tagDashLoop.docx')
+DocUtils.loadDoc('tagDashLoopList.docx')
+DocUtils.loadDoc('tagDashLoopTable.docx')
+DocUtils.loadDoc('tagIntelligentLoopTable.docx',false,true)
+DocUtils.loadDoc('tagIntelligentLoopTableExpected.docx')
+DocUtils.loadDoc('tagDashLoop.docx')
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -120,7 +108,7 @@ describe "DocxGenTemplatingForLoop", () ->
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
 describe "scope calculation" , () ->
-	xmlTemplater= new XmlTemplater(null,)
+	xmlTemplater= new XmlTemplater()
 	it "should compute the scope between 2 <w:t>" , () ->
 		scope= xmlTemplater.calcScopeText """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '<w:p>', offset : 27 }, { tag : '<w:r>', offset : 162 }, { tag : '<w:t>', offset : 188 } ])
@@ -132,7 +120,7 @@ describe "scope calculation" , () ->
 		expect(scope).toEqual( [ { tag : '</w:t>', offset : 11 }, { tag : '</w:r>', offset : 17 }, { tag : '</w:p>', offset : 23 }, { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 }, { tag : '<w:p>', offset : 191 }, { tag : '<w:r>', offset : 260 }, { tag : '<w:t>', offset : 309 } ])
 
 describe "scope diff calculation", () ->
-	xmlTemplater= new XmlTemplater(null,)
+	xmlTemplater= new XmlTemplater()
 	it "should compute the scopeDiff between 2 <w:t>" , () ->
 		scope= xmlTemplater.calcScopeDifference """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([])
@@ -145,7 +133,7 @@ describe "scope diff calculation", () ->
 
 describe "scope inner text", () ->
 	it "should find the scope" , () ->	
-		xmlTemplater= new XmlTemplater(null,)
+		xmlTemplater= new XmlTemplater()
 		docX['tagProduitLoop.docx']= new DocxGen(docXData['tagProduitLoop.docx'])
 		scope= xmlTemplater.calcInnerTextScope docX['tagProduitLoop.docx'].files["word/document.xml"].data ,1195,1245,'w:p'
 		obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
@@ -213,37 +201,37 @@ describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
 		content= """<w:t>Hello {name}</w:t>"""
 		scope= {"name":"Edgar"} 
-		xmlTemplater= new XmlTemplater(null,content,scope)
+		xmlTemplater= new XmlTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with tag in two elements", ()->
 		content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 		scope= {"name":"Edgar"} 
-		xmlTemplater= new XmlTemplater(null,content,scope)
+		xmlTemplater= new XmlTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with simple Loop", ()->
 		content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
-		xmlTemplater= new XmlTemplater(null,content,scope)
+		xmlTemplater= new XmlTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
 	it "should work with dash Loop", ()->
 		content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
-		xmlTemplater= new XmlTemplater(null,content,scope)
+		xmlTemplater= new XmlTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,')
 	it "should work with loop and innerContent", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>"""
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
-		xmlTemplater= new XmlTemplater(null,content,scope)
+		xmlTemplater= new XmlTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 	it "should work with loop and innerContent (with last)", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
-		xmlTemplater= new XmlTemplater(null,content,scope)
+		xmlTemplater= new XmlTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 
@@ -282,7 +270,6 @@ describe "loop forTagging images", () ->
 			]
 		docX['tagLoopExample.docx'].setTemplateVars(tempVars)
 		docX['tagLoopExample.docx'].applyTemplateVars()
-		console.log docX['tagLoopExample.docx']
 		window.test=docX['tagLoopExample.docx']
 
 		# for i of docX['tagLoopExample.docx'].files

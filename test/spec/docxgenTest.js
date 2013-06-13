@@ -1,7 +1,5 @@
 //@ sourceMappingURL=docxgenTest.map
 (function() {
-  var loadDoc;
-
   Object.size = function(obj) {
     var key, log, size;
 
@@ -17,64 +15,39 @@
 
   window.docXData = [];
 
-  loadDoc = function(path, noDocx, intelligentTagging) {
-    var xhrDoc;
+  DocUtils.loadDoc('imageExample.docx');
 
-    if (noDocx == null) {
-      noDocx = false;
-    }
-    if (intelligentTagging == null) {
-      intelligentTagging = false;
-    }
-    xhrDoc = new XMLHttpRequest();
-    xhrDoc.open('GET', "../examples/" + path, false);
-    if (xhrDoc.overrideMimeType) {
-      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDoc.onreadystatechange = function(e) {
-      if (this.readyState === 4 && this.status === 200) {
-        window.docXData[path] = this.response;
-        if (noDocx === false) {
-          return window.docX[path] = new DocxGen(this.response, {}, intelligentTagging);
-        }
-      }
-    };
-    return xhrDoc.send();
-  };
+  DocUtils.loadDoc('image.png', true);
 
-  loadDoc('imageExample.docx');
+  DocUtils.loadDoc('bootstrap_logo.png', true);
 
-  loadDoc('image.png', true);
+  DocUtils.loadDoc('BMW_logo.png', true);
 
-  loadDoc('bootstrap_logo.png', true);
+  DocUtils.loadDoc('Firefox_logo.png', true);
 
-  loadDoc('BMW_logo.png', true);
+  DocUtils.loadDoc('Volkswagen_logo.png', true);
 
-  loadDoc('Firefox_logo.png', true);
+  DocUtils.loadDoc('tagExample.docx');
 
-  loadDoc('Volkswagen_logo.png', true);
+  DocUtils.loadDoc('tagExampleExpected.docx');
 
-  loadDoc('tagExample.docx');
+  DocUtils.loadDoc('tagLoopExample.docx');
 
-  loadDoc('tagExampleExpected.docx');
+  DocUtils.loadDoc('tagLoopExampleImageExpected.docx');
 
-  loadDoc('tagLoopExample.docx');
+  DocUtils.loadDoc('tagProduitLoop.docx');
 
-  loadDoc('tagLoopExampleImageExpected.docx');
+  DocUtils.loadDoc('tagDashLoop.docx');
 
-  loadDoc('tagProduitLoop.docx');
+  DocUtils.loadDoc('tagDashLoopList.docx');
 
-  loadDoc('tagDashLoop.docx');
+  DocUtils.loadDoc('tagDashLoopTable.docx');
 
-  loadDoc('tagDashLoopList.docx');
+  DocUtils.loadDoc('tagIntelligentLoopTable.docx', false, true);
 
-  loadDoc('tagDashLoopTable.docx');
+  DocUtils.loadDoc('tagIntelligentLoopTableExpected.docx');
 
-  loadDoc('tagIntelligentLoopTable.docx', false, true);
-
-  loadDoc('tagIntelligentLoopTableExpected.docx');
-
-  loadDoc('tagDashLoop.docx');
+  DocUtils.loadDoc('tagDashLoop.docx');
 
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
@@ -273,7 +246,7 @@
   describe("scope calculation", function() {
     var xmlTemplater;
 
-    xmlTemplater = new XmlTemplater(null);
+    xmlTemplater = new XmlTemplater();
     it("should compute the scope between 2 <w:t>", function() {
       var scope;
 
@@ -372,7 +345,7 @@
   describe("scope diff calculation", function() {
     var xmlTemplater;
 
-    xmlTemplater = new XmlTemplater(null);
+    xmlTemplater = new XmlTemplater();
     it("should compute the scopeDiff between 2 <w:t>", function() {
       var scope;
 
@@ -408,7 +381,7 @@
     return it("should find the scope", function() {
       var obj, scope, xmlTemplater;
 
-      xmlTemplater = new XmlTemplater(null);
+      xmlTemplater = new XmlTemplater();
       docX['tagProduitLoop.docx'] = new DocxGen(docXData['tagProduitLoop.docx']);
       scope = xmlTemplater.calcInnerTextScope(docX['tagProduitLoop.docx'].files["word/document.xml"].data, 1195, 1245, 'w:p');
       obj = {
@@ -617,7 +590,7 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new XmlTemplater(null, content, scope);
+      xmlTemplater = new XmlTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -628,7 +601,7 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new XmlTemplater(null, content, scope);
+      xmlTemplater = new XmlTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -647,7 +620,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(null, content, scope);
+      xmlTemplater = new XmlTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
     });
@@ -666,7 +639,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(null, content, scope);
+      xmlTemplater = new XmlTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,');
     });
@@ -686,7 +659,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(null, content, scope);
+      xmlTemplater = new XmlTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
@@ -706,7 +679,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(null, content, scope);
+      xmlTemplater = new XmlTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
@@ -773,7 +746,6 @@
       };
       docX['tagLoopExample.docx'].setTemplateVars(tempVars);
       docX['tagLoopExample.docx'].applyTemplateVars();
-      console.log(docX['tagLoopExample.docx']);
       return window.test = docX['tagLoopExample.docx'];
     });
   });
