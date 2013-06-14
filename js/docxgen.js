@@ -41,6 +41,38 @@ Created by Edgar HIPP
     return xhrDoc.send();
   };
 
+  DocUtils.clone = function(obj) {
+    var flags, key, newInstance;
+
+    if ((obj == null) || typeof obj !== 'object') {
+      return obj;
+    }
+    if (obj instanceof Date) {
+      return new Date(obj.getTime());
+    }
+    if (obj instanceof RegExp) {
+      flags = '';
+      if (obj.global != null) {
+        flags += 'g';
+      }
+      if (obj.ignoreCase != null) {
+        flags += 'i';
+      }
+      if (obj.multiline != null) {
+        flags += 'm';
+      }
+      if (obj.sticky != null) {
+        flags += 'y';
+      }
+      return new RegExp(obj.source, flags);
+    }
+    newInstance = new obj.constructor();
+    for (key in obj) {
+      newInstance[key] = DocUtils.clone(obj[key]);
+    }
+    return newInstance;
+  };
+
   DocUtils.xml2Str = function(xmlNode) {
     var e;
 
@@ -148,15 +180,25 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.addExtensionRels = function(contentType, extension) {
-      var content, newTag, xmlDoc;
+      var addTag, content, defaultTags, newTag, tag, xmlDoc, _i, _len;
 
       content = DocUtils.decode_utf8(this.files["[Content_Types].xml"].data);
       xmlDoc = DocUtils.Str2xml(content);
-      newTag = xmlDoc.createElement('Default');
-      newTag.setAttribute('ContentType', contentType);
-      newTag.setAttribute('Extension', extension);
-      xmlDoc.getElementsByTagName("Types")[0].appendChild(newTag);
-      return this.files["[Content_Types].xml"].data = DocUtils.encode_utf8(DocUtils.xml2Str(xmlDoc));
+      addTag = true;
+      defaultTags = xmlDoc.getElementsByTagName('Default');
+      for (_i = 0, _len = defaultTags.length; _i < _len; _i++) {
+        tag = defaultTags[_i];
+        if (tag.getAttribute('Extension') === extension) {
+          addTag = false;
+        }
+      }
+      if (addTag) {
+        newTag = xmlDoc.createElement('Default');
+        newTag.setAttribute('ContentType', contentType);
+        newTag.setAttribute('Extension', extension);
+        xmlDoc.getElementsByTagName("Types")[0].appendChild(newTag);
+        return this.files["[Content_Types].xml"].data = DocUtils.encode_utf8(DocUtils.xml2Str(xmlDoc));
+      }
     };
 
     DocxGen.prototype.addImageRels = function(imageName, imageData) {
@@ -326,6 +368,8 @@ Created by Edgar HIPP
 
   window.XmlTemplater = XmlTemplater = (function() {
     function XmlTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars) {
+      var options;
+
       if (content == null) {
         content = "";
       }
@@ -333,7 +377,16 @@ Created by Edgar HIPP
       this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
       this.scopePath = scopePath != null ? scopePath : [];
       this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
-      this.DocxGen = creator;
+      if (creator instanceof DocxGen || (creator == null)) {
+        this.DocxGen = creator;
+      } else {
+        options = creator;
+        this.templateVars = options.templateVars;
+        this.DocxGen = options.DocxGen;
+        this.intelligentTagging = options.intelligentTagging;
+        this.scopePath = options.scopePath;
+        this.usedTemplateVars = options.usedTemplateVars;
+      }
       if (typeof content === "string") {
         this.load(content);
       } else {
@@ -545,8 +598,18 @@ Created by Edgar HIPP
       return this.matches[bracket.end.i].offset + this.matches[bracket.end.i][1].length + this.charactersAdded[bracket.end.i] + bracket.end.j + 1;
     };
 
+    XmlTemplater.prototype.toJson = function() {
+      return {
+        templateVars: DocUtils.clone(this.templateVars),
+        DocxGen: this.DocxGen,
+        intelligentTagging: DocUtils.clone(this.intelligentTagging),
+        scopePath: DocUtils.clone(this.scopePath),
+        usedTemplateVars: DocUtils.clone(this.usedTemplateVars)
+      };
+    };
+
     XmlTemplater.prototype.forLoop = function(A, B) {
-      var i, newContent, nextFile, scope, subfile, _i, _len, _ref;
+      var i, newContent, nextFile, options, scope, subfile, _i, _len, _ref;
 
       if (A == null) {
         A = "";
@@ -592,6 +655,11 @@ Created by Edgar HIPP
         _ref = this.currentScope[this.loopOpen.tag];
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           scope = _ref[i];
+          options = this.toJson();
+          options.templateVars = scope;
+          options.scopePath = options.scopePath.concat(this.loopOpen.tag);
+          console.log(options);
+          console.log(this.DocxGen, scope, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
           subfile = new XmlTemplater(A, this.DocxGen, scope, this.intelligentTagging, this.scopePath.concat(this.loopOpen.tag), this.usedTemplateVars);
           subfile.applyTemplateVars();
           newContent += subfile.content;
@@ -763,7 +831,7 @@ Created by Edgar HIPP
             imgData = this.currentScope["img"][u].data;
             newId = this.DocxGen.addImageRels(imgName, imgData);
             tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
-            tag.setAttribute('id', u);
+            tag.setAttribute('id', Math.floor((Math.random() * 1000) + 100));
             tag.setAttribute('name', "" + imgName);
             tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
             tagrId.setAttribute('r:embed', "rId" + newId);

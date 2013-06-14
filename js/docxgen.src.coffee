@@ -17,6 +17,28 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 				window.docX[path]=new DocxGen(this.response,{},intelligentTagging)
 	xhrDoc.send()
 
+DocUtils.clone = (obj) ->
+	if not obj? or typeof obj isnt 'object'
+		return obj
+
+	if obj instanceof Date
+		return new Date(obj.getTime()) 
+
+	if obj instanceof RegExp
+		flags = ''
+		flags += 'g' if obj.global?
+		flags += 'i' if obj.ignoreCase?
+		flags += 'm' if obj.multiline?
+		flags += 'y' if obj.sticky?
+		return new RegExp(obj.source, flags) 
+
+	newInstance = new obj.constructor()
+
+	for key of obj
+		newInstance[key] = DocUtils.clone obj[key]
+
+	return newInstance
+
 DocUtils.xml2Str = (xmlNode) ->
 	try
 		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
@@ -90,13 +112,19 @@ window.DocxGen = class DocxGen
 		@imageRels=[]
 		this
 	addExtensionRels: (contentType,extension) ->
+
 		content = DocUtils.decode_utf8 @files["[Content_Types].xml"].data
 		xmlDoc= DocUtils.Str2xml content
-		newTag=xmlDoc.createElement('Default')
-		newTag.setAttribute('ContentType',contentType)
-		newTag.setAttribute('Extension',extension)
-		xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
-		@files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
+		addTag= true
+		defaultTags=xmlDoc.getElementsByTagName('Default')
+		for tag in defaultTags
+			if tag.getAttribute('Extension')==extension then addTag= false
+		if addTag
+			newTag=xmlDoc.createElement('Default')
+			newTag.setAttribute('ContentType',contentType)
+			newTag.setAttribute('Extension',extension)
+			xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
+			@files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) ->
 		if @files["word/media/#{imageName}"]?
 			return false
@@ -180,7 +208,15 @@ window.DocxGen = class DocxGen
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
-		@DocxGen=creator
+		if creator instanceof DocxGen or (not creator?)
+			@DocxGen=creator
+		else
+			options= creator
+			@templateVars= options.templateVars
+			@DocxGen= options.DocxGen
+			@intelligentTagging=options.intelligentTagging
+			@scopePath=options.scopePath
+			@usedTemplateVars=options.usedTemplateVars
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
 	load: (@content) ->
@@ -263,6 +299,12 @@ window.XmlTemplater = class XmlTemplater
 		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
 	calcEndBracket: (bracket)->
 		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
+	toJson: () ->
+		templateVars:DocUtils.clone @templateVars
+		DocxGen:@DocxGen
+		intelligentTagging:DocUtils.clone @intelligentTagging
+		scopePath:DocUtils.clone @scopePath
+		usedTemplateVars:DocUtils.clone @usedTemplateVars
 	forLoop: (A="",B="") ->
 		###
 			<w:t>{#forTag} blabla</w:t>
@@ -297,6 +339,11 @@ window.XmlTemplater = class XmlTemplater
 			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
 			for scope,i in @currentScope[@loopOpen.tag]
+				options= @toJson()
+				options.templateVars=scope
+				options.scopePath= options.scopePath.concat(@loopOpen.tag)
+				console.log options
+				console.log @DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 				subfile= new XmlTemplater  A,@DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
@@ -415,7 +462,8 @@ window.XmlTemplater = class XmlTemplater
 				imgData= @currentScope["img"][u].data
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-				tag.setAttribute('id',u)
+				
+				tag.setAttribute('id',Math.floor((Math.random()*1000)+100))
 				tag.setAttribute('name',"#{imgName}")
 
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]

@@ -1,6 +1,14 @@
 window.XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
-		@DocxGen=creator
+		if creator instanceof DocxGen or (not creator?)
+			@DocxGen=creator
+		else
+			options= creator
+			@templateVars= options.templateVars
+			@DocxGen= options.DocxGen
+			@intelligentTagging=options.intelligentTagging
+			@scopePath=options.scopePath
+			@usedTemplateVars=options.usedTemplateVars
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
 	load: (@content) ->
@@ -83,6 +91,12 @@ window.XmlTemplater = class XmlTemplater
 		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
 	calcEndBracket: (bracket)->
 		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
+	toJson: () ->
+		templateVars:DocUtils.clone @templateVars
+		DocxGen:@DocxGen
+		intelligentTagging:DocUtils.clone @intelligentTagging
+		scopePath:DocUtils.clone @scopePath
+		usedTemplateVars:DocUtils.clone @usedTemplateVars
 	forLoop: (A="",B="") ->
 		###
 			<w:t>{#forTag} blabla</w:t>
@@ -117,6 +131,11 @@ window.XmlTemplater = class XmlTemplater
 			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			newContent= "";
 			for scope,i in @currentScope[@loopOpen.tag]
+				options= @toJson()
+				options.templateVars=scope
+				options.scopePath= options.scopePath.concat(@loopOpen.tag)
+				console.log options
+				console.log @DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 				subfile= new XmlTemplater  A,@DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
 				subfile.applyTemplateVars()
 				newContent+=subfile.content #@applyTemplateVars A,scope
@@ -235,7 +254,8 @@ window.XmlTemplater = class XmlTemplater
 				imgData= @currentScope["img"][u].data
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-				tag.setAttribute('id',u)
+				
+				tag.setAttribute('id',Math.floor((Math.random()*1000)+100))
 				tag.setAttribute('name',"#{imgName}")
 
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]

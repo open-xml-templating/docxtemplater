@@ -17,6 +17,28 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 				window.docX[path]=new DocxGen(this.response,{},intelligentTagging)
 	xhrDoc.send()
 
+DocUtils.clone = (obj) ->
+	if not obj? or typeof obj isnt 'object'
+		return obj
+
+	if obj instanceof Date
+		return new Date(obj.getTime()) 
+
+	if obj instanceof RegExp
+		flags = ''
+		flags += 'g' if obj.global?
+		flags += 'i' if obj.ignoreCase?
+		flags += 'm' if obj.multiline?
+		flags += 'y' if obj.sticky?
+		return new RegExp(obj.source, flags) 
+
+	newInstance = new obj.constructor()
+
+	for key of obj
+		newInstance[key] = DocUtils.clone obj[key]
+
+	return newInstance
+
 DocUtils.xml2Str = (xmlNode) ->
 	try
 		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
@@ -90,13 +112,19 @@ window.DocxGen = class DocxGen
 		@imageRels=[]
 		this
 	addExtensionRels: (contentType,extension) ->
+
 		content = DocUtils.decode_utf8 @files["[Content_Types].xml"].data
 		xmlDoc= DocUtils.Str2xml content
-		newTag=xmlDoc.createElement('Default')
-		newTag.setAttribute('ContentType',contentType)
-		newTag.setAttribute('Extension',extension)
-		xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
-		@files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
+		addTag= true
+		defaultTags=xmlDoc.getElementsByTagName('Default')
+		for tag in defaultTags
+			if tag.getAttribute('Extension')==extension then addTag= false
+		if addTag
+			newTag=xmlDoc.createElement('Default')
+			newTag.setAttribute('ContentType',contentType)
+			newTag.setAttribute('Extension',extension)
+			xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
+			@files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) ->
 		if @files["word/media/#{imageName}"]?
 			return false
