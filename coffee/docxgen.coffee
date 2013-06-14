@@ -89,7 +89,6 @@ DocUtils.preg_match_all= (regex, content) ->
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={},@intelligentTagging=off) ->
-		@files={}
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -101,10 +100,10 @@ window.DocxGen = class DocxGen
 		if typeof content == "string" then @load(content)
 	load: (content)->
 		@zip = new JSZip content
-		@files=@zip.files
+		@zip.files=@zip.files
 		@loadImageRels()
 	loadImageRels: () ->
-		content= DocUtils.decode_utf8 @files["word/_rels/document.xml.rels"].data
+		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].data
 		@xmlDoc= DocUtils.Str2xml content
 		@maxRid=0
 		for tag in @xmlDoc.getElementsByTagName('Relationship')
@@ -113,7 +112,7 @@ window.DocxGen = class DocxGen
 		this
 	addExtensionRels: (contentType,extension) ->
 
-		content = DocUtils.decode_utf8 @files["[Content_Types].xml"].data
+		content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].data
 		xmlDoc= DocUtils.Str2xml content
 		addTag= true
 		defaultTags=xmlDoc.getElementsByTagName('Default')
@@ -124,12 +123,12 @@ window.DocxGen = class DocxGen
 			newTag.setAttribute('ContentType',contentType)
 			newTag.setAttribute('Extension',extension)
 			xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
-			@files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
+			@zip.files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) ->
-		if @files["word/media/#{imageName}"]?
+		if @zip.files["word/media/#{imageName}"]?
 			return false
 		@maxRid++
-		@files["word/media/#{imageName}"]=
+		file=
 			'name':"word/media/#{imageName}"
 			'data':imageData
 			'options':
@@ -138,6 +137,9 @@ window.DocxGen = class DocxGen
 				compression: null
 				date: new Date()
 				dir: false
+		@zip.file file.name,file.data,file.options
+		 # @zip.files["word/media/#{imageName}"]=
+
 		extension= imageName.replace(/[^.]+\.([^.]+)/,'$1')
 		@addExtensionRels("image/#{extension}",extension)
 		newTag= (@xmlDoc.createElement 'Relationship')
@@ -145,10 +147,10 @@ window.DocxGen = class DocxGen
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
 		newTag.setAttribute('Target',"media/#{imageName}")
 		@xmlDoc.getElementsByTagName("Relationships")[0].appendChild newTag
-		@files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
+		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
 	saveImageRels: () ->
-		@files["word/_rels/document.xml.rels"].data	
+		@zip.files["word/_rels/document.xml.rels"].data	
 	getImageList: () ->
 		regex= ///
 		[^.]*  #name
@@ -156,21 +158,21 @@ window.DocxGen = class DocxGen
 		([^.]*)  #extension
 		///
 		imageList= []
-		for index of @files
+		for index of @zip.files
 			extension= index.replace(regex,'$1')
 			if extension in imageExtensions
-				imageList.push {"path":index,files:@files[index]}
+				imageList.push {"path":index,files:@zip.files[index]}
 		imageList
 	setImage: (path,data) ->
-		@files[path].data= data
+		@zip.files[path].data= data
 	applyTemplateVars:()->
-		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(@files[fileName].data,this,@templateVars,@intelligentTagging)
-			@files[fileName].data= currentFile.applyTemplateVars().content
+		for fileName in @templatedFiles when @zip.files[fileName]?
+			currentFile= new XmlTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 	getTemplateVars:()->
 		usedTemplateVars=[]
-		for fileName in @templatedFiles when @files[fileName]?
-			currentFile= new XmlTemplater(@files[fileName].data,this,@templateVars,@intelligentTagging)
+		for fileName in @templatedFiles when @zip.files[fileName]?
+			currentFile= new XmlTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -180,13 +182,14 @@ window.DocxGen = class DocxGen
 		document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{@zip.generate()}"
 	calcZip: () ->
 		zip = new JSZip()
-		for index of @files
-			file= @files[index]
+		console.log @zip.files
+		for index of @zip.files
+			file= @zip.files[index]
 			zip.file file.name,file.data,file.options
 		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new XmlTemplater(@files[path].data,this,@templateVars,@intelligentTagging)
+			currentFile= new XmlTemplater(@zip.files[path].data,this,@templateVars,@intelligentTagging)
 		else
 			currentFile= new XmlTemplater(data,this,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
