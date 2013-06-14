@@ -746,10 +746,8 @@
       };
       docX['tagLoopExample.docx'].setTemplateVars(tempVars);
       docX['tagLoopExample.docx'].applyTemplateVars();
-      window.test = docX['tagLoopExample.docx'];
       _results = [];
       for (i in docX['tagLoopExample.docx'].files) {
-        console.log(i);
         expect(docX['tagLoopExample.docx'].files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.date);
         expect(docX['tagLoopExample.docx'].files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].name);
         expect(docX['tagLoopExample.docx'].files[i].options.base64).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.base64);
@@ -757,9 +755,11 @@
         expect(docX['tagLoopExample.docx'].files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.compression);
         expect(docX['tagLoopExample.docx'].files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.dir);
         if (docX['tagLoopExample.docx'].files[i].data !== null) {
-          console.log(docX['tagLoopExample.docx'].files[i].data.length);
-          console.log(docX['tagLoopExampleImageExpected.docx'].files[i].data.length);
-          _results.push(expect(docX['tagLoopExample.docx'].files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].data.length));
+          expect(docX['tagLoopExample.docx'].files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].data.length);
+        }
+        if (docX['tagLoopExample.docx'].files[i].name.match(/png/)) {
+          console.log(docX['tagLoopExample.docx'].files[i]);
+          _results.push(console.log(docX['tagLoopExampleImageExpected.docx'].files[i]));
         } else {
           _results.push(void 0);
         }

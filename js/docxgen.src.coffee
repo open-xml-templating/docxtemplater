@@ -100,8 +100,8 @@ window.DocxGen = class DocxGen
 		]
 		if typeof content == "string" then @load(content)
 	load: (content)->
-		zip = new JSZip content
-		@files=zip.files
+		@zip = new JSZip content
+		@files=@zip.files
 		@loadImageRels()
 	loadImageRels: () ->
 		content= DocUtils.decode_utf8 @files["word/_rels/document.xml.rels"].data
@@ -176,15 +176,14 @@ window.DocxGen = class DocxGen
 	setTemplateVars: (@templateVars) ->
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->
+		@calcZip()
+		document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{@zip.generate()}"
+	calcZip: () ->
 		zip = new JSZip()
-		doOutput= () ->
-			document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{outputFile}"
 		for index of @files
-			file=@files[index]
+			file= @files[index]
 			zip.file file.name,file.data,file.options
-		outputFile= zip.generate()
-		if download==true then doOutput()
-		outputFile
+		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
 			currentFile= new XmlTemplater(@files[path].data,this,@templateVars,@intelligentTagging)
@@ -192,11 +191,12 @@ window.DocxGen = class DocxGen
 			currentFile= new XmlTemplater(data,this,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
-		outputFile= @output(false)
+		@calcZip()
+		output=@zip.generate()
 		Downloadify.create 'downloadify',
 			filename: () ->	return filename
 			data: () ->
-				return outputFile
+				return output
 			onCancel: () -> alert 'You have cancelled the saving of this file.'
 			onError: () -> alert 'You must put something in the File Contents or there will be nothing to save!'
 			swf: swfpath
@@ -207,7 +207,7 @@ window.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
+	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
 		if creator instanceof DocxGen or (not creator?)
 			@DocxGen=creator
 		else
@@ -217,6 +217,7 @@ window.XmlTemplater = class XmlTemplater
 			@intelligentTagging=options.intelligentTagging
 			@scopePath=options.scopePath
 			@usedTemplateVars=options.usedTemplateVars
+			@imageId=options.imageId
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
 	load: (@content) ->
@@ -304,7 +305,8 @@ window.XmlTemplater = class XmlTemplater
 		DocxGen:@DocxGen
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopePath
-		usedTemplateVars:DocUtils.clone @usedTemplateVars
+		usedTemplateVars:@usedTemplateVars
+		imageId:@imageId
 	forLoop: (A="",B="") ->
 		###
 			<w:t>{#forTag} blabla</w:t>
@@ -342,20 +344,25 @@ window.XmlTemplater = class XmlTemplater
 				options= @toJson()
 				options.templateVars=scope
 				options.scopePath= options.scopePath.concat(@loopOpen.tag)
-				console.log options
-				console.log @DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
-				subfile= new XmlTemplater  A,@DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+				subfile= new XmlTemplater  A,options
 				subfile.applyTemplateVars()
+				@imageId=subfile.imageId
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
 		else 
-			subfile= new XmlTemplater A, @DocxGen, {}, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+			options= @toJson()
+			options.templateVars={}
+			options.scopePath= options.scopePath.concat(@loopOpen.tag)
+			subfile= new XmlTemplater A, options
 			subfile.applyTemplateVars()
+			@imageId=subfile.imageId
 			@content= @content.replace B, ""
 		
-		nextFile= new XmlTemplater @content,@DocxGen, @currentScope,@intelligentTagging,@scopePath, @usedTemplateVars
+		options= @toJson()
+		nextFile= new XmlTemplater @content,options
 		nextFile.applyTemplateVars()
+		@imageId=nextFile.imageId
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		@content=nextFile.content
 		return this
@@ -463,7 +470,8 @@ window.XmlTemplater = class XmlTemplater
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 				
-				tag.setAttribute('id',Math.floor((Math.random()*1000)+100))
+				@imageId++
+				tag.setAttribute('id',@imageId)
 				tag.setAttribute('name',"#{imgName}")
 
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]

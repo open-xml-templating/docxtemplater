@@ -270,10 +270,8 @@ describe "loop forTagging images", () ->
 			]
 		docX['tagLoopExample.docx'].setTemplateVars(tempVars)
 		docX['tagLoopExample.docx'].applyTemplateVars()
-		window.test=docX['tagLoopExample.docx']
 
 		for i of docX['tagLoopExample.docx'].files
-			console.log i
 		# 	#Everything but the date should be different
 			expect(docX['tagLoopExample.docx'].files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.date)
 			expect(docX['tagLoopExample.docx'].files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].name)
@@ -283,8 +281,9 @@ describe "loop forTagging images", () ->
 			expect(docX['tagLoopExample.docx'].files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].options.dir)
 			
 			if (docX['tagLoopExample.docx'].files[i].data)!=null
-				console.log docX['tagLoopExample.docx'].files[i].data.length
-				console.log docX['tagLoopExampleImageExpected.docx'].files[i].data.length
 				expect(docX['tagLoopExample.docx'].files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].data.length)
 
+			if docX['tagLoopExample.docx'].files[i].name.match(/png/)
+				console.log (docX['tagLoopExample.docx'].files[i])
+				console.log (docX['tagLoopExampleImageExpected.docx'].files[i])
 			# expect(docX['tagLoopExample.docx'].files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].files[i].data)

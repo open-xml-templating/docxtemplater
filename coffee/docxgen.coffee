@@ -100,8 +100,8 @@ window.DocxGen = class DocxGen
 		]
 		if typeof content == "string" then @load(content)
 	load: (content)->
-		zip = new JSZip content
-		@files=zip.files
+		@zip = new JSZip content
+		@files=@zip.files
 		@loadImageRels()
 	loadImageRels: () ->
 		content= DocUtils.decode_utf8 @files["word/_rels/document.xml.rels"].data
@@ -176,15 +176,14 @@ window.DocxGen = class DocxGen
 	setTemplateVars: (@templateVars) ->
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->
+		@calcZip()
+		document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{@zip.generate()}"
+	calcZip: () ->
 		zip = new JSZip()
-		doOutput= () ->
-			document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{outputFile}"
 		for index of @files
-			file=@files[index]
+			file= @files[index]
 			zip.file file.name,file.data,file.options
-		outputFile= zip.generate()
-		if download==true then doOutput()
-		outputFile
+		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
 			currentFile= new XmlTemplater(@files[path].data,this,@templateVars,@intelligentTagging)
@@ -192,11 +191,12 @@ window.DocxGen = class DocxGen
 			currentFile= new XmlTemplater(data,this,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
-		outputFile= @output(false)
+		@calcZip()
+		output=@zip.generate()
 		Downloadify.create 'downloadify',
 			filename: () ->	return filename
 			data: () ->
-				return outputFile
+				return output
 			onCancel: () -> alert 'You have cancelled the saving of this file.'
 			onError: () -> alert 'You must put something in the File Contents or there will be nothing to save!'
 			swf: swfpath

@@ -1,5 +1,5 @@
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={}) ->
+	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
 		if creator instanceof DocxGen or (not creator?)
 			@DocxGen=creator
 		else
@@ -9,6 +9,7 @@ window.XmlTemplater = class XmlTemplater
 			@intelligentTagging=options.intelligentTagging
 			@scopePath=options.scopePath
 			@usedTemplateVars=options.usedTemplateVars
+			@imageId=options.imageId
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@currentScope=@templateVars
 	load: (@content) ->
@@ -96,7 +97,8 @@ window.XmlTemplater = class XmlTemplater
 		DocxGen:@DocxGen
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopePath
-		usedTemplateVars:DocUtils.clone @usedTemplateVars
+		usedTemplateVars:@usedTemplateVars
+		imageId:@imageId
 	forLoop: (A="",B="") ->
 		###
 			<w:t>{#forTag} blabla</w:t>
@@ -134,20 +136,25 @@ window.XmlTemplater = class XmlTemplater
 				options= @toJson()
 				options.templateVars=scope
 				options.scopePath= options.scopePath.concat(@loopOpen.tag)
-				console.log options
-				console.log @DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
-				subfile= new XmlTemplater  A,@DocxGen, scope, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+				subfile= new XmlTemplater  A,options
 				subfile.applyTemplateVars()
+				@imageId=subfile.imageId
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
 		else 
-			subfile= new XmlTemplater A, @DocxGen, {}, @intelligentTagging, @scopePath.concat(@loopOpen.tag), @usedTemplateVars
+			options= @toJson()
+			options.templateVars={}
+			options.scopePath= options.scopePath.concat(@loopOpen.tag)
+			subfile= new XmlTemplater A, options
 			subfile.applyTemplateVars()
+			@imageId=subfile.imageId
 			@content= @content.replace B, ""
 		
-		nextFile= new XmlTemplater @content,@DocxGen, @currentScope,@intelligentTagging,@scopePath, @usedTemplateVars
+		options= @toJson()
+		nextFile= new XmlTemplater @content,options
 		nextFile.applyTemplateVars()
+		@imageId=nextFile.imageId
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		@content=nextFile.content
 		return this
@@ -255,7 +262,8 @@ window.XmlTemplater = class XmlTemplater
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 				
-				tag.setAttribute('id',Math.floor((Math.random()*1000)+100))
+				@imageId++
+				tag.setAttribute('id',@imageId)
 				tag.setAttribute('name',"#{imgName}")
 
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
