@@ -74,20 +74,21 @@ Created by Edgar HIPP
   };
 
   DocUtils.xml2Str = function(xmlNode) {
-    var e;
+    var content, e;
 
     try {
-      return (new XMLSerializer()).serializeToString(xmlNode);
+      content = (new XMLSerializer()).serializeToString(xmlNode);
     } catch (_error) {
       e = _error;
       try {
-        return xmlNode.xml;
+        content = xmlNode.xml;
       } catch (_error) {
         e = _error;
         alert('Xmlserializer not supported');
       }
     }
-    return false;
+    content = content.replace(/\x20xmlns=""/g, '');
+    return content;
   };
 
   DocUtils.Str2xml = function(str) {
@@ -177,7 +178,7 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.addExtensionRels = function(contentType, extension) {
-      var addTag, content, defaultTags, newTag, tag, xmlDoc, _i, _len;
+      var addTag, content, defaultTags, newTag, tag, types, xmlDoc, _i, _len;
 
       content = DocUtils.decode_utf8(this.zip.files["[Content_Types].xml"].data);
       xmlDoc = DocUtils.Str2xml(content);
@@ -190,16 +191,18 @@ Created by Edgar HIPP
         }
       }
       if (addTag) {
+        types = xmlDoc.getElementsByTagName("Types")[0];
         newTag = xmlDoc.createElement('Default');
+        newTag.namespaceURI = null;
         newTag.setAttribute('ContentType', contentType);
         newTag.setAttribute('Extension', extension);
-        xmlDoc.getElementsByTagName("Types")[0].appendChild(newTag);
+        types.appendChild(newTag);
         return this.zip.files["[Content_Types].xml"].data = DocUtils.encode_utf8(DocUtils.xml2Str(xmlDoc));
       }
     };
 
     DocxGen.prototype.addImageRels = function(imageName, imageData) {
-      var extension, file, newTag;
+      var extension, file, newTag, relationships;
 
       if (this.zip.files["word/media/" + imageName] != null) {
         return false;
@@ -219,11 +222,14 @@ Created by Edgar HIPP
       this.zip.file(file.name, file.data, file.options);
       extension = imageName.replace(/[^.]+\.([^.]+)/, '$1');
       this.addExtensionRels("image/" + extension, extension);
+      relationships = this.xmlDoc.getElementsByTagName("Relationships")[0];
       newTag = this.xmlDoc.createElement('Relationship');
+      console.log(newTag);
+      newTag.namespaceURI = null;
       newTag.setAttribute('Id', "rId" + this.maxRid);
       newTag.setAttribute('Type', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image');
       newTag.setAttribute('Target', "media/" + imageName);
-      this.xmlDoc.getElementsByTagName("Relationships")[0].appendChild(newTag);
+      relationships.appendChild(newTag);
       this.zip.files["word/_rels/document.xml.rels"].data = DocUtils.encode_utf8(DocUtils.xml2Str(this.xmlDoc));
       return this.maxRid;
     };

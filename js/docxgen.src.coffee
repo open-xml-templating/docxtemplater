@@ -42,15 +42,16 @@ DocUtils.clone = (obj) ->
 DocUtils.xml2Str = (xmlNode) ->
 	try
 		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
-		return (new XMLSerializer()).serializeToString(xmlNode);
+		content=(new XMLSerializer()).serializeToString(xmlNode);
 	catch e
 		try
 			# Internet Explorer.
-			return xmlNode.xml;
+			content= xmlNode.xml;
 		catch e
 			#Other browsers without XML Serializer
 			alert('Xmlserializer not supported');
-	return false;
+	content= content.replace /\x20xmlns=""/g, ''
+	return content;
 
 DocUtils.Str2xml= (str) ->
 	if window.DOMParser
@@ -119,10 +120,12 @@ window.DocxGen = class DocxGen
 		for tag in defaultTags
 			if tag.getAttribute('Extension')==extension then addTag= false
 		if addTag
-			newTag=xmlDoc.createElement('Default')
+			types=xmlDoc.getElementsByTagName("Types")[0]
+			newTag=xmlDoc.createElement 'Default'
+			newTag.namespaceURI= null
 			newTag.setAttribute('ContentType',contentType)
 			newTag.setAttribute('Extension',extension)
-			xmlDoc.getElementsByTagName("Types")[0].appendChild newTag
+			types.appendChild newTag
 			@zip.files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) ->
 		if @zip.files["word/media/#{imageName}"]?
@@ -142,11 +145,14 @@ window.DocxGen = class DocxGen
 
 		extension= imageName.replace(/[^.]+\.([^.]+)/,'$1')
 		@addExtensionRels("image/#{extension}",extension)
-		newTag= (@xmlDoc.createElement 'Relationship')
+		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]
+		newTag= @xmlDoc.createElement 'Relationship' #,relationships.namespaceURI
+		console.log newTag
+		newTag.namespaceURI= null
 		newTag.setAttribute('Id',"rId#{@maxRid}")
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
 		newTag.setAttribute('Target',"media/#{imageName}")
-		@xmlDoc.getElementsByTagName("Relationships")[0].appendChild newTag
+		relationships.appendChild newTag
 		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
 	saveImageRels: () ->
