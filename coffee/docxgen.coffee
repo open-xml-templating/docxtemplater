@@ -5,6 +5,12 @@ Created by Edgar HIPP
 ###
 window.DocUtils= {}
 
+window.docX=[]
+window.docXData=[]
+
+DocUtils.nl2br = (str,is_xhtml) ->
+	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 	xhrDoc= new XMLHttpRequest()
 	xhrDoc.open('GET', "../examples/#{path}", async)

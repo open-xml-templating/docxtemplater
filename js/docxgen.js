@@ -13,6 +13,14 @@ Created by Edgar HIPP
 
   window.DocUtils = {};
 
+  window.docX = [];
+
+  window.docXData = [];
+
+  DocUtils.nl2br = function(str, is_xhtml) {
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+  };
+
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async) {
     var xhrDoc;
 
@@ -440,7 +448,7 @@ Created by Edgar HIPP
       return this.content.replace(/(<w:t[^>]*>)([^>]+)$/, replacerPush);
     };
 
-    XmlTemplater.prototype.getValueFromTag = function(tag, scope) {
+    XmlTemplater.prototype.setUsedTemplateVars = function(tag) {
       var i, s, u, _i, _len, _ref;
 
       u = this.usedTemplateVars;
@@ -452,7 +460,13 @@ Created by Edgar HIPP
         }
         u = u[s];
       }
-      u[tag] = true;
+      if (tag !== "") {
+        return u[tag] = true;
+      }
+    };
+
+    XmlTemplater.prototype.getValueFromTag = function(tag, scope) {
+      this.setUsedTemplateVars(tag);
       if (scope[tag] != null) {
         return DocUtils.encode_utf8(scope[tag]);
       } else {
@@ -874,6 +888,7 @@ Created by Edgar HIPP
     XmlTemplater.prototype.applyTemplateVars = function() {
       var B, character, dashLooping, elementDashLoop, endB, i, innerText, j, m, match, regex, scopeContent, startB, t, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2, _ref3;
 
+      this.setUsedTemplateVars("");
       this.inForLoop = false;
       this.inBracket = false;
       this.inDashLoop = false;

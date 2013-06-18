@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Docxgen.js - image Tagging example</title>
+</head>
+<body>
+
+  <!-- Include dependencies -->
+  <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
+  <script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js'></script>
+
+
+<script src="underscore.js"></script>
+
+  <!-- Include docxgen js lib -->
+  <script type="text/javascript" src="../js/docxgen.js"></script>
+
+
+<div id="forms"></div>
+<script>
+
+DocUtils.loadDoc('templateAonaba.docx');
+
+generateDoc= function(docData)
+{
+  usedTemplateVars = (docX["templateAonaba.docx"].getTemplateVars())
+
+  totalVars={};
+
+  for (var i = usedTemplateVars.length - 1; i >= 0; i--) {
+    totalVars= _.extend(totalVars,usedTemplateVars[i].vars );
+  };
+
+console.log(totalVars);
+ajouter= function (e)
+{
+  console.log(e)
+  genForms(e.data.data,e.data.selector,e.data.margin+5)
+}
+
+genForms= function(tempVars,selector,marginLeft)
+  {
+
+    insideSel= selector.after($('<div>'))
+    console.log(insideSel)
+    $.each(tempVars, function(index, val) {
+       
+       if (val==true)
+         insideSel.after('<br><label for="'+index+'">'+index+'</label><input type="text" id="'+index+'">')
+       else
+         
+         {
+          insideSel.after("<br><button id='"+index+"'>Ajouter "+index+"</button>")
+          $('#'+index).on('click',{data:tempVars[index],insideSel:$('#'+index),margin:marginLeft},ajouter)
+        }
+
+    }); 
+  }
+
+selector=$("#forms")
+genForms(totalVars,selector)
+      // var doc= new DocxGen(docData)
+
+      // doc.setTemplateVars(
+      //   {"first_name":"Hipp",
+      //   "last_name":"Edgar",
+      //   "phone":"0652455478"
+      //   }
+      // )
+      // doc.applyTemplateVars()
+      // imageList=doc.getImageList()
+      // console.log(imageList);
+      // doc.setImage(imageList[0].path,imgData);
+      // doc.output()
+}
+</script>
+
+  <a href="#" onClick="generateDoc(window.docData)">Generate Tagged document</a>
+</body>
+</html>

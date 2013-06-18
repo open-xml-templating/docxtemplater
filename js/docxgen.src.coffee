@@ -5,6 +5,12 @@ Created by Edgar HIPP
 ###
 window.DocUtils= {}
 
+window.docX=[]
+window.docXData=[]
+
+DocUtils.nl2br = (str,is_xhtml) ->
+	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 	xhrDoc= new XMLHttpRequest()
 	xhrDoc.open('GET', "../examples/#{path}", async)
@@ -247,13 +253,15 @@ window.XmlTemplater = class XmlTemplater
 			@matches.push pn #add at the beginning
 			@charactersAdded.push 0
 		@content.replace /(<w:t[^>]*>)([^>]+)$/,replacerPush
-
-	getValueFromTag: (tag,scope) ->
+	setUsedTemplateVars: (tag) ->
 		u = @usedTemplateVars
 		for s,i in @scopePath
 			u[s]={} unless u[s]?
 			u = u[s]
-		u[tag]= true
+		if tag!=""
+			u[tag]= true		
+	getValueFromTag: (tag,scope) ->
+		@setUsedTemplateVars(tag)
 		if scope[tag]? then return DocUtils.encode_utf8 scope[tag] else return "undefined"
 	calcScopeText: (text,start=0,end=text.length-1) ->
 		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
@@ -500,6 +508,7 @@ window.XmlTemplater = class XmlTemplater
 	scope is the current scope
 	returns the new content of the tagged content###
 	applyTemplateVars:()->
+		@setUsedTemplateVars("")
 		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		@inBracket= false # all brackets  {___}
 		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
