@@ -267,9 +267,10 @@ Created by Edgar HIPP
       return this.zip.files[path].data = data;
     };
 
-    DocxGen.prototype.applyTemplateVars = function() {
+    DocxGen.prototype.applyTemplateVars = function(templateVars) {
       var currentFile, fileName, _i, _len, _ref, _results;
 
+      this.templateVars = templateVars != null ? templateVars : this.templateVars;
       _ref = this.templatedFiles;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -630,7 +631,7 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.forLoop = function(A, B) {
-      var i, newContent, nextFile, options, scope, subfile, _i, _len, _ref;
+      var i, newContent, nextFile, options, scope, subScope, subfile, _i, _len, _ref;
 
       if (A == null) {
         A = "";
@@ -668,18 +669,40 @@ Created by Edgar HIPP
           throw "no {,#,/ or } found in B: " + B;
         }
       }
+      console.log('loop', this.loopOpen.tag, this.currentScope, this.currentScope[this.loopOpen.tag]);
       if (this.currentScope[this.loopOpen.tag] != null) {
-        if (typeof this.currentScope[this.loopOpen.tag] !== 'object') {
-          throw '{#' + this.loopOpen.tag + ("}should be an object (it is a " + (typeof this.currentScope[this.loopOpen.tag]) + ")");
+        if (typeof this.currentScope[this.loopOpen.tag] === 'object') {
+          subScope = this.currentScope[this.loopOpen.tag];
+        }
+        if (this.currentScope[this.loopOpen.tag] === 'true') {
+          subScope = true;
+        }
+        if (this.currentScope[this.loopOpen.tag] === 'false') {
+          subScope = false;
         }
         newContent = "";
-        _ref = this.currentScope[this.loopOpen.tag];
-        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-          scope = _ref[i];
+        if (typeof subScope === 'object') {
+          _ref = this.currentScope[this.loopOpen.tag];
+          for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+            scope = _ref[i];
+            options = this.toJson();
+            options.templateVars = scope;
+            options.scopePath = options.scopePath.concat(this.loopOpen.tag);
+            subfile = new XmlTemplater(A, options);
+            subfile.applyTemplateVars();
+            this.imageId = subfile.imageId;
+            newContent += subfile.content;
+            if ((subfile.getFullText().indexOf('{')) !== -1) {
+              throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (1)";
+            }
+          }
+        }
+        if (subScope === true) {
           options = this.toJson();
-          options.templateVars = scope;
+          options.templateVars = this.currentScope;
           options.scopePath = options.scopePath.concat(this.loopOpen.tag);
           subfile = new XmlTemplater(A, options);
+          console.log(A);
           subfile.applyTemplateVars();
           this.imageId = subfile.imageId;
           newContent += subfile.content;
@@ -689,12 +712,15 @@ Created by Edgar HIPP
         }
         this.content = this.content.replace(B, newContent);
       } else {
+        console.log('else');
         options = this.toJson();
         options.templateVars = {};
         options.scopePath = options.scopePath.concat(this.loopOpen.tag);
         subfile = new XmlTemplater(A, options);
+        console.log('else3');
         subfile.applyTemplateVars();
         this.imageId = subfile.imageId;
+        console.log('else2');
         this.content = this.content.replace(B, "");
       }
       options = this.toJson();
@@ -708,9 +734,13 @@ Created by Edgar HIPP
       return this;
     };
 
-    XmlTemplater.prototype.dashLoop = function(elementDashLoop) {
+    XmlTemplater.prototype.dashLoop = function(elementDashLoop, sharp) {
       var A, B, copyA, endB, resultFullScope, startB, t, _i, _ref, _ref1;
 
+      if (sharp == null) {
+        sharp = false;
+      }
+      console.log(this);
       _ref = this.calcB(), B = _ref.B, startB = _ref.startB, endB = _ref.endB;
       resultFullScope = this.calcInnerTextScope(this.content, startB, endB, elementDashLoop);
       for (t = _i = 0, _ref1 = this.matches.length; 0 <= _ref1 ? _i <= _ref1 : _i >= _ref1; t = 0 <= _ref1 ? ++_i : --_i) {
@@ -730,7 +760,12 @@ Created by Edgar HIPP
         "i": this.loopOpen.start.i,
         "j": this.loopOpen.start.j
       };
-      this.textInsideBracket = "-" + this.loopOpen.element + " " + this.loopOpen.tag;
+      if (sharp === false) {
+        this.textInsideBracket = "-" + this.loopOpen.element + " " + this.loopOpen.tag;
+      }
+      if (sharp === true) {
+        this.textInsideBracket = "#" + this.loopOpen.tag;
+      }
       A = this.replaceCurly("", A);
       if (copyA === A) {
         throw "A should have changed after deleting the opening tag";
@@ -945,7 +980,7 @@ Created by Edgar HIPP
               };
             }
             if (this.inBracket === false) {
-              throw "Bracket already closed";
+              throw "Bracket already closed " + this.content;
             }
             this.inBracket = false;
             if (this.inForLoop === false && this.inDashLoop === false) {
@@ -976,7 +1011,7 @@ Created by Edgar HIPP
               if (dashLooping === false) {
                 return this.forLoop();
               } else {
-                return this.dashLoop(elementDashLoop);
+                return this.dashLoop(elementDashLoop, true);
               }
             }
           } else {
@@ -985,9 +1020,6 @@ Created by Edgar HIPP
             }
           }
         }
-      }
-      if ((this.getFullText().indexOf('{')) !== -1) {
-        throw "they shouln't be a { in replaced file: " + (this.getFullText()) + " (2)";
       }
       this.findImages();
       this.replaceImages();

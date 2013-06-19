@@ -130,27 +130,45 @@ window.XmlTemplater = class XmlTemplater
 
 			if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
-
+		console.log 'loop',@loopOpen.tag, @currentScope, @currentScope[@loopOpen.tag]
 		if @currentScope[@loopOpen.tag]?
-			if typeof @currentScope[@loopOpen.tag]!='object' then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
+			# if then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
+			subScope= @currentScope[@loopOpen.tag] if typeof @currentScope[@loopOpen.tag]=='object'
+			subScope= true if @currentScope[@loopOpen.tag]=='true'
+			subScope= false if @currentScope[@loopOpen.tag]=='false'
 			newContent= "";
-			for scope,i in @currentScope[@loopOpen.tag]
+
+			if typeof subScope == 'object'
+				for scope,i in @currentScope[@loopOpen.tag]
+					options= @toJson()
+					options.templateVars=scope
+					options.scopePath= options.scopePath.concat(@loopOpen.tag)
+					subfile= new XmlTemplater  A,options
+					subfile.applyTemplateVars()
+					@imageId=subfile.imageId
+					newContent+=subfile.content #@applyTemplateVars A,scope
+					if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
+			if subScope == true
 				options= @toJson()
-				options.templateVars=scope
+				options.templateVars= @currentScope
 				options.scopePath= options.scopePath.concat(@loopOpen.tag)
 				subfile= new XmlTemplater  A,options
+				console.log A
 				subfile.applyTemplateVars()
 				@imageId=subfile.imageId
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
 		else 
+			console.log 'else'
 			options= @toJson()
 			options.templateVars={}
 			options.scopePath= options.scopePath.concat(@loopOpen.tag)
 			subfile= new XmlTemplater A, options
+			console.log 'else3'
 			subfile.applyTemplateVars()
 			@imageId=subfile.imageId
+			console.log 'else2'
 			@content= @content.replace B, ""
 		
 		options= @toJson()
@@ -161,7 +179,8 @@ window.XmlTemplater = class XmlTemplater
 		@content=nextFile.content
 		return this
 
-	dashLoop: (elementDashLoop) ->
+	dashLoop: (elementDashLoop,sharp=false) ->
+		console.log this
 		{B,startB,endB}= @calcB()
 		resultFullScope = @calcInnerTextScope @content, startB, endB, elementDashLoop
 		for t in [0..@matches.length]
@@ -172,9 +191,12 @@ window.XmlTemplater = class XmlTemplater
 		copyA= A
 
 		#for deleting the opening tag
+
 		@bracketEnd= {"i":@loopOpen.end.i,"j":@loopOpen.end.j}
 		@bracketStart= {"i":@loopOpen.start.i,"j":@loopOpen.start.j}
-		@textInsideBracket= "-"+@loopOpen.element+" "+@loopOpen.tag
+		if sharp==false then @textInsideBracket= "-"+@loopOpen.element+" "+@loopOpen.tag
+		if sharp==true then @textInsideBracket= "#"+@loopOpen.tag
+
 		A= @replaceCurly("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
@@ -313,8 +335,7 @@ window.XmlTemplater = class XmlTemplater
 						@inDashLoop= true
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace regex, '$2'),'element':(@textInsideBracket.replace regex, '$1')}
-
-					if @inBracket is false then throw "Bracket already closed"
+					if @inBracket is false then	throw "Bracket already closed #{@content}"
 					@inBracket= false
 
 					if @inForLoop is false and @inDashLoop is false
@@ -340,10 +361,10 @@ window.XmlTemplater = class XmlTemplater
 						if dashLooping==no
 							return @forLoop()
 						else
-							return @dashLoop(elementDashLoop)
+							return @dashLoop(elementDashLoop,true)
 				else #if character != '{' and character != '}'
 					if @inBracket is true then @textInsideBracket+=character
-		if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
+		# if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
 		@findImages()
 		@replaceImages()
 		this

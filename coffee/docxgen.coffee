@@ -177,7 +177,7 @@ window.DocxGen = class DocxGen
 		imageList
 	setImage: (path,data) ->
 		@zip.files[path].data= data
-	applyTemplateVars:()->
+	applyTemplateVars:(@templateVars=@templateVars)->
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile= new XmlTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
