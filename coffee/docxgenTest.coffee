@@ -170,11 +170,10 @@ describe "Dash Loop Testing", () ->
 
 describe "Intelligent Loop Tagging", () ->
 	it "should work with tables" , () ->	
-		templateVars=
-			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
+		templateVars={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
 		docX['tagIntelligentLoopTable.docx'].setTemplateVars(templateVars)
 		docX['tagIntelligentLoopTable.docx'].applyTemplateVars()
-		expectedText= 'linux0Ubuntu10windows500Win7apple1200MACOSX'
+		expectedText= 'JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984'
 		text= docX['tagIntelligentLoopTableExpected.docx'].getFullText()
 		expect(text).toBe(expectedText)
 		for i of docX['tagIntelligentLoopTable.docx'].zip.files

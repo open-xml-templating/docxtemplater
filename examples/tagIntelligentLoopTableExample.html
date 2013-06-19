@@ -35,7 +35,7 @@ generateDoc= function(docData)
       var doc= new DocxGen(docData,{},true)
 
       doc.setTemplateVars(
-{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
+{clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
       )
       doc.applyTemplateVars()
       doc.output()
