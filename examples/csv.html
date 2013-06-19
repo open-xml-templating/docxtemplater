@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Getting started with CSV Form</title>
+  </head>
+  <body onload="loadFile();">
+    <h1>CSV Form</h1>
+      <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script> 
+    <script src="../libs/downloadify/js/downloadify.min.js"></script>
+  <script src="../libs/downloadify/js/swfobject.js"></script>
+   <script type="text/javascript" src="../js/docxgen.js"></script>
+
+    <script src="csvjson/csvjson.js"></script>
+    <script type="text/javascript" src="jsonform/deps/jquery.min.js"></script>
+
+    <script type="text/javascript">
+    oFReader = new FileReader();
+
+    oFReader.onload = function (oFREvent) {
+      console.log(this)
+      console.log(oFREvent)
+      
+      input=(b64_to_utf8(this.result))
+      arr=csvjson.csv2json(input,{delim:";",textdelim: "\""})
+      console.log(arr)
+      tempVars=arr.rows[0]
+      console.log(tempVars)
+      docX["templateAonaba.docx"].applyTemplateVars(tempVars)
+      docX["templateAonaba.docx"].download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',
+                   "taggedDoc.docx")
+    };
+
+    function b64_to_utf8( str ) {
+      console.log(str)
+      str=str.replace(/^.*base64,(.*)$/,'$1')
+      console.log(str)
+        return window.atob(str);
+    }
+
+    function loadFile() {
+      if (document.getElementById("uploadFile").files.length === 0) { return; }
+      var oFile = document.getElementById("uploadFile").files[0];
+      oFReader.readAsDataURL(oFile);
+    }
+
+    $(document).ready(function($) {
+          DocUtils.loadDoc('templateAonaba.docx',false,true,true);
+        })
+    </script>
+
+<p id="downloadify">
+        You must have Flash 10 installed to download this file.
+</p>
+
+
+      <form name="uploadForm">
+         <input id="uploadFile" type="file" name="myPhoto" onchange="loadFile();" />
+
+
+        <p><input type="submit" value="Send" /></p>
+      </form>
+
+
+
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>csvjson.js demo page</title>
+</head>
+<body onload="convert();">
+	<h1>csvjson.js demo page</h1>
+	<p>Inspect the page source to see what's going on ;)</p>
+	
+	<h4>Input CSV data:</h4>
+	<pre id="input">"Name","Address","Age"
+"Joe Bloggs","15 Example Ave, Sunny hills",25
+"Sam Smith","2012 Ursula Pde, Groceryville",40</pre><br />
+
+	<h4>Ouput CSV data (should be identical):</h4>
+	<pre id="output"></pre>
+</body>
+
+<script type="text/javascript" src="csvjson.js" ></script>
+<script type="text/javascript">
+	function convert() {
+    	var input = document.getElementById("input").innerHTML;
+    	
+    	var output_json = csvjson.csv2json(input, {
+    		delim: ",",
+    		textdelim: "\""
+    	});
+    	console.log("Converted CSV to JSON:", output_json);
+    	
+    	var output_csv = csvjson.json2csv(output_json, {
+    		delim: ",",
+    		textdelim: "\""
+    	});
+    	console.log("Converted JSON to CSV:", output_csv);
+    	
+    	document.getElementById("output").innerHTML = output_csv;
+    }
+    
+</script>
+
+</html>

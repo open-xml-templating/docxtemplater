@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+<title>Image preview example</title>
+
+
+<script type="text/javascript">
+oFReader = new FileReader();
+
+oFReader.onload = function (oFREvent) {
+  console.log(this)
+  console.log(oFREvent)
+  window.test=this
+};
+
+function b64_to_utf8( str ) {
+    return decodeURIComponent(escape(window.atob( str.replace(/^.*base64,(.*)$/,'$1') )));
+}
+
+function loadFile() {
+  if (document.getElementById("uploadFile").files.length === 0) { return; }
+  var oFile = document.getElementById("uploadFile").files[0];
+  oFReader.readAsDataURL(oFile);
+}
+</script>
+</head>
+
+<body onload="loadFile();">
+  <form name="uploadForm">
+     <input id="uploadFile" type="file" name="myPhoto" onchange="loadFile();" />
+
+
+    <p><input type="submit" value="Send" /></p>
+  </form>
+</body>
+</html>

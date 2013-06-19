@@ -60,6 +60,11 @@
         setJsonVars(totalVars,jsonVars.schema.doc.properties)
 
         console.log(jsonVars)
+        jsonVars.onSubmitValid=function (values) 
+        {
+          // "values" follows the schema, yeepee!
+          console.log(values);
+        }
       $('form').jsonForm(jsonVars);
 
         });
