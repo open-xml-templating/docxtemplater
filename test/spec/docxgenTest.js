@@ -246,7 +246,7 @@
   describe("scope calculation", function() {
     var xmlTemplater;
 
-    xmlTemplater = new XmlTemplater();
+    xmlTemplater = new DocXTemplater();
     it("should compute the scope between 2 <w:t>", function() {
       var scope;
 
@@ -345,7 +345,7 @@
   describe("scope diff calculation", function() {
     var xmlTemplater;
 
-    xmlTemplater = new XmlTemplater();
+    xmlTemplater = new DocXTemplater();
     it("should compute the scopeDiff between 2 <w:t>", function() {
       var scope;
 
@@ -381,7 +381,7 @@
     return it("should find the scope", function() {
       var obj, scope, xmlTemplater;
 
-      xmlTemplater = new XmlTemplater();
+      xmlTemplater = new DocXTemplater();
       docX['tagProduitLoop.docx'] = new DocxGen(docXData['tagProduitLoop.docx']);
       scope = xmlTemplater.calcInnerTextScope(docX['tagProduitLoop.docx'].zip.files["word/document.xml"].data, 1195, 1245, 'w:p');
       obj = {
@@ -594,7 +594,7 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new XmlTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -605,7 +605,7 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new XmlTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -624,7 +624,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
     });
@@ -643,7 +643,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,');
     });
@@ -663,7 +663,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
@@ -683,7 +683,7 @@
           }
         ]
       };
-      xmlTemplater = new XmlTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });

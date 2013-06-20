@@ -7,9 +7,11 @@ Created by Edgar HIPP
 
 
 (function() {
-  var DocxGen, XmlTemplater,
+  var DocXTemplater, DocxGen, XmlTemplater,
     __slice = [].slice,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   window.DocUtils = {};
 
@@ -232,7 +234,6 @@ Created by Edgar HIPP
       this.addExtensionRels("image/" + extension, extension);
       relationships = this.xmlDoc.getElementsByTagName("Relationships")[0];
       newTag = this.xmlDoc.createElement('Relationship');
-      console.log(newTag);
       newTag.namespaceURI = null;
       newTag.setAttribute('Id', "rId" + this.maxRid);
       newTag.setAttribute('Type', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image');
@@ -278,7 +279,7 @@ Created by Edgar HIPP
         if (!(this.zip.files[fileName] != null)) {
           continue;
         }
-        currentFile = new XmlTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging);
+        currentFile = new DocXTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging);
         _results.push(this.zip.files[fileName].data = currentFile.applyTemplateVars().content);
       }
       return _results;
@@ -294,7 +295,7 @@ Created by Edgar HIPP
         if (!(this.zip.files[fileName] != null)) {
           continue;
         }
-        currentFile = new XmlTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging);
+        currentFile = new DocXTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging);
         usedTemplateVars.push({
           fileName: fileName,
           vars: currentFile.applyTemplateVars().usedTemplateVars
@@ -319,7 +320,6 @@ Created by Edgar HIPP
       var file, index, zip;
 
       zip = new JSZip();
-      console.log(this.zip.files);
       for (index in this.zip.files) {
         file = this.zip.files[index];
         zip.file(file.name, file.data, file.options);
@@ -337,9 +337,9 @@ Created by Edgar HIPP
         data = "";
       }
       if (data === "") {
-        currentFile = new XmlTemplater(this.zip.files[path].data, this, this.templateVars, this.intelligentTagging);
+        currentFile = new DocXTemplater(this.zip.files[path].data, this, this.templateVars, this.intelligentTagging);
       } else {
-        currentFile = new XmlTemplater(data, this, this.templateVars, this.intelligentTagging);
+        currentFile = new DocXTemplater(data, this, this.templateVars, this.intelligentTagging);
       }
       return currentFile.getFullText();
     };
@@ -391,6 +391,8 @@ Created by Edgar HIPP
       this.scopePath = scopePath != null ? scopePath : [];
       this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
       this.imageId = imageId != null ? imageId : 0;
+      this.tagX = '';
+      this["class"] = window.XmlTemplater;
       if (creator instanceof DocxGen || (creator == null)) {
         this.DocxGen = creator;
       } else {
@@ -411,7 +413,7 @@ Created by Edgar HIPP
     }
 
     XmlTemplater.prototype.load = function(content) {
-      var i, replacerPush, replacerUnshift,
+      var i, regex, replacerPush, replacerUnshift,
         _this = this;
 
       this.content = content;
@@ -446,7 +448,8 @@ Created by Edgar HIPP
         _this.matches.push(pn);
         return _this.charactersAdded.push(0);
       };
-      return this.content.replace(/(<w:t[^>]*>)([^>]+)$/, replacerPush);
+      regex = "(<" + this.tagX + "[^>]*>)([^>]+)$";
+      return this.content.replace(new RegExp(regex), replacerPush);
     };
 
     XmlTemplater.prototype.setUsedTemplateVars = function(tag) {
@@ -565,7 +568,7 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype._getFullTextMatchesFromData = function() {
-      return this.matches = DocUtils.preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>", this.content);
+      return this.matches = DocUtils.preg_match_all("(<" + this.tagX + "[^>]*>)([^<>]*)?</" + this.tagX + ">", this.content);
     };
 
     XmlTemplater.prototype.calcInnerTextScope = function(text, start, end, tag) {
@@ -669,7 +672,6 @@ Created by Edgar HIPP
           throw "no {,#,/ or } found in B: " + B;
         }
       }
-      console.log('loop', this.loopOpen.tag, this.currentScope, this.currentScope[this.loopOpen.tag]);
       if (this.currentScope[this.loopOpen.tag] != null) {
         if (typeof this.currentScope[this.loopOpen.tag] === 'object') {
           subScope = this.currentScope[this.loopOpen.tag];
@@ -688,7 +690,7 @@ Created by Edgar HIPP
             options = this.toJson();
             options.templateVars = scope;
             options.scopePath = options.scopePath.concat(this.loopOpen.tag);
-            subfile = new XmlTemplater(A, options);
+            subfile = new this["class"](A, options);
             subfile.applyTemplateVars();
             this.imageId = subfile.imageId;
             newContent += subfile.content;
@@ -701,8 +703,7 @@ Created by Edgar HIPP
           options = this.toJson();
           options.templateVars = this.currentScope;
           options.scopePath = options.scopePath.concat(this.loopOpen.tag);
-          subfile = new XmlTemplater(A, options);
-          console.log(A);
+          subfile = new this["class"](A, options);
           subfile.applyTemplateVars();
           this.imageId = subfile.imageId;
           newContent += subfile.content;
@@ -712,19 +713,16 @@ Created by Edgar HIPP
         }
         this.content = this.content.replace(B, newContent);
       } else {
-        console.log('else');
         options = this.toJson();
         options.templateVars = {};
         options.scopePath = options.scopePath.concat(this.loopOpen.tag);
-        subfile = new XmlTemplater(A, options);
-        console.log('else3');
+        subfile = new this["class"](A, options);
         subfile.applyTemplateVars();
         this.imageId = subfile.imageId;
-        console.log('else2');
         this.content = this.content.replace(B, "");
       }
       options = this.toJson();
-      nextFile = new XmlTemplater(this.content, options);
+      nextFile = new this["class"](this.content, options);
       nextFile.applyTemplateVars();
       this.imageId = nextFile.imageId;
       if ((nextFile.getFullText().indexOf('{')) !== -1) {
@@ -740,7 +738,6 @@ Created by Edgar HIPP
       if (sharp == null) {
         sharp = false;
       }
-      console.log(this);
       _ref = this.calcB(), B = _ref.B, startB = _ref.startB, endB = _ref.endB;
       resultFullScope = this.calcInnerTextScope(this.content, startB, endB, elementDashLoop);
       for (t = _i = 0, _ref1 = this.matches.length; 0 <= _ref1 ? _i <= _ref1 : _i >= _ref1; t = 0 <= _ref1 ? ++_i : --_i) {
@@ -802,9 +799,9 @@ Created by Edgar HIPP
         replacer = insideValue;
       } else {
         if (spacePreserve === true) {
-          replacer = '<w:t xml:space="preserve">' + insideValue + "</w:t>";
+          replacer = "<" + this.tagX + " xml:space=\"preserve\">" + insideValue + "</" + this.tagX + ">";
         } else {
-          replacer = this.matches[tagNumber][1] + insideValue + "</w:t>";
+          replacer = this.matches[tagNumber][1] + insideValue + ("</" + this.tagX + ">");
         }
       }
       this.charactersAdded[tagNumber + 1] += replacer.length - this.matches[tagNumber][0].length;
@@ -1029,5 +1026,31 @@ Created by Edgar HIPP
     return XmlTemplater;
 
   })();
+
+  window.DocXTemplater = DocXTemplater = (function(_super) {
+    __extends(DocXTemplater, _super);
+
+    function DocXTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId) {
+      if (content == null) {
+        content = "";
+      }
+      this.templateVars = templateVars != null ? templateVars : {};
+      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
+      this.scopePath = scopePath != null ? scopePath : [];
+      this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
+      this.imageId = imageId != null ? imageId : 0;
+      DocXTemplater.__super__.constructor.call(this, null, creator, this.templateVars, this.intelligentTagging, this.scopePath, this.usedTemplateVars, this.imageId);
+      this["class"] = DocXTemplater;
+      this.tagX = 'w:t';
+      if (typeof content === "string") {
+        this.load(content);
+      } else {
+        throw "content must be string!";
+      }
+    }
+
+    return DocXTemplater;
+
+  })(XmlTemplater);
 
 }).call(this);

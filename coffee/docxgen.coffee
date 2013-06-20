@@ -28,7 +28,7 @@ DocUtils.clone = (obj) ->
 		return obj
 
 	if obj instanceof Date
-		return new Date(obj.getTime()) 
+		return new Date(obj.getTime())
 
 	if obj instanceof RegExp
 		flags = ''
@@ -36,7 +36,7 @@ DocUtils.clone = (obj) ->
 		flags += 'i' if obj.ignoreCase?
 		flags += 'm' if obj.multiline?
 		flags += 'y' if obj.sticky?
-		return new RegExp(obj.source, flags) 
+		return new RegExp(obj.source, flags)
 
 	newInstance = new obj.constructor()
 
@@ -153,7 +153,6 @@ window.DocxGen = class DocxGen
 		@addExtensionRels("image/#{extension}",extension)
 		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]
 		newTag= @xmlDoc.createElement 'Relationship' #,relationships.namespaceURI
-		console.log newTag
 		newTag.namespaceURI= null
 		newTag.setAttribute('Id',"rId#{@maxRid}")
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
@@ -162,7 +161,7 @@ window.DocxGen = class DocxGen
 		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
 	saveImageRels: () ->
-		@zip.files["word/_rels/document.xml.rels"].data	
+		@zip.files["word/_rels/document.xml.rels"].data
 	getImageList: () ->
 		regex= ///
 		[^.]*  #name
@@ -179,12 +178,12 @@ window.DocxGen = class DocxGen
 		@zip.files[path].data= data
 	applyTemplateVars:(@templateVars=@templateVars)->
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new XmlTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new XmlTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -194,16 +193,15 @@ window.DocxGen = class DocxGen
 		document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{@zip.generate()}"
 	calcZip: () ->
 		zip = new JSZip()
-		console.log @zip.files
 		for index of @zip.files
 			file= @zip.files[index]
 			zip.file file.name,file.data,file.options
 		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new XmlTemplater(@zip.files[path].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[path].data,this,@templateVars,@intelligentTagging)
 		else
-			currentFile= new XmlTemplater(data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(data,this,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		@calcZip()

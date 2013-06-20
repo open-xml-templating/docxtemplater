@@ -28,7 +28,7 @@ DocUtils.clone = (obj) ->
 		return obj
 
 	if obj instanceof Date
-		return new Date(obj.getTime()) 
+		return new Date(obj.getTime())
 
 	if obj instanceof RegExp
 		flags = ''
@@ -36,7 +36,7 @@ DocUtils.clone = (obj) ->
 		flags += 'i' if obj.ignoreCase?
 		flags += 'm' if obj.multiline?
 		flags += 'y' if obj.sticky?
-		return new RegExp(obj.source, flags) 
+		return new RegExp(obj.source, flags)
 
 	newInstance = new obj.constructor()
 
@@ -153,7 +153,6 @@ window.DocxGen = class DocxGen
 		@addExtensionRels("image/#{extension}",extension)
 		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]
 		newTag= @xmlDoc.createElement 'Relationship' #,relationships.namespaceURI
-		console.log newTag
 		newTag.namespaceURI= null
 		newTag.setAttribute('Id',"rId#{@maxRid}")
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
@@ -162,7 +161,7 @@ window.DocxGen = class DocxGen
 		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
 	saveImageRels: () ->
-		@zip.files["word/_rels/document.xml.rels"].data	
+		@zip.files["word/_rels/document.xml.rels"].data
 	getImageList: () ->
 		regex= ///
 		[^.]*  #name
@@ -179,12 +178,12 @@ window.DocxGen = class DocxGen
 		@zip.files[path].data= data
 	applyTemplateVars:(@templateVars=@templateVars)->
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new XmlTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new XmlTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -194,16 +193,15 @@ window.DocxGen = class DocxGen
 		document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{@zip.generate()}"
 	calcZip: () ->
 		zip = new JSZip()
-		console.log @zip.files
 		for index of @zip.files
 			file= @zip.files[index]
 			zip.file file.name,file.data,file.options
 		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new XmlTemplater(@zip.files[path].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[path].data,this,@templateVars,@intelligentTagging)
 		else
-			currentFile= new XmlTemplater(data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(data,this,@templateVars,@intelligentTagging)
 		currentFile.getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		@calcZip()
@@ -223,6 +221,8 @@ window.DocxGen = class DocxGen
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
+		@tagX=''
+		@class=window.XmlTemplater
 		if creator instanceof DocxGen or (not creator?)
 			@DocxGen=creator
 		else
@@ -245,21 +245,23 @@ window.XmlTemplater = class XmlTemplater
 			@matches.unshift pn #add at the beginning
 			@charactersAdded.unshift 0
 		@content.replace /^()([^<]+)/,replacerUnshift
-		
+
 		replacerPush = (match,pn ..., offset, string)=>
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
 			pn.last= true
 			@matches.push pn #add at the beginning
 			@charactersAdded.push 0
-		@content.replace /(<w:t[^>]*>)([^>]+)$/,replacerPush
+
+		regex= "(<#{@tagX}[^>]*>)([^>]+)$"
+		@content.replace (new RegExp(regex)),replacerPush
 	setUsedTemplateVars: (tag) ->
 		u = @usedTemplateVars
 		for s,i in @scopePath
 			u[s]={} unless u[s]?
 			u = u[s]
 		if tag!=""
-			u[tag]= true		
+			u[tag]= true
 	getValueFromTag: (tag,scope) ->
 		@setUsedTemplateVars(tag)
 		if scope[tag]? then return DocUtils.encode_utf8 scope[tag] else return "undefined"
@@ -297,7 +299,7 @@ window.XmlTemplater = class XmlTemplater
 		output= (match[2] for match in @matches) #get only the text
 		DocUtils.decode_utf8(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		@matches= DocUtils.preg_match_all("(<w:t[^>]*>)([^<>]*)?</w:t>",@content)
+		@matches= DocUtils.preg_match_all("(<#{@tagX}[^>]*>)([^<>]*)?</#{@tagX}>",@content)
 	calcInnerTextScope: (text,start,end,tag) -> #tag: w:t
 		endTag= text.indexOf('</'+tag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
@@ -353,7 +355,6 @@ window.XmlTemplater = class XmlTemplater
 
 			if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
-		console.log 'loop',@loopOpen.tag, @currentScope, @currentScope[@loopOpen.tag]
 		if @currentScope[@loopOpen.tag]?
 			# if then throw '{#'+@loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@loopOpen.tag]})"
 			subScope= @currentScope[@loopOpen.tag] if typeof @currentScope[@loopOpen.tag]=='object'
@@ -366,7 +367,7 @@ window.XmlTemplater = class XmlTemplater
 					options= @toJson()
 					options.templateVars=scope
 					options.scopePath= options.scopePath.concat(@loopOpen.tag)
-					subfile= new XmlTemplater  A,options
+					subfile= new @class  A,options
 					subfile.applyTemplateVars()
 					@imageId=subfile.imageId
 					newContent+=subfile.content #@applyTemplateVars A,scope
@@ -375,27 +376,23 @@ window.XmlTemplater = class XmlTemplater
 				options= @toJson()
 				options.templateVars= @currentScope
 				options.scopePath= options.scopePath.concat(@loopOpen.tag)
-				subfile= new XmlTemplater  A,options
-				console.log A
+				subfile= new @class  A,options
 				subfile.applyTemplateVars()
 				@imageId=subfile.imageId
 				newContent+=subfile.content #@applyTemplateVars A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
-		else 
-			console.log 'else'
+		else
 			options= @toJson()
 			options.templateVars={}
 			options.scopePath= options.scopePath.concat(@loopOpen.tag)
-			subfile= new XmlTemplater A, options
-			console.log 'else3'
+			subfile= new @class A, options
 			subfile.applyTemplateVars()
 			@imageId=subfile.imageId
-			console.log 'else2'
 			@content= @content.replace B, ""
-		
+
 		options= @toJson()
-		nextFile= new XmlTemplater @content,options
+		nextFile= new @class @content,options
 		nextFile.applyTemplateVars()
 		@imageId=nextFile.imageId
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
@@ -403,7 +400,6 @@ window.XmlTemplater = class XmlTemplater
 		return this
 
 	dashLoop: (elementDashLoop,sharp=false) ->
-		console.log this
 		{B,startB,endB}= @calcB()
 		resultFullScope = @calcInnerTextScope @content, startB, endB, elementDashLoop
 		for t in [0..@matches.length]
@@ -442,8 +438,8 @@ window.XmlTemplater = class XmlTemplater
 			replacer= insideValue
 		else
 			if spacePreserve==true
-				replacer= '<w:t xml:space="preserve">'+insideValue+"</w:t>"
-			else replacer= @matches[tagNumber][1]+insideValue+"</w:t>"
+				replacer= """<#{@tagX} xml:space="preserve">#{insideValue}</#{@tagX}>"""
+			else replacer= @matches[tagNumber][1]+insideValue+"</#{@tagX}>"
 		@charactersAdded[tagNumber+1]+=replacer.length-@matches[tagNumber][0].length
 		if content.indexOf(@matches[tagNumber][0])==-1 then throw "content #{@matches[tagNumber][0]} not found in content"
 		copyContent= content
@@ -500,7 +496,7 @@ window.XmlTemplater = class XmlTemplater
 		return content
 	replaceImages:() ->
 		for match,u in @imgMatches
-			
+
 			if @currentScope["img"]? then if @currentScope["img"][u]?
 				xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
 				window.lulu=xmlImg
@@ -508,7 +504,7 @@ window.XmlTemplater = class XmlTemplater
 				imgData= @currentScope["img"][u].data
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-				
+
 				@imageId++
 				tag.setAttribute('id',@imageId)
 				tag.setAttribute('name',"#{imgName}")
@@ -516,7 +512,7 @@ window.XmlTemplater = class XmlTemplater
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
 
 				tagrId.setAttribute('r:embed',"rId#{newId}")
-				
+
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)
 	findImages: () ->
@@ -591,3 +587,9 @@ window.XmlTemplater = class XmlTemplater
 		@findImages()
 		@replaceImages()
 		this
+window.DocXTemplater = class DocXTemplater extends XmlTemplater
+	constructor:(content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
+		super(null,creator,@templateVars,@intelligentTagging,@scopePath,@usedTemplateVars,@imageId)
+		@class=DocXTemplater
+		@tagX='w:t'
+		if typeof content=="string" then @load content else throw "content must be string!"
