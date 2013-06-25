@@ -13,14 +13,20 @@ DocUtils.nl2br = (str,is_xhtml) ->
 
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', "../examples/#{path}", async)
+	if path.indexOf('/')!=-1
+		totalPath= path
+		fileName= totalPath
+	else
+		fileName= path
+		totalPath= "../examples/#{path}"
+	xhrDoc.open('GET', totalPath , async)
 	if xhrDoc.overrideMimeType
 		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
 	xhrDoc.onreadystatechange =(e)->
 		if this.readyState == 4 and this.status == 200
-			window.docXData[path]=this.response
+			window.docXData[fileName]=this.response
 			if noDocx==false
-				window.docX[path]=new DocxGen(this.response,{},intelligentTagging)
+				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
 	xhrDoc.send()
 
 DocUtils.clone = (obj) ->
@@ -118,7 +124,6 @@ window.DocxGen = class DocxGen
 		@imageRels=[]
 		this
 	addExtensionRels: (contentType,extension) ->
-
 		content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].data
 		xmlDoc= DocUtils.Str2xml content
 		addTag= true
@@ -180,6 +185,19 @@ window.DocxGen = class DocxGen
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
+	getCsvVars:() ->
+		obj= @getTemplateVars()
+		csvcontent = ""
+		csvVars= {}
+		for temp,i in obj
+			for j of temp.vars
+				csvcontent+=j+";" unless csvVars[j]?
+				csvVars[j]= {}
+		csvcontent
+	getCsvFile:() ->
+		file= btoa @getCsvVars()
+		document.location.href= "data:application/vnd.ms-excel;base64,#{file}"
+		# for (i in (docX["CUSTemplate.docx"].getTemplateVars()[0].vars)) {cont+=i+";"}
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @zip.files[fileName]?

@@ -43,7 +43,15 @@ window.XmlTemplater = class XmlTemplater
 			u[tag]= true
 	getValueFromTag: (tag,scope) ->
 		@setUsedTemplateVars(tag)
-		if scope[tag]? then return DocUtils.encode_utf8 scope[tag] else return "undefined"
+		content= ""
+		if scope[tag]? 
+			content= DocUtils.encode_utf8 scope[tag] 
+		else 
+			content= "undefined"
+		if content.indexOf('{')!=-1 or content.indexOf('}')!=-1
+			alert('On ne peut mettre de { ou de } dans le contenu d\'une variable')
+			throw 'On ne peut mettre de { ou de } dans le contenu d\'une variable'
+		content
 	calcScopeText: (text,start=0,end=text.length-1) ->
 		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
 		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]

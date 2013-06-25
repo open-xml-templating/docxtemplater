@@ -24,7 +24,7 @@ Created by Edgar HIPP
   };
 
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async) {
-    var xhrDoc;
+    var fileName, totalPath, xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
@@ -36,15 +36,22 @@ Created by Edgar HIPP
       async = false;
     }
     xhrDoc = new XMLHttpRequest();
-    xhrDoc.open('GET', "../examples/" + path, async);
+    if (path.indexOf('/') !== -1) {
+      totalPath = path;
+      fileName = totalPath;
+    } else {
+      fileName = path;
+      totalPath = "../examples/" + path;
+    }
+    xhrDoc.open('GET', totalPath, async);
     if (xhrDoc.overrideMimeType) {
       xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
     }
     xhrDoc.onreadystatechange = function(e) {
       if (this.readyState === 4 && this.status === 200) {
-        window.docXData[path] = this.response;
+        window.docXData[fileName] = this.response;
         if (noDocx === false) {
-          return window.docX[path] = new DocxGen(this.response, {}, intelligentTagging);
+          return window.docX[fileName] = new DocxGen(this.response, {}, intelligentTagging);
         }
       }
     };
@@ -285,6 +292,31 @@ Created by Edgar HIPP
       return _results;
     };
 
+    DocxGen.prototype.getCsvVars = function() {
+      var csvVars, csvcontent, i, j, obj, temp, _i, _len;
+
+      obj = this.getTemplateVars();
+      csvcontent = "";
+      csvVars = {};
+      for (i = _i = 0, _len = obj.length; _i < _len; i = ++_i) {
+        temp = obj[i];
+        for (j in temp.vars) {
+          if (csvVars[j] == null) {
+            csvcontent += j + ";";
+          }
+          csvVars[j] = {};
+        }
+      }
+      return csvcontent;
+    };
+
+    DocxGen.prototype.getCsvFile = function() {
+      var file;
+
+      file = btoa(this.getCsvVars());
+      return document.location.href = "data:application/vnd.ms-excel;base64," + file;
+    };
+
     DocxGen.prototype.getTemplateVars = function() {
       var currentFile, fileName, usedTemplateVars, _i, _len, _ref;
 
@@ -470,12 +502,20 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.getValueFromTag = function(tag, scope) {
+      var content;
+
       this.setUsedTemplateVars(tag);
+      content = "";
       if (scope[tag] != null) {
-        return DocUtils.encode_utf8(scope[tag]);
+        content = DocUtils.encode_utf8(scope[tag]);
       } else {
-        return "undefined";
+        content = "undefined";
       }
+      if (content.indexOf('{') !== -1 || content.indexOf('}') !== -1) {
+        alert('On ne peut mettre de { ou de } dans le contenu d\'une variable');
+        throw 'On ne peut mettre de { ou de } dans le contenu d\'une variable';
+      }
+      return content;
     };
 
     XmlTemplater.prototype.calcScopeText = function(text, start, end) {
