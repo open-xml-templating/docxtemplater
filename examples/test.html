@@ -1,37 +1,89 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-<title>Image preview example</title>
+  <meta charset="UTF-8">
+  <title>Document</title>
 
 
-<script type="text/javascript">
-oFReader = new FileReader();
+<script type="text/javascript" src="../libs/jsqrcode/grid.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/version.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/detector.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/formatinf.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/errorlevel.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/bitmat.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/datablock.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/bmparser.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/datamask.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/rsdecoder.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/gf256poly.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/gf256.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/decoder.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/qrcode.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/findpat.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/alignpat.js"></script>
+<script type="text/javascript" src="../libs/jsqrcode/databr.js"></script>
+    <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
 
-oFReader.onload = function (oFREvent) {
-  console.log(this)
-  console.log(oFREvent)
-  window.test=this
-};
-
-function b64_to_utf8( str ) {
-    return decodeURIComponent(escape(window.atob( str.replace(/^.*base64,(.*)$/,'$1') )));
-}
-
-function loadFile() {
-  if (document.getElementById("uploadFile").files.length === 0) { return; }
-  var oFile = document.getElementById("uploadFile").files[0];
-  oFReader.readAsDataURL(oFile);
-}
-</script>
+  <!-- Include docxgen js lib -->
+  <script type="text/javascript" src="../js/docxgen.js"></script>
 </head>
+<body>
+ 
+ <!-- <canvas id="c"></canvas>  -->
 
-<body onload="loadFile();">
-  <form name="uploadForm">
-     <input id="uploadFile" type="file" name="myPhoto" onchange="loadFile();" />
+<img id='im'>
+
+<script>
+//   var canvas = document.getElementById("c");
+//   canvas.width=1000;
+//   canvas.height=1000;
+// var ctx = canvas.getContext("2d");
+
+// var image = new Image();
+
+// image.onload = function() {
+//   console.log('loade')
+//     ctx.drawImage(image, 0, 0);
+// };
 
 
-    <p><input type="submit" value="Send" /></p>
-  </form>
-</body>
+
+// DocUtils.loadDoc('qrcode.png',true)
+
+
+// data= DocUtils.base64encode(docXData['qrcode.png']);
+
+
+
+DocUtils.loadDoc('qrcode.zip',true)
+
+test= new JSZip(docXData['qrcode.zip'])
+buf=test.files['qrcode.png']
+
+ar=new Int8Array(buf)
+
+
+var str='';
+for (i in ar){
+    str+=String.fromCharCode(ar[i]);
+}
+
+image=document.getElementById('im')
+
+image.src="data:image/png;base64,"+JSZipBase64.encode(buf.data)
+
+qrcode.callback=(function (a) {console.log(a); console.log(this)})
+
+qrcode.decode("data:image/png;base64,"+JSZipBase64.encode(buf.data))
+// image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADIAQMAAACXljzdAAAABlBMVEUAAAD///+l2Z/dAAACEklEQVRYw+3YMaolSwwDUIG2ZdDWDdqWQD+oO8ObYDLf6E+lJ2ncbstd6N8O/keyABfDtsHIkRfgubh15FWjNsDIre9l6VW4CpgBIy+/I+5qaa8yCr8mS0cLAOriS9K6GWXYpXfUH7W+kwXoP8+P3rmTd3YG7II7/PNbuJKF7EAZgAH73uK9cOUMM2oUujsYnksYBsMdNTO0d15Fj0WOoi6GztDLZnQu7ULe4Q6gZtidL4j3zaCuunhVjXouke1oWUcO6y57L84oymjVhoEaQOfShnbdgI7yxhLPJYAaLldhVwtl5HOxl26AwdAN2NXqXMLWdutV7dZe1veiBdiMFlxGXvzqnVMZdufV0w0Y1va5NPSqK9s7XNr2651r6bL15wkg1y9LjgVg2AXABlrgTfJrmWFmBvJrw/ozYU/FDne0ALh48wJvJp5KoLDLMPOWVu3wXlaBAjCjlx0AviABMyMvd6AMuOBn8l1KG65WtTMY1itH57Kjtjts1O4MnXm7y62Aq0Z5u90b5+65vDRS+2nIGUVvVz6V1qsF2wwU0K83ryVgFDYDKO8TexW9FYeO3g8LW7cLvElxKm27imrXq2BYu+eyeBk+tBf0vmX1XNw6+L2f0PbnCY5l6Try6/0F3p/lN8TNcAEFAzpqvyI7kN0XsQv9uFm4k9Y7ati8wHipfi0L0C9cP/cX/ZVMp/LvLu0/ywbnDmqgUq8AAAAASUVORK5CYII=";
+// console.log(data)
+
+// image.src = "data:image/bmp;base64,"+data;
+// console.log(data)
+
+</script>
+ </body>
 </html>

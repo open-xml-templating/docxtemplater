@@ -134,6 +134,10 @@ Created by Edgar HIPP
     return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
   };
 
+  DocUtils.base64encode = function(b) {
+    return btoa(unescape(encodeURIComponent(b)));
+  };
+
   DocUtils.preg_match_all = function(regex, content) {
     /*regex is a string, content is the content. It returns an array of all matches with their offset, for example:
     	regex=la

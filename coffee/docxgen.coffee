@@ -84,6 +84,11 @@ DocUtils.encode_utf8 = (s)->
 DocUtils.decode_utf8= (s) ->
 	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ") #replace Ascii 160 space by the normal space, Ascii 32
 
+DocUtils.base64encode= (b) -> 
+    btoa(unescape(encodeURIComponent(b)))
+
+
+
 DocUtils.preg_match_all= (regex, content) ->
 	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
 	regex=la
