@@ -1,8 +1,3 @@
-###
-Docxgen.coffee
-Created by Edgar HIPP
-03/06/2013
-###
 window.DocUtils= {}
 
 window.docX=[]
@@ -103,6 +98,12 @@ DocUtils.preg_match_all= (regex, content) ->
 		matchArray.push pn
 	content.replace regex,replacer
 	matchArray
+###
+Docxgen.coffee
+Created by Edgar HIPP
+03/06/2013
+###
+
 
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']

@@ -1,11 +1,4 @@
 //@ sourceMappingURL=docxgen.map
-/*
-Docxgen.coffee
-Created by Edgar HIPP
-03/06/2013
-*/
-
-
 (function() {
   var DocXTemplater, DocxGen, XmlTemplater,
     __slice = [].slice,
@@ -162,6 +155,13 @@ Created by Edgar HIPP
     content.replace(regex, replacer);
     return matchArray;
   };
+
+  /*
+  Docxgen.coffee
+  Created by Edgar HIPP
+  03/06/2013
+  */
+
 
   window.DocxGen = DocxGen = (function() {
     var imageExtensions;
