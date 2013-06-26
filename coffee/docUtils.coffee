@@ -22,7 +22,11 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 			window.docXData[fileName]=this.response
 			if noDocx==false
 				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
+			if async==false
+				return window.docXData[fileName]
 	xhrDoc.send()
+	if async==false
+		return window.docXData[fileName]
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'

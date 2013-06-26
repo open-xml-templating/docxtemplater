@@ -49,6 +49,8 @@
 
   DocUtils.loadDoc('tagDashLoop.docx');
 
+  DocUtils.loadDoc('qrCodeExample.docx');
+
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
       return expect(DocxGen).not.toBe(void 0);
@@ -773,6 +775,15 @@
         _results.push(expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data));
       }
       return _results;
+    });
+  });
+
+  describe('qr code testing', function() {
+    return it('should work with local QRCODE', function() {
+      console.log('qrcode');
+      docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false, true);
+      docX['qrCodeExample.docx'].applyTemplateVars();
+      return console.log(docX['qrCodeExample.docx']);
     });
   });
 

@@ -1,6 +1,6 @@
 //@ sourceMappingURL=docxgen.map
 (function() {
-  var DocXTemplater, DocxGen, XmlTemplater,
+  var DocXTemplater, DocxGen, DocxQrCode, XmlTemplater,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -44,11 +44,17 @@
       if (this.readyState === 4 && this.status === 200) {
         window.docXData[fileName] = this.response;
         if (noDocx === false) {
-          return window.docX[fileName] = new DocxGen(this.response, {}, intelligentTagging);
+          window.docX[fileName] = new DocxGen(this.response, {}, intelligentTagging);
+        }
+        if (async === false) {
+          return window.docXData[fileName];
         }
       }
     };
-    return xhrDoc.send();
+    xhrDoc.send();
+    if (async === false) {
+      return window.docXData[fileName];
+    }
   };
 
   DocUtils.clone = function(obj) {
@@ -168,9 +174,10 @@
 
     imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
 
-    function DocxGen(content, templateVars, intelligentTagging) {
+    function DocxGen(content, templateVars, intelligentTagging, qrCode) {
       this.templateVars = templateVars != null ? templateVars : {};
       this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
+      this.qrCode = qrCode != null ? qrCode : false;
       this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
       if (typeof content === "string") {
         this.load(content);
@@ -252,6 +259,21 @@
       relationships.appendChild(newTag);
       this.zip.files["word/_rels/document.xml.rels"].data = DocUtils.encode_utf8(DocUtils.xml2Str(this.xmlDoc));
       return this.maxRid;
+    };
+
+    DocxGen.prototype.getImageByRid = function(rId) {
+      var cRId, path, relationship, relationships, _i, _len;
+
+      relationships = this.xmlDoc.getElementsByTagName('Relationship');
+      for (_i = 0, _len = relationships.length; _i < _len; _i++) {
+        relationship = relationships[_i];
+        cRId = relationship.getAttribute('Id');
+        if (rId === cRId) {
+          path = relationship.getAttribute('Target');
+          return this.zip.files["word/" + path];
+        }
+      }
+      return 'not found';
     };
 
     DocxGen.prototype.saveImageRels = function() {
@@ -919,18 +941,35 @@
     };
 
     XmlTemplater.prototype.replaceImages = function() {
-      var imageTag, imgData, imgName, match, newId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results;
+      var imageTag, imgData, imgName, match, newId, oldFile, rId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results;
 
       _ref = this.imgMatches;
       _results = [];
       for (u = _i = 0, _len = _ref.length; _i < _len; u = ++_i) {
         match = _ref[u];
+        xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
+        if (this.DocxGen.qrCode) {
+          tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
+          rId = tagrId.getAttribute('r:embed');
+          oldFile = this.DocxGen.getImageByRid(rId);
+          console.log(oldFile);
+          newId = this.DocxGen.addImageRels(imgName, imgData);
+          tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
+          this.imageId++;
+          tag.setAttribute('id', this.imageId);
+          tag.setAttribute('name', "" + imgName);
+          tagrId.setAttribute('r:embed', "rId" + newId);
+          imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
+          this.content = this.content.replace(match[0], DocUtils.xml2Str(imageTag));
+        }
         if (this.currentScope["img"] != null) {
           if (this.currentScope["img"][u] != null) {
-            xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
-            window.lulu = xmlImg;
             imgName = this.currentScope["img"][u].name;
             imgData = this.currentScope["img"][u].data;
+            if (this.DocxGen == null) {
+              throw 'DocxGen not defined';
+            }
+            console.log(this.DocxGen);
             newId = this.DocxGen.addImageRels(imgName, imgData);
             tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
             this.imageId++;
@@ -951,7 +990,8 @@
     };
 
     XmlTemplater.prototype.findImages = function() {
-      return this.imgMatches = DocUtils.preg_match_all(/<w:drawing>.*<\/w:drawing>/, this.content);
+      this.imgMatches = DocUtils.preg_match_all(/<w:drawing>.*<\/w:drawing>/, this.content);
+      return console.log(this.imgMatches);
     };
 
     /*
@@ -1096,5 +1136,38 @@
     return DocXTemplater;
 
   })(XmlTemplater);
+
+  window.DocxQrCode = DocxQrCode = (function() {
+    function DocxQrCode(imageData) {
+      this.data = imageData;
+      this.base64Data = JSZipBase64.encode(this.data);
+      this.ready = false;
+      this.result = null;
+    }
+
+    DocxQrCode.prototype.decode = function() {
+      var _this;
+
+      _this = this;
+      qrcode.callback = function() {
+        console.log(1);
+        _this.ready = true;
+        _this.result = this.result;
+        return _this.searchImage();
+      };
+      return qrcode.decode("data:image/png;base64," + this.base64Data);
+    };
+
+    DocxQrCode.prototype.searchImage = function() {
+      if (this.result !== null) {
+        DocUtils.loadDoc(this.result, true, false, true);
+        console.log(docXData[this.result]);
+        return this.data = docXData[this.result];
+      }
+    };
+
+    return DocxQrCode;
+
+  })();
 
 }).call(this);

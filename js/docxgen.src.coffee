@@ -22,7 +22,11 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 			window.docXData[fileName]=this.response
 			if noDocx==false
 				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
+			if async==false
+				return window.docXData[fileName]
 	xhrDoc.send()
+	if async==false
+		return window.docXData[fileName]
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'
@@ -107,7 +111,7 @@ Created by Edgar HIPP
 
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
-	constructor: (content, @templateVars={},@intelligentTagging=off) ->
+	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off) ->
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -171,6 +175,14 @@ window.DocxGen = class DocxGen
 		relationships.appendChild newTag
 		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
+	getImageByRid:(rId)->
+		relationships= @xmlDoc.getElementsByTagName('Relationship')
+		for relationship in relationships
+			cRId= relationship.getAttribute('Id')
+			if rId==cRId
+				path=relationship.getAttribute('Target')
+				return @zip.files["word/#{path}"]
+		return 'not found'
 	saveImageRels: () ->
 		@zip.files["word/_rels/document.xml.rels"].data
 	getImageList: () ->
@@ -528,12 +540,34 @@ window.XmlTemplater = class XmlTemplater
 		return content
 	replaceImages:() ->
 		for match,u in @imgMatches
+			xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
+				
+			if @DocxGen.qrCode
+
+				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
+				rId = tagrId.getAttribute('r:embed')
+				oldFile= @DocxGen.getImageByRid(rId)
+
+				console.log oldFile
+
+				newId= @DocxGen.addImageRels(imgName,imgData)
+				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
+
+				@imageId++
+				tag.setAttribute('id',@imageId)
+				tag.setAttribute('name',"#{imgName}")
+
+				
+				tagrId.setAttribute('r:embed',"rId#{newId}")
+
+				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
+				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)				
 
 			if @currentScope["img"]? then if @currentScope["img"][u]?
-				xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
-				window.lulu=xmlImg
 				imgName= @currentScope["img"][u].name
 				imgData= @currentScope["img"][u].data
+				throw 'DocxGen not defined' unless @DocxGen?
+				console.log @DocxGen
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 
@@ -553,6 +587,7 @@ window.XmlTemplater = class XmlTemplater
 		.*
 		</w:drawing>
 		///, @content
+		console.log @imgMatches
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -625,3 +660,23 @@ window.DocXTemplater = class DocXTemplater extends XmlTemplater
 		@class=DocXTemplater
 		@tagX='w:t'
 		if typeof content=="string" then @load content else throw "content must be string!"
+window.DocxQrCode = class DocxQrCode
+	constructor:(imageData)->
+		@data=imageData
+		@base64Data=JSZipBase64.encode(@data)
+		@ready=false
+		@result=null
+
+	decode:() ->
+		_this= this
+		qrcode.callback= () ->
+			console.log 1
+			_this.ready=true
+			_this.result=this.result
+			_this.searchImage()
+		qrcode.decode("data:image/png;base64,#{@base64Data}")
+	searchImage:() ->
+		if @result!=null
+			DocUtils.loadDoc(@result,true,false,true)
+			console.log docXData[@result]
+			@data=docXData[@result]

@@ -7,7 +7,7 @@ Created by Edgar HIPP
 
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
-	constructor: (content, @templateVars={},@intelligentTagging=off) ->
+	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off) ->
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -71,6 +71,14 @@ window.DocxGen = class DocxGen
 		relationships.appendChild newTag
 		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
+	getImageByRid:(rId)->
+		relationships= @xmlDoc.getElementsByTagName('Relationship')
+		for relationship in relationships
+			cRId= relationship.getAttribute('Id')
+			if rId==cRId
+				path=relationship.getAttribute('Target')
+				return @zip.files["word/#{path}"]
+		return 'not found'
 	saveImageRels: () ->
 		@zip.files["word/_rels/document.xml.rels"].data
 	getImageList: () ->

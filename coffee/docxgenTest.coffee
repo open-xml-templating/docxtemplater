@@ -25,6 +25,7 @@ DocUtils.loadDoc('tagDashLoopTable.docx')
 DocUtils.loadDoc('tagIntelligentLoopTable.docx',false,true)
 DocUtils.loadDoc('tagIntelligentLoopTableExpected.docx')
 DocUtils.loadDoc('tagDashLoop.docx')
+DocUtils.loadDoc('qrCodeExample.docx')
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -291,3 +292,12 @@ describe "loop forTagging images", () ->
 				expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length)
 
 			expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data)
+
+
+describe 'qr code testing', () ->
+	it 'should work with local QRCODE', () ->
+		console.log 'qrcode'
+		docX['qrCodeExample.docx']=new DocxGen(docXData['qrCodeExample.docx'],{},false,true)
+		docX['qrCodeExample.docx'].applyTemplateVars()
+		console.log docX['qrCodeExample.docx']
+
