@@ -96,9 +96,9 @@ window.DocxGen = class DocxGen
 		imageList
 	setImage: (path,data) ->
 		@zip.files[path].data= data
-	applyTemplateVars:(@templateVars=@templateVars)->
+	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 	getCsvVars:() ->
 		obj= @getTemplateVars()

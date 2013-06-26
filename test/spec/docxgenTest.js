@@ -51,6 +51,8 @@
 
   DocUtils.loadDoc('qrCodeExample.docx');
 
+  DocUtils.loadDoc('qrCodeExampleExpected.docx');
+
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
       return expect(DocxGen).not.toBe(void 0);
@@ -780,10 +782,33 @@
 
   describe('qr code testing', function() {
     return it('should work with local QRCODE', function() {
+      var endcallback;
+
       console.log('qrcode');
       docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false, true);
-      docX['qrCodeExample.docx'].applyTemplateVars();
-      return console.log(docX['qrCodeExample.docx']);
+      endcallback = function() {
+        return console.log('finished qrcode');
+      };
+      docX['qrCodeExample.docx'].applyTemplateVars({}, endcallback);
+      docX['qrCodeExample.docx'];
+      waitsFor(function() {
+        return docX['qrCodeExample.docx'].ready != null;
+      });
+      return runs(function() {
+        var i, _results;
+
+        expect(1).toEqual(1);
+        _results = [];
+        for (i in docX['qrCodeExample.docx'].zip.files) {
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date);
+          expect(docX['qrCodeExample.docx'].zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name);
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.base64);
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.binary);
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.compression);
+          _results.push(expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir));
+        }
+        return _results;
+      });
     });
   });
 

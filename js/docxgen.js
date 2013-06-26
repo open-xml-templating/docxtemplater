@@ -308,10 +308,13 @@
       return this.zip.files[path].data = data;
     };
 
-    DocxGen.prototype.applyTemplateVars = function(templateVars) {
+    DocxGen.prototype.applyTemplateVars = function(templateVars, qrCodeCallback) {
       var currentFile, fileName, _i, _len, _ref, _results;
 
       this.templateVars = templateVars != null ? templateVars : this.templateVars;
+      if (qrCodeCallback == null) {
+        qrCodeCallback = null;
+      }
       _ref = this.templatedFiles;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -319,7 +322,7 @@
         if (!(this.zip.files[fileName] != null)) {
           continue;
         }
-        currentFile = new DocXTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging);
+        currentFile = new DocXTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging, [], {}, 0, qrCodeCallback);
         _results.push(this.zip.files[fileName].data = currentFile.applyTemplateVars().content);
       }
       return _results;
@@ -445,7 +448,7 @@
   })();
 
   window.XmlTemplater = XmlTemplater = (function() {
-    function XmlTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId) {
+    function XmlTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId, qrcodeCallback) {
       var options;
 
       if (content == null) {
@@ -456,6 +459,9 @@
       this.scopePath = scopePath != null ? scopePath : [];
       this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
       this.imageId = imageId != null ? imageId : 0;
+      this.qrcodeCallback = qrcodeCallback != null ? qrcodeCallback : function() {
+        return this.DocxGen.ready = true;
+      };
       this.tagX = '';
       this["class"] = window.XmlTemplater;
       if (creator instanceof DocxGen || (creator == null)) {
@@ -474,6 +480,7 @@
       } else {
         throw "content must be string!";
       }
+      this.numQrCode = 0;
       this.currentScope = this.templateVars;
     }
 
@@ -972,10 +979,15 @@
           console.log(imageTag);
           console.log(this.content);
           this.content = this.content.replace(match[0], DocUtils.xml2Str(imageTag));
+          this.numQrCode++;
           callback = function(qr) {
+            _this.numQrCode--;
             console.log(_this.DocxGen);
             console.log(imgName);
-            return _this.DocxGen.setImage("word/media/" + imgName, qr.data);
+            _this.DocxGen.setImage("word/media/" + imgName, qr.data);
+            if (_this.numQrCode === 0) {
+              return _this.qrcodeCallback();
+            }
           };
           qr.decode(callback);
         }

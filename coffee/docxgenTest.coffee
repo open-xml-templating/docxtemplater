@@ -26,6 +26,7 @@ DocUtils.loadDoc('tagIntelligentLoopTable.docx',false,true)
 DocUtils.loadDoc('tagIntelligentLoopTableExpected.docx')
 DocUtils.loadDoc('tagDashLoop.docx')
 DocUtils.loadDoc('qrCodeExample.docx')
+DocUtils.loadDoc('qrCodeExampleExpected.docx')
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -298,6 +299,27 @@ describe 'qr code testing', () ->
 	it 'should work with local QRCODE', () ->
 		console.log 'qrcode'
 		docX['qrCodeExample.docx']=new DocxGen(docXData['qrCodeExample.docx'],{},false,true)
-		docX['qrCodeExample.docx'].applyTemplateVars()
-		console.log docX['qrCodeExample.docx']
+		endcallback= () -> console.log('finished qrcode')
+		docX['qrCodeExample.docx'].applyTemplateVars({},endcallback)
+		docX['qrCodeExample.docx']
 
+		waitsFor () -> docX['qrCodeExample.docx'].ready?
+
+		runs () ->
+			expect(1).toEqual(1)
+
+			for i of docX['qrCodeExample.docx'].zip.files
+			# 	#Everything but the date should be different
+				expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date)
+				expect(docX['qrCodeExample.docx'].zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name)
+				expect(docX['qrCodeExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.base64)
+				expect(docX['qrCodeExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.binary)
+				expect(docX['qrCodeExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.compression)
+				expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir)
+				
+
+
+				# if (docX['qrCodeExample.docx'].zip.files[i].data)!=null
+				# 	expect(docX['qrCodeExample.docx'].zip.files[i].data.length).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data.length)
+
+				# expect(docX['qrCodeExample.docx'].zip.files[i].data).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data)

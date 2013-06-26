@@ -203,9 +203,9 @@ window.DocxGen = class DocxGen
 		imageList
 	setImage: (path,data) ->
 		@zip.files[path].data= data
-	applyTemplateVars:(@templateVars=@templateVars)->
+	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 	getCsvVars:() ->
 		obj= @getTemplateVars()
@@ -260,7 +260,7 @@ window.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
+	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback= () -> @DocxGen.ready=true ) ->
 		@tagX=''
 		@class=window.XmlTemplater
 		if creator instanceof DocxGen or (not creator?)
@@ -274,6 +274,7 @@ window.XmlTemplater = class XmlTemplater
 			@usedTemplateVars=options.usedTemplateVars
 			@imageId=options.imageId
 		if typeof content=="string" then @load content else throw "content must be string!"
+		@numQrCode=0
 		@currentScope=@templateVars
 	load: (@content) ->
 		@matches = @_getFullTextMatchesFromData()
@@ -574,13 +575,14 @@ window.XmlTemplater = class XmlTemplater
 				console.log imageTag
 				console.log @content
 				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)	
-
+				@numQrCode++
 
 				callback= (qr) =>
+					@numQrCode--
 					console.log @DocxGen
 					console.log imgName
 					@DocxGen.setImage("word/media/#{imgName}",qr.data)
-
+					if @numQrCode==0 then @qrcodeCallback()
 				qr.decode(callback)
 
 
