@@ -6,7 +6,7 @@ window.docXData=[]
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
-DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
+DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null) ->
 	xhrDoc= new XMLHttpRequest()
 	if path.indexOf('/')!=-1
 		totalPath= path
@@ -22,6 +22,9 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 			window.docXData[fileName]=this.response
 			if noDocx==false
 				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
+			
+			if callback?
+				callback()
 			if async==false
 				return window.docXData[fileName]
 	xhrDoc.send()

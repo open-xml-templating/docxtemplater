@@ -5,16 +5,19 @@ window.DocxQrCode = class DocxQrCode
 		@ready=false
 		@result=null
 
-	decode:() ->
+	decode:(callback) ->
 		_this= this
 		qrcode.callback= () ->
-			console.log 1
 			_this.ready=true
 			_this.result=this.result
-			_this.searchImage()
+			_this.searchImage(callback)
 		qrcode.decode("data:image/png;base64,#{@base64Data}")
-	searchImage:() ->
+	searchImage:(callback) ->
 		if @result!=null
-			DocUtils.loadDoc(@result,true,false,true)
-			console.log docXData[@result]
-			@data=docXData[@result]
+			console.log 'searchinImage'
+			loadDocCallback= () =>
+				@data=docXData[@result]
+				callback(this)
+			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
+			
+			

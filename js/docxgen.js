@@ -16,7 +16,7 @@
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
   };
 
-  DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async) {
+  DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback) {
     var fileName, totalPath, xhrDoc;
 
     if (noDocx == null) {
@@ -27,6 +27,9 @@
     }
     if (async == null) {
       async = false;
+    }
+    if (callback == null) {
+      callback = null;
     }
     xhrDoc = new XMLHttpRequest();
     if (path.indexOf('/') !== -1) {
@@ -45,6 +48,9 @@
         window.docXData[fileName] = this.response;
         if (noDocx === false) {
           window.docX[fileName] = new DocxGen(this.response, {}, intelligentTagging);
+        }
+        if (callback != null) {
+          callback();
         }
         if (async === false) {
           return window.docXData[fileName];
@@ -233,6 +239,7 @@
       var extension, file, newTag, relationships;
 
       if (this.zip.files["word/media/" + imageName] != null) {
+        throw 'file already exists';
         return false;
       }
       this.maxRid++;
@@ -941,7 +948,8 @@
     };
 
     XmlTemplater.prototype.replaceImages = function() {
-      var imageTag, imgData, imgName, match, newId, oldFile, rId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results;
+      var callback, imageTag, imgData, imgName, match, newId, oldFile, qr, rId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results,
+        _this = this;
 
       _ref = this.imgMatches;
       _results = [];
@@ -952,15 +960,24 @@
           tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
           rId = tagrId.getAttribute('r:embed');
           oldFile = this.DocxGen.getImageByRid(rId);
-          console.log(oldFile);
-          newId = this.DocxGen.addImageRels(imgName, imgData);
+          qr = new DocxQrCode(oldFile.data);
           tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
+          imgName = (tag.getAttribute('name') + "_Copie_" + this.imageId + ".png").replace(/\x20/, "");
+          newId = this.DocxGen.addImageRels(imgName, "");
           this.imageId++;
           tag.setAttribute('id', this.imageId);
           tag.setAttribute('name', "" + imgName);
           tagrId.setAttribute('r:embed', "rId" + newId);
           imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
+          console.log(imageTag);
+          console.log(this.content);
           this.content = this.content.replace(match[0], DocUtils.xml2Str(imageTag));
+          callback = function(qr) {
+            console.log(_this.DocxGen);
+            console.log(imgName);
+            return _this.DocxGen.setImage("word/media/" + imgName, qr.data);
+          };
+          qr.decode(callback);
         }
         if (this.currentScope["img"] != null) {
           if (this.currentScope["img"][u] != null) {
@@ -969,7 +986,6 @@
             if (this.DocxGen == null) {
               throw 'DocxGen not defined';
             }
-            console.log(this.DocxGen);
             newId = this.DocxGen.addImageRels(imgName, imgData);
             tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
             this.imageId++;
@@ -990,8 +1006,7 @@
     };
 
     XmlTemplater.prototype.findImages = function() {
-      this.imgMatches = DocUtils.preg_match_all(/<w:drawing>.*<\/w:drawing>/, this.content);
-      return console.log(this.imgMatches);
+      return this.imgMatches = DocUtils.preg_match_all(/<w:drawing>.*<\/w:drawing>/, this.content);
     };
 
     /*
@@ -1145,24 +1160,29 @@
       this.result = null;
     }
 
-    DocxQrCode.prototype.decode = function() {
+    DocxQrCode.prototype.decode = function(callback) {
       var _this;
 
       _this = this;
       qrcode.callback = function() {
-        console.log(1);
         _this.ready = true;
         _this.result = this.result;
-        return _this.searchImage();
+        return _this.searchImage(callback);
       };
       return qrcode.decode("data:image/png;base64," + this.base64Data);
     };
 
-    DocxQrCode.prototype.searchImage = function() {
+    DocxQrCode.prototype.searchImage = function(callback) {
+      var loadDocCallback,
+        _this = this;
+
       if (this.result !== null) {
-        DocUtils.loadDoc(this.result, true, false, true);
-        console.log(docXData[this.result]);
-        return this.data = docXData[this.result];
+        console.log('searchinImage');
+        loadDocCallback = function() {
+          _this.data = docXData[_this.result];
+          return callback(_this);
+        };
+        return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
       }
     };
 

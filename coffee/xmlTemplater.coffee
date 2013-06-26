@@ -291,11 +291,17 @@ window.XmlTemplater = class XmlTemplater
 				rId = tagrId.getAttribute('r:embed')
 				oldFile= @DocxGen.getImageByRid(rId)
 
-				console.log oldFile
 
-				newId= @DocxGen.addImageRels(imgName,imgData)
+				qr= new DocxQrCode (oldFile.data)
+				
+
+				# imgName= qr.result.replace(/\//g,'_').replace(/:/g,'_')
+				# imgData= qr.data
+				# console.log "newId#{newId}"
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-
+				imgName= (tag.getAttribute('name')+"_Copie_"+@imageId+".png").replace(/\x20/,"")
+				newId= @DocxGen.addImageRels(imgName,"")
+				
 				@imageId++
 				tag.setAttribute('id',@imageId)
 				tag.setAttribute('name',"#{imgName}")
@@ -304,13 +310,23 @@ window.XmlTemplater = class XmlTemplater
 				tagrId.setAttribute('r:embed',"rId#{newId}")
 
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)				
+				console.log imageTag
+				console.log @content
+				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)	
+
+
+				callback= (qr) =>
+					console.log @DocxGen
+					console.log imgName
+					@DocxGen.setImage("word/media/#{imgName}",qr.data)
+
+				qr.decode(callback)
+
 
 			if @currentScope["img"]? then if @currentScope["img"][u]?
 				imgName= @currentScope["img"][u].name
 				imgData= @currentScope["img"][u].data
 				throw 'DocxGen not defined' unless @DocxGen?
-				console.log @DocxGen
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 
@@ -330,7 +346,6 @@ window.XmlTemplater = class XmlTemplater
 		.*
 		</w:drawing>
 		///, @content
-		console.log @imgMatches
 	###
 	content is the whole content to be tagged
 	scope is the current scope

@@ -6,7 +6,7 @@ window.docXData=[]
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
-DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
+DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null) ->
 	xhrDoc= new XMLHttpRequest()
 	if path.indexOf('/')!=-1
 		totalPath= path
@@ -22,6 +22,9 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false) ->
 			window.docXData[fileName]=this.response
 			if noDocx==false
 				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
+			
+			if callback?
+				callback()
 			if async==false
 				return window.docXData[fileName]
 	xhrDoc.send()
@@ -150,6 +153,7 @@ window.DocxGen = class DocxGen
 			@zip.files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) ->
 		if @zip.files["word/media/#{imageName}"]?
+			throw 'file already exists'
 			return false
 		@maxRid++
 		file=
@@ -548,11 +552,17 @@ window.XmlTemplater = class XmlTemplater
 				rId = tagrId.getAttribute('r:embed')
 				oldFile= @DocxGen.getImageByRid(rId)
 
-				console.log oldFile
 
-				newId= @DocxGen.addImageRels(imgName,imgData)
+				qr= new DocxQrCode (oldFile.data)
+				
+
+				# imgName= qr.result.replace(/\//g,'_').replace(/:/g,'_')
+				# imgData= qr.data
+				# console.log "newId#{newId}"
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-
+				imgName= (tag.getAttribute('name')+"_Copie_"+@imageId+".png").replace(/\x20/,"")
+				newId= @DocxGen.addImageRels(imgName,"")
+				
 				@imageId++
 				tag.setAttribute('id',@imageId)
 				tag.setAttribute('name',"#{imgName}")
@@ -561,13 +571,23 @@ window.XmlTemplater = class XmlTemplater
 				tagrId.setAttribute('r:embed',"rId#{newId}")
 
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)				
+				console.log imageTag
+				console.log @content
+				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)	
+
+
+				callback= (qr) =>
+					console.log @DocxGen
+					console.log imgName
+					@DocxGen.setImage("word/media/#{imgName}",qr.data)
+
+				qr.decode(callback)
+
 
 			if @currentScope["img"]? then if @currentScope["img"][u]?
 				imgName= @currentScope["img"][u].name
 				imgData= @currentScope["img"][u].data
 				throw 'DocxGen not defined' unless @DocxGen?
-				console.log @DocxGen
 				newId= @DocxGen.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 
@@ -587,7 +607,6 @@ window.XmlTemplater = class XmlTemplater
 		.*
 		</w:drawing>
 		///, @content
-		console.log @imgMatches
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -667,16 +686,19 @@ window.DocxQrCode = class DocxQrCode
 		@ready=false
 		@result=null
 
-	decode:() ->
+	decode:(callback) ->
 		_this= this
 		qrcode.callback= () ->
-			console.log 1
 			_this.ready=true
 			_this.result=this.result
-			_this.searchImage()
+			_this.searchImage(callback)
 		qrcode.decode("data:image/png;base64,#{@base64Data}")
-	searchImage:() ->
+	searchImage:(callback) ->
 		if @result!=null
-			DocUtils.loadDoc(@result,true,false,true)
-			console.log docXData[@result]
-			@data=docXData[@result]
+			console.log 'searchinImage'
+			loadDocCallback= () =>
+				@data=docXData[@result]
+				callback(this)
+			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
+			
+			

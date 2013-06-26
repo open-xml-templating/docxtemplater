@@ -46,6 +46,7 @@ window.DocxGen = class DocxGen
 			@zip.files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) ->
 		if @zip.files["word/media/#{imageName}"]?
+			throw 'file already exists'
 			return false
 		@maxRid++
 		file=
