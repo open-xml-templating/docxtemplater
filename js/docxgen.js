@@ -459,9 +459,12 @@
       this.scopePath = scopePath != null ? scopePath : [];
       this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
       this.imageId = imageId != null ? imageId : 0;
-      this.qrcodeCallback = qrcodeCallback != null ? qrcodeCallback : function() {
-        return this.DocxGen.ready = true;
-      };
+      this.qrcodeCallback = qrcodeCallback != null ? qrcodeCallback : null;
+      if (this.qrcodeCallback === null) {
+        this.qrcodeCallback = function() {
+          return this.DocxGen.ready = true;
+        };
+      }
       this.tagX = '';
       this["class"] = window.XmlTemplater;
       if (creator instanceof DocxGen || (creator == null)) {

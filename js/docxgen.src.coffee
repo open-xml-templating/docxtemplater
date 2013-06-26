@@ -260,7 +260,8 @@ window.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback= () -> @DocxGen.ready=true ) ->
+	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null) ->
+		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true 
 		@tagX=''
 		@class=window.XmlTemplater
 		if creator instanceof DocxGen or (not creator?)
