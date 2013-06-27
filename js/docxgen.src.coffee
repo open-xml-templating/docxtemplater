@@ -553,35 +553,20 @@ window.XmlTemplater = class XmlTemplater
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
 				rId = tagrId.getAttribute('r:embed')
 				oldFile= @DocxGen.getImageByRid(rId)
-
-
-				qr= new DocxQrCode (oldFile.data)
-				
-
-				# imgName= qr.result.replace(/\//g,'_').replace(/:/g,'_')
-				# imgData= qr.data
-				# console.log "newId#{newId}"
+				qr= new DocxQrCode(oldFile.data,this)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 				imgName= (tag.getAttribute('name')+"_Copie_"+@imageId+".png").replace(/\x20/,"")
-				newId= @DocxGen.addImageRels(imgName,"")
-				
+				newId= @DocxGen.addImageRels(imgName,"")	
 				@imageId++
 				tag.setAttribute('id',@imageId)
-				tag.setAttribute('name',"#{imgName}")
-
-				
+				tag.setAttribute('name',"#{imgName}")		
 				tagrId.setAttribute('r:embed',"rId#{newId}")
-
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				console.log imageTag
-				console.log @content
 				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)	
 				@numQrCode++
 
 				callback= (qr) =>
 					@numQrCode--
-					console.log @DocxGen
-					console.log imgName
 					@DocxGen.setImage("word/media/#{imgName}",qr.data)
 					if @numQrCode==0 then @qrcodeCallback()
 				qr.decode(callback)
@@ -682,8 +667,12 @@ window.DocXTemplater = class DocXTemplater extends XmlTemplater
 		@class=DocXTemplater
 		@tagX='w:t'
 		if typeof content=="string" then @load content else throw "content must be string!"
+window.ImgReplacer = class ImgReplacer
+
+			
+			
 window.DocxQrCode = class DocxQrCode
-	constructor:(imageData)->
+	constructor:(imageData, @DocxGen)->
 		@data=imageData
 		@base64Data=JSZipBase64.encode(@data)
 		@ready=false
@@ -692,13 +681,16 @@ window.DocxQrCode = class DocxQrCode
 	decode:(callback) ->
 		_this= this
 		qrcode.callback= () ->
-			_this.ready=true
-			_this.result=this.result
+			_this.ready= true
+			_this.result= this.result
+			console.log _this
+			window.testdoc= new _this.DocxGen.class this.result, _this.DocxGen.toJson()
+			console.log testdoc
 			_this.searchImage(callback)
+
 		qrcode.decode("data:image/png;base64,#{@base64Data}")
 	searchImage:(callback) ->
 		if @result!=null
-			console.log 'searchinImage'
 			loadDocCallback= () =>
 				@data=docXData[@result]
 				callback(this)
