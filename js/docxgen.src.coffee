@@ -544,57 +544,6 @@ window.XmlTemplater = class XmlTemplater
 			@charactersAdded[j+1]=@charactersAdded[j]
 		if copyContent==content then throw "copycontent=content !!"
 		return content
-	replaceImages:() ->
-		for match,u in @imgMatches
-			xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
-				
-			if @DocxGen.qrCode
-
-				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
-				rId = tagrId.getAttribute('r:embed')
-				oldFile= @DocxGen.getImageByRid(rId)
-				qr= new DocxQrCode(oldFile.data,this)
-				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-				imgName= (tag.getAttribute('name')+"_Copie_"+@imageId+".png").replace(/\x20/,"")
-				newId= @DocxGen.addImageRels(imgName,"")	
-				@imageId++
-				tag.setAttribute('id',@imageId)
-				tag.setAttribute('name',"#{imgName}")		
-				tagrId.setAttribute('r:embed',"rId#{newId}")
-				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)	
-				@numQrCode++
-
-				callback= (qr) =>
-					@numQrCode--
-					@DocxGen.setImage("word/media/#{imgName}",qr.data)
-					if @numQrCode==0 then @qrcodeCallback()
-				qr.decode(callback)
-
-
-			if @currentScope["img"]? then if @currentScope["img"][u]?
-				imgName= @currentScope["img"][u].name
-				imgData= @currentScope["img"][u].data
-				throw 'DocxGen not defined' unless @DocxGen?
-				newId= @DocxGen.addImageRels(imgName,imgData)
-				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-
-				@imageId++
-				tag.setAttribute('id',@imageId)
-				tag.setAttribute('name',"#{imgName}")
-
-				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
-
-				tagrId.setAttribute('r:embed',"rId#{newId}")
-
-				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				@content=@content.replace(match[0], DocUtils.xml2Str imageTag)
-	findImages: () ->
-		@imgMatches= DocUtils.preg_match_all ///
-		<w:drawing>
-		.*
-		</w:drawing>
-		///, @content
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -658,8 +607,9 @@ window.XmlTemplater = class XmlTemplater
 				else #if character != '{' and character != '}'
 					if @inBracket is true then @textInsideBracket+=character
 		# if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
-		@findImages()
-		@replaceImages()
+		imgReplacer= new ImgReplacer(this)
+		imgReplacer.findImages()
+		imgReplacer.replaceImages()
 		this
 window.DocXTemplater = class DocXTemplater extends XmlTemplater
 	constructor:(content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
@@ -668,9 +618,59 @@ window.DocXTemplater = class DocXTemplater extends XmlTemplater
 		@tagX='w:t'
 		if typeof content=="string" then @load content else throw "content must be string!"
 window.ImgReplacer = class ImgReplacer
+	constructor: (@xmlTemplater)->
+		@imgMatches=[]
+	findImages:() ->
+		@imgMatches= DocUtils.preg_match_all ///
+		<w:drawing>
+		.*
+		</w:drawing>
+		///, @xmlTemplater.content
+	replaceImages: ()->
+		for match,u in @imgMatches
+			xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
+				
+			if @xmlTemplater.DocxGen.qrCode
 
-			
-			
+				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
+				rId = tagrId.getAttribute('r:embed')
+				oldFile= @xmlTemplater.DocxGen.getImageByRid(rId)
+				qr= new DocxQrCode(oldFile.data,@xmlTemplater)
+				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
+				imgName= (tag.getAttribute('name')+"_Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
+				newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")	
+				@xmlTemplater.imageId++
+				tag.setAttribute('id',@xmlTemplater.imageId)
+				tag.setAttribute('name',"#{imgName}")		
+				tagrId.setAttribute('r:embed',"rId#{newId}")
+				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
+				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)	
+				@xmlTemplater.numQrCode++
+
+				callback= (qr) =>
+					@xmlTemplater.numQrCode--
+					@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",qr.data)
+					if @xmlTemplater.numQrCode==0 then @xmlTemplater.qrcodeCallback()
+				qr.decode(callback)
+
+
+			if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
+				imgName= @xmlTemplater.currentScope["img"][u].name
+				imgData= @xmlTemplater.currentScope["img"][u].data
+				throw 'DocxGen not defined' unless @xmlTemplater.DocxGen?
+				newId= @xmlTemplater.DocxGen.addImageRels(imgName,imgData)
+				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
+
+				@xmlTemplater.imageId++
+				tag.setAttribute('id',@xmlTemplater.imageId)
+				tag.setAttribute('name',"#{imgName}")
+
+				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
+
+				tagrId.setAttribute('r:embed',"rId#{newId}")
+
+				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
+				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)		
 window.DocxQrCode = class DocxQrCode
 	constructor:(imageData, @DocxGen)->
 		@data=imageData
