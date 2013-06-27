@@ -134,7 +134,7 @@ describe "scope diff calculation", () ->
 		expect(scope).toEqual([ { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 } ])
 
 describe "scope inner text", () ->
-	it "should find the scope" , () ->	
+	it "should find the scope" , () ->
 		xmlTemplater= new DocXTemplater()
 		docX['tagProduitLoop.docx']= new DocxGen(docXData['tagProduitLoop.docx'])
 		scope= xmlTemplater.calcInnerTextScope docX['tagProduitLoop.docx'].zip.files["word/document.xml"].data ,1195,1245,'w:p'
@@ -145,7 +145,7 @@ describe "scope inner text", () ->
 		expect(scope.text).toEqual(obj.text)
 
 describe "Dash Loop Testing", () ->
-	it "dash loop ok on simple table -> w:tr" , () ->	
+	it "dash loop ok on simple table -> w:tr" , () ->
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
 		docX['tagDashLoop.docx'].setTemplateVars(templateVars)
@@ -153,7 +153,7 @@ describe "Dash Loop Testing", () ->
 		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
 		text=docX['tagDashLoop.docx'].getFullText()
 		expect(text).toBe(expectedText)
-	it "dash loop ok on simple table -> w:table" , () ->	
+	it "dash loop ok on simple table -> w:table" , () ->
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
 		docX['tagDashLoopTable.docx'].setTemplateVars(templateVars)
@@ -161,7 +161,7 @@ describe "Dash Loop Testing", () ->
 		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
 		text=docX['tagDashLoopTable.docx'].getFullText()
 		expect(text).toBe(expectedText)
-	it "dash loop ok on simple list -> w:p" , () ->	
+	it "dash loop ok on simple list -> w:p" , () ->
 		templateVars=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
 		docX['tagDashLoopList.docx'].setTemplateVars(templateVars)
@@ -171,7 +171,7 @@ describe "Dash Loop Testing", () ->
 		expect(text).toBe(expectedText)
 
 describe "Intelligent Loop Tagging", () ->
-	it "should work with tables" , () ->	
+	it "should work with tables" , () ->
 		templateVars={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
 		docX['tagIntelligentLoopTable.docx'].setTemplateVars(templateVars)
 		docX['tagIntelligentLoopTable.docx'].applyTemplateVars()
@@ -201,37 +201,37 @@ describe "getTemplateVars", () ->
 describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
 		content= """<w:t>Hello {name}</w:t>"""
-		scope= {"name":"Edgar"} 
+		scope= {"name":"Edgar"}
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with tag in two elements", ()->
 		content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
-		scope= {"name":"Edgar"} 
+		scope= {"name":"Edgar"}
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with simple Loop", ()->
 		content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
-		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
+		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
 	it "should work with dash Loop", ()->
 		content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
-		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]} 
+		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,')
 	it "should work with loop and innerContent", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>"""
-		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
+		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 	it "should work with loop and innerContent (with last)", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
-		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]} 
+		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
@@ -244,7 +244,7 @@ describe "image Loop Replacing", () ->
 		it 'should add', () ->
 			oldData= docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
 			expect(docX['imageExample.docx'].addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
-			
+
 			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData)
 			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>')
 			expect(docX['imageExample.docx'].zip.files['[Content_Types].xml'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/stylesWithEffects.xml" ContentType="application/vnd.ms-word.stylesWithEffects+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/><Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/><Override PartName="/word/endnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/><Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Default ContentType="image/png" Extension="png"/></Types>')
@@ -269,7 +269,7 @@ describe "loop forTagging images", () ->
 			,
 				"titre":"titre2"
 				"prix":"2000"
-				"img":[{data:docXData['BMW_logo.png'],name:"bmw_logo.png"}]	
+				"img":[{data:docXData['BMW_logo.png'],name:"bmw_logo.png"}]
 			,
 				"titre":"titre3"
 				"prix":"1400"
@@ -286,7 +286,7 @@ describe "loop forTagging images", () ->
 			expect(docX['tagLoopExample.docx'].zip.files[i].options.binary).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.binary)
 			expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression)
 			expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir)
-			
+
 
 
 			if (docX['tagLoopExample.docx'].zip.files[i].data)!=null
@@ -316,7 +316,7 @@ describe 'qr code testing', () ->
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.binary)
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.compression)
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir)
-				
+
 
 
 				# if (docX['qrCodeExample.docx'].zip.files[i].data)!=null

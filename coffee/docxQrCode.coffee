@@ -22,5 +22,4 @@ window.DocxQrCode = class DocxQrCode
 				@data=docXData[@result]
 				callback(this)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
-			
-			
+

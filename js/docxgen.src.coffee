@@ -22,7 +22,7 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 			window.docXData[fileName]=this.response
 			if noDocx==false
 				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
-			
+
 			if callback?
 				callback()
 			if async==false
@@ -86,10 +86,8 @@ DocUtils.encode_utf8 = (s)->
 DocUtils.decode_utf8= (s) ->
 	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ") #replace Ascii 160 space by the normal space, Ascii 32
 
-DocUtils.base64encode= (b) -> 
+DocUtils.base64encode= (b) ->
     btoa(unescape(encodeURIComponent(b)))
-
-
 
 DocUtils.preg_match_all= (regex, content) ->
 	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
@@ -261,7 +259,7 @@ window.DocxGen = class DocxGen
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null) ->
-		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true 
+		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
 		@class=window.XmlTemplater
 		if creator instanceof DocxGen or (not creator?)
@@ -307,9 +305,9 @@ window.XmlTemplater = class XmlTemplater
 	getValueFromTag: (tag,scope) ->
 		@setUsedTemplateVars(tag)
 		content= ""
-		if scope[tag]? 
-			content= DocUtils.encode_utf8 scope[tag] 
-		else 
+		if scope[tag]?
+			content= DocUtils.encode_utf8 scope[tag]
+		else
 			content= "undefined"
 		if content.indexOf('{')!=-1 or content.indexOf('}')!=-1
 			alert('On ne peut mettre de { ou de } dans le contenu d\'une variable')
@@ -629,7 +627,7 @@ window.ImgReplacer = class ImgReplacer
 	replaceImages: ()->
 		for match,u in @imgMatches
 			xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
-				
+
 			if @xmlTemplater.DocxGen.qrCode
 
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
@@ -638,13 +636,13 @@ window.ImgReplacer = class ImgReplacer
 				qr= new DocxQrCode(oldFile.data,@xmlTemplater)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 				imgName= (tag.getAttribute('name')+"_Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
-				newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")	
+				newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")
 				@xmlTemplater.imageId++
 				tag.setAttribute('id',@xmlTemplater.imageId)
-				tag.setAttribute('name',"#{imgName}")		
+				tag.setAttribute('name',"#{imgName}")
 				tagrId.setAttribute('r:embed',"rId#{newId}")
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)	
+				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 				@xmlTemplater.numQrCode++
 
 				callback= (qr) =>
@@ -670,7 +668,7 @@ window.ImgReplacer = class ImgReplacer
 				tagrId.setAttribute('r:embed',"rId#{newId}")
 
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)		
+				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 window.DocxQrCode = class DocxQrCode
 	constructor:(imageData, @DocxGen)->
 		@data=imageData
@@ -695,5 +693,4 @@ window.DocxQrCode = class DocxQrCode
 				@data=docXData[@result]
 				callback(this)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
-			
-			
+

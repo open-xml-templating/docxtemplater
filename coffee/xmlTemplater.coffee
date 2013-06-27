@@ -1,6 +1,6 @@
 window.XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null) ->
-		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true 
+		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
 		@class=window.XmlTemplater
 		if creator instanceof DocxGen or (not creator?)
@@ -46,9 +46,9 @@ window.XmlTemplater = class XmlTemplater
 	getValueFromTag: (tag,scope) ->
 		@setUsedTemplateVars(tag)
 		content= ""
-		if scope[tag]? 
-			content= DocUtils.encode_utf8 scope[tag] 
-		else 
+		if scope[tag]?
+			content= DocUtils.encode_utf8 scope[tag]
+		else
 			content= "undefined"
 		if content.indexOf('{')!=-1 or content.indexOf('}')!=-1
 			alert('On ne peut mettre de { ou de } dans le contenu d\'une variable')
