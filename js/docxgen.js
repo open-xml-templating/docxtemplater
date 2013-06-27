@@ -168,6 +168,14 @@
     return matchArray;
   };
 
+  Array.prototype.max = function() {
+    return Math.max.apply(null, this);
+  };
+
+  Array.prototype.min = function() {
+    return Math.min.apply(null, this);
+  };
+
   /*
   Docxgen.coffee
   Created by Edgar HIPP
@@ -192,21 +200,26 @@
 
     DocxGen.prototype.load = function(content) {
       this.zip = new JSZip(content);
-      this.zip.files = this.zip.files;
       return this.loadImageRels();
     };
 
     DocxGen.prototype.loadImageRels = function() {
-      var content, tag, _i, _len, _ref;
+      var RidArray, content, tag;
 
       content = DocUtils.decode_utf8(this.zip.files["word/_rels/document.xml.rels"].data);
       this.xmlDoc = DocUtils.Str2xml(content);
-      this.maxRid = 0;
-      _ref = this.xmlDoc.getElementsByTagName('Relationship');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        tag = _ref[_i];
-        this.maxRid = Math.max(parseInt(tag.getAttribute("Id").substr(3)), this.maxRid);
-      }
+      RidArray = (function() {
+        var _i, _len, _ref, _results;
+
+        _ref = this.xmlDoc.getElementsByTagName('Relationship');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          tag = _ref[_i];
+          _results.push(parseInt(tag.getAttribute("Id").substr(3)));
+        }
+        return _results;
+      }).call(this);
+      this.maxRid = RidArray.max();
       this.imageRels = [];
       return this;
     };

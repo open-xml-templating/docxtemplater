@@ -19,14 +19,12 @@ window.DocxGen = class DocxGen
 		if typeof content == "string" then @load(content)
 	load: (content)->
 		@zip = new JSZip content
-		@zip.files=@zip.files
 		@loadImageRels()
 	loadImageRels: () ->
 		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].data
 		@xmlDoc= DocUtils.Str2xml content
-		@maxRid=0
-		for tag in @xmlDoc.getElementsByTagName('Relationship')
-			@maxRid= Math.max((parseInt tag.getAttribute("Id").substr(3)),@maxRid)
+		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship'))
+		@maxRid=RidArray.max()
 		@imageRels=[]
 		this
 	addExtensionRels: (contentType,extension) ->

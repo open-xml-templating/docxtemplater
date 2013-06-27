@@ -64,11 +64,11 @@ DocUtils.xml2Str = (xmlNode) ->
 		catch e
 			#Other browsers without XML Serializer
 			alert('Xmlserializer not supported');
-	content= content.replace /\x20xmlns=""/g, ''
+	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt)
 	return content;
 
 DocUtils.Str2xml= (str) ->
-	if window.DOMParser
+	if window.DOMParser #Chrome, Firefox, and modern browsers
 		parser=new DOMParser();
 		xmlDoc=parser.parseFromString(str,"text/xml")
 	else # Internet Explorer
@@ -103,6 +103,10 @@ DocUtils.preg_match_all= (regex, content) ->
 		matchArray.push pn
 	content.replace regex,replacer
 	matchArray
+
+Array.prototype.max = () -> Math.max.apply(null, this)
+
+Array.prototype.min = () -> Math.min.apply(null, this)
 ###
 Docxgen.coffee
 Created by Edgar HIPP
@@ -124,14 +128,12 @@ window.DocxGen = class DocxGen
 		if typeof content == "string" then @load(content)
 	load: (content)->
 		@zip = new JSZip content
-		@zip.files=@zip.files
 		@loadImageRels()
 	loadImageRels: () ->
 		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].data
 		@xmlDoc= DocUtils.Str2xml content
-		@maxRid=0
-		for tag in @xmlDoc.getElementsByTagName('Relationship')
-			@maxRid= Math.max((parseInt tag.getAttribute("Id").substr(3)),@maxRid)
+		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship'))
+		@maxRid=RidArray.max()
 		@imageRels=[]
 		this
 	addExtensionRels: (contentType,extension) ->
