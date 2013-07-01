@@ -57,6 +57,10 @@
 
   DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx');
 
+  DocUtils.loadDoc('qrCodeTaggingLoopExample.docx');
+
+  DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx');
+
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
       return expect(DocxGen).not.toBe(void 0);
@@ -844,7 +848,7 @@
         return _results;
       });
     });
-    return it('should work with local QRCODE without tags', function() {
+    it('should work with local QRCODE with {tags}', function() {
       var endcallback;
 
       console.log('qrcode');
@@ -873,6 +877,43 @@
           expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.binary);
           expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.compression);
           _results.push(expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir));
+        }
+        return _results;
+      });
+    });
+    return it('should work with loop QRCODE with {tags}', function() {
+      var endcallback;
+
+      console.log('qrcode');
+      docX['qrCodeTaggingLoopExample.docx'] = new DocxGen(docXData['qrCodeTaggingLoopExample.docx'], {}, false, true);
+      endcallback = function() {
+        return console.log('finished qrcode');
+      };
+      docX['qrCodeTaggingLoopExample.docx'].applyTemplateVars({
+        'images': [
+          {
+            image: 'Firefox_logo'
+          }, {
+            image: 'image'
+          }
+        ]
+      }, endcallback);
+      docX['qrCodeTaggingLoopExample.docx'];
+      waitsFor(function() {
+        return docX['qrCodeTaggingLoopExample.docx'].ready != null;
+      });
+      return runs(function() {
+        var i, _results;
+
+        expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png'] != null).toBeTruthy();
+        _results = [];
+        for (i in docX['qrCodeTaggingLoopExample.docx'].zip.files) {
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.base64);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.binary);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.compression);
+          _results.push(expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir));
         }
         return _results;
       });

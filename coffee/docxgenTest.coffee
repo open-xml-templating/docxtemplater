@@ -29,6 +29,8 @@ DocUtils.loadDoc('qrCodeExample.docx')
 DocUtils.loadDoc('qrCodeExampleExpected.docx')
 DocUtils.loadDoc('qrCodeTaggingExample.docx')
 DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx')
+DocUtils.loadDoc('qrCodeTaggingLoopExample.docx')
+DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx')
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -336,7 +338,7 @@ describe 'qr code testing', () ->
 				# 	expect(docX['qrCodeExample.docx'].zip.files[i].data.length).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data.length)
 				# expect(docX['qrCodeExample.docx'].zip.files[i].data).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data)
 
-	it 'should work with local QRCODE without tags', () ->
+	it 'should work with local QRCODE with {tags}', () ->
 		console.log 'qrcode'
 		docX['qrCodeTaggingExample.docx']=new DocxGen(docXData['qrCodeTaggingExample.docx'],{'image':'Firefox_logo'},false,true)
 		endcallback= () -> console.log('finished qrcode')
@@ -356,6 +358,30 @@ describe 'qr code testing', () ->
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.binary)
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.compression)
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir)
+				# if (docX['qrCodeExample.docx'].zip.files[i].data)!=null
+				# 	expect(docX['qrCodeExample.docx'].zip.files[i].data.length).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data.length)
+				# expect(docX['qrCodeExample.docx'].zip.files[i].data).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data)
+
+	it 'should work with loop QRCODE with {tags}', () ->
+		console.log 'qrcode'
+		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docXData['qrCodeTaggingLoopExample.docx'],{},false,true)
+		endcallback= () -> console.log('finished qrcode')
+		docX['qrCodeTaggingLoopExample.docx'].applyTemplateVars({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
+		docX['qrCodeTaggingLoopExample.docx']
+
+		waitsFor () -> docX['qrCodeTaggingLoopExample.docx'].ready?
+		
+		runs () ->
+			
+			expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png']?).toBeTruthy()
+			for i of docX['qrCodeTaggingLoopExample.docx'].zip.files
+			# 	#Everything but the date should be different
+				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date)
+				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name)
+				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.base64)
+				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.binary)
+				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.compression)
+				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir)
 				# if (docX['qrCodeExample.docx'].zip.files[i].data)!=null
 				# 	expect(docX['qrCodeExample.docx'].zip.files[i].data.length).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data.length)
 				# expect(docX['qrCodeExample.docx'].zip.files[i].data).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data)
