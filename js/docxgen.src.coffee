@@ -683,9 +683,9 @@ window.DocxQrCode = class DocxQrCode
 		qrcode.callback= () ->
 			_this.ready= true
 			_this.result= this.result
-			console.log _this
 			window.testdoc= new _this.DocxGen.class this.result, _this.DocxGen.toJson()
-			console.log testdoc
+			testdoc.applyTemplateVars()
+			_this.result=testdoc.content
 			_this.searchImage(callback)
 
 		qrcode.decode("data:image/png;base64,#{@base64Data}")
@@ -695,4 +695,3 @@ window.DocxQrCode = class DocxQrCode
 				@data=docXData[@result]
 				callback(this)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
-

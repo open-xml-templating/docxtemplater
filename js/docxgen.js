@@ -1203,9 +1203,9 @@
       qrcode.callback = function() {
         _this.ready = true;
         _this.result = this.result;
-        console.log(_this);
         window.testdoc = new _this.DocxGen["class"](this.result, _this.DocxGen.toJson());
-        console.log(testdoc);
+        testdoc.applyTemplateVars();
+        _this.result = testdoc.content;
         return _this.searchImage(callback);
       };
       return qrcode.decode("data:image/png;base64," + this.base64Data);
