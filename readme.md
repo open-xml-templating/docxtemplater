@@ -47,16 +47,23 @@ A simple Demo for replacing images can be found here: http://javascript-ninja.fr
 
 2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended.
 
+3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color}. For this too work, you will need some other dependencies: jsqrcode/grid.js,jsqrcode/version.js,jsqrcode/detector.js,jsqrcode/formatinf.js,jsqrcode/errorlevel.js,jsqrcode/bitmat.js,jsqrcode/datablock.js,jsqrcode/bmparser.js,jsqrcode/datamask.js,jsqrcode/rsdecoder.js,jsqrcode/gf256poly.js,jsqrcode/gf256.js,jsqrcode/decoder.js,jsqrcode/qrcode.js,jsqrcode/findpat.js,jsqrcode/alignpat.js,jsqrcode/databr.js
+
+
 ## Browser support ##
 
 docxgen.js works with
 
 - Chrome
-- Firefox 3+
+- Firefox 3+ 
 - Safari
 - Opera
 
 Internet explorer is not supported (basically because xhr Requests can't be made on binary files)
+
+You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxgenjs/test/SpecRunner.html
+
+Firefox has an other implementation of the xml parser, that's why all tests don't pass now.
 
 ## Usage ##
 
@@ -66,20 +73,24 @@ Internet explorer is not supported (basically because xhr Requests can't be made
 
         This function returns a new DocxGen Object
 
-    new DocxGen(content[,templateVars,intelligentTagging])
+    new DocxGen(content[,templateVars,intelligentTagging,qrCode])
 
         content: 
             Type: string
             The docx template you want to load as plain text
 
         templateVars:
-            Type: Object {tag_name:tag_replacement}
+            Type: Object {tag_name:tag_replacement} [{}]
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
 
         intelligentTagging:
             Type: boolean [false]
             If intelligent Tagging is not set to true, when using recursive tags ({#tag} and {/tag}), the system will copy paste what is between the start tag and the endtag, this could basically corrupt the files if recursive tags are used inside tables.
             If intelligent Tagging is set to true, and when using recursive tags inside tables, the whole column will be copy pasted.
+
+        qrCode:
+            Type: boolean [false]
+            If qrCode is set to true, DocxGen will look at all the images to find a Qr-Code. If the Qr-code matches to a URL, this URL will be loaded by ajax (Be aware that the server you want to access needs to allow your request, or it won't work. http://stackoverflow.com/questions/9310112/why-am-i-seeing-an-origin-is-not-allowed-by-access-control-allow-origin-error )
 
 ### Docxgen methods ###
 
@@ -155,7 +166,13 @@ Internet explorer is not supported (basically because xhr Requests can't be made
 
 Todo:
 
-- [x] Tag searching and remplacement
+- [x] QrCode Decoding
+- [ ] QrCode Decoding with brackets image.png?color={color}
+- [ ] QrCode Decoding callback problems (with {#forloops} :-) 
+- [ ] Adapt tests to firefox for xml parsing problem
+- [x] Refactoring of the inner tagging system
+- [ ] DocXtemplater is now a child of xmlTemplater
+- [x] Tag searching and replacement
 - [x] Docx Output
 - [x] Docx Input
 - [x] Image searching and remplacement

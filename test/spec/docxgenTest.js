@@ -671,7 +671,7 @@
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
-    return it("should work with loop and innerContent (with last)", function() {
+    it("should work with loop and innerContent (with last)", function() {
       var content, scope, xmlTemplater;
 
       content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t> ";
@@ -690,6 +690,25 @@
       xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
+    });
+    return it('should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ', function() {
+      var content, scope, xmlTemplater;
+
+      content = "Hello {#names}{name},{/names}";
+      scope = {
+        "names": [
+          {
+            "name": "Edgar"
+          }, {
+            "name": "Mary"
+          }, {
+            "name": "John"
+          }
+        ]
+      };
+      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater.applyTemplateVars();
+      return expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,');
     });
   });
 

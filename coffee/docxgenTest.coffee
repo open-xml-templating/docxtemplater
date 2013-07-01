@@ -235,6 +235,12 @@ describe "xmlTemplater", ()->
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
+	it 'should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ', ()->
+		content= """Hello {#names}{name},{/names}"""
+		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
+		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater.applyTemplateVars()
+		expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,')
 
 describe "image Loop Replacing", () ->
 	describe 'rels', () ->
