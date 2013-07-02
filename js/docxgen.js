@@ -1151,23 +1151,22 @@
             console.log(rId);
             oldFile = this.xmlTemplater.DocxGen.getImageByRid(rId);
             if (oldFile !== null) {
-              qr = new DocxQrCode(oldFile.data, this.xmlTemplater);
               tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
               imgName = (tag.getAttribute('name') + "_Copie_" + this.xmlTemplater.imageId + ".png").replace(/\x20/, "");
+              console.log('before callback' + imgName);
+              qr = new DocxQrCode(oldFile.data, this.xmlTemplater, imgName);
               newId = this.xmlTemplater.DocxGen.addImageRels(imgName, "");
               this.xmlTemplater.imageId++;
-              tag.setAttribute('id', this.xmlTemplater.imageId);
+              this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, oldFile.data);
               tag.setAttribute('name', "" + imgName);
               tagrId.setAttribute('r:embed', "rId" + newId);
-              console.log('@xmlTemplater.imageId' + this.xmlTemplater.imageId);
-              console.log('newId' + newId);
               imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
               this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], DocUtils.xml2Str(imageTag));
               this.xmlTemplater.numQrCode++;
-              callback = function(qr) {
-                console.log('callback qrcode');
+              callback = function(qr, newImgName) {
+                console.log('callback qrcode:' + newImgName);
                 _this.xmlTemplater.numQrCode--;
-                _this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, qr.data);
+                _this.xmlTemplater.DocxGen.setImage("word/media/" + newImgName, qr.data);
                 if (_this.xmlTemplater.numQrCode === 0) {
                   return _this.xmlTemplater.qrcodeCallback();
                 }
@@ -1210,8 +1209,10 @@
   })();
 
   window.DocxQrCode = DocxQrCode = (function() {
-    function DocxQrCode(imageData, DocxGen) {
+    function DocxQrCode(imageData, DocxGen, imgName) {
       this.DocxGen = DocxGen;
+      this.imgName = imgName != null ? imgName : "";
+      console.log(this.imgName);
       this.data = imageData;
       this.base64Data = JSZipBase64.encode(this.data);
       this.ready = false;
@@ -1247,16 +1248,19 @@
           }
           if (!fail) {
             _this.data = docXData[_this.result];
-            return callback(_this);
+            console.log('not Fail!!----------');
+            console.log(_this.imgName);
+            console.log(_this);
+            return callback(_this, _this.imgName);
           } else {
             console.log('searching local');
-            return callback(_this);
+            return callback(_this, _this.imgName);
           }
         };
         return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
       } else {
         console.log('no qrcode found');
-        return callback(this);
+        return callback(this, this.imgName);
       }
     };
 

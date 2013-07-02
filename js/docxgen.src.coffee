@@ -648,24 +648,24 @@ window.ImgReplacer = class ImgReplacer
 					oldFile= @xmlTemplater.DocxGen.getImageByRid(rId)
 
 					if oldFile!=null
-						qr= new DocxQrCode(oldFile.data,@xmlTemplater)
 						tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 						imgName= (tag.getAttribute('name')+"_Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
+						console.log 'before callback'+imgName
+						qr= new DocxQrCode(oldFile.data,@xmlTemplater,imgName)
 						newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")
 						@xmlTemplater.imageId++
-						tag.setAttribute('id',@xmlTemplater.imageId)
+						@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",oldFile.data)
+						# tag.setAttribute('id',@xmlTemplater.imageId)
 						tag.setAttribute('name',"#{imgName}")
 						tagrId.setAttribute('r:embed',"rId#{newId}")
-						console.log '@xmlTemplater.imageId'+@xmlTemplater.imageId
-						console.log 'newId'+newId
 						imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 						@xmlTemplater.numQrCode++
 
-						callback= (qr) =>
-							console.log 'callback qrcode'
+						callback= (qr,newImgName) =>
+							console.log 'callback qrcode:'+newImgName
 							@xmlTemplater.numQrCode--
-							@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",qr.data)
+							@xmlTemplater.DocxGen.setImage("word/media/#{newImgName}",qr.data)
 							if @xmlTemplater.numQrCode==0 then @xmlTemplater.qrcodeCallback()
 						qr.decode(callback)
 
@@ -688,7 +688,8 @@ window.ImgReplacer = class ImgReplacer
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 window.DocxQrCode = class DocxQrCode
-	constructor:(imageData, @DocxGen)->
+	constructor:(imageData, @DocxGen,@imgName="")->
+		console.log @imgName
 		@data=imageData
 		@base64Data=JSZipBase64.encode(@data)
 		@ready=false
@@ -711,15 +712,18 @@ window.DocxQrCode = class DocxQrCode
 		console.log @result
 		if @result!=null and @result!= 'error decoding QR Code'
 			loadDocCallback= (fail=false) =>
-				if not fail				
+				if not fail
 					@data=docXData[@result]
-					callback(this)
+					console.log 'not Fail!!----------'
+					console.log @imgName
+					console.log this
+					callback(this,@imgName)
 				else
 					console.log 'searching local'
-					callback(this)
+					callback(this,@imgName)
 					# @DocxGen.localImageCreator(@result,callback)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
 			console.log 'no qrcode found'
-			callback(this)	
+			callback(this,@imgName)	
 			

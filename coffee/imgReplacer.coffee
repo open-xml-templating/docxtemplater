@@ -23,24 +23,24 @@ window.ImgReplacer = class ImgReplacer
 					oldFile= @xmlTemplater.DocxGen.getImageByRid(rId)
 
 					if oldFile!=null
-						qr= new DocxQrCode(oldFile.data,@xmlTemplater)
 						tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 						imgName= (tag.getAttribute('name')+"_Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
+						console.log 'before callback'+imgName
+						qr= new DocxQrCode(oldFile.data,@xmlTemplater,imgName)
 						newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")
 						@xmlTemplater.imageId++
-						tag.setAttribute('id',@xmlTemplater.imageId)
+						@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",oldFile.data)
+						# tag.setAttribute('id',@xmlTemplater.imageId)
 						tag.setAttribute('name',"#{imgName}")
 						tagrId.setAttribute('r:embed',"rId#{newId}")
-						console.log '@xmlTemplater.imageId'+@xmlTemplater.imageId
-						console.log 'newId'+newId
 						imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 						@xmlTemplater.numQrCode++
 
-						callback= (qr) =>
-							console.log 'callback qrcode'
+						callback= (qr,newImgName) =>
+							console.log 'callback qrcode:'+newImgName
 							@xmlTemplater.numQrCode--
-							@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",qr.data)
+							@xmlTemplater.DocxGen.setImage("word/media/#{newImgName}",qr.data)
 							if @xmlTemplater.numQrCode==0 then @xmlTemplater.qrcodeCallback()
 						qr.decode(callback)
 

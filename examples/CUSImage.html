@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>DocXGen CSV Import</title>
+  <style>
+  #drop.hover
+  {
+    border:2px solid red;
+  }
+
+  #drop
+  {
+    border:2px dashed gray;
+    width:400px;
+    height:200px;
+  }
+  </style>
+
+  </head>
+
+  <body onload="loadFile();">
+    <h1>DocXGen CSV Import</h1>
+      <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script> 
+    <script src="../libs/downloadify/js/downloadify.min.js"></script>
+  <script src="../libs/downloadify/js/swfobject.js"></script>
+   <script type="text/javascript" src="../js/docxgen.js"></script>
+
+    <script src="csvjson/csvjson.js"></script>
+    <script type="text/javascript" src="jsonform/deps/jquery.min.js"></script>
+
+    <script type="text/javascript">
+    browseReader = new FileReader();
+    dropReader= new FileReader();
+
+    baseDirectoryUrl= "https://www.sfereno.com/owncloud/public.php?service=files&t=b9dcedecdb0fbe2d49673c3ed5f585c2"
+
+    
+
+    
+    browseReader.onload = function (oFREvent) {
+      input=(b64_to_utf8(this.result))
+      arr=csvjson.csv2json(input,{delim:";",textdelim: "\13"})
+      tempVars= calcTempVars(arr)
+      output(tempVars)
+    };
+
+
+
+
+
+    output= function (tempVars)
+    {
+      docX["public.php?service=files&t=d4cc53c88df489f1e624587d610787be&download"].applyTemplateVars(tempVars)
+      
+      setTimeout(
+function () {
+        docX["public.php?service=files&t=d4cc53c88df489f1e624587d610787be&download"].download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',
+                   "taggedDoc.docx")
+},2000             )
+
+    
+
+
+    }
+
+    function b64_to_utf8( str ) {
+      console.log(str)
+      str=str.replace(/^.*base64,(.*)$/,'$1')
+      console.log(str)
+        return window.atob(str);
+    }
+
+    function loadFile() {
+      if (document.getElementById("uploadFile").files.length === 0) { return; }
+      var oFile = document.getElementById("uploadFile").files[0];
+      browseReader.readAsDataURL(oFile);
+    }
+
+
+    function FileSelectHandler(e) {
+
+    // cancel event and hover styling
+    fileDragHover(e);
+
+    // fetch FileList object
+    var files = e.target.files || e.dataTransfer.files;
+
+    // process all File objects
+    for (var i = 0, f; f = files[i]; i++) {
+      ParseFile(f);
+    }
+
+  }
+
+  function calcTempVars(varAsJson)
+  {
+    tempVars={}
+    for (i=0;i<varAsJson.headers.length;i++)
+    {
+      header= varAsJson.headers[i].replace(/[\n\r]/g,"")
+      tempVars[header]=varAsJson.rows[0][varAsJson.headers[i]]
+    }
+    return tempVars
+  }
+
+
+
+  // output file information
+  function ParseFile(file) {
+    // display text
+      var reader = new FileReader();
+    reader.onload= function (e) {
+      console.log(this.result)
+      arr=csvjson.csv2json(this.result,{delim:";",textdelim: "\""})
+      window.test=arr
+      tempVars= calcTempVars(arr)
+      output(tempVars)
+    }
+      reader.readAsText(file);
+  }
+
+  
+      function fileDragHover(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    e.target.className = (e.type == "dragover" ? "hover" : "");
+  }
+
+    $(document).ready(function($) {
+          DocUtils.loadDoc("https://www.sfereno.com/owncloud/public.php?service=files&t=d4cc53c88df489f1e624587d610787be&download",false,true,true);
+          fileDrag= document.getElementById('drop')
+
+        fileDrag.addEventListener("dragover", fileDragHover, false);
+      fileDrag.addEventListener("dragleave", fileDragHover, false);
+      fileDrag.addEventListener("drop", FileSelectHandler, false);
+        })
+
+    </script>
+
+
+
+
+<a href="https://www.sfereno.com/owncloud/public.php?service=files&t=008b0eed680e9b6ed04926e50fcb005e&download">Telecharger le fichier xls type</a><br>
+<a href="https://www.sfereno.com/owncloud/public.php?service=files&t=d4cc53c88df489f1e624587d610787be&download">Telecharger le template en Docx</a>
+
+<div id="drop">Drop files here</div>
+
+      <form name="uploadForm">
+         <input id="uploadFile" type="file" name="myPhoto" onchange="loadFile();" />
+      </form>
+
+      <div id="messages"></div>
+
+
+<p id="downloadify">
+        You must have Flash 10 installed to download this file.
+</p>
+
+
+
+  </body>
+</html>

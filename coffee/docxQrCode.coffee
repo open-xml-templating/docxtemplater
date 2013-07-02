@@ -1,5 +1,6 @@
 window.DocxQrCode = class DocxQrCode
-	constructor:(imageData, @DocxGen)->
+	constructor:(imageData, @DocxGen,@imgName="")->
+		console.log @imgName
 		@data=imageData
 		@base64Data=JSZipBase64.encode(@data)
 		@ready=false
@@ -22,15 +23,18 @@ window.DocxQrCode = class DocxQrCode
 		console.log @result
 		if @result!=null and @result!= 'error decoding QR Code'
 			loadDocCallback= (fail=false) =>
-				if not fail				
+				if not fail
 					@data=docXData[@result]
-					callback(this)
+					console.log 'not Fail!!----------'
+					console.log @imgName
+					console.log this
+					callback(this,@imgName)
 				else
 					console.log 'searching local'
-					callback(this)
+					callback(this,@imgName)
 					# @DocxGen.localImageCreator(@result,callback)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
 			console.log 'no qrcode found'
-			callback(this)	
+			callback(this,@imgName)	
 			
