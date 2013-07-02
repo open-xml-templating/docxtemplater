@@ -1222,50 +1222,59 @@
   })();
 
   window.DocxQrCode = DocxQrCode = (function() {
-    function DocxQrCode(imageData, DocxGen, imgName, num) {
+    function DocxQrCode(imageData, DocxGen, imgName, num, callback) {
       this.DocxGen = DocxGen;
       this.imgName = imgName != null ? imgName : "";
       this.num = num;
+      this.callback = callback;
       this.data = imageData;
       this.base64Data = JSZipBase64.encode(this.data);
       this.ready = false;
       this.result = null;
+      console.log("data:image/png;base64," + this.base64Data);
     }
 
     DocxQrCode.prototype.decode = function(callback) {
       var _this;
 
+      this.callback = callback;
       _this = this;
+      console.log(this);
       qrcode.callback = function() {
         _this.ready = true;
         _this.result = this.result;
         window.testdoc = new _this.DocxGen["class"](this.result, _this.DocxGen.toJson());
         testdoc.applyTemplateVars();
         _this.result = testdoc.content;
-        return _this.searchImage(callback);
+        return _this.searchImage();
       };
       return qrcode.decode("data:image/png;base64," + this.base64Data);
     };
 
-    DocxQrCode.prototype.searchImage = function(callback) {
+    DocxQrCode.prototype.searchImage = function() {
       var loadDocCallback,
         _this = this;
 
       if (this.result !== null && this.result !== 'error decoding QR Code') {
+        console.log('loaded');
         loadDocCallback = function(fail) {
           if (fail == null) {
             fail = false;
           }
           if (!fail) {
             _this.data = docXData[_this.result];
-            return callback(_this, _this.imgName, _this.num);
+            return _this.callback(_this, _this.imgName, _this.num);
           } else {
-            return callback(_this, _this.imgName, _this.num);
+            console.log('failed');
+            console.log(_this.callback);
+            console.log(_this);
+            return _this.callback(_this, _this.imgName, _this.num);
           }
         };
         return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
       } else {
-        return callback(this, this.imgName, this.num);
+        console.log('notloaded');
+        return this.callback(this, this.imgName, this.num);
       }
     };
 

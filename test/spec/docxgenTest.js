@@ -61,7 +61,7 @@
 
   DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx');
 
-  DocUtils.loadDoc('qrcodeTest.png', true);
+  DocUtils.loadDoc('qrcodeTest.zip', true);
 
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
@@ -735,15 +735,39 @@
 
   describe('DocxQrCode module', function() {
     return describe("should calculate simple Docx", function() {
-      return it("should work with basic image", function() {
-        var f, obj, qr;
+      var f, fCalled;
 
-        obj = {};
-        qr = new DocxQrCode(docXData['qrcodeTest.png'], obj, "qrcodeTest.png", 4);
-        f = function() {
-          return 1;
+      f = null;
+      fCalled = null;
+      beforeEach(function() {
+        var obj, qr, qrcodezip;
+
+        qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
+        console.log(qrcodezip);
+        obj = new DocXTemplater();
+        console.log(obj);
+        qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data, obj, "qrcodeTest.png", 4);
+        fCalled = false;
+        console.log(qr);
+        f = {
+          test: function() {
+            console.log('fcalled');
+            return fCalled = true;
+          }
         };
-        return qr.decode(f);
+        spyOn(f, 'test').andCallThrough();
+        qr.decode(f.test);
+        return console.log('end');
+      });
+      return it("should work with basic image", function() {
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          console.log('teststij');
+          console.log(f.test);
+          return expect(f.test).toHaveBeenCalled();
+        });
       });
     });
   });

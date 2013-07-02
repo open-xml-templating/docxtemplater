@@ -31,7 +31,7 @@ DocUtils.loadDoc('qrCodeTaggingExample.docx')
 DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExample.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx')
-DocUtils.loadDoc('qrcodeTest.png',true)
+DocUtils.loadDoc('qrcodeTest.zip',true)
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -257,11 +257,32 @@ describe "xmlTemplater", ()->
 
 describe 'DocxQrCode module', () ->
 	describe "should calculate simple Docx", () ->
+		f=null; fCalled=null
+		beforeEach () ->
+			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
+			console.log qrcodezip
+			obj= new DocXTemplater()
+			console.log obj
+			qr= new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
+			fCalled= false
+			console.log qr
+			f= {test:() -> console.log 'fcalled'; fCalled= true}				
+			spyOn(f,'test').andCallThrough()
+			qr.decode(f.test)
+			console.log 'end'
+
+
+		
 		it "should work with basic image", () ->
-			obj= {}
-			qr= new DocxQrCode(docXData['qrcodeTest.png'],obj,"qrcodeTest.png",4)
-			f= () -> 1
-			qr.decode(f)
+
+			waitsFor( ()->fCalled)
+			runs () ->
+				console.log 'teststij'
+				console.log f.test
+				expect(f.test).toHaveBeenCalled();
+
+
+
 
 
 
