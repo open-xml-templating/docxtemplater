@@ -16,7 +16,17 @@ window.DocxGen = class DocxGen
 		"word/header2.xml",
 		"word/header3.xml"
 		]
+		@qrCodeNumCallBack=0
+		@qrCodeWaitingFor= []
 		if typeof content == "string" then @load(content)
+	qrCodeCallBack:(num,add=true) ->
+		console.log @qrCodeNumCallBack
+		console.log @qrCodeWaitingFor
+		if add==true
+			@qrCodeWaitingFor.push num
+		else
+			index = @qrCodeWaitingFor.indexOf(num)
+			@qrCodeWaitingFor.splice(index, 1)
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels()

@@ -197,10 +197,28 @@
       this.qrCode = qrCode != null ? qrCode : false;
       this.localImageCreator = localImageCreator;
       this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
+      this.qrCodeNumCallBack = 0;
+      this.qrCodeWaitingFor = [];
       if (typeof content === "string") {
         this.load(content);
       }
     }
+
+    DocxGen.prototype.qrCodeCallBack = function(num, add) {
+      var index;
+
+      if (add == null) {
+        add = true;
+      }
+      console.log(this.qrCodeNumCallBack);
+      console.log(this.qrCodeWaitingFor);
+      if (add === true) {
+        return this.qrCodeWaitingFor.push(num);
+      } else {
+        index = this.qrCodeWaitingFor.indexOf(num);
+        return this.qrCodeWaitingFor.splice(index, 1);
+      }
+    };
 
     DocxGen.prototype.load = function(content) {
       this.zip = new JSZip(content);
@@ -1136,25 +1154,22 @@
       var callback, imageTag, imgData, imgName, match, newId, oldFile, qr, rId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results,
         _this = this;
 
-      console.log(this.imgMatches);
       _ref = this.imgMatches;
       _results = [];
       for (u = _i = 0, _len = _ref.length; _i < _len; u = ++_i) {
         match = _ref[u];
         xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
         if (this.xmlTemplater.DocxGen.qrCode) {
-          console.log(xmlImg);
           tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
-          console.log(tagrId);
           if (tagrId !== void 0) {
             rId = tagrId.getAttribute('r:embed');
-            console.log(rId);
             oldFile = this.xmlTemplater.DocxGen.getImageByRid(rId);
             if (oldFile !== null) {
               tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
               imgName = (tag.getAttribute('name') + "_Copie_" + this.xmlTemplater.imageId + ".png").replace(/\x20/, "");
-              console.log('before callback' + imgName);
-              qr = new DocxQrCode(oldFile.data, this.xmlTemplater, imgName);
+              this.xmlTemplater.DocxGen.qrCodeNumCallBack++;
+              qr = new DocxQrCode(oldFile.data, this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+              this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, true);
               newId = this.xmlTemplater.DocxGen.addImageRels(imgName, "");
               this.xmlTemplater.imageId++;
               this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, oldFile.data);
@@ -1163,13 +1178,11 @@
               imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
               this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], DocUtils.xml2Str(imageTag));
               this.xmlTemplater.numQrCode++;
-              callback = function(qr, newImgName) {
-                console.log('callback qrcode:' + newImgName);
+              callback = function(qr, newImgName, num) {
+                console.log("num4:" + num);
+                _this.xmlTemplater.DocxGen.qrCodeCallBack(num, false);
                 _this.xmlTemplater.numQrCode--;
-                _this.xmlTemplater.DocxGen.setImage("word/media/" + newImgName, qr.data);
-                if (_this.xmlTemplater.numQrCode === 0) {
-                  return _this.xmlTemplater.qrcodeCallback();
-                }
+                return _this.xmlTemplater.DocxGen.setImage("word/media/" + newImgName, qr.data);
               };
               _results.push(qr.decode(callback));
             } else {
@@ -1209,10 +1222,12 @@
   })();
 
   window.DocxQrCode = DocxQrCode = (function() {
-    function DocxQrCode(imageData, DocxGen, imgName) {
+    function DocxQrCode(imageData, DocxGen, imgName, num) {
       this.DocxGen = DocxGen;
       this.imgName = imgName != null ? imgName : "";
+      this.num = num;
       console.log(this.imgName);
+      console.log("num1:" + this.num);
       this.data = imageData;
       this.base64Data = JSZipBase64.encode(this.data);
       this.ready = false;
@@ -1224,6 +1239,7 @@
 
       console.log('decoding');
       _this = this;
+      console.log("num2:" + this.num);
       qrcode.callback = function() {
         console.log('decode');
         _this.ready = true;
@@ -1251,16 +1267,18 @@
             console.log('not Fail!!----------');
             console.log(_this.imgName);
             console.log(_this);
-            return callback(_this, _this.imgName);
+            return callback(_this, _this.imgName, _this.num);
           } else {
             console.log('searching local');
-            return callback(_this, _this.imgName);
+            return callback(_this, _this.imgName, _this.num);
           }
         };
         return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
       } else {
         console.log('no qrcode found');
-        return callback(this, this.imgName);
+        console.log(this);
+        console.log("num3:" + this.num);
+        return callback(this, this.imgName, this.num);
       }
     };
 
