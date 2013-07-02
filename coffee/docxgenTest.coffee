@@ -31,6 +31,7 @@ DocUtils.loadDoc('qrCodeTaggingExample.docx')
 DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExample.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx')
+DocUtils.loadDoc('qrcodeTest.png',true)
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -253,6 +254,17 @@ describe "xmlTemplater", ()->
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,')
 
+
+describe 'DocxQrCode module', () ->
+	describe "should calculate simple Docx", () ->
+		it "should work with basic image", () ->
+			obj= {}
+			qr= new DocxQrCode(docXData['qrcodeTest.png'],obj,"qrcodeTest.png",4)
+			f= () -> 1
+			qr.decode(f)
+
+
+
 describe "image Loop Replacing", () ->
 	describe 'rels', () ->
 		it 'should load', () ->
@@ -314,9 +326,8 @@ describe "loop forTagging images", () ->
 
 describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
-		console.log 'qrcode'
 		docX['qrCodeExample.docx']=new DocxGen(docXData['qrCodeExample.docx'],{},false,true)
-		endcallback= () -> console.log('finished qrcode')
+		endcallback= () -> 1
 		docX['qrCodeExample.docx'].applyTemplateVars({},endcallback)
 		docX['qrCodeExample.docx']
 
@@ -339,9 +350,8 @@ describe 'qr code testing', () ->
 				# expect(docX['qrCodeExample.docx'].zip.files[i].data).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data)
 
 	it 'should work with local QRCODE with {tags}', () ->
-		console.log 'qrcode'
 		docX['qrCodeTaggingExample.docx']=new DocxGen(docXData['qrCodeTaggingExample.docx'],{'image':'Firefox_logo'},false,true)
-		endcallback= () -> console.log('finished qrcode')
+		endcallback= () -> 1
 		docX['qrCodeTaggingExample.docx'].applyTemplateVars({'image':'Firefox_logo'},endcallback)
 		docX['qrCodeTaggingExample.docx']
 
@@ -363,9 +373,8 @@ describe 'qr code testing', () ->
 				# expect(docX['qrCodeExample.docx'].zip.files[i].data).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].data)
 
 	it 'should work with loop QRCODE with {tags}', () ->
-		console.log 'qrcode'
 		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docXData['qrCodeTaggingLoopExample.docx'],{},false,true)
-		endcallback= () -> console.log('finished qrcode')
+		endcallback= () -> 1
 		docX['qrCodeTaggingLoopExample.docx'].applyTemplateVars({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
 		docX['qrCodeTaggingLoopExample.docx']
 

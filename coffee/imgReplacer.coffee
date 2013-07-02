@@ -41,7 +41,6 @@ window.ImgReplacer = class ImgReplacer
 						@xmlTemplater.numQrCode++
 
 						callback= (qr,newImgName,num) =>
-							console.log "num4:#{num}"
 							@xmlTemplater.DocxGen.qrCodeCallBack(num,false)
 							@xmlTemplater.numQrCode--
 							@xmlTemplater.DocxGen.setImage("word/media/#{newImgName}",qr.data)

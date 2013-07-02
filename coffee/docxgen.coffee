@@ -20,13 +20,12 @@ window.DocxGen = class DocxGen
 		@qrCodeWaitingFor= []
 		if typeof content == "string" then @load(content)
 	qrCodeCallBack:(num,add=true) ->
-		console.log @qrCodeNumCallBack
-		console.log @qrCodeWaitingFor
 		if add==true
 			@qrCodeWaitingFor.push num
 		else
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
+		if @qrCodeWaitingFor.length==0 then @ready=true
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels()

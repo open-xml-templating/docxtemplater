@@ -61,6 +61,8 @@
 
   DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx');
 
+  DocUtils.loadDoc('qrcodeTest.png', true);
+
   describe("DocxGenBasis", function() {
     it("should be defined", function() {
       return expect(DocxGen).not.toBe(void 0);
@@ -731,6 +733,21 @@
     });
   });
 
+  describe('DocxQrCode module', function() {
+    return describe("should calculate simple Docx", function() {
+      return it("should work with basic image", function() {
+        var f, obj, qr;
+
+        obj = {};
+        qr = new DocxQrCode(docXData['qrcodeTest.png'], obj, "qrcodeTest.png", 4);
+        f = function() {
+          return 1;
+        };
+        return qr.decode(f);
+      });
+    });
+  });
+
   describe("image Loop Replacing", function() {
     return describe('rels', function() {
       it('should load', function() {
@@ -822,10 +839,9 @@
     it('should work with local QRCODE without tags', function() {
       var endcallback;
 
-      console.log('qrcode');
       docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false, true);
       endcallback = function() {
-        return console.log('finished qrcode');
+        return 1;
       };
       docX['qrCodeExample.docx'].applyTemplateVars({}, endcallback);
       docX['qrCodeExample.docx'];
@@ -851,12 +867,11 @@
     it('should work with local QRCODE with {tags}', function() {
       var endcallback;
 
-      console.log('qrcode');
       docX['qrCodeTaggingExample.docx'] = new DocxGen(docXData['qrCodeTaggingExample.docx'], {
         'image': 'Firefox_logo'
       }, false, true);
       endcallback = function() {
-        return console.log('finished qrcode');
+        return 1;
       };
       docX['qrCodeTaggingExample.docx'].applyTemplateVars({
         'image': 'Firefox_logo'
@@ -884,10 +899,9 @@
     return it('should work with loop QRCODE with {tags}', function() {
       var endcallback;
 
-      console.log('qrcode');
       docX['qrCodeTaggingLoopExample.docx'] = new DocxGen(docXData['qrCodeTaggingLoopExample.docx'], {}, false, true);
       endcallback = function() {
-        return console.log('finished qrcode');
+        return 1;
       };
       docX['qrCodeTaggingLoopExample.docx'].applyTemplateVars({
         'images': [

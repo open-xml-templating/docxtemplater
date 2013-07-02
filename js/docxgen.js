@@ -210,13 +210,14 @@
       if (add == null) {
         add = true;
       }
-      console.log(this.qrCodeNumCallBack);
-      console.log(this.qrCodeWaitingFor);
       if (add === true) {
-        return this.qrCodeWaitingFor.push(num);
+        this.qrCodeWaitingFor.push(num);
       } else {
         index = this.qrCodeWaitingFor.indexOf(num);
-        return this.qrCodeWaitingFor.splice(index, 1);
+        this.qrCodeWaitingFor.splice(index, 1);
+      }
+      if (this.qrCodeWaitingFor.length === 0) {
+        return this.ready = true;
       }
     };
 
@@ -1179,7 +1180,6 @@
               this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], DocUtils.xml2Str(imageTag));
               this.xmlTemplater.numQrCode++;
               callback = function(qr, newImgName, num) {
-                console.log("num4:" + num);
                 _this.xmlTemplater.DocxGen.qrCodeCallBack(num, false);
                 _this.xmlTemplater.numQrCode--;
                 return _this.xmlTemplater.DocxGen.setImage("word/media/" + newImgName, qr.data);
@@ -1226,8 +1226,6 @@
       this.DocxGen = DocxGen;
       this.imgName = imgName != null ? imgName : "";
       this.num = num;
-      console.log(this.imgName);
-      console.log("num1:" + this.num);
       this.data = imageData;
       this.base64Data = JSZipBase64.encode(this.data);
       this.ready = false;
@@ -1237,11 +1235,8 @@
     DocxQrCode.prototype.decode = function(callback) {
       var _this;
 
-      console.log('decoding');
       _this = this;
-      console.log("num2:" + this.num);
       qrcode.callback = function() {
-        console.log('decode');
         _this.ready = true;
         _this.result = this.result;
         window.testdoc = new _this.DocxGen["class"](this.result, _this.DocxGen.toJson());
@@ -1256,7 +1251,6 @@
       var loadDocCallback,
         _this = this;
 
-      console.log(this.result);
       if (this.result !== null && this.result !== 'error decoding QR Code') {
         loadDocCallback = function(fail) {
           if (fail == null) {
@@ -1264,20 +1258,13 @@
           }
           if (!fail) {
             _this.data = docXData[_this.result];
-            console.log('not Fail!!----------');
-            console.log(_this.imgName);
-            console.log(_this);
             return callback(_this, _this.imgName, _this.num);
           } else {
-            console.log('searching local');
             return callback(_this, _this.imgName, _this.num);
           }
         };
         return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
       } else {
-        console.log('no qrcode found');
-        console.log(this);
-        console.log("num3:" + this.num);
         return callback(this, this.imgName, this.num);
       }
     };
