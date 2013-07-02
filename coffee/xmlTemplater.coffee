@@ -1,5 +1,5 @@
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null) ->
+	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
 		@class=window.XmlTemplater
@@ -114,6 +114,7 @@ window.XmlTemplater = class XmlTemplater
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopePath
 		usedTemplateVars:@usedTemplateVars
+		localImageCreator:@localImageCreator
 		imageId:@imageId
 	forLoop: (A="",B="") ->
 		###

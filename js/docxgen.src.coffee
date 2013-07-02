@@ -18,18 +18,22 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 	if xhrDoc.overrideMimeType
 		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
 	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			window.docXData[fileName]=this.response
-			if noDocx==false
-				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
+		if this.readyState == 4
+			if this.status == 200
+				window.docXData[fileName]=this.response
+				if noDocx==false
+					window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
 
-			if callback?
-				callback()
-			if async==false
-				return window.docXData[fileName]
+				if callback?
+					callback(false)
+				if async==false
+					return window.docXData[fileName]
+			else
+				# throw 'error loading doc'
+				console.log 'error loading doc'
+				callback(true)
 	xhrDoc.send()
-	if async==false
-		return window.docXData[fileName]
+	return fileName
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'
@@ -116,7 +120,7 @@ Created by Edgar HIPP
 
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
-	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off) ->
+	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator) ->
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -185,8 +189,9 @@ window.DocxGen = class DocxGen
 			cRId= relationship.getAttribute('Id')
 			if rId==cRId
 				path=relationship.getAttribute('Target')
-				return @zip.files["word/#{path}"]
-		return 'not found'
+				if path.substr(0,6)=='media/'
+					return @zip.files["word/#{path}"]
+		return null
 	saveImageRels: () ->
 		@zip.files["word/_rels/document.xml.rels"].data
 	getImageList: () ->
@@ -205,7 +210,7 @@ window.DocxGen = class DocxGen
 		@zip.files[path].data= data
 	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 	getCsvVars:() ->
 		obj= @getTemplateVars()
@@ -260,7 +265,7 @@ window.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 window.XmlTemplater = class XmlTemplater
-	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null) ->
+	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
 		@class=window.XmlTemplater
@@ -375,6 +380,7 @@ window.XmlTemplater = class XmlTemplater
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopePath
 		usedTemplateVars:@usedTemplateVars
+		localImageCreator:@localImageCreator
 		imageId:@imageId
 	forLoop: (A="",B="") ->
 		###
@@ -623,38 +629,48 @@ window.ImgReplacer = class ImgReplacer
 	findImages:() ->
 		@imgMatches= DocUtils.preg_match_all ///
 		<w:drawing>
-		.*
+		.*?
 		</w:drawing>
-		///, @xmlTemplater.content
+		///g, @xmlTemplater.content
 	replaceImages: ()->
+		console.log @imgMatches
 		for match,u in @imgMatches
 			xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
 
 			if @xmlTemplater.DocxGen.qrCode
-
+				console.log xmlImg
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
-				rId = tagrId.getAttribute('r:embed')
-				oldFile= @xmlTemplater.DocxGen.getImageByRid(rId)
-				qr= new DocxQrCode(oldFile.data,@xmlTemplater)
-				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-				imgName= (tag.getAttribute('name')+"_Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
-				newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")
-				@xmlTemplater.imageId++
-				tag.setAttribute('id',@xmlTemplater.imageId)
-				tag.setAttribute('name',"#{imgName}")
-				tagrId.setAttribute('r:embed',"rId#{newId}")
-				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
-				@xmlTemplater.numQrCode++
+				
+				console.log tagrId
+				if tagrId!=undefined
+					rId = tagrId.getAttribute('r:embed')
+					console.log rId
+					oldFile= @xmlTemplater.DocxGen.getImageByRid(rId)
 
-				callback= (qr) =>
-					@xmlTemplater.numQrCode--
-					@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",qr.data)
-					if @xmlTemplater.numQrCode==0 then @xmlTemplater.qrcodeCallback()
-				qr.decode(callback)
+					if oldFile!=null
+						qr= new DocxQrCode(oldFile.data,@xmlTemplater)
+						tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
+						imgName= (tag.getAttribute('name')+"_Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
+						newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")
+						@xmlTemplater.imageId++
+						tag.setAttribute('id',@xmlTemplater.imageId)
+						tag.setAttribute('name',"#{imgName}")
+						tagrId.setAttribute('r:embed',"rId#{newId}")
+						console.log '@xmlTemplater.imageId'+@xmlTemplater.imageId
+						console.log 'newId'+newId
+						imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
+						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
+						@xmlTemplater.numQrCode++
 
+						callback= (qr) =>
+							console.log 'callback qrcode'
+							@xmlTemplater.numQrCode--
+							@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",qr.data)
+							if @xmlTemplater.numQrCode==0 then @xmlTemplater.qrcodeCallback()
+						qr.decode(callback)
 
-			if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
+			else if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
+				
 				imgName= @xmlTemplater.currentScope["img"][u].name
 				imgData= @xmlTemplater.currentScope["img"][u].data
 				throw 'DocxGen not defined' unless @xmlTemplater.DocxGen?
@@ -679,8 +695,10 @@ window.DocxQrCode = class DocxQrCode
 		@result=null
 
 	decode:(callback) ->
+		console.log 'decoding'
 		_this= this
 		qrcode.callback= () ->
+			console.log 'decode'
 			_this.ready= true
 			_this.result= this.result
 			window.testdoc= new _this.DocxGen.class this.result, _this.DocxGen.toJson()
@@ -690,8 +708,18 @@ window.DocxQrCode = class DocxQrCode
 
 		qrcode.decode("data:image/png;base64,#{@base64Data}")
 	searchImage:(callback) ->
-		if @result!=null
-			loadDocCallback= () =>
-				@data=docXData[@result]
-				callback(this)
+		console.log @result
+		if @result!=null and @result!= 'error decoding QR Code'
+			loadDocCallback= (fail=false) =>
+				if not fail				
+					@data=docXData[@result]
+					callback(this)
+				else
+					console.log 'searching local'
+					callback(this)
+					# @DocxGen.localImageCreator(@result,callback)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
+		else
+			console.log 'no qrcode found'
+			callback(this)	
+			

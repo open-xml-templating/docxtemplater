@@ -7,7 +7,7 @@ Created by Edgar HIPP
 
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
-	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off) ->
+	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator) ->
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -76,8 +76,9 @@ window.DocxGen = class DocxGen
 			cRId= relationship.getAttribute('Id')
 			if rId==cRId
 				path=relationship.getAttribute('Target')
-				return @zip.files["word/#{path}"]
-		return 'not found'
+				if path.substr(0,6)=='media/'
+					return @zip.files["word/#{path}"]
+		return null
 	saveImageRels: () ->
 		@zip.files["word/_rels/document.xml.rels"].data
 	getImageList: () ->
@@ -96,7 +97,7 @@ window.DocxGen = class DocxGen
 		@zip.files[path].data= data
 	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 	getCsvVars:() ->
 		obj= @getTemplateVars()

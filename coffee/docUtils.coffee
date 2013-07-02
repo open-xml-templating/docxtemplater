@@ -18,18 +18,22 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 	if xhrDoc.overrideMimeType
 		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
 	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4 and this.status == 200
-			window.docXData[fileName]=this.response
-			if noDocx==false
-				window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
+		if this.readyState == 4
+			if this.status == 200
+				window.docXData[fileName]=this.response
+				if noDocx==false
+					window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
 
-			if callback?
-				callback()
-			if async==false
-				return window.docXData[fileName]
+				if callback?
+					callback(false)
+				if async==false
+					return window.docXData[fileName]
+			else
+				# throw 'error loading doc'
+				console.log 'error loading doc'
+				callback(true)
 	xhrDoc.send()
-	if async==false
-		return window.docXData[fileName]
+	return fileName
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'

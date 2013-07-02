@@ -34,10 +34,10 @@ DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx')
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
-		expect(DocxGen).not.toBe(undefined);
+		expect(DocxGen).not.toBe(undefined)
 	it "should construct", () ->
-		a= new DocxGen();
-		expect(a).not.toBe(undefined);
+		a= new DocxGen()
+		expect(a).not.toBe(undefined)
 describe "DocxGenLoading", () ->
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
