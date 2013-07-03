@@ -59,7 +59,6 @@ this.decode = function(src){
 			canvas_qr.width = image.width;
 			canvas_qr.height = image.height;
             context.drawImage(image, 0, 0);
-            console.log(context)
 			_this.width = image.width;
 			_this.height = image.height;
 			try{
@@ -71,15 +70,15 @@ this.decode = function(src){
 				return;
 			}
 			
-            // try
-            // {
+            try
+            {
                 _this.result = _this.process(context);
-    //         }
-    //         catch(e)
-    //         {
-				// console.log(e);
-    //             this.result = "error decoding QR Code";
-    //         }
+            }
+            catch(e)
+            {
+				console.log(e);
+                this.result = "error decoding QR Code";
+            }
 			if(_this.callback!=null)
 				_this.callback(_this.result);
 		}

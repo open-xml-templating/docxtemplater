@@ -260,7 +260,6 @@ describe 'DocxQrCode module', () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-			console.log qrcodezip
 			docx= new DocxGen()
 			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
 		
@@ -268,11 +267,9 @@ describe 'DocxQrCode module', () ->
 			runs () ->
 				qr= new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
 				fCalled= false
-				console.log qr
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
 				qr.decode(f.test)
-				console.log 'end'
 
 			waitsFor( ()->fCalled)
 			
@@ -288,11 +285,9 @@ describe 'DocxQrCode module', () ->
 			runs () ->
 				qr= new DocxQrCode(qrcodezip.files['qrcodetag.png'].data,obj,"tag.png",2)
 				fCalled= false
-				console.log qr
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
 				qr.decode(f.test)
-				console.log 'end'
 
 			waitsFor( ()->fCalled)
 			
@@ -374,7 +369,7 @@ describe 'qr code testing', () ->
 		
 		runs () ->
 
-			expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png']?).toBeTruthy()
+			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 
 			for i of docX['qrCodeExample.docx'].zip.files
 			# 	#Everything but the date should be different
@@ -398,7 +393,7 @@ describe 'qr code testing', () ->
 		
 		runs () ->
 			
-			expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png']?).toBeTruthy()
+			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 			for i of docX['qrCodeTaggingExample.docx'].zip.files
 			# 	#Everything but the date should be different
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date)
@@ -421,7 +416,7 @@ describe 'qr code testing', () ->
 		
 		runs () ->
 			
-			expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png']?).toBeTruthy()
+			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 			for i of docX['qrCodeTaggingLoopExample.docx'].zip.files
 			# 	#Everything but the date should be different
 				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date)

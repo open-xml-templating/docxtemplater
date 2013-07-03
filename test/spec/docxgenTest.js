@@ -745,7 +745,6 @@
         var docx;
 
         qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
-        console.log(qrcodezip);
         docx = new DocxGen();
         return obj = new DocXTemplater("", docx, {
           Tag: "tagValue"
@@ -757,15 +756,13 @@
 
           qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data, obj, "qrcodeTest.png", 4);
           fCalled = false;
-          console.log(qr);
           f = {
             test: function() {
               return fCalled = true;
             }
           };
           spyOn(f, 'test').andCallThrough();
-          qr.decode(f.test);
-          return console.log('end');
+          return qr.decode(f.test);
         });
         waitsFor(function() {
           return fCalled;
@@ -784,15 +781,13 @@
 
           qr = new DocxQrCode(qrcodezip.files['qrcodetag.png'].data, obj, "tag.png", 2);
           fCalled = false;
-          console.log(qr);
           f = {
             test: function() {
               return fCalled = true;
             }
           };
           spyOn(f, 'test').andCallThrough();
-          qr.decode(f.test);
-          return console.log('end');
+          return qr.decode(f.test);
         });
         waitsFor(function() {
           return fCalled;
@@ -911,7 +906,7 @@
       return runs(function() {
         var i, _results;
 
-        expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png'] != null).toBeTruthy();
+        expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
         _results = [];
         for (i in docX['qrCodeExample.docx'].zip.files) {
           expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date);
@@ -943,7 +938,7 @@
       return runs(function() {
         var i, _results;
 
-        expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png'] != null).toBeTruthy();
+        expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
         _results = [];
         for (i in docX['qrCodeTaggingExample.docx'].zip.files) {
           expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date);
@@ -979,7 +974,7 @@
       return runs(function() {
         var i, _results;
 
-        expect(docX['qrCodeExample.docx'].zip.files['word/media/Image2_Copie_0.png'] != null).toBeTruthy();
+        expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
         _results = [];
         for (i in docX['qrCodeTaggingLoopExample.docx'].zip.files) {
           expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date);

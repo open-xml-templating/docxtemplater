@@ -1,39 +1,36 @@
 window.DocxQrCode = class DocxQrCode
-	constructor:(imageData, @DocxGen,@imgName="",@num,@callback)->
+	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
 		@base64Data=JSZipBase64.encode(@data)
 		@ready=false
 		@result=null
-		console.log "data:image/png;base64,#{@base64Data}"
 	decode:(@callback) ->
 		_this= this
-		console.log this
 
 		@qr= new QrCode()
 
 		@qr.callback= () ->
 			_this.ready= true
 			_this.result= this.result
-			window.testdoc= new _this.DocxGen.class this.result, _this.DocxGen.toJson()
+			window.testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
 			testdoc.applyTemplateVars()
 			_this.result=testdoc.content
 			_this.searchImage()
 		@qr.decode("data:image/png;base64,#{@base64Data}")
 	searchImage:() ->
+
 		if @result!=null and @result!= 'error decoding QR Code'
-			console.log 'loaded'
 			loadDocCallback= (fail=false) =>
 				if not fail
 					@data=docXData[@result]
+					console.log @imgName
 					@callback(this,@imgName,@num)
 				else
-					console.log 'failed'
-					console.log @callback
-					console.log this
+					console.log @imgName
 					@callback(this,@imgName,@num)
-					# @DocxGen.localImageCreator(@result,callback)
+					# @xmlTemplater.localImageCreator(@result,callback)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
-			console.log 'notloaded'
+			console.log @imgName
 			@callback(this,@imgName,@num)	
 			
