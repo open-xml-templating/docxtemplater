@@ -122,7 +122,7 @@ function DetectorResult(bits,  points)
 }
 
 
-function Detector(image)
+function Detector(image,qrcode)
 {
 	this.image=image;
 	this.resultPointCallback = null;
@@ -336,7 +336,7 @@ function Detector(image)
 		{
 			
 			var sampler = GridSampler;
-			return sampler.sampleGrid3(image, dimension, transform);
+			return sampler.sampleGrid3(image, dimension, transform,qrcode);
 		}
 	
 	this.processFinderPatternInfo = function( info)
@@ -406,7 +406,7 @@ function Detector(image)
 	
 	this.detect=function()
 	{
-		var info =  new FinderPatternFinder().findFinderPattern(this.image);
+		var info =  new FinderPatternFinder(qrcode).findFinderPattern(this.image);
 			
 		return this.processFinderPatternInfo(info); 
 	}

@@ -28,7 +28,7 @@ var MAX_MODULES = 57;
 var INTEGER_MATH_SHIFT = 8;
 var CENTER_QUORUM = 2;
 
-qrcode.orderBestPatterns=function(patterns)
+QrCode.prototype.orderBestPatterns=function(patterns)
 		{
 			
 			function distance( pattern1,  pattern2)
@@ -148,8 +148,10 @@ function FinderPatternInfo(patternCenters)
 	}); 
 }
 
-function FinderPatternFinder()
+function FinderPatternFinder(qrcode)
 {
+	if (qrcode==null) 
+		throw ('no qrcode defined!!')
 	this.image=null;
 	this.possibleCenters = [];
 	this.hasSkipped = false;
@@ -193,6 +195,8 @@ function FinderPatternFinder()
 		}
 	this.crossCheckVertical=function( startI,  centerJ,  maxCount,  originalStateCountTotal)
 		{
+			if (qrcode==null)
+				throw ('qrcode not defined')
 			var image = this.image;
 			
 			var maxI = qrcode.height;

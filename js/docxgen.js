@@ -1240,7 +1240,8 @@
       this.callback = callback;
       _this = this;
       console.log(this);
-      qrcode.callback = function() {
+      this.qr = new QrCode();
+      this.qr.callback = function() {
         _this.ready = true;
         _this.result = this.result;
         window.testdoc = new _this.DocxGen["class"](this.result, _this.DocxGen.toJson());
@@ -1248,7 +1249,7 @@
         _this.result = testdoc.content;
         return _this.searchImage();
       };
-      return qrcode.decode("data:image/png;base64," + this.base64Data);
+      return this.qr.decode("data:image/png;base64," + this.base64Data);
     };
 
     DocxQrCode.prototype.searchImage = function() {

@@ -709,14 +709,17 @@ window.DocxQrCode = class DocxQrCode
 	decode:(@callback) ->
 		_this= this
 		console.log this
-		qrcode.callback= () ->
+
+		@qr= new QrCode()
+
+		@qr.callback= () ->
 			_this.ready= true
 			_this.result= this.result
 			window.testdoc= new _this.DocxGen.class this.result, _this.DocxGen.toJson()
 			testdoc.applyTemplateVars()
 			_this.result=testdoc.content
 			_this.searchImage()
-		qrcode.decode("data:image/png;base64,#{@base64Data}")
+		@qr.decode("data:image/png;base64,#{@base64Data}")
 	searchImage:() ->
 		if @result!=null and @result!= 'error decoding QR Code'
 			console.log 'loaded'
