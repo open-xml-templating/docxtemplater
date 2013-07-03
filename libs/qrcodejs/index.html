@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="css/basic.css" media="all">
+<script type="text/javascript" src="js/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="js/hover.js"></script>
+<script type="text/javascript" src="js/jquery.simplemodal.js"></script>
+<script type="text/javascript" src="js/ecl.js"></script>
+<script type="text/javascript" src="js/QRCode.js"></script>
+<!--[if IE]><script type="text/javascript" src="js/excanvas.js"></script><![endif]-->
+<script type="text/javascript">
+onload = function() {
+  draw();
+};
+
+function draw() {
+  var canvas = document.getElementById('canavas-1');
+  if ( ! canvas || ! canvas.getContext ) { return false; }
+  var ctx = canvas.getContext('2d');
+  /* Imageオブジェクトを生成 */
+  var img = new Image();
+  img.src = "QRcode.png?" + new Date().getTime();
+  /* 画像が読み込まれるのを待ってから処理を続行 */
+  img.onload = function() {
+  	canvas.width = img.width;
+	canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+	var imagedata = ctx.getImageData(0,0,img.width,img.height);
+	imagedata.getPoints = function(x,y){
+		if(this.width < x){
+			throw new Error("point error");
+		}
+		if(this.height < y){
+			throw new Error("point error");
+		}
+		point = (x * 4) + (y * this.width * 4);
+		p = new RGBColor(this.data[point],this.data[point+1],this.data[point+2],this.data[point+3]);
+		return p;
+	}
+	var qr = new QRCode();
+	var result = qr.getContsnts(imagedata,img.width);
+	// CR LF -> br TAG
+	result = result.replace("\x0D\x0A","<br>");
+	document.getElementById("qrcode-content").innerHTML = result;
+	console.log(result);
+  }
+}
+</script>
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>QR Decode sample</h1>
+
+<img src="./QRcode.png" id="qr">
+<canvas id="canavas-1" width="400" height="400"></canvas>
+<div id="output"></div>
+<div id="modal-content" rel="tooltip">
+	<h2>QRCode Content</h2>
+	<p id="qrcode-content">faild </p>
+</div>
+</body>
+</html>
