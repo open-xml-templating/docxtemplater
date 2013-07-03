@@ -1235,48 +1235,20 @@
     }
 
     DocxQrCode.prototype.decode = function(callback) {
-      var body, canvas_qr, context, dataUri, img, _this;
+      var _this;
 
       this.callback = callback;
       _this = this;
-      dataUri = "data:image/png;base64," + this.base64Data;
-      img = new Image();
-      body = document.getElementsByTagName("body")[0];
-      canvas_qr = document.createElement('canvas');
-      body.appendChild(canvas_qr);
-      context = canvas_qr.getContext('2d');
-      img.onload = function() {
-        var imageData, qr, result;
-
-        canvas_qr.width = img.width;
-        canvas_qr.height = img.height;
-        context.drawImage(img, 0, 0);
-        imageData = context.getImageData(0, 0, img.width, img.height);
-        imageData.getPoints = function(x, y) {
-          var p, point;
-
-          if (this.width < x) {
-            throw new Error("point error");
-          }
-          if (this.height < y) {
-            throw new Error("point error");
-          }
-          point = (x * 4) + (y * this.width * 4);
-          p = new RGBColor(this.data[point], this.data[point + 1], this.data[point + 2], this.data[point + 3]);
-          return p;
-        };
-        qr = new QRCode();
-        console.log(img);
-        result = qr.getContsnts(imageData, img.width);
+      console.log(this);
+      qrcode.callback = function() {
         _this.ready = true;
-        _this.result = result;
-        window.testdoc = new _this.DocxGen["class"](result, _this.DocxGen.toJson());
+        _this.result = this.result;
+        window.testdoc = new _this.DocxGen["class"](this.result, _this.DocxGen.toJson());
         testdoc.applyTemplateVars();
         _this.result = testdoc.content;
-        _this.searchImage();
-        return console.log(result);
+        return _this.searchImage();
       };
-      return img.src = dataUri;
+      return qrcode.decode("data:image/png;base64," + this.base64Data);
     };
 
     DocxQrCode.prototype.searchImage = function() {
