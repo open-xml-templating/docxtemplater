@@ -47,7 +47,14 @@ A simple Demo for replacing images can be found here: http://javascript-ninja.fr
 
 2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended.
 
-3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color}. For this too work, you will need some other dependencies: jsqrcode/grid.js,jsqrcode/version.js,jsqrcode/detector.js,jsqrcode/formatinf.js,jsqrcode/errorlevel.js,jsqrcode/bitmat.js,jsqrcode/datablock.js,jsqrcode/bmparser.js,jsqrcode/datamask.js,jsqrcode/rsdecoder.js,jsqrcode/gf256poly.js,jsqrcode/gf256.js,jsqrcode/decoder.js,jsqrcode/qrcode.js,jsqrcode/findpat.js,jsqrcode/alignpat.js,jsqrcode/databr.js
+3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color}. For this too work, you will need some other dependencies: 
+* qrcodejs/js/jquery-1.4.2.js
+* qrcodejs/js/hover.js
+* qrcodejs/js/jquery.simplemodal.js
+* qrcodejs/js/ecl.js
+* qrcodejs/js/QRCode.js
+
+
 
 
 ## Browser support ##
