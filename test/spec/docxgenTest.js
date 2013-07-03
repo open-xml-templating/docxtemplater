@@ -735,38 +735,74 @@
 
   describe('DocxQrCode module', function() {
     return describe("should calculate simple Docx", function() {
-      var f, fCalled;
+      var f, fCalled, obj, qrcodezip;
 
       f = null;
       fCalled = null;
+      qrcodezip = null;
+      obj = null;
       beforeEach(function() {
-        var obj, qr, qrcodezip;
+        var docx;
 
         qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
         console.log(qrcodezip);
-        obj = new DocXTemplater();
-        console.log(obj);
-        qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data, obj, "qrcodeTest.png", 4);
-        fCalled = false;
-        console.log(qr);
-        f = {
-          test: function() {
-            console.log('fcalled');
-            return fCalled = true;
-          }
-        };
-        spyOn(f, 'test').andCallThrough();
-        qr.decode(f.test);
-        return console.log('end');
+        docx = new DocxGen();
+        return obj = new DocXTemplater("", docx, {
+          Tag: "tagValue"
+        });
       });
-      return it("should work with basic image", function() {
+      it("should work with basic image", function() {
+        runs(function() {
+          var qr;
+
+          qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data, obj, "qrcodeTest.png", 4);
+          fCalled = false;
+          console.log(qr);
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          qr.decode(f.test);
+          return console.log('end');
+        });
         waitsFor(function() {
           return fCalled;
         });
         return runs(function() {
-          console.log('teststij');
-          console.log(f.test);
-          return expect(f.test).toHaveBeenCalled();
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("test");
+          expect(f.test.mostRecentCall.args[1]).toEqual("qrcodeTest.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(4);
+        });
+      });
+      return it("should work with image with {tags}", function() {
+        runs(function() {
+          var qr;
+
+          qr = new DocxQrCode(qrcodezip.files['qrcodetag.png'].data, obj, "tag.png", 2);
+          fCalled = false;
+          console.log(qr);
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          qr.decode(f.test);
+          return console.log('end');
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
+          expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(2);
         });
       });
     });

@@ -257,33 +257,51 @@ describe "xmlTemplater", ()->
 
 describe 'DocxQrCode module', () ->
 	describe "should calculate simple Docx", () ->
-		f=null; fCalled=null
+		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
 			console.log qrcodezip
-			obj= new DocXTemplater()
-			console.log obj
-			qr= new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
-			fCalled= false
-			console.log qr
-			f= {test:() -> console.log 'fcalled'; fCalled= true}				
-			spyOn(f,'test').andCallThrough()
-			qr.decode(f.test)
-			console.log 'end'
-
-
+			docx= new DocxGen()
+			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
 		
 		it "should work with basic image", () ->
+			runs () ->
+				qr= new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
+				fCalled= false
+				console.log qr
+				f= {test:() -> fCalled= true}				
+				spyOn(f,'test').andCallThrough()
+				qr.decode(f.test)
+				console.log 'end'
 
 			waitsFor( ()->fCalled)
+			
 			runs () ->
-				console.log 'teststij'
-				console.log f.test
 				expect(f.test).toHaveBeenCalled();
+				expect(f.test.calls.length).toEqual(1);
+				expect(f.test.mostRecentCall.args[0].result).toEqual("test");
+				expect(f.test.mostRecentCall.args[1]).toEqual("qrcodeTest.png");
+				expect(f.test.mostRecentCall.args[2]).toEqual(4);
 
+		it "should work with image with {tags}", () ->
 
+			runs () ->
+				qr= new DocxQrCode(qrcodezip.files['qrcodetag.png'].data,obj,"tag.png",2)
+				fCalled= false
+				console.log qr
+				f= {test:() -> fCalled= true}				
+				spyOn(f,'test').andCallThrough()
+				qr.decode(f.test)
+				console.log 'end'
 
-
+			waitsFor( ()->fCalled)
+			
+			runs () ->
+				expect(f.test).toHaveBeenCalled();
+				expect(f.test.calls.length).toEqual(1);
+				expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
+				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
+				expect(f.test.mostRecentCall.args[2]).toEqual(2);
 
 
 describe "image Loop Replacing", () ->
