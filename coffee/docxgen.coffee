@@ -7,7 +7,8 @@ Created by Edgar HIPP
 
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
-	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator) ->
+	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator,@finishedCallback) ->
+		@finishedCallback= () -> console.log 'document ready!' unless @finishedCallback?
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -25,7 +26,11 @@ window.DocxGen = class DocxGen
 		else
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
-		if @qrCodeWaitingFor.length==0 then @ready=true
+		console.log @qrCodeWaitingFor
+		if @qrCodeWaitingFor.length==0
+			@ready=true
+			console.log @finishedCallback
+			@finishedCallback()
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels()
@@ -66,8 +71,6 @@ window.DocxGen = class DocxGen
 				date: new Date()
 				dir: false
 		@zip.file file.name,file.data,file.options
-		 # @zip.files["word/media/#{imageName}"]=
-
 		extension= imageName.replace(/[^.]+\.([^.]+)/,'$1')
 		@addExtensionRels("image/#{extension}",extension)
 		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]

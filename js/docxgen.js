@@ -191,11 +191,17 @@
 
     imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
 
-    function DocxGen(content, templateVars, intelligentTagging, qrCode, localImageCreator) {
+    function DocxGen(content, templateVars, intelligentTagging, qrCode, localImageCreator, finishedCallback) {
       this.templateVars = templateVars != null ? templateVars : {};
       this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
       this.qrCode = qrCode != null ? qrCode : false;
       this.localImageCreator = localImageCreator;
+      this.finishedCallback = finishedCallback;
+      this.finishedCallback = function() {
+        if (this.finishedCallback == null) {
+          return console.log('document ready!');
+        }
+      };
       this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
       this.qrCodeNumCallBack = 0;
       this.qrCodeWaitingFor = [];
@@ -216,8 +222,11 @@
         index = this.qrCodeWaitingFor.indexOf(num);
         this.qrCodeWaitingFor.splice(index, 1);
       }
+      console.log(this.qrCodeWaitingFor);
       if (this.qrCodeWaitingFor.length === 0) {
-        return this.ready = true;
+        this.ready = true;
+        console.log(this.finishedCallback);
+        return this.finishedCallback();
       }
     };
 
@@ -1158,8 +1167,7 @@
       callback = function(docxqrCode) {
         docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
         docxqrCode.xmlTemplater.numQrCode--;
-        console.log("setting image " + docxqrCode.imgName + ", " + docxqrCode.num);
-        return docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, qr.data);
+        return docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
       };
       _ref = this.imgMatches;
       _results = [];
@@ -1182,12 +1190,10 @@
               this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, oldFile.data);
               tag.setAttribute('name', "" + imgName);
               tagrId.setAttribute('r:embed', "rId" + newId);
-              console.log("" + rId + " => " + newId + " -- " + imgName + " ");
               imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
               this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], DocUtils.xml2Str(imageTag));
               this.xmlTemplater.numQrCode++;
-              window.qr[u].decode(callback);
-              _results.push(console.log(window.qr));
+              _results.push(window.qr[u].decode(callback));
             } else {
               _results.push(void 0);
             }
@@ -1241,11 +1247,16 @@
 
       this.callback = callback;
       _this = this;
+      console.log('before', this.imgName);
       this.qr = new QrCode();
       this.qr.callback = function() {
+        var testdoc;
+
+        console.log(this);
+        console.log("after:", _this.imgName);
         _this.ready = true;
         _this.result = this.result;
-        window.testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
+        testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
         testdoc.applyTemplateVars();
         _this.result = testdoc.content;
         return _this.searchImage();
@@ -1254,26 +1265,24 @@
     };
 
     DocxQrCode.prototype.searchImage = function() {
-      var loadDocCallback,
+      var loadDocCallback, _thatiti,
         _this = this;
 
-      if (this.result !== null && this.result !== 'error decoding QR Code') {
+      if (this.result !== null && this.result !== void 0 && this.result !== 'error decoding QR Code') {
+        _thatiti = this;
         loadDocCallback = function(fail) {
           if (fail == null) {
             fail = false;
           }
           if (!fail) {
             _this.data = docXData[_this.result];
-            console.log(_this.imgName);
             return _this.callback(_this, _this.imgName, _this.num);
           } else {
-            console.log(_this.imgName);
             return _this.callback(_this, _this.imgName, _this.num);
           }
         };
         return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
       } else {
-        console.log(this.imgName);
         return this.callback(this, this.imgName, this.num);
       }
     };

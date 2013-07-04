@@ -43,8 +43,9 @@ this.decode = function(src){
 	}
 	else
 	{
+		// debugger;
 		var image = new Image();
-		_this=this
+		var _this=this
 		image.onload=function(){
 			//var canvas_qr = document.getElementById("qr-canvas");
 			var canvas_qr = document.createElement('canvas');
@@ -76,8 +77,8 @@ this.decode = function(src){
             }
             catch(e)
             {
-				console.log(e);
-                this.result = "error decoding QR Code";
+				// console.log('error:'+e);
+                _this.result = "error decoding QR Code";
             }
 			if(_this.callback!=null)
 				_this.callback(_this.result);
