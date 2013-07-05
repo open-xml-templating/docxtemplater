@@ -93,12 +93,6 @@ this.decode = function(src){
 			if(_this.callback!=null)
 			{
 				_this.callback(_this.result);
-				var div= document.createElement('div')
-				var span= document.createElement('span')
-				span.innerHTML='Result:'+_this.result
-				div.appendChild(canvas_qr)
-				div.appendChild(span)
-				body.appendChild(div)
 			}
 				
 		}
