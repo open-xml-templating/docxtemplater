@@ -121,7 +121,10 @@ Created by Edgar HIPP
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator,@finishedCallback) ->
-		@finishedCallback= () -> console.log 'document ready!' unless @finishedCallback?
+		@finishedCallback= (() -> console.log 'document ready!') unless @finishedCallback?
+		@localImageCreator= (arg,callback) ->
+			result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
+			callback(result)	
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -139,10 +142,8 @@ window.DocxGen = class DocxGen
 		else
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
-		console.log @qrCodeWaitingFor
 		if @qrCodeWaitingFor.length==0
 			@ready=true
-			console.log @finishedCallback
 			@finishedCallback()
 	load: (content)->
 		@zip = new JSZip content
@@ -711,11 +712,8 @@ window.DocxQrCode = class DocxQrCode
 		@result=null
 	decode:(@callback) ->
 		_this= this
-		console.log 'before',@imgName
 		@qr= new QrCode()
 		@qr.callback= () ->
-			console.log this
-			console.log "after:", _this.imgName
 			_this.ready= true
 			_this.result= this.result
 			testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
@@ -724,7 +722,13 @@ window.DocxQrCode = class DocxQrCode
 			_this.searchImage()
 		@qr.decode("data:image/png;base64,#{@base64Data}")
 	searchImage:() ->
-		if @result!=null and @result!= undefined and @result!= 'error decoding QR Code'
+		console.log @result
+		if @result.substr(0,4)=='gen:'
+			callback= (data) =>
+				@data=data
+				@callback(this,@imgName,@num)
+			@xmlTemplater.DocxGen.localImageCreator(@result,callback)
+		else if @result!=null and @result!= undefined and @result!= 'error decoding QR Code'
 			_thatiti= this
 			loadDocCallback= (fail=false) =>
 				if not fail
@@ -732,7 +736,6 @@ window.DocxQrCode = class DocxQrCode
 					@callback(this,@imgName,@num)
 				else
 					@callback(this,@imgName,@num)
-					# @xmlTemplater.localImageCreator(@result,callback)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
 			@callback(this,@imgName,@num)	

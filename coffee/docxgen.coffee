@@ -8,7 +8,10 @@ Created by Edgar HIPP
 window.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator,@finishedCallback) ->
-		@finishedCallback= () -> console.log 'document ready!' unless @finishedCallback?
+		@finishedCallback= (() -> console.log 'document ready!') unless @finishedCallback?
+		@localImageCreator= (arg,callback) ->
+			result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
+			callback(result)	
 		@templatedFiles=["word/document.xml"
 		"word/footer1.xml",
 		"word/footer2.xml",
@@ -26,10 +29,8 @@ window.DocxGen = class DocxGen
 		else
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
-		console.log @qrCodeWaitingFor
 		if @qrCodeWaitingFor.length==0
 			@ready=true
-			console.log @finishedCallback
 			@finishedCallback()
 	load: (content)->
 		@zip = new JSZip content

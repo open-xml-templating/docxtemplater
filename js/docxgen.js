@@ -197,10 +197,16 @@
       this.qrCode = qrCode != null ? qrCode : false;
       this.localImageCreator = localImageCreator;
       this.finishedCallback = finishedCallback;
-      this.finishedCallback = function() {
-        if (this.finishedCallback == null) {
+      if (this.finishedCallback == null) {
+        this.finishedCallback = (function() {
           return console.log('document ready!');
-        }
+        });
+      }
+      this.localImageCreator = function(arg, callback) {
+        var result;
+
+        result = JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC");
+        return callback(result);
       };
       this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
       this.qrCodeNumCallBack = 0;
@@ -222,10 +228,8 @@
         index = this.qrCodeWaitingFor.indexOf(num);
         this.qrCodeWaitingFor.splice(index, 1);
       }
-      console.log(this.qrCodeWaitingFor);
       if (this.qrCodeWaitingFor.length === 0) {
         this.ready = true;
-        console.log(this.finishedCallback);
         return this.finishedCallback();
       }
     };
@@ -1247,13 +1251,10 @@
 
       this.callback = callback;
       _this = this;
-      console.log('before', this.imgName);
       this.qr = new QrCode();
       this.qr.callback = function() {
         var testdoc;
 
-        console.log(this);
-        console.log("after:", _this.imgName);
         _this.ready = true;
         _this.result = this.result;
         testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
@@ -1265,10 +1266,17 @@
     };
 
     DocxQrCode.prototype.searchImage = function() {
-      var loadDocCallback, _thatiti,
+      var callback, loadDocCallback, _thatiti,
         _this = this;
 
-      if (this.result !== null && this.result !== void 0 && this.result !== 'error decoding QR Code') {
+      console.log(this.result);
+      if (this.result.substr(0, 4) === 'gen:') {
+        callback = function(data) {
+          _this.data = data;
+          return _this.callback(_this, _this.imgName, _this.num);
+        };
+        return this.xmlTemplater.DocxGen.localImageCreator(this.result, callback);
+      } else if (this.result !== null && this.result !== void 0 && this.result !== 'error decoding QR Code') {
         _thatiti = this;
         loadDocCallback = function(fail) {
           if (fail == null) {
