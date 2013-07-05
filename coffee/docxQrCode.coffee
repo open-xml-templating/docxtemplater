@@ -15,6 +15,7 @@ window.DocxQrCode = class DocxQrCode
 			_this.result=testdoc.content
 			_this.searchImage()
 		@qr.decode("data:image/png;base64,#{@base64Data}")
+		console.log "data:image/png;base64,#{@base64Data}"
 	searchImage:() ->
 		console.log @result
 		if @result.substr(0,4)=='gen:'

@@ -1262,7 +1262,8 @@
         _this.result = testdoc.content;
         return _this.searchImage();
       };
-      return this.qr.decode("data:image/png;base64," + this.base64Data);
+      this.qr.decode("data:image/png;base64," + this.base64Data);
+      return console.log("data:image/png;base64," + this.base64Data);
     };
 
     DocxQrCode.prototype.searchImage = function() {

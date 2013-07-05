@@ -260,8 +260,65 @@ describe 'DocxQrCode module', () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
+			console.log qrcodezip
 			docx= new DocxGen()
 			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
+
+
+		it "should work with Blablalalabioeajbiojbepbroji", () ->
+
+			runs () ->
+				qr= new DocxQrCode(qrcodezip.files['blabla.png'].data,obj,"custom.png",6)
+				fCalled= false
+				f= {test:() -> fCalled= true}				
+				spyOn(f,'test').andCallThrough()
+				qr.decode(f.test)
+
+			waitsFor( ()->fCalled)
+			
+			runs () ->
+				expect(f.test).toHaveBeenCalled();
+				expect(f.test.calls.length).toEqual(1);
+				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
+				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+				expect(f.test.mostRecentCall.args[2]).toEqual(6);
+		
+		it "should work with long texts", () ->
+
+			runs () ->
+				qr= new DocxQrCode(qrcodezip.files['custom.png'].data,obj,"custom.png",6)
+				fCalled= false
+				f= {test:() -> fCalled= true}				
+				spyOn(f,'test').andCallThrough()
+				qr.decode(f.test)
+
+			waitsFor( ()->fCalled)
+			
+			runs () ->
+				expect(f.test).toHaveBeenCalled();
+				expect(f.test.calls.length).toEqual(1);
+				expect(f.test.mostRecentCall.args[0].result).toEqual("Some custom text");
+				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+				expect(f.test.mostRecentCall.args[2]).toEqual(6);
+
+
+		it "should work with long URLs", () ->
+
+			runs () ->
+				qr= new DocxQrCode(qrcodezip.files['website.png'].data,obj,"web",6)
+				fCalled= false
+				f= {test:() -> fCalled= true}				
+				spyOn(f,'test').andCallThrough()
+				qr.decode(f.test)
+
+			waitsFor( ()->fCalled)
+			
+			runs () ->
+				expect(f.test).toHaveBeenCalled();
+				expect(f.test.calls.length).toEqual(1);
+				expect(f.test.mostRecentCall.args[0].result).toEqual("http://website.com/image.png");
+				expect(f.test.mostRecentCall.args[1]).toEqual("web");
+				expect(f.test.mostRecentCall.args[2]).toEqual(6);	
 		
 		it "should work with basic image", () ->
 			runs () ->
@@ -298,6 +355,7 @@ describe 'DocxQrCode module', () ->
 				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
 
+			
 
 describe "image Loop Replacing", () ->
 	describe 'rels', () ->

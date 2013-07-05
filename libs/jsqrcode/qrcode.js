@@ -51,6 +51,12 @@ this.decode = function(src){
 			var canvas_qr = document.createElement('canvas');
 			var context = canvas_qr.getContext('2d');
 			var canvas_out = document.getElementById("out-canvas");
+			
+
+			body=document.getElementsByTagName('body')[0]
+			
+
+			
 			if(canvas_out!=null)
             {
                 var outctx = canvas_out.getContext('2d');
@@ -71,17 +77,30 @@ this.decode = function(src){
 				return;
 			}
 			
+// _this.result=_this.process(context)
+
             try
             {
                 _this.result = _this.process(context);
             }
             catch(e)
             {
-				// console.log('error:'+e);
-                _this.result = "error decoding QR Code";
+            	// debugger;
+				// console.log('error:',e);
+				// console.log(e.getStack())
+                _this.result = "error decoding QR Code:"+e;
             }
 			if(_this.callback!=null)
+			{
 				_this.callback(_this.result);
+				var div= document.createElement('div')
+				var span= document.createElement('span')
+				span.innerHTML='Result:'+_this.result
+				div.appendChild(canvas_qr)
+				div.appendChild(span)
+				body.appendChild(div)
+			}
+				
 		}
 		image.src = src;
 	}

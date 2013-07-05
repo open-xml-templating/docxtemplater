@@ -745,9 +745,85 @@
         var docx;
 
         qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
+        console.log(qrcodezip);
         docx = new DocxGen();
         return obj = new DocXTemplater("", docx, {
           Tag: "tagValue"
+        });
+      });
+      it("should work with Blablalalabioeajbiojbepbroji", function() {
+        runs(function() {
+          var qr;
+
+          qr = new DocxQrCode(qrcodezip.files['blabla.png'].data, obj, "custom.png", 6);
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          return qr.decode(f.test);
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
+          expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(6);
+        });
+      });
+      it("should work with long texts", function() {
+        runs(function() {
+          var qr;
+
+          qr = new DocxQrCode(qrcodezip.files['custom.png'].data, obj, "custom.png", 6);
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          return qr.decode(f.test);
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("Some custom text");
+          expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(6);
+        });
+      });
+      it("should work with long URLs", function() {
+        runs(function() {
+          var qr;
+
+          qr = new DocxQrCode(qrcodezip.files['website.png'].data, obj, "web", 6);
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          return qr.decode(f.test);
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("http://website.com/image.png");
+          expect(f.test.mostRecentCall.args[1]).toEqual("web");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(6);
         });
       });
       it("should work with basic image", function() {
