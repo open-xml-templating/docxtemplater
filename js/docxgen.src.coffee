@@ -248,7 +248,9 @@ window.DocxGen = class DocxGen
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true) ->
 		@calcZip()
-		document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{@zip.generate()}"
+		result= @zip.generate()
+		if download then document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
+		result
 	calcZip: () ->
 		zip = new JSZip()
 		for index of @zip.files

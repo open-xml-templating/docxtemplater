@@ -428,11 +428,17 @@
     };
 
     DocxGen.prototype.output = function(download) {
+      var result;
+
       if (download == null) {
         download = true;
       }
       this.calcZip();
-      return document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + (this.zip.generate());
+      result = this.zip.generate();
+      if (download) {
+        document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + result;
+      }
+      return result;
     };
 
     DocxGen.prototype.calcZip = function() {

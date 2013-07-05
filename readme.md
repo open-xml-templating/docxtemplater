@@ -72,11 +72,11 @@ A simple Demo for replacing images can be found here: http://javascript-ninja.fr
 
 docxgen.js works with
 
-- Chrome **tested**
-- Firefox 3+ (even if all the tests don't pass right now, this is because the way Firefox parses xml files but it doesn't affect the resulting file)
+- Chrome **tested** on version 26
+- Firefox 3+ (**tested** on version 21, but should work with 3+)
 - Safari **not tested**
 
-Internet explorer is not supported (basically because xhr Requests can't be made on binary files)
+Internet explorer is not supported -event IE10- (basically because xhr Requests can't be made on binary files)
 
 You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxgenjs/test/SpecRunner.html
 
@@ -90,7 +90,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         This function returns a new DocxGen Object
 
-    new DocxGen(content[,templateVars,intelligentTagging,qrCode,localImageCreator,finishedCallback])
+    new DocxGen(content[,templateVars,intelligentTagging,qrCode,localImageCreator,qrFinishedCallback])
 
         content: 
             Type: string
@@ -111,7 +111,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         localImageCreator
             Type: function(arg,callback) [function that returns an arrow]
-            The function has to be customized only if you want to use the qrCode options. When the qrcode text starts with **gen:**, the image is not going to be loaded by url but DocxGen calls localImageCreator with **arg**=full Text decoded. The callback needs to be called with the image Data:**callback(result)**, in plain/txt format (if you want to create it from a Data-URI, you can use JSZipBase64.decode(data) to decode a Data-URI to plain/txt)
+            The function has to be customized only if you want to use the qrCode options (**qrCode=true**). When the qrcode text starts with **gen:**, the image is not going to be loaded by url but DocxGen calls localImageCreator with **arg**=full Text decoded. The callback needs to be called with the image Data:**callback(result)**, in plain/txt format (if you want to create it from a Data-URI, you can use JSZipBase64.decode(data) to decode a Data-URI to plain/txt)
 
             The default localImageCreator returns a red arrow, no matter what the arguments are:         
 
@@ -120,6 +120,9 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             
             [Default Image](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC)
 
+        qrFinishedCallBack:
+            Type: function () [function that console.log(ready)]
+                This function is called if you specify qrCode argument to true in this constructor, and will be called when all qrCodes have been replaced (because the qrCode replacing functions are **async**)
 
 ### Docxgen methods ###
 
@@ -142,8 +145,8 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
     output([download=true])
 
         download
-            Type:boolean
-            If download is true, file will be downloaded automatically
+            Type:boolean[true]
+            If download is true, file will be downloaded automatically with data URI.
             returns the output file.
 
         This function creates the docx file and downloads it on the user's computer. The name of the file is download.docx for Chrome, and some akward file names for Firefox: VEeTHCfS.docx.part.docx, and can't be changed because it is handled by the browser.
@@ -166,13 +169,15 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Default:"default.docx"
             Name of the file you would like the user to download.
 
-        This requires to include Downloadify.js, that needs flash version 10. Have a look at the *output* function if you don't want to depend on it.
+        This requires to include Downloadify.js, that needs flash version 10. Have a look at the *output* function if you don't want to depend on it. This function has the advantage that it works regardless of the file size
 
     getImageList()
 
         this gets all images that have one of the following extension: 'gif','jpeg','jpg','emf','png'
         Return format: Array of Object:
         [{path:string,files:ZipFile Object}]
+
+        You should'nt call this method before calling **applyTemplateVars()**, because applyTemplateVars can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTemplateVars()** without any problems
 
     setImage(path,imgData)
 
@@ -183,6 +188,9 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Type:"String"
             imgData in txt/plain
 
+        This sets the image given by a path and an imgData in txt/plain.
+        You should'nt call this method before calling **applyTemplateVars()**, because applyTemplateVars can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTemplateVars()** without any problems
+
     getFullText:([path])
 
         path
@@ -190,17 +198,22 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Default:"word/document.xml"
             This argument determines from which document you want to get the text. The main document is called word/document.xml, but they are other documents: "word/header1.xml", "word/footer1.xml"
 
+        @returns
+            Type:"String"
+            The string containing all the text from the document
+
+        This method gets only the text of a given document (not the formatting)
 
 ## Known issues ##
 
 Todo:
 
 - [x] QrCode Decoding
-- [ ] QrCode Decoding with brackets image.png?color={color}
-- [ ] QrCode Decoding callback problems (with {#forloops} :-) 
-- [ ] Adapt tests to firefox for xml parsing problem
+- [x] QrCode Decoding with brackets image.png?color={color}
+- [x] QrCode Decoding callback problems (with {#forloops} :-) 
+- [x] Adapt tests to firefox for xml parsing problem
 - [x] Refactoring of the inner tagging system
-- [ ] DocXtemplater is now a child of xmlTemplater
+- [x] DocXtemplater is now a child of xmlTemplater
 - [x] Tag searching and replacement
 - [x] Docx Output
 - [x] Docx Input
