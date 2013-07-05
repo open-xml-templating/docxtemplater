@@ -23,7 +23,7 @@ window.DocxQrCode = class DocxQrCode
 				@data=data
 				@callback(this,@imgName,@num)
 			@xmlTemplater.DocxGen.localImageCreator(@result,callback)
-		else if @result!=null and @result!= undefined and @result!= 'error decoding QR Code'
+		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
 			_thatiti= this
 			loadDocCallback= (fail=false) =>
 				if not fail
@@ -34,4 +34,3 @@ window.DocxQrCode = class DocxQrCode
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
 			@callback(this,@imgName,@num)	
-			

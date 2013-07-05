@@ -1,6 +1,6 @@
 # Docxgen.js #
 
-**docxgen.js** is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images.
+**docxgen.js** is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
 
 ## Syntax ##
 
@@ -45,19 +45,36 @@ A simple Demo for replacing images can be found here: http://javascript-ninja.fr
 - jszip-load.js
 - jszip-inflate.js
 
-2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended.
+2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended. This method is howewer useful because a lot of browsers are limited for the download size with the Data-URI method.
 
-3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color}. For this too work, you will need some other dependencies: jsqrcode/grid.js,jsqrcode/version.js,jsqrcode/detector.js,jsqrcode/formatinf.js,jsqrcode/errorlevel.js,jsqrcode/bitmat.js,jsqrcode/datablock.js,jsqrcode/bmparser.js,jsqrcode/datamask.js,jsqrcode/rsdecoder.js,jsqrcode/gf256poly.js,jsqrcode/gf256.js,jsqrcode/decoder.js,jsqrcode/qrcode.js,jsqrcode/findpat.js,jsqrcode/alignpat.js,jsqrcode/databr.js
+3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color} will take the *templateVars[color]* variable to make a dynamic URL. For this too work, you will need [jsqrcode](http://github.com/edi9999/jsqrcode "jsqrcode repositoty forked") and include the following files, in this order:
+
+    <script type="text/javascript" src="grid.js"></script>
+    <script type="text/javascript" src="version.js"></script>
+    <script type="text/javascript" src="detector.js"></script>
+    <script type="text/javascript" src="formatinf.js"></script>
+    <script type="text/javascript" src="errorlevel.js"></script>
+    <script type="text/javascript" src="bitmat.js"></script>
+    <script type="text/javascript" src="datablock.js"></script>
+    <script type="text/javascript" src="bmparser.js"></script>
+    <script type="text/javascript" src="datamask.js"></script>
+    <script type="text/javascript" src="rsdecoder.js"></script>
+    <script type="text/javascript" src="gf256poly.js"></script>
+    <script type="text/javascript" src="gf256.js"></script>
+    <script type="text/javascript" src="decoder.js"></script>
+    <script type="text/javascript" src="qrcode.js"></script>
+    <script type="text/javascript" src="findpat.js"></script>
+    <script type="text/javascript" src="alignpat.js"></script>
+    <script type="text/javascript" src="databr.js"></script>
 
 
 ## Browser support ##
 
 docxgen.js works with
 
-- Chrome
-- Firefox 3+ 
-- Safari
-- Opera
+- Chrome **tested**
+- Firefox 3+ (even if all the tests don't pass right now, this is because the way Firefox parses xml files but it doesn't affect the resulting file)
+- Safari **not tested**
 
 Internet explorer is not supported (basically because xhr Requests can't be made on binary files)
 
@@ -73,7 +90,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         This function returns a new DocxGen Object
 
-    new DocxGen(content[,templateVars,intelligentTagging,qrCode])
+    new DocxGen(content[,templateVars,intelligentTagging,qrCode,localImageCreator,finishedCallback])
 
         content: 
             Type: string
@@ -91,6 +108,18 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
         qrCode:
             Type: boolean [false]
             If qrCode is set to true, DocxGen will look at all the images to find a Qr-Code. If the Qr-code matches to a URL, this URL will be loaded by ajax (Be aware that the server you want to access needs to allow your request, or it won't work. http://stackoverflow.com/questions/9310112/why-am-i-seeing-an-origin-is-not-allowed-by-access-control-allow-origin-error )
+
+        localImageCreator
+            Type: function(arg,callback) [function that returns an arrow]
+            The function has to be customized only if you want to use the qrCode options. When the qrcode text starts with **gen:**, the image is not going to be loaded by url but DocxGen calls localImageCreator with **arg**=full Text decoded. The callback needs to be called with the image Data:**callback(result)**, in plain/txt format (if you want to create it from a Data-URI, you can use JSZipBase64.decode(data) to decode a Data-URI to plain/txt)
+
+            The default localImageCreator returns a red arrow, no matter what the arguments are:         
+
+            @localImageCreator= (arg,callback) ->
+            result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
+            
+            [Default Image](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC)
+
 
 ### Docxgen methods ###
 
@@ -120,7 +149,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
         This function creates the docx file and downloads it on the user's computer. The name of the file is download.docx for Chrome, and some akward file names for Firefox: VEeTHCfS.docx.part.docx, and can't be changed because it is handled by the browser.
         For more informations about how to solve this problem, see the **Filename Problems** section on [http://stuk.github.io/jszip/](http://stuk.github.io/jszip/)
 
-        Note: All browsers don't support the download of big files with Data URI, so you **should** use the `download` method for files bigger than 100kB [Details](http://stackoverflow.com/questions/695151/data-protocol-url-size-limitations)
+        Note: All browsers don't support the download of big files with Data URI, so you **should** use the `download` method for files bigger than 100kB data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC
 
     download(swfpath,imgpath[,fileName])
 

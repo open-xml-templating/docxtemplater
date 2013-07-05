@@ -1277,7 +1277,7 @@
           return _this.callback(_this, _this.imgName, _this.num);
         };
         return this.xmlTemplater.DocxGen.localImageCreator(this.result, callback);
-      } else if (this.result !== null && this.result !== void 0 && this.result !== 'error decoding QR Code') {
+      } else if (this.result !== null && this.result !== void 0 && this.result.substr(0, 22) !== 'error decoding QR Code') {
         _thatiti = this;
         loadDocCallback = function(fail) {
           if (fail == null) {

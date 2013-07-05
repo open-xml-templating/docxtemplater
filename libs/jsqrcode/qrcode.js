@@ -43,7 +43,6 @@ this.decode = function(src){
 	}
 	else
 	{
-		// debugger;
 		var image = new Image();
 		var _this=this
 		image.onload=function(){
@@ -85,9 +84,6 @@ this.decode = function(src){
             }
             catch(e)
             {
-            	// debugger;
-				// console.log('error:',e);
-				// console.log(e.getStack())
                 _this.result = "error decoding QR Code:"+e;
             }
 			if(_this.callback!=null)
@@ -157,7 +153,6 @@ this.process = function(ctx){
 	
 	var end = new Date().getTime();
 	var time = end - start;
-	console.log(time);
     
 	return this.decode_utf8(str);
 	//alert("Time:" + time + " Code: "+str);

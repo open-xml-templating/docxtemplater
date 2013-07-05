@@ -734,7 +734,7 @@
   });
 
   describe('DocxQrCode module', function() {
-    return describe("should calculate simple Docx", function() {
+    return describe("Calculate simple Docx", function() {
       var f, fCalled, obj, qrcodezip;
 
       f = null;
@@ -851,7 +851,7 @@
           return expect(f.test.mostRecentCall.args[2]).toEqual(4);
         });
       });
-      return it("should work with image with {tags}", function() {
+      it("should work with image with {tags}", function() {
         runs(function() {
           var qr;
 
@@ -872,6 +872,31 @@
           expect(f.test).toHaveBeenCalled();
           expect(f.test.calls.length).toEqual(1);
           expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
+          expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(2);
+        });
+      });
+      return it("should work with qr inside image", function() {
+        runs(function() {
+          var qr;
+
+          qr = new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data, obj, "tag.png", 2);
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          return qr.decode(f.test);
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("http://stackoverflow.com/questions/17488685/display-extra-text-in-treeview-nodes-not-just-node-text");
           expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
           return expect(f.test.mostRecentCall.args[2]).toEqual(2);
         });

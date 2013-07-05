@@ -256,7 +256,7 @@ describe "xmlTemplater", ()->
 
 
 describe 'DocxQrCode module', () ->
-	describe "should calculate simple Docx", () ->
+	describe "Calculate simple Docx", () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
@@ -352,6 +352,24 @@ describe 'DocxQrCode module', () ->
 				expect(f.test).toHaveBeenCalled();
 				expect(f.test.calls.length).toEqual(1);
 				expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
+				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
+				expect(f.test.mostRecentCall.args[2]).toEqual(2);
+
+		it "should work with qr inside image", () ->
+
+			runs () ->
+				qr= new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data,obj,"tag.png",2)
+				fCalled= false
+				f= {test:() -> fCalled= true}				
+				spyOn(f,'test').andCallThrough()
+				qr.decode(f.test)
+
+			waitsFor( ()->fCalled)
+			
+			runs () ->
+				expect(f.test).toHaveBeenCalled();
+				expect(f.test.calls.length).toEqual(1);
+				expect(f.test.mostRecentCall.args[0].result).toEqual("http://stackoverflow.com/questions/17488685/display-extra-text-in-treeview-nodes-not-just-node-text");
 				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
 

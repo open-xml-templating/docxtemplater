@@ -395,7 +395,7 @@ function FinderPatternFinder(qrcode)
 			if (startSize < 3)
 			{
 				// Couldn't find enough finder patterns
-				throw "Couldn't find enough finder patterns";
+				throw "Couldn't find enough finder patterns:"+startSize+" patterns found";
 			}
 			
 			// Filter outlier possibilities whose module size is too different
