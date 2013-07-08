@@ -1,4 +1,4 @@
-window.XmlTemplater = class XmlTemplater
+XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
@@ -351,3 +351,8 @@ window.XmlTemplater = class XmlTemplater
 		imgReplacer.findImages()
 		imgReplacer.replaceImages()
 		this
+
+if window?
+	window.XmlTemplater=XmlTemplater
+else
+	global.XmlTemplater=XmlTemplater

@@ -1,7 +1,12 @@
-window.DocUtils= {}
-
-window.docX=[]
-window.docXData=[]
+if window? #js
+	console.log 1
+	window.DocUtils= {}
+	window.docX=[]
+	window.docXData=[]
+else 
+	global.DocUtils= {}
+	global.docX=[]
+	global.docXData=[]
 
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
@@ -117,8 +122,7 @@ Created by Edgar HIPP
 03/06/2013
 ###
 
-
-window.DocxGen = class DocxGen
+DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator,@finishedCallback) ->
 		@finishedCallback= (() -> console.log 'document ready!') unless @finishedCallback?
@@ -279,7 +283,12 @@ window.DocxGen = class DocxGen
 			transparent: true
 			append: false
 			dataType:'base64'
-window.XmlTemplater = class XmlTemplater
+
+if window?
+	window.DocxGen=DocxGen
+else 
+	global.DocxGen=DocxGen
+XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
@@ -632,13 +641,24 @@ window.XmlTemplater = class XmlTemplater
 		imgReplacer.findImages()
 		imgReplacer.replaceImages()
 		this
-window.DocXTemplater = class DocXTemplater extends XmlTemplater
+
+if window?
+	window.XmlTemplater=XmlTemplater
+else
+	global.XmlTemplater=XmlTemplater
+
+DocXTemplater = class DocXTemplater extends XmlTemplater
 	constructor:(content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
 		super(null,creator,@templateVars,@intelligentTagging,@scopePath,@usedTemplateVars,@imageId)
 		@class=DocXTemplater
 		@tagX='w:t'
 		if typeof content=="string" then @load content else throw "content must be string!"
-window.ImgReplacer = class ImgReplacer
+
+if window?
+	window.DocXTemplater=DocXTemplater
+else
+	global.DocXTemplater=DocXTemplater
+ImgReplacer = class ImgReplacer
 	constructor: (@xmlTemplater)->
 		@imgMatches=[]
 	findImages:() ->
@@ -706,7 +726,12 @@ window.ImgReplacer = class ImgReplacer
 
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
-window.DocxQrCode = class DocxQrCode
+
+if window?
+	window.ImgReplacer=ImgReplacer
+else
+	global.ImgReplacer=ImgReplacer
+DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
 		@base64Data=JSZipBase64.encode(@data)
@@ -742,3 +767,8 @@ window.DocxQrCode = class DocxQrCode
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
 			@callback(this,@imgName,@num)	
+
+if window?
+	window.DocxQrCode=DocxQrCode
+else
+	global.DocxQrCode=DocxQrCode

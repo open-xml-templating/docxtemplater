@@ -4,8 +4,7 @@ Created by Edgar HIPP
 03/06/2013
 ###
 
-
-window.DocxGen = class DocxGen
+DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator,@finishedCallback) ->
 		@finishedCallback= (() -> console.log 'document ready!') unless @finishedCallback?
@@ -166,3 +165,8 @@ window.DocxGen = class DocxGen
 			transparent: true
 			append: false
 			dataType:'base64'
+
+if window?
+	window.DocxGen=DocxGen
+else 
+	global.DocxGen=DocxGen

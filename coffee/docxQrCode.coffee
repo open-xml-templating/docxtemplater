@@ -1,4 +1,4 @@
-window.DocxQrCode = class DocxQrCode
+DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
 		@base64Data=JSZipBase64.encode(@data)
@@ -34,3 +34,8 @@ window.DocxQrCode = class DocxQrCode
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
 			@callback(this,@imgName,@num)	
+
+if window?
+	window.DocxQrCode=DocxQrCode
+else
+	global.DocxQrCode=DocxQrCode

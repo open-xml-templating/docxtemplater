@@ -1,4 +1,4 @@
-//@ sourceMappingURL=docxgenTest.map
+//@ sourceMappingURL=docxgenTest.spec.map
 (function() {
   Object.size = function(obj) {
     var key, log, size;
@@ -11,9 +11,13 @@
     return size;
   };
 
-  window.docX = [];
-
-  window.docXData = [];
+  if (typeof window !== "undefined" && window !== null) {
+    window.docX = [];
+    window.docXData = [];
+  } else {
+    global.docX = [];
+    global.docXData = [];
+  }
 
   DocUtils.loadDoc('imageExample.docx');
 

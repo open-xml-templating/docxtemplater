@@ -6,11 +6,16 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  window.DocUtils = {};
-
-  window.docX = [];
-
-  window.docXData = [];
+  if (typeof window !== "undefined" && window !== null) {
+    console.log(1);
+    window.DocUtils = {};
+    window.docX = [];
+    window.docXData = [];
+  } else {
+    global.DocUtils = {};
+    global.docX = [];
+    global.docXData = [];
+  }
 
   DocUtils.nl2br = function(str, is_xhtml) {
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
@@ -186,7 +191,7 @@
   */
 
 
-  window.DocxGen = DocxGen = (function() {
+  DocxGen = DocxGen = (function() {
     var imageExtensions;
 
     imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
@@ -504,7 +509,13 @@
 
   })();
 
-  window.XmlTemplater = XmlTemplater = (function() {
+  if (typeof window !== "undefined" && window !== null) {
+    window.DocxGen = DocxGen;
+  } else {
+    global.DocxGen = DocxGen;
+  }
+
+  XmlTemplater = XmlTemplater = (function() {
     function XmlTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId, qrcodeCallback, localImageCreator) {
       var options;
 
@@ -1134,7 +1145,13 @@
 
   })();
 
-  window.DocXTemplater = DocXTemplater = (function(_super) {
+  if (typeof window !== "undefined" && window !== null) {
+    window.XmlTemplater = XmlTemplater;
+  } else {
+    global.XmlTemplater = XmlTemplater;
+  }
+
+  DocXTemplater = DocXTemplater = (function(_super) {
     __extends(DocXTemplater, _super);
 
     function DocXTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId) {
@@ -1160,7 +1177,13 @@
 
   })(XmlTemplater);
 
-  window.ImgReplacer = ImgReplacer = (function() {
+  if (typeof window !== "undefined" && window !== null) {
+    window.DocXTemplater = DocXTemplater;
+  } else {
+    global.DocXTemplater = DocXTemplater;
+  }
+
+  ImgReplacer = ImgReplacer = (function() {
     function ImgReplacer(xmlTemplater) {
       this.xmlTemplater = xmlTemplater;
       this.imgMatches = [];
@@ -1240,7 +1263,13 @@
 
   })();
 
-  window.DocxQrCode = DocxQrCode = (function() {
+  if (typeof window !== "undefined" && window !== null) {
+    window.ImgReplacer = ImgReplacer;
+  } else {
+    global.ImgReplacer = ImgReplacer;
+  }
+
+  DocxQrCode = DocxQrCode = (function() {
     function DocxQrCode(imageData, xmlTemplater, imgName, num, callback) {
       this.xmlTemplater = xmlTemplater;
       this.imgName = imgName != null ? imgName : "";
@@ -1305,5 +1334,11 @@
     return DocxQrCode;
 
   })();
+
+  if (typeof window !== "undefined" && window !== null) {
+    window.DocxQrCode = DocxQrCode;
+  } else {
+    global.DocxQrCode = DocxQrCode;
+  }
 
 }).call(this);

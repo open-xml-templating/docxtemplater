@@ -1,4 +1,4 @@
-window.ImgReplacer = class ImgReplacer
+ImgReplacer = class ImgReplacer
 	constructor: (@xmlTemplater)->
 		@imgMatches=[]
 	findImages:() ->
@@ -66,3 +66,8 @@ window.ImgReplacer = class ImgReplacer
 
 				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 				@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
+
+if window?
+	window.ImgReplacer=ImgReplacer
+else
+	global.ImgReplacer=ImgReplacer

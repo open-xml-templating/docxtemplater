@@ -1,7 +1,12 @@
-window.DocUtils= {}
-
-window.docX=[]
-window.docXData=[]
+if window? #js
+	console.log 1
+	window.DocUtils= {}
+	window.docX=[]
+	window.docXData=[]
+else 
+	global.DocUtils= {}
+	global.docX=[]
+	global.docXData=[]
 
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');

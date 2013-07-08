@@ -5,8 +5,13 @@ Object.size = (obj) ->
 		size++
 	size
 
-window.docX=[]
-window.docXData=[]
+if window?
+	window.docX=[]
+	window.docXData=[]
+else
+	global.docX=[]
+	global.docXData=[]
+	
 
 DocUtils.loadDoc('imageExample.docx')
 DocUtils.loadDoc('image.png',true)
