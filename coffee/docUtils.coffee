@@ -1,5 +1,4 @@
 if window? #js
-	console.log 1
 	window.DocUtils= {}
 	window.docX=[]
 	window.docXData=[]
@@ -11,34 +10,63 @@ else
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
+
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null) ->
-	xhrDoc= new XMLHttpRequest()
 	if path.indexOf('/')!=-1
 		totalPath= path
 		fileName= totalPath
 	else
 		fileName= path
-		totalPath= "../examples/#{path}"
-	xhrDoc.open('GET', totalPath , async)
-	if xhrDoc.overrideMimeType
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =(e)->
-		if this.readyState == 4
-			if this.status == 200
-				window.docXData[fileName]=this.response
-				if noDocx==false
-					window.docX[fileName]=new DocxGen(this.response,{},intelligentTagging)
+		if window?
+			totalPath= "../examples/#{path}"
+		else
+			totalPath= "../../examples/#{path}"
+	loadFile = (data) ->
+		if window?
+			window.docXData[fileName]=data
+			if noDocx==false
+				window.docX[fileName]=new DocxGen(data,{},intelligentTagging)
+			if callback?
+				callback(false)
+			if async==false
+				return window.docXData[fileName]
+		else
+			global.docXData[fileName]=data
+			if noDocx==false
+				console.log 1
+				# global.docX[fileName]=new DocxGen(data,{},intelligentTagging)
+			if callback?
+				callback(false)
+			if async==false
+				return global.docXData[fileName]
 
-				if callback?
-					callback(false)
-				if async==false
-					return window.docXData[fileName]
-			else
-				# throw 'error loading doc'
-				console.log 'error loading doc'
-				callback(true)
-	xhrDoc.send()
+
+
+	if window?
+		xhrDoc= new XMLHttpRequest()		
+		xhrDoc.open('GET', totalPath , async)
+		if xhrDoc.overrideMimeType
+			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+		xhrDoc.onreadystatechange =(e)->
+			if this.readyState == 4
+				if this.status == 200
+					loadFile(this.response)
+				else
+					console.log 'error loading doc'
+					callback(true)
+		xhrDoc.send()
+	else
+		if async==true
+			fs.readFile totalPath,(err, data) ->
+				if err
+					throw err
+				loadFile(data)
+		else
+			data=fs.readFileSync(totalPath)
+			loadFile(data)
 	return fileName
+
+
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'

@@ -17,6 +17,14 @@
   } else {
     global.docX = [];
     global.docXData = [];
+    global.fs = require('fs');
+    global.vm = require('vm');
+    ['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach(function(file) {
+      return vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
+    });
+    ['docxgen.js'].forEach(function(file) {
+      return vm.runInThisContext(fs.readFileSync(__dirname + '/../../js/' + file), file);
+    });
   }
 
   DocUtils.loadDoc('imageExample.docx');
@@ -86,6 +94,7 @@
         return expect(docXData['image.png'].length).toEqual(18062);
       });
       return it("should have the right number of files (the docx unzipped)", function() {
+        docX['imageExample.docx'] = new DocxGen(docXData['imageExample.docx']);
         return expect(Object.size(docX['imageExample.docx'].zip.files)).toEqual(22);
       });
     });
@@ -749,7 +758,6 @@
         var docx;
 
         qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
-        console.log(qrcodezip);
         docx = new DocxGen();
         return obj = new DocXTemplater("", docx, {
           Tag: "tagValue"

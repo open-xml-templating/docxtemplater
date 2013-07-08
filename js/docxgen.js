@@ -7,7 +7,6 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   if (typeof window !== "undefined" && window !== null) {
-    console.log(1);
     window.DocUtils = {};
     window.docX = [];
     window.docXData = [];
@@ -22,7 +21,7 @@
   };
 
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback) {
-    var fileName, totalPath, xhrDoc;
+    var data, fileName, loadFile, totalPath, xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
@@ -36,38 +35,72 @@
     if (callback == null) {
       callback = null;
     }
-    xhrDoc = new XMLHttpRequest();
     if (path.indexOf('/') !== -1) {
       totalPath = path;
       fileName = totalPath;
     } else {
       fileName = path;
-      totalPath = "../examples/" + path;
+      if (typeof window !== "undefined" && window !== null) {
+        totalPath = "../examples/" + path;
+      } else {
+        totalPath = "../../examples/" + path;
+      }
     }
-    xhrDoc.open('GET', totalPath, async);
-    if (xhrDoc.overrideMimeType) {
-      xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
-    }
-    xhrDoc.onreadystatechange = function(e) {
-      if (this.readyState === 4) {
-        if (this.status === 200) {
-          window.docXData[fileName] = this.response;
-          if (noDocx === false) {
-            window.docX[fileName] = new DocxGen(this.response, {}, intelligentTagging);
-          }
-          if (callback != null) {
-            callback(false);
-          }
-          if (async === false) {
-            return window.docXData[fileName];
-          }
-        } else {
-          console.log('error loading doc');
-          return callback(true);
+    loadFile = function(data) {
+      if (typeof window !== "undefined" && window !== null) {
+        window.docXData[fileName] = data;
+        if (noDocx === false) {
+          window.docX[fileName] = new DocxGen(data, {}, intelligentTagging);
+        }
+        if (callback != null) {
+          callback(false);
+        }
+        if (async === false) {
+          return window.docXData[fileName];
+        }
+      } else {
+        global.docXData[fileName] = data;
+        if (noDocx === false) {
+          console.log(1);
+        }
+        if (callback != null) {
+          callback(false);
+        }
+        if (async === false) {
+          return global.docXData[fileName];
         }
       }
     };
-    xhrDoc.send();
+    if (typeof window !== "undefined" && window !== null) {
+      xhrDoc = new XMLHttpRequest();
+      xhrDoc.open('GET', totalPath, async);
+      if (xhrDoc.overrideMimeType) {
+        xhrDoc.overrideMimeType('text/plain; charset=x-user-defined');
+      }
+      xhrDoc.onreadystatechange = function(e) {
+        if (this.readyState === 4) {
+          if (this.status === 200) {
+            return loadFile(this.response);
+          } else {
+            console.log('error loading doc');
+            return callback(true);
+          }
+        }
+      };
+      xhrDoc.send();
+    } else {
+      if (async === true) {
+        fs.readFile(totalPath, function(err, data) {
+          if (err) {
+            throw err;
+          }
+          return loadFile(data);
+        });
+      } else {
+        data = fs.readFileSync(totalPath);
+        loadFile(data);
+      }
+    }
     return fileName;
   };
 
@@ -216,7 +249,7 @@
       this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
       this.qrCodeNumCallBack = 0;
       this.qrCodeWaitingFor = [];
-      if (typeof content === "string") {
+      if (content != null) {
         this.load(content);
       }
     }

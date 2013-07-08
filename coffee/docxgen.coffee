@@ -21,7 +21,7 @@ DocxGen = class DocxGen
 		]
 		@qrCodeNumCallBack=0
 		@qrCodeWaitingFor= []
-		if typeof content == "string" then @load(content)
+		if content? then @load(content)
 	qrCodeCallBack:(num,add=true) ->
 		if add==true
 			@qrCodeWaitingFor.push num

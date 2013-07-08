@@ -11,6 +11,18 @@ if window?
 else
 	global.docX=[]
 	global.docXData=[]
+	global.fs= require('fs')
+	global.vm = require('vm')
+
+	['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach (file) ->
+		vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
+	
+	['docxgen.js'].forEach (file) ->
+		vm.runInThisContext(fs.readFileSync(__dirname + '/../../js/' + file), file);
+
+
+	# require('../../js/docxgen.js')
+	# global.JSZip=require('../../libs/jszip/jszip.js')
 	
 
 DocUtils.loadDoc('imageExample.docx')
@@ -50,6 +62,9 @@ describe "DocxGenLoading", () ->
 			expect(docXData['imageExample.docx'].length).toEqual(729580)
 			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
+			docX['imageExample.docx']=new DocxGen(docXData['imageExample.docx'])
+			# console.log docX['imageExample.docx']
+			# console.log docX['imageExample.docx'].zip
 			expect(Object.size(docX['imageExample.docx'].zip.files)).toEqual(22)
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
@@ -265,7 +280,6 @@ describe 'DocxQrCode module', () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-			console.log qrcodezip
 			docx= new DocxGen()
 			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
 
