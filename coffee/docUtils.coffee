@@ -33,8 +33,7 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		else
 			global.docXData[fileName]=data
 			if noDocx==false
-				console.log 1
-				# global.docX[fileName]=new DocxGen(data,{},intelligentTagging)
+				global.docX[fileName]=new DocxGen(data,{},intelligentTagging)
 			if callback?
 				callback(false)
 			if async==false
@@ -57,12 +56,12 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		xhrDoc.send()
 	else
 		if async==true
-			fs.readFile totalPath,(err, data) ->
+			fs.readFile totalPath,"binary", (err, data) ->
 				if err
 					throw err
 				loadFile(data)
 		else
-			data=fs.readFileSync(totalPath)
+			data=fs.readFileSync(totalPath,"binary")
 			loadFile(data)
 	return fileName
 
@@ -105,14 +104,20 @@ DocUtils.xml2Str = (xmlNode) ->
 	return content;
 
 DocUtils.Str2xml= (str) ->
-	if window.DOMParser #Chrome, Firefox, and modern browsers
-		parser=new DOMParser();
-		xmlDoc=parser.parseFromString(str,"text/xml")
-	else # Internet Explorer
-		xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
-		xmlDoc.async=false
-		xmlDoc.loadXML(str)
-	xmlDoc
+	if window?
+		if window.DOMParser #Chrome, Firefox, and modern browsers
+			parser=new DOMParser();
+			xmlDoc=parser.parseFromString(str,"text/xml")
+		else # Internet Explorer
+			xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
+			xmlDoc.async=false
+			xmlDoc.loadXML(str)
+		return xmlDoc
+	else
+		if DOMParser
+			parser=new DOMParser();
+			xmlDoc=parser.parseFromString(str,"text/xml")
+		return xmlDoc
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)

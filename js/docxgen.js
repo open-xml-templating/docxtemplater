@@ -61,7 +61,7 @@
       } else {
         global.docXData[fileName] = data;
         if (noDocx === false) {
-          console.log(1);
+          global.docX[fileName] = new DocxGen(data, {}, intelligentTagging);
         }
         if (callback != null) {
           callback(false);
@@ -90,14 +90,14 @@
       xhrDoc.send();
     } else {
       if (async === true) {
-        fs.readFile(totalPath, function(err, data) {
+        fs.readFile(totalPath, "binary", function(err, data) {
           if (err) {
             throw err;
           }
           return loadFile(data);
         });
       } else {
-        data = fs.readFileSync(totalPath);
+        data = fs.readFileSync(totalPath, "binary");
         loadFile(data);
       }
     }
@@ -157,15 +157,23 @@
   DocUtils.Str2xml = function(str) {
     var parser, xmlDoc;
 
-    if (window.DOMParser) {
-      parser = new DOMParser();
-      xmlDoc = parser.parseFromString(str, "text/xml");
+    if (typeof window !== "undefined" && window !== null) {
+      if (window.DOMParser) {
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(str, "text/xml");
+      } else {
+        xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+        xmlDoc.async = false;
+        xmlDoc.loadXML(str);
+      }
+      return xmlDoc;
     } else {
-      xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-      xmlDoc.async = false;
-      xmlDoc.loadXML(str);
+      if (DOMParser) {
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(str, "text/xml");
+      }
+      return xmlDoc;
     }
-    return xmlDoc;
   };
 
   DocUtils.replaceFirstFrom = function(string, search, replace, from) {
@@ -568,7 +576,7 @@
         };
       }
       this.tagX = '';
-      this["class"] = window.XmlTemplater;
+      this["class"] = XmlTemplater;
       if (creator instanceof DocxGen || (creator == null)) {
         this.DocxGen = creator;
       } else {
@@ -1227,9 +1235,9 @@
     };
 
     ImgReplacer.prototype.replaceImages = function() {
-      var callback, imageTag, imgData, imgName, match, newId, oldFile, rId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results;
+      var callback, imageTag, imgData, imgName, match, newId, oldFile, qr, rId, tag, tagrId, u, xmlImg, _i, _len, _ref, _results;
 
-      window.qr = [];
+      qr = [];
       callback = function(docxqrCode) {
         docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
         docxqrCode.xmlTemplater.numQrCode--;
@@ -1249,7 +1257,7 @@
               tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
               imgName = ("Copie_" + this.xmlTemplater.imageId + ".png").replace(/\x20/, "");
               this.xmlTemplater.DocxGen.qrCodeNumCallBack++;
-              window.qr[u] = new DocxQrCode(oldFile.data, this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+              qr[u] = new DocxQrCode(oldFile.data, this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
               this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, true);
               newId = this.xmlTemplater.DocxGen.addImageRels(imgName, "");
               this.xmlTemplater.imageId++;
@@ -1259,7 +1267,7 @@
               imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
               this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], DocUtils.xml2Str(imageTag));
               this.xmlTemplater.numQrCode++;
-              _results.push(window.qr[u].decode(callback));
+              _results.push(qr[u].decode(callback));
             } else {
               _results.push(void 0);
             }

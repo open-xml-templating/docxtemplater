@@ -8,7 +8,7 @@ ImgReplacer = class ImgReplacer
 		</w:drawing>
 		///g, @xmlTemplater.content
 	replaceImages: ()->
-		window.qr=[]
+		qr=[]
 
 		callback= (docxqrCode) ->
 			docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
@@ -31,7 +31,7 @@ ImgReplacer = class ImgReplacer
 						tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 						imgName= ("Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
 						@xmlTemplater.DocxGen.qrCodeNumCallBack++
-						window.qr[u]= new DocxQrCode(oldFile.data,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+						qr[u]= new DocxQrCode(oldFile.data,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 						@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
 
 
@@ -45,8 +45,8 @@ ImgReplacer = class ImgReplacer
 						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 						@xmlTemplater.numQrCode++
 
-							# @xmlTemplater.qrCodeCallBack(-1)
-						window.qr[u].decode(callback)
+						# @xmlTemplater.qrCodeCallBack(-1)
+						qr[u].decode(callback)
 
 			else if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
 				

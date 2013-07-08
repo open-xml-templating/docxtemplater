@@ -2,7 +2,7 @@ XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
-		@class=window.XmlTemplater
+		@class=XmlTemplater
 		if creator instanceof DocxGen or (not creator?)
 			@DocxGen=creator
 		else

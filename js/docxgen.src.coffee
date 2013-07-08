@@ -33,8 +33,7 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		else
 			global.docXData[fileName]=data
 			if noDocx==false
-				console.log 1
-				# global.docX[fileName]=new DocxGen(data,{},intelligentTagging)
+				global.docX[fileName]=new DocxGen(data,{},intelligentTagging)
 			if callback?
 				callback(false)
 			if async==false
@@ -57,12 +56,12 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		xhrDoc.send()
 	else
 		if async==true
-			fs.readFile totalPath,(err, data) ->
+			fs.readFile totalPath,"binary", (err, data) ->
 				if err
 					throw err
 				loadFile(data)
 		else
-			data=fs.readFileSync(totalPath)
+			data=fs.readFileSync(totalPath,"binary")
 			loadFile(data)
 	return fileName
 
@@ -105,14 +104,20 @@ DocUtils.xml2Str = (xmlNode) ->
 	return content;
 
 DocUtils.Str2xml= (str) ->
-	if window.DOMParser #Chrome, Firefox, and modern browsers
-		parser=new DOMParser();
-		xmlDoc=parser.parseFromString(str,"text/xml")
-	else # Internet Explorer
-		xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
-		xmlDoc.async=false
-		xmlDoc.loadXML(str)
-	xmlDoc
+	if window?
+		if window.DOMParser #Chrome, Firefox, and modern browsers
+			parser=new DOMParser();
+			xmlDoc=parser.parseFromString(str,"text/xml")
+		else # Internet Explorer
+			xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
+			xmlDoc.async=false
+			xmlDoc.loadXML(str)
+		return xmlDoc
+	else
+		if DOMParser
+			parser=new DOMParser();
+			xmlDoc=parser.parseFromString(str,"text/xml")
+		return xmlDoc
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
@@ -320,7 +325,7 @@ XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
 		@tagX=''
-		@class=window.XmlTemplater
+		@class=XmlTemplater
 		if creator instanceof DocxGen or (not creator?)
 			@DocxGen=creator
 		else
@@ -696,7 +701,7 @@ ImgReplacer = class ImgReplacer
 		</w:drawing>
 		///g, @xmlTemplater.content
 	replaceImages: ()->
-		window.qr=[]
+		qr=[]
 
 		callback= (docxqrCode) ->
 			docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
@@ -719,7 +724,7 @@ ImgReplacer = class ImgReplacer
 						tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 						imgName= ("Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
 						@xmlTemplater.DocxGen.qrCodeNumCallBack++
-						window.qr[u]= new DocxQrCode(oldFile.data,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+						qr[u]= new DocxQrCode(oldFile.data,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 						@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
 
 
@@ -733,8 +738,8 @@ ImgReplacer = class ImgReplacer
 						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 						@xmlTemplater.numQrCode++
 
-							# @xmlTemplater.qrCodeCallBack(-1)
-						window.qr[u].decode(callback)
+						# @xmlTemplater.qrCodeCallBack(-1)
+						qr[u].decode(callback)
 
 			else if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
 				
