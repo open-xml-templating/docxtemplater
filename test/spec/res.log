@@ -1,49 +1,6 @@
-................[ { tag: '</w:t>', offset: 9 },
-  { tag: '</w:r>', offset: 15 },
-  { tag: '</w:p>', offset: 21 },
-  { tag: '</w:tc>', offset: 27 },
-  { tag: '</w:tr>', offset: 34 },
-  { tag: '</w:tbl>', offset: 41 },
-  { tag: '<w:p>', offset: 189 },
-  { tag: '<w:r>', offset: 258 },
-  { tag: '<w:t>', offset: 307 } ]
-F..F...............
+...................................
 
-Failures:
-
-  1) scope calculation should compute the scope between a w:t in an array and the other outside
-   Message:
-     Expected [ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '</w:tc>', offset : 27 }, { tag : '</w:tr>', offset : 34 }, { tag : '</w:tbl>', offset : 41 }, { tag : '<w:p>', offset : 189 }, { tag : '<w:r>', offset : 258 }, { tag : '<w:t>', offset : 307 } ] to equal [ { tag : '</w:t>', offset : 11 }, { tag : '</w:r>', offset : 17 }, { tag : '</w:p>', offset : 23 }, { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 }, { tag : '<w:p>', offset : 191 }, { tag : '<w:r>', offset : 260 }, { tag : '<w:t>', offset : 309 } ].
-   Stacktrace:
-     Error: Expected [ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '</w:tc>', offset : 27 }, { tag : '</w:tr>', offset : 34 }, { tag : '</w:tbl>', offset : 41 }, { tag : '<w:p>', offset : 189 }, { tag : '<w:r>', offset : 258 }, { tag : '<w:t>', offset : 307 } ] to equal [ { tag : '</w:t>', offset : 11 }, { tag : '</w:r>', offset : 17 }, { tag : '</w:p>', offset : 23 }, { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 }, { tag : '<w:p>', offset : 191 }, { tag : '<w:r>', offset : 260 }, { tag : '<w:t>', offset : 309 } ].
-    at new jasmine.ExpectationResult (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:114:32)
-    at null.toEqual (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:1235:29)
-    at null.<anonymous> (C:\wamp\www\sferenoreport\versionjs\test\spec\docxgenTest.spec.js:340:28)
-    at jasmine.Block.execute (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:1064:17)
-    at jasmine.Queue.next_ (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2096:31)
-    at jasmine.Queue.start (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2049:8)
-    at jasmine.Spec.execute (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2376:14)
-    at jasmine.Queue.next_ (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2096:31)
-    at jasmine.Queue.start (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2049:8)
-    at jasmine.Suite.execute (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2521:14)
-
-  2) scope diff calculation should compute the scopeDiff between a w:t in an array and the other outside
-   Message:
-     Expected [ { tag : '</w:tc>', offset : 27 }, { tag : '</w:tr>', offset : 34 }, { tag : '</w:tbl>', offset : 41 } ] to equal [ { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 } ].
-   Stacktrace:
-     Error: Expected [ { tag : '</w:tc>', offset : 27 }, { tag : '</w:tr>', offset : 34 }, { tag : '</w:tbl>', offset : 41 } ] to equal [ { tag : '</w:tc>', offset : 29 }, { tag : '</w:tr>', offset : 36 }, { tag : '</w:tbl>', offset : 43 } ].
-    at new jasmine.ExpectationResult (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:114:32)
-    at null.toEqual (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:1235:29)
-    at null.<anonymous> (C:\wamp\www\sferenoreport\versionjs\test\spec\docxgenTest.spec.js:393:28)
-    at jasmine.Block.execute (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:1064:17)
-    at jasmine.Queue.next_ (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2096:31)
-    at jasmine.Queue.start (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2049:8)
-    at jasmine.Spec.execute (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2376:14)
-    at jasmine.Queue.next_ (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2096:31)
-    at jasmine.Queue.start (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2049:8)
-    at jasmine.Suite.execute (C:\Users\Edgar\AppData\Roaming\npm\node_modules\jasmine-node\lib\jasmine-node/jasmine-1.3.1.js:2521:14)
-
-Finished in 0.518 seconds
-35 tests, 365 assertions, 2 failures, 0 skipped
+Finished in 0.493 seconds
+35 tests, 365 assertions, 0 failures, 0 skipped
 
 

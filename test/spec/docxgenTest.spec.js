@@ -335,36 +335,35 @@
     return it('should compute the scope between a w:t in an array and the other outside', function() {
       var scope;
 
-      scope = xmlTemplater.calcScopeText("defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
-      console.log(scope);
+      scope = xmlTemplater.calcScopeText("defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
       return expect(scope).toEqual([
         {
           tag: '</w:t>',
-          offset: 11
+          offset: 8
         }, {
           tag: '</w:r>',
-          offset: 17
+          offset: 14
         }, {
           tag: '</w:p>',
-          offset: 23
+          offset: 20
         }, {
           tag: '</w:tc>',
-          offset: 29
+          offset: 26
         }, {
           tag: '</w:tr>',
-          offset: 36
+          offset: 33
         }, {
           tag: '</w:tbl>',
-          offset: 43
+          offset: 40
         }, {
           tag: '<w:p>',
-          offset: 191
+          offset: 188
         }, {
           tag: '<w:r>',
-          offset: 260
+          offset: 257
         }, {
           tag: '<w:t>',
-          offset: 309
+          offset: 306
         }
       ]);
     });
@@ -389,17 +388,17 @@
     return it('should compute the scopeDiff between a w:t in an array and the other outside', function() {
       var scope;
 
-      scope = xmlTemplater.calcScopeDifference("defined €</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
+      scope = xmlTemplater.calcScopeDifference("defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
       return expect(scope).toEqual([
         {
           tag: '</w:tc>',
-          offset: 29
+          offset: 26
         }, {
           tag: '</w:tr>',
-          offset: 36
+          offset: 33
         }, {
           tag: '</w:tbl>',
-          offset: 43
+          offset: 40
         }
       ]);
     });
