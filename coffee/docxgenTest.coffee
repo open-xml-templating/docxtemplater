@@ -15,10 +15,10 @@ else
 	global.vm = require('vm')
 	global.DOMParser = require('xmldom').DOMParser
 	# global.XMLSerializer= require('xmldom').XMLSerializer;
-
+	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
+		vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);	
 	['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach (file) ->
 		vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
-	
 	['docxgen.js'].forEach (file) ->
 		vm.runInThisContext(fs.readFileSync(__dirname + '/../../js/' + file), file);
 
@@ -274,23 +274,23 @@ describe "xmlTemplater", ()->
 		expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,')
 
 
-# describe 'DocxQrCode module', () ->
-# 	describe "Calculate simple Docx", () ->
-# 		f=null; fCalled=null;qrcodezip=null;obj=null;
-# 		beforeEach () ->
-# 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-# 			docx= new DocxGen()
-# 			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
+describe 'DocxQrCode module', () ->
+	describe "Calculate simple Docx", () ->
+		f=null; fCalled=null;qrcodezip=null;obj=null;
+		beforeEach () ->
+			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
+			docx= new DocxGen()
+			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
 
 
-# 		it "should work with Blablalalabioeajbiojbepbroji", () ->
+		it "should work with Blablalalabioeajbiojbepbroji", () ->
 
-# 			runs () ->
-# 				qr= new DocxQrCode(qrcodezip.files['blabla.png'].data,obj,"custom.png",6)
-# 				fCalled= false
-# 				f= {test:() -> fCalled= true}				
-# 				spyOn(f,'test').andCallThrough()
-# 				qr.decode(f.test)
+			runs () ->
+				qr= new DocxQrCode(qrcodezip.files['blabla.png'].data,obj,"custom.png",6)
+				fCalled= false
+				f= {test:() -> fCalled= true}				
+				spyOn(f,'test').andCallThrough()
+				qr.decode(f.test)
 
 # 			waitsFor( ()->fCalled)
 			

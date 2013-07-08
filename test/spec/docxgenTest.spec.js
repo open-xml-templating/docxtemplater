@@ -20,6 +20,9 @@
     global.fs = require('fs');
     global.vm = require('vm');
     global.DOMParser = require('xmldom').DOMParser;
+    ["grid.js", "version.js", "detector.js", "formatinf.js", "errorlevel.js", "bitmat.js", "datablock.js", "bmparser.js", "datamask.js", "rsdecoder.js", "gf256poly.js", "gf256.js", "decoder.js", "qrcode.js", "findpat.js", "alignpat.js", "databr.js"].forEach(function(file) {
+      return vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);
+    });
     ['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach(function(file) {
       return vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
     });
@@ -743,6 +746,41 @@
       xmlTemplater = new DocXTemplater(content, null, scope);
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,');
+    });
+  });
+
+  describe('DocxQrCode module', function() {
+    return describe("Calculate simple Docx", function() {
+      var f, fCalled, obj, qrcodezip;
+
+      f = null;
+      fCalled = null;
+      qrcodezip = null;
+      obj = null;
+      beforeEach(function() {
+        var docx;
+
+        qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
+        docx = new DocxGen();
+        return obj = new DocXTemplater("", docx, {
+          Tag: "tagValue"
+        });
+      });
+      return it("should work with Blablalalabioeajbiojbepbroji", function() {
+        return runs(function() {
+          var qr;
+
+          qr = new DocxQrCode(qrcodezip.files['blabla.png'].data, obj, "custom.png", 6);
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          return qr.decode(f.test);
+        });
+      });
     });
   });
 
