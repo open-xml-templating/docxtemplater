@@ -14,7 +14,9 @@ else
 	global.fs= require('fs')
 	global.vm = require('vm')
 	global.DOMParser = require('xmldom').DOMParser
-	# global.XMLSerializer= require('xmldom').XMLSerializer;
+	global.PNG= require('../../libs/pngjs/png-node')
+	PNG.decode 'some.png', (pixels) ->
+	    console.log pixels
 	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
 		vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);	
 	['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach (file) ->
@@ -22,9 +24,6 @@ else
 	['docxgen.js'].forEach (file) ->
 		vm.runInThisContext(fs.readFileSync(__dirname + '/../../js/' + file), file);
 
-
-	# require('../../js/docxgen.js')
-	# global.JSZip=require('../../libs/jszip/jszip.js')
 	
 
 DocUtils.loadDoc('imageExample.docx')
@@ -275,203 +274,203 @@ describe "xmlTemplater", ()->
 
 
 describe 'DocxQrCode module', () ->
-	describe "Calculate simple Docx", () ->
-		f=null; fCalled=null;qrcodezip=null;obj=null;
-		beforeEach () ->
-			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-			docx= new DocxGen()
-			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
+	# describe "Calculate simple Docx", () ->
+	# 	f=null; fCalled=null;qrcodezip=null;obj=null;
+	# 	beforeEach () ->
+	# 		qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
+	# 		docx= new DocxGen()
+	# 		obj= new DocXTemplater("",docx,{Tag:"tagValue"})
 
 
-		it "should work with Blablalalabioeajbiojbepbroji", () ->
+		# it "should work with Blablalalabioeajbiojbepbroji", () ->
 
-			runs () ->
-				qr= new DocxQrCode(qrcodezip.files['blabla.png'].data,obj,"custom.png",6)
-				fCalled= false
-				f= {test:() -> fCalled= true}				
-				spyOn(f,'test').andCallThrough()
-				qr.decode(f.test)
+		# 	runs () ->
+		# 		qr= new DocxQrCode(qrcodezip.files['blabla.png'].data,obj,"custom.png",6)
+		# 		fCalled= false
+		# 		f= {test:() -> fCalled= true}				
+		# 		spyOn(f,'test').andCallThrough()
+		# 		qr.decode(f.test)
 
-# 			waitsFor( ()->fCalled)
+		# 	waitsFor( ()->fCalled)
 			
-# 			runs () ->
-# 				expect(f.test).toHaveBeenCalled();
-# 				expect(f.test.calls.length).toEqual(1);
-# 				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
-# 				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
-# 				expect(f.test.mostRecentCall.args[2]).toEqual(6);
+		# 	runs () ->
+		# 		expect(f.test).toHaveBeenCalled();
+		# 		expect(f.test.calls.length).toEqual(1);
+		# 		expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
+		# 		expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+		# 		expect(f.test.mostRecentCall.args[2]).toEqual(6);
 		
-# 		it "should work with long texts", () ->
+		# it "should work with long texts", () ->
 
-# 			runs () ->
-# 				qr= new DocxQrCode(qrcodezip.files['custom.png'].data,obj,"custom.png",6)
-# 				fCalled= false
-# 				f= {test:() -> fCalled= true}				
-# 				spyOn(f,'test').andCallThrough()
-# 				qr.decode(f.test)
+		# 	runs () ->
+		# 		qr= new DocxQrCode(qrcodezip.files['custom.png'].data,obj,"custom.png",6)
+		# 		fCalled= false
+		# 		f= {test:() -> fCalled= true}				
+		# 		spyOn(f,'test').andCallThrough()
+		# 		qr.decode(f.test)
 
-# 			waitsFor( ()->fCalled)
+		# 	waitsFor( ()->fCalled)
 			
-# 			runs () ->
-# 				expect(f.test).toHaveBeenCalled();
-# 				expect(f.test.calls.length).toEqual(1);
-# 				expect(f.test.mostRecentCall.args[0].result).toEqual("Some custom text");
-# 				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
-# 				expect(f.test.mostRecentCall.args[2]).toEqual(6);
+		# 	runs () ->
+		# 		expect(f.test).toHaveBeenCalled();
+		# 		expect(f.test.calls.length).toEqual(1);
+		# 		expect(f.test.mostRecentCall.args[0].result).toEqual("Some custom text");
+		# 		expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+		# 		expect(f.test.mostRecentCall.args[2]).toEqual(6);
 
 
-# 		it "should work with long URLs", () ->
+		# it "should work with long URLs", () ->
 
-# 			runs () ->
-# 				qr= new DocxQrCode(qrcodezip.files['website.png'].data,obj,"web",6)
-# 				fCalled= false
-# 				f= {test:() -> fCalled= true}				
-# 				spyOn(f,'test').andCallThrough()
-# 				qr.decode(f.test)
+		# 	runs () ->
+		# 		qr= new DocxQrCode(qrcodezip.files['website.png'].data,obj,"web",6)
+		# 		fCalled= false
+		# 		f= {test:() -> fCalled= true}				
+		# 		spyOn(f,'test').andCallThrough()
+		# 		qr.decode(f.test)
 
-# 			waitsFor( ()->fCalled)
+		# 	waitsFor( ()->fCalled)
 			
-# 			runs () ->
-# 				expect(f.test).toHaveBeenCalled();
-# 				expect(f.test.calls.length).toEqual(1);
-# 				expect(f.test.mostRecentCall.args[0].result).toEqual("http://website.com/image.png");
-# 				expect(f.test.mostRecentCall.args[1]).toEqual("web");
-# 				expect(f.test.mostRecentCall.args[2]).toEqual(6);	
+		# 	runs () ->
+		# 		expect(f.test).toHaveBeenCalled();
+		# 		expect(f.test.calls.length).toEqual(1);
+		# 		expect(f.test.mostRecentCall.args[0].result).toEqual("http://website.com/image.png");
+		# 		expect(f.test.mostRecentCall.args[1]).toEqual("web");
+		# 		expect(f.test.mostRecentCall.args[2]).toEqual(6);	
 		
-# 		it "should work with basic image", () ->
-# 			runs () ->
-# 				qr= new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
-# 				fCalled= false
-# 				f= {test:() -> fCalled= true}				
-# 				spyOn(f,'test').andCallThrough()
-# 				qr.decode(f.test)
+		# it "should work with basic image", () ->
+		# 	runs () ->
+		# 		qr= new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
+		# 		fCalled= false
+		# 		f= {test:() -> fCalled= true}				
+		# 		spyOn(f,'test').andCallThrough()
+		# 		qr.decode(f.test)
 
-# 			waitsFor( ()->fCalled)
+		# 	waitsFor( ()->fCalled)
 			
-# 			runs () ->
-# 				expect(f.test).toHaveBeenCalled();
-# 				expect(f.test.calls.length).toEqual(1);
-# 				expect(f.test.mostRecentCall.args[0].result).toEqual("test");
-# 				expect(f.test.mostRecentCall.args[1]).toEqual("qrcodeTest.png");
-# 				expect(f.test.mostRecentCall.args[2]).toEqual(4);
+		# 	runs () ->
+		# 		expect(f.test).toHaveBeenCalled();
+		# 		expect(f.test.calls.length).toEqual(1);
+		# 		expect(f.test.mostRecentCall.args[0].result).toEqual("test");
+		# 		expect(f.test.mostRecentCall.args[1]).toEqual("qrcodeTest.png");
+		# 		expect(f.test.mostRecentCall.args[2]).toEqual(4);
 
-# 		it "should work with image with {tags}", () ->
+		# it "should work with image with {tags}", () ->
 
-# 			runs () ->
-# 				qr= new DocxQrCode(qrcodezip.files['qrcodetag.png'].data,obj,"tag.png",2)
-# 				fCalled= false
-# 				f= {test:() -> fCalled= true}				
-# 				spyOn(f,'test').andCallThrough()
-# 				qr.decode(f.test)
+		# 	runs () ->
+		# 		qr= new DocxQrCode(qrcodezip.files['qrcodetag.png'].data,obj,"tag.png",2)
+		# 		fCalled= false
+		# 		f= {test:() -> fCalled= true}				
+		# 		spyOn(f,'test').andCallThrough()
+		# 		qr.decode(f.test)
 
-# 			waitsFor( ()->fCalled)
+		# 	waitsFor( ()->fCalled)
 			
-# 			runs () ->
-# 				expect(f.test).toHaveBeenCalled();
-# 				expect(f.test.calls.length).toEqual(1);
-# 				expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
-# 				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
-# 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
+		# 	runs () ->
+		# 		expect(f.test).toHaveBeenCalled();
+		# 		expect(f.test.calls.length).toEqual(1);
+		# 		expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
+		# 		expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
+		# 		expect(f.test.mostRecentCall.args[2]).toEqual(2);
 
-# 		it "should work with qr inside image", () ->
+		# it "should work with qr inside image", () ->
 
-# 			runs () ->
-# 				qr= new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data,obj,"tag.png",2)
-# 				fCalled= false
-# 				f= {test:() -> fCalled= true}				
-# 				spyOn(f,'test').andCallThrough()
-# 				qr.decode(f.test)
+		# 	runs () ->
+		# 		qr= new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data,obj,"tag.png",2)
+		# 		fCalled= false
+		# 		f= {test:() -> fCalled= true}				
+		# 		spyOn(f,'test').andCallThrough()
+		# 		qr.decode(f.test)
 
-# 			waitsFor( ()->fCalled)
+		# 	waitsFor( ()->fCalled)
 			
-# 			runs () ->
-# 				expect(f.test).toHaveBeenCalled();
-# 				expect(f.test.calls.length).toEqual(1);
-# 				expect(f.test.mostRecentCall.args[0].result).toEqual("http://stackoverflow.com/questions/17488685/display-extra-text-in-treeview-nodes-not-just-node-text");
-# 				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
-# 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
+		# 	runs () ->
+		# 		expect(f.test).toHaveBeenCalled();
+		# 		expect(f.test.calls.length).toEqual(1);
+		# 		expect(f.test.mostRecentCall.args[0].result).toEqual("http://stackoverflow.com/questions/17488685/display-extra-text-in-treeview-nodes-not-just-node-text");
+		# 		expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
+		# 		expect(f.test.mostRecentCall.args[2]).toEqual(2);
 
 			
 
-# describe "image Loop Replacing", () ->
-# 	describe 'rels', () ->
-# 		it 'should load', () ->
-# 			expect(docX['imageExample.docx'].loadImageRels().imageRels).toEqual([])
-# 			expect(docX['imageExample.docx'].maxRid).toEqual(10)
-# 		it 'should add', () ->
-# 			oldData= docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
-# 			expect(docX['imageExample.docx'].addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
+describe "image Loop Replacing", () ->
+	describe 'rels', () ->
+		it 'should load', () ->
+			expect(docX['imageExample.docx'].loadImageRels().imageRels).toEqual([])
+			expect(docX['imageExample.docx'].maxRid).toEqual(10)
+		it 'should add', () ->
+			oldData= docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
+			expect(docX['imageExample.docx'].addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
 
-# 			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData)
+			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData)
 			
-# 			# expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>')
-# 			# expect(docX['imageExample.docx'].zip.files['[Content_Types].xml'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/stylesWithEffects.xml" ContentType="application/vnd.ms-word.stylesWithEffects+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/><Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/><Override PartName="/word/endnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/><Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Default ContentType="image/png" Extension="png"/></Types>')
-# 			# if docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data!='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>'
-# 			# 	for char,j in docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
-# 			# 		char2= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>'[j]
+			# expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>')
+			# expect(docX['imageExample.docx'].zip.files['[Content_Types].xml'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/stylesWithEffects.xml" ContentType="application/vnd.ms-word.stylesWithEffects+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/><Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/><Override PartName="/word/endnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/><Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Default ContentType="image/png" Extension="png"/></Types>')
+			# if docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data!='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>'
+			# 	for char,j in docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
+			# 		char2= '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>'[j]
 
-# 			relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
-# 			contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].data
+			relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
+			contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].data
 
-# 			relsXml= DocUtils.Str2xml(relsData)
-# 			contentTypeXml= DocUtils.Str2xml(contentTypeData)
+			relsXml= DocUtils.Str2xml(relsData)
+			contentTypeXml= DocUtils.Str2xml(contentTypeData)
 
-# 			relationships= relsXml.getElementsByTagName('Relationship')
-# 			contentTypes= contentTypeXml.getElementsByTagName('Default')
+			relationships= relsXml.getElementsByTagName('Relationship')
+			contentTypes= contentTypeXml.getElementsByTagName('Default')
 
-# 			expect(relationships.length).toEqual(11)
-# 			expect(contentTypes.length).toBe(4)
+			expect(relationships.length).toEqual(11)
+			expect(contentTypes.length).toBe(4)
 
 
-# describe "loop forTagging images", () ->
-# 	it 'should work with a simple loop file', () ->
-# 		docX['tagLoopExample.docx']= new DocxGen(docXData['tagLoopExample.docx'])
-# 		tempVars=
-# 			"nom":"Hipp"
-# 			"prenom":"Edgar"
-# 			"telephone":"0652455478"
-# 			"description":"New Website"
-# 			"offre":[
-# 				"titre":"titre1"
-# 				"prix":"1250"
-# 				"img":[{data:docXData['Volkswagen_logo.png'],name:"vw_logo.png"}]
-# 			,
-# 				"titre":"titre2"
-# 				"prix":"2000"
-# 				"img":[{data:docXData['BMW_logo.png'],name:"bmw_logo.png"}]
-# 			,
-# 				"titre":"titre3"
-# 				"prix":"1400"
-# 				"img":[{data:docXData['Firefox_logo.png'],name:"firefox_logo.png"}]
-# 			]
-# 		docX['tagLoopExample.docx'].setTemplateVars(tempVars)
-# 		docX['tagLoopExample.docx'].applyTemplateVars()
+describe "loop forTagging images", () ->
+	it 'should work with a simple loop file', () ->
+		docX['tagLoopExample.docx']= new DocxGen(docXData['tagLoopExample.docx'])
+		tempVars=
+			"nom":"Hipp"
+			"prenom":"Edgar"
+			"telephone":"0652455478"
+			"description":"New Website"
+			"offre":[
+				"titre":"titre1"
+				"prix":"1250"
+				"img":[{data:docXData['Volkswagen_logo.png'],name:"vw_logo.png"}]
+			,
+				"titre":"titre2"
+				"prix":"2000"
+				"img":[{data:docXData['BMW_logo.png'],name:"bmw_logo.png"}]
+			,
+				"titre":"titre3"
+				"prix":"1400"
+				"img":[{data:docXData['Firefox_logo.png'],name:"firefox_logo.png"}]
+			]
+		docX['tagLoopExample.docx'].setTemplateVars(tempVars)
+		docX['tagLoopExample.docx'].applyTemplateVars()
 
-# 		for i of docX['tagLoopExample.docx'].zip.files
-# 		# 	#Everything but the date should be different
-# 			expect(docX['tagLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.date)
-# 			expect(docX['tagLoopExample.docx'].zip.files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].name)
-# 			expect(docX['tagLoopExample.docx'].zip.files[i].options.base64).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.base64)
-# 			expect(docX['tagLoopExample.docx'].zip.files[i].options.binary).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.binary)
-# 			expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression)
-# 			expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir)
+		for i of docX['tagLoopExample.docx'].zip.files
+		# 	#Everything but the date should be different
+			expect(docX['tagLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.date)
+			expect(docX['tagLoopExample.docx'].zip.files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].name)
+			expect(docX['tagLoopExample.docx'].zip.files[i].options.base64).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.base64)
+			expect(docX['tagLoopExample.docx'].zip.files[i].options.binary).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.binary)
+			expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression)
+			expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir)
 
-# 			if i!='word/_rels/document.xml.rels' and i!='[Content_Types].xml' 
-# 				if docX['tagLoopExample.docx'].zip.files[i].data?
-# 					expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length)
-# 				expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data)
+			if i!='word/_rels/document.xml.rels' and i!='[Content_Types].xml' 
+				if docX['tagLoopExample.docx'].zip.files[i].data?
+					expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length)
+				expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data)
 
-# 		relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].data
-# 		contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].data
+		relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].data
+		contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].data
 
-# 		relsXml= DocUtils.Str2xml(relsData)
-# 		contentTypeXml= DocUtils.Str2xml(contentTypeData)
+		relsXml= DocUtils.Str2xml(relsData)
+		contentTypeXml= DocUtils.Str2xml(contentTypeData)
 
-# 		relationships= relsXml.getElementsByTagName('Relationship')
-# 		contentTypes= contentTypeXml.getElementsByTagName('Default')
+		relationships= relsXml.getElementsByTagName('Relationship')
+		contentTypes= contentTypeXml.getElementsByTagName('Default')
 
-# 		expect(relationships.length).toEqual(16)
-# 		expect(contentTypes.length).toBe(3)
+		expect(relationships.length).toEqual(16)
+		expect(contentTypes.length).toBe(3)
 
 # describe 'qr code testing', () ->
 # 	it 'should work with local QRCODE without tags', () ->

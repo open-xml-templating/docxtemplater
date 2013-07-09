@@ -20,6 +20,10 @@
     global.fs = require('fs');
     global.vm = require('vm');
     global.DOMParser = require('xmldom').DOMParser;
+    global.PNG = require('../../libs/pngjs/png-node');
+    PNG.decode('some.png', function(pixels) {
+      return console.log(pixels);
+    });
     ["grid.js", "version.js", "detector.js", "formatinf.js", "errorlevel.js", "bitmat.js", "datablock.js", "bmparser.js", "datamask.js", "rsdecoder.js", "gf256poly.js", "gf256.js", "decoder.js", "qrcode.js", "findpat.js", "alignpat.js", "databr.js"].forEach(function(file) {
       return vm.runInThisContext(fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);
     });
@@ -749,38 +753,97 @@
     });
   });
 
-  describe('DocxQrCode module', function() {
-    return describe("Calculate simple Docx", function() {
-      var f, fCalled, obj, qrcodezip;
+  describe('DocxQrCode module', function() {});
 
-      f = null;
-      fCalled = null;
-      qrcodezip = null;
-      obj = null;
-      beforeEach(function() {
-        var docx;
-
-        qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
-        docx = new DocxGen();
-        return obj = new DocXTemplater("", docx, {
-          Tag: "tagValue"
-        });
+  describe("image Loop Replacing", function() {
+    return describe('rels', function() {
+      it('should load', function() {
+        expect(docX['imageExample.docx'].loadImageRels().imageRels).toEqual([]);
+        return expect(docX['imageExample.docx'].maxRid).toEqual(10);
       });
-      return it("should work with Blablalalabioeajbiojbepbroji", function() {
-        return runs(function() {
-          var qr;
+      return it('should add', function() {
+        var contentTypeData, contentTypeXml, contentTypes, oldData, relationships, relsData, relsXml;
 
-          qr = new DocxQrCode(qrcodezip.files['blabla.png'].data, obj, "custom.png", 6);
-          fCalled = false;
-          f = {
-            test: function() {
-              return fCalled = true;
-            }
-          };
-          spyOn(f, 'test').andCallThrough();
-          return qr.decode(f.test);
-        });
+        oldData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
+        expect(docX['imageExample.docx'].addImageRels('image1.png', docXData['bootstrap_logo.png'])).toBe(11);
+        expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData);
+        relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
+        contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].data;
+        relsXml = DocUtils.Str2xml(relsData);
+        contentTypeXml = DocUtils.Str2xml(contentTypeData);
+        relationships = relsXml.getElementsByTagName('Relationship');
+        contentTypes = contentTypeXml.getElementsByTagName('Default');
+        expect(relationships.length).toEqual(11);
+        return expect(contentTypes.length).toBe(4);
       });
+    });
+  });
+
+  describe("loop forTagging images", function() {
+    return it('should work with a simple loop file', function() {
+      var contentTypeData, contentTypeXml, contentTypes, i, relationships, relsData, relsXml, tempVars;
+
+      docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx']);
+      tempVars = {
+        "nom": "Hipp",
+        "prenom": "Edgar",
+        "telephone": "0652455478",
+        "description": "New Website",
+        "offre": [
+          {
+            "titre": "titre1",
+            "prix": "1250",
+            "img": [
+              {
+                data: docXData['Volkswagen_logo.png'],
+                name: "vw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre2",
+            "prix": "2000",
+            "img": [
+              {
+                data: docXData['BMW_logo.png'],
+                name: "bmw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre3",
+            "prix": "1400",
+            "img": [
+              {
+                data: docXData['Firefox_logo.png'],
+                name: "firefox_logo.png"
+              }
+            ]
+          }
+        ]
+      };
+      docX['tagLoopExample.docx'].setTemplateVars(tempVars);
+      docX['tagLoopExample.docx'].applyTemplateVars();
+      for (i in docX['tagLoopExample.docx'].zip.files) {
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.date);
+        expect(docX['tagLoopExample.docx'].zip.files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].name);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.base64).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.base64);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.binary).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.binary);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir);
+        if (i !== 'word/_rels/document.xml.rels' && i !== '[Content_Types].xml') {
+          if (docX['tagLoopExample.docx'].zip.files[i].data != null) {
+            expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length);
+          }
+          expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data);
+        }
+      }
+      relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
+      contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].data;
+      relsXml = DocUtils.Str2xml(relsData);
+      contentTypeXml = DocUtils.Str2xml(contentTypeData);
+      relationships = relsXml.getElementsByTagName('Relationship');
+      contentTypes = contentTypeXml.getElementsByTagName('Default');
+      expect(relationships.length).toEqual(16);
+      return expect(contentTypes.length).toBe(3);
     });
   });
 

@@ -80,6 +80,7 @@ this.decode = function(src){
 
             try
             {
+            	window.context=context
                 _this.result = _this.process(context);
             }
             catch(e)
@@ -106,6 +107,7 @@ this.process = function(ctx){
 	var start = new Date().getTime();
 
 	var image = this.grayScaleToBitmap(this.grayscale());
+	console.log(image)
     //var image = this.binarize(128);
 	
     if(this.debug)
@@ -276,11 +278,6 @@ this.grayscale = function(){
 }
 
   }
-
-
-
-
-
 
 function URShift( number,  bits)
 {
