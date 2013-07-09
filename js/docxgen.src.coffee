@@ -58,11 +58,17 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		if async==true
 			fs.readFile totalPath,"binary", (err, data) ->
 				if err
-					throw err
-				loadFile(data)
+					if callback? then callback(true)
+				else
+					loadFile(data)
+					if callback? then callback(false)
 		else
-			data=fs.readFileSync(totalPath,"binary")
-			loadFile(data)
+			try
+				data=fs.readFileSync(totalPath,"binary")
+				loadFile(data)
+				if callback? then callback(false)
+			catch e
+				if callback? then callback(true)
 	return fileName
 
 
@@ -772,23 +778,33 @@ DocxQrCode = class DocxQrCode
 		@result=null
 	decode:(@callback) ->
 		_this= this
-		@qr= new QrCode()
-		@qr.callback= () ->
-			_this.ready= true
-			_this.result= this.result
-			testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
-			testdoc.applyTemplateVars()
-			_this.result=testdoc.content
-			_this.searchImage()
-		@qr.decode("data:image/png;base64,#{@base64Data}")
-		console.log "data:image/png;base64,#{@base64Data}"
+		if window?
+			@qr= new QrCode()
+			@qr.callback= () ->
+				_this.ready= true
+				_this.result= this.result
+				testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
+				testdoc.applyTemplateVars()
+				_this.result=testdoc.content
+				_this.searchImage()
+			@qr.decode("data:image/png;base64,#{@base64Data}")
+		else
+			@qr=new QrCode()
+			@qr.callback= () ->
+				_this.ready= true
+				_this.result= this.result
+				testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
+				testdoc.applyTemplateVars()
+				_this.result=testdoc.content
+				_this.searchImage()
+			@qr.decode(@data,@data.decoded)
+
 	searchImage:() ->
-		console.log @result
 		if @result.substr(0,4)=='gen:'
 			callback= (data) =>
 				@data=data
 				@callback(this,@imgName,@num)
-			@xmlTemplater.DocxGen.localImageCreator(@result,callback)
+				@xmlTemplater.DocxGen.localImageCreator(@result,callback)
 		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
 			_thatiti= this
 			loadDocCallback= (fail=false) =>

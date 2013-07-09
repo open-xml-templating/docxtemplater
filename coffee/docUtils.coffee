@@ -58,11 +58,17 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		if async==true
 			fs.readFile totalPath,"binary", (err, data) ->
 				if err
-					throw err
-				loadFile(data)
+					if callback? then callback(true)
+				else
+					loadFile(data)
+					if callback? then callback(false)
 		else
-			data=fs.readFileSync(totalPath,"binary")
-			loadFile(data)
+			try
+				data=fs.readFileSync(totalPath,"binary")
+				loadFile(data)
+				if callback? then callback(false)
+			catch e
+				if callback? then callback(true)
 	return fileName
 
 

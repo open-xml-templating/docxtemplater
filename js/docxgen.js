@@ -21,7 +21,7 @@
   };
 
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback) {
-    var data, fileName, loadFile, totalPath, xhrDoc;
+    var data, e, fileName, loadFile, totalPath, xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
@@ -92,13 +92,29 @@
       if (async === true) {
         fs.readFile(totalPath, "binary", function(err, data) {
           if (err) {
-            throw err;
+            if (callback != null) {
+              return callback(true);
+            }
+          } else {
+            loadFile(data);
+            if (callback != null) {
+              return callback(false);
+            }
           }
-          return loadFile(data);
         });
       } else {
-        data = fs.readFileSync(totalPath, "binary");
-        loadFile(data);
+        try {
+          data = fs.readFileSync(totalPath, "binary");
+          loadFile(data);
+          if (callback != null) {
+            callback(false);
+          }
+        } catch (_error) {
+          e = _error;
+          if (callback != null) {
+            callback(true);
+          }
+        }
       }
     }
     return fileName;
@@ -1327,32 +1343,45 @@
 
       this.callback = callback;
       _this = this;
-      this.qr = new QrCode();
-      this.qr.callback = function() {
-        var testdoc;
+      if (typeof window !== "undefined" && window !== null) {
+        this.qr = new QrCode();
+        this.qr.callback = function() {
+          var testdoc;
 
-        _this.ready = true;
-        _this.result = this.result;
-        testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
-        testdoc.applyTemplateVars();
-        _this.result = testdoc.content;
-        return _this.searchImage();
-      };
-      this.qr.decode("data:image/png;base64," + this.base64Data);
-      return console.log("data:image/png;base64," + this.base64Data);
+          _this.ready = true;
+          _this.result = this.result;
+          testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
+          testdoc.applyTemplateVars();
+          _this.result = testdoc.content;
+          return _this.searchImage();
+        };
+        return this.qr.decode("data:image/png;base64," + this.base64Data);
+      } else {
+        this.qr = new QrCode();
+        this.qr.callback = function() {
+          var testdoc;
+
+          _this.ready = true;
+          _this.result = this.result;
+          testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
+          testdoc.applyTemplateVars();
+          _this.result = testdoc.content;
+          return _this.searchImage();
+        };
+        return this.qr.decode(this.data, this.data.decoded);
+      }
     };
 
     DocxQrCode.prototype.searchImage = function() {
       var callback, loadDocCallback, _thatiti,
         _this = this;
 
-      console.log(this.result);
       if (this.result.substr(0, 4) === 'gen:') {
-        callback = function(data) {
+        return callback = function(data) {
           _this.data = data;
-          return _this.callback(_this, _this.imgName, _this.num);
+          _this.callback(_this, _this.imgName, _this.num);
+          return _this.xmlTemplater.DocxGen.localImageCreator(_this.result, callback);
         };
-        return this.xmlTemplater.DocxGen.localImageCreator(this.result, callback);
       } else if (this.result !== null && this.result !== void 0 && this.result.substr(0, 22) !== 'error decoding QR Code') {
         _thatiti = this;
         loadDocCallback = function(fail) {
