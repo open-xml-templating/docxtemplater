@@ -31,6 +31,8 @@ DocxGen = class DocxGen
 		if @qrCodeWaitingFor.length==0
 			@ready=true
 			@finishedCallback()
+		console.log num
+		console.log this.qrCodeWaitingFor
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels()

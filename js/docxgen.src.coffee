@@ -188,6 +188,8 @@ DocxGen = class DocxGen
 		if @qrCodeWaitingFor.length==0
 			@ready=true
 			@finishedCallback()
+		console.log num
+		console.log this.qrCodeWaitingFor
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels()
@@ -719,6 +721,7 @@ ImgReplacer = class ImgReplacer
 
 			if @xmlTemplater.DocxGen.qrCode
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
+				console.log tagrId
 				
 				if tagrId!=undefined
 					rId = tagrId.getAttribute('r:embed')

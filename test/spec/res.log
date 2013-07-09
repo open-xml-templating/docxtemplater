@@ -1,6 +1,15 @@
-.........................................
+..undefined
+F
 
-Finished in 15.91 seconds
-41 tests, 395 assertions, 0 failures, 0 skipped
+Failures:
+
+  1) qr code testing should work with local QRCODE without tags
+   Message:
+     timeout: timed out after 5000 msec waiting for something to happen
+   Stacktrace:
+     undefined
+
+Finished in 8.519 seconds
+3 tests, 7 assertions, 1 failure, 0 skipped
 
 

@@ -20,6 +20,7 @@ ImgReplacer = class ImgReplacer
 
 			if @xmlTemplater.DocxGen.qrCode
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
+				console.log tagrId
 				
 				if tagrId!=undefined
 					rId = tagrId.getAttribute('r:embed')
