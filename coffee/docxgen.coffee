@@ -19,20 +19,21 @@ DocxGen = class DocxGen
 		"word/header2.xml",
 		"word/header3.xml"
 		]
+		@filesProcessed=0
 		@qrCodeNumCallBack=0
 		@qrCodeWaitingFor= []
 		if content? then @load(content)
 	qrCodeCallBack:(num,add=true) ->
 		if add==true
 			@qrCodeWaitingFor.push num
-		else
+		else if add == false
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
-		if @qrCodeWaitingFor.length==0
+		@testReady()
+	testReady:()->
+		if @qrCodeWaitingFor.length==0 && @filesProcessed== @templatedFiles.length
 			@ready=true
 			@finishedCallback()
-		console.log num
-		console.log this.qrCodeWaitingFor
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels()
@@ -110,9 +111,13 @@ DocxGen = class DocxGen
 	setImage: (path,data) ->
 		@zip.files[path].data= data
 	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
+		for fileName in @templatedFiles when !@zip.files[fileName]?
+			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
+			@filesProcessed++
+		@testReady()
 	getCsvVars:() ->
 		obj= @getTemplateVars()
 		csvcontent = ""

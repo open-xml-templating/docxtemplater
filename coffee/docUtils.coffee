@@ -96,16 +96,22 @@ DocUtils.clone = (obj) ->
 	return newInstance
 
 DocUtils.xml2Str = (xmlNode) ->
+	if xmlNode==undefined
+		throw "xmlNode undefined!"
 	try
+		if global?
+			a= new XMLSerializer()
+			content= a.serializeToString(xmlNode)
 		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
-		content=(new XMLSerializer()).serializeToString(xmlNode);
+		else
+			content=(new XMLSerializer()).serializeToString(xmlNode);
 	catch e
 		try
 			# Internet Explorer.
 			content= xmlNode.xml;
 		catch e
 			#Other browsers without XML Serializer
-			alert('Xmlserializer not supported');
+			console.log('Xmlserializer not supported');
 	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt)
 	return content;
 

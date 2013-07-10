@@ -1,15 +1,33 @@
-..undefined
-F
+contentlength1551
+tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+startImg:Copie_0.png
+imagetag not defined, trying alternate method
+contentlength1551
+tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+startImg:Copie_1.png
+imagetag not defined, trying alternate method
+contentlength4784
+tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+contentlength8388
+img:Copie_0.png
+contentlength16
+callbacked
+callbacked
+document ready!
+.
 
-Failures:
-
-  1) qr code testing should work with local QRCODE without tags
-   Message:
-     timeout: timed out after 5000 msec waiting for something to happen
-   Stacktrace:
-     undefined
-
-Finished in 8.519 seconds
-3 tests, 7 assertions, 1 failure, 0 skipped
+Finished in 0.143 seconds
+1 test, 147 assertions, 0 failures, 0 skipped
 
 
+img:Copie_1.png
+contentlength9
+callbacked
+document ready!
+callbacked
+document ready!
