@@ -1,33 +1,46 @@
-contentlength1551
+..........document ready!
+..document ready!
+.document ready!
+........document ready!
+.document ready!
+.document ready!
+.document ready!
+...................tag not defined, trying alternate method
 tagRid not defined, trying alternate method
-tag not defined, trying alternate method
-startImg:Copie_0.png
 imagetag not defined, trying alternate method
-contentlength1551
-tagRid not defined, trying alternate method
 tag not defined, trying alternate method
-startImg:Copie_1.png
+tagRid not defined, trying alternate method
 imagetag not defined, trying alternate method
-contentlength4784
+tag not defined, trying alternate method
+tagRid not defined, trying alternate method
+imagetag not defined, trying alternate method
+document ready!
+.tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+imagetag not defined, trying alternate method
+document ready!
+document ready!
+.tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+imagetag not defined, trying alternate method
+document ready!
+document ready!
+.tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+imagetag not defined, trying alternate method
+tagRid not defined, trying alternate method
+tag not defined, trying alternate method
+imagetag not defined, trying alternate method
 tagRid not defined, trying alternate method
 tag not defined, trying alternate method
 tagRid not defined, trying alternate method
 tag not defined, trying alternate method
-contentlength8388
-img:Copie_0.png
-contentlength16
-callbacked
-callbacked
+document ready!
+document ready!
 document ready!
 .
 
-Finished in 0.143 seconds
-1 test, 147 assertions, 0 failures, 0 skipped
+Finished in 19.463 seconds
+47 tests, 1070 assertions, 0 failures, 0 skipped
 
 
-img:Copie_1.png
-contentlength9
-callbacked
-document ready!
-callbacked
-document ready!
