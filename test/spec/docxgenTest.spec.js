@@ -1103,6 +1103,7 @@
         var i, _results;
 
         expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
+        docX['qrCodeExample.docx'].output();
         _results = [];
         for (i in docX['qrCodeExample.docx'].zip.files) {
           expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date);

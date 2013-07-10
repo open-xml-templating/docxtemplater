@@ -546,7 +546,7 @@ describe 'qr code testing', () ->
 		runs () ->
 
 			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-
+			docX['qrCodeExample.docx'].output()
 			for i of docX['qrCodeExample.docx'].zip.files
 			# 	#Everything but the date should be different
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date)

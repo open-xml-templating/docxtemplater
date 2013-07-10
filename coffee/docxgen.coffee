@@ -139,10 +139,15 @@ DocxGen = class DocxGen
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
 	#output all files, if docx has been loaded via javascript, it will be available
-	output: (download = true) ->
+	output: (download = true,name="output.docx") ->
 		@calcZip()
 		result= @zip.generate()
-		if download then document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
+		if download
+			if global?
+				fs.writeFile name, result, 'base64', (err) ->
+					console.log(err)
+			if window?
+				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
 	calcZip: () ->
 		zip = new JSZip()

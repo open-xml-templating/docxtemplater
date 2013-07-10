@@ -509,16 +509,26 @@
       this.templateVars = templateVars;
     };
 
-    DocxGen.prototype.output = function(download) {
+    DocxGen.prototype.output = function(download, name) {
       var result;
 
       if (download == null) {
         download = true;
       }
+      if (name == null) {
+        name = "output.docx";
+      }
       this.calcZip();
       result = this.zip.generate();
       if (download) {
-        document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + result;
+        if (typeof global !== "undefined" && global !== null) {
+          fs.writeFile(name, result, 'base64', function(err) {
+            return console.log(err);
+          });
+        }
+        if (typeof window !== "undefined" && window !== null) {
+          document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + result;
+        }
       }
       return result;
     };
