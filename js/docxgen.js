@@ -246,7 +246,7 @@
 
     function DocxGen(content, templateVars, intelligentTagging, qrCode, localImageCreator, finishedCallback) {
       this.templateVars = templateVars != null ? templateVars : {};
-      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
+      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : true;
       this.qrCode = qrCode != null ? qrCode : false;
       this.localImageCreator = localImageCreator;
       this.finishedCallback = finishedCallback;

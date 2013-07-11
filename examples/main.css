@@ -7,16 +7,27 @@ img
 
 table.demo
 {
-	margin: 0px 2% 0px 8%;
-	width:90%;
+	margin: 0px;
+	width:100%;
 }
 
 section
 {
-	margin:25px 0px 25px 0px;	
-	padding:20px 0px 0px 0px;
+	padding:20px 0px 25px 5px;
 	border-top:3px solid #DDDDDD;
 	border-bottom: 3px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	border-left: 1px solid #DDDDDD;
+
+	width:90%;
+	margin:auto;
+	margin-top: *25px;
+	margin-bottom:100px;
+}
+
+h2
+{
+	text-align: center;
 }
 
 table.demo tr

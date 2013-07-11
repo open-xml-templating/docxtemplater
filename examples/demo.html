@@ -22,9 +22,8 @@
 <h1>Templates</h1>
 
 DocxGen is based on word templates.
-
-<h2>Use {tagName} for variables to be replaced</h2>
 <section>
+<h2 id='variables'><em>Variables</em>: Use {tagName} to replace variables</h2>
 <table class="demo">
 <tr>
 	<td>
@@ -58,8 +57,11 @@ doc.output() //Output the document using Data-URI
 </table>
 </section>
 
-<section>
 
+<section>
+<h2 id='loops'><em>Loops</em>: You can use the mustache like syntax: {#tagName} {/tagname} to loop inside a variable</h2>
+
+tagName has to be an array of objects, every element of the array will be used to output what is between the opening loop tag and the closing loop tag.
 	<table class="demo">
 		<tr>
 			<td><img src="images/loopTagging.png" alt=""></td>
@@ -69,7 +71,7 @@ doc.output() //Output the document using Data-URI
 		</tr>
 		<tr>
 			<td colspan="3">
-				<h3></h3>
+				<h3>Code Used:</h3>
 				<textarea raw="tagLooping.docx">
 var docData=docXData["tagLooping.docx"]; //docXData is an array containing all the raw data for these examples
 var doc= new DocxGen(docData); //Create a new DocxGen document
@@ -96,8 +98,49 @@ doc.output() //Output the document using Data-URI
 			</td>
 		</tr>
 	</table>
-<!-- 	table.demo>(tr>(td>img)+(td>p)+(td>img))+tr>td[colspan=3]>h3+textarea[raw=tagLooping.docx] -->
+<!-- 	section>(h2>em)+(table.demo>(tr>(td>img)+(td)+(td>img))+tr>td[colspan=3]>h3{Code Used:}+textarea[raw=tagLooping.docx]) -->
 </section>
+
+<section>
+	<h2><em>Tables</em>: loops work inside tables too!</h2>
+	<table class="demo">
+		<tr>
+			<td><img src="images/tableTagging.png"></td>
+			<td>
+			</td>
+			<td><img src="images/tableTaggingResult.png"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="tagIntelligentLoopTable.docx">
+var docData=docXData["tagIntelligentLoopTable.docx"]; //docXData is an array containing all the raw data for these examples
+var doc= new DocxGen(docData); //Create a new DocxGen document
+
+doc.setTemplateVars(
+{"clients":
+[
+{
+ "first_name":"John",
+ "last_name":"Doe",
+ "phone":"+44546546454"
+},
+{
+ "first_name":"Jane",
+ "last_name":"Doe",
+ "phone":"+445476454"
+}
+]
+}
+) //set the templateVariables
+doc.applyTemplateVars() //apply them
+doc.output() //Output the document using Data-URI					
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
 
 </body>
 </html>

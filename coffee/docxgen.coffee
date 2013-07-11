@@ -9,7 +9,7 @@ env= if global? then 'node' else 'browser'
 
 DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
-	constructor: (content, @templateVars={},@intelligentTagging=off,@qrCode=off,@localImageCreator,@finishedCallback) ->
+	constructor: (content, @templateVars={},@intelligentTagging=on,@qrCode=off,@localImageCreator,@finishedCallback) ->
 		@finishedCallback= (() -> console.log 'document ready!') unless @finishedCallback?
 		@localImageCreator= (arg,callback) ->
 			result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")

@@ -1,5 +1,6 @@
 DocUtils.loadDoc("tagExample.docx")
 DocUtils.loadDoc("tagLooping.docx")
+DocUtils.loadDoc("tagIntelligentLoopTable.docx")
 
 function textAreaAdjust(o) {
     o.style.height = "1px";
