@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Demo of DocxGenJS</title>
+	<link rel="stylesheet" href="main.css">
+	  <script type="text/javascript" src="../libs/base64.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
+  <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
+
+  <!-- Include docxgen js lib -->
+  <script type="text/javascript" src="../js/docxgen.js"></script>
+	<script src="main.js"></script>
+</head>
+<body>
+
+<h1>DocxGenJS</h1>
+
+<p><b>docxgen.js</b> is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.</p>
+
+<h1>Templates</h1>
+
+DocxGen is based on word templates.
+
+<h2>Use {tagName} for variables to be replaced</h2>
+<section>
+<table class="demo">
+<tr>
+	<td>
+		<img src="images/textTagging.png" alt="">
+	</td>
+	<td>
+	</td>
+	<td>
+		<img src="images/textTaggingResult.png" alt="">		
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+		<h3>Code Used:</h3>
+		<textarea raw='tagExample.docx'>
+var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
+var doc= new DocxGen(docData); //Create a new DocxGen document
+
+doc.setTemplateVars(
+	{"first_name":"Hipp",
+	"last_name":"Edgar",
+	"phone":"0652455478",
+	"description":"New Website"
+	}
+) //set the templateVariables
+doc.applyTemplateVars() //apply them (replace all occurences of {first_name} by Hipp, ...)
+doc.output() //Output the document using Data-URI
+		</textarea>
+	</td>
+</tr>
+</table>
+</section>
+
+<section>
+
+	<table class="demo">
+		<tr>
+			<td><img src="images/loopTagging.png" alt=""></td>
+			<td>
+			</td>
+			<td><img src="images/loopTaggingResult.png" alt=""></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3></h3>
+				<textarea raw="tagLooping.docx">
+var docData=docXData["tagLooping.docx"]; //docXData is an array containing all the raw data for these examples
+var doc= new DocxGen(docData); //Create a new DocxGen document
+
+doc.setTemplateVars(
+{"products":
+[
+{
+ "title":"Duk",
+ "name":"DukSoftware",
+ "reference":"DS0"
+},
+{
+ "title":"Tingerloo",
+ "name":"Tingerlee",
+ "reference":"T00"
+}
+]
+}
+) //set the templateVariables
+doc.applyTemplateVars() //apply them
+doc.output() //Output the document using Data-URI
+				</textarea>
+			</td>
+		</tr>
+	</table>
+<!-- 	table.demo>(tr>(td>img)+(td>p)+(td>img))+tr>td[colspan=3]>h3+textarea[raw=tagLooping.docx] -->
+</section>
+
+</body>
+</html>
