@@ -1,3 +1,6 @@
+root= global ? window
+env= if global? then 'node' else 'browser'
+
 XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
@@ -352,7 +355,4 @@ XmlTemplater = class XmlTemplater
 		imgReplacer.replaceImages()
 		this
 
-if window?
-	window.XmlTemplater=XmlTemplater
-else
-	global.XmlTemplater=XmlTemplater
+root.XmlTemplater=XmlTemplater

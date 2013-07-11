@@ -5,12 +5,14 @@ Object.size = (obj) ->
 		size++
 	size
 
-if window?
-	window.docX=[]
-	window.docXData=[]
-else
-	global.docX=[]
-	global.docXData=[]
+root= global ? window
+env= if global? then 'node' else 'browser'
+
+root.docX={}
+root.docXData={}
+
+
+if env=='node'
 	global.fs= require('fs')
 	global.vm = require('vm')
 	global.DOMParser = require('xmldom').DOMParser
@@ -126,11 +128,11 @@ describe "DocxGenTemplatingForLoop", () ->
 			docX['tagLoopExample.docx'].applyTemplateVars()
 			expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar')
 		it "should work with loops inside loops", () ->
-			templateVars = {"products":[{"title":"Microsoft","name":"Windows","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
+			templateVars = {"products":[{"title":"Microsoft","name":"DOS","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
 			docX['tagProduitLoop.docx'].setTemplateVars templateVars
 			docX['tagProduitLoop.docx'].applyTemplateVars()
 			text= docX['tagProduitLoop.docx'].getFullText()
-			expectedText= "MicrosoftProduct name : WindowsProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
+			expectedText= "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
 describe "scope calculation" , () ->
@@ -171,26 +173,26 @@ describe "scope inner text", () ->
 describe "Dash Loop Testing", () ->
 	it "dash loop ok on simple table -> w:tr" , () ->
 		templateVars=
-			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
+			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
 		docX['tagDashLoop.docx'].setTemplateVars(templateVars)
 		docX['tagDashLoop.docx'].applyTemplateVars()
-		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
+		expectedText= "linux0Ubuntu10DOS500Win7apple1200MACOSX"
 		text=docX['tagDashLoop.docx'].getFullText()
 		expect(text).toBe(expectedText)
 	it "dash loop ok on simple table -> w:table" , () ->
 		templateVars=
-			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
+			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
 		docX['tagDashLoopTable.docx'].setTemplateVars(templateVars)
 		docX['tagDashLoopTable.docx'].applyTemplateVars()
-		expectedText= "linux0Ubuntu10windows500Win7apple1200MACOSX"
+		expectedText= "linux0Ubuntu10DOS500Win7apple1200MACOSX"
 		text=docX['tagDashLoopTable.docx'].getFullText()
 		expect(text).toBe(expectedText)
 	it "dash loop ok on simple list -> w:p" , () ->
 		templateVars=
-			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
+			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
 		docX['tagDashLoopList.docx'].setTemplateVars(templateVars)
 		docX['tagDashLoopList.docx'].applyTemplateVars()
-		expectedText= 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX '
+		expectedText= 'linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX '
 		text=docX['tagDashLoopList.docx'].getFullText()
 		expect(text).toBe(expectedText)
 
@@ -289,7 +291,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
-				if window?
+				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['blabla.png'].data,obj,"custom.png",6)
 					qr.decode(f.test)			
 				else
@@ -317,7 +319,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
-				if window?
+				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['custom.png'].data,obj,"custom.png",6)
 					qr.decode(f.test)			
 				else
@@ -347,7 +349,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
-				if window?
+				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['website.png'].data,obj,"web",6)
 					qr.decode(f.test)			
 				else
@@ -374,7 +376,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
-				if window?
+				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
 					qr.decode(f.test)			
 				else
@@ -402,7 +404,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
-				if window?
+				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodetag.png'].data,obj,"tag.png",2)
 					qr.decode(f.test)			
 				else
@@ -430,7 +432,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}				
 				spyOn(f,'test').andCallThrough()
-				if window?
+				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data,obj,"tag.png",2)
 					qr.decode(f.test)			
 				else
@@ -518,8 +520,8 @@ describe "loop forTagging images", () ->
 			expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir)
 
 			if i!='word/_rels/document.xml.rels' and i!='[Content_Types].xml' 
-				if window? or i!="word/document.xml" #document.xml is not the same, so we don't taste the data
-					if docX['tagLoopExample.docx'].zip.files[i].data?
+				if env=='browser' or i!="word/document.xml" #document.xml is not the same on node, so we don't test the data
+					if docX['tagLoopExample.docx'].zip.files[i].data?0
 						expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length)
 					expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data)
 
@@ -546,7 +548,6 @@ describe 'qr code testing', () ->
 		runs () ->
 
 			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-			docX['qrCodeExample.docx'].output()
 			for i of docX['qrCodeExample.docx'].zip.files
 			# 	#Everything but the date should be different
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date)

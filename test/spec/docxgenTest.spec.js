@@ -1,5 +1,7 @@
 //@ sourceMappingURL=docxgenTest.spec.map
 (function() {
+  var env, root;
+
   Object.size = function(obj) {
     var key, log, size;
 
@@ -11,12 +13,15 @@
     return size;
   };
 
-  if (typeof window !== "undefined" && window !== null) {
-    window.docX = [];
-    window.docXData = [];
-  } else {
-    global.docX = [];
-    global.docXData = [];
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
+
+  root.docX = {};
+
+  root.docXData = {};
+
+  if (env === 'node') {
     global.fs = require('fs');
     global.vm = require('vm');
     global.DOMParser = require('xmldom').DOMParser;
@@ -212,7 +217,7 @@
           "products": [
             {
               "title": "Microsoft",
-              "name": "Windows",
+              "name": "DOS",
               "reference": "Win7",
               "avantages": [
                 {
@@ -268,7 +273,7 @@
         docX['tagProduitLoop.docx'].setTemplateVars(templateVars);
         docX['tagProduitLoop.docx'].applyTemplateVars();
         text = docX['tagProduitLoop.docx'].getFullText();
-        expectedText = "MicrosoftProduct name : WindowsProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
+        expectedText = "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
         expect(text.length).toEqual(expectedText.length);
         return expect(text).toEqual(expectedText);
       });
@@ -439,7 +444,7 @@
             "price": "0",
             "reference": "Ubuntu10"
           }, {
-            "type": "windows",
+            "type": "DOS",
             "price": "500",
             "reference": "Win7"
           }, {
@@ -451,7 +456,7 @@
       };
       docX['tagDashLoop.docx'].setTemplateVars(templateVars);
       docX['tagDashLoop.docx'].applyTemplateVars();
-      expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
+      expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
       text = docX['tagDashLoop.docx'].getFullText();
       return expect(text).toBe(expectedText);
     });
@@ -465,7 +470,7 @@
             "price": "0",
             "reference": "Ubuntu10"
           }, {
-            "type": "windows",
+            "type": "DOS",
             "price": "500",
             "reference": "Win7"
           }, {
@@ -477,7 +482,7 @@
       };
       docX['tagDashLoopTable.docx'].setTemplateVars(templateVars);
       docX['tagDashLoopTable.docx'].applyTemplateVars();
-      expectedText = "linux0Ubuntu10windows500Win7apple1200MACOSX";
+      expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
       text = docX['tagDashLoopTable.docx'].getFullText();
       return expect(text).toBe(expectedText);
     });
@@ -491,7 +496,7 @@
             "price": "0",
             "reference": "Ubuntu10"
           }, {
-            "type": "windows",
+            "type": "DOS",
             "price": "500",
             "reference": "Win7"
           }, {
@@ -503,7 +508,7 @@
       };
       docX['tagDashLoopList.docx'].setTemplateVars(templateVars);
       docX['tagDashLoopList.docx'].applyTemplateVars();
-      expectedText = 'linux 0 Ubuntu10 windows 500 Win7 apple 1200 MACOSX ';
+      expectedText = 'linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ';
       text = docX['tagDashLoopList.docx'].getFullText();
       return expect(text).toBe(expectedText);
     });
@@ -779,7 +784,7 @@
             }
           };
           spyOn(f, 'test').andCallThrough();
-          if (typeof window !== "undefined" && window !== null) {
+          if (env === 'browser') {
             qr = new DocxQrCode(qrcodezip.files['blabla.png'].data, obj, "custom.png", 6);
             return qr.decode(f.test);
           } else {
@@ -816,7 +821,7 @@
             }
           };
           spyOn(f, 'test').andCallThrough();
-          if (typeof window !== "undefined" && window !== null) {
+          if (env === 'browser') {
             qr = new DocxQrCode(qrcodezip.files['custom.png'].data, obj, "custom.png", 6);
             return qr.decode(f.test);
           } else {
@@ -853,7 +858,7 @@
             }
           };
           spyOn(f, 'test').andCallThrough();
-          if (typeof window !== "undefined" && window !== null) {
+          if (env === 'browser') {
             qr = new DocxQrCode(qrcodezip.files['website.png'].data, obj, "web", 6);
             return qr.decode(f.test);
           } else {
@@ -890,7 +895,7 @@
             }
           };
           spyOn(f, 'test').andCallThrough();
-          if (typeof window !== "undefined" && window !== null) {
+          if (env === 'browser') {
             qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data, obj, "qrcodeTest.png", 4);
             return qr.decode(f.test);
           } else {
@@ -927,7 +932,7 @@
             }
           };
           spyOn(f, 'test').andCallThrough();
-          if (typeof window !== "undefined" && window !== null) {
+          if (env === 'browser') {
             qr = new DocxQrCode(qrcodezip.files['qrcodetag.png'].data, obj, "tag.png", 2);
             return qr.decode(f.test);
           } else {
@@ -964,7 +969,7 @@
             }
           };
           spyOn(f, 'test').andCallThrough();
-          if (typeof window !== "undefined" && window !== null) {
+          if (env === 'browser') {
             qr = new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data, obj, "tag.png", 2);
             return qr.decode(f.test);
           } else {
@@ -1019,7 +1024,7 @@
 
   describe("loop forTagging images", function() {
     return it('should work with a simple loop file', function() {
-      var contentTypeData, contentTypeXml, contentTypes, i, relationships, relsData, relsXml, tempVars;
+      var contentTypeData, contentTypeXml, contentTypes, i, relationships, relsData, relsXml, tempVars, _base;
 
       docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx']);
       tempVars = {
@@ -1068,8 +1073,8 @@
         expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression);
         expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir);
         if (i !== 'word/_rels/document.xml.rels' && i !== '[Content_Types].xml') {
-          if ((typeof window !== "undefined" && window !== null) || i !== "word/document.xml") {
-            if (docX['tagLoopExample.docx'].zip.files[i].data != null) {
+          if (env === 'browser' || i !== "word/document.xml") {
+            if (typeof (_base = docX['tagLoopExample.docx'].zip.files[i]).data === "function" ? _base.data(0) : void 0) {
               expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length);
             }
             expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data);
@@ -1103,7 +1108,6 @@
         var i, _results;
 
         expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
-        docX['qrCodeExample.docx'].output();
         _results = [];
         for (i in docX['qrCodeExample.docx'].zip.files) {
           expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date);

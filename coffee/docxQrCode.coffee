@@ -1,3 +1,6 @@
+root= global ? window
+env= if global? then 'node' else 'browser'
+
 DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
@@ -6,25 +9,17 @@ DocxQrCode = class DocxQrCode
 		@result=null
 	decode:(@callback) ->
 		_this= this
-		if window?
-			@qr= new QrCode()
-			@qr.callback= () ->
-				_this.ready= true
-				_this.result= this.result
-				testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
-				testdoc.applyTemplateVars()
-				_this.result=testdoc.content
-				_this.searchImage()
+		@qr= new QrCode()
+		@qr.callback= () ->
+			_this.ready= true
+			_this.result= this.result
+			testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
+			testdoc.applyTemplateVars()
+			_this.result=testdoc.content
+			_this.searchImage()
+		if env=='browser'
 			@qr.decode("data:image/png;base64,#{@base64Data}")
 		else
-			@qr=new QrCode()
-			@qr.callback= () ->
-				_this.ready= true
-				_this.result= this.result
-				testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
-				testdoc.applyTemplateVars()
-				_this.result=testdoc.content
-				_this.searchImage()
 			@qr.decode(@data,@data.decoded)
 
 	searchImage:() ->
@@ -45,7 +40,4 @@ DocxQrCode = class DocxQrCode
 		else
 			@callback(this,@imgName,@num)	
 
-if window?
-	window.DocxQrCode=DocxQrCode
-else
-	global.DocxQrCode=DocxQrCode
+root.DocxQrCode=DocxQrCode

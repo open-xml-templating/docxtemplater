@@ -1,15 +1,12 @@
-if window? #js
-	window.DocUtils= {}
-	window.docX=[]
-	window.docXData=[]
-else 
-	global.DocUtils= {}
-	global.docX=[]
-	global.docXData=[]
+root= global ? window
+env= if global? then 'node' else 'browser'
+
+root.DocUtils= {}
+root.docX=[]
+root.docXData=[]
 
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
-
 
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null) ->
 	if path.indexOf('/')!=-1
@@ -17,31 +14,21 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		fileName= totalPath
 	else
 		fileName= path
-		if window?
+		if env=='browser'
 			totalPath= "../examples/#{path}"
 		else
 			totalPath= "../../examples/#{path}"
 	loadFile = (data) ->
-		if window?
-			window.docXData[fileName]=data
-			if noDocx==false
-				window.docX[fileName]=new DocxGen(data,{},intelligentTagging)
-			if callback?
-				callback(false)
-			if async==false
-				return window.docXData[fileName]
-		else
-			global.docXData[fileName]=data
-			if noDocx==false
-				global.docX[fileName]=new DocxGen(data,{},intelligentTagging)
-			if callback?
-				callback(false)
-			if async==false
-				return global.docXData[fileName]
+		root.docXData[fileName]=data
+		if noDocx==false
+			root.docX[fileName]=new DocxGen(data,{},intelligentTagging)
+		if callback?
+			callback(false)
+		if async==false
+			return root.docXData[fileName]
 
 
-
-	if window?
+	if env=='browser'
 		xhrDoc= new XMLHttpRequest()		
 		xhrDoc.open('GET', totalPath , async)
 		if xhrDoc.overrideMimeType
@@ -116,20 +103,14 @@ DocUtils.xml2Str = (xmlNode) ->
 	return content;
 
 DocUtils.Str2xml= (str) ->
-	if window?
-		if window.DOMParser #Chrome, Firefox, and modern browsers
-			parser=new DOMParser();
-			xmlDoc=parser.parseFromString(str,"text/xml")
-		else # Internet Explorer
-			xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
-			xmlDoc.async=false
-			xmlDoc.loadXML(str)
-		return xmlDoc
-	else
-		if DOMParser
-			parser=new DOMParser();
-			xmlDoc=parser.parseFromString(str,"text/xml")
-		return xmlDoc
+	if root.DOMParser #Chrome, Firefox, and modern browsers
+		parser=new DOMParser();
+		xmlDoc=parser.parseFromString(str,"text/xml")
+	else # Internet Explorer
+		xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
+		xmlDoc.async=false
+		xmlDoc.loadXML(str)
+	xmlDoc
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
@@ -164,8 +145,11 @@ Array.prototype.min = () -> Math.min.apply(null, this)
 ###
 Docxgen.coffee
 Created by Edgar HIPP
-03/06/2013
+11/07/2013
 ###
+
+root= global ? window
+env= if global? then 'node' else 'browser'
 
 DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
@@ -306,10 +290,10 @@ DocxGen = class DocxGen
 		@calcZip()
 		result= @zip.generate()
 		if download
-			if global?
+			if env=='node'
 				fs.writeFile name, result, 'base64', (err) ->
-					console.log(err)
-			if window?
+					console.log('Error writing file'+err)
+			else
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
 	calcZip: () ->
@@ -341,10 +325,10 @@ DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 
-if window?
-	window.DocxGen=DocxGen
-else 
-	global.DocxGen=DocxGen
+root.DocxGen=DocxGen
+root= global ? window
+env= if global? then 'node' else 'browser'
+
 XmlTemplater = class XmlTemplater
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
@@ -699,10 +683,9 @@ XmlTemplater = class XmlTemplater
 		imgReplacer.replaceImages()
 		this
 
-if window?
-	window.XmlTemplater=XmlTemplater
-else
-	global.XmlTemplater=XmlTemplater
+root.XmlTemplater=XmlTemplater
+root= global ? window
+env= if global? then 'node' else 'browser'
 
 DocXTemplater = class DocXTemplater extends XmlTemplater
 	constructor:(content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0) ->
@@ -711,10 +694,10 @@ DocXTemplater = class DocXTemplater extends XmlTemplater
 		@tagX='w:t'
 		if typeof content=="string" then @load content else throw "content must be string!"
 
-if window?
-	window.DocXTemplater=DocXTemplater
-else
-	global.DocXTemplater=DocXTemplater
+root.DocXTemplater=DocXTemplater
+root= global ? window
+env= if global? then 'node' else 'browser'
+
 ImgReplacer = class ImgReplacer
 	constructor: (@xmlTemplater)->
 		@imgMatches=[]
@@ -764,7 +747,7 @@ ImgReplacer = class ImgReplacer
 								# tag.setAttribute('id',@xmlTemplater.imageId)
 
 
-								if window?
+								if env=='browser'
 									qr[u]= new DocxQrCode(oldFile.data,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 
 								tag.setAttribute('name',"#{imgName}")
@@ -780,7 +763,7 @@ ImgReplacer = class ImgReplacer
 
 								@xmlTemplater.numQrCode++
 
-								if window?
+								if env=='browser'
 									qr[u].decode(callback)
 								else
 									base64= JSZipBase64.encode oldFile.data
@@ -821,10 +804,10 @@ ImgReplacer = class ImgReplacer
 
 						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 
-if window?
-	window.ImgReplacer=ImgReplacer
-else
-	global.ImgReplacer=ImgReplacer
+root.ImgReplacer=ImgReplacer
+root= global ? window
+env= if global? then 'node' else 'browser'
+
 DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
@@ -833,25 +816,17 @@ DocxQrCode = class DocxQrCode
 		@result=null
 	decode:(@callback) ->
 		_this= this
-		if window?
-			@qr= new QrCode()
-			@qr.callback= () ->
-				_this.ready= true
-				_this.result= this.result
-				testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
-				testdoc.applyTemplateVars()
-				_this.result=testdoc.content
-				_this.searchImage()
+		@qr= new QrCode()
+		@qr.callback= () ->
+			_this.ready= true
+			_this.result= this.result
+			testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
+			testdoc.applyTemplateVars()
+			_this.result=testdoc.content
+			_this.searchImage()
+		if env=='browser'
 			@qr.decode("data:image/png;base64,#{@base64Data}")
 		else
-			@qr=new QrCode()
-			@qr.callback= () ->
-				_this.ready= true
-				_this.result= this.result
-				testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
-				testdoc.applyTemplateVars()
-				_this.result=testdoc.content
-				_this.searchImage()
 			@qr.decode(@data,@data.decoded)
 
 	searchImage:() ->
@@ -872,7 +847,4 @@ DocxQrCode = class DocxQrCode
 		else
 			@callback(this,@imgName,@num)	
 
-if window?
-	window.DocxQrCode=DocxQrCode
-else
-	global.DocxQrCode=DocxQrCode
+root.DocxQrCode=DocxQrCode

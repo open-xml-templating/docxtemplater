@@ -1,20 +1,20 @@
 //@ sourceMappingURL=docxgen.map
 (function() {
-  var DocXTemplater, DocxGen, DocxQrCode, ImgReplacer, XmlTemplater,
+  var DocXTemplater, DocxGen, DocxQrCode, ImgReplacer, XmlTemplater, env, root,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  if (typeof window !== "undefined" && window !== null) {
-    window.DocUtils = {};
-    window.docX = [];
-    window.docXData = [];
-  } else {
-    global.DocUtils = {};
-    global.docX = [];
-    global.docXData = [];
-  }
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
+
+  root.DocUtils = {};
+
+  root.docX = [];
+
+  root.docXData = [];
 
   DocUtils.nl2br = function(str, is_xhtml) {
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
@@ -40,38 +40,25 @@
       fileName = totalPath;
     } else {
       fileName = path;
-      if (typeof window !== "undefined" && window !== null) {
+      if (env === 'browser') {
         totalPath = "../examples/" + path;
       } else {
         totalPath = "../../examples/" + path;
       }
     }
     loadFile = function(data) {
-      if (typeof window !== "undefined" && window !== null) {
-        window.docXData[fileName] = data;
-        if (noDocx === false) {
-          window.docX[fileName] = new DocxGen(data, {}, intelligentTagging);
-        }
-        if (callback != null) {
-          callback(false);
-        }
-        if (async === false) {
-          return window.docXData[fileName];
-        }
-      } else {
-        global.docXData[fileName] = data;
-        if (noDocx === false) {
-          global.docX[fileName] = new DocxGen(data, {}, intelligentTagging);
-        }
-        if (callback != null) {
-          callback(false);
-        }
-        if (async === false) {
-          return global.docXData[fileName];
-        }
+      root.docXData[fileName] = data;
+      if (noDocx === false) {
+        root.docX[fileName] = new DocxGen(data, {}, intelligentTagging);
+      }
+      if (callback != null) {
+        callback(false);
+      }
+      if (async === false) {
+        return root.docXData[fileName];
       }
     };
-    if (typeof window !== "undefined" && window !== null) {
+    if (env === 'browser') {
       xhrDoc = new XMLHttpRequest();
       xhrDoc.open('GET', totalPath, async);
       if (xhrDoc.overrideMimeType) {
@@ -181,23 +168,15 @@
   DocUtils.Str2xml = function(str) {
     var parser, xmlDoc;
 
-    if (typeof window !== "undefined" && window !== null) {
-      if (window.DOMParser) {
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(str, "text/xml");
-      } else {
-        xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async = false;
-        xmlDoc.loadXML(str);
-      }
-      return xmlDoc;
+    if (root.DOMParser) {
+      parser = new DOMParser();
+      xmlDoc = parser.parseFromString(str, "text/xml");
     } else {
-      if (DOMParser) {
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(str, "text/xml");
-      }
-      return xmlDoc;
+      xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+      xmlDoc.async = false;
+      xmlDoc.loadXML(str);
     }
+    return xmlDoc;
   };
 
   DocUtils.replaceFirstFrom = function(string, search, replace, from) {
@@ -252,9 +231,13 @@
   /*
   Docxgen.coffee
   Created by Edgar HIPP
-  03/06/2013
+  11/07/2013
   */
 
+
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
   DocxGen = DocxGen = (function() {
     var imageExtensions;
@@ -521,12 +504,11 @@
       this.calcZip();
       result = this.zip.generate();
       if (download) {
-        if (typeof global !== "undefined" && global !== null) {
+        if (env === 'node') {
           fs.writeFile(name, result, 'base64', function(err) {
-            return console.log(err);
+            return console.log('Error writing file' + err);
           });
-        }
-        if (typeof window !== "undefined" && window !== null) {
+        } else {
           document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + result;
         }
       }
@@ -596,11 +578,11 @@
 
   })();
 
-  if (typeof window !== "undefined" && window !== null) {
-    window.DocxGen = DocxGen;
-  } else {
-    global.DocxGen = DocxGen;
-  }
+  root.DocxGen = DocxGen;
+
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
   XmlTemplater = XmlTemplater = (function() {
     function XmlTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId, qrcodeCallback, localImageCreator) {
@@ -1232,11 +1214,11 @@
 
   })();
 
-  if (typeof window !== "undefined" && window !== null) {
-    window.XmlTemplater = XmlTemplater;
-  } else {
-    global.XmlTemplater = XmlTemplater;
-  }
+  root.XmlTemplater = XmlTemplater;
+
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
   DocXTemplater = DocXTemplater = (function(_super) {
     __extends(DocXTemplater, _super);
@@ -1264,11 +1246,11 @@
 
   })(XmlTemplater);
 
-  if (typeof window !== "undefined" && window !== null) {
-    window.DocXTemplater = DocXTemplater;
-  } else {
-    global.DocXTemplater = DocXTemplater;
-  }
+  root.DocXTemplater = DocXTemplater;
+
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
   ImgReplacer = ImgReplacer = (function() {
     function ImgReplacer(xmlTemplater) {
@@ -1318,7 +1300,7 @@
                   newId = this.xmlTemplater.DocxGen.addImageRels(imgName, "");
                   this.xmlTemplater.imageId++;
                   this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, oldFile.data);
-                  if (typeof window !== "undefined" && window !== null) {
+                  if (env === 'browser') {
                     qr[u] = new DocxQrCode(oldFile.data, this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
                   }
                   tag.setAttribute('name', "" + imgName);
@@ -1331,7 +1313,7 @@
                   replacement = DocUtils.xml2Str(imageTag);
                   this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
                   this.xmlTemplater.numQrCode++;
-                  if (typeof window !== "undefined" && window !== null) {
+                  if (env === 'browser') {
                     _results.push(qr[u].decode(callback));
                   } else {
                     base64 = JSZipBase64.encode(oldFile.data);
@@ -1406,11 +1388,11 @@
 
   })();
 
-  if (typeof window !== "undefined" && window !== null) {
-    window.ImgReplacer = ImgReplacer;
-  } else {
-    global.ImgReplacer = ImgReplacer;
-  }
+  root.ImgReplacer = ImgReplacer;
+
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
   DocxQrCode = DocxQrCode = (function() {
     function DocxQrCode(imageData, xmlTemplater, imgName, num, callback) {
@@ -1429,31 +1411,20 @@
 
       this.callback = callback;
       _this = this;
-      if (typeof window !== "undefined" && window !== null) {
-        this.qr = new QrCode();
-        this.qr.callback = function() {
-          var testdoc;
+      this.qr = new QrCode();
+      this.qr.callback = function() {
+        var testdoc;
 
-          _this.ready = true;
-          _this.result = this.result;
-          testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
-          testdoc.applyTemplateVars();
-          _this.result = testdoc.content;
-          return _this.searchImage();
-        };
+        _this.ready = true;
+        _this.result = this.result;
+        testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
+        testdoc.applyTemplateVars();
+        _this.result = testdoc.content;
+        return _this.searchImage();
+      };
+      if (env === 'browser') {
         return this.qr.decode("data:image/png;base64," + this.base64Data);
       } else {
-        this.qr = new QrCode();
-        this.qr.callback = function() {
-          var testdoc;
-
-          _this.ready = true;
-          _this.result = this.result;
-          testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
-          testdoc.applyTemplateVars();
-          _this.result = testdoc.content;
-          return _this.searchImage();
-        };
         return this.qr.decode(this.data, this.data.decoded);
       }
     };
@@ -1491,10 +1462,6 @@
 
   })();
 
-  if (typeof window !== "undefined" && window !== null) {
-    window.DocxQrCode = DocxQrCode;
-  } else {
-    global.DocxQrCode = DocxQrCode;
-  }
+  root.DocxQrCode = DocxQrCode;
 
 }).call(this);

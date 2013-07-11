@@ -1,3 +1,6 @@
+root= global ? window
+env= if global? then 'node' else 'browser'
+
 ImgReplacer = class ImgReplacer
 	constructor: (@xmlTemplater)->
 		@imgMatches=[]
@@ -47,7 +50,7 @@ ImgReplacer = class ImgReplacer
 								# tag.setAttribute('id',@xmlTemplater.imageId)
 
 
-								if window?
+								if env=='browser'
 									qr[u]= new DocxQrCode(oldFile.data,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 
 								tag.setAttribute('name',"#{imgName}")
@@ -63,7 +66,7 @@ ImgReplacer = class ImgReplacer
 
 								@xmlTemplater.numQrCode++
 
-								if window?
+								if env=='browser'
 									qr[u].decode(callback)
 								else
 									base64= JSZipBase64.encode oldFile.data
@@ -104,7 +107,4 @@ ImgReplacer = class ImgReplacer
 
 						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 
-if window?
-	window.ImgReplacer=ImgReplacer
-else
-	global.ImgReplacer=ImgReplacer
+root.ImgReplacer=ImgReplacer

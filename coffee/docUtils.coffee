@@ -1,15 +1,12 @@
-if window? #js
-	window.DocUtils= {}
-	window.docX=[]
-	window.docXData=[]
-else 
-	global.DocUtils= {}
-	global.docX=[]
-	global.docXData=[]
+root= global ? window
+env= if global? then 'node' else 'browser'
+
+root.DocUtils= {}
+root.docX=[]
+root.docXData=[]
 
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
-
 
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null) ->
 	if path.indexOf('/')!=-1
@@ -17,31 +14,21 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		fileName= totalPath
 	else
 		fileName= path
-		if window?
+		if env=='browser'
 			totalPath= "../examples/#{path}"
 		else
 			totalPath= "../../examples/#{path}"
 	loadFile = (data) ->
-		if window?
-			window.docXData[fileName]=data
-			if noDocx==false
-				window.docX[fileName]=new DocxGen(data,{},intelligentTagging)
-			if callback?
-				callback(false)
-			if async==false
-				return window.docXData[fileName]
-		else
-			global.docXData[fileName]=data
-			if noDocx==false
-				global.docX[fileName]=new DocxGen(data,{},intelligentTagging)
-			if callback?
-				callback(false)
-			if async==false
-				return global.docXData[fileName]
+		root.docXData[fileName]=data
+		if noDocx==false
+			root.docX[fileName]=new DocxGen(data,{},intelligentTagging)
+		if callback?
+			callback(false)
+		if async==false
+			return root.docXData[fileName]
 
 
-
-	if window?
+	if env=='browser'
 		xhrDoc= new XMLHttpRequest()		
 		xhrDoc.open('GET', totalPath , async)
 		if xhrDoc.overrideMimeType
@@ -116,20 +103,14 @@ DocUtils.xml2Str = (xmlNode) ->
 	return content;
 
 DocUtils.Str2xml= (str) ->
-	if window?
-		if window.DOMParser #Chrome, Firefox, and modern browsers
-			parser=new DOMParser();
-			xmlDoc=parser.parseFromString(str,"text/xml")
-		else # Internet Explorer
-			xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
-			xmlDoc.async=false
-			xmlDoc.loadXML(str)
-		return xmlDoc
-	else
-		if DOMParser
-			parser=new DOMParser();
-			xmlDoc=parser.parseFromString(str,"text/xml")
-		return xmlDoc
+	if root.DOMParser #Chrome, Firefox, and modern browsers
+		parser=new DOMParser();
+		xmlDoc=parser.parseFromString(str,"text/xml")
+	else # Internet Explorer
+		xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
+		xmlDoc.async=false
+		xmlDoc.loadXML(str)
+	xmlDoc
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)

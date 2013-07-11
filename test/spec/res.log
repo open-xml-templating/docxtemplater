@@ -25,7 +25,6 @@ tag not defined, trying alternate method
 imagetag not defined, trying alternate method
 document ready!
 document ready!
-null
 .tagRid not defined, trying alternate method
 tag not defined, trying alternate method
 imagetag not defined, trying alternate method
@@ -37,11 +36,11 @@ tag not defined, trying alternate method
 tagRid not defined, trying alternate method
 tag not defined, trying alternate method
 document ready!
-document ready!
-document ready!
 .
 
-Finished in 23.208 seconds
-47 tests, 1070 assertions, 0 failures, 0 skipped
+Finished in 20.351 seconds
+47 tests, 1049 assertions, 0 failures, 0 skipped
 
 
+document ready!
+document ready!

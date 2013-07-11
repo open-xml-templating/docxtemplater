@@ -1,8 +1,11 @@
 ###
 Docxgen.coffee
 Created by Edgar HIPP
-03/06/2013
+11/07/2013
 ###
+
+root= global ? window
+env= if global? then 'node' else 'browser'
 
 DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
@@ -143,10 +146,10 @@ DocxGen = class DocxGen
 		@calcZip()
 		result= @zip.generate()
 		if download
-			if global?
+			if env=='node'
 				fs.writeFile name, result, 'base64', (err) ->
-					console.log(err)
-			if window?
+					console.log('Error writing file'+err)
+			else
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
 	calcZip: () ->
@@ -178,7 +181,4 @@ DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 
-if window?
-	window.DocxGen=DocxGen
-else 
-	global.DocxGen=DocxGen
+root.DocxGen=DocxGen
