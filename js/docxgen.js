@@ -20,7 +20,7 @@
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
   };
 
-  DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback) {
+  DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback, basePath) {
     var data, e, fileName, loadFile, totalPath, xhrDoc;
 
     if (noDocx == null) {
@@ -35,16 +35,22 @@
     if (callback == null) {
       callback = null;
     }
+    if (basePath == null) {
+      basePath = null;
+    }
     if (path.indexOf('/') !== -1) {
       totalPath = path;
       fileName = totalPath;
     } else {
       fileName = path;
-      if (env === 'browser') {
-        totalPath = "../examples/" + path;
-      } else {
-        totalPath = "../../examples/" + path;
+      if (basePath === null) {
+        if (env === 'browser') {
+          basePath = '../examples/';
+        } else {
+          basePath = '../../examples/';
+        }
       }
+      totalPath = basePath + path;
     }
     loadFile = function(data) {
       root.docXData[fileName] = data;
@@ -70,7 +76,9 @@
             return loadFile(this.response);
           } else {
             console.log('error loading doc');
-            return callback(true);
+            if (callback != null) {
+              return callback(true);
+            }
           }
         }
       };
@@ -505,8 +513,11 @@
       result = this.zip.generate();
       if (download) {
         if (env === 'node') {
-          fs.writeFile(name, result, 'base64', function(err) {
-            return console.log('Error writing file' + err);
+          fs.writeFile(process.cwd() + '/' + name, result, 'base64', function(err) {
+            if (err) {
+              throw err;
+            }
+            return console.log('file Saved');
           });
         } else {
           document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + result;

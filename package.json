@@ -1,0 +1,32 @@
+{
+  "name": "docxgen",
+  "version": "1.0.5",
+  "author": "Edgar Hipp <hipp.edg@gmail.com>",
+  "description": "A docX Generator",
+  "contributors": [ 
+    {
+      "name": "Edgar Hipp",
+      "email": "hipp.edg@gmail.com"
+    } 
+  ],
+  "bin":
+  {
+    "docxgen":"./docxgenNode/bin/docxgen"
+  },
+
+  "keywords": [
+    "DocX",
+    "templates",
+    "Generator"
+  ],
+  "dependencies" : {
+    "xmldom"   :  "0.1.x"
+  },
+  "devDependencies": {
+    "jasmine-node":"1.10.x"
+  }, 
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.8"
+  }
+}

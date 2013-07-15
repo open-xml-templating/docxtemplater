@@ -19,6 +19,10 @@
 
 <p><b>docxgen.js</b> is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.</p>
 
+<a href="#variables">Replace Variables</a><br>
+<a href="#loops">Use Loops</a><br>
+<a href="#tables">Use Loops inside tables</a><br>
+
 <h1>Templates</h1>
 
 DocxGen is based on word templates.
@@ -61,7 +65,7 @@ doc.output() //Output the document using Data-URI
 <section>
 <h2 id='loops'><em>Loops</em>: You can use the mustache like syntax: {#tagName} {/tagname} to loop inside a variable</h2>
 
-tagName has to be an array of objects, every element of the array will be used to output what is between the opening loop tag and the closing loop tag.
+<p>tagName has to be an array of objects, every element of the array will be used to output what is between the opening loop tag and the closing loop tag.</p>
 	<table class="demo">
 		<tr>
 			<td><img src="images/loopTagging.png" alt=""></td>
@@ -102,7 +106,8 @@ doc.output() //Output the document using Data-URI
 </section>
 
 <section>
-	<h2><em>Tables</em>: loops work inside tables too!</h2>
+	<h2 id='tables'><em>Tables</em>: loops work inside tables too!</h2>
+	<p>This also works with Bullet Lists</p>
 	<table class="demo">
 		<tr>
 			<td><img src="images/tableTagging.png"></td>

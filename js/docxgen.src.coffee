@@ -8,16 +8,18 @@ root.docXData=[]
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
-DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null) ->
+DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null,basePath=null) ->
 	if path.indexOf('/')!=-1
 		totalPath= path
 		fileName= totalPath
 	else
 		fileName= path
-		if env=='browser'
-			totalPath= "../examples/#{path}"
-		else
-			totalPath= "../../examples/#{path}"
+		if basePath==null
+			if env=='browser'
+				basePath= '../examples/'
+			else
+				basePath= '../../examples/'
+		totalPath= basePath+path
 	loadFile = (data) ->
 		root.docXData[fileName]=data
 		if noDocx==false
@@ -39,7 +41,7 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					loadFile(this.response)
 				else
 					console.log 'error loading doc'
-					callback(true)
+					if callback? then callback(true)
 		xhrDoc.send()
 	else
 		if async==true
@@ -291,8 +293,9 @@ DocxGen = class DocxGen
 		result= @zip.generate()
 		if download
 			if env=='node'
-				fs.writeFile name, result, 'base64', (err) ->
-					console.log('Error writing file'+err)
+				fs.writeFile process.cwd()+'/'+name, result, 'base64', (err) ->
+					if err then throw err
+					console.log 'file Saved'
 			else
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result

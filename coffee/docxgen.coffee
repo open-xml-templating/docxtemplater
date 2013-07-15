@@ -147,8 +147,9 @@ DocxGen = class DocxGen
 		result= @zip.generate()
 		if download
 			if env=='node'
-				fs.writeFile name, result, 'base64', (err) ->
-					console.log('Error writing file'+err)
+				fs.writeFile process.cwd()+'/'+name, result, 'base64', (err) ->
+					if err then throw err
+					console.log 'file Saved'
 			else
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
