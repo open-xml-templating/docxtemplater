@@ -21,7 +21,7 @@
   };
 
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback, basePath) {
-    var data, e, fileName, loadFile, totalPath, xhrDoc;
+    var data, e, fileName, httpRegex, httpsRegex, loadFile, totalPath, xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
@@ -37,6 +37,10 @@
     }
     if (basePath == null) {
       basePath = null;
+    }
+    console.log('loading Doc:' + path);
+    if (path == null) {
+      throw 'path not defined';
     }
     if (path.indexOf('/') !== -1) {
       totalPath = path;
@@ -84,30 +88,55 @@
       };
       xhrDoc.send();
     } else {
-      if (async === true) {
-        fs.readFile(totalPath, "binary", function(err, data) {
-          if (err) {
-            if (callback != null) {
-              return callback(true);
-            }
-          } else {
-            loadFile(data);
-            if (callback != null) {
-              return callback(false);
-            }
-          }
+      httpRegex = new RegExp("(http|ftp)://");
+      httpsRegex = new RegExp("(https)://");
+      if (httpRegex.test(path)) {
+        console.log('http url matched:' + path);
+        http.get(path, function(res) {
+          console.log("Got response: " + res.statusCode);
+          return res.on('data', function(d) {
+            return loadFile(d);
+          });
+        }).on('error', function(e) {
+          return console.log("Got error: " + e.message);
+        });
+      } else if (httpsRegex.test(path)) {
+        console.log('https url matched:' + path);
+        https.get(path, function(res) {
+          console.log("Got response: " + res.statusCode);
+          return res.on('data', function(d) {
+            return loadFile(d);
+          });
+        }).on('error', function(e) {
+          return console.log("Got error: " + e.message);
         });
       } else {
-        try {
-          data = fs.readFileSync(totalPath, "binary");
-          loadFile(data);
-          if (callback != null) {
-            callback(false);
-          }
-        } catch (_error) {
-          e = _error;
-          if (callback != null) {
-            callback(true);
+        if (async === true) {
+          fs.readFile(totalPath, "binary", function(err, data) {
+            if (err) {
+              if (callback != null) {
+                return callback(true);
+              }
+            } else {
+              loadFile(data);
+              if (callback != null) {
+                return callback(false);
+              }
+            }
+          });
+        } else {
+          console.log('loading async:' + totalPath);
+          try {
+            data = fs.readFileSync(totalPath, "binary");
+            loadFile(data);
+            if (callback != null) {
+              callback(false);
+            }
+          } catch (_error) {
+            e = _error;
+            if (callback != null) {
+              callback(true);
+            }
           }
         }
       }
@@ -1422,12 +1451,14 @@
 
       this.callback = callback;
       _this = this;
+      console.log('qrcode');
       this.qr = new QrCode();
       this.qr.callback = function() {
         var testdoc;
 
         _this.ready = true;
         _this.result = this.result;
+        console.log('result:' + _this.result);
         testdoc = new _this.xmlTemplater["class"](this.result, _this.xmlTemplater.toJson());
         testdoc.applyTemplateVars();
         _this.result = testdoc.content;
@@ -1441,7 +1472,7 @@
     };
 
     DocxQrCode.prototype.searchImage = function() {
-      var callback, loadDocCallback, _thatiti,
+      var callback, loadDocCallback,
         _this = this;
 
       if (this.result.substr(0, 4) === 'gen:') {
@@ -1451,7 +1482,6 @@
           return _this.xmlTemplater.DocxGen.localImageCreator(_this.result, callback);
         };
       } else if (this.result !== null && this.result !== void 0 && this.result.substr(0, 22) !== 'error decoding QR Code') {
-        _thatiti = this;
         loadDocCallback = function(fail) {
           if (fail == null) {
             fail = false;

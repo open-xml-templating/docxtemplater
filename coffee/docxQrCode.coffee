@@ -9,10 +9,13 @@ DocxQrCode = class DocxQrCode
 		@result=null
 	decode:(@callback) ->
 		_this= this
+		console.log('qrcode')
 		@qr= new QrCode()
 		@qr.callback= () ->
 			_this.ready= true
 			_this.result= this.result
+			console.log('result:'+_this.result)
+
 			testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
 			testdoc.applyTemplateVars()
 			_this.result=testdoc.content
@@ -29,7 +32,6 @@ DocxQrCode = class DocxQrCode
 				@callback(this,@imgName,@num)
 				@xmlTemplater.DocxGen.localImageCreator(@result,callback)
 		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
-			_thatiti= this
 			loadDocCallback= (fail=false) =>
 				if not fail
 					@data=docXData[@result]

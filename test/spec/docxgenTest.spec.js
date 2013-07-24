@@ -22,6 +22,8 @@
   root.docXData = {};
 
   if (env === 'node') {
+    global.http = require('http');
+    global.https = require('https');
     global.fs = require('fs');
     global.vm = require('vm');
     global.DOMParser = require('xmldom').DOMParser;

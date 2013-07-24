@@ -9,12 +9,14 @@ DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null,basePath=null) ->
+	console.log 'loading Doc:'+path
+	throw 'path not defined' unless path?
 	if path.indexOf('/')!=-1
 		totalPath= path
 		fileName= totalPath
 	else
 		fileName= path
-		if basePath==null
+		if basePath==null#set basePath only if it wasn't set as an argument
 			if env=='browser'
 				basePath= '../examples/'
 			else
@@ -44,20 +46,49 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					if callback? then callback(true)
 		xhrDoc.send()
 	else
-		if async==true
-			fs.readFile totalPath,"binary", (err, data) ->
-				if err
-					if callback? then callback(true)
-				else
+		
+		httpRegex= new RegExp "(http|ftp)://"
+		httpsRegex= new RegExp "(https)://"
+		if httpRegex.test(path)
+			console.log('http url matched:'+path)
+			http.get(path, (res) -> 
+				console.log("Got response: " + res.statusCode);
+				res.on('data', (d) ->
+					loadFile(d)
+				)
+			)
+			.on('error', (e) ->
+				console.log("Got error: " + e.message);
+			)
+
+		else if httpsRegex.test(path)
+			console.log('https url matched:'+path)
+			https.get(path, (res) -> 
+				console.log("Got response: " + res.statusCode);
+				res.on('data', (d) ->
+					loadFile(d)
+				)
+			)
+			.on('error', (e) ->
+				console.log("Got error: " + e.message);
+			)
+		else
+			if async==true
+				fs.readFile totalPath,"binary", (err, data) ->
+					if err
+						if callback? then callback(true)
+					else
+						loadFile(data)
+						if callback? then callback(false)
+			else
+				console.log('loading async:'+totalPath)
+
+				try
+					data=fs.readFileSync(totalPath,"binary")
 					loadFile(data)
 					if callback? then callback(false)
-		else
-			try
-				data=fs.readFileSync(totalPath,"binary")
-				loadFile(data)
-				if callback? then callback(false)
-			catch e
-				if callback? then callback(true)
+				catch e
+					if callback? then callback(true)
 	return fileName
 
 
