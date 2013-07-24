@@ -11,9 +11,12 @@ ImgReplacer = class ImgReplacer
 		</w:drawing>
 		///g, @xmlTemplater.content
 	replaceImages: ()->
+		console.log 'replacing Images ...'
 		qr=[]
 
 		callback= (docxqrCode) ->
+			console.log ('removing qrcode')
+			console.log 'setting image:'+"word/media/#{docxqrCode.imgName}"
 			docxqrCode.xmlTemplater.numQrCode--
 			docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
 			docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
@@ -69,14 +72,24 @@ ImgReplacer = class ImgReplacer
 								if env=='browser'
 									qr[u].decode(callback)
 								else
-									base64= JSZipBase64.encode oldFile.data
-									binaryData = new Buffer(base64, 'base64') #.toString('binary');					
-									png= new PNG(binaryData)
-									finished= (a) =>
-										png.decoded= a
-										qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-										qr[u].decode(callback)
-									dat= png.decode(finished)
+									if /\.png$/.test(oldFile.name) 
+										console.log(oldFile.name)
+										base64= JSZipBase64.encode oldFile.data
+										binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+										png= new PNG(binaryData)
+										finished= (a) =>
+											try
+												png.decoded= a
+												qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+												qr[u].decode(callback)											
+											catch e
+												console.log(e)
+												@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+										dat= png.decode(finished)
+									else
+										#remove the image from the list of images to be tested
+										@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+
 
 			else if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
 				

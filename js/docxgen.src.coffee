@@ -46,32 +46,57 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					if callback? then callback(true)
 		xhrDoc.send()
 	else
-		
 		httpRegex= new RegExp "(http|ftp)://"
 		httpsRegex= new RegExp "(https)://"
 		if httpRegex.test(path)
-			console.log('http url matched:'+path)
-			http.get(path, (res) -> 
-				console.log("Got response: " + res.statusCode);
-				res.on('data', (d) ->
-					loadFile(d)
-				)
-			)
-			.on('error', (e) ->
-				console.log("Got error: " + e.message);
-			)
+			# console.log('http url matched:'+path)
+			# http.get(path, (res) -> 
+			# 	console.log("Got response: " + res.statusCode);
+			# 	res.on('data', (d) ->
+			# 		loadFile(d)
+			# 	)
+			# )
+			# .on('error', (e) ->
+			# 	console.log("Got error: " + e.message);
+			# )
 
 		else if httpsRegex.test(path)
 			console.log('https url matched:'+path)
-			https.get(path, (res) -> 
-				console.log("Got response: " + res.statusCode);
-				res.on('data', (d) ->
-					loadFile(d)
+
+			urloptions=(url.parse(path))
+
+			options = 
+				hostname:urloptions.hostname
+				path:urloptions.path
+				method: 'GET'
+				rejectUnauthorized:false
+
+			req = https.request(options, (res)->
+				res.setEncoding('binary')
+				data = ""
+
+				res.on('data', (chunk)->
+					console.log "Status Code #{res.statusCode}"
+					console.log('received')
+					data += chunk
 				)
-			)
-			.on('error', (e) ->
-				console.log("Got error: " + e.message);
-			)
+
+				res.on('end', ()->
+					console.log('receivedTotally')
+					loadFile(data))
+
+				res.on('error',(err)->
+					console.log("Error during HTTP request");
+					console.log(err.message)
+					console.log(err.stack))
+
+				).on('error',(e)->
+						console.log("Error: \n" + e.message); 
+						console.log( e.stack );
+					)
+
+			req.end();
+
 		else
 			if async==true
 				fs.readFile totalPath,"binary", (err, data) ->
@@ -204,11 +229,15 @@ DocxGen = class DocxGen
 		@qrCodeWaitingFor= []
 		if content? then @load(content)
 	qrCodeCallBack:(num,add=true) ->
+
 		if add==true
 			@qrCodeWaitingFor.push num
 		else if add == false
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
+			console.log 'qrcodeWaitingFor'
+			console.log @qrCodeWaitingFor
+			
 		@testReady()
 	testReady:()->
 		if @qrCodeWaitingFor.length==0 && @filesProcessed== @templatedFiles.length
@@ -742,9 +771,12 @@ ImgReplacer = class ImgReplacer
 		</w:drawing>
 		///g, @xmlTemplater.content
 	replaceImages: ()->
+		console.log 'replacing Images ...'
 		qr=[]
 
 		callback= (docxqrCode) ->
+			console.log ('removing qrcode')
+			console.log 'setting image:'+"word/media/#{docxqrCode.imgName}"
 			docxqrCode.xmlTemplater.numQrCode--
 			docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
 			docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
@@ -800,14 +832,24 @@ ImgReplacer = class ImgReplacer
 								if env=='browser'
 									qr[u].decode(callback)
 								else
-									base64= JSZipBase64.encode oldFile.data
-									binaryData = new Buffer(base64, 'base64') #.toString('binary');					
-									png= new PNG(binaryData)
-									finished= (a) =>
-										png.decoded= a
-										qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-										qr[u].decode(callback)
-									dat= png.decode(finished)
+									if /\.png$/.test(oldFile.name) 
+										console.log(oldFile.name)
+										base64= JSZipBase64.encode oldFile.data
+										binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+										png= new PNG(binaryData)
+										finished= (a) =>
+											try
+												png.decoded= a
+												qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+												qr[u].decode(callback)											
+											catch e
+												console.log(e)
+												@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+										dat= png.decode(finished)
+									else
+										#remove the image from the list of images to be tested
+										@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+
 
 			else if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
 				
@@ -874,6 +916,8 @@ DocxQrCode = class DocxQrCode
 				@xmlTemplater.DocxGen.localImageCreator(@result,callback)
 		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
 			loadDocCallback= (fail=false) =>
+				console.log('img loaded!')
+				console.log 'failed ? '+fail
 				if not fail
 					@data=docXData[@result]
 					@callback(this,@imgName,@num)

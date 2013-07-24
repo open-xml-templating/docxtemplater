@@ -33,6 +33,8 @@ DocxQrCode = class DocxQrCode
 				@xmlTemplater.DocxGen.localImageCreator(@result,callback)
 		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
 			loadDocCallback= (fail=false) =>
+				console.log('img loaded!')
+				console.log 'failed ? '+fail
 				if not fail
 					@data=docXData[@result]
 					@callback(this,@imgName,@num)

@@ -21,7 +21,7 @@
   };
 
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback, basePath) {
-    var data, e, fileName, httpRegex, httpsRegex, loadFile, totalPath, xhrDoc;
+    var data, e, fileName, httpRegex, httpsRegex, loadFile, options, req, totalPath, urloptions, xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
@@ -91,25 +91,40 @@
       httpRegex = new RegExp("(http|ftp)://");
       httpsRegex = new RegExp("(https)://");
       if (httpRegex.test(path)) {
-        console.log('http url matched:' + path);
-        http.get(path, function(res) {
-          console.log("Got response: " + res.statusCode);
-          return res.on('data', function(d) {
-            return loadFile(d);
-          });
-        }).on('error', function(e) {
-          return console.log("Got error: " + e.message);
-        });
+
       } else if (httpsRegex.test(path)) {
         console.log('https url matched:' + path);
-        https.get(path, function(res) {
-          console.log("Got response: " + res.statusCode);
-          return res.on('data', function(d) {
-            return loadFile(d);
+        urloptions = url.parse(path);
+        options = {
+          hostname: urloptions.hostname,
+          path: urloptions.path,
+          method: 'GET',
+          rejectUnauthorized: false
+        };
+        req = https.request(options, function(res) {
+          var data;
+
+          res.setEncoding('binary');
+          data = "";
+          res.on('data', function(chunk) {
+            console.log("Status Code " + res.statusCode);
+            console.log('received');
+            return data += chunk;
+          });
+          res.on('end', function() {
+            console.log('receivedTotally');
+            return loadFile(data);
+          });
+          return res.on('error', function(err) {
+            console.log("Error during HTTP request");
+            console.log(err.message);
+            return console.log(err.stack);
           });
         }).on('error', function(e) {
-          return console.log("Got error: " + e.message);
+          console.log("Error: \n" + e.message);
+          return console.log(e.stack);
         });
+        req.end();
       } else {
         if (async === true) {
           fs.readFile(totalPath, "binary", function(err, data) {
@@ -318,6 +333,8 @@
       } else if (add === false) {
         index = this.qrCodeWaitingFor.indexOf(num);
         this.qrCodeWaitingFor.splice(index, 1);
+        console.log('qrcodeWaitingFor');
+        console.log(this.qrCodeWaitingFor);
       }
       return this.testReady();
     };
@@ -1306,8 +1323,11 @@
       var base64, binaryData, callback, dat, finished, imageTag, imgData, imgName, match, newId, oldFile, png, qr, rId, replacement, tag, tagrId, u, xmlImg, _i, _len, _ref, _results,
         _this = this;
 
+      console.log('replacing Images ...');
       qr = [];
       callback = function(docxqrCode) {
+        console.log('removing qrcode');
+        console.log('setting image:' + ("word/media/" + docxqrCode.imgName));
         docxqrCode.xmlTemplater.numQrCode--;
         docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
         return docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
@@ -1356,15 +1376,28 @@
                   if (env === 'browser') {
                     _results.push(qr[u].decode(callback));
                   } else {
-                    base64 = JSZipBase64.encode(oldFile.data);
-                    binaryData = new Buffer(base64, 'base64');
-                    png = new PNG(binaryData);
-                    finished = function(a) {
-                      png.decoded = a;
-                      qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
-                      return qr[u].decode(callback);
-                    };
-                    _results.push(dat = png.decode(finished));
+                    if (/\.png$/.test(oldFile.name)) {
+                      console.log(oldFile.name);
+                      base64 = JSZipBase64.encode(oldFile.data);
+                      binaryData = new Buffer(base64, 'base64');
+                      png = new PNG(binaryData);
+                      finished = function(a) {
+                        var e;
+
+                        try {
+                          png.decoded = a;
+                          qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+                          return qr[u].decode(callback);
+                        } catch (_error) {
+                          e = _error;
+                          console.log(e);
+                          return _this.xmlTemplater.DocxGen.qrCodeCallBack(_this.xmlTemplater.DocxGen.qrCodeNumCallBack, false);
+                        }
+                      };
+                      _results.push(dat = png.decode(finished));
+                    } else {
+                      _results.push(this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, false));
+                    }
                   }
                 } else {
                   _results.push(void 0);
@@ -1486,6 +1519,8 @@
           if (fail == null) {
             fail = false;
           }
+          console.log('img loaded!');
+          console.log('failed ? ' + fail);
           if (!fail) {
             _this.data = docXData[_this.result];
             return _this.callback(_this, _this.imgName, _this.num);

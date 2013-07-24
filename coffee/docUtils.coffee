@@ -46,32 +46,57 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					if callback? then callback(true)
 		xhrDoc.send()
 	else
-		
 		httpRegex= new RegExp "(http|ftp)://"
 		httpsRegex= new RegExp "(https)://"
 		if httpRegex.test(path)
-			console.log('http url matched:'+path)
-			http.get(path, (res) -> 
-				console.log("Got response: " + res.statusCode);
-				res.on('data', (d) ->
-					loadFile(d)
-				)
-			)
-			.on('error', (e) ->
-				console.log("Got error: " + e.message);
-			)
+			# console.log('http url matched:'+path)
+			# http.get(path, (res) -> 
+			# 	console.log("Got response: " + res.statusCode);
+			# 	res.on('data', (d) ->
+			# 		loadFile(d)
+			# 	)
+			# )
+			# .on('error', (e) ->
+			# 	console.log("Got error: " + e.message);
+			# )
 
 		else if httpsRegex.test(path)
 			console.log('https url matched:'+path)
-			https.get(path, (res) -> 
-				console.log("Got response: " + res.statusCode);
-				res.on('data', (d) ->
-					loadFile(d)
+
+			urloptions=(url.parse(path))
+
+			options = 
+				hostname:urloptions.hostname
+				path:urloptions.path
+				method: 'GET'
+				rejectUnauthorized:false
+
+			req = https.request(options, (res)->
+				res.setEncoding('binary')
+				data = ""
+
+				res.on('data', (chunk)->
+					console.log "Status Code #{res.statusCode}"
+					console.log('received')
+					data += chunk
 				)
-			)
-			.on('error', (e) ->
-				console.log("Got error: " + e.message);
-			)
+
+				res.on('end', ()->
+					console.log('receivedTotally')
+					loadFile(data))
+
+				res.on('error',(err)->
+					console.log("Error during HTTP request");
+					console.log(err.message)
+					console.log(err.stack))
+
+				).on('error',(e)->
+						console.log("Error: \n" + e.message); 
+						console.log( e.stack );
+					)
+
+			req.end();
+
 		else
 			if async==true
 				fs.readFile totalPath,"binary", (err, data) ->

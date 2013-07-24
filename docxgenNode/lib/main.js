@@ -42,9 +42,12 @@
     if (debugBool)
       console.log(docX[docxFileName]);
     docX[docxFileName].setTemplateVars(jsonInput)
+    docX[docxFileName].qrCode=true
+
     
     docX[docxFileName].finishedCallback=function () {
       this.output(true,outputFile)
+      console.log('outputed')
     }
     docX[docxFileName].applyTemplateVars()
 

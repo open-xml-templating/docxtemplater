@@ -27,11 +27,15 @@ DocxGen = class DocxGen
 		@qrCodeWaitingFor= []
 		if content? then @load(content)
 	qrCodeCallBack:(num,add=true) ->
+
 		if add==true
 			@qrCodeWaitingFor.push num
 		else if add == false
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
+			console.log 'qrcodeWaitingFor'
+			console.log @qrCodeWaitingFor
+			
 		@testReady()
 	testReady:()->
 		if @qrCodeWaitingFor.length==0 && @filesProcessed== @templatedFiles.length
