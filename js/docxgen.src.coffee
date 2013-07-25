@@ -62,34 +62,27 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 
 		else if httpsRegex.test(path)
 			console.log('https url matched:'+path)
-
 			urloptions=(url.parse(path))
-
 			options = 
 				hostname:urloptions.hostname
 				path:urloptions.path
 				method: 'GET'
 				rejectUnauthorized:false
-
 			req = https.request(options, (res)->
 				res.setEncoding('binary')
 				data = ""
-
 				res.on('data', (chunk)->
 					console.log "Status Code #{res.statusCode}"
 					console.log('received')
 					data += chunk
 				)
-
 				res.on('end', ()->
 					console.log('receivedTotally')
 					loadFile(data))
-
 				res.on('error',(err)->
 					console.log("Error during HTTP request");
 					console.log(err.message)
 					console.log(err.stack))
-
 				).on('error',(e)->
 						console.log("Error: \n" + e.message); 
 						console.log( e.stack );
@@ -107,7 +100,6 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 						if callback? then callback(false)
 			else
 				console.log('loading async:'+totalPath)
-
 				try
 					data=fs.readFileSync(totalPath,"binary")
 					loadFile(data)
@@ -818,6 +810,7 @@ ImgReplacer = class ImgReplacer
 
 								tag.setAttribute('name',"#{imgName}")
 								tagrId.setAttribute('r:embed',"rId#{newId}")
+								console.log "tagrId:"+tagrId.getAttribute('r:embed')
 								imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 
 								if imageTag==undefined
@@ -833,19 +826,21 @@ ImgReplacer = class ImgReplacer
 									qr[u].decode(callback)
 								else
 									if /\.png$/.test(oldFile.name) 
-										console.log(oldFile.name)
-										base64= JSZipBase64.encode oldFile.data
-										binaryData = new Buffer(base64, 'base64') #.toString('binary');					
-										png= new PNG(binaryData)
-										finished= (a) =>
-											try
-												png.decoded= a
-												qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-												qr[u].decode(callback)											
-											catch e
-												console.log(e)
-												@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
-										dat= png.decode(finished)
+										# filename= oldFile.name
+										do (imgName) =>
+											console.log(oldFile.name)
+											base64= JSZipBase64.encode oldFile.data
+											binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+											png= new PNG(binaryData)
+											finished= (a) =>
+												try
+													png.decoded= a
+													qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+													qr[u].decode(callback)											
+												catch e
+													console.log(e)
+													@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+											dat= png.decode(finished)
 									else
 										#remove the image from the list of images to be tested
 										@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)

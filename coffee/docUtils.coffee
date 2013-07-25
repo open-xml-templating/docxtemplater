@@ -62,34 +62,27 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 
 		else if httpsRegex.test(path)
 			console.log('https url matched:'+path)
-
 			urloptions=(url.parse(path))
-
 			options = 
 				hostname:urloptions.hostname
 				path:urloptions.path
 				method: 'GET'
 				rejectUnauthorized:false
-
 			req = https.request(options, (res)->
 				res.setEncoding('binary')
 				data = ""
-
 				res.on('data', (chunk)->
 					console.log "Status Code #{res.statusCode}"
 					console.log('received')
 					data += chunk
 				)
-
 				res.on('end', ()->
 					console.log('receivedTotally')
 					loadFile(data))
-
 				res.on('error',(err)->
 					console.log("Error during HTTP request");
 					console.log(err.message)
 					console.log(err.stack))
-
 				).on('error',(e)->
 						console.log("Error: \n" + e.message); 
 						console.log( e.stack );
@@ -107,7 +100,6 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 						if callback? then callback(false)
 			else
 				console.log('loading async:'+totalPath)
-
 				try
 					data=fs.readFileSync(totalPath,"binary")
 					loadFile(data)

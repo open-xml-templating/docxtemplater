@@ -58,6 +58,7 @@ ImgReplacer = class ImgReplacer
 
 								tag.setAttribute('name',"#{imgName}")
 								tagrId.setAttribute('r:embed',"rId#{newId}")
+								console.log "tagrId:"+tagrId.getAttribute('r:embed')
 								imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 
 								if imageTag==undefined
@@ -73,19 +74,21 @@ ImgReplacer = class ImgReplacer
 									qr[u].decode(callback)
 								else
 									if /\.png$/.test(oldFile.name) 
-										console.log(oldFile.name)
-										base64= JSZipBase64.encode oldFile.data
-										binaryData = new Buffer(base64, 'base64') #.toString('binary');					
-										png= new PNG(binaryData)
-										finished= (a) =>
-											try
-												png.decoded= a
-												qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-												qr[u].decode(callback)											
-											catch e
-												console.log(e)
-												@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
-										dat= png.decode(finished)
+										# filename= oldFile.name
+										do (imgName) =>
+											console.log(oldFile.name)
+											base64= JSZipBase64.encode oldFile.data
+											binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+											png= new PNG(binaryData)
+											finished= (a) =>
+												try
+													png.decoded= a
+													qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+													qr[u].decode(callback)											
+												catch e
+													console.log(e)
+													@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+											dat= png.decode(finished)
 									else
 										#remove the image from the list of images to be tested
 										@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)

@@ -1320,7 +1320,7 @@
     };
 
     ImgReplacer.prototype.replaceImages = function() {
-      var base64, binaryData, callback, dat, finished, imageTag, imgData, imgName, match, newId, oldFile, png, qr, rId, replacement, tag, tagrId, u, xmlImg, _i, _len, _ref, _results,
+      var callback, imageTag, imgData, imgName, match, newId, oldFile, qr, rId, replacement, tag, tagrId, u, xmlImg, _i, _len, _ref, _results,
         _this = this;
 
       console.log('replacing Images ...');
@@ -1365,6 +1365,7 @@
                   }
                   tag.setAttribute('name', "" + imgName);
                   tagrId.setAttribute('r:embed', "rId" + newId);
+                  console.log("tagrId:" + tagrId.getAttribute('r:embed'));
                   imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
                   if (imageTag === void 0) {
                     console.log('imagetag not defined, trying alternate method');
@@ -1377,24 +1378,28 @@
                     _results.push(qr[u].decode(callback));
                   } else {
                     if (/\.png$/.test(oldFile.name)) {
-                      console.log(oldFile.name);
-                      base64 = JSZipBase64.encode(oldFile.data);
-                      binaryData = new Buffer(base64, 'base64');
-                      png = new PNG(binaryData);
-                      finished = function(a) {
-                        var e;
+                      _results.push((function(imgName) {
+                        var base64, binaryData, dat, finished, png;
 
-                        try {
-                          png.decoded = a;
-                          qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
-                          return qr[u].decode(callback);
-                        } catch (_error) {
-                          e = _error;
-                          console.log(e);
-                          return _this.xmlTemplater.DocxGen.qrCodeCallBack(_this.xmlTemplater.DocxGen.qrCodeNumCallBack, false);
-                        }
-                      };
-                      _results.push(dat = png.decode(finished));
+                        console.log(oldFile.name);
+                        base64 = JSZipBase64.encode(oldFile.data);
+                        binaryData = new Buffer(base64, 'base64');
+                        png = new PNG(binaryData);
+                        finished = function(a) {
+                          var e;
+
+                          try {
+                            png.decoded = a;
+                            qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+                            return qr[u].decode(callback);
+                          } catch (_error) {
+                            e = _error;
+                            console.log(e);
+                            return _this.xmlTemplater.DocxGen.qrCodeCallBack(_this.xmlTemplater.DocxGen.qrCodeNumCallBack, false);
+                          }
+                        };
+                        return dat = png.decode(finished);
+                      })(imgName));
                     } else {
                       _results.push(this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, false));
                     }
