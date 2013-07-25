@@ -33,8 +33,6 @@ DocxGen = class DocxGen
 		else if add == false
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
-			console.log 'qrcodeWaitingFor'
-			console.log @qrCodeWaitingFor
 			
 		@testReady()
 	testReady:()->

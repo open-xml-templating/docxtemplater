@@ -74,11 +74,10 @@ ImgReplacer = class ImgReplacer
 									qr[u].decode(callback)
 								else
 									if /\.png$/.test(oldFile.name) 
-										# filename= oldFile.name
 										do (imgName) =>
 											console.log(oldFile.name)
 											base64= JSZipBase64.encode oldFile.data
-											binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+											binaryData = new Buffer(base64, 'base64') 			
 											png= new PNG(binaryData)
 											finished= (a) =>
 												try

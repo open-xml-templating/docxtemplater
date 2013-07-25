@@ -21,7 +21,7 @@
   };
 
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback, basePath) {
-    var data, e, fileName, httpRegex, httpsRegex, loadFile, options, req, totalPath, urloptions, xhrDoc;
+    var data, e, errorCallback, fileName, httpRegex, loadFile, options, req, reqCallback, totalPath, urloptions, xhrDoc;
 
     if (noDocx == null) {
       noDocx = false;
@@ -88,12 +88,9 @@
       };
       xhrDoc.send();
     } else {
-      httpRegex = new RegExp("(http|ftp)://");
-      httpsRegex = new RegExp("(https)://");
+      httpRegex = new RegExp("(https?)", "i");
       if (httpRegex.test(path)) {
-
-      } else if (httpsRegex.test(path)) {
-        console.log('https url matched:' + path);
+        console.log('http(s) url matched:' + path);
         urloptions = url.parse(path);
         options = {
           hostname: urloptions.hostname,
@@ -101,7 +98,11 @@
           method: 'GET',
           rejectUnauthorized: false
         };
-        req = https.request(options, function(res) {
+        errorCallback = function(e) {
+          console.log("Error: \n" + e.message);
+          return console.log(e.stack);
+        };
+        reqCallback = function(res) {
           var data;
 
           res.setEncoding('binary');
@@ -120,10 +121,14 @@
             console.log(err.message);
             return console.log(err.stack);
           });
-        }).on('error', function(e) {
-          console.log("Error: \n" + e.message);
-          return console.log(e.stack);
-        });
+        };
+        switch (urloptions.protocol) {
+          case "https:":
+            req = https.request(options, reqCallback).on('error', errorCallback);
+            break;
+          case 'http:':
+            req = http.request(options, reqCallback).on('error', errorCallback);
+        }
         req.end();
       } else {
         if (async === true) {
@@ -333,8 +338,6 @@
       } else if (add === false) {
         index = this.qrCodeWaitingFor.indexOf(num);
         this.qrCodeWaitingFor.splice(index, 1);
-        console.log('qrcodeWaitingFor');
-        console.log(this.qrCodeWaitingFor);
       }
       return this.testReady();
     };
@@ -1524,12 +1527,11 @@
           if (fail == null) {
             fail = false;
           }
-          console.log('img loaded!');
-          console.log('failed ? ' + fail);
           if (!fail) {
             _this.data = docXData[_this.result];
             return _this.callback(_this, _this.imgName, _this.num);
           } else {
+            console.log('file image loading failed!');
             return _this.callback(_this, _this.imgName, _this.num);
           }
         };

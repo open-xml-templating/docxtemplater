@@ -46,29 +46,22 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					if callback? then callback(true)
 		xhrDoc.send()
 	else
-		httpRegex= new RegExp "(http|ftp)://"
-		httpsRegex= new RegExp "(https)://"
+		httpRegex= new RegExp "(https?)","i"
+		# httpsRegex= new RegExp "(https)://"
 		if httpRegex.test(path)
-			# console.log('http url matched:'+path)
-			# http.get(path, (res) -> 
-			# 	console.log("Got response: " + res.statusCode);
-			# 	res.on('data', (d) ->
-			# 		loadFile(d)
-			# 	)
-			# )
-			# .on('error', (e) ->
-			# 	console.log("Got error: " + e.message);
-			# )
-
-		else if httpsRegex.test(path)
-			console.log('https url matched:'+path)
+			console.log('http(s) url matched:'+path)
 			urloptions=(url.parse(path))
 			options = 
 				hostname:urloptions.hostname
 				path:urloptions.path
 				method: 'GET'
 				rejectUnauthorized:false
-			req = https.request(options, (res)->
+			
+			errorCallback= (e) ->
+				console.log("Error: \n" + e.message); 
+				console.log( e.stack );
+
+			reqCallback= (res)->
 				res.setEncoding('binary')
 				data = ""
 				res.on('data', (chunk)->
@@ -83,10 +76,12 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					console.log("Error during HTTP request");
 					console.log(err.message)
 					console.log(err.stack))
-				).on('error',(e)->
-						console.log("Error: \n" + e.message); 
-						console.log( e.stack );
-					)
+			switch urloptions.protocol
+				when "https:"
+					req = https.request(options, reqCallback).on('error',errorCallback)
+				when 'http:'
+					req = http.request(options, reqCallback).on('error',errorCallback)	
+			
 
 			req.end();
 

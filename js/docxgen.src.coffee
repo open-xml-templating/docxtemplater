@@ -46,29 +46,22 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					if callback? then callback(true)
 		xhrDoc.send()
 	else
-		httpRegex= new RegExp "(http|ftp)://"
-		httpsRegex= new RegExp "(https)://"
+		httpRegex= new RegExp "(https?)","i"
+		# httpsRegex= new RegExp "(https)://"
 		if httpRegex.test(path)
-			# console.log('http url matched:'+path)
-			# http.get(path, (res) -> 
-			# 	console.log("Got response: " + res.statusCode);
-			# 	res.on('data', (d) ->
-			# 		loadFile(d)
-			# 	)
-			# )
-			# .on('error', (e) ->
-			# 	console.log("Got error: " + e.message);
-			# )
-
-		else if httpsRegex.test(path)
-			console.log('https url matched:'+path)
+			console.log('http(s) url matched:'+path)
 			urloptions=(url.parse(path))
 			options = 
 				hostname:urloptions.hostname
 				path:urloptions.path
 				method: 'GET'
 				rejectUnauthorized:false
-			req = https.request(options, (res)->
+			
+			errorCallback= (e) ->
+				console.log("Error: \n" + e.message); 
+				console.log( e.stack );
+
+			reqCallback= (res)->
 				res.setEncoding('binary')
 				data = ""
 				res.on('data', (chunk)->
@@ -83,10 +76,12 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					console.log("Error during HTTP request");
 					console.log(err.message)
 					console.log(err.stack))
-				).on('error',(e)->
-						console.log("Error: \n" + e.message); 
-						console.log( e.stack );
-					)
+			switch urloptions.protocol
+				when "https:"
+					req = https.request(options, reqCallback).on('error',errorCallback)
+				when 'http:'
+					req = http.request(options, reqCallback).on('error',errorCallback)	
+			
 
 			req.end();
 
@@ -227,8 +222,6 @@ DocxGen = class DocxGen
 		else if add == false
 			index = @qrCodeWaitingFor.indexOf(num)
 			@qrCodeWaitingFor.splice(index, 1)
-			console.log 'qrcodeWaitingFor'
-			console.log @qrCodeWaitingFor
 			
 		@testReady()
 	testReady:()->
@@ -826,11 +819,10 @@ ImgReplacer = class ImgReplacer
 									qr[u].decode(callback)
 								else
 									if /\.png$/.test(oldFile.name) 
-										# filename= oldFile.name
 										do (imgName) =>
 											console.log(oldFile.name)
 											base64= JSZipBase64.encode oldFile.data
-											binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+											binaryData = new Buffer(base64, 'base64') 			
 											png= new PNG(binaryData)
 											finished= (a) =>
 												try
@@ -911,12 +903,11 @@ DocxQrCode = class DocxQrCode
 				@xmlTemplater.DocxGen.localImageCreator(@result,callback)
 		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
 			loadDocCallback= (fail=false) =>
-				console.log('img loaded!')
-				console.log 'failed ? '+fail
 				if not fail
 					@data=docXData[@result]
 					@callback(this,@imgName,@num)
 				else
+					console.log('file image loading failed!')
 					@callback(this,@imgName,@num)
 			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
 		else
