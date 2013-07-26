@@ -592,7 +592,7 @@
         }
       ]);
     });
-    return it("should work with loop document", function() {
+    it("should work with loop document", function() {
       var tempVars;
 
       docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx'], {}, false);
@@ -623,6 +623,13 @@
           }
         }
       ]);
+    });
+    return it('should work if there are no templateVars', function() {
+      var tempVars;
+
+      docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false);
+      tempVars = docX['qrCodeExample.docx'].getTemplateVars();
+      return expect(tempVars).toEqual([]);
     });
   });
 

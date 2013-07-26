@@ -525,7 +525,7 @@
     };
 
     DocxGen.prototype.getTemplateVars = function() {
-      var currentFile, fileName, usedTemplateVars, _i, _len, _ref;
+      var currentFile, fileName, h, n, usedTemplateV, usedTemplateVars, _i, _len, _ref;
 
       usedTemplateVars = [];
       _ref = this.templatedFiles;
@@ -535,16 +535,24 @@
           continue;
         }
         currentFile = new DocXTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging);
-        usedTemplateVars.push({
-          fileName: fileName,
-          vars: currentFile.applyTemplateVars().usedTemplateVars
-        });
+        usedTemplateV = currentFile.applyTemplateVars().usedTemplateVars;
+        n = 0;
+        for (h in usedTemplateV) {
+          n++;
+        }
+        if (n > 0) {
+          usedTemplateVars.push({
+            fileName: fileName,
+            vars: usedTemplateV
+          });
+        }
       }
       return usedTemplateVars;
     };
 
     DocxGen.prototype.setTemplateVars = function(templateVars) {
       this.templateVars = templateVars;
+      return this;
     };
 
     DocxGen.prototype.output = function(download, name) {

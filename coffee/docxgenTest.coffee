@@ -225,6 +225,12 @@ describe "getTemplateVars", () ->
 		docX['tagLoopExample.docx']=new DocxGen docXData['tagLoopExample.docx'],{},false
 		tempVars= docX['tagLoopExample.docx'].getTemplateVars()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
+	it 'should work if there are no templateVars', () ->
+		docX['qrCodeExample.docx']=new DocxGen docXData['qrCodeExample.docx'],{},false
+		tempVars= docX['qrCodeExample.docx'].getTemplateVars()
+		expect(tempVars).toEqual([])
+
+
 
 describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->

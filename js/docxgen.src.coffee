@@ -317,9 +317,16 @@ root.DocxGen = class DocxGen
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
-			usedTemplateVars.push {fileName,vars:currentFile.applyTemplateVars().usedTemplateVars}
+			usedTemplateV= currentFile.applyTemplateVars().usedTemplateVars
+			#test if usedTemplateV!={}
+			n=0
+			for h of usedTemplateV
+				n++
+			if n>0 
+				usedTemplateVars.push {fileName,vars:usedTemplateV}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
+		this
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true,name="output.docx") ->
 		@calcZip()

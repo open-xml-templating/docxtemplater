@@ -138,7 +138,12 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Type: Object {tag_name:tag_replacement}
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
 
-    applyTemplateVars()
+    applyTemplateVars([templateVars])
+    
+        templateVars:
+            Type: Object {tag_name:tag_replacement}
+            same as setTemplateVars
+            Default:this.templateVars
 
         This function replaces all template variables by their values
 
@@ -203,6 +208,19 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             The string containing all the text from the document
 
         This method gets only the text of a given document (not the formatting)
+
+## Node Installation and usage:
+
+The node package is meant to be installed globally, so that the docxgen command becomes available to the path and is accessible from the terminal.
+
+Steps to install the node package:
+
+ - git clone the repository
+ - `cd docxgenjs`
+ - `npm install -g`
+ - `docxgen <inputFileDocx> <inputFileJson>` 
+
+
 
 ## Known issues ##
 
