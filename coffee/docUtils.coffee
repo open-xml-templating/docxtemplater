@@ -81,8 +81,6 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 					req = https.request(options, reqCallback).on('error',errorCallback)
 				when 'http:'
 					req = http.request(options, reqCallback).on('error',errorCallback)	
-			
-
 			req.end();
 
 		else
@@ -102,8 +100,6 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 				catch e
 					if callback? then callback(true)
 	return fileName
-
-
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'
@@ -144,8 +140,7 @@ DocUtils.xml2Str = (xmlNode) ->
 		catch e
 			#Other browsers without XML Serializer
 			console.log('Xmlserializer not supported');
-	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt)
-	return content;
+	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
 
 DocUtils.Str2xml= (str) ->
 	if root.DOMParser #Chrome, Firefox, and modern browsers

@@ -218,8 +218,7 @@
         console.log('Xmlserializer not supported');
       }
     }
-    content = content.replace(/\x20xmlns=""/g, '');
-    return content;
+    return content = content.replace(/\x20xmlns=""/g, '');
   };
 
   DocUtils.Str2xml = function(str) {
@@ -288,7 +287,7 @@
   /*
   Docxgen.coffee
   Created by Edgar HIPP
-  11/07/2013
+  26/07/2013
   */
 
 
@@ -296,7 +295,7 @@
 
   env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
-  DocxGen = DocxGen = (function() {
+  root.DocxGen = DocxGen = (function() {
     var imageExtensions;
 
     imageExtensions = ['gif', 'jpeg', 'jpg', 'emf', 'png'];
@@ -312,12 +311,14 @@
           return console.log('document ready!');
         });
       }
-      this.localImageCreator = function(arg, callback) {
-        var result;
+      if (this.localImageCreator == null) {
+        this.localImageCreator = function(arg, callback) {
+          var result;
 
-        result = JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC");
-        return callback(result);
-      };
+          result = JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC");
+          return callback(result);
+        };
+      }
       this.templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
       this.filesProcessed = 0;
       this.qrCodeNumCallBack = 0;
@@ -325,6 +326,7 @@
       if (content != null) {
         this.load(content);
       }
+      this;
     }
 
     DocxGen.prototype.qrCodeCallBack = function(num, add) {
@@ -637,8 +639,6 @@
     return DocxGen;
 
   })();
-
-  root.DocxGen = DocxGen;
 
   root = typeof global !== "undefined" && global !== null ? global : window;
 
