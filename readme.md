@@ -138,6 +138,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Type: Object {tag_name:tag_replacement}
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
 
+
     applyTemplateVars([templateVars])
     
         templateVars:
@@ -209,6 +210,50 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         This method gets only the text of a given document (not the formatting)
 
+    getTemplateVars()
+
+        This function returns the template variables contained in the opened document. For example if the content of the document.xml is the following:
+
+            {name}
+            {first_name}
+            {phone}
+
+        The function will return:
+            [{
+                filename:"document.xml",
+                vars:
+                {
+                    name:true,
+                    first_name:true,
+                    phone:true
+                }
+            }]
+
+        If the content contains tagLoops:
+
+            {title}
+            {#customer}
+            {name}
+            {phone}
+            {/customer}
+
+
+        The function will return:
+
+            [{
+                filename:"document.xml",
+                vars:
+                {
+                    title:true,
+                    customer:
+                    {
+                        name:true,
+                        phone:true
+                    }
+                }
+            }]
+
+
 ## Node Installation and usage:
 
 The node package is meant to be installed globally, so that the docxgen command becomes available to the path and is accessible from the terminal.
@@ -220,9 +265,13 @@ Steps to install the node package:
  - `npm install -g`
  - `docxgen <inputFileDocx> <inputFileJson>` 
 
+## Tests
 
+They is a full test suite covering a lot of the functions of DocxGen (48 tests)
+ - in a Browser: It can be launched by opening specRunner.html in the test/ folder 
+ - in node: It can be launched using jasmine-node: `jasmine-node docxgenTest.spec.js` in the test\spec folder
 
-## Known issues ##
+## Known issues
 
 Todo:
 
