@@ -20,8 +20,9 @@
 <p><b>docxgen.js</b> is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.</p>
 
 <a href="#variables">Replace Variables</a><br>
-<a href="#loops">Use Loops</a><br>
-<a href="#tables">Use Loops inside tables</a><br>
+<a href="#formating">Formating</a><br>
+<a href="#loops">Loops</a><br>
+<a href="#tables">Loops and tables</a><br>
 
 <h1>Templates</h1>
 
@@ -34,6 +35,7 @@ DocxGen is based on word templates.
 		<img src="images/textTagging.png" alt="">
 	</td>
 	<td>
+	<div>=> <br>Results in:</div>
 	</td>
 	<td>
 		<img src="images/textTaggingResult.png" alt="">		
@@ -61,15 +63,52 @@ doc.output() //Output the document using Data-URI
 </table>
 </section>
 
+<section>
+<h2 id='formating'><em>Formating</em>: DocxGen doesn't ever change your formatting!</h2>
+<table class="demo">
+<tr>
+	<td>
+		<img src="images/formatTagging.png" alt="">
+	</td>
+	<td>
+	<div>=> <br>Results in:</div>
+	</td>
+	<td>
+		<img src="images/formatTaggingResult.png" alt="">		
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+		<h3>Code Used:</h3>
+		<textarea raw='tagFormating.docx'>
+var docData=docXData["tagFormating.docx"]; //docXData is an array containing all the raw data for these examples
+var doc= new DocxGen(docData); //Create a new DocxGen document
+
+doc.setTemplateVars(
+	{"first_name":"Hipp",
+	"last_name":"Edgar",
+	"phone":"0652455478",
+	"description":"New Website"
+	}
+) //set the templateVariables
+doc.applyTemplateVars() //apply them (replace all occurences of {first_name} by Hipp, ...)
+doc.output() //Output the document using Data-URI
+		</textarea>
+	</td>
+</tr>
+</table>
+</section>
+
 
 <section>
-<h2 id='loops'><em>Loops</em>: You can use the mustache like syntax: {#tagName} {/tagname} to loop inside a variable</h2>
+<h2 id='loops'><em>Loops</em>: You can use the mustache like syntax: {#tagName} {/tagname} to loop inside an array</h2>
 
 <p>tagName has to be an array of objects, every element of the array will be used to output what is between the opening loop tag and the closing loop tag.</p>
 	<table class="demo">
 		<tr>
 			<td><img src="images/loopTagging.png" alt=""></td>
 			<td>
+				<div>=> <br>Results in:</div>
 			</td>
 			<td><img src="images/loopTaggingResult.png" alt=""></td>
 		</tr>
@@ -112,6 +151,7 @@ doc.output() //Output the document using Data-URI
 		<tr>
 			<td><img src="images/tableTagging.png"></td>
 			<td>
+				<div>=> <br>Results in:</div>	
 			</td>
 			<td><img src="images/tableTaggingResult.png"></td>
 		</tr>

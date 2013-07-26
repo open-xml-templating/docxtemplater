@@ -451,14 +451,10 @@
       return null;
     };
 
-    DocxGen.prototype.saveImageRels = function() {
-      return this.zip.files["word/_rels/document.xml.rels"].data;
-    };
-
     DocxGen.prototype.getImageList = function() {
       var extension, imageList, index, regex;
 
-      regex = /[^.]*\.([^.]*)/;
+      regex = /[^.]+\.([^.]+)/;
       imageList = [];
       for (index in this.zip.files) {
         extension = index.replace(regex, '$1');
@@ -665,6 +661,25 @@
       }
       this.tagX = '';
       this["class"] = XmlTemplater;
+      /*They are two ways to instantiate a XmlTemplater object:
+      		1: new XmlTemplater(content,creator,@templateVars, ...)
+      			content:string
+      			creator:DocxGen object
+      			...
+      		2: new XmlTemplater(content, options)
+      			content is the content
+      			options contains all the arguments:
+      			options=
+      				{
+      				"templateVars":...,
+      				"DocxGen":...,
+      				"intelligentTagging":...,
+      				"scopePath":...,
+      				"usedTemplateVars":...,
+      				"imageId":...
+      				}
+      */
+
       if (creator instanceof DocxGen || (creator == null)) {
         this.DocxGen = creator;
       } else {

@@ -223,11 +223,11 @@ root.DocxGen = class DocxGen
 	loadImageRels: () ->
 		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].data
 		@xmlDoc= DocUtils.Str2xml content
-		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship'))
+		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship')) #Get all Rids
 		@maxRid=RidArray.max()
 		@imageRels=[]
 		this
-	addExtensionRels: (contentType,extension) ->
+	addExtensionRels: (contentType,extension) -> #Add an extension type in the [Content_Types.xml], is used if for example you want word to be able to read png files (for every extension you add you need a contentType)
 		content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].data
 		xmlDoc= DocUtils.Str2xml content
 		addTag= true
@@ -242,7 +242,7 @@ root.DocxGen = class DocxGen
 			newTag.setAttribute('Extension',extension)
 			types.appendChild newTag
 			@zip.files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
-	addImageRels: (imageName,imageData) ->
+	addImageRels: (imageName,imageData) -> #Adding an image and returns it's Rid
 		if @zip.files["word/media/#{imageName}"]?
 			throw 'file already exists'
 			return false
@@ -268,7 +268,7 @@ root.DocxGen = class DocxGen
 		relationships.appendChild newTag
 		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
 		@maxRid
-	getImageByRid:(rId)->
+	getImageByRid:(rId)-> #This is to get an image by it's rId (returns null if no img was found)
 		relationships= @xmlDoc.getElementsByTagName('Relationship')
 		for relationship in relationships
 			cRId= relationship.getAttribute('Id')
@@ -277,29 +277,29 @@ root.DocxGen = class DocxGen
 				if path.substr(0,6)=='media/'
 					return @zip.files["word/#{path}"]
 		return null
-	saveImageRels: () ->
-		@zip.files["word/_rels/document.xml.rels"].data
 	getImageList: () ->
 		regex= ///
-		[^.]*  #name
+		[^.]+  #name
 		\.   #dot
-		([^.]*)  #extension
+		([^.]+)  #extension
 		///
 		imageList= []
 		for index of @zip.files
 			extension= index.replace(regex,'$1')
-			if extension in imageExtensions
+			if extension in imageExtensions #Defined in constructor
 				imageList.push {"path":index,files:@zip.files[index]}
 		imageList
 	setImage: (path,data) ->
 		@zip.files[path].data= data
 	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
+		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in @templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 			@filesProcessed++
+		#When all files have been processed, check if the document is ready
 		@testReady()
 	getCsvVars:() ->
 		obj= @getTemplateVars()
@@ -313,7 +313,6 @@ root.DocxGen = class DocxGen
 	getCsvFile:() ->
 		file= btoa @getCsvVars()
 		document.location.href= "data:application/vnd.ms-excel;base64,#{file}"
-		# for (i in (docX["CUSTemplate.docx"].getTemplateVars()[0].vars)) {cont+=i+";"}
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @zip.files[fileName]?
@@ -367,12 +366,33 @@ root.DocxGen = class DocxGen
 root= global ? window
 env= if global? then 'node' else 'browser'
 
-XmlTemplater = class XmlTemplater
+#This is an abstract class, DocXTemplater is an example of inherited class
+
+XmlTemplater =  class XmlTemplater #abstract class !! 
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
-		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready=true
-		@tagX=''
-		@class=XmlTemplater
-		if creator instanceof DocxGen or (not creator?)
+		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready= true
+		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
+		@class=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
+		
+		###They are two ways to instantiate a XmlTemplater object:
+		1: new XmlTemplater(content,creator,@templateVars, ...)
+			content:string
+			creator:DocxGen object
+			...
+		2: new XmlTemplater(content, options)
+			content is the content
+			options contains all the arguments:
+			options=
+				{
+				"templateVars":...,
+				"DocxGen":...,
+				"intelligentTagging":...,
+				"scopePath":...,
+				"usedTemplateVars":...,
+				"imageId":...
+				}
+		###
+		if creator instanceof DocxGen or (not creator?) 
 			@DocxGen=creator
 		else
 			options= creator

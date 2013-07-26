@@ -1,4 +1,5 @@
 DocUtils.loadDoc("tagExample.docx")
+DocUtils.loadDoc("tagFormating.docx")
 DocUtils.loadDoc("tagLooping.docx")
 DocUtils.loadDoc("tagIntelligentLoopTable.docx")
 

@@ -1,9 +1,19 @@
 img
 {
-	display:inline-block;
+	display:block;
 	width:100%;
 	margin:auto;
 	border:1px solid black;
+}
+
+tr > td > div
+{
+	vertical-align:middle;
+}
+
+tr > td > div
+{
+	min-height: 260px
 }
 
 table.demo
