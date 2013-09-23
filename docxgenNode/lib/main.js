@@ -1,18 +1,34 @@
 (function() {
 
-  docxFileName=process.argv[2]
-  jsonFileName=process.argv[3]
+  /*docxFileName=process.argv[2]
   outputFile=process.argv[4] || "output.docx"
   debug= process.argv[5]
-  debugBool=false
+  */
+  res=global.fs.readFileSync(process.argv[2],'utf-8')
+  jsonInput=JSON.parse(res)
+
+  for(var key in jsonInput){
+    if (key.substr(0,7)=='config.') {
+      DocUtils.config[key.substr(7)]=jsonInput[key]
+    };
+  }
+
+  docxFileName=DocUtils.config["docxFile"];
+  jsonFileName=process.argv[2];
+
+  outputFile=DocUtils.config["outputFile"];
+  debug= DocUtils.config["debug"];
+  debugBool= DocUtils.config["debugBool"];
+
+  console.log(DocUtils.config)
+
   currentPath= process.cwd()+'/';
 
   if(docxFileName=='--help' || docxFileName=='-h' || docxFileName==null || docxFileName==undefined || jsonFileName==null || jsonFileName==undefined)
   {
-    console.log('Usage: docxgen <docxfile> <jsonfile> [<outputFile>] --debug');
-    console.log('--- <docxfile> a docxFile that contains Mustache Tags and QrCodes');
-    console.log('--- <jsonfile> a jsonFile that contains the variables ');
-    console.log('--- [<outputfile>], default: output.docx  the output in docx format');
+    console.log('Usage: docxgen <configFilePath>');
+    console.log('--- ConfigFile Format: json');
+    console.log('--- see Config.json in docxgenjs/docxgenNode');
   }
   else
   {

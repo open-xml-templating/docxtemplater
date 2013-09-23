@@ -20,7 +20,7 @@
     "Generator"
   ],
   "dependencies" : {
-    "xmldom"   :  "0.1.x"
+    "xmldom"   :  "0.1.x",
   },
   "devDependencies": {
     "jasmine-node":"1.10.x",
