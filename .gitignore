@@ -1,6 +1,5 @@
 *.sublime-project
 *.sublime-workspace
-Gruntfile.js
 npm-debug.log
 .hg
 node_modules
