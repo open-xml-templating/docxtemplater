@@ -23,7 +23,9 @@
     "xmldom"   :  "0.1.x"
   },
   "devDependencies": {
-    "jasmine-node":"1.10.x"
+    "jasmine-node":"1.10.x",
+    "grunt-cli":"0.1.*",
+    "grunt":"0.4.*"
   }, 
   "license": "MIT",
   "engines": {
