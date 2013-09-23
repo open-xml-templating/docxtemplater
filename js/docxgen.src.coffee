@@ -196,6 +196,10 @@ root.docXData=[]
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
+DocUtils.config= 
+	"baseNodePath":'../../examples/'
+	"baseClientPath":'../examples/'
+
 DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null,basePath=null) ->
 	console.log 'loading Doc:'+path
 	throw 'path not defined' unless path?
@@ -206,9 +210,9 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		fileName= path
 		if basePath==null#set basePath only if it wasn't set as an argument
 			if env=='browser'
-				basePath= '../examples/'
+				basePath= DocUtils.config.baseClientPath
 			else
-				basePath= '../../examples/'
+				basePath= DocUtils.config.baseNodePath
 		totalPath= basePath+path
 	loadFile = (data) ->
 		root.docXData[fileName]=data

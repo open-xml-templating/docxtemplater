@@ -363,6 +363,11 @@ Created by Edgar HIPP
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
   };
 
+  DocUtils.config = {
+    "baseNodePath": '../../examples/',
+    "baseClientPath": '../examples/'
+  };
+
   DocUtils.loadDoc = function(path, noDocx, intelligentTagging, async, callback, basePath) {
     var data, e, errorCallback, fileName, httpRegex, loadFile, options, req, reqCallback, totalPath, urloptions, xhrDoc;
     if (noDocx == null) {
@@ -391,9 +396,9 @@ Created by Edgar HIPP
       fileName = path;
       if (basePath === null) {
         if (env === 'browser') {
-          basePath = '../examples/';
+          basePath = DocUtils.config.baseClientPath;
         } else {
-          basePath = '../../examples/';
+          basePath = DocUtils.config.baseNodePath;
         }
       }
       totalPath = basePath + path;
