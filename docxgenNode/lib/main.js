@@ -1,9 +1,21 @@
 (function() {
-
-  /*docxFileName=process.argv[2]
+   showHelp= function()
+    {
+	console.log('Usage: docxgen <configFilePath>');
+	console.log('--- ConfigFile Format: json');
+	console.log('--- see Config.json in docxgenjs/docxgenNode');
+    }
+	/*docxFileName=process.argv[2]
   outputFile=process.argv[4] || "output.docx"
   debug= process.argv[5]
   */
+
+  if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null || process.argv[2]==undefined)
+	{
+	showHelp();
+	return;
+	}
+
   res=global.fs.readFileSync(process.argv[2],'utf-8')
   jsonInput=JSON.parse(res)
 
@@ -26,9 +38,7 @@
 
   if(docxFileName=='--help' || docxFileName=='-h' || docxFileName==null || docxFileName==undefined || jsonFileName==null || jsonFileName==undefined)
   {
-    console.log('Usage: docxgen <configFilePath>');
-    console.log('--- ConfigFile Format: json');
-    console.log('--- see Config.json in docxgenjs/docxgenNode');
+	showHelp();
   }
   else
   {
