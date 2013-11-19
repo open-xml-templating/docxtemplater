@@ -256,6 +256,8 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
 ## Node Installation and usage:
 
+### Installation
+
 The node package is meant to be installed globally, so that the docxgen command becomes available to the path and is accessible from the terminal.
 
 Steps to install the node package:
@@ -263,7 +265,24 @@ Steps to install the node package:
  - git clone the repository
  - `cd docxgenjs`
  - `npm install -g`
- - `docxgen <inputFileDocx> <inputFileJson>` 
+
+You're finished.
+
+### Usage
+
+	`docxgen <configFile>`
+
+configFile Structure: json Structure
+
+required Properties:
+	"config.docxFile":"tagExample.docx",
+	"config.outputFile":"output.docx",
+	"config.baseNodePath":"../examples/",
+	"config.qrcode":false,
+
+	config.docxFile: The input file in docx format
+	config.outputFile: The outputfile of the document
+	config.qrcode:true if the images should be scanned to be replaced, false otherwise
 
 ## Tests
 
