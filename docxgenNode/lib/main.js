@@ -5,12 +5,8 @@
 	console.log('--- ConfigFile Format: json');
 	console.log('--- see Config.json in docxgenjs/docxgenNode');
     }
-	/*docxFileName=process.argv[2]
-  outputFile=process.argv[4] || "output.docx"
-  debug= process.argv[5]
-  */
 
-  if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null || process.argv[2]==undefined)
+if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null || process.argv[2]==undefined)
 	{
 	showHelp();
 	return;
@@ -68,7 +64,7 @@
     if (debugBool)
       console.log(docX[docxFileName]);
     docX[docxFileName].setTemplateVars(jsonInput)
-    docX[docxFileName].qrCode=true
+    docX[docxFileName].qrCode=DocUtils.config["qrcode"];
 
     
     docX[docxFileName].finishedCallback=function () {
