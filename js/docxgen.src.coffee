@@ -33,6 +33,8 @@ root.DocxGen = class DocxGen
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== @templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
+	logUndefined: (tag,scope)->
+		console.log("undefinedTag:"+tag)
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels() #Loads the image Relationships that can be found in "word/_rels/document.xml.rels"
@@ -138,7 +140,7 @@ root.DocxGen = class DocxGen
 			n=0
 			for h of usedTemplateV
 				n++
-			if n>0 
+			if n>0
 				usedTemplateVars.push {fileName,vars:usedTemplateV}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
@@ -550,12 +552,12 @@ env= if global? then 'node' else 'browser'
 
 #This is an abstract class, DocXTemplater is an example of inherited class
 
-XmlTemplater =  class XmlTemplater #abstract class !! 
+XmlTemplater =  class XmlTemplater #abstract class !!
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready= true
 		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
 		@class=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
-		
+
 		###They are two ways to instantiate a XmlTemplater object:
 		1: new XmlTemplater(content,creator,@templateVars, ...)
 			content:string
@@ -574,7 +576,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				"imageId":...
 				}
 		###
-		if creator instanceof DocxGen or (not creator?) 
+		if creator instanceof DocxGen or (not creator?)
 			@DocxGen=creator
 		else
 			options= creator
@@ -621,6 +623,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			content= DocUtils.encode_utf8 scope[tag]
 		else
 			content= "undefined"
+			@DocxGen.logUndefined(tag,scope)
 		if content.indexOf('{')!=-1 or content.indexOf('}')!=-1
 			alert('On ne peut mettre de { ou de } dans le contenu d\'une variable')
 			throw 'On ne peut mettre de { ou de } dans le contenu d\'une variable'
@@ -924,6 +927,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		this
 
 root.XmlTemplater=XmlTemplater
+
 root= global ? window
 env= if global? then 'node' else 'browser'
 

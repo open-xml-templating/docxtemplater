@@ -70,6 +70,10 @@ Created by Edgar HIPP
       }
     };
 
+    DocxGen.prototype.logUndefined = function(tag, scope) {
+      return console.log("undefinedTag:" + tag);
+    };
+
     DocxGen.prototype.load = function(content) {
       this.zip = new JSZip(content);
       return this.loadImageRels();
@@ -981,6 +985,7 @@ Created by Edgar HIPP
         content = DocUtils.encode_utf8(scope[tag]);
       } else {
         content = "undefined";
+        this.DocxGen.logUndefined(tag, scope);
       }
       if (content.indexOf('{') !== -1 || content.indexOf('}') !== -1) {
         alert('On ne peut mettre de { ou de } dans le contenu d\'une variable');

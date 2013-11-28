@@ -33,6 +33,8 @@ root.DocxGen = class DocxGen
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== @templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
+	logUndefined: (tag,scope)->
+		console.log("undefinedTag:"+tag)
 	load: (content)->
 		@zip = new JSZip content
 		@loadImageRels() #Loads the image Relationships that can be found in "word/_rels/document.xml.rels"
@@ -138,7 +140,7 @@ root.DocxGen = class DocxGen
 			n=0
 			for h of usedTemplateV
 				n++
-			if n>0 
+			if n>0
 				usedTemplateVars.push {fileName,vars:usedTemplateV}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
