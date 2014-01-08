@@ -351,27 +351,6 @@ describe 'DocxQrCode module', () ->
 				expect(f.test.mostRecentCall.args[2]).toEqual(6);
 
 
-		it "should work with long URLs", () ->
-
-			runs () ->
-				fCalled= false
-				f= {test:() -> fCalled= true}
-				spyOn(f,'test').andCallThrough()
-				if env=='browser'
-					qr=new DocxQrCode(qrcodezip.files['website.png'].data,obj,"web",6)
-					qr.decode(f.test)
-				else
-					console.log('gogo')
-					base64= JSZipBase64.encode qrcodezip.files['website.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
-					png= new PNG(binaryData)
-					finished= (a) ->
-						console.log('gogogo')
-						png.decoded= a
-						qr= new DocxQrCode(png,obj,"web",6)
-						qr.decode(f.test)
-					dat= png.decode(finished)
-
 		it "should work with basic image", () ->
 			runs () ->
 				fCalled= false
@@ -426,25 +405,6 @@ describe 'DocxQrCode module', () ->
 				expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
 				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
-
-		it "should work with qr inside image", () ->
-
-			runs () ->
-				fCalled= false
-				f= {test:() -> fCalled= true}
-				spyOn(f,'test').andCallThrough()
-				if env=='browser'
-					qr=new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data,obj,"tag.png",2)
-					qr.decode(f.test)
-				else
-					base64= JSZipBase64.encode qrcodezip.files['qrInsideImage.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
-					png= new PNG(binaryData)
-					finished= (a) ->
-						png.decoded= a
-						qr= new DocxQrCode(png,obj,"tag.png",2)
-						qr.decode(f.test)
-					dat= png.decode(finished)
 
 
 describe "image Loop Replacing", () ->

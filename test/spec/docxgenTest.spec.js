@@ -819,34 +819,6 @@
           return expect(f.test.mostRecentCall.args[2]).toEqual(6);
         });
       });
-      it("should work with long URLs", function() {
-        return runs(function() {
-          var base64, binaryData, dat, finished, png, qr;
-          fCalled = false;
-          f = {
-            test: function() {
-              return fCalled = true;
-            }
-          };
-          spyOn(f, 'test').andCallThrough();
-          if (env === 'browser') {
-            qr = new DocxQrCode(qrcodezip.files['website.png'].data, obj, "web", 6);
-            return qr.decode(f.test);
-          } else {
-            console.log('gogo');
-            base64 = JSZipBase64.encode(qrcodezip.files['website.png'].data);
-            binaryData = new Buffer(base64, 'base64');
-            png = new PNG(binaryData);
-            finished = function(a) {
-              console.log('gogogo');
-              png.decoded = a;
-              qr = new DocxQrCode(png, obj, "web", 6);
-              return qr.decode(f.test);
-            };
-            return dat = png.decode(finished);
-          }
-        });
-      });
       it("should work with basic image", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;
@@ -883,7 +855,7 @@
           return expect(f.test.mostRecentCall.args[2]).toEqual(4);
         });
       });
-      it("should work with image with {tags}", function() {
+      return it("should work with image with {tags}", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;
           fCalled = false;
@@ -917,32 +889,6 @@
           expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
           expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
           return expect(f.test.mostRecentCall.args[2]).toEqual(2);
-        });
-      });
-      return it("should work with qr inside image", function() {
-        return runs(function() {
-          var base64, binaryData, dat, finished, png, qr;
-          fCalled = false;
-          f = {
-            test: function() {
-              return fCalled = true;
-            }
-          };
-          spyOn(f, 'test').andCallThrough();
-          if (env === 'browser') {
-            qr = new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data, obj, "tag.png", 2);
-            return qr.decode(f.test);
-          } else {
-            base64 = JSZipBase64.encode(qrcodezip.files['qrInsideImage.png'].data);
-            binaryData = new Buffer(base64, 'base64');
-            png = new PNG(binaryData);
-            finished = function(a) {
-              png.decoded = a;
-              qr = new DocxQrCode(png, obj, "tag.png", 2);
-              return qr.decode(f.test);
-            };
-            return dat = png.decode(finished);
-          }
         });
       });
     });
