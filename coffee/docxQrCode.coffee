@@ -39,8 +39,11 @@ DocxQrCode = class DocxQrCode
 				else
 					console.log('file image loading failed!')
 					@callback(this,@imgName,@num)
-			DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
+			try
+				DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
+			catch error
+				console.log error
 		else
-			@callback(this,@imgName,@num)	
+			@callback(this,@imgName,@num)
 
 root.DocxQrCode=DocxQrCode

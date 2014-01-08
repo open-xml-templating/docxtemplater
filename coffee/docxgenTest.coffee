@@ -29,7 +29,7 @@ if env=='node'
 	['docxgen.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../js/' + file), file);
 
-	
+
 
 DocUtils.loadDoc('imageExample.docx')
 DocUtils.loadDoc('image.png',true)
@@ -239,13 +239,13 @@ describe "xmlTemplater", ()->
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
-	
+
 	it "should work with non w:t content", ()->
 		content= """{image}.png"""
 		scope= {"image":"edgar"}
 		xmlTemplater= new DocXTemplater(content,null,scope)
 		xmlTemplater.applyTemplateVars()
-		expect(xmlTemplater.content).toBe('edgar.png')		
+		expect(xmlTemplater.content).toBe('edgar.png')
 	it "should work with tag in two elements", ()->
 		content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 		scope= {"name":"Edgar"}
@@ -297,52 +297,52 @@ describe 'DocxQrCode module', () ->
 
 			runs () ->
 				fCalled= false
-				f= {test:() -> fCalled= true}				
+				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
 				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['blabla.png'].data,obj,"custom.png",6)
-					qr.decode(f.test)			
+					qr.decode(f.test)
 				else
 					base64= JSZipBase64.encode qrcodezip.files['blabla.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"custom.png",6)
 						qr.decode(f.test)
 					dat= png.decode(finished)
-			
+
 			waitsFor( ()->fCalled)
-					
+
 			runs () ->
 				expect(f.test).toHaveBeenCalled();
 				expect(f.test.calls.length).toEqual(1);
 				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
 				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
 				expect(f.test.mostRecentCall.args[2]).toEqual(6);
-		
+
 		it "should work with long texts", () ->
 
 			runs () ->
 				fCalled= false
-				f= {test:() -> fCalled= true}				
+				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
 				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['custom.png'].data,obj,"custom.png",6)
-					qr.decode(f.test)			
+					qr.decode(f.test)
 				else
 					base64= JSZipBase64.encode qrcodezip.files['custom.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"custom.png",6)
 						qr.decode(f.test)
 					dat= png.decode(finished)
-			
+
 			waitsFor( ()->fCalled)
 
-			
+
 			runs () ->
 				expect(f.test).toHaveBeenCalled();
 				expect(f.test.calls.length).toEqual(1);
@@ -355,15 +355,15 @@ describe 'DocxQrCode module', () ->
 
 			runs () ->
 				fCalled= false
-				f= {test:() -> fCalled= true}				
+				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
 				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['website.png'].data,obj,"web",6)
-					qr.decode(f.test)			
+					qr.decode(f.test)
 				else
 					console.log('gogo')
 					base64= JSZipBase64.encode qrcodezip.files['website.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
 						console.log('gogogo')
@@ -371,36 +371,27 @@ describe 'DocxQrCode module', () ->
 						qr= new DocxQrCode(png,obj,"web",6)
 						qr.decode(f.test)
 					dat= png.decode(finished)
-			
-			waitsFor( ()->fCalled)
-			
-			runs () ->
-				expect(f.test).toHaveBeenCalled();
-				expect(f.test.calls.length).toEqual(1);
-				expect(f.test.mostRecentCall.args[0].result).toEqual("http://website.com/image.png");
-				expect(f.test.mostRecentCall.args[1]).toEqual("web");
-				expect(f.test.mostRecentCall.args[2]).toEqual(6);	
-		
+
 		it "should work with basic image", () ->
 			runs () ->
 				fCalled= false
-				f= {test:() -> fCalled= true}				
+				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
 				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data,obj,"qrcodeTest.png",4)
-					qr.decode(f.test)			
+					qr.decode(f.test)
 				else
 					base64= JSZipBase64.encode qrcodezip.files['qrcodeTest.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"qrcodeTest.png",4)
 						qr.decode(f.test)
 					dat= png.decode(finished)
-			
+
 			waitsFor( ()->fCalled)
-			
+
 			runs () ->
 				expect(f.test).toHaveBeenCalled();
 				expect(f.test.calls.length).toEqual(1);
@@ -412,23 +403,23 @@ describe 'DocxQrCode module', () ->
 
 			runs () ->
 				fCalled= false
-				f= {test:() -> fCalled= true}				
+				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
 				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodetag.png'].data,obj,"tag.png",2)
-					qr.decode(f.test)			
+					qr.decode(f.test)
 				else
 					base64= JSZipBase64.encode qrcodezip.files['qrcodetag.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"tag.png",2)
 						qr.decode(f.test)
 					dat= png.decode(finished)
-			
+
 			waitsFor( ()->fCalled)
-			
+
 			runs () ->
 				expect(f.test).toHaveBeenCalled();
 				expect(f.test.calls.length).toEqual(1);
@@ -440,31 +431,21 @@ describe 'DocxQrCode module', () ->
 
 			runs () ->
 				fCalled= false
-				f= {test:() -> fCalled= true}				
+				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
 				if env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrInsideImage.png'].data,obj,"tag.png",2)
-					qr.decode(f.test)			
+					qr.decode(f.test)
 				else
 					base64= JSZipBase64.encode qrcodezip.files['qrInsideImage.png'].data
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');					
+					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"tag.png",2)
 						qr.decode(f.test)
 					dat= png.decode(finished)
-			
-			waitsFor( ()->fCalled)
-			
-			runs () ->
-				expect(f.test).toHaveBeenCalled();
-				expect(f.test.calls.length).toEqual(1);
-				expect(f.test.mostRecentCall.args[0].result).toEqual("http://stackoverflow.com/questions/17488685/display-extra-text-in-treeview-nodes-not-just-node-text");
-				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
-				expect(f.test.mostRecentCall.args[2]).toEqual(2);
 
-			
 
 describe "image Loop Replacing", () ->
 	describe 'rels', () ->
@@ -476,7 +457,7 @@ describe "image Loop Replacing", () ->
 			expect(docX['imageExample.docx'].addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
 
 			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData)
-			
+
 			# expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>')
 			# expect(docX['imageExample.docx'].zip.files['[Content_Types].xml'].data).toBe('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/stylesWithEffects.xml" ContentType="application/vnd.ms-word.stylesWithEffects+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/><Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/><Override PartName="/word/endnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/><Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Default ContentType="image/png" Extension="png"/></Types>')
 			# if docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data!='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.jpeg"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/><Relationship Id="rId11" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>'
@@ -529,7 +510,7 @@ describe "loop forTagging images", () ->
 			expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression)
 			expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir)
 
-			if i!='word/_rels/document.xml.rels' and i!='[Content_Types].xml' 
+			if i!='word/_rels/document.xml.rels' and i!='[Content_Types].xml'
 				if env=='browser' or i!="word/document.xml" #document.xml is not the same on node, so we don't test the data
 					if docX['tagLoopExample.docx'].zip.files[i].data?0
 						expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length)
@@ -554,7 +535,7 @@ describe 'qr code testing', () ->
 		docX['qrCodeExample.docx'].applyTemplateVars({},endcallback)
 
 		waitsFor () -> docX['qrCodeExample.docx'].ready?
-		
+
 		runs () ->
 
 			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
@@ -576,7 +557,7 @@ describe 'qr code testing', () ->
 		docX['qrCodeTaggingExample.docx'].applyTemplateVars({'image':'Firefox_logo'},endcallback)
 
 		waitsFor () -> docX['qrCodeTaggingExample.docx'].ready?
-		
+
 		runs () ->
 			expect(docX['qrCodeTaggingExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 			for i of docX['qrCodeTaggingExample.docx'].zip.files
@@ -598,9 +579,9 @@ describe 'qr code testing', () ->
 		docX['qrCodeTaggingLoopExample.docx']
 
 		waitsFor () -> docX['qrCodeTaggingLoopExample.docx'].ready?
-		
+
 		runs () ->
-			
+
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_1.png']?).toBeTruthy()
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_2.png']?).toBeFalsy()

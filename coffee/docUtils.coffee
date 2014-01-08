@@ -8,7 +8,7 @@ root.docXData=[]
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
-DocUtils.config= 
+DocUtils.config=
 	"baseNodePath":'../../examples/'
 	"baseClientPath":'../examples/'
 
@@ -37,7 +37,7 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 
 
 	if env=='browser'
-		xhrDoc= new XMLHttpRequest()		
+		xhrDoc= new XMLHttpRequest()
 		xhrDoc.open('GET', totalPath , async)
 		if xhrDoc.overrideMimeType
 			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
@@ -55,14 +55,14 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 		if httpRegex.test(path)
 			console.log('http(s) url matched:'+path)
 			urloptions=(url.parse(path))
-			options = 
+			options =
 				hostname:urloptions.hostname
 				path:urloptions.path
 				method: 'GET'
 				rejectUnauthorized:false
-			
+
 			errorCallback= (e) ->
-				console.log("Error: \n" + e.message); 
+				console.log("Error: \n" + e.message);
 				console.log( e.stack );
 
 			reqCallback= (res)->
@@ -84,7 +84,7 @@ DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callba
 				when "https:"
 					req = https.request(options, reqCallback).on('error',errorCallback)
 				when 'http:'
-					req = http.request(options, reqCallback).on('error',errorCallback)	
+					req = http.request(options, reqCallback).on('error',errorCallback)
 			req.end();
 
 		else

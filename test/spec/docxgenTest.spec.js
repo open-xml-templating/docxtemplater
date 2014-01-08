@@ -1,10 +1,8 @@
-//@ sourceMappingURL=docxgenTest.spec.map
 (function() {
   var env, root;
 
   Object.size = function(obj) {
     var key, log, size;
-
     size = 0;
     log = 0;
     for (key in obj) {
@@ -95,7 +93,6 @@
     });
     return it("should construct", function() {
       var a;
-
       a = new DocxGen();
       return expect(a).not.toBe(void 0);
     });
@@ -120,14 +117,12 @@
     describe("content_loading", function() {
       it("should load the right content for the footer", function() {
         var fullText;
-
         fullText = docX['imageExample.docx'].getFullText("word/footer1.xml");
         expect(fullText.length).not.toBe(0);
         return expect(fullText).toBe('{last_name}{first_name}{phone}');
       });
       return it("should load the right content for the document", function() {
         var fullText;
-
         fullText = docX['imageExample.docx'].getFullText();
         return expect(fullText).toBe("");
       });
@@ -141,7 +136,6 @@
       });
       return it("should change the image with another one", function() {
         var newImageData, oldImageData;
-
         oldImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].data;
         docX['imageExample.docx'].setImage('word/media/image1.jpeg', docXData['image.png']);
         newImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].data;
@@ -155,7 +149,6 @@
     return describe("text templating", function() {
       it("should change values with template vars", function() {
         var templateVars;
-
         templateVars = {
           "first_name": "Hipp",
           "last_name": "Edgar",
@@ -170,7 +163,6 @@
       });
       return it("should export the good file", function() {
         var i, _results;
-
         _results = [];
         for (i in docX['tagExample.docx'].zip.files) {
           expect(docX['tagExample.docx'].zip.files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].zip.files[i].options.date);
@@ -190,7 +182,6 @@
     return describe("textLoop templating", function() {
       it("should replace all the tags", function() {
         var templateVars;
-
         templateVars = {
           "nom": "Hipp",
           "prenom": "Edgar",
@@ -215,7 +206,6 @@
       });
       return it("should work with loops inside loops", function() {
         var expectedText, templateVars, text;
-
         templateVars = {
           "products": [
             {
@@ -285,11 +275,9 @@
 
   describe("scope calculation", function() {
     var xmlTemplater;
-
     xmlTemplater = new DocXTemplater();
     it("should compute the scope between 2 <w:t>", function() {
       var scope;
-
       scope = xmlTemplater.calcScopeText("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
       return expect(scope).toEqual([
         {
@@ -315,7 +303,6 @@
     });
     it("should compute the scope between 2 <w:t> in an Array", function() {
       var scope;
-
       scope = xmlTemplater.calcScopeText("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
       return expect(scope).toEqual([
         {
@@ -347,7 +334,6 @@
     });
     return it('should compute the scope between a w:t in an array and the other outside', function() {
       var scope;
-
       scope = xmlTemplater.calcScopeText("defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
       return expect(scope).toEqual([
         {
@@ -384,23 +370,19 @@
 
   describe("scope diff calculation", function() {
     var xmlTemplater;
-
     xmlTemplater = new DocXTemplater();
     it("should compute the scopeDiff between 2 <w:t>", function() {
       var scope;
-
       scope = xmlTemplater.calcScopeDifference("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
       return expect(scope).toEqual([]);
     });
     it("should compute the scopeDiff between 2 <w:t> in an Array", function() {
       var scope;
-
       scope = xmlTemplater.calcScopeDifference("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
       return expect(scope).toEqual([]);
     });
     return it('should compute the scopeDiff between a w:t in an array and the other outside', function() {
       var scope;
-
       scope = xmlTemplater.calcScopeDifference("defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
       return expect(scope).toEqual([
         {
@@ -420,7 +402,6 @@
   describe("scope inner text", function() {
     return it("should find the scope", function() {
       var obj, scope, xmlTemplater;
-
       xmlTemplater = new DocXTemplater();
       docX['tagProduitLoop.docx'] = new DocxGen(docXData['tagProduitLoop.docx']);
       scope = xmlTemplater.calcInnerTextScope(docX['tagProduitLoop.docx'].zip.files["word/document.xml"].data, 1195, 1245, 'w:p');
@@ -439,7 +420,6 @@
   describe("Dash Loop Testing", function() {
     it("dash loop ok on simple table -> w:tr", function() {
       var expectedText, templateVars, text;
-
       templateVars = {
         "os": [
           {
@@ -465,7 +445,6 @@
     });
     it("dash loop ok on simple table -> w:table", function() {
       var expectedText, templateVars, text;
-
       templateVars = {
         "os": [
           {
@@ -491,7 +470,6 @@
     });
     return it("dash loop ok on simple list -> w:p", function() {
       var expectedText, templateVars, text;
-
       templateVars = {
         "os": [
           {
@@ -520,7 +498,6 @@
   describe("Intelligent Loop Tagging", function() {
     return it("should work with tables", function() {
       var expectedText, i, templateVars, text, _results;
-
       templateVars = {
         clients: [
           {
@@ -564,7 +541,6 @@
   describe("getTemplateVars", function() {
     it("should work with simple document", function() {
       var tempVars;
-
       docX['tagExample.docx'] = new DocxGen(docXData['tagExample.docx'], {}, false);
       tempVars = docX['tagExample.docx'].getTemplateVars();
       return expect(tempVars).toEqual([
@@ -594,7 +570,6 @@
     });
     it("should work with loop document", function() {
       var tempVars;
-
       docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx'], {}, false);
       tempVars = docX['tagLoopExample.docx'].getTemplateVars();
       return expect(tempVars).toEqual([
@@ -626,7 +601,6 @@
     });
     return it('should work if there are no templateVars', function() {
       var tempVars;
-
       docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false);
       tempVars = docX['qrCodeExample.docx'].getTemplateVars();
       return expect(tempVars).toEqual([]);
@@ -636,7 +610,6 @@
   describe("xmlTemplater", function() {
     it("should work with simpleContent", function() {
       var content, scope, xmlTemplater;
-
       content = "<w:t>Hello {name}</w:t>";
       scope = {
         "name": "Edgar"
@@ -647,7 +620,6 @@
     });
     it("should work with non w:t content", function() {
       var content, scope, xmlTemplater;
-
       content = "{image}.png";
       scope = {
         "image": "edgar"
@@ -658,7 +630,6 @@
     });
     it("should work with tag in two elements", function() {
       var content, scope, xmlTemplater;
-
       content = "<w:t>Hello {</w:t><w:t>name}</w:t>";
       scope = {
         "name": "Edgar"
@@ -669,7 +640,6 @@
     });
     it("should work with simple Loop", function() {
       var content, scope, xmlTemplater;
-
       content = "<w:t>Hello {#names}{name},{/names}</w:t>";
       scope = {
         "names": [
@@ -688,7 +658,6 @@
     });
     it("should work with dash Loop", function() {
       var content, scope, xmlTemplater;
-
       content = "<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>";
       scope = {
         "names": [
@@ -707,7 +676,6 @@
     });
     it("should work with loop and innerContent", function() {
       var content, scope, xmlTemplater;
-
       content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t>";
       scope = {
         "title": "Everyone uses it",
@@ -727,7 +695,6 @@
     });
     it("should work with loop and innerContent (with last)", function() {
       var content, scope, xmlTemplater;
-
       content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t> ";
       scope = {
         "title": "Everyone uses it",
@@ -747,7 +714,6 @@
     });
     return it('should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ', function() {
       var content, scope, xmlTemplater;
-
       content = "Hello {#names}{name},{/names}";
       scope = {
         "names": [
@@ -769,14 +735,12 @@
   describe('DocxQrCode module', function() {
     return describe("Calculate simple Docx", function() {
       var f, fCalled, obj, qrcodezip;
-
       f = null;
       fCalled = null;
       qrcodezip = null;
       obj = null;
       beforeEach(function() {
         var docx;
-
         qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
         docx = new DocxGen();
         return obj = new DocXTemplater("", docx, {
@@ -786,7 +750,6 @@
       it("should work with Blablalalabioeajbiojbepbroji", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;
-
           fCalled = false;
           f = {
             test: function() {
@@ -823,7 +786,6 @@
       it("should work with long texts", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;
-
           fCalled = false;
           f = {
             test: function() {
@@ -858,9 +820,8 @@
         });
       });
       it("should work with long URLs", function() {
-        runs(function() {
+        return runs(function() {
           var base64, binaryData, dat, finished, png, qr;
-
           fCalled = false;
           f = {
             test: function() {
@@ -885,21 +846,10 @@
             return dat = png.decode(finished);
           }
         });
-        waitsFor(function() {
-          return fCalled;
-        });
-        return runs(function() {
-          expect(f.test).toHaveBeenCalled();
-          expect(f.test.calls.length).toEqual(1);
-          expect(f.test.mostRecentCall.args[0].result).toEqual("http://website.com/image.png");
-          expect(f.test.mostRecentCall.args[1]).toEqual("web");
-          return expect(f.test.mostRecentCall.args[2]).toEqual(6);
-        });
       });
       it("should work with basic image", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;
-
           fCalled = false;
           f = {
             test: function() {
@@ -936,7 +886,6 @@
       it("should work with image with {tags}", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;
-
           fCalled = false;
           f = {
             test: function() {
@@ -971,9 +920,8 @@
         });
       });
       return it("should work with qr inside image", function() {
-        runs(function() {
+        return runs(function() {
           var base64, binaryData, dat, finished, png, qr;
-
           fCalled = false;
           f = {
             test: function() {
@@ -996,16 +944,6 @@
             return dat = png.decode(finished);
           }
         });
-        waitsFor(function() {
-          return fCalled;
-        });
-        return runs(function() {
-          expect(f.test).toHaveBeenCalled();
-          expect(f.test.calls.length).toEqual(1);
-          expect(f.test.mostRecentCall.args[0].result).toEqual("http://stackoverflow.com/questions/17488685/display-extra-text-in-treeview-nodes-not-just-node-text");
-          expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
-          return expect(f.test.mostRecentCall.args[2]).toEqual(2);
-        });
       });
     });
   });
@@ -1018,7 +956,6 @@
       });
       return it('should add', function() {
         var contentTypeData, contentTypeXml, contentTypes, oldData, relationships, relsData, relsXml;
-
         oldData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
         expect(docX['imageExample.docx'].addImageRels('image1.png', docXData['bootstrap_logo.png'])).toBe(11);
         expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData);
@@ -1037,7 +974,6 @@
   describe("loop forTagging images", function() {
     return it('should work with a simple loop file', function() {
       var contentTypeData, contentTypeXml, contentTypes, i, relationships, relsData, relsXml, tempVars, _base;
-
       docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx']);
       tempVars = {
         "nom": "Hipp",
@@ -1107,7 +1043,6 @@
   describe('qr code testing', function() {
     it('should work with local QRCODE without tags', function() {
       var endcallback;
-
       docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false, true);
       endcallback = function() {
         return 1;
@@ -1118,7 +1053,6 @@
       });
       return runs(function() {
         var i, _results;
-
         expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
         _results = [];
         for (i in docX['qrCodeExample.docx'].zip.files) {
@@ -1134,7 +1068,6 @@
     });
     it('should work with local QRCODE with {tags}', function() {
       var endcallback;
-
       docX['qrCodeTaggingExample.docx'] = new DocxGen(docXData['qrCodeTaggingExample.docx'], {
         'image': 'Firefox_logo'
       }, false, true);
@@ -1149,7 +1082,6 @@
       });
       return runs(function() {
         var i, _results;
-
         expect(docX['qrCodeTaggingExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
         _results = [];
         for (i in docX['qrCodeTaggingExample.docx'].zip.files) {
@@ -1165,7 +1097,6 @@
     });
     return it('should work with loop QRCODE with {tags}', function() {
       var endcallback;
-
       docX['qrCodeTaggingLoopExample.docx'] = new DocxGen(docXData['qrCodeTaggingLoopExample.docx'], {}, false, true);
       endcallback = function() {
         return 1;
@@ -1185,7 +1116,6 @@
       });
       return runs(function() {
         var i, _results;
-
         expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
         expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_1.png'] != null).toBeTruthy();
         expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_2.png'] != null).toBeFalsy();
@@ -1204,3 +1134,7 @@
   });
 
 }).call(this);
+
+/*
+//# sourceMappingURL=../../js/docxgenTest.spec.js.map
+*/

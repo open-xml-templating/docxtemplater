@@ -20,7 +20,8 @@ module.exports = function(grunt) {
       sourceMap: true
     },
         files: {
-         'js/docxgen.js': ['coffee/docxgen.coffee','coffee/docUtils.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee'] // compile individually into dest, maintaining folder structure
+         'js/docxgen.js': ['coffee/docxgen.coffee','coffee/docUtils.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee'], // compile individually into dest, maintaining folder structure
+         'test/spec/docxgenTest.spec.js': ['coffee/docxgentest.coffee'] 
           }
         }
     },
@@ -34,6 +35,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint qunit concat min');
+  grunt.registerTask('default', 'watch');
 
 };

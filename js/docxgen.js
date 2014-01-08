@@ -829,7 +829,7 @@ Created by Edgar HIPP
     };
 
     DocxQrCode.prototype.searchImage = function() {
-      var callback, loadDocCallback,
+      var callback, error, loadDocCallback,
         _this = this;
       if (this.result.substr(0, 4) === 'gen:') {
         return callback = function(data) {
@@ -850,7 +850,12 @@ Created by Edgar HIPP
             return _this.callback(_this, _this.imgName, _this.num);
           }
         };
-        return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
+        try {
+          return DocUtils.loadDoc(this.result, true, false, false, loadDocCallback);
+        } catch (_error) {
+          error = _error;
+          return console.log(error);
+        }
       } else {
         return this.callback(this, this.imgName, this.num);
       }
@@ -1534,5 +1539,5 @@ Created by Edgar HIPP
 }).call(this);
 
 /*
-//@ sourceMappingURL=docxgen.js.map
+//# sourceMappingURL=../js/docxgen.js.map
 */
