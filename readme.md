@@ -309,4 +309,5 @@ Todo:
 - [ ] Incompatibility with IE: Error : SCRIPT5022: End of stream reached (stream length = 14578, asked index = 18431). Corrupted zip ?
 jszip-load.js, Ligne 82 Caractère 13 -> Getting binary data with IE 7+ doesn't seem to work, two ways:
 * [Using VBscript](http://emilsblog.lerch.org/2009/07/javascript-hacks-using-xhr-to-load.html)
-* By not using an xhr call on raw data, but load xml files. Howewer, images would have to be given too by an other way
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/edi9999/docxtemplater/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
