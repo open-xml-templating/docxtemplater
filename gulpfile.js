@@ -10,11 +10,8 @@ var paths = {
   coffee: ['coffee/docxgen.coffee','coffee/docUtils.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee'], // compile individually into dest, maintaining folder structure
 };
 
-gulp.task('default', function () {
-    gulp.src(paths.coffee, { read: false })
-        .pipe(watch(function(files)
-        {
-        }));
+gulp.task('watch', function () {
+	gulp.watch(paths.coffee,['coffee']);
 });
 
 gulp.task('coffee', function() {
@@ -25,3 +22,5 @@ gulp.task('coffee', function() {
     .pipe(concat('docxgen.js'))
     .pipe(gulp.dest('./js/'));
 });
+
+gulp.task('default',['coffee','watch']);
