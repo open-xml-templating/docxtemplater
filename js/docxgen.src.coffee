@@ -6,7 +6,6 @@ Created by Edgar HIPP
 
 root= global ? window
 env= if global? then 'node' else 'browser'
-
 root.DocxGen = class DocxGen
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor: (content, @templateVars={},@intelligentTagging=on,@qrCode=off,@localImageCreator,@finishedCallback) ->
