@@ -31,17 +31,17 @@ will result in :
 
 ## Demo ##
 
-All demos can be found here: http://javascript-ninja.fr/docxgenjs/examples/simpleTagging.html#
+[All demos can be found here](http://javascript-ninja.fr/docxgenjs/examples/demo.html)
 
 Including:
 
-- Replace Variables
-- Formating
-- Loops
-- Loops and tables
-- Lists
-- Replacing images
-- Naming the output
+<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#variables">Replace Variables</a><br>
+<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#formating">Formating</a><br>
+<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#loops">Loops</a><br>
+<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#tables">Loops and tables</a><br>
+<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists">Lists</a><br>
+<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#images">Replacing images</a><br>
+<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming">Naming the output</a><br>
 
 ## Dependencies ##
 
