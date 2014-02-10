@@ -183,6 +183,15 @@ DocUtils.preg_match_all= (regex, content) ->
 	content.replace regex,replacer
 	matchArray
 
+
+DocUtils.sizeOfObject = (obj) ->
+	size=0
+	log = 0
+	for key of obj
+		size++
+	size
+
+
 Array.prototype.max = () -> Math.max.apply(null, this)
 
 Array.prototype.min = () -> Math.min.apply(null, this)

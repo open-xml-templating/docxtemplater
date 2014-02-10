@@ -1,9 +1,3 @@
-Object.size = (obj) ->
-	size=0
-	log = 0
-	for key of obj
-		size++
-	size
 
 root= global ? window
 env= if global? then 'node' else 'browser'
@@ -70,7 +64,7 @@ describe "DocxGenLoading", () ->
 			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
 			docX['imageExample.docx']=new DocxGen(docXData['imageExample.docx'])
-			expect(Object.size(docX['imageExample.docx'].zip.files)).toEqual(22)
+			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(22)
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
 			expect(typeof docX['imageExample.docx']).toBe('object');

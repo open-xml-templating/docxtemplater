@@ -123,13 +123,7 @@ root.DocxGen = class DocxGen
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			usedTemplateV= currentFile.applyTemplateVars().usedTemplateVars
-			#test if usedTemplateV!={}
-			console.log 'used'
-			console.log usedTemplateV
-			n=0
-			for h of usedTemplateV
-				n++
-			if n>0
+			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTemplateVars.push {fileName,vars:usedTemplateV}
 		usedTemplateVars
 	setTemplateVars: (@templateVars) ->
