@@ -3,7 +3,7 @@ DocUtils.loadDoc("tagFormating.docx")
 DocUtils.loadDoc("tagLooping.docx")
 DocUtils.loadDoc("imageExample.docx")
 DocUtils.loadDoc("tagIntelligentLoopTable.docx")
-DocUtils.loadDoc("image.png")
+DocUtils.loadDoc("image.png",true)
 
 function textAreaAdjust(o) {
     o.style.height = "1px";
