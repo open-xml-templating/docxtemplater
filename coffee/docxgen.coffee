@@ -157,7 +157,7 @@ root.DocxGen = class DocxGen
 		@calcZip()
 		output=@zip.generate()
 		Downloadify.create 'downloadify',
-			filename: () ->	return filename
+			filename: () ->return filename
 			data: () ->
 				return output
 			onCancel: () -> alert 'You have cancelled the saving of this file.'
