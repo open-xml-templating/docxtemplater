@@ -4,6 +4,7 @@ DocUtils.loadDoc("tagLooping.docx")
 DocUtils.loadDoc("imageExample.docx")
 DocUtils.loadDoc("tagIntelligentLoopTable.docx")
 DocUtils.loadDoc("image.png",true)
+DocUtils.loadDoc("tagDashLoopList.docx")
 
 function textAreaAdjust(o) {
     o.style.height = "1px";

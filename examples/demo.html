@@ -25,6 +25,7 @@
 <a href="#formating">Formating</a><br>
 <a href="#loops">Loops</a><br>
 <a href="#tables">Loops and tables</a><br>
+<a href="#lists">Lists</a><br>
 <a href="#images">Replacing images</a><br>
 <a href="#naming">Naming the output</a><br>
 
@@ -147,6 +148,7 @@ doc.output() //Output the document using Data-URI
 	</table>
 </section>
 
+
 <section>
 	<h2 id='tables'><em>Tables</em>: loops work inside tables too!</h2>
 	<p>This also works with Bullet Lists</p>
@@ -183,6 +185,35 @@ doc.setTemplateVars(
 ) //set the templateVariables
 doc.applyTemplateVars() //apply them
 doc.output() //Output the document using Data-URI					
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='lists'><em>lists</em>: dash (-) loops works for any element</h2>
+	<p>This could work for lists, paragraphs, or any element that could be repeated. The syntax is {-element name} {/name}. When encountering such an element, docxgen will search for the first parent element that equals element, and loop over this.</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/listTagging.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/listTaggingResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="tagDashLoopList.docx">
+var docData=docXData["tagDashLoopList.docx"]; //docXData is an array containing all the raw data for these examples
+var doc= new DocxGen(docData)
+
+doc.setTemplateVars(
+{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
+)
+doc.applyTemplateVars()
+doc.output()
 				</textarea>
 			</td>
 		</tr>
