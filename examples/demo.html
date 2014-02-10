@@ -141,7 +141,6 @@ doc.output() //Output the document using Data-URI
 			</td>
 		</tr>
 	</table>
-<!-- 	section>(h2>em)+(table.demo>(tr>(td>img)+(td)+(td>img))+tr>td[colspan=3]>h3{Code Used:}+textarea[raw=tagLooping.docx]) -->
 </section>
 
 <section>
@@ -186,6 +185,34 @@ doc.output() //Output the document using Data-URI
 	</table>
 </section>
 
+<section>
+	<h2 id='images'><em>Images</em>Change images</h2>
+	<p>Replace images</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/imageTagging.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/imageTaggingResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="imageExample.docx">
+var docData=docXData["imageExample.docx"]; //docXData is an array containing all the raw data for these examples
+var imgData=docXData["image.png"];
+
+var doc= new DocxGen(docData) //Create Docxgen object from docxdata, in base64
+imageList=doc.getImageList() //Get the array of images in the document
+console.log(imageList); 
+doc.setImage(imageList[0].path,imgData); //change the first image to imgData
+doc.output() 
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
 
 </body>
 </html>

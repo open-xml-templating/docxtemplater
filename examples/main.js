@@ -1,7 +1,9 @@
 DocUtils.loadDoc("tagExample.docx")
 DocUtils.loadDoc("tagFormating.docx")
 DocUtils.loadDoc("tagLooping.docx")
+DocUtils.loadDoc("imageExample.docx")
 DocUtils.loadDoc("tagIntelligentLoopTable.docx")
+DocUtils.loadDoc("image.png")
 
 function textAreaAdjust(o) {
     o.style.height = "1px";
@@ -45,7 +47,6 @@ for (var i = 0; i < executeButtonList.length; i++) {
 
 var viewRawButtonList= document.getElementsByClassName('raw');
 
-
 for (var i = 0; i < viewRawButtonList.length; i++) {
 	viewRawButtonList[i].onclick=function()
 	{
@@ -62,12 +63,7 @@ for (var i = 0; i < viewRawButtonList.length; i++) {
 		};
 
 	}
-
-
-	
 };
-
-
 
 }
 
