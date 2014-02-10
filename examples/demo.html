@@ -8,6 +8,8 @@
   <script type="text/javascript" src="../libs/jszip/jszip.js"></script>
   <script type="text/javascript" src="../libs/jszip/jszip-load.js"></script>
   <script type="text/javascript" src="../libs/jszip/jszip-inflate.js"></script>
+  <script src="../libs/downloadify/js/downloadify.min.js"></script>
+  <script src="../libs/downloadify/js/swfobject.js"></script>
 
   <!-- Include docxgen js lib -->
   <script type="text/javascript" src="../js/docxgen.js"></script>
@@ -24,6 +26,7 @@
 <a href="#loops">Loops</a><br>
 <a href="#tables">Loops and tables</a><br>
 <a href="#images">Replacing images</a><br>
+<a href="#naming">Naming the output</a><br>
 
 <h1>Templates</h1>
 
@@ -211,6 +214,45 @@ doc.output()
 				</textarea>
 			</td>
 		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='images'><em>Naming:</em> Don't wanna see download.docx ?</h2>
+	<p>Sorry mate, if you want this, you're going to need flash :-(</p>
+	<table class="demo">
+		<tr>
+			<td>
+				<img src="images/textTagging.PNG" alt="">
+			</td>
+			<td>
+			<div>=> <br>Results in:</div>
+			</td>
+			<td>
+				<img src="images/textTaggingResult.PNG" alt="">		
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="tagExample.docx">
+		var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
+		var doc= new DocxGen(docData)
+		doc.setTemplateVars({
+				"first_name":"Hipp",
+				"last_name":"Edgar",
+				"phone":"0652455478",
+				"description":"New Website"
+			});
+		doc.applyTemplateVars()
+		doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',"taggedDoc.docx")
+				</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<p id="downloadify"> You must have Flash 10 installed to download this file.  </p>
+			</td>
 	</table>
 </section>
 
