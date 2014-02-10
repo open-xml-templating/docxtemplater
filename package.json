@@ -9,6 +9,9 @@
       "email": "hipp.edg@gmail.com"
     }
   ],
+  "scripts": {
+    "preinstall": "npm install gulp -g"
+  },
   "bin": {
     "docxgen": "./docxgenNode/bin/docxgen.js"
   },
@@ -22,10 +25,8 @@
   },
   "devDependencies": {
     "jasmine-node": "1.10.x",
-    "grunt-cli": "0.1.*",
-    "grunt": "0.4.*",
-    "grunt-contrib-coffee": "~0.8.0",
-    "grunt-contrib-watch": "~0.5.3"
+    "gulp": "~3.5.2",
+    "gulp-util": "~2.2.14"
   },
   "license": "MIT",
   "engines": {
