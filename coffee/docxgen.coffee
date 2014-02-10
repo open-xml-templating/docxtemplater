@@ -118,18 +118,6 @@ root.DocxGen = class DocxGen
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()
-	getCsvVars:() ->
-		obj= @getTemplateVars()
-		csvcontent = ""
-		csvVars= {}
-		for temp,i in obj
-			for j of temp.vars
-				csvcontent+=j+";" unless csvVars[j]?
-				csvVars[j]= {}
-		csvcontent
-	getCsvFile:() ->
-		file= btoa @getCsvVars()
-		document.location.href= "data:application/vnd.ms-excel;base64,#{file}"
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in @templatedFiles when @zip.files[fileName]?
