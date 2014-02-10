@@ -2,6 +2,20 @@
 
 **docxgen.js** is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
 
+## Demo ##
+
+[All demos can be found here](http://javascript-ninja.fr/docxgenjs/examples/demo.html)
+
+Including:
+
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#variables">Replace Variables</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#formating">Formating</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#loops">Loops</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#tables">Loops and tables</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists">Lists</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#images">Replacing images</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming">Naming the output</a><br>
+
 ## Syntax ##
 
 The *syntax* is highly inspired by [Mustache](http://mustache.github.io/). The template is created in Microsoft Word or an equivalent docx saver.
@@ -29,19 +43,6 @@ will result in :
     Mac OSX, 200 €
     Ubuntu, 0€
 
-## Demo ##
-
-[All demos can be found here](http://javascript-ninja.fr/docxgenjs/examples/demo.html)
-
-Including:
-
-<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#variables">Replace Variables</a><br>
-<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#formating">Formating</a><br>
-<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#loops">Loops</a><br>
-<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#tables">Loops and tables</a><br>
-<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists">Lists</a><br>
-<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#images">Replacing images</a><br>
-<a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming">Naming the output</a><br>
 
 ## Dependencies ##
 
