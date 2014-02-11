@@ -14,8 +14,24 @@ TemplaterState =  class TemplaterState
 		@inBracket= true
 		@textInsideBracket= ""
 		@bracketStart=@currentStep
+	loopType:()->
+		if @inDashLoop then return 'dash'
+		if @inForLoop then return 'for'
+		return 'simple'
 	endBracket:()->
+		if @inBracket is false then throw "Bracket already closed"
+		@inBracket= false
 		@bracketEnd=@currentStep
+		if @textInsideBracket[0]=='#' and @loopType()=='simple'
+			@inForLoop= true #begin for loop
+			@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
+		if @textInsideBracket[0]=='-' and @loopType()=='simple'
+			@inDashLoop= true
+			dashInnerRegex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
+			@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace dashInnerRegex, '$2'),'element':(@textInsideBracket.replace dashInnerRegex, '$1')}
+		if @textInsideBracket[0]=='/'
+			@loopClose={'start':@bracketStart,'end':@bracketEnd}
+
 
 root.TemplaterState=TemplaterState
 
