@@ -254,7 +254,16 @@ Created by Edgar HIPP
         if (!(this.zip.files[fileName] != null)) {
           continue;
         }
-        currentFile = new DocXTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging, [], {}, 0, qrCodeCallback, this.localImageCreator);
+        currentFile = new DocXTemplater(this.zip.files[fileName].data, {
+          DocxGen: this,
+          templateVars: this.templateVars,
+          intelligentTagging: this.intelligentTagging,
+          scopePath: [],
+          usedTemplateVars: {},
+          imageId: 0,
+          qrCodeCallback: qrCodeCallback,
+          localImageCreator: this.localImageCreator
+        }, this, this.templateVars, this.intelligentTagging, [], {}, 0, qrCodeCallback, this.localImageCreator);
         this.zip.files[fileName].data = currentFile.applyTemplateVars().content;
         this.filesProcessed++;
       }
@@ -402,10 +411,10 @@ Created by Edgar HIPP
       options = {};
     }
     noDocx = options.docx != null ? !options.docx : false;
-    async = options.async || false;
-    intelligentTagging = options.intelligentTagging || false;
-    callback = options.callback || null;
-    basePath = options.basePath || null;
+    async = options.async != null ? options.async : false;
+    intelligentTagging = options.intelligentTagging != null ? options.intelligentTagging : false;
+    callback = options.callback != null ? options.callback : null;
+    basePath = options.basePath != null ? options.basePath : null;
     console.log('loading Doc:' + path);
     if (path == null) {
       throw 'path not defined';
@@ -943,12 +952,12 @@ Created by Edgar HIPP
       this.tagX = '';
       this.currentClass = XmlTemplater;
 
-      /*They are two ways to instantiate a XmlTemplater object:
-      		1: new XmlTemplater(content,creator,@templateVars, ...)
+      /*They are two ways to instantiate an XmlTemplater object:
+      		1: new (content,creator,@templateVars, ...)
       			content:string
       			creator:DocxGen object
       			...
-      		2: new XmlTemplater(content, options)
+      		2: new (content, options)
       			content is the content
       			options contains all the arguments:
       			options=

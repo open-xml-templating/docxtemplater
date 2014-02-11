@@ -42,7 +42,17 @@ root.DocxGen = class DocxGen
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,{
+				DocxGen:this
+				templateVars:@templateVars
+				intelligentTagging:@intelligentTagging
+				scopePath:[]
+				usedTemplateVars:{}
+				imageId:0
+				qrCodeCallback:qrCodeCallback
+				localImageCreator:@localImageCreator
+			}
+				this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready

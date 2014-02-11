@@ -9,12 +9,12 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 
-		###They are two ways to instantiate a XmlTemplater object:
-		1: new XmlTemplater(content,creator,@templateVars, ...)
+		###They are two ways to instantiate an XmlTemplater object:
+		1: new (content,creator,@templateVars, ...)
 			content:string
 			creator:DocxGen object
 			...
-		2: new XmlTemplater(content, options)
+		2: new (content, options)
 			content is the content
 			options contains all the arguments:
 			options=

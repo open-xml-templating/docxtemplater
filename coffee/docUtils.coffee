@@ -14,10 +14,10 @@ DocUtils.config=
 
 DocUtils.loadDoc= (path,options={}) ->
 	noDocx= if options.docx? then !options.docx else false
-	async=options.async or false
-	intelligentTagging=options.intelligentTagging or false
-	callback=options.callback or null
-	basePath=options.basePath or null
+	async=if options.async? then options.async else false
+	intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else false
+	callback=if options.callback? then options.callback else null
+	basePath=if options.basePath? then options.basePath else null
 	console.log 'loading Doc:'+path
 	throw 'path not defined' unless path?
 	if path.indexOf('/')!=-1
