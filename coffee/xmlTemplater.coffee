@@ -319,8 +319,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	applyTemplateVars:()->
 		@setUsedTemplateVars("")
 		@templaterState.initialize()
-		@inBracket= false # all brackets  {___}
-		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
 		@textInsideBracket= ""
 		for match,i in @matches
 			innerText= match[2] || "" #text inside the <w:t>
@@ -330,31 +328,31 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				for m,t in @matches when t<=i
 					if @content[m.offset+@charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
-					if @inBracket is true then throw "Bracket already open with text: #{@textInsideBracket}"
-					@inBracket= true
+					if @templaterState.inBracket is true then throw "Bracket already open with text: #{@textInsideBracket}"
+					@templaterState.inBracket= true
 					@textInsideBracket= ""
 					@bracketStart={"i":i,"j":j}
 
 				else if character == '}'
 					@bracketEnd={"i":i,"j":j}
 
-					if @textInsideBracket[0]=='#' and @templaterState.inForLoop is false and @inDashLoop is false
+					if @textInsideBracket[0]=='#' and @templaterState.inForLoop is false and @templaterState.inDashLoop is false
 						@templaterState.inForLoop= true #begin for loop
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
-					if @textInsideBracket[0]=='-' and @templaterState.inForLoop is false and @inDashLoop is false
-						@inDashLoop= true
+					if @textInsideBracket[0]=='-' and @templaterState.inForLoop is false and @templaterState.inDashLoop is false
+						@templaterState.inDashLoop= true
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace regex, '$2'),'element':(@textInsideBracket.replace regex, '$1')}
-					if @inBracket is false then	throw "Bracket already closed #{@content}"
-					@inBracket= false
+					if @templaterState.inBracket is false then	throw "Bracket already closed #{@content}"
+					@templaterState.inBracket= false
 
-					if @templaterState.inForLoop is false and @inDashLoop is false
+					if @templaterState.inForLoop is false and @templaterState.inDashLoop is false
 						@content = @replaceCurly(@getValueFromTag(@textInsideBracket,@currentScope))
 
 					if @textInsideBracket[0]=='/'
 						@loopClose={'start':@bracketStart,'end':@bracketEnd}
 
-					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @inDashLoop is true
+					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @templaterState.inDashLoop is true
 						return @dashLoop(@loopOpen.element)
 
 					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @templaterState.inForLoop is true
@@ -373,7 +371,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 						else
 							return @dashLoop(elementDashLoop,true)
 				else #if character != '{' and character != '}'
-					if @inBracket is true then @textInsideBracket+=character
+					if @templaterState.inBracket is true then @textInsideBracket+=character
 		# if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
 		imgReplacer= new ImgReplacer(this)
 		imgReplacer.findImages()
