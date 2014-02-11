@@ -20,10 +20,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			@usedTemplateVars=if options.usedTemplateVars then options.usedTemplateVars else {}
 			@imageId=if options.imageId then options.imageId else 0
 		if typeof content=="string" then @load content else throw "content must be string!"
+
 		@numQrCode=0
 		@currentScope=@templateVars
-
 		@templaterState= new TemplaterState
+		this
 
 	load: (@content) ->
 		@matches = @_getFullTextMatchesFromData()

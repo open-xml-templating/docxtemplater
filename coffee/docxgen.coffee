@@ -46,9 +46,6 @@ root.DocxGen = class DocxGen
 				DocxGen:this
 				templateVars:@templateVars
 				intelligentTagging:@intelligentTagging
-				scopePath:[]
-				usedTemplateVars:{}
-				imageId:0
 				qrCodeCallback:qrCodeCallback
 				localImageCreator:@localImageCreator
 			}
@@ -60,7 +57,11 @@ root.DocxGen = class DocxGen
 	getTemplateVars:()->
 		usedTemplateVars=[]
 		for fileName in templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
+			currentFile= new DocXTemplater(@zip.files[fileName].data,{
+				DocxGen:this
+				templateVars:@templateVars
+				intelligentTagging:@intelligentTagging
+			})
 			usedTemplateV= currentFile.applyTemplateVars().usedTemplateVars
 			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTemplateVars.push {fileName,vars:usedTemplateV}
@@ -88,10 +89,9 @@ root.DocxGen = class DocxGen
 		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			currentFile= new DocXTemplater(@zip.files[path].data,this,@templateVars,@intelligentTagging)
-		else
-			currentFile= new DocXTemplater(data,this,@templateVars,@intelligentTagging)
-		currentFile.getFullText()
+			usedData=@zip.files[path].data
+			return @getFullText(path,usedData)
+		(new DocXTemplater(data,{DocxGen:this,templateVars:@templateVars,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		@calcZip()
 		output=@zip.generate()

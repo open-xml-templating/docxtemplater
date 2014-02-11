@@ -258,9 +258,6 @@ Created by Edgar HIPP
           DocxGen: this,
           templateVars: this.templateVars,
           intelligentTagging: this.intelligentTagging,
-          scopePath: [],
-          usedTemplateVars: {},
-          imageId: 0,
           qrCodeCallback: qrCodeCallback,
           localImageCreator: this.localImageCreator
         }, this, this.templateVars, this.intelligentTagging, [], {}, 0, qrCodeCallback, this.localImageCreator);
@@ -278,7 +275,11 @@ Created by Edgar HIPP
         if (!(this.zip.files[fileName] != null)) {
           continue;
         }
-        currentFile = new DocXTemplater(this.zip.files[fileName].data, this, this.templateVars, this.intelligentTagging);
+        currentFile = new DocXTemplater(this.zip.files[fileName].data, {
+          DocxGen: this,
+          templateVars: this.templateVars,
+          intelligentTagging: this.intelligentTagging
+        });
         usedTemplateV = currentFile.applyTemplateVars().usedTemplateVars;
         if (DocUtils.sizeOfObject(usedTemplateV)) {
           usedTemplateVars.push({
@@ -331,7 +332,7 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.getFullText = function(path, data) {
-      var currentFile;
+      var usedData;
       if (path == null) {
         path = "word/document.xml";
       }
@@ -339,11 +340,14 @@ Created by Edgar HIPP
         data = "";
       }
       if (data === "") {
-        currentFile = new DocXTemplater(this.zip.files[path].data, this, this.templateVars, this.intelligentTagging);
-      } else {
-        currentFile = new DocXTemplater(data, this, this.templateVars, this.intelligentTagging);
+        usedData = this.zip.files[path].data;
+        return this.getFullText(path, usedData);
       }
-      return currentFile.getFullText();
+      return (new DocXTemplater(data, {
+        DocxGen: this,
+        templateVars: this.templateVars,
+        intelligentTagging: this.intelligentTagging
+      })).getFullText();
     };
 
     DocxGen.prototype.download = function(swfpath, imgpath, filename) {
@@ -970,6 +974,7 @@ Created by Edgar HIPP
       this.numQrCode = 0;
       this.currentScope = this.templateVars;
       this.templaterState = new TemplaterState;
+      this;
     }
 
     XmlTemplater.prototype.load = function(content) {
