@@ -31,7 +31,7 @@ ImgReplacer = class ImgReplacer
 					tagrId= xmlImg.getElementsByTagName("a:blip")[0]
 				if tagrId!=undefined
 					rId = tagrId.getAttribute('r:embed')
-					oldFile= @xmlTemplater.DocxGen.getImageByRid(rId)
+					oldFile= @xmlTemplater.DocxGen.imgManager.getImageByRid(rId)
 
 					if oldFile!=null
 						tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
@@ -44,10 +44,10 @@ ImgReplacer = class ImgReplacer
 
 								imgName= ("Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
 								@xmlTemplater.DocxGen.qrCodeNumCallBack++
-								
+
 								@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
 
-								newId= @xmlTemplater.DocxGen.addImageRels(imgName,"")
+								newId= @xmlTemplater.DocxGen.imgManager.addImageRels(imgName,"")
 								@xmlTemplater.imageId++
 								@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",oldFile.data)
 								# tag.setAttribute('id',@xmlTemplater.imageId)
@@ -73,17 +73,17 @@ ImgReplacer = class ImgReplacer
 								if env=='browser'
 									qr[u].decode(callback)
 								else
-									if /\.png$/.test(oldFile.name) 
+									if /\.png$/.test(oldFile.name)
 										do (imgName) =>
 											console.log(oldFile.name)
 											base64= JSZipBase64.encode oldFile.data
-											binaryData = new Buffer(base64, 'base64') 			
+											binaryData = new Buffer(base64, 'base64')
 											png= new PNG(binaryData)
 											finished= (a) =>
 												try
 													png.decoded= a
 													qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-													qr[u].decode(callback)											
+													qr[u].decode(callback)
 												catch e
 													console.log(e)
 													@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
@@ -94,11 +94,11 @@ ImgReplacer = class ImgReplacer
 
 
 			else if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
-				
+
 				imgName= @xmlTemplater.currentScope["img"][u].name
 				imgData= @xmlTemplater.currentScope["img"][u].data
 				throw 'DocxGen not defined' unless @xmlTemplater.DocxGen?
-				newId= @xmlTemplater.DocxGen.addImageRels(imgName,imgData)
+				newId= @xmlTemplater.DocxGen.imgManager.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 				if tag==undefined
 					console.log 'tag not defined, trying alternate method'

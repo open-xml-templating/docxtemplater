@@ -398,14 +398,15 @@ describe 'DocxQrCode module', () ->
 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
 
 
+
 describe "image Loop Replacing", () ->
 	describe 'rels', () ->
 		it 'should load', () ->
-			expect(docX['imageExample.docx'].loadImageRels().imageRels).toEqual([])
-			expect(docX['imageExample.docx'].maxRid).toEqual(10)
+			expect(docX['imageExample.docx'].imgManager.loadImageRels().imageRels).toEqual([])
+			expect(docX['imageExample.docx'].imgManager.maxRid).toEqual(10)
 		it 'should add', () ->
 			oldData= docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data
-			expect(docX['imageExample.docx'].addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
+			expect(docX['imageExample.docx'].imgManager.addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
 
 			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData)
 
