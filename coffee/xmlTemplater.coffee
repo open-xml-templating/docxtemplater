@@ -21,7 +21,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@handleRecursiveCase()
 	getValueFromTag: (tag,scope) ->
 		@useTag(tag)
-		content= ""
 		if scope[tag]?
 			content= DocUtils.encode_utf8 scope[tag]
 		else
@@ -31,7 +30,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			throw "You can't enter { or  } inside the content of a variable"
 		content
 	calcScopeText: (text,start=0,end=text.length-1) ->
-		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
+		###
+		get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
 		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
 		###
 		tags= DocUtils.preg_match_all("<(\/?[^/> ]+)([^>]*)>",text.substr(start,end)) #getThemAll (the opening and closing tags)!
@@ -266,21 +266,18 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	returns the new content of the tagged content###
 	applyTags:()->
 		@templaterState.initialize()
-
 		for match,i in @matches
-			innerText= match[2] || "" #text inside the <w:t>
+			innerText= if match[2]? then match[2] else "" #text inside the <w:t>
 			for t in [i...@matches.length]
 				@charactersAdded[t+1]=@charactersAdded[t]
 			for character,j in innerText
+				@templaterState.currentStep={'i':i,'j':j}
 				for m,t in @matches when t<=i
 					if @content[m.offset+@charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
-					if @templaterState.inBracket is true then throw "Bracket already open with text: #{@templaterState.textInsideBracket}"
-					@templaterState.inBracket= true
-					@templaterState.textInsideBracket= ""
-					@templaterState.bracketStart={"i":i,"j":j}
+					@templaterState.startBracket()
 				else if character == '}'
-					@templaterState.bracketEnd={"i":i,"j":j}
+					@templaterState.endBracket()
 					if @templaterState.textInsideBracket[0]=='#' and @templaterState.inForLoop is false and @templaterState.inDashLoop is false
 						@templaterState.inForLoop= true #begin for loop
 						@loopOpen={'start':@templaterState.bracketStart,'end':@templaterState.bracketEnd,'tag':@templaterState.textInsideBracket.substr 1}
@@ -288,7 +285,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 						@templaterState.inDashLoop= true
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						@loopOpen={'start':@templaterState.bracketStart,'end':@templaterState.bracketEnd,'tag':(@templaterState.textInsideBracket.replace regex, '$2'),'element':(@templaterState.textInsideBracket.replace regex, '$1')}
-					if @templaterState.inBracket is false then	throw "Bracket already closed #{@content}"
+
+					if @templaterState.inBracket is false then throw "Bracket already closed #{@content}"
 					@templaterState.inBracket= false
 
 					if @templaterState.inForLoop is false and @templaterState.inDashLoop is false
@@ -317,9 +315,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 							return @dashLoop(elementDashLoop,true)
 				else #if character != '{' and character != '}'
 					if @templaterState.inBracket is true then @templaterState.textInsideBracket+=character
-		imgReplacer= new ImgReplacer(this)
-		imgReplacer.findImages()
-		imgReplacer.replaceImages()
+		new ImgReplacer(this).findImages().replaceImages()
 		this
 	handleRecursiveCase:()->
 		###

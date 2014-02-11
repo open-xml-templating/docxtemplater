@@ -4,12 +4,14 @@ env= if global? then 'node' else 'browser'
 ImgReplacer = class ImgReplacer
 	constructor: (@xmlTemplater)->
 		@imgMatches=[]
+		this
 	findImages:() ->
 		@imgMatches= DocUtils.preg_match_all ///
 		<w:drawing[^>]*>
 		.*?
 		</w:drawing>
 		///g, @xmlTemplater.content
+		this
 	replaceImages: ()->
 		console.log 'replacing Images ...'
 		qr=[]

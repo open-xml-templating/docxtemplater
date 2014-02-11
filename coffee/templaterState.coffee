@@ -9,6 +9,13 @@ TemplaterState =  class TemplaterState
 		@inBracket= false # all brackets  {___}
 		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
 		@textInsideBracket= ""
+	startBracket:()->
+		if @inBracket is true then throw "Bracket already open with text: #{@textInsideBracket}"
+		@inBracket= true
+		@textInsideBracket= ""
+		@bracketStart=@currentStep
+	endBracket:()->
+		@bracketEnd=@currentStep
 
 root.TemplaterState=TemplaterState
 
