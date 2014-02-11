@@ -7,14 +7,13 @@ Created by Edgar HIPP
 root= global ? window
 env= if global? then 'node' else 'browser'
 root.DocxGen = class DocxGen
-	constructor: (content, @templateVars={},@intelligentTagging=on,@qrCode=off,@localImageCreator,@finishedCallback) ->
-		@finishedCallback= (() -> console.log 'document ready!') unless @finishedCallback? #Default Value of @finishedCallback
-		if not @localImageCreator?
-			@localImageCreator= (arg,callback) ->
-				#This is the image of an arrow, you can replace this function by whatever you want to generate an image
-				result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
-				callback(result)
-		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+	constructor: (content, @templateVars={},@intelligentTagging=on,@qrCode=off) ->
+		@finishedCallback= (() -> console.log 'document ready!')
+		@localImageCreator= (arg,callback) ->
+			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
+			result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
+			callback(result)
 		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
 		@qrCodeNumCallBack=0 #This is the order of the qrcode
 		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
@@ -28,7 +27,7 @@ root.DocxGen = class DocxGen
 			@qrCodeWaitingFor.splice(index, 1)
 		@testReady()
 	testReady:()->
-		if @qrCodeWaitingFor.length==0 and @filesProcessed== @templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
+		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
 	logUndefined: (tag,scope)->
@@ -40,9 +39,9 @@ root.DocxGen = class DocxGen
 		@imgManager=(new ImgManager(@zip)).loadImageRels()
 	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
-		for fileName in @templatedFiles when !@zip.files[fileName]?
+		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
-		for fileName in @templatedFiles when @zip.files[fileName]?
+		for fileName in templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
 			@zip.files[fileName].data= currentFile.applyTemplateVars().content
 			@filesProcessed++
@@ -50,7 +49,7 @@ root.DocxGen = class DocxGen
 		@testReady()
 	getTemplateVars:()->
 		usedTemplateVars=[]
-		for fileName in @templatedFiles when @zip.files[fileName]?
+		for fileName in templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,this,@templateVars,@intelligentTagging)
 			usedTemplateV= currentFile.applyTemplateVars().usedTemplateVars
 			if DocUtils.sizeOfObject(usedTemplateV)
