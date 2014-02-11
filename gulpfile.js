@@ -6,6 +6,8 @@ var coffee= require('gulp-coffee');
 var concat= require('gulp-concat');
 var uglify= require('gulp-uglify');
 var spawn = require('child_process').spawn;
+var livereload = require('gulp-livereload');
+var server = livereload();
 
 var paths = {
 	coffee: ['coffee/templaterState.coffee','coffee/docxgen.coffee','coffee/docUtils.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee'], // compile individually into dest, maintaining folder structure
@@ -14,7 +16,7 @@ var paths = {
 };
 
 gulp.task('watch', function () {
-	gulp.watch(paths.coffee,['coffee','jasmine']);
+	gulp.watch(paths.coffee,['coffee','jasmine','livereload']);
 	gulp.watch(paths.coffeeTest,['coffeeTest']);
 });
 
@@ -36,6 +38,13 @@ gulp.task('coffee', function(cb) {
 		.pipe(gulp.dest('./js/'));
 	cb(err)
 });
+
+
+gulp.task('livereload',['coffee'],function(cb)
+		{
+			server.changed('SpecRunner.html');
+			cb()
+		})
 
 gulp.task('jasmine', ['coffee'], function(cb) {
 	var child = spawn("cmd", ["/c","jasmine-node","docxgenTest.spec.js"], {cwd:paths.testDirectory});
@@ -96,4 +105,4 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 	});
 });
 
-gulp.task('default',['coffeeTest','coffee','jasmine','watch']);
+gulp.task('default',['coffeeTest','coffee','jasmine','watch','livereload']);
