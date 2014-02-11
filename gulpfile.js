@@ -37,31 +37,14 @@ gulp.task('coffee', function(cb) {
 	cb(err)
 });
 
-gulp.task('jasmine', ['coffee'], function() {
+gulp.task('jasmine', ['coffee'], function(cb) {
 	var child = spawn("cmd", ["/c","jasmine-node","docxgenTest.spec.js"], {cwd:paths.testDirectory});
 	stdout = '',
 	stderr = '';
+	totalData=""
 	child.stdout.setEncoding('utf8');
 	child.stdout.on('data', function (data) {
-		regex=/([0-9]+) tests, ([0-9]+) assertions, ([0-9]+) failures, ([0-9]+) skipped/;
-		if(regex.test(data))
-		{
-			matches=regex.exec(data);
-			tests=parseInt(matches[1]);
-			assertions=parseInt(matches[2]);
-			failures=parseInt(matches[3]);
-			skipped=parseInt(matches[4]);
-
-			if (failures==0)
-			{
-				gutil.log(gutil.colors.green(data));
-			}
-			else
-			{
-				gutil.log(gutil.colors.red(data));
-				gutil.beep()
-			}
-		}
+		totalData+=data;
 	});
 
 	child.on('error',function(err){
@@ -69,12 +52,34 @@ gulp.task('jasmine', ['coffee'], function() {
 	});
 
 	child.stderr.setEncoding('utf8');
+
 	child.stderr.on('data', function (data) {
 		stderr += data;
 		gutil.log(gutil.colors.red(data));
 	});
 
 	child.on('close', function(code) {
+		regex=/([0-9]+) tests, ([0-9]+) assertions, ([0-9]+) failures, ([0-9]+) skipped/;
+		if(regex.test(totalData))
+		{
+			matches=regex.exec(totalData);
+			fullText=matches[0]
+			tests=parseInt(matches[1]);
+			assertions=parseInt(matches[2]);
+			failures=parseInt(matches[3]);
+			skipped=parseInt(matches[4]);
+
+			if (failures==0)
+			{
+				gutil.log(gutil.colors.green(fullText));
+			}
+			else
+			{
+				gutil.log(gutil.colors.red(fullText));
+				gutil.beep()
+			}
+		}
+		cb();
 	});
 });
 
