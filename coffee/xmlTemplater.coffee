@@ -40,6 +40,9 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@numQrCode=0
 		@currentScope=@templateVars
+
+		@templaterState= new TemplaterState
+
 	load: (@content) ->
 		@matches = @_getFullTextMatchesFromData()
 		@charactersAdded= (0 for i in [0...@matches.length])
@@ -315,7 +318,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	returns the new content of the tagged content###
 	applyTemplateVars:()->
 		@setUsedTemplateVars("")
-		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
+		@templaterState.initialize()
 		@inBracket= false # all brackets  {___}
 		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
 		@textInsideBracket= ""
@@ -335,17 +338,17 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				else if character == '}'
 					@bracketEnd={"i":i,"j":j}
 
-					if @textInsideBracket[0]=='#' and @inForLoop is false and @inDashLoop is false
-						@inForLoop= true #begin for loop
+					if @textInsideBracket[0]=='#' and @templaterState.inForLoop is false and @inDashLoop is false
+						@templaterState.inForLoop= true #begin for loop
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
-					if @textInsideBracket[0]=='-' and @inForLoop is false and @inDashLoop is false
+					if @textInsideBracket[0]=='-' and @templaterState.inForLoop is false and @inDashLoop is false
 						@inDashLoop= true
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace regex, '$2'),'element':(@textInsideBracket.replace regex, '$1')}
 					if @inBracket is false then	throw "Bracket already closed #{@content}"
 					@inBracket= false
 
-					if @inForLoop is false and @inDashLoop is false
+					if @templaterState.inForLoop is false and @inDashLoop is false
 						@content = @replaceCurly(@getValueFromTag(@textInsideBracket,@currentScope))
 
 					if @textInsideBracket[0]=='/'
@@ -354,7 +357,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @inDashLoop is true
 						return @dashLoop(@loopOpen.element)
 
-					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @inForLoop is true
+					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @templaterState.inForLoop is true
 						#You DashLoop= take the outer scope only if you are in a table
 						dashLooping= no
 						if @intelligentTagging==on

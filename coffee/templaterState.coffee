@@ -1,8 +1,11 @@
 root= global ? window
 env= if global? then 'node' else 'browser'
 
-#This is an abstract class, DocXTemplater is an example of inherited class
+#This class responsibility is to store an xmlTemplater's state
 
-TemplaterState =  class TemplaterState #abstract class !!
+TemplaterState =  class TemplaterState
+	initialize:()->
+		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 
 root.TemplaterState=TemplaterState
+

@@ -1,7 +1,5 @@
-
 root= global ? window
 env= if global? then 'node' else 'browser'
-
 
 root.docX={}
 root.docXData={}
@@ -23,8 +21,6 @@ if env=='node'
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
 	['docxgen.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../js/' + file), file);
-
-
 
 DocUtils.loadDoc('imageExample.docx')
 DocUtils.loadDoc('image.png',true)
