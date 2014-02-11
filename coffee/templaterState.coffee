@@ -6,30 +6,30 @@ env= if global? then 'node' else 'browser'
 TemplaterState =  class TemplaterState
 	initialize:()->
 		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
-		@inBracket= false # all brackets  {___}
+		@inTag= false # all brackets  {___}
 		@inDashLoop = false	# bracket with dash: {-w:tr dashLoop} {/dashLoop}
-		@textInsideBracket= ""
-	startBracket:()->
-		if @inBracket is true then throw "Bracket already open with text: #{@textInsideBracket}"
-		@inBracket= true
-		@textInsideBracket= ""
+		@textInsideTag= ""
+	startTag:()->
+		if @inTag is true then throw "Tag already open with text: #{@textInsideTag}"
+		@inTag= true
+		@textInsideTag= ""
 		@bracketStart=@currentStep
 	loopType:()->
 		if @inDashLoop then return 'dash'
 		if @inForLoop then return 'for'
 		return 'simple'
-	endBracket:()->
-		if @inBracket is false then throw "Bracket already closed"
-		@inBracket= false
+	endTag:()->
+		if @inTag is false then throw "Tag already closed"
+		@inTag= false
 		@bracketEnd=@currentStep
-		if @textInsideBracket[0]=='#' and @loopType()=='simple'
+		if @textInsideTag[0]=='#' and @loopType()=='simple'
 			@inForLoop= true #begin for loop
-			@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
-		if @textInsideBracket[0]=='-' and @loopType()=='simple'
+			@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideTag.substr 1}
+		if @textInsideTag[0]=='-' and @loopType()=='simple'
 			@inDashLoop= true
 			dashInnerRegex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
-			@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace dashInnerRegex, '$2'),'element':(@textInsideBracket.replace dashInnerRegex, '$1')}
-		if @textInsideBracket[0]=='/'
+			@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideTag.replace dashInnerRegex, '$2'),'element':(@textInsideTag.replace dashInnerRegex, '$1')}
+		if @textInsideTag[0]=='/'
 			@loopClose={'start':@bracketStart,'end':@bracketEnd}
 
 

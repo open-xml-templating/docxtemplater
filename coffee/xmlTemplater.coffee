@@ -73,16 +73,16 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if startTag==-1 then throw "can't find startTag"
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 	calcB: () ->
-		startB = @calcStartBracket @templaterState.loopOpen
-		endB= @calcEndBracket @templaterState.loopClose
+		startB = @calcStartTag @templaterState.loopOpen
+		endB= @calcEndTag @templaterState.loopClose
 		{B:@content.substr(startB,endB-startB),startB,endB}
 	calcA: () ->
-		startA= @calcEndBracket @templaterState.loopOpen
-		endA= @calcStartBracket @templaterState.loopClose
+		startA= @calcEndTag @templaterState.loopOpen
+		endA= @calcStartTag @templaterState.loopClose
 		{A:@content.substr(startA,endA-startA),startA,endA}
-	calcStartBracket: (bracket) ->
+	calcStartTag: (bracket) ->
 		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
-	calcEndBracket: (bracket)->
+	calcEndTag: (bracket)->
 		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
 	toJson: () ->
 		Tags:DocUtils.clone @Tags
@@ -179,14 +179,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 		@templaterState.bracketEnd= {"i":@templaterState.loopOpen.end.i,"j":@templaterState.loopOpen.end.j}
 		@templaterState.bracketStart= {"i":@templaterState.loopOpen.start.i,"j":@templaterState.loopOpen.start.j}
-		if sharp==false then @templaterState.textInsideBracket= "-"+@templaterState.loopOpen.element+" "+@templaterState.loopOpen.tag
-		if sharp==true then @templaterState.textInsideBracket= "#"+@templaterState.loopOpen.tag
+		if sharp==false then @templaterState.textInsideTag= "-"+@templaterState.loopOpen.element+" "+@templaterState.loopOpen.tag
+		if sharp==true then @templaterState.textInsideTag= "#"+@templaterState.loopOpen.tag
 
 		A= @replaceTagByValue("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
 
-		@templaterState.textInsideBracket= "/"+@templaterState.loopOpen.tag
+		@templaterState.textInsideTag= "/"+@templaterState.loopOpen.tag
 		#for deleting the closing tag
 		@templaterState.bracketEnd= {"i":@templaterState.loopClose.end.i,"j":@templaterState.loopClose.end.j}
 		@templaterState.bracketStart= {"i":@templaterState.loopClose.start.i,"j":@templaterState.loopClose.start.j}
@@ -221,14 +221,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		copyContent=content
 		if @templaterState.bracketEnd.i==@templaterState.bracketStart.i #<w>{aaaaa}</w>
 			if (@matches[@templaterState.bracketStart.i].first?)
-				insideValue= @matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideBracket}}", newValue
+				insideValue= @matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideTag}}", newValue
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,insideValue,true,true)
 
 			else if (@matches[@templaterState.bracketStart.i].last?)
-				insideValue= @matches[@templaterState.bracketStart.i][0].replace "{#{@templaterState.textInsideBracket}}", newValue
+				insideValue= @matches[@templaterState.bracketStart.i][0].replace "{#{@templaterState.textInsideTag}}", newValue
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,insideValue,true,true)
 			else
-				insideValue= @matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideBracket}}", newValue
+				insideValue= @matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideTag}}", newValue
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,insideValue,true)
 
 		else if @templaterState.bracketEnd.i>@templaterState.bracketStart.i
@@ -275,14 +275,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				for m,t in @matches when t<=i
 					if @content[m.offset+@charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
-					@templaterState.startBracket()
+					@templaterState.startTag()
 				else if character == '}'
-					@templaterState.endBracket()
+					@templaterState.endTag()
 
 					if @templaterState.loopType()=='simple'
-						@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideBracket,@currentScope))
+						@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag,@currentScope))
 
-					if @templaterState.textInsideBracket[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideBracket)
+					if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
 						#You DashLoop= take the outer scope only if you are in a table
 
 						if @templaterState.loopType()=='dash'
@@ -292,7 +292,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 							if dashElement!=false then return @dashLoop(dashElement,true)
 						return @forLoop()
 				else #if character != '{' and character != '}'
-					if @templaterState.inBracket is true then @templaterState.textInsideBracket+=character
+					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		new ImgReplacer(this).findImages().replaceImages()
 		this
 	handleRecursiveCase:()->
