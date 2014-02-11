@@ -9,34 +9,16 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 
-		###They are two ways to instantiate an XmlTemplater object:
-		1: new (content,creator,@templateVars, ...)
-			content:string
-			creator:DocxGen object
-			...
-		2: new (content, options)
-			content is the content
-			options contains all the arguments:
-			options=
-				{
-				"templateVars":...,
-				"DocxGen":...,
-				"intelligentTagging":...,
-				"scopePath":...,
-				"usedTemplateVars":...,
-				"imageId":...
-				}
-		###
 		if creator instanceof DocxGen or (not creator?)
 			@DocxGen=creator
 		else
 			options= creator
-			@templateVars= options.templateVars
-			@DocxGen= options.DocxGen
-			@intelligentTagging=options.intelligentTagging
-			@scopePath=options.scopePath
-			@usedTemplateVars=options.usedTemplateVars
-			@imageId=options.imageId
+			@templateVars= if options.templateVars then options.templateVars else {}
+			@DocxGen= if options.DocxGen then options.DocxGen else null
+			@intelligentTagging=if options.intelligentTagging then options.intelligentTagging else off
+			@scopePath=if options.scopePath then options.scopePath else []
+			@usedTemplateVars=if options.usedTemplateVars then options.usedTemplateVars else {}
+			@imageId=if options.imageId then options.imageId else 0
 		if typeof content=="string" then @load content else throw "content must be string!"
 		@numQrCode=0
 		@currentScope=@templateVars

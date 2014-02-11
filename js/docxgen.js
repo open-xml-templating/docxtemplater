@@ -951,35 +951,16 @@ Created by Edgar HIPP
       }
       this.tagX = '';
       this.currentClass = XmlTemplater;
-
-      /*They are two ways to instantiate an XmlTemplater object:
-      		1: new (content,creator,@templateVars, ...)
-      			content:string
-      			creator:DocxGen object
-      			...
-      		2: new (content, options)
-      			content is the content
-      			options contains all the arguments:
-      			options=
-      				{
-      				"templateVars":...,
-      				"DocxGen":...,
-      				"intelligentTagging":...,
-      				"scopePath":...,
-      				"usedTemplateVars":...,
-      				"imageId":...
-      				}
-       */
       if (creator instanceof DocxGen || (creator == null)) {
         this.DocxGen = creator;
       } else {
         options = creator;
-        this.templateVars = options.templateVars;
-        this.DocxGen = options.DocxGen;
-        this.intelligentTagging = options.intelligentTagging;
-        this.scopePath = options.scopePath;
-        this.usedTemplateVars = options.usedTemplateVars;
-        this.imageId = options.imageId;
+        this.templateVars = options.templateVars ? options.templateVars : {};
+        this.DocxGen = options.DocxGen ? options.DocxGen : null;
+        this.intelligentTagging = options.intelligentTagging ? options.intelligentTagging : false;
+        this.scopePath = options.scopePath ? options.scopePath : [];
+        this.usedTemplateVars = options.usedTemplateVars ? options.usedTemplateVars : {};
+        this.imageId = options.imageId ? options.imageId : 0;
       }
       if (typeof content === "string") {
         this.load(content);
