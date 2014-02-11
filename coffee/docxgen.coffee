@@ -8,7 +8,7 @@ root= global ? window
 env= if global? then 'node' else 'browser'
 root.DocxGen = class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
-	constructor: (content, @templateVars={},@intelligentTagging=on,@qrCode=off) ->
+	constructor: (content, @Tags={},@intelligentTagging=on,@qrCode=off) ->
 		@finishedCallback= (() -> console.log 'document ready!')
 		@localImageCreator= (arg,callback) ->
 			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
@@ -37,36 +37,36 @@ root.DocxGen = class DocxGen
 	load: (content)->
 		@zip = new JSZip content
 		@imgManager=(new ImgManager(@zip)).loadImageRels()
-	applyTemplateVars:(@templateVars=@templateVars,qrCodeCallback=null)->
+	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,{
 				DocxGen:this
-				templateVars:@templateVars
+				Tags:@Tags
 				intelligentTagging:@intelligentTagging
 				qrCodeCallback:qrCodeCallback
 				localImageCreator:@localImageCreator
 			}
-				this,@templateVars,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
-			@zip.files[fileName].data= currentFile.applyTemplateVars().content
+				this,@Tags,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
+			@zip.files[fileName].data= currentFile.applyTags().content
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()
-	getTemplateVars:()->
-		usedTemplateVars=[]
+	getTags:()->
+		usedTags=[]
 		for fileName in templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].data,{
 				DocxGen:this
-				templateVars:@templateVars
+				Tags:@Tags
 				intelligentTagging:@intelligentTagging
 			})
-			usedTemplateV= currentFile.applyTemplateVars().usedTemplateVars
+			usedTemplateV= currentFile.applyTags().usedTags
 			if DocUtils.sizeOfObject(usedTemplateV)
-				usedTemplateVars.push {fileName,vars:usedTemplateV}
-		usedTemplateVars
-	setTemplateVars: (@templateVars) ->
+				usedTags.push {fileName,vars:usedTemplateV}
+		usedTags
+	setTags: (@Tags) ->
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true,name="output.docx") ->
@@ -91,7 +91,7 @@ root.DocxGen = class DocxGen
 		if data==""
 			usedData=@zip.files[path].data
 			return @getFullText(path,usedData)
-		(new DocXTemplater(data,{DocxGen:this,templateVars:@templateVars,intelligentTagging:@intelligentTagging})).getFullText()
+		(new DocXTemplater(data,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		@calcZip()
 		output=@zip.generate()

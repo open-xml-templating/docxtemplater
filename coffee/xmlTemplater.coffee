@@ -5,63 +5,22 @@ env= if global? then 'node' else 'browser'
 
 XmlTemplater =  class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
-		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready= true
 		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
-
-		@templateVars= if options.templateVars? then options.templateVars else {}
+		@Tags= if options.Tags? then options.Tags else {}
 		@DocxGen= if options.DocxGen? then options.DocxGen else null
 		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
 		@scopePath=if options.scopePath? then options.scopePath else []
-		@usedTemplateVars=if options.usedTemplateVars? then options.usedTemplateVars else {}
+		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
-		if typeof content=="string" then @load content else throw "content must be string!"
-
-		@numQrCode=0
-		@currentScope=@templateVars
+		@currentScope=@Tags
 		@templaterState= new TemplaterState
-		this
-
-	handleRecursiveCase:()->
-		###
-		Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
-		For example with this string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
-			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift)
-			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush)
-		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
-		###
-		replacerUnshift = (match,pn ..., offset, string)=>
-			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-			pn.offset= offset
-			pn.first= true
-			@matches.unshift pn #add at the beginning
-			@charactersAdded.unshift 0
-		@content.replace /^()([^<]+)/,replacerUnshift
-
-		replacerPush = (match,pn ..., offset, string)=>
-			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-			pn.offset= offset
-			pn.last= true
-			@matches.push pn #add at the beginning
-			@charactersAdded.push 0
-
-		regex= "(<#{@tagX}[^>]*>)([^>]+)$"
-		@content.replace (new RegExp(regex)),replacerPush
-
 	load: (@content) ->
 		@matches = @_getFullTextMatchesFromData()
 		@charactersAdded= (0 for i in [0...@matches.length])
 		@handleRecursiveCase()
-
-	setUsedTemplateVars: (tag) ->
-		u = @usedTemplateVars
-		for s,i in @scopePath
-			u[s]={} unless u[s]?
-			u = u[s]
-		if tag!=""
-			u[tag]= true
 	getValueFromTag: (tag,scope) ->
-		@setUsedTemplateVars(tag)
+		@useTag(tag)
 		content= ""
 		if scope[tag]?
 			content= DocUtils.encode_utf8 scope[tag]
@@ -126,11 +85,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	calcEndBracket: (bracket)->
 		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
 	toJson: () ->
-		templateVars:DocUtils.clone @templateVars
+		Tags:DocUtils.clone @Tags
 		DocxGen:@DocxGen
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopePath
-		usedTemplateVars:@usedTemplateVars
+		usedTags:@usedTags
 		localImageCreator:@localImageCreator
 		imageId:@imageId
 	forLoop: (A="",B="") ->
@@ -172,35 +131,35 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			if typeof subScope == 'object'
 				for scope,i in @currentScope[@loopOpen.tag]
 					options= @toJson()
-					options.templateVars=scope
+					options.Tags=scope
 					options.scopePath= options.scopePath.concat(@loopOpen.tag)
 					subfile= new @currentClass  A,options
-					subfile.applyTemplateVars()
+					subfile.applyTags()
 					@imageId=subfile.imageId
-					newContent+=subfile.content #@applyTemplateVars A,scope
+					newContent+=subfile.content #@applyTags A,scope
 					if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			if subScope == true
 				options= @toJson()
-				options.templateVars= @currentScope
+				options.Tags= @currentScope
 				options.scopePath= options.scopePath.concat(@loopOpen.tag)
 				subfile= new @currentClass  A,options
-				subfile.applyTemplateVars()
+				subfile.applyTags()
 				@imageId=subfile.imageId
-				newContent+=subfile.content #@applyTemplateVars A,scope
+				newContent+=subfile.content #@applyTags A,scope
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			@content=@content.replace B, newContent
 		else
 			options= @toJson()
-			options.templateVars={}
+			options.Tags={}
 			options.scopePath= options.scopePath.concat(@loopOpen.tag)
 			subfile= new @currentClass A, options
-			subfile.applyTemplateVars()
+			subfile.applyTags()
 			@imageId=subfile.imageId
 			@content= @content.replace B, ""
 
 		options= @toJson()
 		nextFile= new @currentClass @content,options
-		nextFile.applyTemplateVars()
+		nextFile.applyTags()
 		@imageId=nextFile.imageId
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		@content=nextFile.content
@@ -305,8 +264,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	content is the whole content to be tagged
 	scope is the current scope
 	returns the new content of the tagged content###
-	applyTemplateVars:()->
-		@setUsedTemplateVars("")
+	applyTags:()->
+		@useTag("")
 		@templaterState.initialize()
 		for match,i in @matches
 			innerText= match[2] || "" #text inside the <w:t>
@@ -364,5 +323,39 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		imgReplacer.findImages()
 		imgReplacer.replaceImages()
 		this
+	handleRecursiveCase:()->
+		###
+		Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
+		For example with this string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
+			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift)
+			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush)
+		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
+		###
+		replacerUnshift = (match,pn ..., offset, string)=>
+			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+			pn.offset= offset
+			pn.first= true
+			@matches.unshift pn #add at the beginning
+			@charactersAdded.unshift 0
+		@content.replace /^()([^<]+)/,replacerUnshift
+
+		replacerPush = (match,pn ..., offset, string)=>
+			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+			pn.offset= offset
+			pn.last= true
+			@matches.push pn #add at the beginning
+			@charactersAdded.push 0
+
+		regex= "(<#{@tagX}[^>]*>)([^>]+)$"
+		@content.replace (new RegExp(regex)),replacerPush
+
+	#set the tag as used, so that DocxGen can return the list off all tags
+	useTag: (tag) ->
+		u = @usedTags
+		for s,i in @scopePath
+			u[s]={} unless u[s]?
+			u = u[s]
+		if tag!=""
+			u[tag]= true
 
 root.XmlTemplater=XmlTemplater

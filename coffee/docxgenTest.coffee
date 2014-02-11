@@ -87,13 +87,13 @@ describe "DocxGenLoading", () ->
 describe "DocxGenTemplating", () ->
 	describe "text templating", () ->
 		it "should change values with template vars", () ->
-			templateVars=
+			Tags=
 				"first_name":"Hipp"
 				"last_name":"Edgar",
 				"phone":"0652455478"
 				"description":"New Website"
-			docX['tagExample.docx'].setTemplateVars templateVars
-			docX['tagExample.docx'].applyTemplateVars()
+			docX['tagExample.docx'].setTags Tags
+			docX['tagExample.docx'].applyTags()
 			expect(docX['tagExample.docx'].getFullText()).toEqual('Edgar Hipp')
 			expect(docX['tagExample.docx'].getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website')
 			expect(docX['tagExample.docx'].getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478')
@@ -111,19 +111,19 @@ describe "DocxGenTemplating", () ->
 describe "DocxGenTemplatingForLoop", () ->
 	describe "textLoop templating", () ->
 		it "should replace all the tags", () ->
-			templateVars =
+			Tags =
 				"nom":"Hipp"
 				"prenom":"Edgar"
 				"telephone":"0652455478"
 				"description":"New Website"
 				"offre":[{"titre":"titre1","prix":"1250"},{"titre":"titre2","prix":"2000"},{"titre":"titre3","prix":"1400"}]
-			docX['tagLoopExample.docx'].setTemplateVars templateVars
-			docX['tagLoopExample.docx'].applyTemplateVars()
+			docX['tagLoopExample.docx'].setTags Tags
+			docX['tagLoopExample.docx'].applyTags()
 			expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar')
 		it "should work with loops inside loops", () ->
-			templateVars = {"products":[{"title":"Microsoft","name":"DOS","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
-			docX['tagProduitLoop.docx'].setTemplateVars templateVars
-			docX['tagProduitLoop.docx'].applyTemplateVars()
+			Tags = {"products":[{"title":"Microsoft","name":"DOS","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
+			docX['tagProduitLoop.docx'].setTags Tags
+			docX['tagProduitLoop.docx'].applyTags()
 			text= docX['tagProduitLoop.docx'].getFullText()
 			expectedText= "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
 			expect(text.length).toEqual(expectedText.length)
@@ -165,35 +165,35 @@ describe "scope inner text", () ->
 
 describe "Dash Loop Testing", () ->
 	it "dash loop ok on simple table -> w:tr" , () ->
-		templateVars=
+		Tags=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-		docX['tagDashLoop.docx'].setTemplateVars(templateVars)
-		docX['tagDashLoop.docx'].applyTemplateVars()
+		docX['tagDashLoop.docx'].setTags(Tags)
+		docX['tagDashLoop.docx'].applyTags()
 		expectedText= "linux0Ubuntu10DOS500Win7apple1200MACOSX"
 		text=docX['tagDashLoop.docx'].getFullText()
 		expect(text).toBe(expectedText)
 	it "dash loop ok on simple table -> w:table" , () ->
-		templateVars=
+		Tags=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-		docX['tagDashLoopTable.docx'].setTemplateVars(templateVars)
-		docX['tagDashLoopTable.docx'].applyTemplateVars()
+		docX['tagDashLoopTable.docx'].setTags(Tags)
+		docX['tagDashLoopTable.docx'].applyTags()
 		expectedText= "linux0Ubuntu10DOS500Win7apple1200MACOSX"
 		text=docX['tagDashLoopTable.docx'].getFullText()
 		expect(text).toBe(expectedText)
 	it "dash loop ok on simple list -> w:p" , () ->
-		templateVars=
+		Tags=
 			"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-		docX['tagDashLoopList.docx'].setTemplateVars(templateVars)
-		docX['tagDashLoopList.docx'].applyTemplateVars()
+		docX['tagDashLoopList.docx'].setTags(Tags)
+		docX['tagDashLoopList.docx'].applyTags()
 		expectedText= 'linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX '
 		text=docX['tagDashLoopList.docx'].getFullText()
 		expect(text).toBe(expectedText)
 
 describe "Intelligent Loop Tagging", () ->
 	it "should work with tables" , () ->
-		templateVars={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
-		docX['tagIntelligentLoopTable.docx'].setTemplateVars(templateVars)
-		docX['tagIntelligentLoopTable.docx'].applyTemplateVars()
+		Tags={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
+		docX['tagIntelligentLoopTable.docx'].setTags(Tags)
+		docX['tagIntelligentLoopTable.docx'].applyTags()
 		expectedText= 'JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984'
 		text= docX['tagIntelligentLoopTableExpected.docx'].getFullText()
 		expect(text).toBe(expectedText)
@@ -207,18 +207,18 @@ describe "Intelligent Loop Tagging", () ->
 			expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.dir)
 			expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.date)
 
-describe "getTemplateVars", () ->
+describe "getTags", () ->
 	it "should work with simple document", () ->
 		docX['tagExample.docx']=new DocxGen docXData['tagExample.docx'],{},false
-		tempVars= docX['tagExample.docx'].getTemplateVars()
+		tempVars= docX['tagExample.docx'].getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { last_name : true, first_name : true } }, { fileName : 'word/footer1.xml', vars : { last_name : true, first_name : true, phone : true } }, { fileName : 'word/header1.xml', vars : { last_name : true, first_name : true, phone : true, description : true } }])
 	it "should work with loop document", () ->
 		docX['tagLoopExample.docx']=new DocxGen docXData['tagLoopExample.docx'],{},false
-		tempVars= docX['tagLoopExample.docx'].getTemplateVars()
+		tempVars= docX['tagLoopExample.docx'].getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
-	it 'should work if there are no templateVars', () ->
+	it 'should work if there are no Tags', () ->
 		docX['qrCodeExample.docx']=new DocxGen docXData['qrCodeExample.docx'],{},false
-		tempVars= docX['qrCodeExample.docx'].getTemplateVars()
+		tempVars= docX['qrCodeExample.docx'].getTags()
 		expect(tempVars).toEqual([])
 
 
@@ -227,51 +227,51 @@ describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
 		content= """<w:t>Hello {name}</w:t>"""
 		scope= {"name":"Edgar"}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 
 	it "should work with non w:t content", ()->
 		content= """{image}.png"""
 		scope= {"image":"edgar"}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.content).toBe('edgar.png')
 	it "should work with tag in two elements", ()->
 		content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 		scope= {"name":"Edgar"}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with simple Loop", ()->
 		content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
 	it "should work with dash Loop", ()->
 		content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,')
 	it "should work with loop and innerContent", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>"""
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 	it "should work with loop and innerContent (with last)", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 	it 'should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ', ()->
 		content= """Hello {#names}{name},{/names}"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
-		xmlTemplater.applyTemplateVars()
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
 		expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,')
 
 
@@ -281,7 +281,7 @@ describe 'DocxQrCode module', () ->
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
 			docx= new DocxGen()
-			obj= new DocXTemplater("",{DocxGen:docx,templateVars:{Tag:"tagValue"}})
+			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
 
 
 		it "should work with Blablalalabioeajbiojbepbroji", () ->
@@ -450,8 +450,8 @@ describe "loop forTagging images", () ->
 				"prix":"1400"
 				"img":[{data:docXData['Firefox_logo.png'],name:"firefox_logo.png"}]
 			]
-		docX['tagLoopExample.docx'].setTemplateVars(tempVars)
-		docX['tagLoopExample.docx'].applyTemplateVars()
+		docX['tagLoopExample.docx'].setTags(tempVars)
+		docX['tagLoopExample.docx'].applyTags()
 
 		for i of docX['tagLoopExample.docx'].zip.files
 		# 	#Everything but the date should be different
@@ -484,7 +484,7 @@ describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
 		docX['qrCodeExample.docx']=new DocxGen(docXData['qrCodeExample.docx'],{},false,true)
 		endcallback= () -> 1
-		docX['qrCodeExample.docx'].applyTemplateVars({},endcallback)
+		docX['qrCodeExample.docx'].applyTags({},endcallback)
 
 		waitsFor () -> docX['qrCodeExample.docx'].ready?
 
@@ -506,7 +506,7 @@ describe 'qr code testing', () ->
 	it 'should work with local QRCODE with {tags}', () ->
 		docX['qrCodeTaggingExample.docx']=new DocxGen(docXData['qrCodeTaggingExample.docx'],{'image':'Firefox_logo'},false,true)
 		endcallback= () -> 1
-		docX['qrCodeTaggingExample.docx'].applyTemplateVars({'image':'Firefox_logo'},endcallback)
+		docX['qrCodeTaggingExample.docx'].applyTags({'image':'Firefox_logo'},endcallback)
 
 		waitsFor () -> docX['qrCodeTaggingExample.docx'].ready?
 
@@ -527,7 +527,7 @@ describe 'qr code testing', () ->
 	it 'should work with loop QRCODE with {tags}', () ->
 		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docXData['qrCodeTaggingLoopExample.docx'],{},false,true)
 		endcallback= () -> 1
-		docX['qrCodeTaggingLoopExample.docx'].applyTemplateVars({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
+		docX['qrCodeTaggingLoopExample.docx'].applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
 		docX['qrCodeTaggingLoopExample.docx']
 
 		waitsFor () -> docX['qrCodeTaggingLoopExample.docx'].ready?

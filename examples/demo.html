@@ -53,14 +53,14 @@ DocxGen is based on word templates.
 var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
 var doc= new DocxGen(docData); //Create a new DocxGen document
 
-doc.setTemplateVars(
+doc.setTags(
 	{"first_name":"Hipp",
 	"last_name":"Edgar",
 	"phone":"0652455478",
 	"description":"New Website"
 	}
 ) //set the templateVariables
-doc.applyTemplateVars() //apply them (replace all occurences of {first_name} by Hipp, ...)
+doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
 doc.output() //Output the document using Data-URI
 		</textarea>
 	</td>
@@ -89,14 +89,14 @@ doc.output() //Output the document using Data-URI
 var docData=docXData["tagFormating.docx"]; //docXData is an array containing all the raw data for these examples
 var doc= new DocxGen(docData); //Create a new DocxGen document
 
-doc.setTemplateVars(
+doc.setTags(
 	{"first_name":"Hipp",
 	"last_name":"Edgar",
 	"phone":"0652455478",
 	"description":"New Website"
 	}
 ) //set the templateVariables
-doc.applyTemplateVars() //apply them (replace all occurences of {first_name} by Hipp, ...)
+doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
 doc.output() //Output the document using Data-URI
 		</textarea>
 	</td>
@@ -124,7 +124,7 @@ doc.output() //Output the document using Data-URI
 var docData=docXData["tagLooping.docx"]; //docXData is an array containing all the raw data for these examples
 var doc= new DocxGen(docData); //Create a new DocxGen document
 
-doc.setTemplateVars(
+doc.setTags(
 {"products":
 [
 {
@@ -140,7 +140,7 @@ doc.setTemplateVars(
 ]
 }
 ) //set the templateVariables
-doc.applyTemplateVars() //apply them
+doc.applyTags() //apply them
 doc.output() //Output the document using Data-URI
 				</textarea>
 			</td>
@@ -167,7 +167,7 @@ doc.output() //Output the document using Data-URI
 var docData=docXData["tagIntelligentLoopTable.docx"]; //docXData is an array containing all the raw data for these examples
 var doc= new DocxGen(docData); //Create a new DocxGen document
 
-doc.setTemplateVars(
+doc.setTags(
 {"clients":
 [
 {
@@ -183,7 +183,7 @@ doc.setTemplateVars(
 ]
 }
 ) //set the templateVariables
-doc.applyTemplateVars() //apply them
+doc.applyTags() //apply them
 doc.output() //Output the document using Data-URI					
 				</textarea>
 			</td>
@@ -209,10 +209,10 @@ doc.output() //Output the document using Data-URI
 var docData=docXData["tagDashLoopList.docx"]; //docXData is an array containing all the raw data for these examples
 var doc= new DocxGen(docData)
 
-doc.setTemplateVars(
+doc.setTags(
 {"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
 )
-doc.applyTemplateVars()
+doc.applyTags()
 doc.output()
 				</textarea>
 			</td>
@@ -269,13 +269,13 @@ doc.output()
 				<textarea raw="tagExample.docx">
 		var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
 		var doc= new DocxGen(docData)
-		doc.setTemplateVars({
+		doc.setTags({
 				"first_name":"Hipp",
 				"last_name":"Edgar",
 				"phone":"0652455478",
 				"description":"New Website"
 			});
-		doc.applyTemplateVars()
+		doc.applyTags()
 		doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',"taggedDoc.docx")
 				</textarea>
 			</td>
