@@ -55,7 +55,7 @@ will result in :
 
 2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended. This method is howewer useful because a lot of browsers are limited for the download size with the Data-URI method.
 
-3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color} will take the *templateVars[color]* variable to make a dynamic URL. For this too work, you will need [jsqrcode](http://github.com/edi9999/jsqrcode "jsqrcode repositoty forked") and include the following files, in this order:
+3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color} will take the *Tags[color]* variable to make a dynamic URL. For this too work, you will need [jsqrcode](http://github.com/edi9999/jsqrcode "jsqrcode repositoty forked") and include the following files, in this order:
 
     <script type="text/javascript" src="grid.js"></script>
     <script type="text/javascript" src="version.js"></script>
@@ -98,13 +98,13 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         This function returns a new DocxGen Object
 
-    new DocxGen(content[,templateVars,intelligentTagging,qrCode,localImageCreator,qrFinishedCallback])
+    new DocxGen(content[,Tags,intelligentTagging,qrCode,localImageCreator,qrFinishedCallback])
 
         content: 
             Type: string
             The docx template you want to load as plain text
 
-        templateVars:
+        Tags:
             Type: Object {tag_name:tag_replacement} [{}]
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
 
@@ -140,19 +140,19 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Type: string
             The docx template you want to load as plain text
 
-    setTemplateVars(templateVars)
+    setTags(Tags)
 
-        templateVars:
+        Tags:
             Type: Object {tag_name:tag_replacement}
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
 
 
-    applyTemplateVars([templateVars])
+    applyTags([Tags])
     
-        templateVars:
+        Tags:
             Type: Object {tag_name:tag_replacement}
-            same as setTemplateVars
-            Default:this.templateVars
+            same as setTags
+            Default:this.Tags
 
         This function replaces all template variables by their values
 
@@ -191,7 +191,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
         Return format: Array of Object:
         [{path:string,files:ZipFile Object}]
 
-        You should'nt call this method before calling **applyTemplateVars()**, because applyTemplateVars can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTemplateVars()** without any problems
+        You should'nt call this method before calling **applyTags()**, because applyTags can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTags()** without any problems
 
     setImage(path,imgData)
 
@@ -203,7 +203,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             imgData in txt/plain
 
         This sets the image given by a path and an imgData in txt/plain.
-        You should'nt call this method before calling **applyTemplateVars()**, because applyTemplateVars can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTemplateVars()** without any problems
+        You should'nt call this method before calling **applyTags()**, because applyTags can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTags()** without any problems
 
     getFullText:([path])
 
@@ -218,7 +218,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         This method gets only the text of a given document (not the formatting)
 
-    getTemplateVars()
+    getTags()
 
         This function returns the template variables contained in the opened document. For example if the content of the document.xml is the following:
 
