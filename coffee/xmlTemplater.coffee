@@ -9,14 +9,12 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 
-		console.log("templateVars",options)
 		@templateVars= if options.templateVars? then options.templateVars else {}
 		@DocxGen= if options.DocxGen? then options.DocxGen else null
 		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTemplateVars=if options.usedTemplateVars? then options.usedTemplateVars else {}
 		@imageId=if options.imageId? then options.imageId else 0
-		console.log(@templateVars)
 		if typeof content=="string" then @load content else throw "content must be string!"
 
 		@numQrCode=0
@@ -24,9 +22,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@templaterState= new TemplaterState
 		this
 
-	load: (@content) ->
-		@matches = @_getFullTextMatchesFromData()
-		@charactersAdded= (0 for i in [0...@matches.length])
+	handleRecursiveCase:()->
+		###
+		Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
+		For example with this string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
+			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift)
+			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush)
+		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
+		###
 		replacerUnshift = (match,pn ..., offset, string)=>
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
@@ -44,6 +47,12 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 		regex= "(<#{@tagX}[^>]*>)([^>]+)$"
 		@content.replace (new RegExp(regex)),replacerPush
+
+	load: (@content) ->
+		@matches = @_getFullTextMatchesFromData()
+		@charactersAdded= (0 for i in [0...@matches.length])
+		@handleRecursiveCase()
+
 	setUsedTemplateVars: (tag) ->
 		u = @usedTemplateVars
 		for s,i in @scopePath
