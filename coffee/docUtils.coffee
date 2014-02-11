@@ -12,7 +12,14 @@ DocUtils.config=
 	"baseNodePath":'../../examples/'
 	"baseClientPath":'../examples/'
 
-DocUtils.loadDoc= (path,noDocx=false,intelligentTagging=false,async=false,callback=null,basePath=null) ->
+DocUtils.loadDoc= (path,options={}) ->
+	noDocx= if options.docx? then !options.docx else false
+	async=options.async or false
+	intelligentTagging=options.intelligentTagging or false
+	callback=options.callback or null
+	basePath=options.basePath or null
+
+	#noDocx=false,intelligentTagging=false,async=false,callback=null,basePath=null
 	console.log 'loading Doc:'+path
 	throw 'path not defined' unless path?
 	if path.indexOf('/')!=-1

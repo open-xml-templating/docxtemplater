@@ -40,7 +40,7 @@ DocxQrCode = class DocxQrCode
 					console.log('file image loading failed!')
 					@callback(this,@imgName,@num)
 			try
-				DocUtils.loadDoc(@result,true,false,false,loadDocCallback)
+				DocUtils.loadDoc(@result,{docx:false,callback:loadDocCallback,async:false})
 			catch error
 				console.log error
 		else
