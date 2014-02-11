@@ -618,7 +618,9 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -628,7 +630,9 @@
       scope = {
         "image": "edgar"
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.content).toBe('edgar.png');
     });
@@ -638,7 +642,9 @@
       scope = {
         "name": "Edgar"
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
     });
@@ -656,7 +662,9 @@
           }
         ]
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
     });
@@ -674,7 +682,9 @@
           }
         ]
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,');
     });
@@ -693,7 +703,9 @@
           }
         ]
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
@@ -712,7 +724,9 @@
           }
         ]
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
     });
@@ -730,7 +744,9 @@
           }
         ]
       };
-      xmlTemplater = new DocXTemplater(content, null, scope);
+      xmlTemplater = new DocXTemplater(content, {
+        templateVars: scope
+      });
       xmlTemplater.applyTemplateVars();
       return expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,');
     });
@@ -747,8 +763,11 @@
         var docx;
         qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
         docx = new DocxGen();
-        return obj = new DocXTemplater("", docx, {
-          Tag: "tagValue"
+        return obj = new DocXTemplater("", {
+          DocxGen: docx,
+          templateVars: {
+            Tag: "tagValue"
+          }
         });
       });
       it("should work with Blablalalabioeajbiojbepbroji", function() {

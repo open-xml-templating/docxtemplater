@@ -227,50 +227,50 @@ describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
 		content= """<w:t>Hello {name}</w:t>"""
 		scope= {"name":"Edgar"}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 
 	it "should work with non w:t content", ()->
 		content= """{image}.png"""
 		scope= {"image":"edgar"}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.content).toBe('edgar.png')
 	it "should work with tag in two elements", ()->
 		content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 		scope= {"name":"Edgar"}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 	it "should work with simple Loop", ()->
 		content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
 	it "should work with dash Loop", ()->
 		content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,')
 	it "should work with loop and innerContent", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>"""
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 	it "should work with loop and innerContent (with last)", ()->
 		content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> """
 		scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 	it 'should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ', ()->
 		content= """Hello {#names}{name},{/names}"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-		xmlTemplater= new DocXTemplater(content,null,scope)
+		xmlTemplater= new DocXTemplater(content,{templateVars:scope})
 		xmlTemplater.applyTemplateVars()
 		expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,')
 
@@ -281,7 +281,7 @@ describe 'DocxQrCode module', () ->
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
 			docx= new DocxGen()
-			obj= new DocXTemplater("",docx,{Tag:"tagValue"})
+			obj= new DocXTemplater("",{DocxGen:docx,templateVars:{Tag:"tagValue"}})
 
 
 		it "should work with Blablalalabioeajbiojbepbroji", () ->
