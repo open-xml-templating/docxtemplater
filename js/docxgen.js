@@ -163,7 +163,7 @@
 /*
 Docxgen.coffee
 Created by Edgar HIPP
-26/07/2013
+02/11/2014
  */
 
 (function() {
