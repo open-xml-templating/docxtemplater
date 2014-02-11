@@ -16,7 +16,7 @@ DocxQrCode = class DocxQrCode
 			_this.result= this.result
 			console.log('result:'+_this.result)
 
-			testdoc= new _this.xmlTemplater.class this.result, _this.xmlTemplater.toJson()
+			testdoc= new _this.xmlTemplater.currentClass this.result, _this.xmlTemplater.toJson()
 			testdoc.applyTemplateVars()
 			_this.result=testdoc.content
 			_this.searchImage()

@@ -7,7 +7,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	constructor: (content="",creator,@templateVars={},@intelligentTagging=off,@scopePath=[],@usedTemplateVars={},@imageId=0, @qrcodeCallback = null,@localImageCreator) ->
 		if @qrcodeCallback==null then @qrcodeCallback= () -> @DocxGen.ready= true
 		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
-		@class=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
+		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 
 		###They are two ways to instantiate a XmlTemplater object:
 		1: new XmlTemplater(content,creator,@templateVars, ...)
@@ -182,7 +182,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					options= @toJson()
 					options.templateVars=scope
 					options.scopePath= options.scopePath.concat(@loopOpen.tag)
-					subfile= new @class  A,options
+					subfile= new @currentClass  A,options
 					subfile.applyTemplateVars()
 					@imageId=subfile.imageId
 					newContent+=subfile.content #@applyTemplateVars A,scope
@@ -191,7 +191,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				options= @toJson()
 				options.templateVars= @currentScope
 				options.scopePath= options.scopePath.concat(@loopOpen.tag)
-				subfile= new @class  A,options
+				subfile= new @currentClass  A,options
 				subfile.applyTemplateVars()
 				@imageId=subfile.imageId
 				newContent+=subfile.content #@applyTemplateVars A,scope
@@ -201,13 +201,13 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			options= @toJson()
 			options.templateVars={}
 			options.scopePath= options.scopePath.concat(@loopOpen.tag)
-			subfile= new @class A, options
+			subfile= new @currentClass A, options
 			subfile.applyTemplateVars()
 			@imageId=subfile.imageId
 			@content= @content.replace B, ""
 
 		options= @toJson()
-		nextFile= new @class @content,options
+		nextFile= new @currentClass @content,options
 		nextFile.applyTemplateVars()
 		@imageId=nextFile.imageId
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
