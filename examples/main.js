@@ -3,7 +3,7 @@ DocUtils.loadDoc("tagFormating.docx")
 DocUtils.loadDoc("tagLooping.docx")
 DocUtils.loadDoc("imageExample.docx")
 DocUtils.loadDoc("tagIntelligentLoopTable.docx")
-DocUtils.loadDoc("image.png",true)
+DocUtils.loadDoc("image.png",{docx:false})
 DocUtils.loadDoc("tagDashLoopList.docx")
 
 function textAreaAdjust(o) {

@@ -315,8 +315,9 @@ Todo:
 - [x] Problems with accents -> No more issue with accents in outputFile
 - [x] Problems with the filenames -> Fixed, using Downloadify.js and method **download**
 - [ ] Incompatibility with IE: Error : SCRIPT5022: End of stream reached (stream length = 14578, asked index = 18431). Corrupted zip ?
-- [ ] Refactor: create an `ImgManager class`. Responsibility: retrieve images, changing images, on a file based view
+- [x] Refactor: create an `ImgManager class`. Responsibility: retrieve images, changing images, on a file based view
 - [ ] Refactor: create a `BracketFinder class`, which will be a subclass used by XmlTemplater
+- [x] Change signature of loadDoc function
 
 
 jszip-load.js, Ligne 82 Caractère 13 -> Getting binary data with IE 7+ doesn't seem to work, two ways:
