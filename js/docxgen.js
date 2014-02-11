@@ -936,18 +936,13 @@ Created by Edgar HIPP
   env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
   XmlTemplater = XmlTemplater = (function() {
-    function XmlTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId, qrcodeCallback, localImageCreator) {
-      var options;
+    function XmlTemplater(content, options) {
       if (content == null) {
         content = "";
       }
-      this.templateVars = templateVars != null ? templateVars : {};
-      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
-      this.scopePath = scopePath != null ? scopePath : [];
-      this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
-      this.imageId = imageId != null ? imageId : 0;
-      this.qrcodeCallback = qrcodeCallback != null ? qrcodeCallback : null;
-      this.localImageCreator = localImageCreator;
+      if (options == null) {
+        options = {};
+      }
       if (this.qrcodeCallback === null) {
         this.qrcodeCallback = function() {
           return this.DocxGen.ready = true;
@@ -955,17 +950,14 @@ Created by Edgar HIPP
       }
       this.tagX = '';
       this.currentClass = XmlTemplater;
-      if (creator instanceof DocxGen || (creator == null)) {
-        this.DocxGen = creator;
-      } else {
-        options = creator;
-        this.templateVars = options.templateVars ? options.templateVars : {};
-        this.DocxGen = options.DocxGen ? options.DocxGen : null;
-        this.intelligentTagging = options.intelligentTagging ? options.intelligentTagging : false;
-        this.scopePath = options.scopePath ? options.scopePath : [];
-        this.usedTemplateVars = options.usedTemplateVars ? options.usedTemplateVars : {};
-        this.imageId = options.imageId ? options.imageId : 0;
-      }
+      console.log("templateVars", options);
+      this.templateVars = options.templateVars != null ? options.templateVars : {};
+      this.DocxGen = options.DocxGen != null ? options.DocxGen : null;
+      this.intelligentTagging = options.intelligentTagging != null ? options.intelligentTagging : false;
+      this.scopePath = options.scopePath != null ? options.scopePath : [];
+      this.usedTemplateVars = options.usedTemplateVars != null ? options.usedTemplateVars : {};
+      this.imageId = options.imageId != null ? options.imageId : 0;
+      console.log(this.templateVars);
       if (typeof content === "string") {
         this.load(content);
       } else {
@@ -1564,16 +1556,14 @@ Created by Edgar HIPP
   DocXTemplater = DocXTemplater = (function(_super) {
     __extends(DocXTemplater, _super);
 
-    function DocXTemplater(content, creator, templateVars, intelligentTagging, scopePath, usedTemplateVars, imageId) {
+    function DocXTemplater(content, options) {
       if (content == null) {
         content = "";
       }
-      this.templateVars = templateVars != null ? templateVars : {};
-      this.intelligentTagging = intelligentTagging != null ? intelligentTagging : false;
-      this.scopePath = scopePath != null ? scopePath : [];
-      this.usedTemplateVars = usedTemplateVars != null ? usedTemplateVars : {};
-      this.imageId = imageId != null ? imageId : 0;
-      DocXTemplater.__super__.constructor.call(this, null, creator, this.templateVars, this.intelligentTagging, this.scopePath, this.usedTemplateVars, this.imageId);
+      if (options == null) {
+        options = {};
+      }
+      DocXTemplater.__super__.constructor.call(this, "", options);
       this.currentClass = DocXTemplater;
       this.tagX = 'w:t';
       if (typeof content === "string") {
