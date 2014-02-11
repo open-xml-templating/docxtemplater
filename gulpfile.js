@@ -71,6 +71,14 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 
 			if (failures==0)
 			{
+				try
+				{
+				var subChild = spawn("cmd", ["/c","cmdmp3.exe","success.mp3"], {cwd:process.cwd()});
+				}
+				catch (exception)
+				{
+					console.log("couldn't play success sound")
+				}
 				gutil.log(gutil.colors.green(fullText));
 			}
 			else
@@ -79,11 +87,13 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 				gutil.beep()
 			}
 		}
+		else
+			{
+				gutil.log(gutil.colors.red(totalData))
+				gutil.beep()
+			}
 		cb();
 	});
 });
-
-
-
 
 gulp.task('default',['coffeeTest','coffee','jasmine','watch']);
