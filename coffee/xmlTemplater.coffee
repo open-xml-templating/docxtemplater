@@ -79,8 +79,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			content= "undefined"
 			@DocxGen.logUndefined(tag,scope)
 		if content.indexOf('{')!=-1 or content.indexOf('}')!=-1
-			alert('On ne peut mettre de { ou de } dans le contenu d\'une variable')
-			throw 'On ne peut mettre de { ou de } dans le contenu d\'une variable'
+			throw "You can't enter { or  } inside the content of a variable"
 		content
 	calcScopeText: (text,start=0,end=text.length-1) ->
 		###get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
@@ -231,14 +230,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 		@bracketEnd= {"i":@loopOpen.end.i,"j":@loopOpen.end.j}
 		@bracketStart= {"i":@loopOpen.start.i,"j":@loopOpen.start.j}
-		if sharp==false then @textInsideBracket= "-"+@loopOpen.element+" "+@loopOpen.tag
-		if sharp==true then @textInsideBracket= "#"+@loopOpen.tag
+		if sharp==false then @templaterState.textInsideBracket= "-"+@loopOpen.element+" "+@loopOpen.tag
+		if sharp==true then @templaterState.textInsideBracket= "#"+@loopOpen.tag
 
 		A= @replaceCurly("",A)
 		if copyA==A then throw "A should have changed after deleting the opening tag"
 		copyA= A
 
-		@textInsideBracket= "/"+@loopOpen.tag
+		@templaterState.textInsideBracket= "/"+@loopOpen.tag
 		#for deleting the closing tag
 		@bracketEnd= {"i":@loopClose.end.i,"j":@loopClose.end.j}
 		@bracketStart= {"i":@loopClose.start.i,"j":@loopClose.start.j}
@@ -273,14 +272,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		copyContent=content
 		if @bracketEnd.i==@bracketStart.i #<w>{aaaaa}</w>
 			if (@matches[@bracketStart.i].first?)
-				insideValue= @matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
+				insideValue= @matches[@bracketStart.i][2].replace "{#{@templaterState.textInsideBracket}}", newValue
 				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true,true)
 
 			else if (@matches[@bracketStart.i].last?)
-				insideValue= @matches[@bracketStart.i][0].replace "{#{@textInsideBracket}}", newValue
+				insideValue= @matches[@bracketStart.i][0].replace "{#{@templaterState.textInsideBracket}}", newValue
 				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true,true)
 			else
-				insideValue= @matches[@bracketStart.i][2].replace "{#{@textInsideBracket}}", newValue
+				insideValue= @matches[@bracketStart.i][2].replace "{#{@templaterState.textInsideBracket}}", newValue
 				content= @replaceXmlTag(content,@bracketStart.i,insideValue,true)
 
 		else if @bracketEnd.i>@bracketStart.i
@@ -319,7 +318,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	applyTemplateVars:()->
 		@setUsedTemplateVars("")
 		@templaterState.initialize()
-		@textInsideBracket= ""
 		for match,i in @matches
 			innerText= match[2] || "" #text inside the <w:t>
 			for t in [i...@matches.length]
@@ -328,34 +326,34 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				for m,t in @matches when t<=i
 					if @content[m.offset+@charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
-					if @templaterState.inBracket is true then throw "Bracket already open with text: #{@textInsideBracket}"
+					if @templaterState.inBracket is true then throw "Bracket already open with text: #{@templaterState.textInsideBracket}"
 					@templaterState.inBracket= true
-					@textInsideBracket= ""
+					@templaterState.textInsideBracket= ""
 					@bracketStart={"i":i,"j":j}
 
 				else if character == '}'
 					@bracketEnd={"i":i,"j":j}
 
-					if @textInsideBracket[0]=='#' and @templaterState.inForLoop is false and @templaterState.inDashLoop is false
+					if @templaterState.textInsideBracket[0]=='#' and @templaterState.inForLoop is false and @templaterState.inDashLoop is false
 						@templaterState.inForLoop= true #begin for loop
-						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@textInsideBracket.substr 1}
-					if @textInsideBracket[0]=='-' and @templaterState.inForLoop is false and @templaterState.inDashLoop is false
+						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':@templaterState.textInsideBracket.substr 1}
+					if @templaterState.textInsideBracket[0]=='-' and @templaterState.inForLoop is false and @templaterState.inDashLoop is false
 						@templaterState.inDashLoop= true
 						regex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
-						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@textInsideBracket.replace regex, '$2'),'element':(@textInsideBracket.replace regex, '$1')}
+						@loopOpen={'start':@bracketStart,'end':@bracketEnd,'tag':(@templaterState.textInsideBracket.replace regex, '$2'),'element':(@templaterState.textInsideBracket.replace regex, '$1')}
 					if @templaterState.inBracket is false then	throw "Bracket already closed #{@content}"
 					@templaterState.inBracket= false
 
 					if @templaterState.inForLoop is false and @templaterState.inDashLoop is false
-						@content = @replaceCurly(@getValueFromTag(@textInsideBracket,@currentScope))
+						@content = @replaceCurly(@getValueFromTag(@templaterState.textInsideBracket,@currentScope))
 
-					if @textInsideBracket[0]=='/'
+					if @templaterState.textInsideBracket[0]=='/'
 						@loopClose={'start':@bracketStart,'end':@bracketEnd}
 
-					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @templaterState.inDashLoop is true
+					if @templaterState.textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @templaterState.textInsideBracket) and @templaterState.inDashLoop is true
 						return @dashLoop(@loopOpen.element)
 
-					if @textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @textInsideBracket) and @templaterState.inForLoop is true
+					if @templaterState.textInsideBracket[0]=='/' and ('/'+@loopOpen.tag == @templaterState.textInsideBracket) and @templaterState.inForLoop is true
 						#You DashLoop= take the outer scope only if you are in a table
 						dashLooping= no
 						if @intelligentTagging==on
@@ -371,8 +369,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 						else
 							return @dashLoop(elementDashLoop,true)
 				else #if character != '{' and character != '}'
-					if @templaterState.inBracket is true then @textInsideBracket+=character
-		# if ((@getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{@getFullText()} (2)"
+					if @templaterState.inBracket is true then @templaterState.textInsideBracket+=character
 		imgReplacer= new ImgReplacer(this)
 		imgReplacer.findImages()
 		imgReplacer.replaceImages()
