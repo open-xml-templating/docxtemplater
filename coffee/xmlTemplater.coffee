@@ -86,52 +86,26 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if innerTagsContent=="" and outerTagsContent==""
 			outerTagsContent= @findOuterTagsContent().content
 			innerTagsContent= @findInnerTagsContent().content
-
 			if outerTagsContent[0]!='{' or outerTagsContent.indexOf('{')==-1 or outerTagsContent.indexOf('/')==-1 or outerTagsContent.indexOf('}')==-1 or outerTagsContent.indexOf('#')==-1 then throw "no {,#,/ or } found in outerTagsContent: #{outerTagsContent}"
 
-		if @currentScope[@templaterState.loopOpen.tag]?
-			# if then throw '{#'+@templaterState.loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@templaterState.loopOpen.tag]})"
-			subScope= @currentScope[@templaterState.loopOpen.tag] if typeof @currentScope[@templaterState.loopOpen.tag]=='object'
-			subScope= true if @currentScope[@templaterState.loopOpen.tag]=='true'
-			subScope= false if @currentScope[@templaterState.loopOpen.tag]=='false'
-			newContent= "";
-
-			if typeof subScope == 'object'
-				for scope,i in @currentScope[@templaterState.loopOpen.tag]
-					options= @toJson()
-					options.Tags=scope
-					options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-					subfile= new @currentClass innerTagsContent,options
-					subfile.applyTags()
-					@imageId=subfile.imageId
+		tagValue=@currentScope[@templaterState.loopOpen.tag]
+		newContent= "";
+		if tagValue?
+			if typeof tagValue == 'object'
+				for scope,i in tagValue
+					subfile=@calcSubXmlTemplater(innerTagsContent,scope)
 					newContent+=subfile.content
-					if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
-			if subScope == true
-				options= @toJson()
-				options.Tags= @currentScope
-				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-				subfile= new @currentClass innerTagsContent,options
-				subfile.applyTags()
-				@imageId=subfile.imageId
+			if tagValue == true
+				subfile=@calcSubXmlTemplater(innerTagsContent,@currentScope)
 				newContent+=subfile.content
-				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
-			@content=@content.replace outerTagsContent, newContent
 		else
-			options= @toJson()
-			options.Tags={}
-			options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-			subfile= new @currentClass innerTagsContent, options
-			subfile.applyTags()
-			@imageId=subfile.imageId
-			@content= @content.replace outerTagsContent, ""
+			subfile=@calcSubXmlTemplater(innerTagsContent,{})
 
-		options= @toJson()
-		nextFile= new @currentClass @content,options
-		nextFile.applyTags()
-		@imageId=nextFile.imageId
+		@content=@content.replace outerTagsContent, newContent
+
+		nextFile=@calcSubXmlTemplater(@content)
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
-		@content=nextFile.content
-		this
+		nextFile
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{content,start,end}= @findOuterTagsContent()
 		resultFullScope = @calcInnerTextScope @content, start, end, elementDashLoop
@@ -300,5 +274,16 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				if dashElement!=false then return @dashLoop(dashElement,true)
 			return @forLoop()
 		return undefined
+	calcSubXmlTemplater:(innerTagsContent,scope)->
+		options= @toJson()
+		if scope?
+			options.Tags= scope
+			options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
+		subfile= new @currentClass innerTagsContent,options
+		subfile.applyTags()
+		if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
+		@imageId=subfile.imageId
+		subfile
+
 
 root.XmlTemplater=XmlTemplater
