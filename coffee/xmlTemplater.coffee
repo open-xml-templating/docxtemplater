@@ -92,7 +92,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		usedTags:@usedTags
 		localImageCreator:@localImageCreator
 		imageId:@imageId
-	forLoop: (A="",B="") ->
+	forLoop: (innerTagsContent="",outerTagsContent="") ->
 		###
 			<w:t>{#forTag} blabla</w:t>
 			Blabla1
@@ -115,11 +115,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			We replace B by nA, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-		if A=="" and B==""
-			B= @findOuterTagsContent().content
-			A= @findInnerTagsContent().content
+		if innerTagsContent=="" and outerTagsContent==""
+			outerTagsContent= @findOuterTagsContent().content
+			innerTagsContent= @findInnerTagsContent().content
 
-			if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
+			if outerTagsContent[0]!='{' or outerTagsContent.indexOf('{')==-1 or outerTagsContent.indexOf('/')==-1 or outerTagsContent.indexOf('}')==-1 or outerTagsContent.indexOf('#')==-1 then throw "no {,#,/ or } found in outerTagsContent: #{outerTagsContent}"
 
 		if @currentScope[@templaterState.loopOpen.tag]?
 			# if then throw '{#'+@templaterState.loopOpen.tag+"}should be an object (it is a #{typeof @currentScope[@templaterState.loopOpen.tag]})"
@@ -133,29 +133,29 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					options= @toJson()
 					options.Tags=scope
 					options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-					subfile= new @currentClass  A,options
+					subfile= new @currentClass innerTagsContent,options
 					subfile.applyTags()
 					@imageId=subfile.imageId
-					newContent+=subfile.content #@applyTags A,scope
+					newContent+=subfile.content
 					if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 			if subScope == true
 				options= @toJson()
 				options.Tags= @currentScope
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-				subfile= new @currentClass  A,options
+				subfile= new @currentClass innerTagsContent,options
 				subfile.applyTags()
 				@imageId=subfile.imageId
-				newContent+=subfile.content #@applyTags A,scope
+				newContent+=subfile.content
 				if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
-			@content=@content.replace B, newContent
+			@content=@content.replace outerTagsContent, newContent
 		else
 			options= @toJson()
 			options.Tags={}
 			options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-			subfile= new @currentClass A, options
+			subfile= new @currentClass innerTagsContent, options
 			subfile.applyTags()
 			@imageId=subfile.imageId
-			@content= @content.replace B, ""
+			@content= @content.replace outerTagsContent, ""
 
 		options= @toJson()
 		nextFile= new @currentClass @content,options
