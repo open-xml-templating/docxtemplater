@@ -16,8 +16,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@currentScope=@Tags
 		@templaterState= new TemplaterState
 	load: (@content) ->
-		@matches = @_getFullTextMatchesFromData()
-		@charactersAdded= (0 for i in [0...@matches.length])
+		@templaterState.matches = @_getFullTextMatchesFromData()
+		@templaterState.charactersAdded= (0 for i in [0...@templaterState.matches.length])
 		@handleRecursiveCase()
 	getValueFromScope: (tag,scope) ->
 		@useTag(tag)
@@ -29,7 +29,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if content.indexOf('{')!=-1 or content.indexOf('}')!=-1
 			throw "You can't enter { or  } inside the content of a variable"
 		content
-	calcScopeText: (text,start=0,end=text.length-1) ->
+	getListXmlElements: (text,start=0,end=text.length-1) ->
 		###
 		get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
 		returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
@@ -50,7 +50,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 		result
 	calcScopeDifference: (text,start=0,end=text.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this text, the XML will  break
-		scope= @calcScopeText text,start,end
+		scope= @getListXmlElements text,start,end
 		while(1)
 			if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closing tag
 				break;
@@ -60,11 +60,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			else break;
 		scope
 	getFullText:() ->
-		@matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
-		output= (match[2] for match in @matches) #get only the text
+		@templaterState.matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
+		output= (match[2] for match in @templaterState.matches) #get only the text
 		DocUtils.decode_utf8(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		@matches= DocUtils.preg_match_all("(<#{@tagX}[^>]*>)([^<>]*)?</#{@tagX}>",@content)
+		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagX}[^>]*>)([^<>]*)?</#{@tagX}>",@content)
 	calcInnerTextScope: (text,start,end,tag) -> #tag: w:t
 		endTag= text.indexOf('</'+tag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
@@ -73,17 +73,13 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if startTag==-1 then throw "can't find startTag"
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 	findOuterTagsContent: () ->
-		start = @calcStartTag @templaterState.loopOpen
-		end= @calcEndTag @templaterState.loopClose
+		start = @templaterState.calcStartTag @templaterState.loopOpen
+		end= @templaterState.calcEndTag @templaterState.loopClose
 		{content:@content.substr(start,end-start),start,end}
 	findInnerTagsContent: () ->
-		start= @calcEndTag @templaterState.loopOpen
-		end= @calcStartTag @templaterState.loopClose
+		start= @templaterState.calcEndTag @templaterState.loopOpen
+		end= @templaterState.calcStartTag @templaterState.loopClose
 		{content:@content.substr(start,end-start),start,end}
-	calcStartTag: (bracket) ->
-		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
-	calcEndTag: (bracket)->
-		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
 	toJson: () ->
 		Tags:DocUtils.clone @Tags
 		DocxGen:@DocxGen
@@ -99,20 +95,20 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			Blabla2
 			<w:t>{/forTag}</w:t>
 
-			Let A be what is in between the first closing bracket and the second opening bracket
-			Let B what is in between the first opening tag {# and the last closing tag
+			Let innerTagsContent be what is in between the first closing bracket and the second opening bracket
+			Let outerTagsContent what is in between the first opening tag {# and the last closing tag
 
-			A=</w:t>
+			innerTagsContent=</w:t>
 			Blabla1
 			Blabla2
 			<w:t>
 
-			B={#forTag}</w:t>
+			outerTagsContent={#forTag}</w:t>
 			Blabla1
 			Blabla2
 			<w:t>{/forTag}
 
-			We replace B by nA, n is equal to the length of the array in scope forTag
+			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
 		if innerTagsContent=="" and outerTagsContent==""
@@ -163,13 +159,12 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@imageId=nextFile.imageId
 		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
 		@content=nextFile.content
-		return this
-
+		this
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{content,start,end}= @findOuterTagsContent()
 		resultFullScope = @calcInnerTextScope @content, start, end, elementDashLoop
-		for t in [0..@matches.length]
-			@charactersAdded[t]-=resultFullScope.startTag
+		for t in [0..@templaterState.matches.length]
+			@templaterState.charactersAdded[t]-=resultFullScope.startTag
 		B= resultFullScope.text
 		if (@content.indexOf B)==-1 then throw "couln't find B in @content"
 		A = B
@@ -197,49 +192,49 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		return @forLoop(A,B)
 
 	replaceXmlTag: (content,tagNumber,insideValue,spacePreserve=false,noStartTag=false) ->
-		@matches[tagNumber][2]=insideValue #so that the matches are still correct
-		startTag= @matches[tagNumber].offset+@charactersAdded[tagNumber]  #where the open tag starts: <w:t>
+		@templaterState.matches[tagNumber][2]=insideValue #so that the templaterState.matches are still correct
+		startTag= @templaterState.matches[tagNumber].offset+@templaterState.charactersAdded[tagNumber]  #where the open tag starts: <w:t>
 		#calculate the replacer according to the params
 		if noStartTag == true
 			replacer= insideValue
 		else
 			if spacePreserve==true
 				replacer= """<#{@tagX} xml:space="preserve">#{insideValue}</#{@tagX}>"""
-			else replacer= @matches[tagNumber][1]+insideValue+"</#{@tagX}>"
-		@charactersAdded[tagNumber+1]+=replacer.length-@matches[tagNumber][0].length
-		if content.indexOf(@matches[tagNumber][0])==-1 then throw "content #{@matches[tagNumber][0]} not found in content"
+			else replacer= @templaterState.matches[tagNumber][1]+insideValue+"</#{@tagX}>"
+		@templaterState.charactersAdded[tagNumber+1]+=replacer.length-@templaterState.matches[tagNumber][0].length
+		if content.indexOf(@templaterState.matches[tagNumber][0])==-1 then throw "content #{@templaterState.matches[tagNumber][0]} not found in content"
 		copyContent= content
-		content = DocUtils.replaceFirstFrom content,@matches[tagNumber][0], replacer, startTag
-		@matches[tagNumber][0]=replacer
+		content = DocUtils.replaceFirstFrom content,@templaterState.matches[tagNumber][0], replacer, startTag
+		@templaterState.matches[tagNumber][0]=replacer
 
-		if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@matches[@templaterState.bracketStart.i][0]} to #{replacer}"
+		if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@templaterState.matches[@templaterState.bracketStart.i][0]} to #{replacer}"
 		content
 
 	replaceTagByValue: (newValue,content=@content) ->
-		if (@matches[@templaterState.bracketEnd.i][2].indexOf ('}'))==-1 then throw "no closing bracket at @templaterState.bracketEnd.i #{@matches[@templaterState.bracketEnd.i][2]}"
-		if (@matches[@templaterState.bracketStart.i][2].indexOf ('{'))==-1 then throw "no opening bracket at @templaterState.bracketStart.i #{@matches[@templaterState.bracketStart.i][2]}"
+		if (@templaterState.matches[@templaterState.bracketEnd.i][2].indexOf ('}'))==-1 then throw "no closing bracket at @templaterState.bracketEnd.i #{@templaterState.matches[@templaterState.bracketEnd.i][2]}"
+		if (@templaterState.matches[@templaterState.bracketStart.i][2].indexOf ('{'))==-1 then throw "no opening bracket at @templaterState.bracketStart.i #{@templaterState.matches[@templaterState.bracketStart.i][2]}"
 		copyContent=content
 		if @templaterState.bracketEnd.i==@templaterState.bracketStart.i #<w>{aaaaa}</w>
-			if (@matches[@templaterState.bracketStart.i].first?)
-				insideValue= @matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideTag}}", newValue
+			if (@templaterState.matches[@templaterState.bracketStart.i].first?)
+				insideValue= @templaterState.matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideTag}}", newValue
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,insideValue,true,true)
 
-			else if (@matches[@templaterState.bracketStart.i].last?)
-				insideValue= @matches[@templaterState.bracketStart.i][0].replace "{#{@templaterState.textInsideTag}}", newValue
+			else if (@templaterState.matches[@templaterState.bracketStart.i].last?)
+				insideValue= @templaterState.matches[@templaterState.bracketStart.i][0].replace "{#{@templaterState.textInsideTag}}", newValue
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,insideValue,true,true)
 			else
-				insideValue= @matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideTag}}", newValue
+				insideValue= @templaterState.matches[@templaterState.bracketStart.i][2].replace "{#{@templaterState.textInsideTag}}", newValue
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,insideValue,true)
 
 		else if @templaterState.bracketEnd.i>@templaterState.bracketStart.i
 
 			# 1. for the first (@templaterState.bracketStart.i): replace __{.. by __value
 			regexRight= /^([^{]*){.*$/
-			subMatches= @matches[@templaterState.bracketStart.i][2].match regexRight
+			subMatches= @templaterState.matches[@templaterState.bracketStart.i][2].match regexRight
 
-			if @matches[@templaterState.bracketStart.i].first? #if the content starts with:  {tag</w:t>
+			if @templaterState.matches[@templaterState.bracketStart.i].first? #if the content starts with:  {tag</w:t>
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,newValue,true,true)
-			else if @matches[@templaterState.bracketStart.i].last?
+			else if @templaterState.matches[@templaterState.bracketStart.i].last?
 				content= @replaceXmlTag(content,@templaterState.bracketStart.i,newValue,true,true)
 			else
 				insideValue=subMatches[1]+newValue
@@ -247,17 +242,17 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 			#2. for in between (@templaterState.bracketStart.i+1...@templaterState.bracketEnd.i) replace whole by ""
 			for k in [(@templaterState.bracketStart.i+1)...@templaterState.bracketEnd.i]
-				@charactersAdded[k+1]=@charactersAdded[k]
+				@templaterState.charactersAdded[k+1]=@templaterState.charactersAdded[k]
 				content= @replaceXmlTag(content,k,"")
 
 			#3. for the last (@templaterState.bracketEnd.i) replace ..}__ by ".." ###
 			regexLeft= /^[^}]*}(.*)$/;
-			insideValue = @matches[@templaterState.bracketEnd.i][2].replace regexLeft, '$1'
-			@charactersAdded[@templaterState.bracketEnd.i+1]=@charactersAdded[@templaterState.bracketEnd.i]
+			insideValue = @templaterState.matches[@templaterState.bracketEnd.i][2].replace regexLeft, '$1'
+			@templaterState.charactersAdded[@templaterState.bracketEnd.i+1]=@templaterState.charactersAdded[@templaterState.bracketEnd.i]
 			content= @replaceXmlTag(content,k, insideValue,true)
 
-		for match, j in @matches when j>@templaterState.bracketEnd.i
-			@charactersAdded[j+1]=@charactersAdded[j]
+		for match, j in @templaterState.matches when j>@templaterState.bracketEnd.i
+			@templaterState.charactersAdded[j+1]=@templaterState.charactersAdded[j]
 		if copyContent==content then throw "copycontent=content !!"
 		content
 	###
@@ -266,14 +261,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	returns the new content of the tagged content###
 	applyTags:()->
 		@templaterState.initialize()
-		for match,i in @matches
+		for match,i in @templaterState.matches
 			innerText= if match[2]? then match[2] else "" #text inside the <w:t>
-			for t in [i...@matches.length]
-				@charactersAdded[t+1]=@charactersAdded[t]
+			for t in [i...@templaterState.matches.length]
+				@templaterState.charactersAdded[t+1]=@templaterState.charactersAdded[t]
 			for character,j in innerText
 				@templaterState.currentStep={'i':i,'j':j}
-				for m,t in @matches when t<=i
-					if @content[m.offset+@charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
+				for m,t in @templaterState.matches when t<=i
+					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
 					@templaterState.startTag()
 				else if character == '}'
@@ -298,16 +293,16 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
 			pn.first= true
-			@matches.unshift pn #add at the beginning
-			@charactersAdded.unshift 0
+			@templaterState.matches.unshift pn #add at the beginning
+			@templaterState.charactersAdded.unshift 0
 		@content.replace /^()([^<]+)/,replacerUnshift
 
 		replacerPush = (match,pn ..., offset, string)=>
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
 			pn.last= true
-			@matches.push pn #add at the beginning
-			@charactersAdded.push 0
+			@templaterState.matches.push pn #add at the beginning
+			@templaterState.charactersAdded.push 0
 
 		regex= "(<#{@tagX}[^>]*>)([^>]+)$"
 		@content.replace (new RegExp(regex)),replacerPush

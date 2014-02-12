@@ -4,6 +4,10 @@ env= if global? then 'node' else 'browser'
 #This class responsibility is to store an xmlTemplater's state
 
 TemplaterState =  class TemplaterState
+	calcStartTag: (bracket) ->
+		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
+	calcEndTag: (bracket)->
+		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
 	initialize:()->
 		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		@inTag= false # all brackets  {___}
