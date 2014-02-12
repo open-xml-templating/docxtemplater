@@ -72,14 +72,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		startTag = Math.max text.lastIndexOf('<'+tag+'>',start), text.lastIndexOf('<'+tag+' ',start)
 		if startTag==-1 then throw "can't find startTag"
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
-	calcB: () ->
-		startB = @calcStartTag @templaterState.loopOpen
-		endB= @calcEndTag @templaterState.loopClose
-		{B:@content.substr(startB,endB-startB),startB,endB}
-	calcA: () ->
-		startA= @calcEndTag @templaterState.loopOpen
-		endA= @calcStartTag @templaterState.loopClose
-		{A:@content.substr(startA,endA-startA),startA,endA}
+	findOuterTagsContent: () ->
+		start = @calcStartTag @templaterState.loopOpen
+		end= @calcEndTag @templaterState.loopClose
+		{content:@content.substr(start,end-start),start,end}
+	findInnerTagsContent: () ->
+		start= @calcEndTag @templaterState.loopOpen
+		end= @calcStartTag @templaterState.loopClose
+		{content:@content.substr(start,end-start),start,end}
 	calcStartTag: (bracket) ->
 		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
 	calcEndTag: (bracket)->
@@ -116,8 +116,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			<w:t>subContent subContent subContent</w:t>
 		###
 		if A=="" and B==""
-			B= @calcB().B
-			A= @calcA().A
+			B= @findOuterTagsContent().content
+			A= @findInnerTagsContent().content
 
 			if B[0]!='{' or B.indexOf('{')==-1 or B.indexOf('/')==-1 or B.indexOf('}')==-1 or B.indexOf('#')==-1 then throw "no {,#,/ or } found in B: #{B}"
 
@@ -166,8 +166,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		return this
 
 	dashLoop: (elementDashLoop,sharp=false) ->
-		{B,startB,endB}= @calcB()
-		resultFullScope = @calcInnerTextScope @content, startB, endB, elementDashLoop
+		{content,start,end}= @findOuterTagsContent()
+		resultFullScope = @calcInnerTextScope @content, start, end, elementDashLoop
 		for t in [0..@matches.length]
 			@charactersAdded[t]-=resultFullScope.startTag
 		B= resultFullScope.text
@@ -278,19 +278,9 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					@templaterState.startTag()
 				else if character == '}'
 					@templaterState.endTag()
-
-					if @templaterState.loopType()=='simple'
-						@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag,@currentScope))
-
-					if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
-						#You DashLoop= take the outer scope only if you are in a table
-
-						if @templaterState.loopType()=='dash'
-							return @dashLoop(@templaterState.loopOpen.element)
-						if @intelligentTagging==on
-							dashElement=@calcIntellegentlyDashElement()
-							if dashElement!=false then return @dashLoop(dashElement,true)
-						return @forLoop()
+					result=@executeEndTag()
+					if result!=undefined
+						return result
 				else #if character != '{' and character != '}'
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		new ImgReplacer(this).findImages().replaceImages()
@@ -302,6 +292,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift)
 			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush)
 		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
+		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
 		###
 		replacerUnshift = (match,pn ..., offset, string)=>
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
@@ -329,12 +320,18 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			u = u[s]
 		if tag!=""
 			u[tag]= true
-	calcIntellegentlyDashElement:()->
-		{B,startB,endB}= @calcB()
-		scopeContent= @calcScopeText @content, startB,endB-startB
-		for t in scopeContent
-			if t.tag=='<w:tc>'
-				return 'w:tr'
-		return false
+	calcIntellegentlyDashElement:()->return false
+	executeEndTag:()->
+		if @templaterState.loopType()=='simple'
+			@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag,@currentScope))
+		if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
+			#You DashLoop= take the outer scope only if you are in a table
+			if @templaterState.loopType()=='dash'
+				return @dashLoop(@templaterState.loopOpen.element)
+			if @intelligentTagging==on
+				dashElement=@calcIntellegentlyDashElement()
+				if dashElement!=false then return @dashLoop(dashElement,true)
+			return @forLoop()
+		return undefined
 
 root.XmlTemplater=XmlTemplater
