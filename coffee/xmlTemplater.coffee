@@ -207,13 +207,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	returns the new content of the tagged content###
 	applyTags:()->
 		@templaterState.initialize()
-		for match,i in @templaterState.matches
+		for match,numMatch in @templaterState.matches
 			innerText= if match[2]? then match[2] else "" #text inside the <w:t>
-			for t in [i...@templaterState.matches.length]
-				@templaterState.charactersAdded[t+1]=@templaterState.charactersAdded[t]
-			for character,j in innerText
-				@templaterState.currentStep={'i':i,'j':j}
-				for m,t in @templaterState.matches when t<=i
+			for character,numCharacter in innerText
+				@templaterState.currentStep={'i':numMatch,'j':numCharacter}
+				for m,t in @templaterState.matches when t<=numMatch
 					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
 					@templaterState.startTag()
