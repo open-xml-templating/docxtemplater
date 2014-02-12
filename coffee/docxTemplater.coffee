@@ -2,6 +2,7 @@ root= global ? window
 env= if global? then 'node' else 'browser'
 
 DocXTemplater = class DocXTemplater extends XmlTemplater
+	xmlUtil=new XmlUtil()
 	constructor:(content="",options={}) ->
 		super("",options)
 		@currentClass=DocXTemplater
@@ -9,7 +10,7 @@ DocXTemplater = class DocXTemplater extends XmlTemplater
 		if typeof content=="string" then @load content else throw "content must be string!"
 	calcIntellegentlyDashElement:()->
 		{content,start,end}= @findOuterTagsContent()
-		scopeContent= @getListXmlElements @content, start,end-start
+		scopeContent= xmlUtil.getListXmlElements @content, start,end-start
 		for t in scopeContent
 			if t.tag=='<w:tc>'
 				return 'w:tr'

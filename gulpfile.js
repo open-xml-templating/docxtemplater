@@ -10,7 +10,7 @@ var livereload = require('gulp-livereload');
 var server = livereload();
 
 var paths = {
-	coffee: ['coffee/templaterState.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/docUtils.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee'], // compile individually into dest, maintaining folder structure
+	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/docUtils.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee'], // compile individually into dest, maintaining folder structure
 	coffeeTest: ['coffee/docxgenTest.coffee'], // compile individually into dest, maintaining folder structure
 	testDirectory:__dirname+'\\test\\spec'
 };

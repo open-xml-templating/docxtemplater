@@ -6,7 +6,6 @@ root.docXData={}
 
 
 if env=='node'
-	time= new Date()
 	global.http= require('http')
 	global.https= require('https')
 	global.fs= require('fs')
@@ -17,7 +16,6 @@ if env=='node'
 	global.url= require('url')
 
 
-	console.log('now1:'+((new Date()).getTime()-time.getTime()))
 
 	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);
@@ -25,7 +23,6 @@ if env=='node'
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
 	['docxgen.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../js/' + file), file);
-	console.log('now2:'+((new Date()).getTime()-time.getTime()))
 
 DocUtils.loadDoc('imageExample.docx')
 DocUtils.loadDoc('tagExample.docx')
@@ -45,7 +42,6 @@ DocUtils.loadDoc('qrCodeTaggingExample.docx')
 DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExample.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx')
-console.log('nowp:'+((new Date()).getTime()-time.getTime()))
 
 DocUtils.loadDoc('image.png',{docx:false})
 DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
@@ -53,7 +49,6 @@ DocUtils.loadDoc('BMW_logo.png',{docx:false})
 DocUtils.loadDoc('Firefox_logo.png',{docx:false})
 DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
 DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
-console.log('now3:'+((new Date()).getTime()-time.getTime()))
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -136,28 +131,28 @@ describe "DocxGenTemplatingForLoop", () ->
 			expectedText= "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
-describe "scope calculation" , () ->
-	xmlTemplater= new DocXTemplater()
+describe "Xml Util" , () ->
+	xmlUtil= new XmlUtil()
 	it "should compute the scope between 2 <w:t>" , () ->
-		scope= xmlTemplater.getListXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
+		scope= xmlUtil.getListXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '<w:p>', offset : 27 }, { tag : '<w:r>', offset : 162 }, { tag : '<w:t>', offset : 188 } ])
 	it "should compute the scope between 2 <w:t> in an Array", () ->
-		scope= xmlTemplater.getListXmlElements """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
+		scope= xmlUtil.getListXmlElements """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 3 }, { tag : '</w:r>', offset : 9 }, { tag : '</w:p>', offset : 15 }, { tag : '</w:tc>', offset : 21 }, { tag : '<w:tc>', offset : 28 }, { tag : '<w:p>', offset : 83 }, { tag : '<w:r>', offset : 268 }, { tag : '<w:t>', offset : 374 } ])
 	it 'should compute the scope between a w:t in an array and the other outside', () ->
-		scope= xmlTemplater.getListXmlElements """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
+		scope= xmlUtil.getListXmlElements """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 8 }, { tag : '</w:r>', offset : 14 }, { tag : '</w:p>', offset : 20 }, { tag : '</w:tc>', offset : 26 }, { tag : '</w:tr>', offset : 33 }, { tag : '</w:tbl>', offset : 40 }, { tag : '<w:p>', offset : 188 }, { tag : '<w:r>', offset : 257 }, { tag : '<w:t>', offset : 306 } ])
 
 describe "scope diff calculation", () ->
-	xmlTemplater= new DocXTemplater()
+	xmlUtil= new XmlUtil()
 	it "should compute the scopeDiff between 2 <w:t>" , () ->
-		scope= xmlTemplater.calcScopeDifference """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
+		scope= xmlUtil.getListDifferenceXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([])
 	it "should compute the scopeDiff between 2 <w:t> in an Array", () ->
-		scope= xmlTemplater.calcScopeDifference """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
+		scope= xmlUtil.getListDifferenceXmlElements """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
 		expect(scope).toEqual([])
 	it 'should compute the scopeDiff between a w:t in an array and the other outside', () ->
-		scope= xmlTemplater.calcScopeDifference """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
+		scope= xmlUtil.getListDifferenceXmlElements """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
 		expect(scope).toEqual([ { tag : '</w:tc>', offset : 26 }, { tag : '</w:tr>', offset : 33 }, { tag : '</w:tbl>', offset : 40 } ])
 
 describe "scope inner text", () ->
@@ -313,8 +308,6 @@ describe 'DocxQrCode module', () ->
 			waitsFor( ()->fCalled)
 
 			runs () ->
-				console.log('fCalled')
-				console.log('now4:'+((new Date()).getTime()-time.getTime()))
 				expect(f.test).toHaveBeenCalled();
 				expect(f.test.calls.length).toEqual(1);
 				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
@@ -560,4 +553,3 @@ describe 'qr code testing', () ->
 				# if (docX['qrCodeTaggingLoopExample.docx'].zip.files[i].data)!=null
 				# 	expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].data.length).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].data.length)
 				# expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].data).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].data)
-console.log('now4:'+((new Date()).getTime()-time.getTime()))
