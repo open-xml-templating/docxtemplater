@@ -46,6 +46,7 @@ gulp.task('livereload',['coffee'],function(cb)
 		})
 
 gulp.task('jasmine', ['coffee'], function(cb) {
+	time=new Date();
 	var child = spawn("cmd", ["/c","jasmine-node","docxgenTest.spec.js"], {cwd:paths.testDirectory});
 	stdout = '',
 	stderr = '';
@@ -60,11 +61,6 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 	});
 
 	child.stderr.setEncoding('utf8');
-
-	child.stderr.on('data', function (data) {
-		stderr += data;
-		gutil.log(gutil.colors.red(data));
-	});
 
 	child.on('close', function(code) {
 		regex=/([0-9]+) tests, ([0-9]+) assertions, ([0-9]+) failures, ([0-9]+) skipped/;

@@ -18,7 +18,7 @@ DocUtils.loadDoc= (path,options={}) ->
 	intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else false
 	callback=if options.callback? then options.callback else null
 	basePath=if options.basePath? then options.basePath else null
-	console.log 'loading Doc:'+path
+	#console.log 'loading Doc:'+path
 	throw 'path not defined' unless path?
 	if path.indexOf('/')!=-1
 		totalPath= path
@@ -51,14 +51,14 @@ DocUtils.loadDoc= (path,options={}) ->
 				if this.status == 200
 					loadFile(this.response)
 				else
-					console.log 'error loading doc'
+					#console.error 'error loading doc'
 					if callback? then callback(true)
 		xhrDoc.send()
 	else
 		httpRegex= new RegExp "(https?)","i"
 		# httpsRegex= new RegExp "(https)://"
 		if httpRegex.test(path)
-			console.log('http(s) url matched:'+path)
+			#console.log('http(s) url matched:'+path)
 			urloptions=(url.parse(path))
 			options =
 				hostname:urloptions.hostname
@@ -67,24 +67,25 @@ DocUtils.loadDoc= (path,options={}) ->
 				rejectUnauthorized:false
 
 			errorCallback= (e) ->
-				console.log("Error: \n" + e.message);
-				console.log( e.stack );
+				#console.error("Error: \n" + e.message);
+				#console.error( e.stack );
 
 			reqCallback= (res)->
 				res.setEncoding('binary')
 				data = ""
 				res.on('data', (chunk)->
-					console.log "Status Code #{res.statusCode}"
-					console.log('received')
+					#console.log "Status Code #{res.statusCode}"
+					#console.log('received')
 					data += chunk
 				)
 				res.on('end', ()->
-					console.log('receivedTotally')
+					#console.log('receivedTotally')
 					loadFile(data))
 				res.on('error',(err)->
-					console.log("Error during HTTP request");
-					console.log(err.message)
-					console.log(err.stack))
+					#console.log("Error during HTTP request");
+					#console.log(err.message)
+					#console.log(err.stack)
+					)
 			switch urloptions.protocol
 				when "https:"
 					req = https.request(options, reqCallback).on('error',errorCallback)
@@ -101,7 +102,7 @@ DocUtils.loadDoc= (path,options={}) ->
 						loadFile(data)
 						if callback? then callback(false)
 			else
-				console.log('loading async:'+totalPath)
+				#console.log('loading async:'+totalPath)
 				try
 					data=fs.readFileSync(totalPath,"binary")
 					loadFile(data)
@@ -143,12 +144,7 @@ DocUtils.xml2Str = (xmlNode) ->
 		else
 			content=(new XMLSerializer()).serializeToString(xmlNode);
 	catch e
-		try
-			# Internet Explorer.
-			content= xmlNode.xml;
-		catch e
-			#Other browsers without XML Serializer
-			console.log('Xmlserializer not supported');
+		content= xmlNode.xml;
 	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
 
 DocUtils.Str2xml= (str) ->

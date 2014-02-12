@@ -9,12 +9,12 @@ DocxQrCode = class DocxQrCode
 		@result=null
 	decode:(@callback) ->
 		_this= this
-		console.log('qrcode')
+		#console.log('qrcode')
 		@qr= new QrCode()
 		@qr.callback= () ->
 			_this.ready= true
 			_this.result= this.result
-			console.log('result:'+_this.result)
+			#console.log('result:'+_this.result)
 
 			testdoc= new _this.xmlTemplater.currentClass this.result, _this.xmlTemplater.toJson()
 			testdoc.applyTags()
@@ -37,7 +37,7 @@ DocxQrCode = class DocxQrCode
 					@data=docXData[@result]
 					@callback(this,@imgName,@num)
 				else
-					console.log('file image loading failed!')
+					#console.log('file image loading failed!')
 					@callback(this,@imgName,@num)
 			try
 				DocUtils.loadDoc(@result,{docx:false,callback:loadDocCallback,async:false})

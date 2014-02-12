@@ -9,7 +9,7 @@ env= if global? then 'node' else 'browser'
 root.DocxGen = class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 	constructor: (content, @Tags={},@intelligentTagging=on,@qrCode=off) ->
-		@finishedCallback= (() -> console.log 'document ready!')
+		@finishedCallback= () -> #console.log 'document ready!'
 		@localImageCreator= (arg,callback) ->
 			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
 			result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
@@ -31,7 +31,7 @@ root.DocxGen = class DocxGen
 			@ready=true
 			@finishedCallback()
 	logUndefined: (tag,scope)->
-		console.log("undefinedTag:"+tag)
+		#console.log("undefinedTag:"+tag)
 	getImageList:()-> @imgManager.getImageList()
 	setImage: (path,data) -> @imgManager.setImage(path,data)
 	load: (content)->
@@ -76,7 +76,7 @@ root.DocxGen = class DocxGen
 			if env=='node'
 				fs.writeFile process.cwd()+'/'+name, result, 'base64', (err) ->
 					if err then throw err
-					console.log 'file Saved'
+					#console.log 'file Saved'
 			else
 				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"

@@ -4,7 +4,9 @@ env= if global? then 'node' else 'browser'
 root.docX={}
 root.docXData={}
 
+
 if env=='node'
+	time= new Date()
 	global.http= require('http')
 	global.https= require('https')
 	global.fs= require('fs')
@@ -15,19 +17,17 @@ if env=='node'
 	global.url= require('url')
 
 
+	console.log('now1:'+((new Date()).getTime()-time.getTime()))
+
 	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);
 	['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
 	['docxgen.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../js/' + file), file);
+	console.log('now2:'+((new Date()).getTime()-time.getTime()))
 
 DocUtils.loadDoc('imageExample.docx')
-DocUtils.loadDoc('image.png',{docx:false})
-DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
-DocUtils.loadDoc('BMW_logo.png',{docx:false})
-DocUtils.loadDoc('Firefox_logo.png',{docx:false})
-DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
 DocUtils.loadDoc('tagExample.docx')
 DocUtils.loadDoc('tagExampleExpected.docx')
 DocUtils.loadDoc('tagLoopExample.docx')
@@ -45,7 +45,15 @@ DocUtils.loadDoc('qrCodeTaggingExample.docx')
 DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExample.docx')
 DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx')
+console.log('nowp:'+((new Date()).getTime()-time.getTime()))
+
+DocUtils.loadDoc('image.png',{docx:false})
+DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
+DocUtils.loadDoc('BMW_logo.png',{docx:false})
+DocUtils.loadDoc('Firefox_logo.png',{docx:false})
+DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
 DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
+console.log('now3:'+((new Date()).getTime()-time.getTime()))
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -285,7 +293,6 @@ describe 'DocxQrCode module', () ->
 
 
 		it "should work with Blablalalabioeajbiojbepbroji", () ->
-
 			runs () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
@@ -306,6 +313,8 @@ describe 'DocxQrCode module', () ->
 			waitsFor( ()->fCalled)
 
 			runs () ->
+				console.log('fCalled')
+				console.log('now4:'+((new Date()).getTime()-time.getTime()))
 				expect(f.test).toHaveBeenCalled();
 				expect(f.test.calls.length).toEqual(1);
 				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
@@ -551,3 +560,4 @@ describe 'qr code testing', () ->
 				# if (docX['qrCodeTaggingLoopExample.docx'].zip.files[i].data)!=null
 				# 	expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].data.length).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].data.length)
 				# expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].data).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].data)
+console.log('now4:'+((new Date()).getTime()-time.getTime()))

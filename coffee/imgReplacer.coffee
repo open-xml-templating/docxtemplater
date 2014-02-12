@@ -13,12 +13,12 @@ ImgReplacer = class ImgReplacer
 		///g, @xmlTemplater.content
 		this
 	replaceImages: ()->
-		console.log 'replacing Images ...'
+		#console.log 'replacing Images ...'
 		qr=[]
 
 		callback= (docxqrCode) ->
-			console.log ('removing qrcode')
-			console.log 'setting image:'+"word/media/#{docxqrCode.imgName}"
+			#console.log ('removing qrcode')
+			#console.log 'setting image:'+"word/media/#{docxqrCode.imgName}"
 			docxqrCode.xmlTemplater.numQrCode--
 			docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
 			docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
@@ -29,7 +29,7 @@ ImgReplacer = class ImgReplacer
 				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
 
 				if tagrId==undefined
-					console.log 'tagRid not defined, trying alternate method'
+					#console.log 'tagRid not defined, trying alternate method'
 					tagrId= xmlImg.getElementsByTagName("a:blip")[0]
 				if tagrId!=undefined
 					rId = tagrId.getAttribute('r:embed')
@@ -38,7 +38,7 @@ ImgReplacer = class ImgReplacer
 					if oldFile!=null
 						tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 						if tag==undefined
-							console.log 'tag not defined, trying alternate method'
+							#console.log 'tag not defined, trying alternate method'
 							tag=xmlImg.getElementsByTagName('wp:docPr')[0]
 						if tag!=undefined
 
@@ -60,11 +60,11 @@ ImgReplacer = class ImgReplacer
 
 								tag.setAttribute('name',"#{imgName}")
 								tagrId.setAttribute('r:embed',"rId#{newId}")
-								console.log "tagrId:"+tagrId.getAttribute('r:embed')
+								#console.log "tagrId:"+tagrId.getAttribute('r:embed')
 								imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 
 								if imageTag==undefined
-									console.log 'imagetag not defined, trying alternate method'
+									#console.log 'imagetag not defined, trying alternate method'
 									imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
 
 								replacement= DocUtils.xml2Str imageTag
@@ -77,7 +77,7 @@ ImgReplacer = class ImgReplacer
 								else
 									if /\.png$/.test(oldFile.name)
 										do (imgName) =>
-											console.log(oldFile.name)
+											#console.log(oldFile.name)
 											base64= JSZipBase64.encode oldFile.data
 											binaryData = new Buffer(base64, 'base64')
 											png= new PNG(binaryData)
@@ -103,7 +103,7 @@ ImgReplacer = class ImgReplacer
 				newId= @xmlTemplater.DocxGen.imgManager.addImageRels(imgName,imgData)
 				tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 				if tag==undefined
-					console.log 'tag not defined, trying alternate method'
+					#console.log 'tag not defined, trying alternate method'
 					tag=xmlImg.getElementsByTagName('wp:docPr')[0]
 				if tag!=undefined
 
@@ -113,13 +113,13 @@ ImgReplacer = class ImgReplacer
 
 					tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
 					if tagrId==undefined
-						console.log 'tagRid not defined, trying alternate method'
+						#console.log 'tagRid not defined, trying alternate method'
 						tagrId= xmlImg.getElementsByTagName("a:blip")[0]
 					if tagrId!=undefined
 						tagrId.setAttribute('r:embed',"rId#{newId}")
 						imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
 						if imageTag==undefined
-							console.log 'imagetag not defined, trying alternate method'
+							#console.log 'imagetag not defined, trying alternate method'
 							imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
 
 						@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
