@@ -5,9 +5,9 @@ env= if global? then 'node' else 'browser'
 
 TemplaterState =  class TemplaterState
 	calcStartTag: (bracket) ->
-		@matches[bracket.start.i].offset+@matches[bracket.start.i][1].length+@charactersAdded[bracket.start.i]+bracket.start.j
+		@matches[bracket.start.numMatch].offset+@matches[bracket.start.numMatch][1].length+@charactersAdded[bracket.start.numMatch]+bracket.start.numCharacter
 	calcEndTag: (bracket)->
-		@matches[bracket.end.i].offset+@matches[bracket.end.i][1].length+@charactersAdded[bracket.end.i]+bracket.end.j+1
+		@matches[bracket.end.numMatch].offset+@matches[bracket.end.numMatch][1].length+@charactersAdded[bracket.end.numMatch]+bracket.end.numCharacter+1
 	initialize:()->
 		@inForLoop= false # bracket with sharp: {#forLoop}______{/forLoop}
 		@inTag= false # all brackets  {___}
