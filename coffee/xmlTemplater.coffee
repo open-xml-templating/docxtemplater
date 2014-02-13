@@ -30,11 +30,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		DocUtils.decode_utf8(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
 		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagX}[^>]*>)([^<>]*)?</#{@tagX}>",@content)
-	calcInnerTextScope: (text,start,end,tag) -> #tag: w:t
-		endTag= text.indexOf('</'+tag+'>',end)
+	calcOuterXml: (text,start,end,xmlTag) -> #tag: w:t
+		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
-		endTag+=('</'+tag+'>').length
-		startTag = Math.max text.lastIndexOf('<'+tag+'>',start), text.lastIndexOf('<'+tag+' ',start)
+		endTag+=('</'+xmlTag+'>').length
+		startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
 		if startTag==-1 then throw "can't find startTag"
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 	findOuterTagsContent: () ->
@@ -108,13 +108,13 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		nextFile
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{content,start,end}= @findOuterTagsContent()
-		resultFullScope = @calcInnerTextScope @content, start, end, elementDashLoop
+		outerXml = @calcOuterXml @content, start, end, elementDashLoop
 		for t in [0..@templaterState.matches.length]
-			@templaterState.charactersAdded[t]-=resultFullScope.startTag
-		B= resultFullScope.text
-		if (@content.indexOf B)==-1 then throw "couln't find B in @content"
-		A = B
-		copyA= A
+			@templaterState.charactersAdded[t]-=outerXml.startTag
+		outerXmlText= outerXml.text
+		if (@content.indexOf outerXmlText)==-1 then throw "couln't find outerXmlText in @content"
+		innerXmlText = outerXmlText
+		copyinnerXmlText= innerXmlText
 
 		#for deleting the opening tag
 
@@ -123,19 +123,19 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if sharp==false then @templaterState.textInsideTag= "-"+@templaterState.loopOpen.element+" "+@templaterState.loopOpen.tag
 		if sharp==true then @templaterState.textInsideTag= "#"+@templaterState.loopOpen.tag
 
-		A= @replaceTagByValue("",A)
-		if copyA==A then throw "A should have changed after deleting the opening tag"
-		copyA= A
+		innerXmlText= @replaceTagByValue("",innerXmlText)
+		if copyinnerXmlText==innerXmlText then throw "innerXmlText should have changed after deleting the opening tag"
+		copyinnerXmlText= innerXmlText
 
 		@templaterState.textInsideTag= "/"+@templaterState.loopOpen.tag
 		#for deleting the closing tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopClose.end.numXmlTag,"numCharacter":@templaterState.loopClose.end.numCharacter}
 		@templaterState.tagStart= {"numXmlTag":@templaterState.loopClose.start.numXmlTag,"numCharacter":@templaterState.loopClose.start.numCharacter}
-		A= @replaceTagByValue("",A)
+		innerXmlText= @replaceTagByValue("",innerXmlText)
 
-		if copyA==A then throw "A should have changed after deleting the opening tag"
+		if copyinnerXmlText==innerXmlText then throw "innerXmlText should have changed after deleting the opening tag"
 
-		return @forLoop(A,B)
+		return @forLoop(innerXmlText,outerXmlText)
 
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber

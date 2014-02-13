@@ -159,7 +159,7 @@ describe "scope inner text", () ->
 	it "should find the scope" , () ->
 		xmlTemplater= new DocXTemplater()
 		docX['tagProduitLoop.docx']= new DocxGen(docXData['tagProduitLoop.docx'])
-		scope= xmlTemplater.calcInnerTextScope docX['tagProduitLoop.docx'].zip.files["word/document.xml"].data ,1195,1245,'w:p'
+		scope= xmlTemplater.calcOuterXml docX['tagProduitLoop.docx'].zip.files["word/document.xml"].data ,1195,1245,'w:p'
 		obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
 		expect(scope.endTag).toEqual(obj.endTag)
 		expect(scope.startTag).toEqual(obj.startTag)
