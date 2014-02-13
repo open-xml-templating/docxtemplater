@@ -137,7 +137,12 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 		return @forLoop(A,B)
 
-	replaceXmlTag: (content,tagNumber,insideValue,spacePreserve=false,noStartTag=false) ->
+	replaceXmlTag: (content,options) ->
+		tagNumber=options.tagNumber
+		insideValue=options.insideValue
+		spacePreserve= if options.spacePreserve? then options.spacePreserve else false
+		noStartTag= if options.noStartTag? then options.noStartTag else false
+
 		@templaterState.matches[tagNumber][2]=insideValue #so that the templaterState.matches are still correct
 		startTag= @templaterState.matches[tagNumber].offset+@templaterState.charactersAdded[tagNumber]  #where the open tag starts: <w:t>
 		#calculate the replacer according to the params
@@ -157,21 +162,38 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		content
 
 	replaceTagByValue: (newValue,content=@content) ->
-		console.log(@templaterState)
 		if (@templaterState.matches[@templaterState.bracketEnd.numMatch][2].indexOf ('}'))==-1 then throw "no closing bracket at @templaterState.bracketEnd.numMatch #{@templaterState.matches[@templaterState.bracketEnd.numMatch][2]}"
 		if (@templaterState.matches[@templaterState.bracketStart.numMatch][2].indexOf ('{'))==-1 then throw "no opening bracket at @templaterState.bracketStart.numMatch #{@templaterState.matches[@templaterState.bracketStart.numMatch][2]}"
 		copyContent=content
 		if @templaterState.bracketEnd.numMatch==@templaterState.bracketStart.numMatch #<w>{aaaaa}</w>
 			if (@templaterState.matches[@templaterState.bracketStart.numMatch].first?)
 				insideValue= @templaterState.matches[@templaterState.bracketStart.numMatch][2].replace "{#{@templaterState.textInsideTag}}", newValue
-				content= @replaceXmlTag(content,@templaterState.bracketStart.numMatch,insideValue,true,true)
+				content= @replaceXmlTag(content,
+				{
+					tagNumber:@templaterState.bracketStart.numMatch
+					insideValue:insideValue
+					spacePreserve:true
+					noStartTag:true
+				})
 
 			else if (@templaterState.matches[@templaterState.bracketStart.numMatch].last?)
 				insideValue= @templaterState.matches[@templaterState.bracketStart.numMatch][0].replace "{#{@templaterState.textInsideTag}}", newValue
-				content= @replaceXmlTag(content,@templaterState.bracketStart.numMatch,insideValue,true,true)
+				content= @replaceXmlTag(content,
+				{
+					tagNumber:@templaterState.bracketStart.numMatch
+					insideValue:insideValue
+					spacePreserve:true
+					noStartTag:true
+				})
 			else
 				insideValue= @templaterState.matches[@templaterState.bracketStart.numMatch][2].replace "{#{@templaterState.textInsideTag}}", newValue
-				content= @replaceXmlTag(content,@templaterState.bracketStart.numMatch,insideValue,true)
+				content= @replaceXmlTag(content,
+				{
+					tagNumber:@templaterState.bracketStart.numMatch
+					insideValue:insideValue
+					spacePreserve:true
+					noStartTag:false
+				})
 
 		else if @templaterState.bracketEnd.numMatch>@templaterState.bracketStart.numMatch
 
@@ -180,23 +202,54 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			subMatches= @templaterState.matches[@templaterState.bracketStart.numMatch][2].match regexRight
 
 			if @templaterState.matches[@templaterState.bracketStart.numMatch].first? #if the content starts with:  {tag</w:t>
-				content= @replaceXmlTag(content,@templaterState.bracketStart.numMatch,newValue,true,true)
+				content= @replaceXmlTag(content,
+				{
+					tagNumber:@templaterState.bracketStart.numMatch
+					insideValue:newValue
+					spacePreserve:true
+					noStartTag:false
+				})
 			else if @templaterState.matches[@templaterState.bracketStart.numMatch].last?
-				content= @replaceXmlTag(content,@templaterState.bracketStart.numMatch,newValue,true,true)
+				content= @replaceXmlTag(content,
+				{
+					tagNumber:@templaterState.bracketStart.numMatch
+					insideValue:newValue
+					spacePreserve:true
+					noStartTag:true
+				})
 			else
 				insideValue=subMatches[1]+newValue
-				content= @replaceXmlTag(content,@templaterState.bracketStart.numMatch,insideValue,true)
+
+				content= @replaceXmlTag(content,
+				{
+					tagNumber:@templaterState.bracketStart.numMatch
+					insideValue:insideValue
+					spacePreserve:true
+					noStartTag:false
+				})
 
 			#2. for in between (@templaterState.bracketStart.numMatch+1...@templaterState.bracketEnd.numMatch) replace whole by ""
 			for k in [(@templaterState.bracketStart.numMatch+1)...@templaterState.bracketEnd.numMatch]
 				@templaterState.charactersAdded[k+1]=@templaterState.charactersAdded[k]
-				content= @replaceXmlTag(content,k,"")
+				content= @replaceXmlTag(content,
+				{
+					tagNumber:k
+					insideValue:""
+					spacePreserve:false
+					noStartTag:false
+				})
 
 			#3. for the last (@templaterState.bracketEnd.numMatch) replace ..}__ by ".." ###
 			regexLeft= /^[^}]*}(.*)$/;
 			insideValue = @templaterState.matches[@templaterState.bracketEnd.numMatch][2].replace regexLeft, '$1'
 			@templaterState.charactersAdded[@templaterState.bracketEnd.numMatch+1]=@templaterState.charactersAdded[@templaterState.bracketEnd.numMatch]
-			content= @replaceXmlTag(content,k, insideValue,true)
+			content= @replaceXmlTag(content,
+			{
+				tagNumber:k
+				insideValue:insideValue
+				spacePreserve:true
+				noStartTag:false
+			})
 
 		for match, j in @templaterState.matches when j>@templaterState.bracketEnd.numMatch
 			@templaterState.charactersAdded[j+1]=@templaterState.charactersAdded[j]
