@@ -3,11 +3,11 @@ env= if global? then 'node' else 'browser'
 
 #This class responsibility is to store an xmlTemplater's state
 
-TemplaterState =  class TemplaterState
+root.TemplaterState =  class TemplaterState
 	calcStartTag: (tag) ->
-		@matches[tag.start.numMatch].offset+@matches[tag.start.numMatch][1].length+@charactersAdded[tag.start.numMatch]+tag.start.numCharacter
+		@matches[tag.start.numXmlTag].offset+@matches[tag.start.numXmlTag][1].length+@charactersAdded[tag.start.numXmlTag]+tag.start.numCharacter
 	calcEndTag: (tag)->
-		@matches[tag.end.numMatch].offset+@matches[tag.end.numMatch][1].length+@charactersAdded[tag.end.numMatch]+tag.end.numCharacter+1
+		@matches[tag.end.numXmlTag].offset+@matches[tag.end.numXmlTag][1].length+@charactersAdded[tag.end.numXmlTag]+tag.end.numCharacter+1
 	initialize:()->
 		@inForLoop= false # tag with sharp: {#forLoop}______{/forLoop}
 		@inTag= false # all tags  {___}
@@ -35,7 +35,3 @@ TemplaterState =  class TemplaterState
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':(@textInsideTag.replace dashInnerRegex, '$2'),'element':(@textInsideTag.replace dashInnerRegex, '$1')}
 		if @textInsideTag[0]=='/'
 			@loopClose={'start':@tagStart,'end':@tagEnd}
-
-
-root.TemplaterState=TemplaterState
-
