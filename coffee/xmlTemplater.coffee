@@ -14,16 +14,19 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@templaterState.matches = @_getFullTextMatchesFromData()
 		@templaterState.charactersAdded= (0 for i in [0...@templaterState.matches.length])
 		@handleRecursiveCase()
-	getValueFromScope: (tag,scope) ->
-		@useTag(tag)
+	getValueFromScope: (tag=@templaterState.loopOpen.tag,scope=@currentScope) ->
 		if scope[tag]?
-			content= DocUtils.encode_utf8 scope[tag]
+			if typeof scope[tag]=='string'
+				@useTag(tag)
+				value= DocUtils.encode_utf8 scope[tag]
+				if value.indexOf('{')!=-1 or value.indexOf('}')!=-1
+					throw "You can't enter { or  } inside the content of a variable"
+			else value= scope[tag]
 		else
-			content= "undefined"
+			@useTag(tag)
+			value= "undefined"
 			@DocxGen.logUndefined(tag,scope)
-		if content.indexOf('{')!=-1 or content.indexOf('}')!=-1
-			throw "You can't enter { or  } inside the content of a variable"
-		content
+		value
 	getFullText:() ->
 		@templaterState.matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
 		output= (match[2] for match in @templaterState.matches) #get only the text
@@ -60,7 +63,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		usedTags:@usedTags
 		localImageCreator:@localImageCreator
 		imageId:@imageId
-	forLoop: (innerTagsContent="",outerTagsContent="") ->
+	forLoop: (innerTagsContent=@findInnerTagsContent().content,outerTagsContent=@findOuterTagsContent().content)->
 		###
 			<w:t>{#forTag} blabla</w:t>
 			Blabla1
@@ -83,10 +86,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-		if innerTagsContent=="" and outerTagsContent==""
-			outerTagsContent= @findOuterTagsContent().content
-			innerTagsContent= @findInnerTagsContent().content
-			if outerTagsContent[0]!='{' or outerTagsContent.indexOf('{')==-1 or outerTagsContent.indexOf('/')==-1 or outerTagsContent.indexOf('}')==-1 or outerTagsContent.indexOf('#')==-1 then throw "no {,#,/ or } found in outerTagsContent: #{outerTagsContent}"
 
 		tagValue=@currentScope[@templaterState.loopOpen.tag]
 		newContent= "";
@@ -306,7 +305,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	calcIntellegentlyDashElement:()->return false
 	executeEndTag:()->
 		if @templaterState.loopType()=='simple'
-			@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag,@currentScope))
+			@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
 		if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
 			#You DashLoop= take the outer scope only if you are in a table
 			if @templaterState.loopType()=='dash'
