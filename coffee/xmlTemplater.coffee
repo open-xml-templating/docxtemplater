@@ -272,8 +272,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		###
 		Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
 		For example with this string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
-			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift)
-			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush)
+			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift) (in this case 'I am')
+			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush) (in this case 'sleeping')
 		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
 		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
 		###
@@ -303,7 +303,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			u = u[s]
 		if tag!=""
 			u[tag]= true
-	calcIntellegentlyDashElement:()->return false
+	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	replaceSimpleTag:()->
 		@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
 	replaceLoopTag:()->
@@ -313,7 +313,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if @intelligentTagging==on
 			dashElement=@calcIntellegentlyDashElement()
 			if dashElement!=false then return @dashLoop(dashElement,true)
-		return @forLoop()
+		@forLoop()
 	calcSubXmlTemplater:(innerTagsContent,scope)->
 		options= @toJson()
 		if scope?
