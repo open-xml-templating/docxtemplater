@@ -32,7 +32,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		output= (match[2] for match in @templaterState.matches) #get only the text
 		DocUtils.decode_utf8(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagX}[^>]*>)([^<>]*)?</#{@tagX}>",@content)
+		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagX}[^>]*>)([^<>]*)</#{@tagX}>",@content)
 	calcOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
@@ -251,7 +251,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	applyTags:()->
 		@templaterState.initialize()
 		for match,numXmlTag in @templaterState.matches
-			innerText= if match[2]? then match[2] else "" #text inside the <w:t>
+			innerText= match[2] #text inside the <w:t>
 			for character,numCharacter in innerText
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
 				for m,t in @templaterState.matches when t<=numXmlTag
