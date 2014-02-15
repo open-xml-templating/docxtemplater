@@ -260,9 +260,10 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					@templaterState.startTag()
 				else if character == '}'
 					@templaterState.endTag()
-					result=@executeEndTag()
-					if result!=undefined
-						return result
+					if @templaterState.loopType()=='simple'
+						@replaceSimpleTag()
+					if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
+						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		new ImgReplacer(this).findImages().replaceImages()
@@ -303,18 +304,16 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if tag!=""
 			u[tag]= true
 	calcIntellegentlyDashElement:()->return false
-	executeEndTag:()->
-		if @templaterState.loopType()=='simple'
-			@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
-		if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
-			#You DashLoop= take the outer scope only if you are in a table
-			if @templaterState.loopType()=='dash'
-				return @dashLoop(@templaterState.loopOpen.element)
-			if @intelligentTagging==on
-				dashElement=@calcIntellegentlyDashElement()
-				if dashElement!=false then return @dashLoop(dashElement,true)
-			return @forLoop()
-		return undefined
+	replaceSimpleTag:()->
+		@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
+	replaceLoopTag:()->
+		#You DashLoop= take the outer scope only if you are in a table
+		if @templaterState.loopType()=='dash'
+			return @dashLoop(@templaterState.loopOpen.element)
+		if @intelligentTagging==on
+			dashElement=@calcIntellegentlyDashElement()
+			if dashElement!=false then return @dashLoop(dashElement,true)
+		return @forLoop()
 	calcSubXmlTemplater:(innerTagsContent,scope)->
 		options= @toJson()
 		if scope?
