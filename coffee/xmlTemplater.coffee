@@ -136,21 +136,23 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 		return @forLoop(innerXmlText,outerXmlText)
 
+	calcReplacer:(noStartTag,spacePreserve, insideValue,xmlTagNumber)->
+		if noStartTag == true
+			return insideValue
+		else
+			if spacePreserve==true
+				return """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
+			else
+				return @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
 		spacePreserve= if options.spacePreserve? then options.spacePreserve else true
 		noStartTag= if options.noStartTag? then options.noStartTag else true
-
+		replacer=@calcReplacer(noStartTag,spacePreserve,insideValue,xmlTagNumber)
 		@templaterState.matches[xmlTagNumber][2]=insideValue #so that the templaterState.matches are still correct
 		startTag= @templaterState.matches[xmlTagNumber].offset+@templaterState.charactersAdded[xmlTagNumber]  #where the open tag starts: <w:t>
 		#calculate the replacer according to the params
-		if noStartTag == true
-			replacer= insideValue
-		else
-			if spacePreserve==true
-				replacer= """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
-			else replacer= @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
 		@templaterState.charactersAdded[xmlTagNumber+1]+=replacer.length-@templaterState.matches[xmlTagNumber][0].length
 		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw "content #{@templaterState.matches[xmlTagNumber][0]} not found in content"
 		copyContent= content
