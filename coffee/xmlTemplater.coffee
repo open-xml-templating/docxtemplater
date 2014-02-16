@@ -165,49 +165,31 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf ('{'))==-1 then throw "no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}"
 		copyContent=content
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
-			if (@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?)
-				insideValue= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "{#{@templaterState.textInsideTag}}", newValue
-				content= @replaceXmlTag(content,
-				{
-					xmlTagNumber:@templaterState.tagStart.numXmlTag
-					insideValue:insideValue
-					noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
-				})
-			else
-				insideValue= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "{#{@templaterState.textInsideTag}}", newValue
-				content= @replaceXmlTag(content,
-				{
-					xmlTagNumber:@templaterState.tagStart.numXmlTag
-					insideValue:insideValue
-					noStartTag:false
-				})
-
+			insideValue= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "{#{@templaterState.textInsideTag}}", newValue
+			content= @replaceXmlTag(content,
+			{
+				xmlTagNumber:@templaterState.tagStart.numXmlTag
+				insideValue:insideValue
+				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+			})
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag
 
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace __{.. by __value
 			regexRight= /^([^{]*){.*$/
 			subMatches= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].match regexRight
 
-			if @templaterState.matches[@templaterState.tagStart.numXmlTag].first? #if the content starts with:  {tag</w:t>
+			if @templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last? #if the content starts with:  {tag</w:t>
 				content= @replaceXmlTag(content,
 				{
 					xmlTagNumber:@templaterState.tagStart.numXmlTag
 					insideValue:newValue
-					noStartTag:false
-				})
-			else if @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
-				content= @replaceXmlTag(content,
-				{
-					xmlTagNumber:@templaterState.tagStart.numXmlTag
-					insideValue:newValue
+					noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 				})
 			else
-				insideValue=subMatches[1]+newValue
-
 				content= @replaceXmlTag(content,
 				{
 					xmlTagNumber:@templaterState.tagStart.numXmlTag
-					insideValue:insideValue
+					insideValue:subMatches[1]+newValue
 					noStartTag:false
 				})
 

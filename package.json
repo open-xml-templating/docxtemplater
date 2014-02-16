@@ -10,7 +10,7 @@
     }
   ],
   "bin": {
-    "docxgen": "./docxgenNode/bin/docxgen.js"
+    "docxtemplater": "./docxgenNode/bin/docxgen.js"
   },
   "keywords": [
     "DocX",

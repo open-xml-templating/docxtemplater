@@ -1,7 +1,7 @@
 (function() {
    showHelp= function()
     {
-	console.log('Usage: docxgen <configFilePath>');
+	console.log('Usage: docxtemplater <configFilePath>');
 	console.log('--- ConfigFile Format: json');
 	console.log('--- see Config.json in docxgenjs/docxgenNode');
     }
@@ -65,17 +65,10 @@ if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null |
       console.log(docX[docxFileName]);
     docX[docxFileName].setTemplateVars(jsonInput)
     docX[docxFileName].qrCode=DocUtils.config["qrcode"];
-
-    
     docX[docxFileName].finishedCallback=function () {
       this.output(true,outputFile)
       console.log('outputed')
     }
     docX[docxFileName].applyTemplateVars()
-
-    // docX[docxFileName].output(true,outputFile)
   }
-
-  
-
 }).call(this)

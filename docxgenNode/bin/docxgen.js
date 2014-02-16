@@ -31,11 +31,3 @@ return vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../js/' + fil
 
 require(lib + '/main.js');
 
-
-// global.vm = require('vm');
-// var path = require('path');
-// global.https = require('https');
-// global.http= require('http');
-// global.fs = require('fs');
-// vm.runInThisContext(global.fs.readFileSync('docxgen.js'), 'docxgen.js');
-// DocUtils.loadDoc('https://ws.sfereno.com/report/images/deperditionsThermiques?murs=34&renouvellementAir=14&plancherHaut=21&pontsThermiques=4&ouvertures=11&plancherBas=16')
