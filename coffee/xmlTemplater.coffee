@@ -5,7 +5,7 @@ env= if global? then 'node' else 'browser'
 
 XmlTemplater =  class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
-		@tagX='' #TagX represents the name of the tag that contains text. For example, in docx, @tagX='w:t'
+		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@currentScope=@Tags
@@ -32,7 +32,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		output= (match[2] for match in @templaterState.matches) #get only the text
 		DocUtils.decode_utf8(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagX}[^>]*>)([^<>]*)</#{@tagX}>",@content)
+		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 	calcOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
@@ -149,8 +149,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			replacer= insideValue
 		else
 			if spacePreserve==true
-				replacer= """<#{@tagX} xml:space="preserve">#{insideValue}</#{@tagX}>"""
-			else replacer= @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagX}>"
+				replacer= """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
+			else replacer= @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
 		@templaterState.charactersAdded[xmlTagNumber+1]+=replacer.length-@templaterState.matches[xmlTagNumber][0].length
 		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw "content #{@templaterState.matches[xmlTagNumber][0]} not found in content"
 		copyContent= content
@@ -292,7 +292,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			@templaterState.matches.push pn #add at the beginning
 			@templaterState.charactersAdded.push 0
 
-		regex= "(<#{@tagX}[^>]*>)([^>]+)$"
+		regex= "(<#{@tagXml}[^>]*>)([^>]+)$"
 		@content.replace (new RegExp(regex)),replacerPush
 
 	#set the tag as used, so that DocxGen can return the list off all tags

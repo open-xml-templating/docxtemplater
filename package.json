@@ -1,5 +1,5 @@
 {
-  "name": "docxgen",
+  "name": "docxtemplater",
   "version": "0.3.0",
   "author": "Edgar Hipp <hipp.edg@gmail.com>",
   "description": "A docX Generator",
@@ -9,9 +9,6 @@
       "email": "hipp.edg@gmail.com"
     }
   ],
-  "scripts": {
-    "preinstall": "npm install gulp -g"
-  },
   "bin": {
     "docxgen": "./docxgenNode/bin/docxgen.js"
   },
