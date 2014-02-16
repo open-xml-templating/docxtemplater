@@ -264,21 +264,17 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
 ## Node Installation and usage:
 
-### Installation
+### Node Installation
 
 The node package is meant to be installed globally, so that the docxgen command becomes available to the path and is accessible from the terminal.
 
-Steps to install the node package:
-
- - git clone the repository
- - `cd docxgenjs`
- - `npm install -g`
+`npm install docxtemplater -g`
 
 You're finished.
 
-### Usage
+### Node Usage
 
-	`docxgen <configFile>`
+	`docxtemplater <configFile>`
 
 configFile Structure: json Structure
 
