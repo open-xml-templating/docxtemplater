@@ -136,7 +136,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 		return @forLoop(innerXmlText,outerXmlText)
 
-	calcReplacer:(noStartTag,spacePreserve, insideValue,xmlTagNumber)->
+	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber)->
 		if noStartTag == true
 			return insideValue
 		else
@@ -148,8 +148,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
 		spacePreserve= if options.spacePreserve? then options.spacePreserve else true
-		noStartTag= if options.noStartTag? then options.noStartTag else true
-		replacer=@calcReplacer(noStartTag,spacePreserve,insideValue,xmlTagNumber)
+		noStartTag= if options.noStartTag? then options.noStartTag else false
+		replacer=@xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber)
 		@templaterState.matches[xmlTagNumber][2]=insideValue #so that the templaterState.matches are still correct
 		startTag= @templaterState.matches[xmlTagNumber].offset+@templaterState.charactersAdded[xmlTagNumber]  #where the open tag starts: <w:t>
 		#calculate the replacer according to the params
@@ -176,7 +176,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			})
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag
 
-			# 1. for the first (@templaterState.tagStart.numXmlTag): replace __{.. by __value
+			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 			regexRight= /^([^{]*){.*$/
 			subMatches= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].match regexRight
 
@@ -192,7 +192,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				{
 					xmlTagNumber:@templaterState.tagStart.numXmlTag
 					insideValue:subMatches[1]+newValue
-					noStartTag:false
 				})
 
 			#2. for in between (@templaterState.tagStart.numXmlTag+1...@templaterState.tagEnd.numXmlTag) replace whole by ""
@@ -203,7 +202,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					xmlTagNumber:k
 					insideValue:""
 					spacePreserve:false
-					noStartTag:false
 				})
 
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
@@ -214,7 +212,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			{
 				xmlTagNumber:k
 				insideValue:insideValue
-				noStartTag:false
 			})
 
 		for match, j in @templaterState.matches when j>@templaterState.tagEnd.numXmlTag
