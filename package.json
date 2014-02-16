@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Edgar Hipp <hipp.edg@gmail.com>",
   "description": "A docX Generator",
   "contributors": [
