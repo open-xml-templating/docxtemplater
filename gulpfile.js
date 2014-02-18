@@ -33,7 +33,7 @@ gulp.task('coffee', function(cb) {
 	// Minify and copy all JavaScript (except vendor scripts)
 	return gulp.src(paths.coffee)
 		.pipe(coffee())
-		.pipe(uglify())
+		//.pipe(uglify())
 		.pipe(concat('docxgen.js'))
 		.pipe(gulp.dest('./js/'));
 	cb(err)

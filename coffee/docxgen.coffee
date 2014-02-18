@@ -42,7 +42,7 @@ root.DocxGen = class DocxGen
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,{
+			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
@@ -50,10 +50,14 @@ root.DocxGen = class DocxGen
 				localImageCreator:@localImageCreator
 			}
 				this,@Tags,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
-			@zip.files[fileName].data= currentFile.applyTags().content
+			@setData(fileName,currentFile.applyTags().content)
+			#@zip.files[fileName].data= currentFile.applyTags().content
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()
+	setData:(fileName,data)->
+		@zip.remove(fileName)
+		@zip.file(fileName,data)
 	getTags:()->
 		usedTags=[]
 		for fileName in templatedFiles when @zip.files[fileName]?
@@ -89,7 +93,7 @@ root.DocxGen = class DocxGen
 		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
-			usedData=@zip.files[path].data
+			usedData=@zip.files[path].asText()
 			return @getFullText(path,usedData)
 		(new DocXTemplater(data,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
