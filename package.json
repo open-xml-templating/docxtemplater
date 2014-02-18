@@ -9,6 +9,7 @@
       "email": "hipp.edg@gmail.com"
     }
   ],
+  "main":"js/docxgen.js",
   "bin": {
     "docxtemplater": "./docxgenNode/bin/docxgen.js"
   },
