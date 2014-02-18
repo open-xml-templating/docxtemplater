@@ -50,8 +50,6 @@ will result in :
 
 - base64.js
 - jszip.js
-- jszip-load.js
-- jszip-inflate.js
 
 2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended. This method is howewer useful because a lot of browsers are limited for the download size with the Data-URI method.
 
