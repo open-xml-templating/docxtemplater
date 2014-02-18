@@ -138,9 +138,9 @@
       });
       return it("should change the image with another one", function() {
         var newImageData, oldImageData;
-        oldImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].data;
+        oldImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText();
         docX['imageExample.docx'].setImage('word/media/image1.jpeg', docXData['image.png']);
-        newImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].data;
+        newImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText();
         expect(oldImageData).not.toEqual(newImageData);
         return expect(docXData['image.png']).toEqual(newImageData);
       });
@@ -178,11 +178,8 @@
         for (i in docX['tagExample.docx'].zip.files) {
           expect(docX['tagExample.docx'].zip.files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].zip.files[i].options.date);
           expect(docX['tagExample.docx'].zip.files[i].name).toBe(docX['tagExampleExpected.docx'].zip.files[i].name);
-          expect(docX['tagExample.docx'].zip.files[i].options.base64).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.base64);
-          expect(docX['tagExample.docx'].zip.files[i].options.binary).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.binary);
-          expect(docX['tagExample.docx'].zip.files[i].options.compression).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.compression);
           expect(docX['tagExample.docx'].zip.files[i].options.dir).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.dir);
-          _results.push(expect(docX['tagExample.docx'].zip.files[i].data).toBe(docX['tagExampleExpected.docx'].zip.files[i].data));
+          _results.push(expect(docX['tagExample.docx'].zip.files[i].asText()).toBe(docX['tagExampleExpected.docx'].zip.files[i].asText()));
         }
         return _results;
       });
@@ -415,7 +412,7 @@
       var obj, scope, xmlTemplater;
       xmlTemplater = new DocXTemplater();
       docX['tagProduitLoop.docx'] = new DocxGen(docXData['tagProduitLoop.docx']);
-      scope = xmlTemplater.calcOuterXml(docX['tagProduitLoop.docx'].zip.files["word/document.xml"].data, 1195, 1245, 'w:p');
+      scope = xmlTemplater.calcOuterXml(docX['tagProduitLoop.docx'].zip.files["word/document.xml"].asText(), 1195, 1245, 'w:p');
       obj = {
         text: "<w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>",
         startTag: 1134,
@@ -537,11 +534,8 @@
       expect(text).toBe(expectedText);
       _results = [];
       for (i in docX['tagIntelligentLoopTable.docx'].zip.files) {
-        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].data);
+        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].asText()).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].asText());
         expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].name);
-        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.base64);
-        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.binary).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.binary);
-        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.compression).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.compression);
         expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.dir);
         _results.push(expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.date));
       }
@@ -777,6 +771,13 @@
           }
         });
       });
+      it("should do it's thing with JSZip.base64", function() {
+        var base64data, data;
+        data = qrcodezip.files['blabla.png'].asText();
+        base64data = JSZipBase64.encode(data);
+        expect(base64data.length).toBe(624);
+        return expect(base64data.substr(0, 50)).toBe("kcNChoKAAAADUlIRFIAAAAAIAAABOAAAAAZ0Uk5TAEAA07AAAE");
+      });
       it("should work with Blablalalabioeajbiojbepbroji", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;
@@ -788,10 +789,10 @@
           };
           spyOn(f, 'test').andCallThrough();
           if (env === 'browser') {
-            qr = new DocxQrCode(qrcodezip.files['blabla.png'].data, obj, "custom.png", 6);
+            qr = new DocxQrCode(qrcodezip.files['blabla.png'].asText(), obj, "custom.png", 6);
             return qr.decode(f.test);
           } else {
-            base64 = JSZipBase64.encode(qrcodezip.files['blabla.png'].data);
+            base64 = JSZipBase64.encode(qrcodezip.files['blabla.png'].asText());
             binaryData = new Buffer(base64, 'base64');
             png = new PNG(binaryData);
             finished = function(a) {
@@ -824,10 +825,10 @@
           };
           spyOn(f, 'test').andCallThrough();
           if (env === 'browser') {
-            qr = new DocxQrCode(qrcodezip.files['custom.png'].data, obj, "custom.png", 6);
+            qr = new DocxQrCode(qrcodezip.files['custom.png'].asText(), obj, "custom.png", 6);
             return qr.decode(f.test);
           } else {
-            base64 = JSZipBase64.encode(qrcodezip.files['custom.png'].data);
+            base64 = JSZipBase64.encode(qrcodezip.files['custom.png'].asText());
             binaryData = new Buffer(base64, 'base64');
             png = new PNG(binaryData);
             finished = function(a) {
@@ -860,10 +861,10 @@
           };
           spyOn(f, 'test').andCallThrough();
           if (env === 'browser') {
-            qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data, obj, "qrcodeTest.png", 4);
+            qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].asText(), obj, "qrcodeTest.png", 4);
             return qr.decode(f.test);
           } else {
-            base64 = JSZipBase64.encode(qrcodezip.files['qrcodeTest.png'].data);
+            base64 = JSZipBase64.encode(qrcodezip.files['qrcodeTest.png'].asText());
             binaryData = new Buffer(base64, 'base64');
             png = new PNG(binaryData);
             finished = function(a) {
@@ -896,10 +897,10 @@
           };
           spyOn(f, 'test').andCallThrough();
           if (env === 'browser') {
-            qr = new DocxQrCode(qrcodezip.files['qrcodetag.png'].data, obj, "tag.png", 2);
+            qr = new DocxQrCode(qrcodezip.files['qrcodetag.png'].asText(), obj, "tag.png", 2);
             return qr.decode(f.test);
           } else {
-            base64 = JSZipBase64.encode(qrcodezip.files['qrcodetag.png'].data);
+            base64 = JSZipBase64.encode(qrcodezip.files['qrcodetag.png'].asText());
             binaryData = new Buffer(base64, 'base64');
             png = new PNG(binaryData);
             finished = function(a) {
@@ -932,11 +933,11 @@
       });
       return it('should add', function() {
         var contentTypeData, contentTypeXml, contentTypes, oldData, relationships, relsData, relsXml;
-        oldData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
+        oldData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText();
         expect(docX['imageExample.docx'].imgManager.addImageRels('image1.png', docXData['bootstrap_logo.png'])).toBe(11);
-        expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData);
-        relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
-        contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].data;
+        expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()).not.toBe(oldData);
+        relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText();
+        contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].asText();
         relsXml = DocUtils.Str2xml(relsData);
         contentTypeXml = DocUtils.Str2xml(contentTypeData);
         relationships = relsXml.getElementsByTagName('Relationship');
@@ -992,21 +993,18 @@
       for (i in docX['tagLoopExample.docx'].zip.files) {
         expect(docX['tagLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.date);
         expect(docX['tagLoopExample.docx'].zip.files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].name);
-        expect(docX['tagLoopExample.docx'].zip.files[i].options.base64).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.base64);
-        expect(docX['tagLoopExample.docx'].zip.files[i].options.binary).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.binary);
-        expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression);
         expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir);
         if (i !== 'word/_rels/document.xml.rels' && i !== '[Content_Types].xml') {
           if (env === 'browser' || i !== "word/document.xml") {
-            if (typeof (_base = docX['tagLoopExample.docx'].zip.files[i]).data === "function" ? _base.data(0) : void 0) {
-              expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length);
+            if (typeof (_base = docX['tagLoopExample.docx'].zip.files[i].asText()) === "function" ? _base(0) : void 0) {
+              expect(docX['tagLoopExample.docx'].zip.files[i].asText().length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].asText().length);
             }
-            expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data);
+            expect(docX['tagLoopExample.docx'].zip.files[i].asText()).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].asText());
           }
         }
       }
-      relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
-      contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].data;
+      relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].asText();
+      contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].asText();
       relsXml = DocUtils.Str2xml(relsData);
       contentTypeXml = DocUtils.Str2xml(contentTypeData);
       relationships = relsXml.getElementsByTagName('Relationship');
