@@ -90,7 +90,9 @@ describe "DocxGenLoading", () ->
 	describe "output and input", () ->
 		it "should be the same" , () ->
 			doc=new DocxGen(root.docXData['tagExample.docx'])
-			expect(doc.output(false)).toEqual(docXData['tagExample.docx'])
+			output=doc.output(false)
+			expect(output.length).toEqual(91348)
+			expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')
 
 describe "DocxGenTemplating", () ->
 	describe "text templating", () ->

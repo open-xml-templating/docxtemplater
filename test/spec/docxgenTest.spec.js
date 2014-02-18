@@ -147,9 +147,11 @@
     });
     return describe("output and input", function() {
       return it("should be the same", function() {
-        var doc;
+        var doc, output;
         doc = new DocxGen(root.docXData['tagExample.docx']);
-        return expect(doc.output(false)).toEqual(docXData['tagExample.docx']);
+        output = doc.output(false);
+        expect(output.length).toEqual(91348);
+        return expect(output.substr(0, 50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn');
       });
     });
   });
