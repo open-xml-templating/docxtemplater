@@ -39,11 +39,10 @@ gulp.task('coffee', function(cb) {
 	cb(err)
 });
 
-gulp.task('livereload',['coffee'],function(cb)
-		{
-			server.changed('SpecRunner.html');
-			cb()
-		})
+gulp.task('livereload',['coffee'],function(cb) {
+	server.changed('SpecRunner.html');
+	cb()
+})
 
 gulp.task('jasmine', ['coffee'], function(cb) {
 	time=new Date();

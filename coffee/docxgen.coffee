@@ -109,3 +109,6 @@ root.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 
+if env=='node'
+	module.exports=root.DocxGen
+

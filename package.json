@@ -17,6 +17,10 @@
     "templates",
     "Generator"
   ],
+  "repository":{
+  	  "type":"git",
+  	  "url":"https://github.com/edi9999/docxtemplater"
+  },
   "dependencies": {
     "xmldom": "0.1.x"
   },
