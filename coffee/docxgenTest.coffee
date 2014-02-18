@@ -85,6 +85,12 @@ describe "DocxGenLoading", () ->
 			newImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].data
 			expect(oldImageData).not.toEqual(newImageData)
 			expect(docXData['image.png']).toEqual(newImageData)
+	describe "output and input", () ->
+		it "should be the same" , () ->
+			doc=new DocxGen(root.docXData['tagExample.docx'])
+			output=doc.output(false)
+			expect(output.length).toEqual(91348)
+			expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')
 
 describe "DocxGenTemplating", () ->
 	describe "text templating", () ->

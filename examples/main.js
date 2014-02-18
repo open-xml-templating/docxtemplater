@@ -57,14 +57,12 @@ for (var i = 0; i < viewRawButtonList.length; i++) {
 			if(childs[j].tagName=='TEXTAREA')
 			{
 				raw=(childs[j].getAttribute("raw"))
-				console.log	(raw)
 				var doc=new DocxGen(docXData[raw])
 				doc.output()
 			}
-		};
-
+		}
 	}
-};
+}
 
 }
 
