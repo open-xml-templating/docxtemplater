@@ -427,7 +427,7 @@ Created by Edgar HIPP
         if (!(this.zip.files[fileName] != null)) {
           continue;
         }
-        currentFile = new DocXTemplater(this.zip.files[fileName].data, {
+        currentFile = new DocXTemplater(this.zip.files[fileName].asText(), {
           DocxGen: this,
           Tags: this.Tags,
           intelligentTagging: this.intelligentTagging

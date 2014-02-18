@@ -60,7 +60,7 @@ root.DocxGen = class DocxGen
 	getTags:()->
 		usedTags=[]
 		for fileName in templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].data,{
+			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
