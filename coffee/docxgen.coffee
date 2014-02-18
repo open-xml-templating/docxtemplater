@@ -33,7 +33,7 @@ root.DocxGen = class DocxGen
 	logUndefined: (tag,scope)->
 		#console.log("undefinedTag:"+tag)
 	getImageList:()-> @imgManager.getImageList()
-	setImage: (path,data) -> @imgManager.setImage(path,data)
+	setImage: (path,data,options) -> @imgManager.setImage(path,data,options)
 	load: (content)->
 		@zip = new JSZip content
 		@imgManager=(new ImgManager(@zip)).loadImageRels()
@@ -54,9 +54,9 @@ root.DocxGen = class DocxGen
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()
-	setData:(fileName,data)->
+	setData:(fileName,data,options={})->
 		@zip.remove(fileName)
-		@zip.file(fileName,data)
+		@zip.file(fileName,data,options)
 	getTags:()->
 		usedTags=[]
 		for fileName in templatedFiles when @zip.files[fileName]?

@@ -17,9 +17,9 @@ ImgManager = class ImgManager
 			if extension in imageExtensions #Defined in constructor
 				imageList.push {"path":index,files:@zip.files[index]}
 		imageList
-	setImage:(fileName,data)->
+	setImage:(fileName,data,options={})->
 		@zip.remove(fileName)
-		@zip.file(fileName,data)
+		@zip.file(fileName,data,options)
 
 	loadImageRels: () ->
 		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].asText()
@@ -43,7 +43,7 @@ ImgManager = class ImgManager
 			newTag.setAttribute('ContentType',contentType)
 			newTag.setAttribute('Extension',extension)
 			types.appendChild newTag
-			@zip.files["[Content_Types].xml"].data= DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
+			@setImage "[Content_Types].xml",DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) -> #Adding an image and returns it's Rid
 		if @zip.files["word/media/#{imageName}"]?
 			throw 'file already exists'
@@ -58,7 +58,7 @@ ImgManager = class ImgManager
 				compression: null
 				date: new Date()
 				dir: false
-		@zip.file file.name,file.asText(),file.options
+		@zip.file file.name,file.data,file.options
 		extension= imageName.replace(/[^.]+\.([^.]+)/,'$1')
 		@addExtensionRels("image/#{extension}",extension)
 		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]

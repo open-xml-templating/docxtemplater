@@ -238,7 +238,7 @@ var imgData=docXData["image.png"];
 var doc= new DocxGen(docData) //Create Docxgen object from docxdata, in base64
 imageList=doc.getImageList() //Get the array of images in the document
 console.log(imageList); 
-doc.setImage(imageList[0].path,imgData); //change the first image to imgData
+doc.setImage(imageList[0].path,imgData,{binary:true,base64:false}); //change the first image to imgData
 doc.output() 
 				</textarea>
 			</td>

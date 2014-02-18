@@ -201,9 +201,12 @@
       return imageList;
     };
 
-    ImgManager.prototype.setImage = function(fileName, data) {
+    ImgManager.prototype.setImage = function(fileName, data, options) {
+      if (options == null) {
+        options = {};
+      }
       this.zip.remove(fileName);
-      return this.zip.file(fileName, data);
+      return this.zip.file(fileName, data, options);
     };
 
     ImgManager.prototype.loadImageRels = function() {
@@ -244,7 +247,7 @@
         newTag.setAttribute('ContentType', contentType);
         newTag.setAttribute('Extension', extension);
         types.appendChild(newTag);
-        return this.zip.files["[Content_Types].xml"].data = DocUtils.encode_utf8(DocUtils.xml2Str(xmlDoc));
+        return this.setImage("[Content_Types].xml", DocUtils.encode_utf8(DocUtils.xml2Str(xmlDoc)));
       }
     };
 
@@ -266,7 +269,7 @@
           dir: false
         }
       };
-      this.zip.file(file.name, file.asText(), file.options);
+      this.zip.file(file.name, file.data, file.options);
       extension = imageName.replace(/[^.]+\.([^.]+)/, '$1');
       this.addExtensionRels("image/" + extension, extension);
       relationships = this.xmlDoc.getElementsByTagName("Relationships")[0];
@@ -369,8 +372,8 @@ Created by Edgar HIPP
       return this.imgManager.getImageList();
     };
 
-    DocxGen.prototype.setImage = function(path, data) {
-      return this.imgManager.setImage(path, data);
+    DocxGen.prototype.setImage = function(path, data, options) {
+      return this.imgManager.setImage(path, data, options);
     };
 
     DocxGen.prototype.load = function(content) {
@@ -408,9 +411,12 @@ Created by Edgar HIPP
       return this.testReady();
     };
 
-    DocxGen.prototype.setData = function(fileName, data) {
+    DocxGen.prototype.setData = function(fileName, data, options) {
+      if (options == null) {
+        options = {};
+      }
       this.zip.remove(fileName);
-      return this.zip.file(fileName, data);
+      return this.zip.file(fileName, data, options);
     };
 
     DocxGen.prototype.getTags = function() {
