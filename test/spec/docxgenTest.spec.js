@@ -129,7 +129,7 @@
         return expect(fullText).toBe("");
       });
     });
-    return describe("image loading", function() {
+    describe("image loading", function() {
       it("should find one image (and not more than 1)", function() {
         return expect(docX['imageExample.docx'].getImageList().length).toEqual(1);
       });
@@ -143,6 +143,13 @@
         newImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText();
         expect(oldImageData).not.toEqual(newImageData);
         return expect(docXData['image.png']).toEqual(newImageData);
+      });
+    });
+    return describe("output and input", function() {
+      return it("should be the same", function() {
+        var doc;
+        doc = new DocxGen(root.docXData['tagExample.docx']);
+        return expect(doc.output(false)).toEqual(docXData['tagExample.docx']);
       });
     });
   });

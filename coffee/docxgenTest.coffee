@@ -55,6 +55,8 @@ describe "DocxGenBasis", () ->
 	it "should construct", () ->
 		a= new DocxGen()
 		expect(a).not.toBe(undefined)
+
+
 describe "DocxGenLoading", () ->
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
@@ -85,6 +87,10 @@ describe "DocxGenLoading", () ->
 			newImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
 			expect(oldImageData).not.toEqual(newImageData)
 			expect(docXData['image.png']).toEqual(newImageData)
+	describe "output and input", () ->
+		it "should be the same" , () ->
+			doc=new DocxGen(root.docXData['tagExample.docx'])
+			expect(doc.output(false)).toEqual(docXData['tagExample.docx'])
 
 describe "DocxGenTemplating", () ->
 	describe "text templating", () ->
