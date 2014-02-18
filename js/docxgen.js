@@ -984,7 +984,9 @@ Created by Edgar HIPP
       this.num = num;
       this.callback = callback;
       this.data = imageData;
+      console.log(this.data);
       this.base64Data = JSZip.base64.encode(this.data);
+      console.log(this.base64Data);
       this.ready = false;
       this.result = null;
     }
