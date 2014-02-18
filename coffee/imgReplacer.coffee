@@ -78,7 +78,7 @@ ImgReplacer = class ImgReplacer
 									if /\.png$/.test(oldFile.name)
 										do (imgName) =>
 											#console.log(oldFile.name)
-											base64= JSZipBase64.encode oldFile.data
+											base64= JSZip.base64.encode oldFile.asBinary()
 											binaryData = new Buffer(base64, 'base64')
 											png= new PNG(binaryData)
 											finished= (a) =>

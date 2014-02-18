@@ -19,8 +19,8 @@ if env=='node'
 
 	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);
-	['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach (file) ->
-		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
+	['jszip.js'].forEach (file) ->
+		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip2.0/dist/' + file), file);
 	root.DocxGen= require('../../js/docxgen.js')
 
 DocUtils.loadDoc('imageExample.docx')
@@ -310,7 +310,7 @@ describe 'DocxQrCode module', () ->
 					qr=new DocxQrCode(qrcodezip.files['blabla.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
-					base64= JSZipBase64.encode qrcodezip.files['blabla.png'].asBinary()
+					base64= JSZip.base64.encode qrcodezip.files['blabla.png'].asBinary()
 					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
@@ -338,7 +338,7 @@ describe 'DocxQrCode module', () ->
 					qr=new DocxQrCode(qrcodezip.files['custom.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
-					base64= JSZipBase64.encode qrcodezip.files['custom.png'].asBinary()
+					base64= JSZip.base64.encode qrcodezip.files['custom.png'].asBinary()
 					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
@@ -367,7 +367,7 @@ describe 'DocxQrCode module', () ->
 					qr=new DocxQrCode(qrcodezip.files['qrcodeTest.png'].asBinary(),obj,"qrcodeTest.png",4)
 					qr.decode(f.test)
 				else
-					base64= JSZipBase64.encode qrcodezip.files['qrcodeTest.png'].asBinary()
+					base64= JSZip.base64.encode qrcodezip.files['qrcodeTest.png'].asBinary()
 					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->
@@ -395,7 +395,7 @@ describe 'DocxQrCode module', () ->
 					qr=new DocxQrCode(qrcodezip.files['qrcodetag.png'].asBinary(),obj,"tag.png",2)
 					qr.decode(f.test)
 				else
-					base64= JSZipBase64.encode qrcodezip.files['qrcodetag.png'].asBinary()
+					base64= JSZip.base64.encode qrcodezip.files['qrcodetag.png'].asBinary()
 					binaryData = new Buffer(base64, 'base64') #.toString('binary');
 					png= new PNG(binaryData)
 					finished= (a) ->

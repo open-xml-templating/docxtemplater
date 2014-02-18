@@ -4,9 +4,8 @@ env= if global? then 'node' else 'browser'
 DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
-		console.log @data
+		if @data==undefined then throw "data of qrcode can't be undefined"
 		@base64Data=JSZip.base64.encode(@data)
-		console.log @base64Data
 		@ready=false
 		@result=null
 	decode:(@callback) ->

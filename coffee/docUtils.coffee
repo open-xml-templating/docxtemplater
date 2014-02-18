@@ -169,10 +169,6 @@ DocUtils.decode_utf8= (s) ->
 		return decodeURIComponent(escape(s.replace(new RegExp(String.fromCharCode(160),"g")," "))) #replace Ascii 160 space by the normal space, Ascii 32
 	catch e
 		console.log 'could not decode'
-		console.log s
-		window.s=s
-		for t,i in s when i>0
-			DocUtils.decode_utf8(t)
 		throw 'end'
 
 

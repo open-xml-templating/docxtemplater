@@ -745,7 +745,7 @@ Created by Edgar HIPP
   };
 
   DocUtils.decode_utf8 = function(s) {
-    var e, i, t, _i, _len;
+    var e;
     try {
       if (s === void 0) {
         return void 0;
@@ -754,14 +754,6 @@ Created by Edgar HIPP
     } catch (_error) {
       e = _error;
       console.log('could not decode');
-      console.log(s);
-      window.s = s;
-      for (i = _i = 0, _len = s.length; _i < _len; i = ++_i) {
-        t = s[i];
-        if (i > 0) {
-          DocUtils.decode_utf8(t);
-        }
-      }
       throw 'end';
     }
   };
@@ -885,7 +877,7 @@ Created by Edgar HIPP
                       _results.push((function(_this) {
                         return function(imgName) {
                           var base64, binaryData, dat, finished, png;
-                          base64 = JSZipBase64.encode(oldFile.data);
+                          base64 = JSZip.base64.encode(oldFile.asBinary());
                           binaryData = new Buffer(base64, 'base64');
                           png = new PNG(binaryData);
                           finished = function(a) {
@@ -984,9 +976,10 @@ Created by Edgar HIPP
       this.num = num;
       this.callback = callback;
       this.data = imageData;
-      console.log(this.data);
+      if (this.data === void 0) {
+        throw "data of qrcode can't be undefined";
+      }
       this.base64Data = JSZip.base64.encode(this.data);
-      console.log(this.base64Data);
       this.ready = false;
       this.result = null;
     }
