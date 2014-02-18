@@ -30,11 +30,9 @@
     "gulp-util": "~2.2.14",
     "gulp-coffee": "~1.4.1",
     "gulp-watch": "~0.5.0",
-    "gulp-plumber": "~0.5.6",
     "gulp-concat": "~2.1.7",
     "gulp-uglify": "~0.2.1",
-    "gulp-livereload": "~1.1.1",
-    "jszip": "~2.1.1"
+    "gulp-livereload": "~1.1.1"
   },
   "license": "MIT",
   "engines": {
