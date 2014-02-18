@@ -27,6 +27,11 @@
     root.DocxGen = require('../../js/docxgen.js');
   }
 
+  DocUtils.pathConfig = {
+    "node": '../../examples/',
+    "browser": '../examples/'
+  };
+
   DocUtils.loadDoc('imageExample.docx');
 
   DocUtils.loadDoc('tagExample.docx');

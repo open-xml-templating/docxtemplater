@@ -547,11 +547,6 @@ Created by Edgar HIPP
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
   };
 
-  DocUtils.config = {
-    "baseNodePath": '../../examples/',
-    "baseClientPath": '../examples/'
-  };
-
   DocUtils.loadDoc = function(path, options) {
     var async, basePath, callback, data, e, errorCallback, fileName, httpRegex, intelligentTagging, loadFile, noDocx, req, reqCallback, totalPath, urloptions, xhrDoc;
     if (options == null) {
@@ -561,7 +556,7 @@ Created by Edgar HIPP
     async = options.async != null ? options.async : false;
     intelligentTagging = options.intelligentTagging != null ? options.intelligentTagging : false;
     callback = options.callback != null ? options.callback : null;
-    basePath = options.basePath != null ? options.basePath : null;
+    basePath = "";
     if (path == null) {
       throw 'path not defined';
     }
@@ -570,11 +565,11 @@ Created by Edgar HIPP
       fileName = totalPath;
     } else {
       fileName = path;
-      if (basePath === null) {
+      if (basePath === "" && (DocUtils.pathConfig != null)) {
         if (env === 'browser') {
-          basePath = DocUtils.config.baseClientPath;
+          basePath = DocUtils.pathConfig.browser;
         } else {
-          basePath = DocUtils.config.baseNodePath;
+          basePath = DocUtils.pathConfig.node;
         }
       }
       totalPath = basePath + path;

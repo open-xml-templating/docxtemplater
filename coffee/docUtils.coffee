@@ -8,28 +8,23 @@ root.docXData=[]
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
-DocUtils.config=
-	"baseNodePath":'../../examples/'
-	"baseClientPath":'../examples/'
-
 DocUtils.loadDoc= (path,options={}) ->
 	noDocx= if options.docx? then !options.docx else false
 	async=if options.async? then options.async else false
 	intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else false
 	callback=if options.callback? then options.callback else null
-	basePath=if options.basePath? then options.basePath else null
-	#console.log 'loading Doc:'+path
+	basePath=""
 	throw 'path not defined' unless path?
 	if path.indexOf('/')!=-1
 		totalPath= path
 		fileName= totalPath
 	else
 		fileName= path
-		if basePath==null#set basePath only if it wasn't set as an argument
+		if basePath=="" && DocUtils.pathConfig? #set basePath only if it wasn't set as an argument
 			if env=='browser'
-				basePath= DocUtils.config.baseClientPath
+				basePath= DocUtils.pathConfig.browser
 			else
-				basePath= DocUtils.config.baseNodePath
+				basePath= DocUtils.pathConfig.node
 		totalPath= basePath+path
 	loadFile = (data) ->
 		root.docXData[fileName]=data

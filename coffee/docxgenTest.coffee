@@ -23,6 +23,10 @@ if env=='node'
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip2.0/dist/' + file), file);
 	root.DocxGen= require('../../js/docxgen.js')
 
+DocUtils.pathConfig=
+	"node":'../../examples/'
+	"browser":'../examples/'
+
 DocUtils.loadDoc('imageExample.docx')
 DocUtils.loadDoc('tagExample.docx')
 DocUtils.loadDoc('tagExampleExpected.docx')
