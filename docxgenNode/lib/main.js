@@ -15,6 +15,11 @@ if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null |
   res=global.fs.readFileSync(process.argv[2],'utf-8')
   jsonInput=JSON.parse(res)
 
+	DocUtils.config={}
+
+  currentPath= process.cwd()+'/';
+	DocUtils.pathConfig={"node":currentPath}
+
   for(var key in jsonInput){
     if (key.substr(0,7)=='config.') {
       DocUtils.config[key.substr(7)]=jsonInput[key]
@@ -28,9 +33,9 @@ if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null |
   debug= DocUtils.config["debug"];
   debugBool= DocUtils.config["debugBool"];
 
-  console.log(DocUtils.config)
 
-  currentPath= process.cwd()+'/';
+
+
 
   if(docxFileName=='--help' || docxFileName=='-h' || docxFileName==null || docxFileName==undefined || jsonFileName==null || jsonFileName==undefined)
   {
@@ -48,27 +53,29 @@ if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null |
       }
     if (debugBool)
       console.log("loading docx:"+docxFileName)
-    DocUtils.loadDoc(docxFileName,false,true,false,function(r){console.log('error:'+r)},currentPath);
+    DocUtils.loadDoc(docxFileName,{intelligentTagging:true});
     if (debugBool)
       console.log('data:'+docXData[docxFileName]);
-      console.log("loading json:"+jsonFileName)
-    DocUtils.loadDoc(jsonFileName,true,true,false,function(r){console.log('error:'+r)},currentPath);
+    DocUtils.loadDoc(jsonFileName,{noDocx:true});
+
     if (debugBool)
       console.log('data:'+docXData[jsonFileName]);
     if (docXData[jsonFileName]==undefined) throw 'no data found in json file'
     jsonInput=JSON.parse(docXData[jsonFileName])
+    if (docX[docxFileName]==undefined) throw 'no data found in json file'
     if (debugBool)
       console.log('decoded',jsonInput);
     if (debugBool)
       console.log(docX);
     if (debugBool)
       console.log(docX[docxFileName]);
-    docX[docxFileName].setTemplateVars(jsonInput)
+
+    docX[docxFileName].setTags(jsonInput)
     docX[docxFileName].qrCode=DocUtils.config["qrcode"];
     docX[docxFileName].finishedCallback=function () {
       this.output(true,outputFile)
       console.log('outputed')
     }
-    docX[docxFileName].applyTemplateVars()
+    docX[docxFileName].applyTags()
   }
 }).call(this)
