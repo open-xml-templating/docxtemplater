@@ -262,7 +262,35 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
 ## Node Installation and usage:
 
-### Node Installation
+They are two ways to install docxtemplater:
+
+- With the global flag, it will release a command line interface that you can use by using `docxtemplater` and that is explained later on.
+- With no global flag, you can require('docxtemplater') and do your own thing
+
+### Node Local example
+
+Installation: `npm install docxtemplater`
+
+		var Docxtemplater= require('docxtemplater');
+
+		//loading the file
+		docxtemplater=DocUtils.loadDoc("input.docx");
+
+		//setting the tags
+		docxtemplater.setTags({"name":"Edgar"});
+
+		//when finished
+		docxtemplater.finishedCallback=function () {
+  	  	  docxtemplater.output(true,"output.docx");
+		}
+
+		//apply the tags
+		docxtemplater.applyTags();
+
+you can download [input.docx](https://github.com/edi9999/docxtemplater/blob/master/input.docx?raw=true) and put it in the same folder than your script.
+
+
+### Node Global Installation
 
 The node package is meant to be installed globally, so that the docxgen command becomes available to the path and is accessible from the terminal.
 
@@ -270,7 +298,7 @@ The node package is meant to be installed globally, so that the docxgen command 
 
 You're finished.
 
-### Node Usage
+### Node Global Usage
 
 	`docxtemplater <configFile>`
 
