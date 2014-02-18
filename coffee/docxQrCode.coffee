@@ -4,7 +4,7 @@ env= if global? then 'node' else 'browser'
 DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
-		@base64Data=JSZipBase64.encode(@data)
+		@base64Data=JSZip.base64.encode(@data)
 		@ready=false
 		@result=null
 	decode:(@callback) ->

@@ -89,7 +89,7 @@ root.DocxGen = class DocxGen
 		zip = new JSZip()
 		for index of @zip.files
 			file= @zip.files[index]
-			zip.file file.name,file.data,file.options
+			zip.file file.name,file.asText(),file.options
 		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""

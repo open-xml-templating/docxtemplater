@@ -470,7 +470,7 @@ Created by Edgar HIPP
       zip = new JSZip();
       for (index in this.zip.files) {
         file = this.zip.files[index];
-        zip.file(file.name, file.data, file.options);
+        zip.file(file.name, file.asText(), file.options);
       }
       return this.zip = zip;
     };
@@ -987,7 +987,7 @@ Created by Edgar HIPP
       this.num = num;
       this.callback = callback;
       this.data = imageData;
-      this.base64Data = JSZipBase64.encode(this.data);
+      this.base64Data = JSZip.base64.encode(this.data);
       this.ready = false;
       this.result = null;
     }
