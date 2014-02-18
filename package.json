@@ -17,9 +17,9 @@
     "templates",
     "Generator"
   ],
-  "repository":{
-  	  "type":"git",
-  	  "url":"https://github.com/edi9999/docxtemplater"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edi9999/docxtemplater"
   },
   "dependencies": {
     "xmldom": "0.1.x"
@@ -33,7 +33,8 @@
     "gulp-plumber": "~0.5.6",
     "gulp-concat": "~2.1.7",
     "gulp-uglify": "~0.2.1",
-    "gulp-livereload": "~1.1.1"
+    "gulp-livereload": "~1.1.1",
+    "jszip": "~2.1.1"
   },
   "license": "MIT",
   "engines": {
