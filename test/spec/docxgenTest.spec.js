@@ -771,6 +771,13 @@
           }
         });
       });
+      it("should do it's thing with JSZip.base64", function() {
+        var base64data, data;
+        data = qrcodezip.files['blabla.png'].asText();
+        base64data = JSZipBase64.encode(data);
+        expect(base64data.length).toBe(624);
+        return expect(base64data.substr(0, 50)).toBe("kcNChoKAAAADUlIRFIAAAAAIAAABOAAAAAZ0Uk5TAEAA07AAAE");
+      });
       it("should work with Blablalalabioeajbiojbepbroji", function() {
         runs(function() {
           var base64, binaryData, dat, finished, png, qr;

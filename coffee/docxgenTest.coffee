@@ -286,12 +286,19 @@ describe "xmlTemplater", ()->
 
 
 describe 'DocxQrCode module', () ->
+
 	describe "Calculate simple Docx", () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
 			docx= new DocxGen()
 			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
+
+		it "should do it's thing with JSZip.base64", () ->
+			data=qrcodezip.files['blabla.png'].asText()
+			base64data=JSZipBase64.encode(data)
+			expect(base64data.length).toBe(624)
+			expect(base64data.substr(0,50)).toBe("kcNChoKAAAADUlIRFIAAAAAIAAABOAAAAAZ0Uk5TAEAA07AAAE")
 
 
 		it "should work with Blablalalabioeajbiojbepbroji", () ->
