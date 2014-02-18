@@ -17,11 +17,12 @@ ImgManager = class ImgManager
 			if extension in imageExtensions #Defined in constructor
 				imageList.push {"path":index,files:@zip.files[index]}
 		imageList
-	setImage: (path,data) ->
-		@zip.files[path].data= data
+	setImage:(fileName,data)->
+		@zip.remove(fileName)
+		@zip.file(fileName,data)
 
 	loadImageRels: () ->
-		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].data
+		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].asText()
 		@xmlDoc= DocUtils.Str2xml content
 		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship')) #Get all Rids
 		@maxRid=RidArray.max()
@@ -29,7 +30,7 @@ ImgManager = class ImgManager
 		this
 
 	addExtensionRels: (contentType,extension) -> #Add an extension type in the [Content_Types.xml], is used if for example you want word to be able to read png files (for every extension you add you need a contentType)
-		content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].data
+		content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].asText()
 		xmlDoc= DocUtils.Str2xml content
 		addTag= true
 		defaultTags=xmlDoc.getElementsByTagName('Default')
@@ -57,7 +58,7 @@ ImgManager = class ImgManager
 				compression: null
 				date: new Date()
 				dir: false
-		@zip.file file.name,file.data,file.options
+		@zip.file file.name,file.asText(),file.options
 		extension= imageName.replace(/[^.]+\.([^.]+)/,'$1')
 		@addExtensionRels("image/#{extension}",extension)
 		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]
@@ -67,7 +68,8 @@ ImgManager = class ImgManager
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
 		newTag.setAttribute('Target',"media/#{imageName}")
 		relationships.appendChild newTag
-		@zip.files["word/_rels/document.xml.rels"].data= DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc
+
+		@setImage("word/_rels/document.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid
 	getImageByRid:(rId)-> #This is to get an image by it's rId (returns null if no img was found)
 		relationships= @xmlDoc.getElementsByTagName('Relationship')

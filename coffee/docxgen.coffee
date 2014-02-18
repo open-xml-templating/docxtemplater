@@ -51,7 +51,6 @@ root.DocxGen = class DocxGen
 			}
 				this,@Tags,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
 			@setData(fileName,currentFile.applyTags().content)
-			#@zip.files[fileName].data= currentFile.applyTags().content
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()
@@ -74,7 +73,6 @@ root.DocxGen = class DocxGen
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (download = true,name="output.docx") ->
-		@calcZip()
 		result= @zip.generate()
 		if download
 			if env=='node'
@@ -85,19 +83,12 @@ root.DocxGen = class DocxGen
 				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
-	calcZip: () ->
-		zip = new JSZip()
-		for index of @zip.files
-			file= @zip.files[index]
-			zip.file file.name,file.asText(),file.options
-		@zip=zip
 	getFullText:(path="word/document.xml",data="") ->
 		if data==""
 			usedData=@zip.files[path].asText()
 			return @getFullText(path,usedData)
 		(new DocXTemplater(data,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
-		@calcZip()
 		output=@zip.generate()
 		Downloadify.create 'downloadify',
 			filename: () ->return filename

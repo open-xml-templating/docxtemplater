@@ -201,13 +201,14 @@
       return imageList;
     };
 
-    ImgManager.prototype.setImage = function(path, data) {
-      return this.zip.files[path].data = data;
+    ImgManager.prototype.setImage = function(fileName, data) {
+      this.zip.remove(fileName);
+      return this.zip.file(fileName, data);
     };
 
     ImgManager.prototype.loadImageRels = function() {
       var RidArray, content, tag;
-      content = DocUtils.decode_utf8(this.zip.files["word/_rels/document.xml.rels"].data);
+      content = DocUtils.decode_utf8(this.zip.files["word/_rels/document.xml.rels"].asText());
       this.xmlDoc = DocUtils.Str2xml(content);
       RidArray = (function() {
         var _i, _len, _ref, _results;
@@ -226,7 +227,7 @@
 
     ImgManager.prototype.addExtensionRels = function(contentType, extension) {
       var addTag, content, defaultTags, newTag, tag, types, xmlDoc, _i, _len;
-      content = DocUtils.decode_utf8(this.zip.files["[Content_Types].xml"].data);
+      content = DocUtils.decode_utf8(this.zip.files["[Content_Types].xml"].asText());
       xmlDoc = DocUtils.Str2xml(content);
       addTag = true;
       defaultTags = xmlDoc.getElementsByTagName('Default');
@@ -265,7 +266,7 @@
           dir: false
         }
       };
-      this.zip.file(file.name, file.data, file.options);
+      this.zip.file(file.name, file.asText(), file.options);
       extension = imageName.replace(/[^.]+\.([^.]+)/, '$1');
       this.addExtensionRels("image/" + extension, extension);
       relationships = this.xmlDoc.getElementsByTagName("Relationships")[0];
@@ -275,7 +276,7 @@
       newTag.setAttribute('Type', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image');
       newTag.setAttribute('Target', "media/" + imageName);
       relationships.appendChild(newTag);
-      this.zip.files["word/_rels/document.xml.rels"].data = DocUtils.encode_utf8(DocUtils.xml2Str(this.xmlDoc));
+      this.setImage("word/_rels/document.xml.rels", DocUtils.encode_utf8(DocUtils.xml2Str(this.xmlDoc)));
       return this.maxRid;
     };
 
@@ -449,7 +450,6 @@ Created by Edgar HIPP
       if (name == null) {
         name = "output.docx";
       }
-      this.calcZip();
       result = this.zip.generate();
       if (download) {
         if (env === 'node') {
@@ -463,16 +463,6 @@ Created by Edgar HIPP
         }
       }
       return result;
-    };
-
-    DocxGen.prototype.calcZip = function() {
-      var file, index, zip;
-      zip = new JSZip();
-      for (index in this.zip.files) {
-        file = this.zip.files[index];
-        zip.file(file.name, file.asText(), file.options);
-      }
-      return this.zip = zip;
     };
 
     DocxGen.prototype.getFullText = function(path, data) {
@@ -499,7 +489,6 @@ Created by Edgar HIPP
       if (filename == null) {
         filename = "default.docx";
       }
-      this.calcZip();
       output = this.zip.generate();
       return Downloadify.create('downloadify', {
         filename: function() {
@@ -755,7 +744,7 @@ Created by Edgar HIPP
       if (s === void 0) {
         return void 0;
       }
-      return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
+      return decodeURIComponent(escape(s.replace(new RegExp(String.fromCharCode(160), "g"), " ")));
     } catch (_error) {
       e = _error;
       console.log('could not decode');
