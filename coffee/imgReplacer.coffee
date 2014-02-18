@@ -56,7 +56,7 @@ ImgReplacer = class ImgReplacer
 
 
 								if env=='browser'
-									qr[u]= new DocxQrCode(oldFile.data,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+									qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 
 								tag.setAttribute('name',"#{imgName}")
 								tagrId.setAttribute('r:embed',"rId#{newId}")

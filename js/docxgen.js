@@ -867,7 +867,7 @@ Created by Edgar HIPP
                   this.xmlTemplater.imageId++;
                   this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, oldFile.data);
                   if (env === 'browser') {
-                    qr[u] = new DocxQrCode(oldFile.data, this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+                    qr[u] = new DocxQrCode(oldFile.asBinary(), this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
                   }
                   tag.setAttribute('name', "" + imgName);
                   tagrId.setAttribute('r:embed', "rId" + newId);
