@@ -24,7 +24,7 @@ gulp.task('coffeeTest', function() {
 	// Minify and copy all JavaScript (except vendor scripts)
 	return gulp.src(paths.coffeeTest)
 		.pipe(coffee())
-	//	.pipe(uglify())
+		.pipe(uglify())
 		.pipe(concat('docxgenTest.spec.js'))
 		.pipe(gulp.dest('./test/spec'));
 });
@@ -33,7 +33,7 @@ gulp.task('coffee', function(cb) {
 	// Minify and copy all JavaScript (except vendor scripts)
 	return gulp.src(paths.coffee)
 		.pipe(coffee())
-		//.pipe(uglify())
+		.pipe(uglify())
 		.pipe(concat('docxgen.js'))
 		.pipe(gulp.dest('./js/'));
 	cb(err)
