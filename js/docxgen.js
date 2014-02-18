@@ -750,7 +750,23 @@ Created by Edgar HIPP
   };
 
   DocUtils.decode_utf8 = function(s) {
-    return decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160), "g"), " ");
+    var e, t, _i, _len;
+    try {
+      if (s === void 0) {
+        return void 0;
+      }
+      return decodeURIComponent(escape(s.replace(new RegExp(String.fromCharCode(160), "g"), " ")));
+    } catch (_error) {
+      e = _error;
+      console.log('could not decode');
+      console.log(s);
+      window.s = s;
+      for (_i = 0, _len = s.length; _i < _len; _i++) {
+        t = s[_i];
+        DocUtils.decode_utf8(t);
+      }
+      throw 'end';
+    }
   };
 
   DocUtils.base64encode = function(b) {

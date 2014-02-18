@@ -24,7 +24,7 @@ gulp.task('coffeeTest', function() {
 	// Minify and copy all JavaScript (except vendor scripts)
 	return gulp.src(paths.coffeeTest)
 		.pipe(coffee())
-		.pipe(uglify())
+	//	.pipe(uglify())
 		.pipe(concat('docxgenTest.spec.js'))
 		.pipe(gulp.dest('./test/spec'));
 });

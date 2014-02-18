@@ -164,7 +164,17 @@ DocUtils.encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 
 DocUtils.decode_utf8= (s) ->
-	decodeURIComponent(escape(s)).replace(new RegExp(String.fromCharCode(160),"g")," ") #replace Ascii 160 space by the normal space, Ascii 32
+	try
+		if s==undefined then return undefined
+		return decodeURIComponent(escape(s.replace(new RegExp(String.fromCharCode(160),"g")," "))) #replace Ascii 160 space by the normal space, Ascii 32
+	catch e
+		console.log 'could not decode'
+		console.log s
+		window.s=s
+		for t in s
+			DocUtils.decode_utf8(t)
+		throw 'end'
+
 
 DocUtils.base64encode= (b) ->
     btoa(unescape(encodeURIComponent(b)))

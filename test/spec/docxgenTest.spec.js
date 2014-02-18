@@ -1,1 +1,1103 @@
-(function(){var e,o;o="undefined"!=typeof global&&null!==global?global:window,e="undefined"!=typeof global&&null!==global?"node":"browser",o.docX={},o.docXData={},"node"===e&&(global.http=require("http"),global.https=require("https"),global.fs=require("fs"),global.vm=require("vm"),global.DOMParser=require("xmldom").DOMParser,global.XMLSerializer=require("xmldom").XMLSerializer,global.PNG=require("../../libs/pngjs/png-node"),global.url=require("url"),["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach(function(e){return vm.runInThisContext(global.fs.readFileSync(__dirname+"/../../libs/jsqrcode/"+e),e)}),["jszip.js","jszip-load.js","jszip-deflate.js","jszip-inflate.js"].forEach(function(e){return vm.runInThisContext(global.fs.readFileSync(__dirname+"/../../libs/jszip/"+e),e)}),o.DocxGen=require("../../js/docxgen.js")),DocUtils.loadDoc("imageExample.docx"),DocUtils.loadDoc("tagExample.docx"),DocUtils.loadDoc("tagExampleExpected.docx"),DocUtils.loadDoc("tagLoopExample.docx"),DocUtils.loadDoc("tagLoopExampleImageExpected.docx"),DocUtils.loadDoc("tagProduitLoop.docx"),DocUtils.loadDoc("tagDashLoop.docx"),DocUtils.loadDoc("tagDashLoopList.docx"),DocUtils.loadDoc("tagDashLoopTable.docx"),DocUtils.loadDoc("tagIntelligentLoopTable.docx",{intelligentTagging:!0}),DocUtils.loadDoc("tagIntelligentLoopTableExpected.docx"),DocUtils.loadDoc("tagDashLoop.docx"),DocUtils.loadDoc("qrCodeExample.docx"),DocUtils.loadDoc("qrCodeExampleExpected.docx"),DocUtils.loadDoc("qrCodeTaggingExample.docx"),DocUtils.loadDoc("qrCodeTaggingExampleExpected.docx"),DocUtils.loadDoc("qrCodeTaggingLoopExample.docx"),DocUtils.loadDoc("qrCodeTaggingLoopExampleExpected.docx"),DocUtils.loadDoc("image.png",{docx:!1}),DocUtils.loadDoc("bootstrap_logo.png",{docx:!1}),DocUtils.loadDoc("BMW_logo.png",{docx:!1}),DocUtils.loadDoc("Firefox_logo.png",{docx:!1}),DocUtils.loadDoc("Volkswagen_logo.png",{docx:!1}),DocUtils.loadDoc("qrcodeTest.zip",{docx:!1}),describe("DocxGenBasis",function(){return it("should be defined",function(){return expect(DocxGen).not.toBe(void 0)}),it("should construct",function(){var e;return e=new DocxGen,expect(e).not.toBe(void 0)})}),describe("DocxGenLoading",function(){return describe("ajax done correctly",function(){return it("doc and img Data should have the expected length",function(){return expect(docXData["imageExample.docx"].length).toEqual(729580),expect(docXData["image.png"].length).toEqual(18062)}),it("should have the right number of files (the docx unzipped)",function(){return docX["imageExample.docx"]=new DocxGen(docXData["imageExample.docx"]),expect(DocUtils.sizeOfObject(docX["imageExample.docx"].zip.files)).toEqual(22)})}),describe("basic loading",function(){return it("should load file imageExample.docx",function(){return expect(typeof docX["imageExample.docx"]).toBe("object")})}),describe("content_loading",function(){return it("should load the right content for the footer",function(){var e;return e=docX["imageExample.docx"].getFullText("word/footer1.xml"),expect(e.length).not.toBe(0),expect(e).toBe("{last_name}{first_name}{phone}")}),it("should load the right content for the document",function(){var e;return e=docX["imageExample.docx"].getFullText(),expect(e).toBe("")})}),describe("image loading",function(){return it("should find one image (and not more than 1)",function(){return expect(docX["imageExample.docx"].getImageList().length).toEqual(1)}),it("should find the image named with the good name",function(){return expect(docX["imageExample.docx"].getImageList()[0].path).toEqual("word/media/image1.jpeg")}),it("should change the image with another one",function(){var e,o;return o=docX["imageExample.docx"].zip.files["word/media/image1.jpeg"].data,docX["imageExample.docx"].setImage("word/media/image1.jpeg",docXData["image.png"]),e=docX["imageExample.docx"].zip.files["word/media/image1.jpeg"].data,expect(o).not.toEqual(e),expect(docXData["image.png"]).toEqual(e)})})}),describe("DocxGenTemplating",function(){return describe("text templating",function(){return it("should change values with template vars",function(){var e;return e={first_name:"Hipp",last_name:"Edgar",phone:"0652455478",description:"New Website"},docX["tagExample.docx"].setTags(e),docX["tagExample.docx"].applyTags(),expect(docX["tagExample.docx"].getFullText()).toEqual("Edgar Hipp"),expect(docX["tagExample.docx"].getFullText("word/header1.xml")).toEqual("Edgar Hipp0652455478New Website"),expect(docX["tagExample.docx"].getFullText("word/footer1.xml")).toEqual("EdgarHipp0652455478")}),it("should export the good file",function(){var e,o;o=[];for(e in docX["tagExample.docx"].zip.files)expect(docX["tagExample.docx"].zip.files[e].options.date).not.toBe(docX["tagExampleExpected.docx"].zip.files[e].options.date),expect(docX["tagExample.docx"].zip.files[e].name).toBe(docX["tagExampleExpected.docx"].zip.files[e].name),expect(docX["tagExample.docx"].zip.files[e].options.base64).toBe(docX["tagExampleExpected.docx"].zip.files[e].options.base64),expect(docX["tagExample.docx"].zip.files[e].options.binary).toBe(docX["tagExampleExpected.docx"].zip.files[e].options.binary),expect(docX["tagExample.docx"].zip.files[e].options.compression).toBe(docX["tagExampleExpected.docx"].zip.files[e].options.compression),expect(docX["tagExample.docx"].zip.files[e].options.dir).toBe(docX["tagExampleExpected.docx"].zip.files[e].options.dir),o.push(expect(docX["tagExample.docx"].zip.files[e].data).toBe(docX["tagExampleExpected.docx"].zip.files[e].data));return o})})}),describe("DocxGenTemplatingForLoop",function(){return describe("textLoop templating",function(){return it("should replace all the tags",function(){var e;return e={nom:"Hipp",prenom:"Edgar",telephone:"0652455478",description:"New Website",offre:[{titre:"titre1",prix:"1250"},{titre:"titre2",prix:"2000"},{titre:"titre3",prix:"1400"}]},docX["tagLoopExample.docx"].setTags(e),docX["tagLoopExample.docx"].applyTags(),expect(docX["tagLoopExample.docx"].getFullText()).toEqual("Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar")}),it("should work with loops inside loops",function(){var e,o,t;return e={products:[{title:"Microsoft",name:"DOS",reference:"Win7",avantages:[{title:"Everyone uses it",proof:[{reason:"it is quite cheap"},{reason:"it is quit simple"},{reason:"it works on a lot of different Hardware"}]}]},{title:"Linux",name:"Ubuntu",reference:"Ubuntu10",avantages:[{title:"It's very powerful",proof:[{reason:"the terminal is your friend"},{reason:"Hello world"},{reason:"it's free"}]}]},{title:"Apple",name:"Mac",reference:"OSX",avantages:[{title:"It's very easy",proof:[{reason:"you can do a lot just with the mouse"},{reason:"It's nicely designed"}]}]}]},docX["tagProduitLoop.docx"].setTags(e),docX["tagProduitLoop.docx"].applyTags(),t=docX["tagProduitLoop.docx"].getFullText(),o="MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed",expect(t.length).toEqual(o.length),expect(t).toEqual(o)})})}),describe("Xml Util",function(){var e;return e=new XmlUtil,it("should compute the scope between 2 <w:t>",function(){var o;return o=e.getListXmlElements('undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le '),expect(o).toEqual([{tag:"</w:t>",offset:9},{tag:"</w:r>",offset:15},{tag:"</w:p>",offset:21},{tag:"<w:p>",offset:27},{tag:"<w:r>",offset:162},{tag:"<w:t>",offset:188}])}),it("should compute the scope between 2 <w:t> in an Array",function(){var o;return o=e.getListXmlElements('urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté'),expect(o).toEqual([{tag:"</w:t>",offset:3},{tag:"</w:r>",offset:9},{tag:"</w:p>",offset:15},{tag:"</w:tc>",offset:21},{tag:"<w:tc>",offset:28},{tag:"<w:p>",offset:83},{tag:"<w:r>",offset:268},{tag:"<w:t>",offset:374}])}),it("should compute the scope between a w:t in an array and the other outside",function(){var o;return o=e.getListXmlElements('defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources '),expect(o).toEqual([{tag:"</w:t>",offset:8},{tag:"</w:r>",offset:14},{tag:"</w:p>",offset:20},{tag:"</w:tc>",offset:26},{tag:"</w:tr>",offset:33},{tag:"</w:tbl>",offset:40},{tag:"<w:p>",offset:188},{tag:"<w:r>",offset:257},{tag:"<w:t>",offset:306}])})}),describe("scope diff calculation",function(){var e;return e=new XmlUtil,it("should compute the scopeDiff between 2 <w:t>",function(){var o;return o=e.getListDifferenceXmlElements('undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le '),expect(o).toEqual([])}),it("should compute the scopeDiff between 2 <w:t> in an Array",function(){var o;return o=e.getListDifferenceXmlElements('urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté'),expect(o).toEqual([])}),it("should compute the scopeDiff between a w:t in an array and the other outside",function(){var o;return o=e.getListDifferenceXmlElements('defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources '),expect(o).toEqual([{tag:"</w:tc>",offset:26},{tag:"</w:tr>",offset:33},{tag:"</w:tbl>",offset:40}])})}),describe("scope inner text",function(){return it("should find the scope",function(){var e,o,t;return t=new DocXTemplater,docX["tagProduitLoop.docx"]=new DocxGen(docXData["tagProduitLoop.docx"]),o=t.calcOuterXml(docX["tagProduitLoop.docx"].zip.files["word/document.xml"].data,1195,1245,"w:p"),e={text:'<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>',startTag:1134,endTag:1286},expect(o.endTag).toEqual(e.endTag),expect(o.startTag).toEqual(e.startTag),expect(o.text.length).toEqual(e.text.length),expect(o.text).toEqual(e.text)})}),describe("Dash Loop Testing",function(){return it("dash loop ok on simple table -> w:tr",function(){var e,o,t;return e={os:[{type:"linux",price:"0",reference:"Ubuntu10"},{type:"DOS",price:"500",reference:"Win7"},{type:"apple",price:"1200",reference:"MACOSX"}]},docX["tagDashLoop.docx"].setTags(e),docX["tagDashLoop.docx"].applyTags(),o="linux0Ubuntu10DOS500Win7apple1200MACOSX",t=docX["tagDashLoop.docx"].getFullText(),expect(t).toBe(o)}),it("dash loop ok on simple table -> w:table",function(){var e,o,t;return e={os:[{type:"linux",price:"0",reference:"Ubuntu10"},{type:"DOS",price:"500",reference:"Win7"},{type:"apple",price:"1200",reference:"MACOSX"}]},docX["tagDashLoopTable.docx"].setTags(e),docX["tagDashLoopTable.docx"].applyTags(),o="linux0Ubuntu10DOS500Win7apple1200MACOSX",t=docX["tagDashLoopTable.docx"].getFullText(),expect(t).toBe(o)}),it("dash loop ok on simple list -> w:p",function(){var e,o,t;return e={os:[{type:"linux",price:"0",reference:"Ubuntu10"},{type:"DOS",price:"500",reference:"Win7"},{type:"apple",price:"1200",reference:"MACOSX"}]},docX["tagDashLoopList.docx"].setTags(e),docX["tagDashLoopList.docx"].applyTags(),o="linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ",t=docX["tagDashLoopList.docx"].getFullText(),expect(t).toBe(o)})}),describe("Intelligent Loop Tagging",function(){return it("should work with tables",function(){var e,o,t,a,i;e={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]},docX["tagIntelligentLoopTable.docx"].setTags(e),docX["tagIntelligentLoopTable.docx"].applyTags(),o="JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984",a=docX["tagIntelligentLoopTableExpected.docx"].getFullText(),expect(a).toBe(o),i=[];for(t in docX["tagIntelligentLoopTable.docx"].zip.files)expect(docX["tagIntelligentLoopTable.docx"].zip.files[t].data).toBe(docX["tagIntelligentLoopTableExpected.docx"].zip.files[t].data),expect(docX["tagIntelligentLoopTable.docx"].zip.files[t].name).toBe(docX["tagIntelligentLoopTableExpected.docx"].zip.files[t].name),expect(docX["tagIntelligentLoopTable.docx"].zip.files[t].options.base64).toBe(docX["tagIntelligentLoopTableExpected.docx"].zip.files[t].options.base64),expect(docX["tagIntelligentLoopTable.docx"].zip.files[t].options.binary).toBe(docX["tagIntelligentLoopTableExpected.docx"].zip.files[t].options.binary),expect(docX["tagIntelligentLoopTable.docx"].zip.files[t].options.compression).toBe(docX["tagIntelligentLoopTableExpected.docx"].zip.files[t].options.compression),expect(docX["tagIntelligentLoopTable.docx"].zip.files[t].options.dir).toBe(docX["tagIntelligentLoopTableExpected.docx"].zip.files[t].options.dir),i.push(expect(docX["tagIntelligentLoopTable.docx"].zip.files[t].options.date).not.toBe(docX["tagIntelligentLoopTableExpected.docx"].zip.files[t].options.date));return i})}),describe("getTags",function(){return it("should work with simple document",function(){var e;return docX["tagExample.docx"]=new DocxGen(docXData["tagExample.docx"],{},!1),e=docX["tagExample.docx"].getTags(),expect(e).toEqual([{fileName:"word/document.xml",vars:{last_name:!0,first_name:!0}},{fileName:"word/footer1.xml",vars:{last_name:!0,first_name:!0,phone:!0}},{fileName:"word/header1.xml",vars:{last_name:!0,first_name:!0,phone:!0,description:!0}}])}),it("should work with loop document",function(){var e;return docX["tagLoopExample.docx"]=new DocxGen(docXData["tagLoopExample.docx"],{},!1),e=docX["tagLoopExample.docx"].getTags(),expect(e).toEqual([{fileName:"word/document.xml",vars:{offre:{prix:!0,titre:!0},nom:!0,prenom:!0}},{fileName:"word/footer1.xml",vars:{nom:!0,prenom:!0,telephone:!0}},{fileName:"word/header1.xml",vars:{nom:!0,prenom:!0}}])}),it("should work if there are no Tags",function(){var e;return docX["qrCodeExample.docx"]=new DocxGen(docXData["qrCodeExample.docx"],{},!1),e=docX["qrCodeExample.docx"].getTags(),expect(e).toEqual([])})}),describe("xmlTemplater",function(){return it("should work with simpleContent",function(){var e,o,t;return e="<w:t>Hello {name}</w:t>",o={name:"Edgar"},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.getFullText()).toBe("Hello Edgar")}),it("should work with non w:t content",function(){var e,o,t;return e="{image}.png",o={image:"edgar"},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.content).toBe("edgar.png")}),it("should work with tag in two elements",function(){var e,o,t;return e="<w:t>Hello {</w:t><w:t>name}</w:t>",o={name:"Edgar"},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.getFullText()).toBe("Hello Edgar")}),it("should work with simple Loop",function(){var e,o,t;return e="<w:t>Hello {#names}{name},{/names}</w:t>",o={names:[{name:"Edgar"},{name:"Mary"},{name:"John"}]},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.getFullText()).toBe("Hello Edgar,Mary,John,")}),it("should work with dash Loop",function(){var e,o,t;return e="<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>",o={names:[{name:"Edgar"},{name:"Mary"},{name:"John"}]},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.getFullText()).toBe("Hello Edgar,Hello Mary,Hello John,")}),it("should work with loop and innerContent",function(){var e,o,t;return e='</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>',o={title:"Everyone uses it",proof:[{reason:"it is quite cheap"},{reason:"it is quit simple"},{reason:"it works on a lot of different Hardware"}]},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.getFullText()).toBe("Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware")}),it("should work with loop and innerContent (with last)",function(){var e,o,t;return e='</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> ',o={title:"Everyone uses it",proof:[{reason:"it is quite cheap"},{reason:"it is quit simple"},{reason:"it works on a lot of different Hardware"}]},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.getFullText()).toBe("Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware")}),it("should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ",function(){var e,o,t;return e="Hello {#names}{name},{/names}",o={names:[{name:"Edgar"},{name:"Mary"},{name:"John"}]},t=new DocXTemplater(e,{Tags:o}),t.applyTags(),expect(t.content).toBe("Hello Edgar,Mary,John,")})}),describe("DocxQrCode module",function(){return describe("Calculate simple Docx",function(){var o,t,a,i;return o=null,t=null,i=null,a=null,beforeEach(function(){var e;return i=new JSZip(docXData["qrcodeTest.zip"]),e=new DocxGen,a=new DocXTemplater("",{DocxGen:e,Tags:{Tag:"tagValue"}})}),it("should work with Blablalalabioeajbiojbepbroji",function(){return runs(function(){var r,n,l,c,d,p;return t=!1,o={test:function(){return t=!0}},spyOn(o,"test").andCallThrough(),"browser"===e?(p=new DocxQrCode(i.files["blabla.png"].data,a,"custom.png",6),p.decode(o.test)):(r=JSZipBase64.encode(i.files["blabla.png"].data),n=new Buffer(r,"base64"),d=new PNG(n),c=function(e){return d.decoded=e,p=new DocxQrCode(d,a,"custom.png",6),p.decode(o.test)},l=d.decode(c))}),waitsFor(function(){return t}),runs(function(){return expect(o.test).toHaveBeenCalled(),expect(o.test.calls.length).toEqual(1),expect(o.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji"),expect(o.test.mostRecentCall.args[1]).toEqual("custom.png"),expect(o.test.mostRecentCall.args[2]).toEqual(6)})}),it("should work with long texts",function(){return runs(function(){var r,n,l,c,d,p;return t=!1,o={test:function(){return t=!0}},spyOn(o,"test").andCallThrough(),"browser"===e?(p=new DocxQrCode(i.files["custom.png"].data,a,"custom.png",6),p.decode(o.test)):(r=JSZipBase64.encode(i.files["custom.png"].data),n=new Buffer(r,"base64"),d=new PNG(n),c=function(e){return d.decoded=e,p=new DocxQrCode(d,a,"custom.png",6),p.decode(o.test)},l=d.decode(c))}),waitsFor(function(){return t}),runs(function(){return expect(o.test).toHaveBeenCalled(),expect(o.test.calls.length).toEqual(1),expect(o.test.mostRecentCall.args[0].result).toEqual("Some custom text"),expect(o.test.mostRecentCall.args[1]).toEqual("custom.png"),expect(o.test.mostRecentCall.args[2]).toEqual(6)})}),it("should work with basic image",function(){return runs(function(){var r,n,l,c,d,p;return t=!1,o={test:function(){return t=!0}},spyOn(o,"test").andCallThrough(),"browser"===e?(p=new DocxQrCode(i.files["qrcodeTest.png"].data,a,"qrcodeTest.png",4),p.decode(o.test)):(r=JSZipBase64.encode(i.files["qrcodeTest.png"].data),n=new Buffer(r,"base64"),d=new PNG(n),c=function(e){return d.decoded=e,p=new DocxQrCode(d,a,"qrcodeTest.png",4),p.decode(o.test)},l=d.decode(c))}),waitsFor(function(){return t}),runs(function(){return expect(o.test).toHaveBeenCalled(),expect(o.test.calls.length).toEqual(1),expect(o.test.mostRecentCall.args[0].result).toEqual("test"),expect(o.test.mostRecentCall.args[1]).toEqual("qrcodeTest.png"),expect(o.test.mostRecentCall.args[2]).toEqual(4)})}),it("should work with image with {tags}",function(){return runs(function(){var r,n,l,c,d,p;return t=!1,o={test:function(){return t=!0}},spyOn(o,"test").andCallThrough(),"browser"===e?(p=new DocxQrCode(i.files["qrcodetag.png"].data,a,"tag.png",2),p.decode(o.test)):(r=JSZipBase64.encode(i.files["qrcodetag.png"].data),n=new Buffer(r,"base64"),d=new PNG(n),c=function(e){return d.decoded=e,p=new DocxQrCode(d,a,"tag.png",2),p.decode(o.test)},l=d.decode(c))}),waitsFor(function(){return t}),runs(function(){return expect(o.test).toHaveBeenCalled(),expect(o.test.calls.length).toEqual(1),expect(o.test.mostRecentCall.args[0].result).toEqual("tagValue"),expect(o.test.mostRecentCall.args[1]).toEqual("tag.png"),expect(o.test.mostRecentCall.args[2]).toEqual(2)})})})}),describe("image Loop Replacing",function(){return describe("rels",function(){return it("should load",function(){return expect(docX["imageExample.docx"].imgManager.loadImageRels().imageRels).toEqual([]),expect(docX["imageExample.docx"].imgManager.maxRid).toEqual(10)}),it("should add",function(){var e,o,t,a,i,r,n;return a=docX["imageExample.docx"].zip.files["word/_rels/document.xml.rels"].data,expect(docX["imageExample.docx"].imgManager.addImageRels("image1.png",docXData["bootstrap_logo.png"])).toBe(11),expect(docX["imageExample.docx"].zip.files["word/_rels/document.xml.rels"].data).not.toBe(a),r=docX["imageExample.docx"].zip.files["word/_rels/document.xml.rels"].data,e=docX["imageExample.docx"].zip.files["[Content_Types].xml"].data,n=DocUtils.Str2xml(r),o=DocUtils.Str2xml(e),i=n.getElementsByTagName("Relationship"),t=o.getElementsByTagName("Default"),expect(i.length).toEqual(11),expect(t.length).toBe(4)})})}),describe("loop forTagging images",function(){return it("should work with a simple loop file",function(){var o,t,a,i,r,n,l,c,d;docX["tagLoopExample.docx"]=new DocxGen(docXData["tagLoopExample.docx"]),c={nom:"Hipp",prenom:"Edgar",telephone:"0652455478",description:"New Website",offre:[{titre:"titre1",prix:"1250",img:[{data:docXData["Volkswagen_logo.png"],name:"vw_logo.png"}]},{titre:"titre2",prix:"2000",img:[{data:docXData["BMW_logo.png"],name:"bmw_logo.png"}]},{titre:"titre3",prix:"1400",img:[{data:docXData["Firefox_logo.png"],name:"firefox_logo.png"}]}]},docX["tagLoopExample.docx"].setTags(c),docX["tagLoopExample.docx"].applyTags();for(i in docX["tagLoopExample.docx"].zip.files)expect(docX["tagLoopExample.docx"].zip.files[i].options.date).not.toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].options.date),expect(docX["tagLoopExample.docx"].zip.files[i].name).toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].name),expect(docX["tagLoopExample.docx"].zip.files[i].options.base64).toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].options.base64),expect(docX["tagLoopExample.docx"].zip.files[i].options.binary).toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].options.binary),expect(docX["tagLoopExample.docx"].zip.files[i].options.compression).toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].options.compression),expect(docX["tagLoopExample.docx"].zip.files[i].options.dir).toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].options.dir),"word/_rels/document.xml.rels"!==i&&"[Content_Types].xml"!==i&&("browser"===e||"word/document.xml"!==i)&&(("function"==typeof(d=docX["tagLoopExample.docx"].zip.files[i]).data?d.data(0):void 0)&&expect(docX["tagLoopExample.docx"].zip.files[i].data.length).toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].data.length),expect(docX["tagLoopExample.docx"].zip.files[i].data).toBe(docX["tagLoopExampleImageExpected.docx"].zip.files[i].data));return n=docX["tagLoopExample.docx"].zip.files["word/_rels/document.xml.rels"].data,o=docX["tagLoopExample.docx"].zip.files["[Content_Types].xml"].data,l=DocUtils.Str2xml(n),t=DocUtils.Str2xml(o),r=l.getElementsByTagName("Relationship"),a=t.getElementsByTagName("Default"),expect(r.length).toEqual(16),expect(a.length).toBe(3)})}),describe("qr code testing",function(){return it("should work with local QRCODE without tags",function(){var e;return docX["qrCodeExample.docx"]=new DocxGen(docXData["qrCodeExample.docx"],{},!1,!0),e=function(){return 1},docX["qrCodeExample.docx"].applyTags({},e),waitsFor(function(){return null!=docX["qrCodeExample.docx"].ready}),runs(function(){var e,o;expect(null!=docX["qrCodeExample.docx"].zip.files["word/media/Copie_0.png"]).toBeTruthy(),o=[];for(e in docX["qrCodeExample.docx"].zip.files)expect(docX["qrCodeExample.docx"].zip.files[e].options.date).not.toBe(docX["qrCodeExampleExpected.docx"].zip.files[e].options.date),expect(docX["qrCodeExample.docx"].zip.files[e].name).toBe(docX["qrCodeExampleExpected.docx"].zip.files[e].name),expect(docX["qrCodeExample.docx"].zip.files[e].options.base64).toBe(docX["qrCodeExampleExpected.docx"].zip.files[e].options.base64),expect(docX["qrCodeExample.docx"].zip.files[e].options.binary).toBe(docX["qrCodeExampleExpected.docx"].zip.files[e].options.binary),expect(docX["qrCodeExample.docx"].zip.files[e].options.compression).toBe(docX["qrCodeExampleExpected.docx"].zip.files[e].options.compression),o.push(expect(docX["qrCodeExample.docx"].zip.files[e].options.dir).toBe(docX["qrCodeExampleExpected.docx"].zip.files[e].options.dir));return o})}),it("should work with local QRCODE with {tags}",function(){var e;return docX["qrCodeTaggingExample.docx"]=new DocxGen(docXData["qrCodeTaggingExample.docx"],{image:"Firefox_logo"},!1,!0),e=function(){return 1},docX["qrCodeTaggingExample.docx"].applyTags({image:"Firefox_logo"},e),waitsFor(function(){return null!=docX["qrCodeTaggingExample.docx"].ready}),runs(function(){var e,o;expect(null!=docX["qrCodeTaggingExample.docx"].zip.files["word/media/Copie_0.png"]).toBeTruthy(),o=[];for(e in docX["qrCodeTaggingExample.docx"].zip.files)expect(docX["qrCodeTaggingExample.docx"].zip.files[e].options.date).not.toBe(docX["qrCodeTaggingExampleExpected.docx"].zip.files[e].options.date),expect(docX["qrCodeTaggingExample.docx"].zip.files[e].name).toBe(docX["qrCodeTaggingExampleExpected.docx"].zip.files[e].name),expect(docX["qrCodeTaggingExample.docx"].zip.files[e].options.base64).toBe(docX["qrCodeTaggingExampleExpected.docx"].zip.files[e].options.base64),expect(docX["qrCodeTaggingExample.docx"].zip.files[e].options.binary).toBe(docX["qrCodeTaggingExampleExpected.docx"].zip.files[e].options.binary),expect(docX["qrCodeTaggingExample.docx"].zip.files[e].options.compression).toBe(docX["qrCodeTaggingExampleExpected.docx"].zip.files[e].options.compression),o.push(expect(docX["qrCodeTaggingExample.docx"].zip.files[e].options.dir).toBe(docX["qrCodeTaggingExampleExpected.docx"].zip.files[e].options.dir));return o})}),it("should work with loop QRCODE with {tags}",function(){var e;return docX["qrCodeTaggingLoopExample.docx"]=new DocxGen(docXData["qrCodeTaggingLoopExample.docx"],{},!1,!0),e=function(){return 1},docX["qrCodeTaggingLoopExample.docx"].applyTags({images:[{image:"Firefox_logo"},{image:"image"}]},e),docX["qrCodeTaggingLoopExample.docx"],waitsFor(function(){return null!=docX["qrCodeTaggingLoopExample.docx"].ready}),runs(function(){var e,o;expect(null!=docX["qrCodeTaggingLoopExample.docx"].zip.files["word/media/Copie_0.png"]).toBeTruthy(),expect(null!=docX["qrCodeTaggingLoopExample.docx"].zip.files["word/media/Copie_1.png"]).toBeTruthy(),expect(null!=docX["qrCodeTaggingLoopExample.docx"].zip.files["word/media/Copie_2.png"]).toBeFalsy(),o=[];for(e in docX["qrCodeTaggingLoopExample.docx"].zip.files)expect(docX["qrCodeTaggingLoopExample.docx"].zip.files[e].options.date).not.toBe(docX["qrCodeTaggingLoopExampleExpected.docx"].zip.files[e].options.date),expect(docX["qrCodeTaggingLoopExample.docx"].zip.files[e].name).toBe(docX["qrCodeTaggingLoopExampleExpected.docx"].zip.files[e].name),expect(docX["qrCodeTaggingLoopExample.docx"].zip.files[e].options.base64).toBe(docX["qrCodeTaggingLoopExampleExpected.docx"].zip.files[e].options.base64),expect(docX["qrCodeTaggingLoopExample.docx"].zip.files[e].options.binary).toBe(docX["qrCodeTaggingLoopExampleExpected.docx"].zip.files[e].options.binary),expect(docX["qrCodeTaggingLoopExample.docx"].zip.files[e].options.compression).toBe(docX["qrCodeTaggingLoopExampleExpected.docx"].zip.files[e].options.compression),o.push(expect(docX["qrCodeTaggingLoopExample.docx"].zip.files[e].options.dir).toBe(docX["qrCodeTaggingLoopExampleExpected.docx"].zip.files[e].options.dir));return o})})})}).call(this);
+(function() {
+  var env, root;
+
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
+
+  root.docX = {};
+
+  root.docXData = {};
+
+  if (env === 'node') {
+    global.http = require('http');
+    global.https = require('https');
+    global.fs = require('fs');
+    global.vm = require('vm');
+    global.DOMParser = require('xmldom').DOMParser;
+    global.XMLSerializer = require('xmldom').XMLSerializer;
+    global.PNG = require('../../libs/pngjs/png-node');
+    global.url = require('url');
+    ["grid.js", "version.js", "detector.js", "formatinf.js", "errorlevel.js", "bitmat.js", "datablock.js", "bmparser.js", "datamask.js", "rsdecoder.js", "gf256poly.js", "gf256.js", "decoder.js", "qrcode.js", "findpat.js", "alignpat.js", "databr.js"].forEach(function(file) {
+      return vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);
+    });
+    ['jszip.js', 'jszip-load.js', 'jszip-deflate.js', 'jszip-inflate.js'].forEach(function(file) {
+      return vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip/' + file), file);
+    });
+    root.DocxGen = require('../../js/docxgen.js');
+  }
+
+  DocUtils.loadDoc('imageExample.docx');
+
+  DocUtils.loadDoc('tagExample.docx');
+
+  DocUtils.loadDoc('tagExampleExpected.docx');
+
+  DocUtils.loadDoc('tagLoopExample.docx');
+
+  DocUtils.loadDoc('tagLoopExampleImageExpected.docx');
+
+  DocUtils.loadDoc('tagProduitLoop.docx');
+
+  DocUtils.loadDoc('tagDashLoop.docx');
+
+  DocUtils.loadDoc('tagDashLoopList.docx');
+
+  DocUtils.loadDoc('tagDashLoopTable.docx');
+
+  DocUtils.loadDoc('tagIntelligentLoopTable.docx', {
+    intelligentTagging: true
+  });
+
+  DocUtils.loadDoc('tagIntelligentLoopTableExpected.docx');
+
+  DocUtils.loadDoc('tagDashLoop.docx');
+
+  DocUtils.loadDoc('qrCodeExample.docx');
+
+  DocUtils.loadDoc('qrCodeExampleExpected.docx');
+
+  DocUtils.loadDoc('qrCodeTaggingExample.docx');
+
+  DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx');
+
+  DocUtils.loadDoc('qrCodeTaggingLoopExample.docx');
+
+  DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx');
+
+  DocUtils.loadDoc('image.png', {
+    docx: false
+  });
+
+  DocUtils.loadDoc('bootstrap_logo.png', {
+    docx: false
+  });
+
+  DocUtils.loadDoc('BMW_logo.png', {
+    docx: false
+  });
+
+  DocUtils.loadDoc('Firefox_logo.png', {
+    docx: false
+  });
+
+  DocUtils.loadDoc('Volkswagen_logo.png', {
+    docx: false
+  });
+
+  DocUtils.loadDoc('qrcodeTest.zip', {
+    docx: false
+  });
+
+  describe("DocxGenBasis", function() {
+    it("should be defined", function() {
+      return expect(DocxGen).not.toBe(void 0);
+    });
+    return it("should construct", function() {
+      var a;
+      a = new DocxGen();
+      return expect(a).not.toBe(void 0);
+    });
+  });
+
+  describe("DocxGenLoading", function() {
+    describe("ajax done correctly", function() {
+      it("doc and img Data should have the expected length", function() {
+        expect(docXData['imageExample.docx'].length).toEqual(729580);
+        return expect(docXData['image.png'].length).toEqual(18062);
+      });
+      return it("should have the right number of files (the docx unzipped)", function() {
+        docX['imageExample.docx'] = new DocxGen(docXData['imageExample.docx']);
+        return expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(22);
+      });
+    });
+    describe("basic loading", function() {
+      return it("should load file imageExample.docx", function() {
+        return expect(typeof docX['imageExample.docx']).toBe('object');
+      });
+    });
+    describe("content_loading", function() {
+      it("should load the right content for the footer", function() {
+        var fullText;
+        fullText = docX['imageExample.docx'].getFullText("word/footer1.xml");
+        expect(fullText.length).not.toBe(0);
+        return expect(fullText).toBe('{last_name}{first_name}{phone}');
+      });
+      return it("should load the right content for the document", function() {
+        var fullText;
+        fullText = docX['imageExample.docx'].getFullText();
+        return expect(fullText).toBe("");
+      });
+    });
+    return describe("image loading", function() {
+      it("should find one image (and not more than 1)", function() {
+        return expect(docX['imageExample.docx'].getImageList().length).toEqual(1);
+      });
+      it("should find the image named with the good name", function() {
+        return expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg');
+      });
+      return it("should change the image with another one", function() {
+        var newImageData, oldImageData;
+        oldImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].data;
+        docX['imageExample.docx'].setImage('word/media/image1.jpeg', docXData['image.png']);
+        newImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].data;
+        expect(oldImageData).not.toEqual(newImageData);
+        return expect(docXData['image.png']).toEqual(newImageData);
+      });
+    });
+  });
+
+  describe("DocxGenTemplating", function() {
+    return describe("text templating", function() {
+      it("should change values with template vars", function() {
+        var Tags;
+        Tags = {
+          "first_name": "Hipp",
+          "last_name": "Edgar",
+          "phone": "0652455478",
+          "description": "New Website"
+        };
+        docX['tagExample.docx'].setTags(Tags);
+        docX['tagExample.docx'].applyTags();
+        expect(docX['tagExample.docx'].getFullText()).toEqual('Edgar Hipp');
+        expect(docX['tagExample.docx'].getFullText("word/header1.xml")).toEqual('Edgar Hipp0652455478New Website');
+        return expect(docX['tagExample.docx'].getFullText("word/footer1.xml")).toEqual('EdgarHipp0652455478');
+      });
+      return it("should export the good file", function() {
+        var i, _results;
+        _results = [];
+        for (i in docX['tagExample.docx'].zip.files) {
+          expect(docX['tagExample.docx'].zip.files[i].options.date).not.toBe(docX['tagExampleExpected.docx'].zip.files[i].options.date);
+          expect(docX['tagExample.docx'].zip.files[i].name).toBe(docX['tagExampleExpected.docx'].zip.files[i].name);
+          expect(docX['tagExample.docx'].zip.files[i].options.base64).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.base64);
+          expect(docX['tagExample.docx'].zip.files[i].options.binary).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.binary);
+          expect(docX['tagExample.docx'].zip.files[i].options.compression).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.compression);
+          expect(docX['tagExample.docx'].zip.files[i].options.dir).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.dir);
+          _results.push(expect(docX['tagExample.docx'].zip.files[i].data).toBe(docX['tagExampleExpected.docx'].zip.files[i].data));
+        }
+        return _results;
+      });
+    });
+  });
+
+  describe("DocxGenTemplatingForLoop", function() {
+    return describe("textLoop templating", function() {
+      it("should replace all the tags", function() {
+        var Tags;
+        Tags = {
+          "nom": "Hipp",
+          "prenom": "Edgar",
+          "telephone": "0652455478",
+          "description": "New Website",
+          "offre": [
+            {
+              "titre": "titre1",
+              "prix": "1250"
+            }, {
+              "titre": "titre2",
+              "prix": "2000"
+            }, {
+              "titre": "titre3",
+              "prix": "1400"
+            }
+          ]
+        };
+        docX['tagLoopExample.docx'].setTags(Tags);
+        docX['tagLoopExample.docx'].applyTags();
+        return expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar');
+      });
+      return it("should work with loops inside loops", function() {
+        var Tags, expectedText, text;
+        Tags = {
+          "products": [
+            {
+              "title": "Microsoft",
+              "name": "DOS",
+              "reference": "Win7",
+              "avantages": [
+                {
+                  "title": "Everyone uses it",
+                  "proof": [
+                    {
+                      "reason": "it is quite cheap"
+                    }, {
+                      "reason": "it is quit simple"
+                    }, {
+                      "reason": "it works on a lot of different Hardware"
+                    }
+                  ]
+                }
+              ]
+            }, {
+              "title": "Linux",
+              "name": "Ubuntu",
+              "reference": "Ubuntu10",
+              "avantages": [
+                {
+                  "title": "It's very powerful",
+                  "proof": [
+                    {
+                      "reason": "the terminal is your friend"
+                    }, {
+                      "reason": "Hello world"
+                    }, {
+                      "reason": "it's free"
+                    }
+                  ]
+                }
+              ]
+            }, {
+              "title": "Apple",
+              "name": "Mac",
+              "reference": "OSX",
+              "avantages": [
+                {
+                  "title": "It's very easy",
+                  "proof": [
+                    {
+                      "reason": "you can do a lot just with the mouse"
+                    }, {
+                      "reason": "It's nicely designed"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        };
+        docX['tagProduitLoop.docx'].setTags(Tags);
+        docX['tagProduitLoop.docx'].applyTags();
+        text = docX['tagProduitLoop.docx'].getFullText();
+        expectedText = "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
+        expect(text.length).toEqual(expectedText.length);
+        return expect(text).toEqual(expectedText);
+      });
+    });
+  });
+
+  describe("Xml Util", function() {
+    var xmlUtil;
+    xmlUtil = new XmlUtil();
+    it("should compute the scope between 2 <w:t>", function() {
+      var scope;
+      scope = xmlUtil.getListXmlElements("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
+      return expect(scope).toEqual([
+        {
+          tag: '</w:t>',
+          offset: 9
+        }, {
+          tag: '</w:r>',
+          offset: 15
+        }, {
+          tag: '</w:p>',
+          offset: 21
+        }, {
+          tag: '<w:p>',
+          offset: 27
+        }, {
+          tag: '<w:r>',
+          offset: 162
+        }, {
+          tag: '<w:t>',
+          offset: 188
+        }
+      ]);
+    });
+    it("should compute the scope between 2 <w:t> in an Array", function() {
+      var scope;
+      scope = xmlUtil.getListXmlElements("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
+      return expect(scope).toEqual([
+        {
+          tag: '</w:t>',
+          offset: 3
+        }, {
+          tag: '</w:r>',
+          offset: 9
+        }, {
+          tag: '</w:p>',
+          offset: 15
+        }, {
+          tag: '</w:tc>',
+          offset: 21
+        }, {
+          tag: '<w:tc>',
+          offset: 28
+        }, {
+          tag: '<w:p>',
+          offset: 83
+        }, {
+          tag: '<w:r>',
+          offset: 268
+        }, {
+          tag: '<w:t>',
+          offset: 374
+        }
+      ]);
+    });
+    return it('should compute the scope between a w:t in an array and the other outside', function() {
+      var scope;
+      scope = xmlUtil.getListXmlElements("defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
+      return expect(scope).toEqual([
+        {
+          tag: '</w:t>',
+          offset: 8
+        }, {
+          tag: '</w:r>',
+          offset: 14
+        }, {
+          tag: '</w:p>',
+          offset: 20
+        }, {
+          tag: '</w:tc>',
+          offset: 26
+        }, {
+          tag: '</w:tr>',
+          offset: 33
+        }, {
+          tag: '</w:tbl>',
+          offset: 40
+        }, {
+          tag: '<w:p>',
+          offset: 188
+        }, {
+          tag: '<w:r>',
+          offset: 257
+        }, {
+          tag: '<w:t>',
+          offset: 306
+        }
+      ]);
+    });
+  });
+
+  describe("scope diff calculation", function() {
+    var xmlUtil;
+    xmlUtil = new XmlUtil();
+    it("should compute the scopeDiff between 2 <w:t>", function() {
+      var scope;
+      scope = xmlUtil.getListDifferenceXmlElements("undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ");
+      return expect(scope).toEqual([]);
+    });
+    it("should compute the scopeDiff between 2 <w:t> in an Array", function() {
+      var scope;
+      scope = xmlUtil.getListDifferenceXmlElements("urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté");
+      return expect(scope).toEqual([]);
+    });
+    return it('should compute the scopeDiff between a w:t in an array and the other outside', function() {
+      var scope;
+      scope = xmlUtil.getListDifferenceXmlElements("defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ");
+      return expect(scope).toEqual([
+        {
+          tag: '</w:tc>',
+          offset: 26
+        }, {
+          tag: '</w:tr>',
+          offset: 33
+        }, {
+          tag: '</w:tbl>',
+          offset: 40
+        }
+      ]);
+    });
+  });
+
+  describe("scope inner text", function() {
+    return it("should find the scope", function() {
+      var obj, scope, xmlTemplater;
+      xmlTemplater = new DocXTemplater();
+      docX['tagProduitLoop.docx'] = new DocxGen(docXData['tagProduitLoop.docx']);
+      scope = xmlTemplater.calcOuterXml(docX['tagProduitLoop.docx'].zip.files["word/document.xml"].data, 1195, 1245, 'w:p');
+      obj = {
+        text: "<w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>",
+        startTag: 1134,
+        endTag: 1286
+      };
+      expect(scope.endTag).toEqual(obj.endTag);
+      expect(scope.startTag).toEqual(obj.startTag);
+      expect(scope.text.length).toEqual(obj.text.length);
+      return expect(scope.text).toEqual(obj.text);
+    });
+  });
+
+  describe("Dash Loop Testing", function() {
+    it("dash loop ok on simple table -> w:tr", function() {
+      var Tags, expectedText, text;
+      Tags = {
+        "os": [
+          {
+            "type": "linux",
+            "price": "0",
+            "reference": "Ubuntu10"
+          }, {
+            "type": "DOS",
+            "price": "500",
+            "reference": "Win7"
+          }, {
+            "type": "apple",
+            "price": "1200",
+            "reference": "MACOSX"
+          }
+        ]
+      };
+      docX['tagDashLoop.docx'].setTags(Tags);
+      docX['tagDashLoop.docx'].applyTags();
+      expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
+      text = docX['tagDashLoop.docx'].getFullText();
+      return expect(text).toBe(expectedText);
+    });
+    it("dash loop ok on simple table -> w:table", function() {
+      var Tags, expectedText, text;
+      Tags = {
+        "os": [
+          {
+            "type": "linux",
+            "price": "0",
+            "reference": "Ubuntu10"
+          }, {
+            "type": "DOS",
+            "price": "500",
+            "reference": "Win7"
+          }, {
+            "type": "apple",
+            "price": "1200",
+            "reference": "MACOSX"
+          }
+        ]
+      };
+      docX['tagDashLoopTable.docx'].setTags(Tags);
+      docX['tagDashLoopTable.docx'].applyTags();
+      expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
+      text = docX['tagDashLoopTable.docx'].getFullText();
+      return expect(text).toBe(expectedText);
+    });
+    return it("dash loop ok on simple list -> w:p", function() {
+      var Tags, expectedText, text;
+      Tags = {
+        "os": [
+          {
+            "type": "linux",
+            "price": "0",
+            "reference": "Ubuntu10"
+          }, {
+            "type": "DOS",
+            "price": "500",
+            "reference": "Win7"
+          }, {
+            "type": "apple",
+            "price": "1200",
+            "reference": "MACOSX"
+          }
+        ]
+      };
+      docX['tagDashLoopList.docx'].setTags(Tags);
+      docX['tagDashLoopList.docx'].applyTags();
+      expectedText = 'linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ';
+      text = docX['tagDashLoopList.docx'].getFullText();
+      return expect(text).toBe(expectedText);
+    });
+  });
+
+  describe("Intelligent Loop Tagging", function() {
+    return it("should work with tables", function() {
+      var Tags, expectedText, i, text, _results;
+      Tags = {
+        clients: [
+          {
+            first_name: "John",
+            last_name: "Doe",
+            phone: "+33647874513"
+          }, {
+            first_name: "Jane",
+            last_name: "Doe",
+            phone: "+33454540124"
+          }, {
+            first_name: "Phil",
+            last_name: "Kiel",
+            phone: "+44578451245"
+          }, {
+            first_name: "Dave",
+            last_name: "Sto",
+            phone: "+44548787984"
+          }
+        ]
+      };
+      docX['tagIntelligentLoopTable.docx'].setTags(Tags);
+      docX['tagIntelligentLoopTable.docx'].applyTags();
+      expectedText = 'JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984';
+      text = docX['tagIntelligentLoopTableExpected.docx'].getFullText();
+      expect(text).toBe(expectedText);
+      _results = [];
+      for (i in docX['tagIntelligentLoopTable.docx'].zip.files) {
+        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].data).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].data);
+        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].name);
+        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.base64).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.base64);
+        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.binary).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.binary);
+        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.compression).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.compression);
+        expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.dir);
+        _results.push(expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.date));
+      }
+      return _results;
+    });
+  });
+
+  describe("getTags", function() {
+    it("should work with simple document", function() {
+      var tempVars;
+      docX['tagExample.docx'] = new DocxGen(docXData['tagExample.docx'], {}, false);
+      tempVars = docX['tagExample.docx'].getTags();
+      return expect(tempVars).toEqual([
+        {
+          fileName: 'word/document.xml',
+          vars: {
+            last_name: true,
+            first_name: true
+          }
+        }, {
+          fileName: 'word/footer1.xml',
+          vars: {
+            last_name: true,
+            first_name: true,
+            phone: true
+          }
+        }, {
+          fileName: 'word/header1.xml',
+          vars: {
+            last_name: true,
+            first_name: true,
+            phone: true,
+            description: true
+          }
+        }
+      ]);
+    });
+    it("should work with loop document", function() {
+      var tempVars;
+      docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx'], {}, false);
+      tempVars = docX['tagLoopExample.docx'].getTags();
+      return expect(tempVars).toEqual([
+        {
+          fileName: 'word/document.xml',
+          vars: {
+            offre: {
+              prix: true,
+              titre: true
+            },
+            nom: true,
+            prenom: true
+          }
+        }, {
+          fileName: 'word/footer1.xml',
+          vars: {
+            nom: true,
+            prenom: true,
+            telephone: true
+          }
+        }, {
+          fileName: 'word/header1.xml',
+          vars: {
+            nom: true,
+            prenom: true
+          }
+        }
+      ]);
+    });
+    return it('should work if there are no Tags', function() {
+      var tempVars;
+      docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false);
+      tempVars = docX['qrCodeExample.docx'].getTags();
+      return expect(tempVars).toEqual([]);
+    });
+  });
+
+  describe("xmlTemplater", function() {
+    it("should work with simpleContent", function() {
+      var content, scope, xmlTemplater;
+      content = "<w:t>Hello {name}</w:t>";
+      scope = {
+        "name": "Edgar"
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
+    });
+    it("should work with non w:t content", function() {
+      var content, scope, xmlTemplater;
+      content = "{image}.png";
+      scope = {
+        "image": "edgar"
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.content).toBe('edgar.png');
+    });
+    it("should work with tag in two elements", function() {
+      var content, scope, xmlTemplater;
+      content = "<w:t>Hello {</w:t><w:t>name}</w:t>";
+      scope = {
+        "name": "Edgar"
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
+    });
+    it("should work with simple Loop", function() {
+      var content, scope, xmlTemplater;
+      content = "<w:t>Hello {#names}{name},{/names}</w:t>";
+      scope = {
+        "names": [
+          {
+            "name": "Edgar"
+          }, {
+            "name": "Mary"
+          }, {
+            "name": "John"
+          }
+        ]
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,');
+    });
+    it("should work with dash Loop", function() {
+      var content, scope, xmlTemplater;
+      content = "<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>";
+      scope = {
+        "names": [
+          {
+            "name": "Edgar"
+          }, {
+            "name": "Mary"
+          }, {
+            "name": "John"
+          }
+        ]
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Hello Mary,Hello John,');
+    });
+    it("should work with loop and innerContent", function() {
+      var content, scope, xmlTemplater;
+      content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t>";
+      scope = {
+        "title": "Everyone uses it",
+        "proof": [
+          {
+            "reason": "it is quite cheap"
+          }, {
+            "reason": "it is quit simple"
+          }, {
+            "reason": "it works on a lot of different Hardware"
+          }
+        ]
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
+    });
+    it("should work with loop and innerContent (with last)", function() {
+      var content, scope, xmlTemplater;
+      content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t> ";
+      scope = {
+        "title": "Everyone uses it",
+        "proof": [
+          {
+            "reason": "it is quite cheap"
+          }, {
+            "reason": "it is quit simple"
+          }, {
+            "reason": "it works on a lot of different Hardware"
+          }
+        ]
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.getFullText()).toBe('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware');
+    });
+    return it('should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ', function() {
+      var content, scope, xmlTemplater;
+      content = "Hello {#names}{name},{/names}";
+      scope = {
+        "names": [
+          {
+            "name": "Edgar"
+          }, {
+            "name": "Mary"
+          }, {
+            "name": "John"
+          }
+        ]
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      return expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,');
+    });
+  });
+
+  describe('DocxQrCode module', function() {
+    return describe("Calculate simple Docx", function() {
+      var f, fCalled, obj, qrcodezip;
+      f = null;
+      fCalled = null;
+      qrcodezip = null;
+      obj = null;
+      beforeEach(function() {
+        var docx;
+        qrcodezip = new JSZip(docXData['qrcodeTest.zip']);
+        docx = new DocxGen();
+        return obj = new DocXTemplater("", {
+          DocxGen: docx,
+          Tags: {
+            Tag: "tagValue"
+          }
+        });
+      });
+      it("should work with Blablalalabioeajbiojbepbroji", function() {
+        runs(function() {
+          var base64, binaryData, dat, finished, png, qr;
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          if (env === 'browser') {
+            qr = new DocxQrCode(qrcodezip.files['blabla.png'].data, obj, "custom.png", 6);
+            return qr.decode(f.test);
+          } else {
+            base64 = JSZipBase64.encode(qrcodezip.files['blabla.png'].data);
+            binaryData = new Buffer(base64, 'base64');
+            png = new PNG(binaryData);
+            finished = function(a) {
+              png.decoded = a;
+              qr = new DocxQrCode(png, obj, "custom.png", 6);
+              return qr.decode(f.test);
+            };
+            return dat = png.decode(finished);
+          }
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
+          expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(6);
+        });
+      });
+      it("should work with long texts", function() {
+        runs(function() {
+          var base64, binaryData, dat, finished, png, qr;
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          if (env === 'browser') {
+            qr = new DocxQrCode(qrcodezip.files['custom.png'].data, obj, "custom.png", 6);
+            return qr.decode(f.test);
+          } else {
+            base64 = JSZipBase64.encode(qrcodezip.files['custom.png'].data);
+            binaryData = new Buffer(base64, 'base64');
+            png = new PNG(binaryData);
+            finished = function(a) {
+              png.decoded = a;
+              qr = new DocxQrCode(png, obj, "custom.png", 6);
+              return qr.decode(f.test);
+            };
+            return dat = png.decode(finished);
+          }
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("Some custom text");
+          expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(6);
+        });
+      });
+      it("should work with basic image", function() {
+        runs(function() {
+          var base64, binaryData, dat, finished, png, qr;
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          if (env === 'browser') {
+            qr = new DocxQrCode(qrcodezip.files['qrcodeTest.png'].data, obj, "qrcodeTest.png", 4);
+            return qr.decode(f.test);
+          } else {
+            base64 = JSZipBase64.encode(qrcodezip.files['qrcodeTest.png'].data);
+            binaryData = new Buffer(base64, 'base64');
+            png = new PNG(binaryData);
+            finished = function(a) {
+              png.decoded = a;
+              qr = new DocxQrCode(png, obj, "qrcodeTest.png", 4);
+              return qr.decode(f.test);
+            };
+            return dat = png.decode(finished);
+          }
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("test");
+          expect(f.test.mostRecentCall.args[1]).toEqual("qrcodeTest.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(4);
+        });
+      });
+      return it("should work with image with {tags}", function() {
+        runs(function() {
+          var base64, binaryData, dat, finished, png, qr;
+          fCalled = false;
+          f = {
+            test: function() {
+              return fCalled = true;
+            }
+          };
+          spyOn(f, 'test').andCallThrough();
+          if (env === 'browser') {
+            qr = new DocxQrCode(qrcodezip.files['qrcodetag.png'].data, obj, "tag.png", 2);
+            return qr.decode(f.test);
+          } else {
+            base64 = JSZipBase64.encode(qrcodezip.files['qrcodetag.png'].data);
+            binaryData = new Buffer(base64, 'base64');
+            png = new PNG(binaryData);
+            finished = function(a) {
+              png.decoded = a;
+              qr = new DocxQrCode(png, obj, "tag.png", 2);
+              return qr.decode(f.test);
+            };
+            return dat = png.decode(finished);
+          }
+        });
+        waitsFor(function() {
+          return fCalled;
+        });
+        return runs(function() {
+          expect(f.test).toHaveBeenCalled();
+          expect(f.test.calls.length).toEqual(1);
+          expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
+          expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
+          return expect(f.test.mostRecentCall.args[2]).toEqual(2);
+        });
+      });
+    });
+  });
+
+  describe("image Loop Replacing", function() {
+    return describe('rels', function() {
+      it('should load', function() {
+        expect(docX['imageExample.docx'].imgManager.loadImageRels().imageRels).toEqual([]);
+        return expect(docX['imageExample.docx'].imgManager.maxRid).toEqual(10);
+      });
+      return it('should add', function() {
+        var contentTypeData, contentTypeXml, contentTypes, oldData, relationships, relsData, relsXml;
+        oldData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
+        expect(docX['imageExample.docx'].imgManager.addImageRels('image1.png', docXData['bootstrap_logo.png'])).toBe(11);
+        expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data).not.toBe(oldData);
+        relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
+        contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].data;
+        relsXml = DocUtils.Str2xml(relsData);
+        contentTypeXml = DocUtils.Str2xml(contentTypeData);
+        relationships = relsXml.getElementsByTagName('Relationship');
+        contentTypes = contentTypeXml.getElementsByTagName('Default');
+        expect(relationships.length).toEqual(11);
+        return expect(contentTypes.length).toBe(4);
+      });
+    });
+  });
+
+  describe("loop forTagging images", function() {
+    return it('should work with a simple loop file', function() {
+      var contentTypeData, contentTypeXml, contentTypes, i, relationships, relsData, relsXml, tempVars, _base;
+      docX['tagLoopExample.docx'] = new DocxGen(docXData['tagLoopExample.docx']);
+      tempVars = {
+        "nom": "Hipp",
+        "prenom": "Edgar",
+        "telephone": "0652455478",
+        "description": "New Website",
+        "offre": [
+          {
+            "titre": "titre1",
+            "prix": "1250",
+            "img": [
+              {
+                data: docXData['Volkswagen_logo.png'],
+                name: "vw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre2",
+            "prix": "2000",
+            "img": [
+              {
+                data: docXData['BMW_logo.png'],
+                name: "bmw_logo.png"
+              }
+            ]
+          }, {
+            "titre": "titre3",
+            "prix": "1400",
+            "img": [
+              {
+                data: docXData['Firefox_logo.png'],
+                name: "firefox_logo.png"
+              }
+            ]
+          }
+        ]
+      };
+      docX['tagLoopExample.docx'].setTags(tempVars);
+      docX['tagLoopExample.docx'].applyTags();
+      for (i in docX['tagLoopExample.docx'].zip.files) {
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.date);
+        expect(docX['tagLoopExample.docx'].zip.files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].name);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.base64).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.base64);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.binary).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.binary);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.compression).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.compression);
+        expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir);
+        if (i !== 'word/_rels/document.xml.rels' && i !== '[Content_Types].xml') {
+          if (env === 'browser' || i !== "word/document.xml") {
+            if (typeof (_base = docX['tagLoopExample.docx'].zip.files[i]).data === "function" ? _base.data(0) : void 0) {
+              expect(docX['tagLoopExample.docx'].zip.files[i].data.length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data.length);
+            }
+            expect(docX['tagLoopExample.docx'].zip.files[i].data).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].data);
+          }
+        }
+      }
+      relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].data;
+      contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].data;
+      relsXml = DocUtils.Str2xml(relsData);
+      contentTypeXml = DocUtils.Str2xml(contentTypeData);
+      relationships = relsXml.getElementsByTagName('Relationship');
+      contentTypes = contentTypeXml.getElementsByTagName('Default');
+      expect(relationships.length).toEqual(16);
+      return expect(contentTypes.length).toBe(3);
+    });
+  });
+
+  describe('qr code testing', function() {
+    it('should work with local QRCODE without tags', function() {
+      var endcallback;
+      docX['qrCodeExample.docx'] = new DocxGen(docXData['qrCodeExample.docx'], {}, false, true);
+      endcallback = function() {
+        return 1;
+      };
+      docX['qrCodeExample.docx'].applyTags({}, endcallback);
+      waitsFor(function() {
+        return docX['qrCodeExample.docx'].ready != null;
+      });
+      return runs(function() {
+        var i, _results;
+        expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
+        _results = [];
+        for (i in docX['qrCodeExample.docx'].zip.files) {
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date);
+          expect(docX['qrCodeExample.docx'].zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name);
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.base64);
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.binary);
+          expect(docX['qrCodeExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.compression);
+          _results.push(expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir));
+        }
+        return _results;
+      });
+    });
+    it('should work with local QRCODE with {tags}', function() {
+      var endcallback;
+      docX['qrCodeTaggingExample.docx'] = new DocxGen(docXData['qrCodeTaggingExample.docx'], {
+        'image': 'Firefox_logo'
+      }, false, true);
+      endcallback = function() {
+        return 1;
+      };
+      docX['qrCodeTaggingExample.docx'].applyTags({
+        'image': 'Firefox_logo'
+      }, endcallback);
+      waitsFor(function() {
+        return docX['qrCodeTaggingExample.docx'].ready != null;
+      });
+      return runs(function() {
+        var i, _results;
+        expect(docX['qrCodeTaggingExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
+        _results = [];
+        for (i in docX['qrCodeTaggingExample.docx'].zip.files) {
+          expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date);
+          expect(docX['qrCodeTaggingExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].name);
+          expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.base64);
+          expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.binary);
+          expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.compression);
+          _results.push(expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir));
+        }
+        return _results;
+      });
+    });
+    return it('should work with loop QRCODE with {tags}', function() {
+      var endcallback;
+      docX['qrCodeTaggingLoopExample.docx'] = new DocxGen(docXData['qrCodeTaggingLoopExample.docx'], {}, false, true);
+      endcallback = function() {
+        return 1;
+      };
+      docX['qrCodeTaggingLoopExample.docx'].applyTags({
+        'images': [
+          {
+            image: 'Firefox_logo'
+          }, {
+            image: 'image'
+          }
+        ]
+      }, endcallback);
+      docX['qrCodeTaggingLoopExample.docx'];
+      waitsFor(function() {
+        return docX['qrCodeTaggingLoopExample.docx'].ready != null;
+      });
+      return runs(function() {
+        var i, _results;
+        expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
+        expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_1.png'] != null).toBeTruthy();
+        expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_2.png'] != null).toBeFalsy();
+        _results = [];
+        for (i in docX['qrCodeTaggingLoopExample.docx'].zip.files) {
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.base64);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.binary);
+          expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.compression);
+          _results.push(expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir));
+        }
+        return _results;
+      });
+    });
+  });
+
+}).call(this);
