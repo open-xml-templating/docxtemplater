@@ -1,11 +1,28 @@
 ###
 Docxgen.coffee
 Created by Edgar HIPP
-02/11/2014
+02/18/2014
 ###
 
 root= global ? window
 env= if global? then 'node' else 'browser'
+
+if env=='node'
+	global.http= require('http')
+	global.https= require('https')
+	global.fs= require('fs')
+	global.vm = require('vm')
+	global.DOMParser = require('xmldom').DOMParser
+	global.XMLSerializer= require('xmldom').XMLSerializer
+	global.PNG= require('../libs/pngjs/png-node')
+	global.url= require('url')
+
+	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
+		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../libs/jsqrcode/' + file), file)
+	['jszip.js'].forEach (file) ->
+		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../libs/jszip2.0/dist/' + file), file)
+
+
 root.DocxGen = class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 	constructor: (content, @Tags={},@intelligentTagging=on,@qrCode=off) ->

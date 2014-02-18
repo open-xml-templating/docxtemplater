@@ -4,24 +4,8 @@ env= if global? then 'node' else 'browser'
 root.docX={}
 root.docXData={}
 
-
 if env=='node'
-	global.http= require('http')
-	global.https= require('https')
-	global.fs= require('fs')
-	global.vm = require('vm')
-	global.DOMParser = require('xmldom').DOMParser
-	global.XMLSerializer= require('xmldom').XMLSerializer
-	global.PNG= require('../../libs/pngjs/png-node')
-	global.url= require('url')
-
-
-
-	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
-		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jsqrcode/' + file), file);
-	['jszip.js'].forEach (file) ->
-		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../../libs/jszip2.0/dist/' + file), file);
-	root.DocxGen= require('../../js/docxgen.js')
+	root.DocxGen= require(__dirname+'/../../js/docxgen.js')
 
 DocUtils.pathConfig=
 	"node":'../../examples/'
@@ -59,7 +43,6 @@ describe "DocxGenBasis", () ->
 	it "should construct", () ->
 		a= new DocxGen()
 		expect(a).not.toBe(undefined)
-
 
 describe "DocxGenLoading", () ->
 	describe "ajax done correctly", () ->

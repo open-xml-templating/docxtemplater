@@ -2,7 +2,7 @@
   "name": "docxtemplater",
   "version": "0.3.2",
   "author": "Edgar Hipp <hipp.edg@gmail.com>",
-  "description": "A docX Generator",
+  "description": "A docX templater",
   "contributors": [
     {
       "name": "Edgar Hipp",
@@ -15,7 +15,7 @@
   "keywords": [
     "DocX",
     "templates",
-    "Generator"
+    "Generation"
   ],
   "repository": {
     "type": "git",
