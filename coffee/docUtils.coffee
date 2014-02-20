@@ -32,7 +32,7 @@ DocUtils.loadDoc= (path,options={}) ->
 			root.docX[fileName]=new DocxGen(data,{},intelligentTagging)
 			return root.docX[fileName]
 		if callback?
-			callback(false)
+			callback(root.docXData[fileName])
 		if async==false
 			return root.docXData[fileName]
 
@@ -96,15 +96,14 @@ DocUtils.loadDoc= (path,options={}) ->
 						if callback? then callback(true)
 					else
 						loadFile(data)
-						if callback? then callback(false)
+						if callback? then callback(data)
 			else
-				#console.log('loading async:'+totalPath)
 				try
 					data=fs.readFileSync(totalPath,"binary")
 					a=loadFile(data)
-					if callback? then callback(false) else return a
+					if callback? then callback(data) else return a
 				catch e
-					if callback? then callback(true)
+					if callback? then callback()
 	return fileName
 
 DocUtils.clone = (obj) ->

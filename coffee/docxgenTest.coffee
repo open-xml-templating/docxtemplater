@@ -11,25 +11,13 @@ DocUtils.pathConfig=
 	"node":'../../examples/'
 	"browser":'../examples/'
 
-DocUtils.loadDoc('imageExample.docx')
-DocUtils.loadDoc('tagExample.docx')
-DocUtils.loadDoc('tagExampleExpected.docx')
-DocUtils.loadDoc('tagLoopExample.docx')
-DocUtils.loadDoc('tagLoopExampleImageExpected.docx')
-DocUtils.loadDoc('tagProduitLoop.docx')
-DocUtils.loadDoc('tagDashLoop.docx')
-DocUtils.loadDoc('tagDashLoopList.docx')
-DocUtils.loadDoc('tagDashLoopTable.docx')
-DocUtils.loadDoc('tagIntelligentLoopTable.docx',{intelligentTagging:true})
-DocUtils.loadDoc('tagIntelligentLoopTableExpected.docx')
-DocUtils.loadDoc('tagDashLoop.docx')
-DocUtils.loadDoc('qrCodeExample.docx')
-DocUtils.loadDoc('qrCodeExampleExpected.docx')
-DocUtils.loadDoc('qrCodeTaggingExample.docx')
-DocUtils.loadDoc('qrCodeTaggingExampleExpected.docx')
-DocUtils.loadDoc('qrCodeTaggingLoopExample.docx')
-DocUtils.loadDoc('qrCodeTaggingLoopExampleExpected.docx')
 
+fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx']
+
+for name in fileNames
+	root.docX[name]=new DocxGen().loadFromFile(name)
+
+DocUtils.loadDoc('tagIntelligentLoopTable.docx',{intelligentTagging:true})
 DocUtils.loadDoc('image.png',{docx:false})
 DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
 DocUtils.loadDoc('BMW_logo.png',{docx:false})

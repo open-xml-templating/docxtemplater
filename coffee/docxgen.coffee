@@ -37,7 +37,10 @@ root.DocxGen = class DocxGen
 		if content? then @load(content)
 		this
 	loadFromFile:(path)->
-		@load DocUtils.loadDoc(path,{docx:false})
+		DocUtils.loadDoc(path,{docx:false,callback: (rawData) =>
+			@load rawData
+		})
+		this
 	qrCodeCallBack:(num,add=true) ->
 		if add==true
 			@qrCodeWaitingFor.push num
