@@ -138,6 +138,10 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Type: string
             The docx template you want to load as plain text
 
+    loadFromFile(path)
+    	path
+    		Type: string
+    		Loads a docx from a file path
     setTags(Tags)
 
         Tags:
@@ -146,7 +150,6 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
 
     applyTags([Tags])
-    
         Tags:
             Type: Object {tag_name:tag_replacement}
             same as setTags
@@ -271,21 +274,22 @@ They are two ways to install docxtemplater:
 
 Installation: `npm install docxtemplater`
 
-		var Docxtemplater= require('docxtemplater');
+	var DocXTemplater= require('docxtemplater');
 
-		//loading the file
-		docxtemplater=DocUtils.loadDoc("input.docx");
+	//loading the file
+	docxtemplater=new DocXTemplater().loadFromFile("input.docx");
 
-		//setting the tags
-		docxtemplater.setTags({"name":"Edgar"});
+	//setting the tags
+	docxtemplater.setTags({"name":"Edgar"});
 
-		//when finished
-		docxtemplater.finishedCallback=function () {
-  	  	  docxtemplater.output(true,"output.docx");
-		}
+	//when finished
+	docxtemplater.finishedCallback=function () {
+  	  docxtemplater.output(true,"output.docx");
+	}
 
-		//apply the tags
-		docxtemplater.applyTags();
+	//apply the tags
+	docxtemplater.applyTags();
+
 
 you can download [input.docx](https://github.com/edi9999/docxtemplater/blob/master/input.docx?raw=true) and put it in the same folder than your script.
 

@@ -36,6 +36,8 @@ root.DocxGen = class DocxGen
 		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
 		if content? then @load(content)
 		this
+	loadFromFile:(path)->
+		@load DocUtils.loadDoc(path,{docx:false})
 	qrCodeCallBack:(num,add=true) ->
 		if add==true
 			@qrCodeWaitingFor.push num
@@ -54,6 +56,7 @@ root.DocxGen = class DocxGen
 	load: (content)->
 		@zip = new JSZip content
 		@imgManager=(new ImgManager(@zip)).loadImageRels()
+		this
 	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in templatedFiles when !@zip.files[fileName]?
