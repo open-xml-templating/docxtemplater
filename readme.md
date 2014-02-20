@@ -344,7 +344,8 @@ Todo:
 - [x] Refactor: create an `ImgManager class`. Responsibility: retrieve images, changing images, on a file based view
 - [x] Refactor: create a `templaterState class`, which will be a subclass used by XmlTemplater
 - [x] create a nodejs api
-- [ ] solve problem with special symbols (cyrillic0
+- [ ] Use FileSaver API for output http://eligrey.com/blog/post/saving-generated-files-on-the-client-side
+- [ ] solve problem with special symbols (cyrillic characters)
 - [ ] let the api user insert they own XML
 - [ ] stop overflooding the global scope:
 	- DocUtils

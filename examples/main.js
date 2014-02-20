@@ -24,7 +24,7 @@ for (var i = textAreaList.length - 1; i >= 0; i--) {
 
 	var viewRawButton=document.createElement('button')
 	viewRawButton.className = "raw";
-	viewRawButton.innerHTML="View raw Document";
+	viewRawButton.innerHTML="View Initial Document";
 	textAreaList[i].parentNode.insertBefore(viewRawButton, textAreaList[i].nextSibling);
 };
 
