@@ -21,11 +21,15 @@ gulp.task('watch', function () {
 
 gulp.task('coffeeTest', function() {
 	// Minify and copy all JavaScript (except vendor scripts)
-	return gulp.src(paths.coffeeTest)
+	a=gulp.src(paths.coffeeTest)
 		.pipe(coffee())
 		.pipe(uglify())
 		.pipe(concat('docxgenTest.spec.js'))
 		.pipe(gulp.dest('./test/spec'));
+
+	gulp.run('livereload');
+	gulp.run('jasmine');
+	return a;
 });
 
 gulp.task('coffee', function(cb) {
