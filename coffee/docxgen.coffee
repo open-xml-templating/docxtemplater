@@ -57,6 +57,7 @@ root.DocxGen = class DocxGen
 	getImageList:()-> @imgManager.getImageList()
 	setImage: (path,data,options) -> @imgManager.setImage(path,data,options)
 	load: (content)->
+		@loadedContent=content
 		@zip = new JSZip content
 		@imgManager=(new ImgManager(@zip)).loadImageRels()
 		this

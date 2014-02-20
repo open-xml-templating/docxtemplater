@@ -11,7 +11,6 @@ DocUtils.pathConfig=
 	"node":'../../examples/'
 	"browser":'../examples/'
 
-
 fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx']
 
 for name in fileNames
@@ -35,10 +34,10 @@ describe "DocxGenBasis", () ->
 describe "DocxGenLoading", () ->
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
-			expect(docXData['imageExample.docx'].length).toEqual(729580)
+			expect(docX['imageExample.docx'].loadedContent.length).toEqual(729580)
 			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
-			docX['imageExample.docx']=new DocxGen(docXData['imageExample.docx'])
+			docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent)
 			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(22)
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
@@ -64,7 +63,7 @@ describe "DocxGenLoading", () ->
 			expect(docXData['image.png']).toEqual(newImageData)
 	describe "output and input", () ->
 		it "should be the same" , () ->
-			doc=new DocxGen(root.docXData['tagExample.docx'])
+			doc=new DocxGen(root.docX['tagExample.docx'].loadedContent)
 			output=doc.output(false)
 			expect(output.length).toEqual(91348)
 			expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')
@@ -140,7 +139,7 @@ describe "scope diff calculation", () ->
 describe "scope inner text", () ->
 	it "should find the scope" , () ->
 		xmlTemplater= new DocXTemplater()
-		docX['tagProduitLoop.docx']= new DocxGen(docXData['tagProduitLoop.docx'])
+		docX['tagProduitLoop.docx'].load(docX['tagProduitLoop.docx'].loadedContent)
 		scope= xmlTemplater.calcOuterXml docX['tagProduitLoop.docx'].zip.files["word/document.xml"].asText() ,1195,1245,'w:p'
 		obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
 		expect(scope.endTag).toEqual(obj.endTag)
@@ -194,15 +193,15 @@ describe "Intelligent Loop Tagging", () ->
 
 describe "getTags", () ->
 	it "should work with simple document", () ->
-		docX['tagExample.docx']=new DocxGen docXData['tagExample.docx'],{},false
+		docX['tagExample.docx']=new DocxGen docX['tagExample.docx'].loadedContent,{},false
 		tempVars= docX['tagExample.docx'].getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { last_name : true, first_name : true } }, { fileName : 'word/footer1.xml', vars : { last_name : true, first_name : true, phone : true } }, { fileName : 'word/header1.xml', vars : { last_name : true, first_name : true, phone : true, description : true } }])
 	it "should work with loop document", () ->
-		docX['tagLoopExample.docx']=new DocxGen docXData['tagLoopExample.docx'],{},false
+		docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},false
 		tempVars= docX['tagLoopExample.docx'].getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
 	it 'should work if there are no Tags', () ->
-		docX['qrCodeExample.docx']=new DocxGen docXData['qrCodeExample.docx'],{},false
+		docX['qrCodeExample.docx']=new DocxGen docX['qrCodeExample.docx'].loadedContent,{},false
 		tempVars= docX['qrCodeExample.docx'].getTags()
 		expect(tempVars).toEqual([])
 
@@ -422,7 +421,7 @@ describe "image Loop Replacing", () ->
 
 describe "loop forTagging images", () ->
 	it 'should work with a simple loop file', () ->
-		docX['tagLoopExample.docx']= new DocxGen(docXData['tagLoopExample.docx'])
+		docX['tagLoopExample.docx']= new DocxGen(docX['tagLoopExample.docx'].loadedContent)
 		tempVars=
 			"nom":"Hipp"
 			"prenom":"Edgar"
@@ -473,7 +472,7 @@ describe "loop forTagging images", () ->
 
 describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
-		docX['qrCodeExample.docx']=new DocxGen(docXData['qrCodeExample.docx'],{},false,true)
+		docX['qrCodeExample.docx']=new DocxGen(docX['qrCodeExample.docx'].loadedContent,{},false,true)
 		endcallback= () -> 1
 		docX['qrCodeExample.docx'].applyTags({},endcallback)
 
@@ -495,7 +494,7 @@ describe 'qr code testing', () ->
 				# expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
 
 	it 'should work with local QRCODE with {tags}', () ->
-		docX['qrCodeTaggingExample.docx']=new DocxGen(docXData['qrCodeTaggingExample.docx'],{'image':'Firefox_logo'},false,true)
+		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},false,true)
 		endcallback= () -> 1
 		docX['qrCodeTaggingExample.docx'].applyTags({'image':'Firefox_logo'},endcallback)
 
@@ -516,7 +515,7 @@ describe 'qr code testing', () ->
 				# expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
 
 	it 'should work with loop QRCODE with {tags}', () ->
-		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docXData['qrCodeTaggingLoopExample.docx'],{},false,true)
+		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docX['qrCodeTaggingLoopExample.docx'].loadedContent,{},false,true)
 		endcallback= () -> 1
 		docX['qrCodeTaggingLoopExample.docx'].applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
 		docX['qrCodeTaggingLoopExample.docx']
