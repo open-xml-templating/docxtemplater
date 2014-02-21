@@ -41,7 +41,6 @@ root.DocxGen = class DocxGen
 			this.successFun=fun
 		,
 		successFun:()->
-			console.log('success')
 		}
 		if !options.docx? then options.docx=false
 		if !options.async? then options.async=false
