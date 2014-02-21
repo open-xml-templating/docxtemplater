@@ -48,18 +48,16 @@ DocxGen is based on word templates.
 	<td colspan="3">
 		<h3>Code Used:</h3>
 		<textarea raw='tagExample.docx'>
-var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
-var doc= new DocxGen(docData); //Create a new DocxGen document
-
-doc.setTags(
-	{"first_name":"Hipp",
-	"last_name":"Edgar",
-	"phone":"0652455478",
-	"description":"New Website"
-	}
-) //set the templateVariables
-doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-doc.output() //Output the document using Data-URI
+new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
+	doc.setTags( {"first_name":"Hipp",
+		"last_name":"Edgar",
+		"phone":"0652455478",
+		"description":"New Website"
+		}
+	) //set the templateVariables
+	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.output() //Output the document using Data-URI
+});
 		</textarea>
 	</td>
 </tr>

@@ -37,13 +37,18 @@ root.DocxGen = class DocxGen
 		if content? then @load(content)
 		this
 	loadFromFile:(path,options={})->
-		promise={success:(docxtemplater)->console.log 'loaded'}
+		promise={success:(fun)->
+			this.successFun=fun
+		,
+		successFun:()->
+			console.log('success')
+		}
 		if !options.docx? then options.docx=false
 		if !options.async? then options.async=false
 
 		if !options.callback? then options.callback=(rawData) =>
 			@load rawData
-			promise.success()
+			promise.successFun(this)
 		DocUtils.loadDoc(path,options)
 
 		if options.async==false then return this else return promise
