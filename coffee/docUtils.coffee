@@ -166,7 +166,6 @@ DocUtils.decode_utf8= (s) ->
 		console.log 'could not decode'
 		throw 'end'
 
-
 DocUtils.base64encode= (b) ->
     btoa(unescape(encodeURIComponent(b)))
 
@@ -185,14 +184,12 @@ DocUtils.preg_match_all= (regex, content) ->
 	content.replace regex,replacer
 	matchArray
 
-
 DocUtils.sizeOfObject = (obj) ->
 	size=0
 	log = 0
 	for key of obj
 		size++
 	size
-
 
 Array.prototype.max = () -> Math.max.apply(null, this)
 

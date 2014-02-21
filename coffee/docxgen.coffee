@@ -36,11 +36,17 @@ root.DocxGen = class DocxGen
 		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
 		if content? then @load(content)
 		this
-	loadFromFile:(path)->
-		DocUtils.loadDoc(path,{docx:false,callback: (rawData) =>
+	loadFromFile:(path,options={})->
+		promise={success:(docxtemplater)->console.log 'loaded'}
+		if !options.docx? then options.docx=false
+		if !options.async? then options.async=false
+
+		if !options.callback? then options.callback=(rawData) =>
 			@load rawData
-		})
-		this
+			promise.success()
+		DocUtils.loadDoc(path,options)
+
+		if options.async==false then return this else return promise
 	qrCodeCallBack:(num,add=true) ->
 		if add==true
 			@qrCodeWaitingFor.push num
