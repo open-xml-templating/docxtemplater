@@ -82,24 +82,21 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 	<td colspan="3">
 		<h3>Code Used:</h3>
 		<textarea raw='tagFormating.docx'>
-var docData=docXData["tagFormating.docx"]; //docXData is an array containing all the raw data for these examples
-var doc= new DocxGen(docData); //Create a new DocxGen document
-
-doc.setTags(
-	{"first_name":"Hipp",
-	"last_name":"Edgar",
-	"phone":"0652455478",
-	"description":"New Website"
-	}
-) //set the templateVariables
-doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-doc.output() //Output the document using Data-URI
+new DocxGen().loadFromFile("tagFormating.docx",{async:true}).success(function(doc){
+	doc.setTags({
+		"first_name":"Hipp",
+		"last_name":"Edgar",
+		"phone":"0652455478",
+		"description":"New Website"
+		}); //set the templateVariables
+	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.output() //Output the document using Data-URI
+});
 		</textarea>
 	</td>
 </tr>
 </table>
 </section>
-
 
 <section>
 <h2 id='loops'><em>Loops</em>: You can use the mustache like syntax: {#tagName} {/tagname} to loop inside an array</h2>
@@ -117,27 +114,20 @@ doc.output() //Output the document using Data-URI
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagLooping.docx">
-var docData=docXData["tagLooping.docx"]; //docXData is an array containing all the raw data for these examples
-var doc= new DocxGen(docData); //Create a new DocxGen document
-
-doc.setTags(
-{"products":
-[
-{
- "title":"Duk",
- "name":"DukSoftware",
- "reference":"DS0"
-},
-{
- "title":"Tingerloo",
- "name":"Tingerlee",
- "reference":"T00"
-}
-]
-}
-) //set the templateVariables
+new DocxGen().loadFromFile("tagLooping.docx",{async:true}).success(function(doc){ 
+doc.setTags({
+	"products": [{
+ 	 	 "title":"Duk",
+ 	 	 "name":"DukSoftware",
+ 	 	 "reference":"DS0"
+		},{
+ 	 	 "title":"Tingerloo",
+ 	 	 "name":"Tingerlee",
+ 	 	 "reference":"T00"
+	}]}); //set the templateVariables
 doc.applyTags() //apply them
 doc.output() //Output the document using Data-URI
+});
 				</textarea>
 			</td>
 		</tr>
@@ -160,27 +150,20 @@ doc.output() //Output the document using Data-URI
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagIntelligentLoopTable.docx">
-var docData=docXData["tagIntelligentLoopTable.docx"]; //docXData is an array containing all the raw data for these examples
-var doc= new DocxGen(docData); //Create a new DocxGen document
-
-doc.setTags(
-{"clients":
-[
-{
- "first_name":"John",
- "last_name":"Doe",
- "phone":"+44546546454"
-},
-{
- "first_name":"Jane",
- "last_name":"Doe",
- "phone":"+445476454"
-}
-]
-}
-) //set the templateVariables
-doc.applyTags() //apply them
-doc.output() //Output the document using Data-URI					
+var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true}).success(function(doc){
+	doc.setTags({
+		"clients":[{
+			"first_name":"John",
+			"last_name":"Doe",
+			"phone":"+44546546454"
+		},{
+			"first_name":"Jane",
+			"last_name":"Doe",
+			"phone":"+445476454"
+		}]}); //set the templateVariables
+	doc.applyTags() //apply them
+	doc.output() //Output the document using Data-URI					
+});
 				</textarea>
 			</td>
 		</tr>
@@ -202,14 +185,13 @@ doc.output() //Output the document using Data-URI
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagDashLoopList.docx">
-var docData=docXData["tagDashLoopList.docx"]; //docXData is an array containing all the raw data for these examples
-var doc= new DocxGen(docData)
-
-doc.setTags(
-{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
-)
-doc.applyTags()
-doc.output()
+var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success(function(doc){ 
+	doc.setTags(
+	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
+	)
+	doc.applyTags()
+	doc.output()
+});
 				</textarea>
 			</td>
 		</tr>
@@ -230,14 +212,13 @@ doc.output()
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="imageExample.docx">
-var docData=docXData["imageExample.docx"]; //docXData is an array containing all the raw data for these examples
 var imgData=docXData["image.png"];
-
-var doc= new DocxGen(docData) //Create Docxgen object from docxdata, in base64
-imageList=doc.getImageList() //Get the array of images in the document
-console.log(imageList); 
-doc.setImage(imageList[0].path,imgData,{binary:true,base64:false}); //change the first image to imgData
-doc.output() 
+new DocxGen().loadFromFile("imageExample.docx",{async:true}).success(function(doc){
+	imageList=doc.getImageList() //Get the array of images in the document
+	console.log(imageList); 
+	doc.setImage(imageList[0].path,imgData,{binary:true,base64:false}); //change the first image to imgData
+	doc.output() 
+});
 				</textarea>
 			</td>
 		</tr>
@@ -263,16 +244,17 @@ doc.output()
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagExample.docx">
-		var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
-		var doc= new DocxGen(docData)
-		doc.setTags({
-				"first_name":"Hipp",
-				"last_name":"Edgar",
-				"phone":"0652455478",
-				"description":"New Website"
-			});
-		doc.applyTags()
-		doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',"taggedDoc.docx")
+var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
+new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
+	doc.setTags({
+			"first_name":"Hipp",
+			"last_name":"Edgar",
+			"phone":"0652455478",
+			"description":"New Website"
+		});
+	doc.applyTags()
+	doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',"taggedDoc.docx")
+});
 				</textarea>
 			</td>
 		</tr>
