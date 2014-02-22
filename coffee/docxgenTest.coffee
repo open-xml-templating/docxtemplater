@@ -233,6 +233,16 @@ describe "xmlTemplater", ()->
 		xmlTemplater= new DocXTemplater(content,{Tags:scope})
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
+	it "should work with simple Loop with boolean value", ()->
+		content= """<w:t>Hello {#showName}{name},{/showName}</w:t>"""
+		scope= {"showName":true,"name":"Edgar"}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
+
+		scope= {"showName":false,"name":"Edgar"}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello ')
 	it "should work with dash Loop", ()->
 		content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
 		scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
