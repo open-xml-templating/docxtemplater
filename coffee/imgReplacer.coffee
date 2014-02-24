@@ -13,7 +13,6 @@ ImgReplacer = class ImgReplacer
 		///g, @xmlTemplater.content
 		this
 	replaceImages: ()->
-		#console.log 'replacing Images ...'
 		qr=[]
 
 		callback= (docxqrCode) ->
@@ -75,7 +74,7 @@ ImgReplacer = class ImgReplacer
 								else
 									if /\.png$/.test(oldFile.name)
 										do (imgName) =>
-											#console.log(oldFile.name)
+											console.log("name"+oldFile.name)
 											base64= JSZip.base64.encode oldFile.asBinary()
 											binaryData = new Buffer(base64, 'base64')
 											png= new PNG(binaryData)

@@ -306,11 +306,11 @@ describe 'DocxQrCode module', () ->
 			waitsFor( ()->fCalled)
 
 			runs () ->
-				expect(f.test).toHaveBeenCalled();
-				expect(f.test.calls.length).toEqual(1);
-				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji");
-				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
-				expect(f.test.mostRecentCall.args[2]).toEqual(6);
+				expect(f.test).toHaveBeenCalled()
+				expect(f.test.calls.length).toEqual(1)
+				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji")
+				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png")
+				expect(f.test.mostRecentCall.args[2]).toEqual(6)
 
 		it "should work with long texts", () ->
 
@@ -516,16 +516,13 @@ describe 'qr code testing', () ->
 			# 	#Everything but the date should be different
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date)
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].name)
-				#expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.base64).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.base64)
-				#expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.binary).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.binary)
-				#expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.compression).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.compression)
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir)
 
 				if (docX['qrCodeTaggingExample.docx'].zip.files[i].asText())!=null and env!='node'
 					if docX['qrCodeTaggingExample.docx'].zip.files[i].asText().length!=docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText().length
 						console.log i
 					expect(docX['qrCodeTaggingExample.docx'].zip.files[i].asText().length).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText().length)
-					#expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
+					expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
 
 	it 'should work with loop QRCODE with {tags}', () ->
 		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docX['qrCodeTaggingLoopExample.docx'].loadedContent,{},false,true)
