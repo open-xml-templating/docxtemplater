@@ -15,11 +15,12 @@ DocxQrCode = class DocxQrCode
 		@qr.callback= () ->
 			_this.ready= true
 			_this.result= this.result
-			#console.log('result:'+_this.result)
+			console.log('result decoding:'+_this.result)
 
 			testdoc= new _this.xmlTemplater.currentClass this.result, _this.xmlTemplater.toJson()
 			testdoc.applyTags()
 			_this.result=testdoc.content
+			console.log 'after applying'+_this.result
 			_this.searchImage()
 		if env=='browser'
 			@qr.decode("data:image/png;base64,#{@base64Data}")
@@ -33,12 +34,12 @@ DocxQrCode = class DocxQrCode
 				@callback(this,@imgName,@num)
 				@xmlTemplater.DocxGen.localImageCreator(@result,callback)
 		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
-			loadDocCallback= (fail=false) =>
-				if not fail
+			loadDocCallback= (data) =>
+				if not data
 					@data=docXData[@result]
 					@callback(this,@imgName,@num)
 				else
-					#console.log('file image loading failed!')
+					@data=data
 					@callback(this,@imgName,@num)
 			try
 				DocUtils.loadDoc(@result,{docx:false,callback:loadDocCallback,async:false})

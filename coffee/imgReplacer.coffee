@@ -17,8 +17,6 @@ ImgReplacer = class ImgReplacer
 		qr=[]
 
 		callback= (docxqrCode) ->
-			#console.log ('removing qrcode')
-			#console.log 'setting image:'+"word/media/#{docxqrCode.imgName}"
 			docxqrCode.xmlTemplater.numQrCode--
 			docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
 			docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)

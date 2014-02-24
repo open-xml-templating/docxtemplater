@@ -1,7 +1,7 @@
 ###
 Docxgen.coffee
 Created by Edgar HIPP
-02/18/2014
+02/24/2014
 ###
 
 root= global ? window
@@ -65,7 +65,9 @@ root.DocxGen = class DocxGen
 	logUndefined: (tag,scope)->
 		#console.log("undefinedTag:"+tag)
 	getImageList:()-> @imgManager.getImageList()
-	setImage: (path,data,options) -> @imgManager.setImage(path,data,options)
+	setImage: (path,data,options={}) ->
+		if !options.binary? then options.binary=true
+		@imgManager.setImage(path,data,options)
 	load: (content)->
 		@loadedContent=content
 		@zip = new JSZip content
