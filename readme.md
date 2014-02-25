@@ -16,6 +16,10 @@ Including:
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#images">Replacing images</a><br>
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming">Naming the output</a><br>
 
+## Why Use a library for this ? ##
+
+docx is a zipped format that contains some xml. If you want to build a simple replace {tag} by value, system, it can already become complicated, because the {tag} is internally separated into `<w:t>{</w:t><w:t>tag</w:t><w:t>}</w:t>`.  If you want to embed loops to iterate over an array, it becomes a real hassle.
+
 ## Syntax ##
 
 The *syntax* is highly inspired by [Mustache](http://mustache.github.io/). The template is created in Microsoft Word or an equivalent docx saver.
