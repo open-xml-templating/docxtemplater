@@ -542,7 +542,7 @@ describe 'qr code testing', () ->
 				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name)
 				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir)
 
-				###if (docX['qrCodeTaggingLoopExample.docx'].zip.files[i].asText())!=null
+				if (docX['qrCodeTaggingLoopExample.docx'].zip.files[i].asText())!=null and i!="word/document.xml"
 					expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].asText().length).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].asText().length)
 					expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].asText())
-				###
+
