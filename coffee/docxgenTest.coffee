@@ -518,9 +518,7 @@ describe 'qr code testing', () ->
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].name)
 				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir)
 
-				if (docX['qrCodeTaggingExample.docx'].zip.files[i].asText())!=null and env!='node'
-					if docX['qrCodeTaggingExample.docx'].zip.files[i].asText().length!=docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText().length
-						console.log i
+				if (docX['qrCodeTaggingExample.docx'].zip.files[i].asText())!=null and i!="word/document.xml"
 					expect(docX['qrCodeTaggingExample.docx'].zip.files[i].asText().length).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText().length)
 					expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
 
@@ -537,7 +535,6 @@ describe 'qr code testing', () ->
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_1.png']?).toBeTruthy()
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_2.png']?).toBeFalsy()
-			# docX['qrCodeTaggingLoopExample.docx'].output()
 
 			for i of docX['qrCodeTaggingLoopExample.docx'].zip.files
 				#Everything but the date should be different

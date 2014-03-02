@@ -5,7 +5,8 @@ DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@data=imageData
 		if @data==undefined then throw "data of qrcode can't be undefined"
-		@base64Data=JSZip.base64.encode(@data)
+		if env=='browser'
+			@base64Data=JSZip.base64.encode(@data)
 		@ready=false
 		@result=null
 	decode:(@callback) ->

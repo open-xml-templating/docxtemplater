@@ -35,8 +35,6 @@ DocUtils.loadDoc= (path,options={}) ->
 			callback(root.docXData[fileName])
 		if async==false
 			return root.docXData[fileName]
-
-
 	if env=='browser'
 		xhrDoc= new XMLHttpRequest()
 		xhrDoc.open('GET', totalPath , async)
@@ -63,25 +61,16 @@ DocUtils.loadDoc= (path,options={}) ->
 				rejectUnauthorized:false
 
 			errorCallback= (e) ->
-				#console.error("Error: \n" + e.message);
-				#console.error( e.stack );
+				throw "Error on HTTPS Call"
 
 			reqCallback= (res)->
 				res.setEncoding('binary')
 				data = ""
 				res.on('data', (chunk)->
-					#console.log "Status Code #{res.statusCode}"
-					#console.log('received')
 					data += chunk
 				)
 				res.on('end', ()->
-					#console.log('receivedTotally')
 					loadFile(data))
-				res.on('error',(err)->
-					#console.log("Error during HTTP request");
-					#console.log(err.message)
-					#console.log(err.stack)
-					)
 			switch urloptions.protocol
 				when "https:"
 					req = https.request(options, reqCallback).on('error',errorCallback)

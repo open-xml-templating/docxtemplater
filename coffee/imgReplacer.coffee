@@ -52,8 +52,6 @@ ImgReplacer = class ImgReplacer
 								# tag.setAttribute('id',@xmlTemplater.imageId)
 
 
-								if env=='browser'
-									qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 
 								tag.setAttribute('name',"#{imgName}")
 								tagrId.setAttribute('r:embed',"rId#{newId}")
@@ -70,22 +68,18 @@ ImgReplacer = class ImgReplacer
 								@xmlTemplater.numQrCode++
 
 								if env=='browser'
+									qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 									qr[u].decode(callback)
 								else
 									if /\.png$/.test(oldFile.name)
 										do (imgName) =>
-											console.log("name"+oldFile.name)
 											base64= JSZip.base64.encode oldFile.asBinary()
 											binaryData = new Buffer(base64, 'base64')
 											png= new PNG(binaryData)
 											finished= (a) =>
-												try
-													png.decoded= a
-													qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-													qr[u].decode(callback)
-												catch e
-													console.log(e)
-													@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+												png.decoded= a
+												qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+												qr[u].decode(callback)
 											dat= png.decode(finished)
 									else
 										#remove the image from the list of images to be tested
