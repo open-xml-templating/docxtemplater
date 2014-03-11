@@ -535,7 +535,6 @@ describe 'qr code testing', () ->
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_1.png']?).toBeTruthy()
 			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_2.png']?).toBeFalsy()
-			(docX['qrCodeTaggingLoopExample.docx'].output(true))
 
 			for i of docX['qrCodeTaggingLoopExample.docx'].zip.files
 				#Everything but the date should be different

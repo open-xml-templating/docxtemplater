@@ -29,7 +29,7 @@ DocUtils.loadDoc= (path,options={}) ->
 	loadFile = (data) ->
 		root.docXData[fileName]=data
 		if noDocx==false
-			root.docX[fileName]=new DocxGen(data,{},intelligentTagging)
+			root.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
 			return root.docX[fileName]
 		if callback?
 			callback(root.docXData[fileName])
