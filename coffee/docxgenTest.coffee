@@ -16,6 +16,8 @@ fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagL
 for name in fileNames
 	root.docX[name]=new DocxGen().loadFromFile(name)
 
+root.docX["tagExampleWithParser"]=new DocxGen().loadFromFile("tagExample.docx")
+
 DocUtils.loadDoc('tagIntelligentLoopTable.docx',{intelligentTagging:true})
 DocUtils.loadDoc('image.png',{docx:false})
 DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
@@ -556,6 +558,16 @@ describe 'Changing the parser', () ->
 			return {'get':(scope) -> scope[tag].toUpperCase()}
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello EDGAR')
-
-
-
+	it 'should work when setting from the DocXGen interface', () ->
+		Tags=
+			"first_name":"Hipp"
+			"last_name":"Edgar",
+			"phone":"0652455478"
+			"description":"New Website"
+		docX["tagExampleWithParser"].setTags Tags
+		docX["tagExampleWithParser"].parser= (tag) ->
+			return {'get':(scope) -> scope[tag].toUpperCase()}
+		docX['tagExampleWithParser'].applyTags()
+		expect(docX['tagExampleWithParser'].getFullText()).toEqual('EDGAR HIPP')
+		expect(docX['tagExampleWithParser'].getFullText("word/header1.xml")).toEqual('EDGAR HIPP0652455478NEW WEBSITE')
+		expect(docX['tagExampleWithParser'].getFullText("word/footer1.xml")).toEqual('EDGARHIPP0652455478')

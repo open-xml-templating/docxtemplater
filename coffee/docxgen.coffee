@@ -29,7 +29,7 @@ root.DocxGen = class DocxGen
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 			@qrCode= if @options.qrCode? then @options.qrCode else off
-
+			@parser= if @options.parser? then @parser else null
 		@finishedCallback= () -> #console.log 'document ready!'
 		@localImageCreator= (arg,callback) ->
 			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
@@ -38,7 +38,7 @@ root.DocxGen = class DocxGen
 		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
 		@qrCodeNumCallBack=0 #This is the order of the qrcode
 		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
-		if content? then @load(content)
+		if content? then if content.length>0 then @load(content)
 		this
 	loadFromFile:(path,options={})->
 		promise={success:(fun)->
@@ -90,6 +90,8 @@ root.DocxGen = class DocxGen
 				localImageCreator:@localImageCreator
 			}
 				this,@Tags,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
+			if @parser?
+				currentFile.parser=@parser
 			@setData(fileName,currentFile.applyTags().content)
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
@@ -105,6 +107,8 @@ root.DocxGen = class DocxGen
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
 			})
+			if @parser?
+				currentFile.parser=@parser
 			usedTemplateV= currentFile.applyTags().usedTags
 			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}
