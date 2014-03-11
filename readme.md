@@ -97,7 +97,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         This function returns a new DocxGen Object
 
-    new DocxGen(content[,Tags,intelligentTagging,qrCode,localImageCreator,qrFinishedCallback])
+    new DocxGen(content[,Tags,options])
 
         content: 
             Type: string
@@ -107,14 +107,15 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             Type: Object {tag_name:tag_replacement} [{}]
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
 
-        intelligentTagging:
-            Type: boolean [false]
-            If intelligent Tagging is not set to true, when using recursive tags ({#tag} and {/tag}), the system will copy paste what is between the start tag and the endtag, this could basically corrupt the files if recursive tags are used inside tables.
-            If intelligent Tagging is set to true, and when using recursive tags inside tables, the whole column will be copy pasted.
+        options: object
+        	intelligentTagging:
+            	Type: boolean [false]
+            	If intelligent Tagging is not set to true, when using recursive tags ({#tag} and {/tag}), the system will copy paste what is between the start tag and the endtag, this could basically corrupt the files if recursive tags are used inside tables.
+            	If intelligent Tagging is set to true, and when using recursive tags inside tables, the whole column will be copy pasted.
 
-        qrCode:
-            Type: boolean [false]
-            If qrCode is set to true, DocxGen will look at all the images to find a Qr-Code. If the Qr-code matches to a URL, this URL will be loaded by ajax (Be aware that the server you want to access needs to allow your request, or it won't work. http://stackoverflow.com/questions/9310112/why-am-i-seeing-an-origin-is-not-allowed-by-access-control-allow-origin-error )
+        	qrCode:
+            	Type: boolean [false]
+            	If qrCode is set to true, DocxGen will look at all the images to find a Qr-Code. If the Qr-code matches to a URL, this URL will be loaded by ajax (Be aware that the server you want to access needs to allow your request, or it won't work. http://stackoverflow.com/questions/9310112/why-am-i-seeing-an-origin-is-not-allowed-by-access-control-allow-origin-error )
 
         localImageCreator
             Type: function(arg,callback) [function that returns an arrow]
