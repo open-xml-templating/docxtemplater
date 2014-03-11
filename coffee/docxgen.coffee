@@ -25,7 +25,11 @@ if env=='node'
 
 root.DocxGen = class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
-	constructor: (content, @Tags={},@intelligentTagging=on,@qrCode=off) ->
+	constructor: (content, @Tags={},@options) ->
+		if @options?
+			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
+			@qrCode= if @options.qrCode? then @options.qrCode else off
+
 		@finishedCallback= () -> #console.log 'document ready!'
 		@localImageCreator= (arg,callback) ->
 			#This is the image of an arrow, you can replace this function by whatever you want to generate an image

@@ -193,15 +193,15 @@ describe "Intelligent Loop Tagging", () ->
 
 describe "getTags", () ->
 	it "should work with simple document", () ->
-		docX['tagExample.docx']=new DocxGen docX['tagExample.docx'].loadedContent,{},false
+		docX['tagExample.docx']=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:off}
 		tempVars= docX['tagExample.docx'].getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { last_name : true, first_name : true } }, { fileName : 'word/footer1.xml', vars : { last_name : true, first_name : true, phone : true } }, { fileName : 'word/header1.xml', vars : { last_name : true, first_name : true, phone : true, description : true } }])
 	it "should work with loop document", () ->
-		docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},false
+		docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
 		tempVars= docX['tagLoopExample.docx'].getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
 	it 'should work if there are no Tags', () ->
-		docX['qrCodeExample.docx']=new DocxGen docX['qrCodeExample.docx'].loadedContent,{},false
+		docX['qrCodeExample.docx']=new DocxGen docX['qrCodeExample.docx'].loadedContent,{},{intelligentTagging:off}
 		tempVars= docX['qrCodeExample.docx'].getTags()
 		expect(tempVars).toEqual([])
 
@@ -482,7 +482,7 @@ describe "loop forTagging images", () ->
 
 describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
-		docX['qrCodeExample.docx']=new DocxGen(docX['qrCodeExample.docx'].loadedContent,{},false,true)
+		docX['qrCodeExample.docx']=new DocxGen(docX['qrCodeExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
 		endcallback= () -> 1
 		docX['qrCodeExample.docx'].applyTags({},endcallback)
 
@@ -504,7 +504,7 @@ describe 'qr code testing', () ->
 				# expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
 
 	it 'should work with local QRCODE with {tags}', () ->
-		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},false,true)
+		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
 		endcallback= () -> 1
 		docX['qrCodeTaggingExample.docx'].applyTags({'image':'Firefox_logo'},endcallback)
 
@@ -523,7 +523,7 @@ describe 'qr code testing', () ->
 					expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
 
 	it 'should work with loop QRCODE with {tags}', () ->
-		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docX['qrCodeTaggingLoopExample.docx'].loadedContent,{},false,true)
+		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docX['qrCodeTaggingLoopExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
 		endcallback= () -> 1
 		docX['qrCodeTaggingLoopExample.docx'].applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
 		docX['qrCodeTaggingLoopExample.docx']
