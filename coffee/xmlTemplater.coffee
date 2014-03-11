@@ -14,14 +14,20 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@templaterState.matches = @_getFullTextMatchesFromData()
 		@templaterState.charactersAdded= (0 for i in [0...@templaterState.matches.length])
 		@handleRecursiveCase()
+	parser: (tag) ->
+		return {
+		'get':(scope) -> return scope[tag]
+		}
 	getValueFromScope: (tag=@templaterState.loopOpen.tag,scope=@currentScope) ->
-		if scope[tag]?
-			if typeof scope[tag]=='string'
+		parser=@parser(tag)
+		result=parser.get(scope)
+		if result?
+			if typeof result=='string'
 				@useTag(tag)
 				value= DocUtils.encode_utf8 scope[tag]
 				if value.indexOf('{')!=-1 or value.indexOf('}')!=-1
 					throw "You can't enter { or  } inside the content of a variable"
-			else value= scope[tag]
+			else value= result
 		else
 			@useTag(tag)
 			value= "undefined"

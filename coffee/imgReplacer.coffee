@@ -17,6 +17,7 @@ ImgReplacer = class ImgReplacer
 
 		callback= (docxqrCode) ->
 			docxqrCode.xmlTemplater.numQrCode--
+			console.log docxqrCode.data.length
 			docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
 			docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
 		for match,u in @imgMatches
