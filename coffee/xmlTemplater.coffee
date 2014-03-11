@@ -24,7 +24,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if result?
 			if typeof result=='string'
 				@useTag(tag)
-				value= DocUtils.encode_utf8 scope[tag]
+				value= DocUtils.encode_utf8 result
 				if value.indexOf('{')!=-1 or value.indexOf('}')!=-1
 					throw "You can't enter { or  } inside the content of a variable"
 			else value= result

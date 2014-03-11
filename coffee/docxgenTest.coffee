@@ -547,3 +547,16 @@ describe 'qr code testing', () ->
 				#	expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].asText().length).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].asText().length)
 				#	expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].asText())
 
+describe 'Changing the parser', () ->
+	it 'should work with uppercassing', () ->
+		content= """<w:t>Hello {name}</w:t>"""
+		scope= {"name":"Edgar"}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.parser= (tag) ->
+			console.log 'parser'
+			return {'get':(scope) -> scope[tag].toUpperCase()}
+		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello EDGAR')
+
+
+
