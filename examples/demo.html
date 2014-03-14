@@ -150,7 +150,7 @@ doc.output() //Output the document using Data-URI
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagIntelligentLoopTable.docx">
-var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true}).success(function(doc){
+var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,intelligentTagging:true}).success(function(doc){
 	doc.setTags({
 		"clients":[{
 			"first_name":"John",
