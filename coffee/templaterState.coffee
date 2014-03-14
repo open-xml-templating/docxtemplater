@@ -13,7 +13,7 @@ root.TemplaterState =  class TemplaterState
 		@inTag= false # all tags  {___}
 		@inDashLoop = false	# tag with dash: {-w:tr dashLoop} {/dashLoop}
 		@textInsideTag= ""
-	startTag:()->
+	startTag:(char)->
 		if @inTag is true then throw "Tag already open with text: #{@textInsideTag}"
 		@inTag= true
 		@textInsideTag= ""

@@ -554,7 +554,6 @@ describe 'Changing the parser', () ->
 		scope= {"name":"Edgar"}
 		xmlTemplater= new DocXTemplater(content,{Tags:scope})
 		xmlTemplater.parser= (tag) ->
-			console.log 'parser'
 			return {'get':(scope) -> scope[tag].toUpperCase()}
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello EDGAR')
@@ -574,7 +573,6 @@ describe 'Changing the parser', () ->
 
 describe 'Non Utf-8 characters', () ->
 	it 'should read full text correctly', ()->
-		console.log docX["cyrillic.docx"].getFullText()
 		fullText=docX["cyrillic.docx"].getFullText()
 		expect(fullText.charCodeAt(0)).toBe(1024)
 		expect(fullText.charCodeAt(1)).toBe(1050)
@@ -584,3 +582,15 @@ describe 'Non Utf-8 characters', () ->
 		expect(fullText.charCodeAt(5)).toBe(1045)
 		expect(fullText.charCodeAt(6)).toBe(1039)
 		expect(fullText.charCodeAt(7)).toBe(1040)
+	it 'should still read full text after applying tags',()->
+		docX["cyrillic.docx"].applyTags({name:"Edgar"})
+		fullText=docX["cyrillic.docx"].getFullText()
+		expect(fullText.charCodeAt(0)).toBe(1024)
+		expect(fullText.charCodeAt(1)).toBe(1050)
+		expect(fullText.charCodeAt(2)).toBe(1048)
+		expect(fullText.charCodeAt(3)).toBe(1046)
+		expect(fullText.charCodeAt(4)).toBe(1044)
+		expect(fullText.charCodeAt(5)).toBe(1045)
+		expect(fullText.charCodeAt(6)).toBe(1039)
+		expect(fullText.charCodeAt(7)).toBe(1040)
+		expect(fullText.indexOf('Edgar')).toBe(9)
