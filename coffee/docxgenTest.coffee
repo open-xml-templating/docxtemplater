@@ -573,5 +573,14 @@ describe 'Changing the parser', () ->
 		expect(docX['tagExampleWithParser'].getFullText("word/footer1.xml")).toEqual('EDGARHIPP0652455478')
 
 describe 'Non Utf-8 characters', () ->
-	it 'should correctly', ()->
+	it 'should read full text correctly', ()->
 		console.log docX["cyrillic.docx"].getFullText()
+		fullText=docX["cyrillic.docx"].getFullText()
+		expect(fullText.charCodeAt(0)).toBe(1024)
+		expect(fullText.charCodeAt(1)).toBe(1050)
+		expect(fullText.charCodeAt(2)).toBe(1048)
+		expect(fullText.charCodeAt(3)).toBe(1046)
+		expect(fullText.charCodeAt(4)).toBe(1044)
+		expect(fullText.charCodeAt(5)).toBe(1045)
+		expect(fullText.charCodeAt(6)).toBe(1039)
+		expect(fullText.charCodeAt(7)).toBe(1040)
