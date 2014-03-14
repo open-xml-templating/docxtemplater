@@ -30,7 +30,8 @@ ImgManager = class ImgManager
 		this
 
 	addExtensionRels: (contentType,extension) -> #Add an extension type in the [Content_Types.xml], is used if for example you want word to be able to read png files (for every extension you add you need a contentType)
-		content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].asText()
+		#content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].asText()
+		content = @zip.files["[Content_Types].xml"].asText()
 		xmlDoc= DocUtils.Str2xml content
 		addTag= true
 		defaultTags=xmlDoc.getElementsByTagName('Default')

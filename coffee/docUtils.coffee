@@ -147,12 +147,17 @@ DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occu
 DocUtils.encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 
+DocUtils.convert_spaces= (s) ->
+	s.replace(new RegExp(String.fromCharCode(160),"g")," ")
+
 DocUtils.decode_utf8= (s) ->
 	try
 		if s==undefined then return undefined
-		return decodeURIComponent(escape(s.replace(new RegExp(String.fromCharCode(160),"g")," "))) #replace Ascii 160 space by the normal space, Ascii 32
+		return decodeURIComponent(escape(DocUtils.convert_spaces(s))) #replace Ascii 160 space by the normal space, Ascii 32
 	catch e
+		console.log s
 		console.log 'could not decode'
+		debugger
 		throw 'end'
 
 DocUtils.base64encode= (b) ->

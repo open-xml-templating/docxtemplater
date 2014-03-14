@@ -36,7 +36,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	getFullText:() ->
 		@templaterState.matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
 		output= (match[2] for match in @templaterState.matches) #get only the text
-		DocUtils.decode_utf8(output.join("")) #join it
+		#DocUtils.decode_utf8(output.join("")) #join it
+		DocUtils.convert_spaces(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
 		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 	calcOuterXml: (text,start,end,xmlTag) -> #tag: w:t
