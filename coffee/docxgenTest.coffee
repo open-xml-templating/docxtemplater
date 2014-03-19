@@ -11,7 +11,7 @@ DocUtils.pathConfig=
 	"node":'../../examples/'
 	"browser":'../examples/'
 
-fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplexExample.docx']
+fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx']
 
 for name in fileNames
 	root.docX[name]=new DocxGen().loadFromFile(name)
@@ -596,6 +596,32 @@ describe 'Non Utf-8 characters', () ->
 		expect(fullText.indexOf('Edgar')).toBe(9)
 
 describe 'Complex table example' , () ->
+	it 'should work with simple table', () ->
+		docX["tableComplex2Example.docx"].setTags({
+		"table1":[{
+			"t1data1":"t1-1row-data1",
+			"t1data2":"t1-1row-data2",
+			"t1data3":"t1-1row-data3",
+			"t1data4":"t1-1row-data4"
+		},{
+			"t1data1":"t1-2row-data1",
+			"t1data2":"t1-2row-data2",
+			"t1data3":"t1-2row-data3",
+			"t1data4":"t1-2row-data4"
+		},
+		{
+			"t1data1":"t1-3row-data1",
+			"t1data2":"t1-3row-data2",
+			"t1data3":"t1-3row-data3",
+			"t1data4":"t1-3row-data4"
+		}],
+		"t1total1":"t1total1-data",
+		"t1total2":"t1total2-data",
+		"t1total3":"t1total3-data"
+		});
+		docX["tableComplex2Example.docx"].applyTags()
+		fullText=docX["tableComplex2Example.docx"].getFullText()
+		expect(fullText).toBe("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data")
 	it 'should work with more complex table', () ->
 		docX["tableComplexExample.docx"].setTags({
 		"table1":[{
@@ -635,5 +661,5 @@ describe 'Complex table example' , () ->
 		"t2total3":"t2total3-data"
 		}); #set the templateVariables
 		docX["tableComplexExample.docx"].applyTags() #apply them
-		#console.log docX["tableComplexExample.docx"].getTags()#apply them
-		docX["tableComplexExample.docx"].output() #apply them
+		fullText=docX["tableComplexExample.docx"].getFullText() #apply them
+		expect(fullText).toBe("")

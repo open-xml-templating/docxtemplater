@@ -34,12 +34,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			value= "undefined"
 		value
 	getFullText:() ->
-		@templaterState._matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
-		output= (match[2] for match in @templaterState._matches) #get only the text
-		#DocUtils.decode_utf8(output.join("")) #join it
+		matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
+		output= (match[2] for match in matches) #get only the text
 		DocUtils.convert_spaces(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		@templaterState._matches= DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
+		return DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 	calcOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
@@ -99,20 +98,27 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if tagValue?
 			if typeof tagValue == 'object'
 				for scope,i in tagValue
+					console.log 'objectS'
 					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
+					console.log 'objectE'
 					newContent+=subfile.content
 			if tagValue == true
+				console.log 'trueS'
 				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@currentScope})
+				console.log 'trueE'
 				newContent+=subfile.content
 		else
+			console.log '------noneS------'
 			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
+			console.log '------noneE------'
 
 		@content=@content.replace outerTagsContent, newContent
+		console.log 'totalS'
+		a=@calcSubXmlTemplater(@content)
+		console.log 'totalE'
+		console.log a.getFullText()
+		return a
 
-		nextFile=@calcSubXmlTemplater(@content)
-
-		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
-		nextFile
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{content,start,end}= @findOuterTagsContent()
 		outerXml = @calcOuterXml @content, start, end, elementDashLoop
@@ -245,6 +251,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					if @templaterState.loopType()=='simple'
 						@replaceSimpleTag()
 					if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
+						console.log 'loop'
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
@@ -301,6 +308,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@forLoop()
 	calcSubXmlTemplater:(innerTagsContent,argOptions)->
 		options= @toJson()
+		options.exception=true
 
 		if argOptions?
 			if argOptions.Tags?
@@ -308,16 +316,20 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
 			options.exception= if argOptions.exception? then argOptions.exception else true
 
+		console.log options.Tags
+
 		subfile= new @currentClass innerTagsContent,options
 		console.log 'applying'
 
-		console.log subfile.getFullText()
+		console.log "Before:"+subfile.getFullText()
 		console.log options.Tags
 		subfile.applyTags()
-		console.log subfile.getFullText()
+		console.log "After:"+subfile.getFullText()
 		console.log 'end Applying'
-		if options.exception
-			if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
+		if options.exception and false
+			if ((subfile.getFullText().indexOf '{')!=-1)
+				debugger
+				throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
 		@imageId=subfile.imageId
 		subfile
 

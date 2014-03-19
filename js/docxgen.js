@@ -1197,23 +1197,22 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.getFullText = function() {
-      var match, output;
-      this.templaterState._matches = this._getFullTextMatchesFromData();
+      var match, matches, output;
+      matches = this._getFullTextMatchesFromData();
       output = (function() {
-        var _i, _len, _ref, _results;
-        _ref = this.templaterState._matches;
+        var _i, _len, _results;
         _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          match = _ref[_i];
+        for (_i = 0, _len = matches.length; _i < _len; _i++) {
+          match = matches[_i];
           _results.push(match[2]);
         }
         return _results;
-      }).call(this);
+      })();
       return DocUtils.convert_spaces(output.join(""));
     };
 
     XmlTemplater.prototype._getFullTextMatchesFromData = function() {
-      return this.templaterState._matches = DocUtils.preg_match_all("(<" + this.tagXml + "[^>]*>)([^<>]*)</" + this.tagXml + ">", this.content);
+      return DocUtils.preg_match_all("(<" + this.tagXml + "[^>]*>)([^<>]*)</" + this.tagXml + ">", this.content);
     };
 
     XmlTemplater.prototype.calcOuterXml = function(text, start, end, xmlTag) {
@@ -1278,7 +1277,7 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.forLoop = function(innerTagsContent, outerTagsContent) {
-      var i, newContent, nextFile, scope, subfile, tagValue, _i, _len;
+      var a, i, newContent, scope, subfile, tagValue, _i, _len;
       if (innerTagsContent == null) {
         innerTagsContent = this.findInnerTagsContent().content;
       }
@@ -1314,29 +1313,35 @@ Created by Edgar HIPP
         if (typeof tagValue === 'object') {
           for (i = _i = 0, _len = tagValue.length; _i < _len; i = ++_i) {
             scope = tagValue[i];
+            console.log('objectS');
             subfile = this.calcSubXmlTemplater(innerTagsContent, {
               Tags: scope
             });
+            console.log('objectE');
             newContent += subfile.content;
           }
         }
         if (tagValue === true) {
+          console.log('trueS');
           subfile = this.calcSubXmlTemplater(innerTagsContent, {
             Tags: this.currentScope
           });
+          console.log('trueE');
           newContent += subfile.content;
         }
       } else {
+        console.log('------noneS------');
         subfile = this.calcSubXmlTemplater(innerTagsContent, {
           Tags: {}
         });
+        console.log('------noneE------');
       }
       this.content = this.content.replace(outerTagsContent, newContent);
-      nextFile = this.calcSubXmlTemplater(this.content);
-      if ((nextFile.getFullText().indexOf('{')) !== -1) {
-        throw "they shouln't be a { in replaced file: " + (nextFile.getFullText()) + " (3)";
-      }
-      return nextFile;
+      console.log('totalS');
+      a = this.calcSubXmlTemplater(this.content);
+      console.log('totalE');
+      console.log(a.getFullText());
+      return a;
     };
 
     XmlTemplater.prototype.dashLoop = function(elementDashLoop, sharp) {
@@ -1524,6 +1529,7 @@ Created by Edgar HIPP
               this.replaceSimpleTag();
             }
             if (this.templaterState.textInsideTag[0] === '/' && ('/' + this.templaterState.loopOpen.tag === this.templaterState.textInsideTag)) {
+              console.log('loop');
               return this.replaceLoopTag();
             }
           } else {
@@ -1619,6 +1625,7 @@ Created by Edgar HIPP
     XmlTemplater.prototype.calcSubXmlTemplater = function(innerTagsContent, argOptions) {
       var options, subfile;
       options = this.toJson();
+      options.exception = true;
       if (argOptions != null) {
         if (argOptions.Tags != null) {
           options.Tags = argOptions.Tags;
@@ -1626,15 +1633,17 @@ Created by Edgar HIPP
         }
         options.exception = argOptions.exception != null ? argOptions.exception : true;
       }
+      console.log(options.Tags);
       subfile = new this.currentClass(innerTagsContent, options);
       console.log('applying');
-      console.log(subfile.getFullText());
+      console.log("Before:" + subfile.getFullText());
       console.log(options.Tags);
       subfile.applyTags();
-      console.log(subfile.getFullText());
+      console.log("After:" + subfile.getFullText());
       console.log('end Applying');
-      if (options.exception) {
+      if (options.exception && false) {
         if ((subfile.getFullText().indexOf('{')) !== -1) {
+          debugger;
           throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (1)";
         }
       }
