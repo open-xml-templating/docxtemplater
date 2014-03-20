@@ -122,7 +122,7 @@ root.DocxGen = class DocxGen
 	output: (options={}) ->
 		if !options.download? then options.download=true
 		if !options.name? then options.name="output.docx"
-		if !options.type? then options.type="string"
+		if !options.type? then options.type="base64"
 		result= @zip.generate({type:options.type})
 		if options.download
 			if env=='node'
