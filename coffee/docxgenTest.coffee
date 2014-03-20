@@ -8,8 +8,10 @@ if env=='node'
 	root.DocxGen= require(__dirname+'/../../js/docxgen.js')
 
 DocUtils.pathConfig=
-	"node":'../../examples/'
 	"browser":'../examples/'
+
+if env=='node'
+	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
 fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx']
 

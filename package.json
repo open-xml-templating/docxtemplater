@@ -38,5 +38,9 @@
   "license": "MIT",
   "engines": {
     "node": "*"
+  },
+  "scripts":{
+      "test":"jasmine-node test/spec/docxgenTest.spec.js"
   }
+
 }
