@@ -1,6 +1,6 @@
 root= global ? window
 env= if global? then 'node' else 'browser'
-root.XmlUtil class root.XmlUtil
+root.XmlUtil  = class root.XmlUtil
 	getListXmlElements: (text,start=0,end=text.length-1) ->
 		###
 		get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
