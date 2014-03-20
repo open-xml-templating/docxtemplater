@@ -684,4 +684,5 @@ describe 'Complex table example' , () ->
 		}); #set the templateVariables
 		docX["tableComplex3Example.docx"].applyTags() #apply them
 		fullText=docX["tableComplex3Example.docx"].getFullText() #apply them
-		expect(fullText).toBe("")
+
+		expect(fullText).toBe("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data")

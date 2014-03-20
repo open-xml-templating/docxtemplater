@@ -912,7 +912,6 @@ Created by Edgar HIPP
       qr = [];
       callback = function(docxqrCode) {
         docxqrCode.xmlTemplater.numQrCode--;
-        console.log(docxqrCode.data.length);
         docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
         return docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
       };
@@ -1178,7 +1177,6 @@ Created by Edgar HIPP
       }
       parser = this.parser(tag);
       result = parser.get(scope);
-      console.log("" + tag + "=>" + result);
       if (result != null) {
         if (typeof result === 'string') {
           this.useTag(tag);
@@ -1313,34 +1311,25 @@ Created by Edgar HIPP
         if (typeof tagValue === 'object') {
           for (i = _i = 0, _len = tagValue.length; _i < _len; i = ++_i) {
             scope = tagValue[i];
-            console.log('objectS');
             subfile = this.calcSubXmlTemplater(innerTagsContent, {
               Tags: scope
             });
-            console.log('objectE');
             newContent += subfile.content;
           }
         }
         if (tagValue === true) {
-          console.log('trueS');
           subfile = this.calcSubXmlTemplater(innerTagsContent, {
             Tags: this.currentScope
           });
-          console.log('trueE');
           newContent += subfile.content;
         }
       } else {
-        console.log('------noneS------');
         subfile = this.calcSubXmlTemplater(innerTagsContent, {
           Tags: {}
         });
-        console.log('------noneE------');
       }
       this.content = this.content.replace(outerTagsContent, newContent);
-      console.log('totalS');
       a = this.calcSubXmlTemplater(this.content);
-      console.log('totalE');
-      console.log(a.getFullText());
       return a;
     };
 
@@ -1529,7 +1518,6 @@ Created by Edgar HIPP
               this.replaceSimpleTag();
             }
             if (this.templaterState.textInsideTag[0] === '/' && ('/' + this.templaterState.loopOpen.tag === this.templaterState.textInsideTag)) {
-              console.log('loop');
               return this.replaceLoopTag();
             }
           } else {
@@ -1608,22 +1596,19 @@ Created by Edgar HIPP
     XmlTemplater.prototype.replaceLoopTag = function() {
       var dashElement;
       if (this.templaterState.loopType() === 'dash') {
-        console.log('dash');
         return this.dashLoop(this.templaterState.loopOpen.element);
       }
       if (this.intelligentTagging === true) {
-        console.log('intelligent');
         dashElement = this.calcIntellegentlyDashElement();
         if (dashElement !== false) {
           return this.dashLoop(dashElement, true);
         }
       }
-      console.log('for');
       return this.forLoop();
     };
 
     XmlTemplater.prototype.calcSubXmlTemplater = function(innerTagsContent, argOptions) {
-      var num, options, subfile;
+      var num, options, subfile, subsubfile;
       options = this.toJson();
       options.exception = true;
       if (argOptions != null) {
@@ -1634,20 +1619,16 @@ Created by Edgar HIPP
         options.exception = argOptions.exception != null ? argOptions.exception : true;
       }
       subfile = new this.currentClass(innerTagsContent, options);
-      console.log('applying');
       num = parseInt(Math.random() * 100);
-      console.log("Before:" + num + subfile.getFullText());
-      subfile.applyTags();
-      console.log("After:" + num + subfile.getFullText());
-      console.log('end Applying');
+      subsubfile = subfile.applyTags();
       if (options.exception) {
-        if ((subfile.getFullText().indexOf('{')) !== -1) {
+        if ((subsubfile.getFullText().indexOf('{')) !== -1) {
           debugger;
-          throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (1)";
+          throw "they shouln't be a { in replaced file: " + (subsubfile.getFullText()) + " (1)";
         }
       }
       this.imageId = subfile.imageId;
-      return subfile;
+      return subsubfile;
     };
 
     return XmlTemplater;

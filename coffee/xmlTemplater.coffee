@@ -21,7 +21,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	getValueFromScope: (tag=@templaterState.loopOpen.tag,scope=@currentScope) ->
 		parser=@parser(tag)
 		result=parser.get(scope)
-		console.log "#{tag}=>#{result}"
 		if result?
 			if typeof result=='string'
 				@useTag(tag)
@@ -98,25 +97,16 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if tagValue?
 			if typeof tagValue == 'object'
 				for scope,i in tagValue
-					console.log 'objectS'
 					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
-					console.log 'objectE'
 					newContent+=subfile.content
 			if tagValue == true
-				console.log 'trueS'
 				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@currentScope})
-				console.log 'trueE'
 				newContent+=subfile.content
 		else
-			console.log '------noneS------'
 			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
-			console.log '------noneE------'
 
 		@content=@content.replace outerTagsContent, newContent
-		console.log 'totalS'
 		a=@calcSubXmlTemplater(@content)
-		console.log 'totalE'
-		console.log a.getFullText()
 		return a
 
 	dashLoop: (elementDashLoop,sharp=false) ->
@@ -251,7 +241,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					if @templaterState.loopType()=='simple'
 						@replaceSimpleTag()
 					if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
-						console.log 'loop'
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
@@ -298,14 +287,11 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
-			console.log 'dash'
 			return @dashLoop(@templaterState.loopOpen.element)
 		if @intelligentTagging==on
-			console.log 'intelligent'
 			dashElement=@calcIntellegentlyDashElement()
 			if dashElement!=false then return @dashLoop(dashElement,true)
-		console.log 'for'
-		@forLoop()
+		return @forLoop()
 	calcSubXmlTemplater:(innerTagsContent,argOptions)->
 		options= @toJson()
 		options.exception=true
@@ -317,18 +303,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			options.exception= if argOptions.exception? then argOptions.exception else true
 
 		subfile= new @currentClass innerTagsContent,options
-		console.log 'applying'
 
 		num= parseInt(Math.random()*100)
-		console.log "Before:"+num+subfile.getFullText()
-		subfile.applyTags()
-		console.log "After:"+num+subfile.getFullText()
-		console.log 'end Applying'
+		subsubfile=subfile.applyTags()
 		if options.exception
-			if ((subfile.getFullText().indexOf '{')!=-1)
+			if ((subsubfile.getFullText().indexOf '{')!=-1)
 				debugger
-				throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
+				throw "they shouln't be a { in replaced file: #{subsubfile.getFullText()} (1)"
 		@imageId=subfile.imageId
-		subfile
+		subsubfile
 
 root.XmlTemplater=XmlTemplater
