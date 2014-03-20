@@ -119,11 +119,14 @@ root.DocxGen = class DocxGen
 	setTags: (@Tags) ->
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
-	output: (download = true,name="output.docx") ->
-		result= @zip.generate()
-		if download
+	output: (options={}) ->
+		if !options.download? then options.download=true
+		if !options.name? then options.name="output.docx"
+		if !options.type? then options.type="base64"
+		result= @zip.generate({type:options.type})
+		if options.download
 			if env=='node'
-				fs.writeFile process.cwd()+'/'+name, result, 'base64', (err) ->
+				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
 					if err then throw err
 					#console.log 'file Saved'
 			else
