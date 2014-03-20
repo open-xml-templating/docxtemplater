@@ -9,7 +9,7 @@ var livereload = require('gulp-livereload');
 var server = livereload();
 
 
-var config={uglify:false}
+var config={uglify:true}
 
 var paths = {
 	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/docUtils.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee'], // compile individually into dest, maintaining folder structure
