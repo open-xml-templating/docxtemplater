@@ -31,15 +31,13 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		else
 			@useTag(tag)
 			value= "undefined"
-			@DocxGen.logUndefined(tag,scope)
 		value
 	getFullText:() ->
-		@templaterState.matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
-		output= (match[2] for match in @templaterState.matches) #get only the text
-		#DocUtils.decode_utf8(output.join("")) #join it
+		matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
+		output= (match[2] for match in matches) #get only the text
 		DocUtils.convert_spaces(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		@templaterState.matches= DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
+		return DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 	calcOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
@@ -99,19 +97,18 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if tagValue?
 			if typeof tagValue == 'object'
 				for scope,i in tagValue
-					subfile=@calcSubXmlTemplater(innerTagsContent,scope)
+					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
 					newContent+=subfile.content
 			if tagValue == true
-				subfile=@calcSubXmlTemplater(innerTagsContent,@currentScope)
+				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@currentScope})
 				newContent+=subfile.content
 		else
-			subfile=@calcSubXmlTemplater(innerTagsContent,{})
+			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
 
 		@content=@content.replace outerTagsContent, newContent
+		a=@calcSubXmlTemplater(@content)
+		return a
 
-		nextFile=@calcSubXmlTemplater(@content)
-		if ((nextFile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{nextFile.getFullText()} (3)"
-		nextFile
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{content,start,end}= @findOuterTagsContent()
 		outerXml = @calcOuterXml @content, start, end, elementDashLoop
@@ -294,17 +291,26 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if @intelligentTagging==on
 			dashElement=@calcIntellegentlyDashElement()
 			if dashElement!=false then return @dashLoop(dashElement,true)
-		@forLoop()
-	calcSubXmlTemplater:(innerTagsContent,scope)->
+		return @forLoop()
+	calcSubXmlTemplater:(innerTagsContent,argOptions)->
 		options= @toJson()
-		if scope?
-			options.Tags= scope
-			options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-		subfile= new @currentClass innerTagsContent,options
-		subfile.applyTags()
-		if ((subfile.getFullText().indexOf '{')!=-1) then throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"
-		@imageId=subfile.imageId
-		subfile
+		options.exception=true
 
+		if argOptions?
+			if argOptions.Tags?
+				options.Tags=argOptions.Tags
+				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
+			options.exception= if argOptions.exception? then argOptions.exception else true
+
+		subfile= new @currentClass innerTagsContent,options
+
+		num= parseInt(Math.random()*100)
+		subsubfile=subfile.applyTags()
+		if options.exception
+			if ((subsubfile.getFullText().indexOf '{')!=-1)
+				debugger
+				throw "they shouln't be a { in replaced file: #{subsubfile.getFullText()} (1)"
+		@imageId=subfile.imageId
+		subsubfile
 
 root.XmlTemplater=XmlTemplater

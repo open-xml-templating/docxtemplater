@@ -32,7 +32,7 @@ root.DocxGen = class DocxGen
 			@parser= if @options.parser? then @parser else null
 	constructor: (content, @Tags={},@options) ->
 		@setOptions(@options)
-		@finishedCallback= () -> #console.log 'document ready!'
+		@finishedCallback=()->
 		@localImageCreator= (arg,callback) ->
 			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
 			result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
@@ -70,7 +70,6 @@ root.DocxGen = class DocxGen
 			@ready=true
 			@finishedCallback()
 	logUndefined: (tag,scope)->
-		#console.log("undefinedTag:"+tag)
 	getImageList:()-> @imgManager.getImageList()
 	setImage: (path,data,options={}) ->
 		if !options.binary? then options.binary=true
@@ -128,7 +127,6 @@ root.DocxGen = class DocxGen
 			if env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
 					if err then throw err
-					#console.log 'file Saved'
 			else
 				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
