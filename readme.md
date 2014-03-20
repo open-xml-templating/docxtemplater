@@ -159,12 +159,25 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
 
         This function replaces all template variables by their values
 
-    output([download=true])
+    output([options])
 
-        download
-            Type:boolean[true]
-            If download is true, file will be downloaded automatically with data URI.
-            returns the output file.
+        options: object[{}]
+
+            download:
+                Type:boolean[true]
+                If download is true, file will be downloaded automatically with data URI.
+                returns the output file.
+            
+            type:
+                Type;string["base64"]
+                The type of zip to return. The possible values are : (same as in http://stuk.github.io/jszip/ @generate)
+                base64 (default) : the result will be a string, the binary in a base64 form.
+                string : the result will be a string in "binary" form, 1 byte per char.
+                uint8array : the result will be a Uint8Array containing the zip. This requires a compatible browser.
+                arraybuffer : the result will be a ArrayBuffer containing the zip. This requires a compatible browser.
+                blob : the result will be a Blob containing the zip. This requires a compatible browser.
+                nodebuffer : the result will be a nodejs Buffer containing the zip. This requires nodejs.
+
 
         This function creates the docx file and downloads it on the user's computer. The name of the file is download.docx for Chrome, and some akward file names for Firefox: VEeTHCfS.docx.part.docx, and can't be changed because it is handled by the browser.
         For more informations about how to solve this problem, see the **Filename Problems** section on [http://stuk.github.io/jszip/](http://stuk.github.io/jszip/)
