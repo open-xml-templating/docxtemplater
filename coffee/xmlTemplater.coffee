@@ -316,17 +316,15 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
 			options.exception= if argOptions.exception? then argOptions.exception else true
 
-		console.log options.Tags
-
 		subfile= new @currentClass innerTagsContent,options
 		console.log 'applying'
 
-		console.log "Before:"+subfile.getFullText()
-		console.log options.Tags
+		num= parseInt(Math.random()*100)
+		console.log "Before:"+num+subfile.getFullText()
 		subfile.applyTags()
-		console.log "After:"+subfile.getFullText()
+		console.log "After:"+num+subfile.getFullText()
 		console.log 'end Applying'
-		if options.exception and false
+		if options.exception
 			if ((subfile.getFullText().indexOf '{')!=-1)
 				debugger
 				throw "they shouln't be a { in replaced file: #{subfile.getFullText()} (1)"

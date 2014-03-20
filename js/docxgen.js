@@ -1623,7 +1623,7 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.calcSubXmlTemplater = function(innerTagsContent, argOptions) {
-      var options, subfile;
+      var num, options, subfile;
       options = this.toJson();
       options.exception = true;
       if (argOptions != null) {
@@ -1633,15 +1633,14 @@ Created by Edgar HIPP
         }
         options.exception = argOptions.exception != null ? argOptions.exception : true;
       }
-      console.log(options.Tags);
       subfile = new this.currentClass(innerTagsContent, options);
       console.log('applying');
-      console.log("Before:" + subfile.getFullText());
-      console.log(options.Tags);
+      num = parseInt(Math.random() * 100);
+      console.log("Before:" + num + subfile.getFullText());
       subfile.applyTags();
-      console.log("After:" + subfile.getFullText());
+      console.log("After:" + num + subfile.getFullText());
       console.log('end Applying');
-      if (options.exception && false) {
+      if (options.exception) {
         if ((subfile.getFullText().indexOf('{')) !== -1) {
           debugger;
           throw "they shouln't be a { in replaced file: " + (subfile.getFullText()) + " (1)";

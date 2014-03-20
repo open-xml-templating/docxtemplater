@@ -18,7 +18,7 @@
     "browser": '../examples/'
   };
 
-  fileNames = ["imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx'];
+  fileNames = ["imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx', 'tableComplex3Example.docx'];
 
   for (_i = 0, _len = fileNames.length; _i < _len; _i++) {
     name = fileNames[_i];
@@ -1213,9 +1213,36 @@
       fullText = docX["tableComplex2Example.docx"].getFullText();
       return expect(fullText).toBe("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data");
     });
-    return it('should work with more complex table', function() {
+    it('should work with more complex table', function() {
       var fullText;
       docX["tableComplexExample.docx"].setTags({
+        "table2": [
+          {
+            "t2data1": "t2-1row-data1",
+            "t2data2": "t2-1row-data2",
+            "t2data3": "t2-1row-data3",
+            "t2data4": "t2-1row-data4"
+          }, {
+            "t2data1": "t2-2row-data1",
+            "t2data2": "t2-2row-data2",
+            "t2data3": "t2-2row-data3",
+            "t2data4": "t2-2row-data4"
+          }
+        ],
+        "t1total1": "t1total1-data",
+        "t1total2": "t1total2-data",
+        "t1total3": "t1total3-data",
+        "t2total1": "t2total1-data",
+        "t2total2": "t2total2-data",
+        "t2total3": "t2total3-data"
+      });
+      docX["tableComplexExample.docx"].applyTags();
+      fullText = docX["tableComplexExample.docx"].getFullText();
+      return expect(fullText).toBe("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
+    });
+    return it('should work with two tables', function() {
+      var fullText;
+      docX["tableComplex3Example.docx"].setTags({
         "table1": [
           {
             "t1data1": "t1-1row-data1",
@@ -1254,8 +1281,8 @@
         "t2total2": "t2total2-data",
         "t2total3": "t2total3-data"
       });
-      docX["tableComplexExample.docx"].applyTags();
-      fullText = docX["tableComplexExample.docx"].getFullText();
+      docX["tableComplex3Example.docx"].applyTags();
+      fullText = docX["tableComplex3Example.docx"].getFullText();
       return expect(fullText).toBe("");
     });
   });
