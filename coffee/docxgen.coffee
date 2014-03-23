@@ -25,29 +25,28 @@ if env=='node'
 
 root.DocxGen = class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+	defaultImageCreator=(arg,callback) ->
+		#This is the image of an arrow, you can replace this function by whatever you want to generate an image
+		result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
+		callback(result)
+	constructor: (content, @Tags={},@options) ->
+		@setOptions(@options)
+		@finishedCallback=()->
+		@localImageCreator= defaultImageCreator
+		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
+		@qrCodeNumCallBack=0 #This is the order of the qrcode
+		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
+		if content? then if content.length>0 then @load(content)
 	setOptions:(@options)->
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 			@qrCode= if @options.qrCode? then @options.qrCode else off
 			@parser= if @options.parser? then @parser else null
-	constructor: (content, @Tags={},@options) ->
-		@setOptions(@options)
-		@finishedCallback=()->
-		@localImageCreator= (arg,callback) ->
-			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
-			result=JSZipBase64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
-			callback(result)
-		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
-		@qrCodeNumCallBack=0 #This is the order of the qrcode
-		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
-		if content? then if content.length>0 then @load(content)
-		this
 	loadFromFile:(path,options={})->
-		promise={success:(fun)->
-			this.successFun=fun
-		,
-		successFun:()->
-		}
+		promise=
+			success:(fun)->
+				this.successFun=fun
+			successFun:()->
 		if !options.docx? then options.docx=false
 		if !options.async? then options.async=false
 		@setOptions(options)
