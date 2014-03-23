@@ -41,21 +41,19 @@ root.DocxGen = class DocxGen
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 			@qrCode= if @options.qrCode? then @options.qrCode else off
-			@parser= if @options.parser? then @parser else null
+			if @options.parser? then @parser=options.parser
 	loadFromFile:(path,options={})->
+		@setOptions(options)
 		promise=
 			success:(fun)->
 				this.successFun=fun
 			successFun:()->
 		if !options.docx? then options.docx=false
 		if !options.async? then options.async=false
-		@setOptions(options)
-
 		if !options.callback? then options.callback=(rawData) =>
 			@load rawData
 			promise.successFun(this)
 		DocUtils.loadDoc(path,options)
-
 		if options.async==false then return this else return promise
 	qrCodeCallBack:(num,add=true) ->
 		if add==true
@@ -68,7 +66,6 @@ root.DocxGen = class DocxGen
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
-	logUndefined: (tag,scope)->
 	getImageList:()-> @imgManager.getImageList()
 	setImage: (path,data,options={}) ->
 		if !options.binary? then options.binary=true
@@ -89,10 +86,8 @@ root.DocxGen = class DocxGen
 				intelligentTagging:@intelligentTagging
 				qrCodeCallback:qrCodeCallback
 				localImageCreator:@localImageCreator
-			}
-				this,@Tags,@intelligentTagging,[],{},0,qrCodeCallback,@localImageCreator)
-			if @parser?
-				currentFile.parser=@parser
+				parser:@parser
+			})
 			@setData(fileName,currentFile.applyTags().content)
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
@@ -107,9 +102,8 @@ root.DocxGen = class DocxGen
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
+				parser:@parser
 			})
-			if @parser?
-				currentFile.parser=@parser
 			usedTemplateV= currentFile.applyTags().usedTags
 			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}

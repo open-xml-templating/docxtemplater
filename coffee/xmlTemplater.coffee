@@ -60,6 +60,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
+		if options.parser? then @parser=options.parser
 	toJson: () ->
 		Tags:DocUtils.clone @Tags
 		DocxGen:@DocxGen
@@ -68,6 +69,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		usedTags:@usedTags
 		localImageCreator:@localImageCreator
 		imageId:@imageId
+		parser:@parser
 	forLoop: (innerTagsContent=@findInnerTagsContent().content,outerTagsContent=@findOuterTagsContent().content)->
 		###
 			<w:t>{#forTag} blabla</w:t>
