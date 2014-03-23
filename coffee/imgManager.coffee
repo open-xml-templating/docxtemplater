@@ -4,7 +4,6 @@ env= if global? then 'node' else 'browser'
 ImgManager = class ImgManager
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor:(@zip)->
-		this
 	getImageList: () ->
 		regex= ///
 		[^.]+  #name

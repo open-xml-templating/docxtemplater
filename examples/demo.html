@@ -4,10 +4,10 @@
 	<meta charset="UTF-8">
 	<title>Demo of DocxGenJS</title>
 	<link rel="stylesheet" href="main.css">
-	  <script type="text/javascript" src="../libs/base64.js"></script>
-  <script type="text/javascript" src="../libs/jszip2.0/dist/jszip.js"></script>
-  <script src="../libs/downloadify/js/downloadify.min.js"></script>
-  <script src="../libs/downloadify/js/swfobject.js"></script>
+	  <script type="text/javascript" src="../vendor/base64.js"></script>
+  <script type="text/javascript" src="../vendor/jszip2.0/dist/jszip.js"></script>
+  <script src="../vendor/downloadify/js/downloadify.min.js"></script>
+  <script src="../vendor/downloadify/js/swfobject.js"></script>
 
   <!-- Include docxgen js lib -->
   <script type="text/javascript" src="../js/docxgen.js"></script>
@@ -253,7 +253,7 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 			"description":"New Website"
 		});
 	doc.applyTags()
-	doc.download('../libs/downloadify/media/downloadify.swf','../libs/downloadify/images/download.png',"taggedDoc.docx")
+	doc.download('../vendor/downloadify/media/downloadify.swf','../vendor/downloadify/images/download.png',"taggedDoc.docx")
 });
 				</textarea>
 			</td>
