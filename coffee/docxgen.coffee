@@ -1,7 +1,6 @@
 ###
 Docxgen.coffee
 Created by Edgar HIPP
-02/24/2014
 ###
 
 root= global ? window
@@ -21,7 +20,6 @@ if env=='node'
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../libs/jsqrcode/' + file), file)
 	['jszip.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../libs/jszip2.0/dist/' + file), file)
-
 
 root.DocxGen = class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
@@ -124,11 +122,9 @@ root.DocxGen = class DocxGen
 				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
-	getFullText:(path="word/document.xml",data="") ->
-		if data==""
-			usedData=@zip.files[path].asText()
-			return @getFullText(path,usedData)
-		(new DocXTemplater(data,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
+	getFullText:(path="word/document.xml") ->
+		usedData=@zip.files[path].asText()
+		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
 		output=@zip.generate()
 		Downloadify.create 'downloadify',

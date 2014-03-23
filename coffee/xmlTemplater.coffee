@@ -14,6 +14,23 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@templaterState.matches = @_getFullTextMatchesFromData()
 		@templaterState.charactersAdded= (0 for i in [0...@templaterState.matches.length])
 		@handleRecursiveCase()
+	fromJson:(options)->
+		@Tags= if options.Tags? then options.Tags else {}
+		@DocxGen= if options.DocxGen? then options.DocxGen else null
+		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
+		@scopePath=if options.scopePath? then options.scopePath else []
+		@usedTags=if options.usedTags? then options.usedTags else {}
+		@imageId=if options.imageId? then options.imageId else 0
+		if options.parser? then @parser=options.parser
+	toJson: () ->
+		Tags:DocUtils.clone @Tags
+		DocxGen:@DocxGen
+		intelligentTagging:DocUtils.clone @intelligentTagging
+		scopePath:DocUtils.clone @scopePath
+		usedTags:@usedTags
+		localImageCreator:@localImageCreator
+		imageId:@imageId
+		parser:@parser
 	parser: (tag) ->
 		return {
 		'get':(scope) -> return scope[tag]
@@ -37,8 +54,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		output= (match[2] for match in matches) #get only the text
 		DocUtils.convert_spaces(output.join("")) #join it
 	_getFullTextMatchesFromData: () ->
-		return DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
-	calcOuterXml: (text,start,end,xmlTag) -> #tag: w:t
+		DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
+	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
 		endTag+=('</'+xmlTag+'>').length
@@ -53,23 +70,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		start= @templaterState.calcEndTag @templaterState.loopOpen
 		end= @templaterState.calcStartTag @templaterState.loopClose
 		{content:@content.substr(start,end-start),start,end}
-	fromJson:(options)->
-		@Tags= if options.Tags? then options.Tags else {}
-		@DocxGen= if options.DocxGen? then options.DocxGen else null
-		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
-		@scopePath=if options.scopePath? then options.scopePath else []
-		@usedTags=if options.usedTags? then options.usedTags else {}
-		@imageId=if options.imageId? then options.imageId else 0
-		if options.parser? then @parser=options.parser
-	toJson: () ->
-		Tags:DocUtils.clone @Tags
-		DocxGen:@DocxGen
-		intelligentTagging:DocUtils.clone @intelligentTagging
-		scopePath:DocUtils.clone @scopePath
-		usedTags:@usedTags
-		localImageCreator:@localImageCreator
-		imageId:@imageId
-		parser:@parser
 	forLoop: (innerTagsContent=@findInnerTagsContent().content,outerTagsContent=@findOuterTagsContent().content)->
 		###
 			<w:t>{#forTag} blabla</w:t>
@@ -105,43 +105,32 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@currentScope})
 				newContent+=subfile.content
 		else
-			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
+			# This line is only for having the ability to retrieve the tags from a document
+			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
 
 		@content=@content.replace outerTagsContent, newContent
-		a=@calcSubXmlTemplater(@content)
-		return a
+		@calcSubXmlTemplater(@content)
 
-	dashLoop: (elementDashLoop,sharp=false) ->
-		{content,start,end}= @findOuterTagsContent()
-		outerXml = @calcOuterXml @content, start, end, elementDashLoop
-		for t in [0..@templaterState.matches.length]
-			@templaterState.charactersAdded[t]-=outerXml.startTag
-		outerXmlText= outerXml.text
-		if (@content.indexOf outerXmlText)==-1 then throw "couln't find outerXmlText in @content"
-		innerXmlText = outerXmlText
-		copyinnerXmlText= innerXmlText
-
-		#for deleting the opening tag
-
+	deleteOuterTags:(outerXmlText,sharp)->
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}
 		@templaterState.tagStart= {"numXmlTag":@templaterState.loopOpen.start.numXmlTag,"numCharacter":@templaterState.loopOpen.start.numCharacter}
 		if sharp==false then @templaterState.textInsideTag= "-"+@templaterState.loopOpen.element+" "+@templaterState.loopOpen.tag
 		if sharp==true then @templaterState.textInsideTag= "#"+@templaterState.loopOpen.tag
 
-		innerXmlText= @replaceTagByValue("",innerXmlText)
-		if copyinnerXmlText==innerXmlText then throw "innerXmlText should have changed after deleting the opening tag"
-		copyinnerXmlText= innerXmlText
-
+		xmlText= @replaceTagByValue("",outerXmlText)
 		@templaterState.textInsideTag= "/"+@templaterState.loopOpen.tag
 		#for deleting the closing tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopClose.end.numXmlTag,"numCharacter":@templaterState.loopClose.end.numCharacter}
 		@templaterState.tagStart= {"numXmlTag":@templaterState.loopClose.start.numXmlTag,"numCharacter":@templaterState.loopClose.start.numCharacter}
-		innerXmlText= @replaceTagByValue("",innerXmlText)
-
-		if copyinnerXmlText==innerXmlText then throw "innerXmlText should have changed after deleting the opening tag"
-
-		return @forLoop(innerXmlText,outerXmlText)
-
+		@replaceTagByValue("",xmlText)
+	dashLoop: (elementDashLoop,sharp=false) ->
+		{content,start,end}= @findOuterTagsContent()
+		outerXml = @getOuterXml @content, start, end, elementDashLoop
+		for t in [0..@templaterState.matches.length]
+			@templaterState.charactersAdded[t]-=outerXml.startTag
+		outerXmlText= outerXml.text
+		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
+		@forLoop(innerXmlText,outerXmlText)
 	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber)->
 		if noStartTag == true
 			return insideValue
