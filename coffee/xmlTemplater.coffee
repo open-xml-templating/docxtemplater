@@ -273,8 +273,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if tag!=""
 			u[tag]= true
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
-	replaceSimpleTag:()->
-		@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
+	replaceSimpleTag:()->@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
@@ -282,25 +281,15 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if @intelligentTagging==on
 			dashElement=@calcIntellegentlyDashElement()
 			if dashElement!=false then return @dashLoop(dashElement,true)
-		return @forLoop()
+		@forLoop()
 	calcSubXmlTemplater:(innerTagsContent,argOptions)->
 		options= @toJson()
-		options.exception=true
-
 		if argOptions?
 			if argOptions.Tags?
 				options.Tags=argOptions.Tags
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-			options.exception= if argOptions.exception? then argOptions.exception else true
-
 		subfile= new @currentClass innerTagsContent,options
-
-		num= parseInt(Math.random()*100)
 		subsubfile=subfile.applyTags()
-		if options.exception
-			if ((subsubfile.getFullText().indexOf '{')!=-1)
-				debugger
-				throw "they shouln't be a { in replaced file: #{subsubfile.getFullText()} (1)"
 		@imageId=subfile.imageId
 		subsubfile
 
