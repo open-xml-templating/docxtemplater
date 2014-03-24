@@ -143,4 +143,3 @@ root.DocxGen = class DocxGen
 
 if env=='node'
 	module.exports=root.DocxGen
-

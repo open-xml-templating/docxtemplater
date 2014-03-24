@@ -112,19 +112,20 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@calcSubXmlTemplater(@content)
 
 	deleteOuterTags:(outerXmlText,sharp)->
+		#delete the opening tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}
 		@templaterState.tagStart= {"numXmlTag":@templaterState.loopOpen.start.numXmlTag,"numCharacter":@templaterState.loopOpen.start.numCharacter}
 		if sharp==false then @templaterState.textInsideTag= "-"+@templaterState.loopOpen.element+" "+@templaterState.loopOpen.tag
 		if sharp==true then @templaterState.textInsideTag= "#"+@templaterState.loopOpen.tag
-
 		xmlText= @replaceTagByValue("",outerXmlText)
-		@templaterState.textInsideTag= "/"+@templaterState.loopOpen.tag
-		#for deleting the closing tag
+
+		#delete the closing tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopClose.end.numXmlTag,"numCharacter":@templaterState.loopClose.end.numCharacter}
 		@templaterState.tagStart= {"numXmlTag":@templaterState.loopClose.start.numXmlTag,"numCharacter":@templaterState.loopClose.start.numCharacter}
+		@templaterState.textInsideTag= "/"+@templaterState.loopOpen.tag
 		@replaceTagByValue("",xmlText)
 	dashLoop: (elementDashLoop,sharp=false) ->
-		{content,start,end}= @findOuterTagsContent()
+		{_,start,end}= @findOuterTagsContent()
 		outerXml = @getOuterXml @content, start, end, elementDashLoop
 		for t in [0..@templaterState.matches.length]
 			@templaterState.charactersAdded[t]-=outerXml.startTag
@@ -150,17 +151,13 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		#calculate the replacer according to the params
 		@templaterState.charactersAdded[xmlTagNumber+1]+=replacer.length-@templaterState.matches[xmlTagNumber][0].length
 		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw "content #{@templaterState.matches[xmlTagNumber][0]} not found in content"
-		copyContent= content
 		content = DocUtils.replaceFirstFrom content,@templaterState.matches[xmlTagNumber][0], replacer, startTag
 		@templaterState.matches[xmlTagNumber][0]=replacer
-
-		if copyContent==content then throw "offset problem0: didnt changed the value (should have changed from #{@templaterState.matches[@templaterState.tagStart.numXmlTag][0]} to #{replacer}"
 		content
-
 	replaceTagByValue: (newValue,content=@content) ->
 		if (@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].indexOf ('}'))==-1 then throw "no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.matches[@templaterState.tagEnd.numXmlTag][2]}"
 		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf ('{'))==-1 then throw "no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}"
-		copyContent=content
+
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
 			insideValue= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "{#{@templaterState.textInsideTag}}", newValue
 			content= @replaceXmlTag(content,
@@ -169,25 +166,22 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 				insideValue:insideValue
 				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 			})
-		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag
+		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
 
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 			regexRight= /^([^{]*){.*$/
 			subMatches= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].match regexRight
 
-			if @templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last? #if the content starts with:  {tag</w:t>
-				content= @replaceXmlTag(content,
-				{
-					xmlTagNumber:@templaterState.tagStart.numXmlTag
-					insideValue:newValue
-					noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
-				})
+			options=
+				xmlTagNumber:@templaterState.tagStart.numXmlTag
+
+			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last? #if the content starts with:  {tag</w:t> (when handling recursive cases)
+				options.insideValue=subMatches[1]+newValue
 			else
-				content= @replaceXmlTag(content,
-				{
-					xmlTagNumber:@templaterState.tagStart.numXmlTag
-					insideValue:subMatches[1]+newValue
-				})
+				options.insideValue=newValue
+				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+
+			content= @replaceXmlTag(content,options)
 
 			#2. for in between (@templaterState.tagStart.numXmlTag+1...@templaterState.tagEnd.numXmlTag) replace whole by ""
 			for k in [(@templaterState.tagStart.numXmlTag+1)...@templaterState.tagEnd.numXmlTag]
@@ -211,7 +205,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 
 		for match, j in @templaterState.matches when j>@templaterState.tagEnd.numXmlTag
 			@templaterState.charactersAdded[j+1]=@templaterState.charactersAdded[j]
-		if copyContent==content then throw "copycontent=content !!"
 		content
 	###
 	content is the whole content to be tagged
