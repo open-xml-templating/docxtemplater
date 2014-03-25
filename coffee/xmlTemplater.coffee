@@ -159,13 +159,13 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf ('{'))==-1 then throw "no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}"
 
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
-			insideValue= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "{#{@templaterState.textInsideTag}}", newValue
-			content= @replaceXmlTag(content,
-			{
+
+			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				insideValue:insideValue
+				insideValue:@templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "{#{@templaterState.textInsideTag}}", newValue
 				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
-			})
+
+			content= @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
 
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
@@ -175,33 +175,34 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
 
-			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last? #if the content starts with:  {tag</w:t> (when handling recursive cases)
+			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
 				options.insideValue=subMatches[1]+newValue
-			else
+			else #if the content starts with:  {tag</w:t> (when handling recursive cases)
 				options.insideValue=newValue
 				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
 			content= @replaceXmlTag(content,options)
 
 			#2. for in between (@templaterState.tagStart.numXmlTag+1...@templaterState.tagEnd.numXmlTag) replace whole by ""
+
+			options=
+				insideValue:""
+				spacePreserve:false
+
 			for k in [(@templaterState.tagStart.numXmlTag+1)...@templaterState.tagEnd.numXmlTag]
 				@templaterState.charactersAdded[k+1]=@templaterState.charactersAdded[k]
-				content= @replaceXmlTag(content,
-				{
-					xmlTagNumber:k
-					insideValue:""
-					spacePreserve:false
-				})
+				options.xmlTagNumber=k
+				content= @replaceXmlTag(content, options)
 
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
-			regexLeft= /^[^}]*}(.*)$/;
-			insideValue = @templaterState.matches[@templaterState.tagEnd.numXmlTag][2].replace regexLeft, '$1'
-			@templaterState.charactersAdded[@templaterState.tagEnd.numXmlTag+1]=@templaterState.charactersAdded[@templaterState.tagEnd.numXmlTag]
-			content= @replaceXmlTag(content,
-			{
+			regexLeft= /^[^}]*}(.*)$/
+			options =
+				insideValue:@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].replace regexLeft, '$1'
+				spacePreserve:true
 				xmlTagNumber:k
-				insideValue:insideValue
-			})
+
+			@templaterState.charactersAdded[@templaterState.tagEnd.numXmlTag+1]=@templaterState.charactersAdded[@templaterState.tagEnd.numXmlTag]
+			content= @replaceXmlTag(content, options)
 
 		for match, j in @templaterState.matches when j>@templaterState.tagEnd.numXmlTag
 			@templaterState.charactersAdded[j+1]=@templaterState.charactersAdded[j]
