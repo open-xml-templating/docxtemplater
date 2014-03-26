@@ -596,6 +596,13 @@ describe 'Non Utf-8 characters', () ->
 		expect(fullText.charCodeAt(6)).toBe(1039)
 		expect(fullText.charCodeAt(7)).toBe(1040)
 		expect(fullText.indexOf('Edgar')).toBe(9)
+	it 'should insert russian characters', () ->
+		russianText=[1055, 1091, 1087, 1082, 1080, 1085, 1072]
+		russian= (String.fromCharCode(char) for char in russianText)
+		russian=russian.join('')
+		docX["tagExample.docx"].applyTags({last_name:russian})
+		outputText=docX["tagExample.docx"].getFullText()
+		expect(outputText.substr(0,7)).toBe(russian)
 
 describe 'Complex table example' , () ->
 	it 'should work with simple table', () ->
