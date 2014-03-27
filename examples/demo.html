@@ -318,7 +318,7 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 
 <section>
 	<h2 id='qrcodeloop'><em>QrCode:</em>Replace many images</h2>
-	<p>If you scan the qrcode on the left, you will get "{image}.png". Because the qrcode is inside a loop (inside a loop tag {#images} {/images}), it will loop over the array defined underneath:  {'images':[{image:'Firefox_logo'},{image:'image'}]}. So this will replace the whole by two images, the first one being the logo of firefox_logo, the second image.png</p>
+	<p>If you scan the qrcode on the left, you will get "{image}.png". Because the qrcode is inside a loop (inside a loop tag {#images} {/images}), it will loop over the array defined underneath:  {'images':[{image:'Firefox_logo'},{image:'image'}]}. So this will replace the whole by two images, the first one being the logo of firefox_logo, the second image.png . To create your own qrcodes, I recommend you <a href="http://qrcode.kaywa.com">http://qrcode.kaywa.com</a> with the <b>static</b> option</p>
 	<table class="demo">
 		<tr>
 			<td><img src="images/qrCodeLoop.PNG"></td>
