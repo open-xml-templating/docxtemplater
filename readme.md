@@ -17,6 +17,8 @@ Including:
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists">Lists</a><br>
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#images">Replacing images</a><br>
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming">Naming the output</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcode">Using QrCodes</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcodeloop">Replacing many images with QrCode</a><br>
 
 ## Why use a library for this ? ##
 

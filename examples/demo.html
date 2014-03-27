@@ -4,13 +4,35 @@
 	<meta charset="UTF-8">
 	<title>Demo of DocxGenJS</title>
 	<link rel="stylesheet" href="main.css">
-	  <script type="text/javascript" src="../vendor/base64.js"></script>
-  <script type="text/javascript" src="../vendor/jszip2.0/dist/jszip.js"></script>
-  <script src="../vendor/downloadify/js/downloadify.min.js"></script>
-  <script src="../vendor/downloadify/js/swfobject.js"></script>
 
-  <!-- Include docxgen js lib -->
-  <script type="text/javascript" src="../js/docxgen.js"></script>
+	<!--Include this only if you want to use the qrcode functionality-->
+	<script type="text/javascript" src="../vendor/jsqrcode/grid.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/version.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/detector.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/formatinf.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/errorlevel.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/bitmat.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/datablock.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/bmparser.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/datamask.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/rsdecoder.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/gf256poly.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/gf256.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/decoder.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/qrcode.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/findpat.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/alignpat.js"></script>
+	<script type="text/javascript" src="../vendor/jsqrcode/databr.js"></script>
+
+	<!-- Mandatory js for the library to work -->
+	<script type="text/javascript" src="../vendor/base64.js"></script>
+	<script type="text/javascript" src="../vendor/jszip2.0/dist/jszip.js"></script>
+	<script type="text/javascript" src="../js/docxgen.js"></script>
+
+	<!-- Include this only if you want to use downloadify (last example) -->
+	<script src="../vendor/downloadify/js/downloadify.min.js"></script>
+	<script src="../vendor/downloadify/js/swfobject.js"></script>
+
 	<script src="main.js"></script>
 </head>
 <body>
@@ -26,6 +48,8 @@
 <a href="#lists">Lists</a><br>
 <a href="#images">Replacing images</a><br>
 <a href="#naming">Naming the output</a><br>
+<a href="#qrcode">Using QrCodes</a><br>
+<a href="#qrcodeloop">Replacing many images with QrCode</a><br>
 
 <h1>Templates</h1>
 
@@ -259,9 +283,61 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3">
-				<p id="downloadify"> You must have Flash 10 installed to download this file.  </p>
+		<td colspan="3">
+			<p id="downloadify"> You must have Flash 10 installed to download this file.  </p>
+		</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='qrcode'><em>QrCode:</em>Replace a specific image</h2>
+	<p>If you scan the qrcode on the left, you will get the value "Firefox_logo.png" So docxtemplater will load that image and replace the image, keeping the style of the original image (which is really great). You can put tags inside string if you want. For example put "{name}.png" and the image will be loaded depending on the tags.</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/qrCode.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
 			</td>
+			<td><img src="images/qrCodeResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="qrCodeExample.docx">
+					new DocxGen().loadFromFile("qrCodeExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
+						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
+						doc.applyTags();
+					});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+
+<section>
+	<h2 id='qrcodeloop'><em>QrCode:</em>Replace many images</h2>
+	<p>If you scan the qrcode on the left, you will get "{image}.png". Because the qrcode is inside a loop (inside a loop tag {#images} {/images}), it will loop over the array defined underneath:  {'images':[{image:'Firefox_logo'},{image:'image'}]}. So this will replace the whole by two images, the first one being the logo of firefox_logo, the second image.png</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/qrCodeLoop.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/qrCodeLoopResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="qrCodeTaggingLoopExample.docx">
+					new DocxGen().loadFromFile("qrCodeTaggingLoopExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
+						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
+						doc.applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]});
+					});
+				</textarea>
+			</td>
+		</tr>
 	</table>
 </section>
 
