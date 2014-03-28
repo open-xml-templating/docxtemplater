@@ -225,7 +225,7 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					@templaterState.endTag()
 					if @templaterState.loopType()=='simple'
 						@replaceSimpleTag()
-					if @templaterState.textInsideTag[0]=='/' and ('/'+@templaterState.loopOpen.tag == @templaterState.textInsideTag)
+					else if @templaterState.isLoopClosingTag()
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character

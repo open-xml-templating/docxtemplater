@@ -22,6 +22,8 @@ root.TemplaterState =  class TemplaterState
 		if @inDashLoop then return 'dash'
 		if @inForLoop then return 'for'
 		return 'simple'
+	isLoopClosingTag:()->
+		@textInsideTag[0]=='/' and ('/'+@loopOpen.tag == @textInsideTag)
 	endTag:()->
 		if @inTag is false then throw "Tag already closed"
 		@inTag= false
