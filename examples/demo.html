@@ -315,7 +315,6 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 	</table>
 </section>
 
-
 <section>
 	<h2 id='qrcodeloop'><em>QrCode:</em>Replace many images</h2>
 	<p>If you scan the qrcode on the left, you will get "{image}.png". Because the qrcode is inside a loop (inside a loop tag {#images} {/images}), it will loop over the array defined underneath:  {'images':[{image:'Firefox_logo'},{image:'image'}]}. So this will replace the whole by two images, the first one being the logo of firefox_logo, the second image.png . To create your own qrcodes, I recommend you <a href="http://qrcode.kaywa.com">http://qrcode.kaywa.com</a> with the <b>static</b> option</p>
@@ -334,6 +333,31 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 					new DocxGen().loadFromFile("qrCodeTaggingLoopExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
 						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
 						doc.applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]});
+					});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='rawxml'>Embed your own XML</h2>
+	<p>You can embed your own XML using the {@rawXml} syntax. DocXTemplater will replace the containing w:p tag to the xml you enter in the json. This can be particularly useful to embed: tables, user input that could be bold, italics, change the size, color, or whatever. However, you can't create some graphs, smartarts because they use multiple files and not just the one you're in.</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/xmlTagging.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/xmlTaggingResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="xmlInsertionExample.docx">
+					new DocxGen().loadFromFile("xmlInsertionExample.docx",{async:true}).success(function(doc){
+					doc.applyTags({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
+						doc.output()
 					});
 				</textarea>
 			</td>
