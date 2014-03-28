@@ -225,6 +225,10 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					@templaterState.endTag()
 					if @templaterState.loopType()=='simple'
 						@replaceSimpleTag()
+
+					if @templaterState.loopType()=='xml'
+						@replaceSimpleTagRawXml()
+
 					else if @templaterState.isLoopClosingTag()
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
@@ -268,6 +272,13 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			u[tag]= true
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	replaceSimpleTag:()->@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
+	replaceSimpleTagRawXml:()->
+		@replaceSimpleTag()
+		###
+		outerXml = @getOuterXml @content, start, end, elementDashLoop
+		console.log outerXml
+		@content
+		###
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
