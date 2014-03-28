@@ -4,10 +4,8 @@ env= if global? then 'node' else 'browser'
 #This class responsibility is to store an xmlTemplater's state
 
 root.TemplaterState =  class TemplaterState
-	calcStartTag: (tag) ->
-		@calcPosition(tag.start)
-	calcEndTag: (tag)->
-		@calcPosition(tag.end)+1
+	calcStartTag: (tag) -> @calcPosition(tag.start)
+	calcEndTag: (tag)-> @calcPosition(tag.end)+1
 	calcPosition:(bracket)->
 		@matches[bracket.numXmlTag].offset+@matches[bracket.numXmlTag][1].length+@charactersAdded[bracket.numXmlTag]+bracket.numCharacter
 	initialize:()->
@@ -35,6 +33,7 @@ root.TemplaterState =  class TemplaterState
 		@tagEnd=@currentStep
 		if @textInsideTag[0]=='@' and @loopType()=='simple'
 			@rawXmlTag=true
+			@tag=@textInsideTag.substr 1
 		if @textInsideTag[0]=='#' and @loopType()=='simple'
 			@inForLoop= true #begin for loop
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}

@@ -273,12 +273,10 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	replaceSimpleTag:()->@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
 	replaceSimpleTagRawXml:()->
-		@replaceSimpleTag()
-		###
-		outerXml = @getOuterXml @content, start, end, elementDashLoop
-		console.log outerXml
-		@content
-		###
+		start=@templaterState.calcPosition(@templaterState.tagStart)
+		end=@templaterState.calcPosition(@templaterState.tagEnd)
+		outerXml = (@getOuterXml @content, start, end, 'w:p').text
+		@content=@content.replace outerXml, @getValueFromScope(@templaterState.tag)
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
