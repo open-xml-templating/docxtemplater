@@ -5,6 +5,11 @@ root.DocUtils= {}
 root.docX=[]
 root.docXData=[]
 
+DocUtils.defaultParser=(tag) ->
+	return {
+	'get':(scope) -> return scope[tag]
+	}
+
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 

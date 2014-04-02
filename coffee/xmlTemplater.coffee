@@ -21,6 +21,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
+		@scopeManager=new ScopeManager(@Tags,@scopePath)
 		if options.parser? then @parser=options.parser
 	toJson: () ->
 		Tags:DocUtils.clone @Tags
@@ -32,10 +33,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		imageId:@imageId
 		parser:@parser
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
-	parser: (tag) ->
-		return {
-		'get':(scope) -> return scope[tag]
-		}
+	parser:root.DocUtils.defaultParser
 	getFullText:(@tagXml=@tagXml) ->
 		matcher=new XmlMatcher(@content).parse(@tagXml)
 		output= (match[2] for match in matcher.matches) #get only the text
@@ -66,6 +64,12 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		new ImgReplacer(this).findImages().replaceImages()
 		this
+	replaceSimpleTag:()->@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
+	replaceSimpleTagRawXml:()->
+		start=@templaterState.calcPosition(@templaterState.tagStart)
+		end=@templaterState.calcPosition(@templaterState.tagEnd)
+		outerXml = (@getOuterXml @content, start, end, 'w:p').text
+		@content=@content.replace outerXml, @getValueFromScope(@templaterState.tag)
 	getValueFromScope: (tag=@templaterState.loopOpen.tag,scope=@currentScope) ->
 		parser=@parser(tag)
 		result=parser.get(scope)
@@ -184,12 +188,6 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		for match, j in @templaterState.matches when j>@templaterState.tagEnd.numXmlTag
 			@templaterState.charactersAdded[j+1]=@templaterState.charactersAdded[j]
 		content
-	replaceSimpleTag:()->@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
-	replaceSimpleTagRawXml:()->
-		start=@templaterState.calcPosition(@templaterState.tagStart)
-		end=@templaterState.calcPosition(@templaterState.tagEnd)
-		outerXml = (@getOuterXml @content, start, end, 'w:p').text
-		@content=@content.replace outerXml, @getValueFromScope(@templaterState.tag)
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
