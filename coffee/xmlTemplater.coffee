@@ -21,8 +21,8 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
-		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags)
-		if options.parser? then @parser=options.parser
+		@parser= if options.parser? then options.parser else root.DocUtils.defaultParser
+		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@currentScope,@parser)
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
 		DocxGen:@DocxGen
@@ -33,7 +33,6 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		imageId:@imageId
 		parser:@parser
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
-	parser:root.DocUtils.defaultParser
 	getFullText:(@tagXml=@tagXml) ->
 		matcher=new XmlMatcher(@content).parse(@tagXml)
 		output= (match[2] for match in matcher.matches) #get only the text
@@ -70,9 +69,9 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		end=@templaterState.calcPosition(@templaterState.tagEnd)
 		outerXml = (@getOuterXml @content, start, end, 'w:p').text
 		@content=@content.replace outerXml, @getValueFromScope(@templaterState.tag)
-	getValueFromScope: (tag=@templaterState.loopOpen.tag,scope=@currentScope) ->
+	getValueFromScope: (tag) ->
 		parser=@parser(tag)
-		result=parser.get(scope)
+		result=parser.get(@currentScope)
 		if result?
 			if typeof result=='string'
 				@scopeManager.useTag(tag)
