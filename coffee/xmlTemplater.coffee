@@ -227,19 +227,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		###
 		tag=@templaterState.loopOpen.tag
 
-		if @scopeManager.get(tag)?
-			if @scopeManager.getTypeOf(tag) == 'object'
-				newContent=""
-				for scope,i in @scopeManager.get(tag)
-					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
-					newContent+=subfile.content
-			if @scopeManager.get(tag) == true
-				newContent=""
-				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@scopeManager.currentScope})
-				newContent+=subfile.content
-			if @scopeManager.get(tag) ==false
-				newContent=""
-		else
+		newContent=""
+		@scopeManager.loopOver tag, (subTags) =>
+			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:subTags})
+			newContent+=subfile.content
+		if !@scopeManager.get(tag)?
 			newContent=""
 			# This line is only for having the ability to retrieve the tags from a document
 			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})

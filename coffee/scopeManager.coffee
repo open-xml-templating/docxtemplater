@@ -5,6 +5,13 @@ env= if global? then 'node' else 'browser'
 
 root.ScopeManager =  class ScopeManager
 	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser)->
+	loopOver:(tag,callback)->
+		if !@get(tag)? then return
+		if @getTypeOf(tag) == 'object'
+			for scope,i in @get(tag)
+				callback(scope)
+		if @get(tag) == true
+			callback(@currentScope)
 	get:(tag)->
 		@currentScope[tag]
 	getTypeOf:(tag)->
