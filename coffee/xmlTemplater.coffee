@@ -49,12 +49,10 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			@useTag(tag)
 			value= "undefined"
 		value
-	getFullText:() ->
-		matches= @_getFullTextMatchesFromData(@tagXml) #get everything that is between <w:t>
-		output= (match[2] for match in matches) #get only the text
+	getFullText:(@tagXml=@tagXml) ->
+		matcher=new XmlMatcher(@content).parse(@tagXml)
+		output= (match[2] for match in matcher.matches) #get only the text
 		DocUtils.convert_spaces(output.join("")) #join it
-	_getFullTextMatchesFromData: (@tagXml) ->
-		DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw "can't find endTag #{endTag}"
