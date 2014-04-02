@@ -236,6 +236,7 @@ describe "xmlTemplater", ()->
 		scope= {"showName":true,"name":"Edgar"}
 		xmlTemplater= new DocXTemplater(content,{Tags:scope})
 		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,')
 
 		scope= {"showName":false,"name":"Edgar"}
 		xmlTemplater= new DocXTemplater(content,{Tags:scope})

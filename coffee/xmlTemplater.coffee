@@ -14,7 +14,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
 		@templaterState.charactersAdded= xmlMatcher.charactersAdded
-	fromJson:(options)->
+	fromJson:(options={})->
 		@Tags= if options.Tags? then options.Tags else {}
 		@DocxGen= if options.DocxGen? then options.DocxGen else null
 		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
@@ -220,33 +220,27 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			Blabla2
 			<w:t>{/forTag}</w:t>
 
-			Let innerTagsContent be what is in between the first closing tag and the second opening tag
-			Let outerTagsContent what is in between the first opening tag {# and the last closing tag
-
-			innerTagsContent=</w:t>
-			Blabla1
-			Blabla2
-			<w:t>
-
-			outerTagsContent={#forTag}</w:t>
-			Blabla1
-			Blabla2
-			<w:t>{/forTag}
-
+			Let innerTagsContent be what is in between the first closing tag and the second opening tag | blabla....Blabla2<w:t>|
+			Let outerTagsContent what is in between the first opening tag  and the last closing tag     |{#forTag} blabla....Blabla2<w:t>{/forTag}|
 			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-		tagValue=@scopeManager.currentScope[@templaterState.loopOpen.tag]
-		newContent= "";
-		if tagValue?
-			if typeof tagValue == 'object'
-				for scope,i in tagValue
+		tag=@templaterState.loopOpen.tag
+
+		if @scopeManager.get(tag)?
+			if @scopeManager.getTypeOf(tag) == 'object'
+				newContent=""
+				for scope,i in @scopeManager.get(tag)
 					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
 					newContent+=subfile.content
-			if tagValue == true
+			if @scopeManager.get(tag) == true
+				newContent=""
 				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@scopeManager.currentScope})
 				newContent+=subfile.content
+			if @scopeManager.get(tag) ==false
+				newContent=""
 		else
+			newContent=""
 			# This line is only for having the ability to retrieve the tags from a document
 			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
 		@content=@content.replace outerTagsContent, newContent

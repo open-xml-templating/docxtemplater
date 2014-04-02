@@ -5,6 +5,10 @@ env= if global? then 'node' else 'browser'
 
 root.ScopeManager =  class ScopeManager
 	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser)->
+	get:(tag)->
+		@currentScope[tag]
+	getTypeOf:(tag)->
+		typeof @get(tag)
 	getValueFromScope: (tag) ->
 		parser=@parser(tag)
 		result=parser.get(@currentScope)
