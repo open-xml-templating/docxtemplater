@@ -11,9 +11,9 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		@currentScope=@Tags
 		@templaterState= new TemplaterState
 	load: (@content) ->
-		@templaterState.matches = @_getFullTextMatchesFromData()
-		@templaterState.charactersAdded= (0 for i in [0...@templaterState.matches.length])
-		@handleRecursiveCase()
+		@xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
+		@templaterState.matches = @xmlMatcher.matches
+		@templaterState.charactersAdded= @xmlMatcher.charactersAdded
 	fromJson:(options)->
 		@Tags= if options.Tags? then options.Tags else {}
 		@DocxGen= if options.DocxGen? then options.DocxGen else null
@@ -50,10 +50,10 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			value= "undefined"
 		value
 	getFullText:() ->
-		matches= @_getFullTextMatchesFromData() #get everything that is between <w:t>
+		matches= @_getFullTextMatchesFromData(@tagXml) #get everything that is between <w:t>
 		output= (match[2] for match in matches) #get only the text
 		DocUtils.convert_spaces(output.join("")) #join it
-	_getFullTextMatchesFromData: () ->
+	_getFullTextMatchesFromData: (@tagXml) ->
 		DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
@@ -233,32 +233,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		new ImgReplacer(this).findImages().replaceImages()
 		this
-	handleRecursiveCase:()->
-		###
-		Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
-		For example with this string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
-			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift) (in this case 'I am')
-			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush) (in this case 'sleeping')
-		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
-		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
-		###
-		replacerUnshift = (match,pn ..., offset, string)=>
-			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-			pn.offset= offset
-			pn.first= true
-			@templaterState.matches.unshift pn #add at the beginning
-			@templaterState.charactersAdded.unshift 0
-		@content.replace /^()([^<]+)/,replacerUnshift
-
-		replacerPush = (match,pn ..., offset, string)=>
-			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-			pn.offset= offset
-			pn.last= true
-			@templaterState.matches.push pn #add at the beginning
-			@templaterState.charactersAdded.push 0
-
-		regex= "(<#{@tagXml}[^>]*>)([^>]+)$"
-		@content.replace (new RegExp(regex)),replacerPush
 
 	#set the tag as used, so that DocxGen can return the list off all tags
 	useTag: (tag) ->
