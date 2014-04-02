@@ -3,17 +3,17 @@ env= if global? then 'node' else 'browser'
 
 #This is an abstract class, DocXTemplater is an example of inherited class
 
-XmlTemplater =  class XmlTemplater #abstract class !!
+root.XmlTemplater =  class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
-		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
+		@currentClass=root.XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@currentScope=@Tags
 		@templaterState= new TemplaterState
 	load: (@content) ->
-		@xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
-		@templaterState.matches = @xmlMatcher.matches
-		@templaterState.charactersAdded= @xmlMatcher.charactersAdded
+		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
+		@templaterState.matches = xmlMatcher.matches
+		@templaterState.charactersAdded= xmlMatcher.charactersAdded
 	fromJson:(options)->
 		@Tags= if options.Tags? then options.Tags else {}
 		@DocxGen= if options.DocxGen? then options.DocxGen else null
@@ -31,10 +31,41 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		localImageCreator:@localImageCreator
 		imageId:@imageId
 		parser:@parser
+	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	parser: (tag) ->
 		return {
 		'get':(scope) -> return scope[tag]
 		}
+	getFullText:(@tagXml=@tagXml) ->
+		matcher=new XmlMatcher(@content).parse(@tagXml)
+		output= (match[2] for match in matcher.matches) #get only the text
+		DocUtils.convert_spaces(output.join("")) #join it
+	###
+	content is the whole content to be tagged
+	scope is the current scope
+	returns the new content of the tagged content###
+	applyTags:()->
+		@templaterState.initialize()
+		for match,numXmlTag in @templaterState.matches
+			innerText= match[2] #text inside the <w:t>
+			for character,numCharacter in innerText
+				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
+				for m,t in @templaterState.matches when t<=numXmlTag
+					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
+				if character=='{'
+					@templaterState.startTag()
+				else if character == '}'
+					@templaterState.endTag()
+					if @templaterState.loopType()=='simple'
+						@replaceSimpleTag()
+					if @templaterState.loopType()=='xml'
+						@replaceSimpleTagRawXml()
+					else if @templaterState.isLoopClosingTag()
+						return @replaceLoopTag()
+				else #if character != '{' and character != '}'
+					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
+		new ImgReplacer(this).findImages().replaceImages()
+		this
 	getValueFromScope: (tag=@templaterState.loopOpen.tag,scope=@currentScope) ->
 		parser=@parser(tag)
 		result=parser.get(scope)
@@ -49,66 +80,14 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 			@useTag(tag)
 			value= "undefined"
 		value
-	getFullText:(@tagXml=@tagXml) ->
-		matcher=new XmlMatcher(@content).parse(@tagXml)
-		output= (match[2] for match in matcher.matches) #get only the text
-		DocUtils.convert_spaces(output.join("")) #join it
-	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
-		endTag= text.indexOf('</'+xmlTag+'>',end)
-		if endTag==-1 then throw "can't find endTag #{endTag}"
-		endTag+=('</'+xmlTag+'>').length
-		startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
-		if startTag==-1 then throw "can't find startTag"
-		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
-	findOuterTagsContent: () ->
-		start = @templaterState.calcStartTag @templaterState.loopOpen
-		end= @templaterState.calcEndTag @templaterState.loopClose
-		{content:@content.substr(start,end-start),start,end}
-	findInnerTagsContent: () ->
-		start= @templaterState.calcEndTag @templaterState.loopOpen
-		end= @templaterState.calcStartTag @templaterState.loopClose
-		{content:@content.substr(start,end-start),start,end}
-	forLoop: (innerTagsContent=@findInnerTagsContent().content,outerTagsContent=@findOuterTagsContent().content)->
-		###
-			<w:t>{#forTag} blabla</w:t>
-			Blabla1
-			Blabla2
-			<w:t>{/forTag}</w:t>
-
-			Let innerTagsContent be what is in between the first closing tag and the second opening tag
-			Let outerTagsContent what is in between the first opening tag {# and the last closing tag
-
-			innerTagsContent=</w:t>
-			Blabla1
-			Blabla2
-			<w:t>
-
-			outerTagsContent={#forTag}</w:t>
-			Blabla1
-			Blabla2
-			<w:t>{/forTag}
-
-			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
-			<w:t>subContent subContent subContent</w:t>
-		###
-
-		tagValue=@currentScope[@templaterState.loopOpen.tag]
-		newContent= "";
-		if tagValue?
-			if typeof tagValue == 'object'
-				for scope,i in tagValue
-					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
-					newContent+=subfile.content
-			if tagValue == true
-				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@currentScope})
-				newContent+=subfile.content
-		else
-			# This line is only for having the ability to retrieve the tags from a document
-			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
-
-		@content=@content.replace outerTagsContent, newContent
-		@calcSubXmlTemplater(@content)
-
+	#set the tag as used, so that DocxGen can return the list off all tags
+	useTag: (tag) ->
+		u = @usedTags
+		for s,i in @scopePath
+			u[s]={} unless u[s]?
+			u = u[s]
+		if tag!=""
+			u[tag]= true
 	deleteOuterTags:(outerXmlText,sharp)->
 		#delete the opening tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}
@@ -205,42 +184,6 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		for match, j in @templaterState.matches when j>@templaterState.tagEnd.numXmlTag
 			@templaterState.charactersAdded[j+1]=@templaterState.charactersAdded[j]
 		content
-	###
-	content is the whole content to be tagged
-	scope is the current scope
-	returns the new content of the tagged content###
-	applyTags:()->
-		@templaterState.initialize()
-		for match,numXmlTag in @templaterState.matches
-			innerText= match[2] #text inside the <w:t>
-			for character,numCharacter in innerText
-				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
-				for m,t in @templaterState.matches when t<=numXmlTag
-					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
-				if character=='{'
-					@templaterState.startTag()
-				else if character == '}'
-					@templaterState.endTag()
-					if @templaterState.loopType()=='simple'
-						@replaceSimpleTag()
-					if @templaterState.loopType()=='xml'
-						@replaceSimpleTagRawXml()
-					else if @templaterState.isLoopClosingTag()
-						return @replaceLoopTag()
-				else #if character != '{' and character != '}'
-					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
-		new ImgReplacer(this).findImages().replaceImages()
-		this
-
-	#set the tag as used, so that DocxGen can return the list off all tags
-	useTag: (tag) ->
-		u = @usedTags
-		for s,i in @scopePath
-			u[s]={} unless u[s]?
-			u = u[s]
-		if tag!=""
-			u[tag]= true
-	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	replaceSimpleTag:()->@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
 	replaceSimpleTagRawXml:()->
 		start=@templaterState.calcPosition(@templaterState.tagStart)
@@ -265,5 +208,58 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 		subsubfile=subfile.applyTags()
 		@imageId=subfile.imageId
 		subsubfile
+	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
+		endTag= text.indexOf('</'+xmlTag+'>',end)
+		if endTag==-1 then throw "can't find endTag #{endTag}"
+		endTag+=('</'+xmlTag+'>').length
+		startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
+		if startTag==-1 then throw "can't find startTag"
+		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
+	findOuterTagsContent: () ->
+		start = @templaterState.calcStartTag @templaterState.loopOpen
+		end= @templaterState.calcEndTag @templaterState.loopClose
+		{content:@content.substr(start,end-start),start,end}
+	findInnerTagsContent: () ->
+		start= @templaterState.calcEndTag @templaterState.loopOpen
+		end= @templaterState.calcStartTag @templaterState.loopClose
+		{content:@content.substr(start,end-start),start,end}
+	forLoop: (innerTagsContent=@findInnerTagsContent().content,outerTagsContent=@findOuterTagsContent().content)->
+		###
+			<w:t>{#forTag} blabla</w:t>
+			Blabla1
+			Blabla2
+			<w:t>{/forTag}</w:t>
 
-root.XmlTemplater=XmlTemplater
+			Let innerTagsContent be what is in between the first closing tag and the second opening tag
+			Let outerTagsContent what is in between the first opening tag {# and the last closing tag
+
+			innerTagsContent=</w:t>
+			Blabla1
+			Blabla2
+			<w:t>
+
+			outerTagsContent={#forTag}</w:t>
+			Blabla1
+			Blabla2
+			<w:t>{/forTag}
+
+			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
+			<w:t>subContent subContent subContent</w:t>
+		###
+
+		tagValue=@currentScope[@templaterState.loopOpen.tag]
+		newContent= "";
+		if tagValue?
+			if typeof tagValue == 'object'
+				for scope,i in tagValue
+					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
+					newContent+=subfile.content
+			if tagValue == true
+				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@currentScope})
+				newContent+=subfile.content
+		else
+			# This line is only for having the ability to retrieve the tags from a document
+			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
+
+		@content=@content.replace outerTagsContent, newContent
+		@calcSubXmlTemplater(@content)
