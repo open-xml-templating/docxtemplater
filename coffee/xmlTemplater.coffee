@@ -225,10 +225,8 @@ XmlTemplater =  class XmlTemplater #abstract class !!
 					@templaterState.endTag()
 					if @templaterState.loopType()=='simple'
 						@replaceSimpleTag()
-
 					if @templaterState.loopType()=='xml'
 						@replaceSimpleTagRawXml()
-
 					else if @templaterState.isLoopClosingTag()
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
