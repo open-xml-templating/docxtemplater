@@ -349,31 +349,39 @@ They is a full test suite covering a lot of the functions of DocxGen (48 tests)
 
 Todo:
 
-- [x] QrCode Decoding
-- [x] QrCode Decoding with brackets image.png?color={color}
-- [x] QrCode Decoding callback problems (with {#forloops} :-) 
-- [x] Adapt tests to firefox for xml parsing problem
-- [x] Refactoring of the inner tagging system
-- [x] DocXtemplater is now a child of xmlTemplater
-- [x] Tag searching and replacement
-- [x] Docx Output
-- [x] Docx Input
-- [x] Image searching and remplacement
-- [x] Problems with accents -> No more issue with accents in outputFile
-- [x] Problems with the filenames -> Fixed, using Downloadify.js and method **download**
-- [ ] Incompatibility with IE: Error : SCRIPT5022: End of stream reached (stream length = 14578, asked index = 18431). Corrupted zip ?
-- [x] Refactor: create an `ImgManager class`. Responsibility: retrieve images, changing images, on a file based view
-- [x] Refactor: create a `templaterState class`, which will be a subclass used by XmlTemplater
-- [x] create a nodejs api
-- [ ] Use FileSaver API for output http://eligrey.com/blog/post/saving-generated-files-on-the-client-side
-- [ ] solve problem with special symbols (cyrillic characters)
-- [ ] let the api user insert they own XML
-- [ ] stop overflooding the global scope:
-	- DocUtils
-	- XmlTemplater
-	- jsQrCode
-	- jsZip
-- [ ] output with FileSaver.js to name your file
+ - [x] QrCode Decoding
+ - [x] QrCode Decoding with brackets image.png?color={color}
+ - [x] QrCode Decoding callback problems (with {#forloops} :-) 
+ - [x] Adapt tests to firefox for xml parsing problem
+ - [x] Refactoring of the inner tagging system
+ - [x] DocXtemplater is now a child of xmlTemplater
+ - [x] Tag searching and replacement
+ - [x] Docx Output
+ - [x] Docx Input
+ - [x] Image searching and remplacement
+ - [x] Problems with accents -> No more issue with accents in outputFile
+ - [x] Problems with the filenames -> Fixed, using Downloadify.js and method **download**
+ - [ ] Incompatibility with IE: Error : SCRIPT5022: End of stream reached (stream length = 14578, asked index = 18431). Corrupted zip ?
+ - [x] Refactor: create an `ImgManager class`. Responsibility: retrieve images, changing images, on a file based view
+ - [x] Refactor: create a `templaterState class`, which will be a subclass used by XmlTemplater
+ - [x] create a nodejs api
+ - [ ] Use FileSaver API for output http://eligrey.com/blog/post/saving-generated-files-on-the-client-side
+ - [x] solve problem with special symbols (cyrillic characters)
+ - [x] let the api user insert they own XML
+ - [ ] stop overflooding the global scope:
+ - DocUtils
+ - XmlTemplater
+ - jsQrCode
+ - jsZip
+ - DocXTemplater
+ - ScopeManager
+ - XmlMatcher
+ - [ ] output with FileSaver.js to name your file
+ -  Decouple responsabilities:
+   - [ ] ScopeManager
+   - [ ] XmlTemplaterInterface and XmlTemplater ??
+ - [ ] Remove the node/browser specific code when possible
+ - [ ] When not possible, create a NodeSpecific File or BrowserSpecific File
 - [x] Change signature of loadDoc function
 
 

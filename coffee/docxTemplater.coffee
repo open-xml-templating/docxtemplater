@@ -15,4 +15,3 @@ root.DocXTemplater = class DocXTemplater extends XmlTemplater
 			if t.tag=='<w:tc>'
 				return 'w:tr'
 		return super()
-

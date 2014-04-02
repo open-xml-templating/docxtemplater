@@ -19,7 +19,6 @@ ImgManager = class ImgManager
 	setImage:(fileName,data,options={})->
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
-
 	loadImageRels: () ->
 		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].asText()
 		@xmlDoc= DocUtils.Str2xml content
