@@ -293,7 +293,9 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 
 <section>
 	<h2 id='qrcode'><em>QrCode:</em>Replace a specific image</h2>
-	<p>If you scan the qrcode on the left, you will get the value "Firefox_logo.png" So docxtemplater will load that image and replace the image, keeping the style of the original image (which is really great). You can put tags inside string if you want. For example put "{name}.png" and the image will be loaded depending on the tags.</p>
+	<p>If you scan the qrcode on the left, you will get the value "Firefox_logo.png" So docxtemplater will load that image and replace the image, keeping the style of the original image (which is really great). You can put tags inside string if you want. For example put "{name}.png" and the image will be loaded depending on the tags.
+<b>Important</b>: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
+</p>
 	<table class="demo">
 		<tr>
 			<td><img src="images/qrCode.PNG"></td>

@@ -80,6 +80,7 @@ will result in :
     <script type="text/javascript" src="alignpat.js"></script>
     <script type="text/javascript" src="databr.js"></script>
 
+**Important**: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
 
 ## Browser support ##
 
@@ -122,6 +123,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
         	qrCode:
             	Type: boolean [false]
             	If qrCode is set to true, DocxGen will look at all the images to find a Qr-Code. If the Qr-code matches to a URL, this URL will be loaded by ajax (Be aware that the server you want to access needs to allow your request, or it won't work. http://stackoverflow.com/questions/9310112/why-am-i-seeing-an-origin-is-not-allowed-by-access-control-allow-origin-error )
+            	**Important**: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
 
         localImageCreator
             Type: function(arg,callback) [function that returns an arrow]
