@@ -8,8 +8,8 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
 		@currentClass=root.XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
-		@currentScope=@Tags
 		@templaterState= new TemplaterState
+		@currentScope=@Tags
 	load: (@content) ->
 		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
@@ -22,7 +22,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
 		@parser= if options.parser? then options.parser else root.DocUtils.defaultParser
-		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@currentScope,@parser)
+		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
 		DocxGen:@DocxGen
@@ -63,15 +63,15 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		new ImgReplacer(this).findImages().replaceImages()
 		this
-	replaceSimpleTag:()->@content = @replaceTagByValue(@getValueFromScope(@templaterState.textInsideTag))
+	replaceSimpleTag:()->@content = @replaceTagByValue(@scopeManager.getValueFromScope(@templaterState.textInsideTag))
 	replaceSimpleTagRawXml:()->
 		start=@templaterState.calcPosition(@templaterState.tagStart)
 		end=@templaterState.calcPosition(@templaterState.tagEnd)
 		outerXml = (@getOuterXml @content, start, end, 'w:p').text
-		@content=@content.replace outerXml, @getValueFromScope(@templaterState.tag)
+		@content=@content.replace outerXml, @scopeManager.getValueFromScope(@templaterState.tag)
 	getValueFromScope: (tag) ->
 		parser=@parser(tag)
-		result=parser.get(@currentScope)
+		result=parser.get(@scopeManager.currentScope)
 		if result?
 			if typeof result=='string'
 				@scopeManager.useTag(tag)
@@ -236,7 +236,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-		tagValue=@currentScope[@templaterState.loopOpen.tag]
+		tagValue=@scopeManager.currentScope[@templaterState.loopOpen.tag]
 		newContent= "";
 		if tagValue?
 			if typeof tagValue == 'object'
@@ -244,7 +244,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 					subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:scope})
 					newContent+=subfile.content
 			if tagValue == true
-				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@currentScope})
+				subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:@scopeManager.currentScope})
 				newContent+=subfile.content
 		else
 			# This line is only for having the ability to retrieve the tags from a document

@@ -524,9 +524,9 @@ describe 'Changing the parser', () ->
 	it 'should work with uppercassing', () ->
 		content= """<w:t>Hello {name}</w:t>"""
 		scope= {"name":"Edgar"}
-		xmlTemplater= new DocXTemplater(content,{Tags:scope})
-		xmlTemplater.parser= (tag) ->
+		parser= (tag) ->
 			return {'get':(scope) -> scope[tag].toUpperCase()}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope,parser:parser})
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello EDGAR')
 	it 'should work when setting from the DocXGen interface', () ->
