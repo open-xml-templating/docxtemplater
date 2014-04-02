@@ -98,7 +98,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@templaterState.textInsideTag= "/"+@templaterState.loopOpen.tag
 		@replaceTagByValue("",xmlText)
 	dashLoop: (elementDashLoop,sharp=false) ->
-		{_,start,end}= @findOuterTagsContent()
+		{_,start,end}= @templaterState.findOuterTagsContent(@content)
 		outerXml = @getOuterXml @content, start, end, elementDashLoop
 		for t in [0..@templaterState.matches.length]
 			@templaterState.charactersAdded[t]-=outerXml.startTag
@@ -205,15 +205,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
 		if startTag==-1 then throw "can't find startTag"
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
-	findOuterTagsContent: () ->
-		start = @templaterState.calcStartTag @templaterState.loopOpen
-		end= @templaterState.calcEndTag @templaterState.loopClose
-		{content:@content.substr(start,end-start),start,end}
-	findInnerTagsContent: () ->
-		start= @templaterState.calcEndTag @templaterState.loopOpen
-		end= @templaterState.calcStartTag @templaterState.loopClose
-		{content:@content.substr(start,end-start),start,end}
-	forLoop: (innerTagsContent=@findInnerTagsContent().content,outerTagsContent=@findOuterTagsContent().content)->
+	forLoop: (innerTagsContent=@templaterState.findInnerTagsContent(@content).content,outerTagsContent=@templaterState.findOuterTagsContent(@content).content)->
 		###
 			<w:t>{#forTag} blabla</w:t>
 			Blabla1
@@ -226,13 +218,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			<w:t>subContent subContent subContent</w:t>
 		###
 		tag=@templaterState.loopOpen.tag
-
 		newContent=""
 		@scopeManager.loopOver tag, (subTags) =>
 			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:subTags})
 			newContent+=subfile.content
 		if !@scopeManager.get(tag)?
-			newContent=""
 			# This line is only for having the ability to retrieve the tags from a document
 			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
 		@content=@content.replace outerTagsContent, newContent

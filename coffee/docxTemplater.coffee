@@ -9,7 +9,7 @@ root.DocXTemplater = class DocXTemplater extends XmlTemplater
 		@tagXml='w:t'
 		if typeof content=="string" then @load content else throw "content must be string!"
 	calcIntellegentlyDashElement:()->
-		{content,start,end}= @findOuterTagsContent()
+		{content,start,end}= @templaterState.findOuterTagsContent(@content)
 		scopeContent= xmlUtil.getListXmlElements @content, start,end-start
 		for t in scopeContent
 			if t.tag=='<w:tc>'
