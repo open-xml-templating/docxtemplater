@@ -21,14 +21,14 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
-		@scopeManager=new ScopeManager(@Tags,@scopePath)
+		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags)
 		if options.parser? then @parser=options.parser
 	toJson: () ->
-		Tags:DocUtils.clone @Tags
+		Tags:DocUtils.clone @scopeManager.tags
 		DocxGen:@DocxGen
 		intelligentTagging:DocUtils.clone @intelligentTagging
-		scopePath:DocUtils.clone @scopePath
-		usedTags:@usedTags
+		scopePath:DocUtils.clone @scopeManager.scopePath
+		usedTags:@scopeManager.usedTags
 		localImageCreator:@localImageCreator
 		imageId:@imageId
 		parser:@parser
@@ -75,23 +75,16 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		result=parser.get(scope)
 		if result?
 			if typeof result=='string'
-				@useTag(tag)
+				@scopeManager.useTag(tag)
 				value= result
 				if value.indexOf('{')!=-1 or value.indexOf('}')!=-1
 					throw "You can't enter { or  } inside the content of a variable"
 			else value= result
 		else
-			@useTag(tag)
+			@scopeManager.useTag(tag)
 			value= "undefined"
 		value
 	#set the tag as used, so that DocxGen can return the list off all tags
-	useTag: (tag) ->
-		u = @usedTags
-		for s,i in @scopePath
-			u[s]={} unless u[s]?
-			u = u[s]
-		if tag!=""
-			u[tag]= true
 	deleteOuterTags:(outerXmlText,sharp)->
 		#delete the opening tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}
@@ -244,7 +237,6 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-
 		tagValue=@currentScope[@templaterState.loopOpen.tag]
 		newContent= "";
 		if tagValue?
@@ -258,6 +250,5 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		else
 			# This line is only for having the ability to retrieve the tags from a document
 			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
-
 		@content=@content.replace outerTagsContent, newContent
 		@calcSubXmlTemplater(@content)
