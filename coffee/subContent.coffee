@@ -24,5 +24,7 @@ root.SubContent =  class SubContent
 		@refreshText()
 	replace:(newText)->
 		@fullText=@fullText.substr(0,@start)+newText+@fullText.substr(@end)
+		@end=@start+newText.length
+		@refreshText()
 
 

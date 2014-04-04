@@ -693,3 +693,8 @@ describe 'SubContent', () ->
 		sub.getOuterXml('w:t')
 		expect(sub.text).toBe('<w:t>text</w:t>')
 
+	it 'should replace the inner text', () ->
+		sub.replace('<w:table>Sample Table</w:table>')
+		expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
+
+
