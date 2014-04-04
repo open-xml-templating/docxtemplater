@@ -14,9 +14,10 @@
     "docxtemplater": "./docxgenNode/bin/docxgen.js"
   },
   "keywords": [
-    "DocX",
+    "docx",
     "templates",
-    "Generation"
+    "generation",
+    "microsoft word"
   ],
   "repository": {
     "type": "git",
