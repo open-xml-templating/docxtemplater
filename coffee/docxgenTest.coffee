@@ -679,3 +679,17 @@ describe 'Raw Xml Insertion' , () ->
 			expect(docX['xmlInsertionExample.docx'].zip.files[i].options.dir).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].options.dir)
 			expect(docX['xmlInsertionExample.docx'].zip.files[i].asText().length).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].asText().length)
 			expect(docX['xmlInsertionExample.docx'].zip.files[i].asText()).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].asText())
+
+describe 'SubContent', () ->
+	sub=new SubContent("start<w:t>text</w:t>end")
+	sub.start=10
+	sub.end=14
+	sub.refreshText()
+
+	it "should get the text inside the tags correctly", ()->
+		expect(sub.text).toBe('text')
+
+	it 'should get the text expanded to the outer xml', () ->
+		sub.getOuterXml('w:t')
+		expect(sub.text).toBe('<w:t>text</w:t>')
+

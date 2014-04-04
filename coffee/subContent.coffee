@@ -10,7 +10,7 @@ root.SubContent =  class SubContent
 		@end=0
 	getInnerTag:(templaterState)->
 		@start=templaterState.calcPosition(templaterState.tagStart)
-		@end=templaterState.calcPosition(templaterState.tagEnd)
+		@end=templaterState.calcPosition(templaterState.tagEnd)+1
 		@refreshText()
 	refreshText:()->
 		@text=@fullText.substr(@start,@end-@start)
@@ -22,4 +22,7 @@ root.SubContent =  class SubContent
 		@start = Math.max @fullText.lastIndexOf('<'+xmlTag+'>',@start), @fullText.lastIndexOf('<'+xmlTag+' ',@start)
 		if @start==-1 then throw "can't find startTag"
 		@refreshText()
+	replace:(newText)->
+		@fullText=@fullText.substr(0,@start)+newText+@fullText.substr(@end)
+
 
