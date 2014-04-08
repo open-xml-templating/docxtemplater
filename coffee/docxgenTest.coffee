@@ -5,6 +5,10 @@ root.docX={}
 root.docXData={}
 
 if env=='node'
+	expressions= require('angular-expressions')
+	angularParser= (tag) ->
+		expr=expressions.compile(tag)
+		{get:expr}
 	root.DocxGen= require(__dirname+'/../../js/docxgen.js')
 
 DocUtils.pathConfig=
@@ -13,7 +17,8 @@ DocUtils.pathConfig=
 if env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx']
+fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx"]
+
 
 for name in fileNames
 	root.docX[name]=new DocxGen().loadFromFile(name)
@@ -543,6 +548,14 @@ describe 'Changing the parser', () ->
 		expect(docX['tagExampleWithParser'].getFullText()).toEqual('EDGAR HIPP')
 		expect(docX['tagExampleWithParser'].getFullText("word/header1.xml")).toEqual('EDGAR HIPP0652455478NEW WEBSITE')
 		expect(docX['tagExampleWithParser'].getFullText("word/footer1.xml")).toEqual('EDGARHIPP0652455478')
+
+	it 'should work with angular parser', () ->
+		Tags=
+			person:{first_name:"Hipp",last_name:"Edgar",birth_year:1955,age:59}
+		docX["angularExample.docx"].setTags Tags
+		docX["angularExample.docx"].parser=angularParser
+		docX["angularExample.docx"].applyTags()
+		expect(docX["angularExample.docx"].getFullText()).toEqual('Hipp Edgar 2014')
 
 describe 'Non Utf-8 characters', () ->
 	it 'should read full text correctly', ()->
