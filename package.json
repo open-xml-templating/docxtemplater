@@ -9,7 +9,7 @@
       "email": "hipp.edg@gmail.com"
     }
   ],
-  "main":"js/docxgen.js",
+  "main": "js/docxgen.js",
   "bin": {
     "docxtemplater": "./docxgenNode/bin/docxgen.js"
   },
@@ -24,10 +24,10 @@
     "url": "https://github.com/edi9999/docxtemplater"
   },
   "dependencies": {
-    "xmldom": "0.1.x"
+    "xmldom": "0.1.x",
+    "angular-expressions": "~0.1.0"
   },
   "devDependencies": {
-    "jasmine-node": "1.10.x",
     "gulp": "~3.5.2",
     "gulp-util": "~2.2.14",
     "gulp-coffee": "~1.4.1",
@@ -40,8 +40,8 @@
   "engines": {
     "node": ">=0.10"
   },
-  "scripts":{
-      "test":"jasmine-node test/spec/docxgenTest.spec.js"
+  "scripts": {
+    "test": "jasmine-node test/spec/docxgenTest.spec.js",
+    "preinstall":"npm install -g jasmine-node && npm install -g browserify"
   }
-
 }
