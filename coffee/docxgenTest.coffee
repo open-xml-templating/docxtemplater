@@ -4,11 +4,12 @@ env= if global? then 'node' else 'browser'
 root.docX={}
 root.docXData={}
 
+expressions= require('angular-expressions')
+angularParser= (tag) ->
+	expr=expressions.compile(tag)
+	{get:expr}
+
 if env=='node'
-	expressions= require('angular-expressions')
-	angularParser= (tag) ->
-		expr=expressions.compile(tag)
-		{get:expr}
 	root.DocxGen= require(__dirname+'/../../js/docxgen.js')
 
 DocUtils.pathConfig=
@@ -705,7 +706,6 @@ describe 'SubContent', () ->
 	it 'should get the text expanded to the outer xml', () ->
 		sub.getOuterXml('w:t')
 		expect(sub.text).toBe('<w:t>text</w:t>')
-
 	it 'should replace the inner text', () ->
 		sub.replace('<w:table>Sample Table</w:table>')
 		expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
