@@ -45,7 +45,14 @@ Like Mustache, it has the loopopening {#} and loopclosing {/} brackets
     {#products}{name}, {price} €
     {/products}
 
-    vars={products:[{name:"Windows",price:100},{name:"Mac OSX",price:200},{name:"Ubuntu",price:0}]}
+    vars={
+    		products:
+    			[
+    			 {name:"Windows",price:100},
+    			 {name:"Mac OSX",price:200},
+    			 {name:"Ubuntu",price:0}
+    			]
+    	}
 
 will result in :
 
@@ -54,13 +61,90 @@ will result in :
     Ubuntu, 0€
 
 
+
+## Browser support ##
+
+docxgen.js works with
+
+- Chrome **tested** on version 26
+- Firefox 3+ (**tested** on version 21, but should work with 3+)
+- Safari **not tested**
+
+Internet explorer is not supported -even IE10- (basically because xhr Requests can't be made on binary files)
+
+You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxgenjs/test/SpecRunner.html
+
+Firefox has an other implementation of the xml parser, that's why all tests don't pass now.
+
+
+## Tests
+
+They is a full test suite covering a lot of the functions of DocxGen (48 tests)
+ - in a Browser: It can be launched by opening specRunner.html in the test/ folder 
+ - in node: It can be launched using jasmine-node: `jasmine-node docxgenTest.spec.js` in the test\spec folder
+
+## Node Installation and usage:
+
+They are two ways to install docxtemplater:
+
+- With the global flag, it will release a command line interface that you can use by using `docxtemplater` and that is explained later on.
+- With no global flag, you can require('docxtemplater') and do your own thing
+
+### Node Local example
+
+Installation: `npm install docxtemplater`
+
+	var DocXTemplater= require('docxtemplater');
+
+	//loading the file
+	docxtemplater=new DocXTemplater().loadFromFile("input.docx");
+
+	//setting the tags
+	docxtemplater.setTags({"name":"Edgar"});
+
+	//when finished
+	docxtemplater.finishedCallback=function () {
+  	  docxtemplater.output(true,"output.docx");
+	}
+
+	//apply the tags
+	docxtemplater.applyTags();
+
+You can download [input.docx](https://github.com/edi9999/docxtemplater/blob/master/input.docx?raw=true) and put it in the same folder than your script.
+
+### Node Global Installation
+
+The node package can be installed globally, so that the docxgen command becomes available to the path and is accessible from the terminal.
+
+`npm install docxtemplater -g`
+
+You're finished.
+
+### Node Global Usage
+
+	`docxtemplater <configFile>`
+
+configFile Structure: json Structure
+
+required Properties:
+	"config.docxFile":"tagExample.docx",
+	"config.outputFile":"output.docx",
+	"config.baseNodePath":"../examples/",
+	"config.qrcode":false,
+
+	config.docxFile: The input file in docx format
+	config.outputFile: The outputfile of the document
+	config.qrcode:true if the images should be scanned to be replaced, false otherwise
+
+The rest of the json is used for the scope variables (eg, those not starting with config.)
+
 ## Dependencies ##
 
 1. **docxgen.js** uses [jszip.js](http://stuk.github.io/jszip/) to zip and unzip the docx files
 
 2. Optionally, if you want to be able to name the output files, you can use **Downloadify.js**, which is required to use method download. Be informed that it uses flash, this is why the method is not recommended. This method is howewer useful because a lot of browsers are limited for the download size with the Data-URI method. **Update**: I will probably implement in the future a way to use the FileSaver API, with [FileSaverJS](http://eligrey.com/demos/FileSaver.js/)
 
-3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color} will take the *Tags[color]* variable to make a dynamic URL. For this too work, you will need [jsqrcode](http://github.com/edi9999/jsqrcode "jsqrcode repositoty forked") and include the following files, in this order:
+3. Optionnaly, if you want to replace images by images situated at a particular URL, you can use QR codes. For example If you store an image at http://website.com/image.png , you should encode the URL in QR-Code format. ![Qr Code Sample](http://qrfree.kaywa.com/?l=1&s=8&d=http%3A%2F%2Fwebsite.com%2Fimage.png "Qrcode Sample to http://website.com/image.png"). You can even use bracket tags in images. http://website.com/image.png?color={color} will take the *Tags[color]* variable to make a dynamic URL. For this too work, you will need [jsqrcode](http://github.com/edi9999/jsqrcode "jsqrcode repositoty forked") and include the following files, in this order (only for browser support, node support already comes out of the box):
 
     <script type="text/javascript" src="grid.js"></script>
     <script type="text/javascript" src="version.js"></script>
@@ -79,22 +163,6 @@ will result in :
     <script type="text/javascript" src="findpat.js"></script>
     <script type="text/javascript" src="alignpat.js"></script>
     <script type="text/javascript" src="databr.js"></script>
-
-**Important**: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
-
-## Browser support ##
-
-docxgen.js works with
-
-- Chrome **tested** on version 26
-- Firefox 3+ (**tested** on version 21, but should work with 3+)
-- Safari **not tested**
-
-Internet explorer is not supported -even IE10- (basically because xhr Requests can't be made on binary files)
-
-You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxgenjs/test/SpecRunner.html
-
-Firefox has an other implementation of the xml parser, that's why all tests don't pass now.
 
 ## Usage ##
 
@@ -286,66 +354,7 @@ Firefox has an other implementation of the xml parser, that's why all tests don'
             }]
 
 
-## Node Installation and usage:
-
-They are two ways to install docxtemplater:
-
-- With the global flag, it will release a command line interface that you can use by using `docxtemplater` and that is explained later on.
-- With no global flag, you can require('docxtemplater') and do your own thing
-
-### Node Local example
-
-Installation: `npm install docxtemplater`
-
-	var DocXTemplater= require('docxtemplater');
-
-	//loading the file
-	docxtemplater=new DocXTemplater().loadFromFile("input.docx");
-
-	//setting the tags
-	docxtemplater.setTags({"name":"Edgar"});
-
-	//when finished
-	docxtemplater.finishedCallback=function () {
-  	  docxtemplater.output(true,"output.docx");
-	}
-
-	//apply the tags
-	docxtemplater.applyTags();
-
-
-you can download [input.docx](https://github.com/edi9999/docxtemplater/blob/master/input.docx?raw=true) and put it in the same folder than your script.
-
-
-### Node Global Installation
-
-The node package is meant to be installed globally, so that the docxgen command becomes available to the path and is accessible from the terminal.
-
-`npm install docxtemplater -g`
-
-You're finished.
-
-### Node Global Usage
-
-	`docxtemplater <configFile>`
-
-configFile Structure: json Structure
-
-required Properties:
-	"config.docxFile":"tagExample.docx",
-	"config.outputFile":"output.docx",
-	"config.baseNodePath":"../examples/",
-	"config.qrcode":false,
-
-	config.docxFile: The input file in docx format
-	config.outputFile: The outputfile of the document
-	config.qrcode:true if the images should be scanned to be replaced, false otherwise
-
-## Tests
-
-They is a full test suite covering a lot of the functions of DocxGen (48 tests)
- - in a Browser: It can be launched by opening specRunner.html in the test/ folder 
- - in node: It can be launched using jasmine-node: `jasmine-node docxgenTest.spec.js` in the test\spec folder
+**Important**: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
 
 ## Known issues
 
