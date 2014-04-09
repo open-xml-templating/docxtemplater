@@ -12,6 +12,7 @@ Including:
 
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#variables">Replace Variables</a><br>
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#formating">Formating</a><br>
+- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#parsing">Angular Parsing</a><br>
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#loops">Loops</a><br>
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#tables">Loops and tables</a><br>
 - <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists">Lists</a><br>
@@ -60,6 +61,36 @@ will result in :
     Mac OSX, 200 €
     Ubuntu, 0€
 
+## Angular.js like parsing
+
+	This year is {person.age+person.birthyear}
+
+	vars={person:{age:50,birthyear:1964}}
+
+will result in:
+
+	This year is 2014
+
+To enable this, you need to specify a custom parser. See [Angular Parsing](http://javascript-ninja.fr/docxgenjs/examples/demo.html#parsing)
+You need to create a parser function:
+
+docxgen comes shipped with this parser:
+
+	parser=function(expression)
+	{
+		return {get:function(scope){return scope[expression]}}
+	}
+
+the angular-parser is the following:
+	
+	expressions= require('angular-expressions')
+	angularParser= (tag) ->
+		expr=expressions.compile(tag)
+		{get:expr}
+
+The require() works in the browser if you include vendor/angular-parser-browser.js
+
+you can set the parser in the constructor of DocxGen, or in the loadFromFile method.
 
 
 ## Browser support ##
@@ -138,7 +169,7 @@ required Properties:
 
 The rest of the json is used for the scope variables (eg, those not starting with config.)
 
-## Dependencies ##
+## Dependencies
 
 1. **docxgen.js** uses [jszip.js](http://stuk.github.io/jszip/) to zip and unzip the docx files
 
@@ -183,6 +214,11 @@ The rest of the json is used for the scope variables (eg, those not starting wit
             Object containing for each tag_name, the replacement for this tag. For example, if you want to replace firstName by David, your Object will be: {"firstName":"David"}
 
         options: object
+
+			parser:
+				Type: function
+				A custom parser to use. See angular.js like parsing
+
         	intelligentTagging:
             	Type: boolean [false]
             	If intelligent Tagging is not set to true, when using recursive tags ({#tag} and {/tag}), the system will copy paste what is between the start tag and the endtag, this could basically corrupt the files if recursive tags are used inside tables.
