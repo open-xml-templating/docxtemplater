@@ -47,8 +47,13 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			innerText= match[2] #text inside the <w:t>
 			for character,numCharacter in innerText
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
-				for m,t in @templaterState.matches when t<=numXmlTag
-					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
+				for m,t in @templaterState.matches when t==numXmlTag
+					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
+						console.log m[0][0]+" != "+@content[m.offset+@templaterState.charactersAdded[t]]
+						console.log t
+						console.log @content.substr(m.offset+@templaterState.charactersAdded[t]-5,10)
+						debugger
+						throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
 					@templaterState.startTag()
 				else if character == '}'
@@ -57,6 +62,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 						@replaceSimpleTag()
 					if @templaterState.loopType()=='xml'
 						@replaceSimpleTagRawXml()
+						break
 					else if @templaterState.isLoopClosingTag()
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
@@ -66,7 +72,20 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 	replaceSimpleTag:()->@content = @replaceTagByValue(@scopeManager.getValueFromScope(@templaterState.textInsideTag))
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
-		@content= subContent.replace(@scopeManager.getValueFromScope(@templaterState.tag)).fullText
+		newText=@scopeManager.getValueFromScope(@templaterState.tag)
+		console.log newText
+		console.log subContent.text
+		console.log @templaterState.tagStart.numXmlTag
+		console.log @templaterState.tagEnd.numXmlTag
+		@templaterState.charactersAdded[@templaterState.tagStart.numXmlTag]+=newText.length-subContent.text.length
+		console.log newText.length
+		console.log "-"+subContent.text.length
+		console.log @templaterState.charactersAdded[@templaterState.tagStart.numXmlTag]
+		for k in [(@templaterState.tagStart.numXmlTag)..@templaterState.matches.length]
+			@templaterState.charactersAdded[k+1]=@templaterState.charactersAdded[k]
+			console.log k+1
+			console.log @templaterState.charactersAdded[k+1]
+		@content= subContent.replace(newText).fullText
 	getValueFromScope: (tag) ->
 		parser=@parser(tag)
 		result=parser.get(@scopeManager.currentScope)
