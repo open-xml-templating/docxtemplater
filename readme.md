@@ -434,5 +434,3 @@ Todo:
 
 jszip-load.js, Ligne 82 Caractère 13 -> Getting binary data with IE 7+ doesn't seem to work, two ways:
 * [Using VBscript](http://emilsblog.lerch.org/2009/07/javascript-hacks-using-xhr-to-load.html)
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/edi9999/docxtemplater/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
