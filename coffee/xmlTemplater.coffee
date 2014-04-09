@@ -47,8 +47,9 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			innerText= match[2] #text inside the <w:t>
 			for character,numCharacter in innerText
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
-				for m,t in @templaterState.matches when t<=numXmlTag
-					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0] then throw "no < at the beginning of #{m[0][0]} (2)"
+				for m,t in @templaterState.matches when t==numXmlTag
+					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
+						throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
 					@templaterState.startTag()
 				else if character == '}'
@@ -57,6 +58,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 						@replaceSimpleTag()
 					if @templaterState.loopType()=='xml'
 						@replaceSimpleTagRawXml()
+						break
 					else if @templaterState.isLoopClosingTag()
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
@@ -66,7 +68,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 	replaceSimpleTag:()->@content = @replaceTagByValue(@scopeManager.getValueFromScope(@templaterState.textInsideTag))
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
-		@content= subContent.replace(@scopeManager.getValueFromScope(@templaterState.tag)).fullText
+		newText=@scopeManager.getValueFromScope(@templaterState.tag)
+		@templaterState.charactersAdded[@templaterState.tagStart.numXmlTag]+=newText.length-subContent.text.length
+		for k in [(@templaterState.tagStart.numXmlTag)..@templaterState.matches.length]
+			@templaterState.charactersAdded[k+1]=@templaterState.charactersAdded[k]
+		@content= subContent.replace(newText).fullText
 	getValueFromScope: (tag) ->
 		parser=@parser(tag)
 		result=parser.get(@scopeManager.currentScope)

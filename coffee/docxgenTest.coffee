@@ -18,7 +18,7 @@ DocUtils.pathConfig=
 if env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx"]
+fileNames=["imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx"]
 
 
 for name in fileNames
@@ -694,6 +694,28 @@ describe 'Raw Xml Insertion' , () ->
 			expect(docX['xmlInsertionExample.docx'].zip.files[i].asText().length).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].asText().length)
 			expect(docX['xmlInsertionExample.docx'].zip.files[i].asText()).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].asText())
 
+
+	it 'should work even when tags are after the xml', () ->
+		docX["xmlInsertionComplexExample.docx"].setTags(
+			{
+			"complexXml":"<w:p><w:r><w:t>Hello</w:t></w:r></w:p>",
+			"name":"Hipp",
+			"first_name":"Edgar",
+			"products":[
+				{"year":1550,"name":"Moto","company":"Fein"},
+				{"year":1987,"name":"Water","company":"Test"},
+				{"year":2010,"name":"Bread","company":"Yu"}
+			]
+			})
+		docX["xmlInsertionComplexExample.docx"].applyTags()
+		for i of docX['xmlInsertionComplexExample.docx'].zip.files
+			#Everything but the date should be different
+			expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].options.date).not.toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].options.date)
+			expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].name).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].name)
+			expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].options.dir).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].options.dir)
+			expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].asText().length).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].asText().length)
+			expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].asText()).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].asText())
+
 describe 'SubContent', () ->
 	sub=new SubContent("start<w:t>text</w:t>end")
 	sub.start=10
@@ -710,3 +732,5 @@ describe 'SubContent', () ->
 		sub.replace('<w:table>Sample Table</w:table>')
 		expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
 		expect(sub.text).toBe('<w:table>Sample Table</w:table>')
+
+
