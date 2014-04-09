@@ -23,7 +23,7 @@
 	<script type="text/javascript" src="../vendor/jsqrcode/findpat.js"></script>
 	<script type="text/javascript" src="../vendor/jsqrcode/alignpat.js"></script>
 	<script type="text/javascript" src="../vendor/jsqrcode/databr.js"></script>
-	<script type="text/javascript" src="../vendor/angular-parse.js"></script>
+	<script type="text/javascript" src="../vendor/angular-parse-browser.js"></script>
 
 	<!-- Mandatory js for the library to work -->
 	<script type="text/javascript" src="../vendor/base64.js"></script>
@@ -44,6 +44,7 @@
 
 <a href="#variables">Replace Variables</a><br>
 <a href="#formating">Formating</a><br>
+<a href="#parsing">Parsing</a><br>
 <a href="#loops">Loops</a><br>
 <a href="#tables">Loops and tables</a><br>
 <a href="#lists">Lists</a><br>
@@ -124,6 +125,47 @@ new DocxGen().loadFromFile("tagFormating.docx",{async:true}).success(function(do
 </table>
 </section>
 
+<section>
+<h2 id='parsing'><em>Parsing</em> we enable you to use Angular Like Syntax</h2>
+<p>To enable this in the browser, you need to include vendor/angular-parser-browser.js</p>
+<table class="demo">
+<tr>
+	<td>
+		<img src="images/angularTagging.png" alt="">
+	</td>
+	<td>
+	<div>=> <br>Results in:</div>
+	</td>
+	<td>
+		<img src="images/angularTaggingResult.png" alt="">
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+		<h3>Code Used:</h3>
+		<textarea raw='angularExample.docx'>
+expressions= require('angular-expressions')
+angularParser= function(tag){ 
+	expr=expressions.compile(tag);
+	return {get:expr};
+}
+
+new DocxGen().loadFromFile("angularExample.docx",{async:true,parser:angularParser}).success(function(doc){
+	doc.setTags({
+		person:{
+			first_name:"Hipp",
+			last_name:"Edgar",
+			birth_year:1955,
+			age:59
+		}}); //set the templateVariables
+	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.output() //Output the document using Data-URI
+});
+		</textarea>
+	</td>
+</tr>
+</table>
+</section>
 <section>
 <h2 id='loops'><em>Loops</em>: You can use the mustache like syntax: {#tagName} {/tagname} to loop inside an array</h2>
 
