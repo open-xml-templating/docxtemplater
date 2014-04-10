@@ -69,9 +69,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
-		@templaterState.charactersAdded[@templaterState.tagStart.numXmlTag]+=newText.length-subContent.text.length
-		for k in [(@templaterState.tagStart.numXmlTag)..@templaterState.matches.length]
-			@templaterState.charactersAdded[k+1]=@templaterState.charactersAdded[k]
+		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText,subContent.text)
 		@content= subContent.replace(newText).fullText
 	getValueFromScope: (tag) ->
 		parser=@parser(tag)

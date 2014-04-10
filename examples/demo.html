@@ -284,7 +284,7 @@ var imgData=docXData["image.png"];
 new DocxGen().loadFromFile("imageExample.docx",{async:true}).success(function(doc){
 	imageList=doc.getImageList() //Get the array of images in the document
 	console.log(imageList); 
-	doc.setImage(imageList[0].path,imgData,{binary:true,base64:false}); //change the first image to imgData
+	doc.setImage(imageList[0].path,imgData); //change the first image to imgData
 	doc.output() 
 });
 				</textarea>

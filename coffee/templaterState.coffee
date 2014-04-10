@@ -4,6 +4,10 @@ env= if global? then 'node' else 'browser'
 #This class responsibility is to store an xmlTemplater's state
 
 root.TemplaterState=  class TemplaterState
+	moveCharacters:(numXmlTag,newText,oldText)->
+		@charactersAdded[numXmlTag]+=newText.length-oldText.length
+		for k in [numXmlTag..@matches.length]
+			@charactersAdded[k+1]=@charactersAdded[k]
 	calcStartTag: (tag) -> @calcPosition(tag.start)
 	calcEndTag: (tag)-> @calcPosition(tag.end)+1
 	calcPosition:(bracket)->
