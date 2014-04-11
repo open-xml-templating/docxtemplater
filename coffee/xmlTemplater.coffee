@@ -48,7 +48,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			for character,numCharacter in innerText
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
 				for m,t in @templaterState.matches when t==numXmlTag
-					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[1][0]
+					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
 						throw "no < at the beginning of #{m[0][0]} (2)"
 				if character=='{'
 					@templaterState.startTag()
@@ -173,9 +173,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				insideValue:@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].replace regexLeft, '$1'
 				spacePreserve:true
 				xmlTagNumber:k
-
 			content= @replaceXmlTag(content, options)
-
 		content
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table

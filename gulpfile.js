@@ -6,10 +6,10 @@ var concat= require('gulp-concat');
 var uglify= require('gulp-uglify');
 var spawn = require('child_process').spawn;
 var livereload = require('gulp-livereload');
-var server = livereload();
+var server=null;
 
 
-var config={uglify:true}
+var config={uglify:false}
 
 var paths = {
 	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
@@ -41,18 +41,40 @@ gulp.task('coffee', function(cb) {
 	a= gulp.src(paths.coffee)
 		.pipe(coffee({map:true}))
 
+	fileName='docxgen.js'
 	if (config.uglify)
-		a=a.pipe(uglify())
+		{
+			fileName='docxgen.min.js'
+			a=a.pipe(uglify())
+		}
 
 	a=a
-		.pipe(concat('docxgen.js'))
+		.pipe(concat('docxgen.min.js'))
 		.pipe(gulp.dest('./js/'));
 
 	return a;
 	cb(err)
 });
 
+
+gulp.task('allCoffee', function(cb) {
+	a= gulp.src(paths.coffee)
+		.pipe(coffee({map:true}))
+		.pipe(uglify())
+		.pipe(concat('docxgen.min.js'))
+		.pipe(gulp.dest('./js/'));
+
+	b= gulp.src(paths.coffee)
+		.pipe(coffee({map:true}))
+		.pipe(concat('docxgen.js'))
+		.pipe(gulp.dest('./js/'));
+
+	return a
+});
+
 gulp.task('livereload',['coffee'],function(cb) {
+	if (server==null)
+		server=livereload();
 	server.changed('SpecRunner.html');
 	cb()
 })
