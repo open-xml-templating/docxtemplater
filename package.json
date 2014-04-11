@@ -41,6 +41,6 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "test": "jasmine-node test/spec/docxgenTest.spec.js",
+    "test": "jasmine-node test/spec/docxgenTest.spec.js"
   }
 }
