@@ -121,7 +121,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		noStartTag= if options.noStartTag? then options.noStartTag else false
 		replacer=@xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber)
 		@templaterState.matches[xmlTagNumber][2]=insideValue #so that the templaterState.matches are still correct
-		startTag= @templaterState.matches[xmlTagNumber].offset+@templaterState.charactersAdded[xmlTagNumber]  #where the open tag starts: <w:t>
+		startTag= @templaterState.calcXmlTagPosition(xmlTagNumber)#where the open tag starts: <w:t>
 		#calculate the replacer according to the params
 		@templaterState.moveCharacters(xmlTagNumber+1,replacer,@templaterState.matches[xmlTagNumber][0])
 		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw "content #{@templaterState.matches[xmlTagNumber][0]} not found in content"

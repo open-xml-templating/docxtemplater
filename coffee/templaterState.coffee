@@ -10,6 +10,8 @@ root.TemplaterState=  class TemplaterState
 		for k in [numXmlTag..@matches.length]
 			@charactersAdded[k]+=newTextLength-oldTextLength
 	calcStartTag: (tag) -> @calcPosition(tag.start)
+	calcXmlTagPosition:(xmlTagNumber)->
+		@matches[xmlTagNumber].offset+@charactersAdded[xmlTagNumber]
 	calcEndTag: (tag)-> @calcPosition(tag.end)+1
 	calcPosition:(bracket)->
 		@matches[bracket.numXmlTag].offset+@matches[bracket.numXmlTag][1].length+@charactersAdded[bracket.numXmlTag]+bracket.numCharacter

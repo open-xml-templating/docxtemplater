@@ -42,6 +42,5 @@
   },
   "scripts": {
     "test": "jasmine-node test/spec/docxgenTest.spec.js",
-    "preinstall":"npm install -g jasmine-node && npm install -g browserify"
   }
 }

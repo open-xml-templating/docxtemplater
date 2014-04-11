@@ -12,8 +12,8 @@ var server = livereload();
 var config={uglify:true}
 
 var paths = {
-	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'], // compile individually into dest, maintaining folder structure
-	coffeeTest: ['coffee/docxgenTest.coffee'], // compile individually into dest, maintaining folder structure
+	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
+	coffeeTest: ['coffee/docxgenTest.coffee'],
 	testDirectory:__dirname+'\\test\\spec'
 };
 
@@ -23,7 +23,6 @@ gulp.task('watch', function () {
 });
 
 gulp.task('coffeeTest', function() {
-	// Minify and copy all JavaScript (except vendor scripts)
 	a=gulp.src(paths.coffeeTest)
 		.pipe(coffee({map:true}))
 	
@@ -39,7 +38,6 @@ gulp.task('coffeeTest', function() {
 });
 
 gulp.task('coffee', function(cb) {
-	// Minify and copy all JavaScript (except vendor scripts)
 	a= gulp.src(paths.coffee)
 		.pipe(coffee({map:true}))
 
