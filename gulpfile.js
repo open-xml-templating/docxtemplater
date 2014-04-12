@@ -14,7 +14,7 @@ var config={uglify:false}
 var paths = {
 	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
 	coffeeTest: ['coffee/docxgenTest.coffee'],
-	testDirectory:__dirname+'\\test\\spec'
+	testDirectory:__dirname+'/test/spec'
 };
 
 gulp.task('watch', function () {
@@ -49,7 +49,7 @@ gulp.task('coffee', function(cb) {
 		}
 
 	a=a
-		.pipe(concat('docxgen.min.js'))
+		.pipe(concat(fileName))
 		.pipe(gulp.dest('./js/'));
 
 	return a;
@@ -81,7 +81,7 @@ gulp.task('livereload',['coffee'],function(cb) {
 
 gulp.task('jasmine', ['coffee'], function(cb) {
 	time=new Date();
-	var child = spawn("cmd", ["/c","jasmine-node","docxgenTest.spec.js"], {cwd:paths.testDirectory});
+	var child = spawn( "jasmine-node",["docxgenTest.spec.js"], {cwd:paths.testDirectory});
 	stdout = '',
 	stderr = '';
 	totalData=""
@@ -109,14 +109,6 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 
 			if (failures==0)
 			{
-				try
-				{
-				var subChild = spawn("cmd", ["/c","cmdmp3.exe","success.mp3"], {cwd:process.cwd()});
-				}
-				catch (exception)
-				{
-					console.log("couldn't play success sound")
-				}
 				gutil.log(gutil.colors.green(fullText));
 			}
 			else
