@@ -33,10 +33,6 @@ if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null |
   debug= DocUtils.config["debug"];
   debugBool= DocUtils.config["debugBool"];
 
-
-
-
-
   if(docxFileName=='--help' || docxFileName=='-h' || docxFileName==null || docxFileName==undefined || jsonFileName==null || jsonFileName==undefined)
   {
 	showHelp();

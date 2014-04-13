@@ -10,7 +10,8 @@ angularParser= (tag) ->
 	{get:expr}
 
 if env=='node'
-	root.DocxGen= require(__dirname+'/../../js/docxgen.js')
+	path=require('path')
+	root.DocxGen= require(path.join(__dirname,'/../../js/docxgen.js'))
 
 DocUtils.pathConfig=
 	"browser":'../examples/'

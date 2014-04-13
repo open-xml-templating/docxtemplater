@@ -1,5 +1,5 @@
 (function() {
-  var angularParser, env, expressions, fileNames, name, root, _i, _len;
+  var angularParser, env, expressions, fileNames, name, path, root, _i, _len;
 
   root = typeof global !== "undefined" && global !== null ? global : window;
 
@@ -20,7 +20,8 @@
   };
 
   if (env === 'node') {
-    root.DocxGen = require(__dirname + '/../../js/docxgen.js');
+    path = require('path');
+    root.DocxGen = require(path.join(__dirname, '/../../js/docxgen.js'));
   }
 
   DocUtils.pathConfig = {
