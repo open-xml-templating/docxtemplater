@@ -69,8 +69,8 @@ if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null |
     docX[docxFileName].setTags(jsonInput)
     docX[docxFileName].qrCode=DocUtils.config["qrcode"];
     docX[docxFileName].finishedCallback=function () {
-      this.output(true,outputFile)
-      console.log('outputed')
+      this.output({download:true,name:outputFile});
+      console.log('outputed');
     }
     docX[docxFileName].applyTags()
   }
