@@ -63,7 +63,8 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 						return @replaceLoopTag()
 				else #if character != '{' and character != '}'
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
-		new ImgReplacer(this).findImages().replaceImages()
+		if @DocxGen? and @DocxGen.qrCode
+				new ImgReplacer(this).findImages().replaceImages()
 		this
 	replaceSimpleTag:()->@content = @replaceTagByValue(@scopeManager.getValueFromScope(@templaterState.textInsideTag))
 	replaceSimpleTagRawXml:()->
