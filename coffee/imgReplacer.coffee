@@ -28,41 +28,40 @@ ImgReplacer = class ImgReplacer
 		rId = tagrId.getAttribute('r:embed')
 		oldFile= @xmlTemplater.DocxGen.imgManager.getImageByRid(rId)
 		if oldFile!=null
-			tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-			if tag==undefined
-				tag=xmlImg.getElementsByTagName('wp:docPr')[0]
-			if tag!=undefined
-				if tag.getAttribute("name").substr(0,6)!="Copie_" #if image is not already a replacement
-					imgName= ("Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
-					@xmlTemplater.DocxGen.qrCodeNumCallBack++
-					@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
-					newId= @xmlTemplater.DocxGen.imgManager.addImageRels(imgName,"")
-					@xmlTemplater.imageId++
-					@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",oldFile.data)
-					tag.setAttribute('name',"#{imgName}")
-					tagrId.setAttribute('r:embed',"rId#{newId}")
-					imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-					if imageTag==undefined
-						imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
-					replacement= DocUtils.xml2Str imageTag
-					@xmlTemplater.content= @xmlTemplater.content.replace(match[0], replacement)
-					@xmlTemplater.numQrCode++
-					if env=='browser'
-						@qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-						@qr[u].decode(@imageSetter)
+			if env=='browser' then tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
+			if env=='node' then tag= xmlImg.getElementsByTagName("wp:docPr")[0]
+			if tag==undefined then throw 'tag undefine'
+			if tag.getAttribute("name").substr(0,6)!="Copie_" #if image is not already a replacement
+				imgName= ("Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
+				@xmlTemplater.DocxGen.qrCodeNumCallBack++
+				@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
+				newId= @xmlTemplater.DocxGen.imgManager.addImageRels(imgName,"")
+				@xmlTemplater.imageId++
+				@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",oldFile.data)
+				tag.setAttribute('name',"#{imgName}")
+				tagrId.setAttribute('r:embed',"rId#{newId}")
+				imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
+				if imageTag==undefined
+					imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
+				replacement= DocUtils.xml2Str imageTag
+				@xmlTemplater.content= @xmlTemplater.content.replace(match[0], replacement)
+				@xmlTemplater.numQrCode++
+				if env=='browser'
+					@qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+					@qr[u].decode(@imageSetter)
+				else
+					if /\.png$/.test(oldFile.name)
+						do (imgName) =>
+							base64= JSZip.base64.encode oldFile.asBinary()
+							binaryData = new Buffer(base64, 'base64')
+							png= new PNG(binaryData)
+							finished= (a) =>
+								png.decoded= a
+								@qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
+								@qr[u].decode(@imageSetter)
+							dat= png.decode(finished)
 					else
-						if /\.png$/.test(oldFile.name)
-							do (imgName) =>
-								base64= JSZip.base64.encode oldFile.asBinary()
-								binaryData = new Buffer(base64, 'base64')
-								png= new PNG(binaryData)
-								finished= (a) =>
-									png.decoded= a
-									@qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
-									@qr[u].decode(@imageSetter)
-								dat= png.decode(finished)
-						else
-							#remove the image from the list of images to be tested
-							@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+						#remove the image from the list of images to be tested
+						@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
 
 root.ImgReplacer=ImgReplacer

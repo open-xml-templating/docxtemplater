@@ -445,7 +445,7 @@ describe 'qr code testing', () ->
 		docX['imageExample.docx'].applyTags({},endcallback)
 		waitsFor () -> docX['imageExample.docx'].ready?
 		runs () ->
-			docX['imageExample.docx'].output()
+			#docX['imageExample.docx'].output()
 
 	it 'should work with local QRCODE with {tags}', () ->
 		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})

@@ -998,9 +998,7 @@
       waitsFor(function() {
         return docX['imageExample.docx'].ready != null;
       });
-      return runs(function() {
-        return docX['imageExample.docx'].output();
-      });
+      return runs(function() {});
     });
     it('should work with local QRCODE with {tags}', function() {
       var endcallback;
