@@ -481,13 +481,20 @@ describe 'qr code testing', () ->
 		waitsFor () -> docX['qrCodeExample.docx'].ready?
 
 		runs () ->
-
 			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
 			for i of docX['qrCodeExample.docx'].zip.files
 				#Everything but the date should be different
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date)
 				expect(docX['qrCodeExample.docx'].zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name)
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir)
+
+	it 'shouldn\'t bug if some images don\'t contain a qrcode',()->
+		docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		endcallback= () -> 1
+		docX['imageExample.docx'].applyTags({},endcallback)
+		waitsFor () -> docX['imageExample.docx'].ready?
+		runs () ->
+			docX['imageExample.docx'].output()
 
 	it 'should work with local QRCODE with {tags}', () ->
 		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})

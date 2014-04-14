@@ -1051,6 +1051,23 @@
         return _results;
       });
     });
+    it('shouldn\'t bug if some images don\'t contain a qrcode', function() {
+      var endcallback;
+      docX['imageExample.docx'] = new DocxGen(docX['imageExample.docx'].loadedContent, {}, {
+        intelligentTagging: false,
+        qrCode: true
+      });
+      endcallback = function() {
+        return 1;
+      };
+      docX['imageExample.docx'].applyTags({}, endcallback);
+      waitsFor(function() {
+        return docX['imageExample.docx'].ready != null;
+      });
+      return runs(function() {
+        return docX['imageExample.docx'].output();
+      });
+    });
     it('should work with local QRCODE with {tags}', function() {
       var endcallback;
       docX['qrCodeTaggingExample.docx'] = new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent, {
