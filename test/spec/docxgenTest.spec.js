@@ -959,71 +959,56 @@
     });
   });
 
-  describe("loop forTagging images", function() {
-    return it('should work with a simple loop file', function() {
-      var contentTypeData, contentTypeXml, contentTypes, i, relationships, relsData, relsXml, tempVars, _base;
-      docX['tagLoopExample.docx'] = new DocxGen(docX['tagLoopExample.docx'].loadedContent);
-      tempVars = {
-        "nom": "Hipp",
-        "prenom": "Edgar",
-        "telephone": "0652455478",
-        "description": "New Website",
-        "offre": [
-          {
-            "titre": "titre1",
-            "prix": "1250",
-            "img": [
-              {
-                data: docXData['Volkswagen_logo.png'],
-                name: "vw_logo.png"
-              }
-            ]
-          }, {
-            "titre": "titre2",
-            "prix": "2000",
-            "img": [
-              {
-                data: docXData['BMW_logo.png'],
-                name: "bmw_logo.png"
-              }
-            ]
-          }, {
-            "titre": "titre3",
-            "prix": "1400",
-            "img": [
-              {
-                data: docXData['Firefox_logo.png'],
-                name: "firefox_logo.png"
-              }
-            ]
-          }
-        ]
-      };
-      docX['tagLoopExample.docx'].setTags(tempVars);
-      docX['tagLoopExample.docx'].applyTags();
-      for (i in docX['tagLoopExample.docx'].zip.files) {
-        expect(docX['tagLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.date);
-        expect(docX['tagLoopExample.docx'].zip.files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].name);
-        expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir);
-        if (i !== 'word/_rels/document.xml.rels' && i !== '[Content_Types].xml') {
-          if (env === 'browser' || i !== "word/document.xml") {
-            if (typeof (_base = docX['tagLoopExample.docx'].zip.files[i].asText()) === "function" ? _base(0) : void 0) {
-              expect(docX['tagLoopExample.docx'].zip.files[i].asText().length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].asText().length);
-            }
-            expect(docX['tagLoopExample.docx'].zip.files[i].asText()).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].asText());
-          }
-        }
-      }
-      relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].asText();
-      contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].asText();
-      relsXml = DocUtils.Str2xml(relsData);
-      contentTypeXml = DocUtils.Str2xml(contentTypeData);
-      relationships = relsXml.getElementsByTagName('Relationship');
-      contentTypes = contentTypeXml.getElementsByTagName('Default');
-      expect(relationships.length).toEqual(16);
-      return expect(contentTypes.length).toBe(3);
-    });
-  });
+
+  /*
+  describe "loop forTagging images", () ->
+  	it 'should work with a simple loop file', () ->
+  		docX['tagLoopExample.docx']= new DocxGen(docX['tagLoopExample.docx'].loadedContent)
+  		tempVars=
+  			"nom":"Hipp"
+  			"prenom":"Edgar"
+  			"telephone":"0652455478"
+  			"description":"New Website"
+  			"offre":[
+  				"titre":"titre1"
+  				"prix":"1250"
+  				"img":[{data:docXData['Volkswagen_logo.png'],name:"vw_logo.png"}]
+  			,
+  				"titre":"titre2"
+  				"prix":"2000"
+  				"img":[{data:docXData['BMW_logo.png'],name:"bmw_logo.png"}]
+  			,
+  				"titre":"titre3"
+  				"prix":"1400"
+  				"img":[{data:docXData['Firefox_logo.png'],name:"firefox_logo.png"}]
+  			]
+  		docX['tagLoopExample.docx'].setTags(tempVars)
+  		docX['tagLoopExample.docx'].applyTags()
+  
+  		for i of docX['tagLoopExample.docx'].zip.files
+  		 * 	#Everything but the date should be different
+  			expect(docX['tagLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.date)
+  			expect(docX['tagLoopExample.docx'].zip.files[i].name).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].name)
+  			expect(docX['tagLoopExample.docx'].zip.files[i].options.dir).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].options.dir)
+  
+  			if i!='word/_rels/document.xml.rels' and i!='[Content_Types].xml'
+  				if env=='browser' or i!="word/document.xml" #document.xml is not the same on node, so we don't test the data
+  					if docX['tagLoopExample.docx'].zip.files[i].asText()?0
+  						expect(docX['tagLoopExample.docx'].zip.files[i].asText().length).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].asText().length)
+  					expect(docX['tagLoopExample.docx'].zip.files[i].asText()).toBe(docX['tagLoopExampleImageExpected.docx'].zip.files[i].asText())
+  
+  		relsData = docX['tagLoopExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()
+  		contentTypeData = docX['tagLoopExample.docx'].zip.files['[Content_Types].xml'].asText()
+  
+  		relsXml= DocUtils.Str2xml(relsData)
+  		contentTypeXml= DocUtils.Str2xml(contentTypeData)
+  
+  		relationships= relsXml.getElementsByTagName('Relationship')
+  		contentTypes= contentTypeXml.getElementsByTagName('Default')
+  
+  		expect(relationships.length).toEqual(16)
+  		expect(contentTypes.length).toBe(3)
+   */
 
   describe('qr code testing', function() {
     it('should work with local QRCODE without tags', function() {

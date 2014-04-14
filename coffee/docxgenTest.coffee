@@ -424,6 +424,7 @@ describe "image Loop Replacing", () ->
 			expect(contentTypes.length).toBe(4)
 
 
+###
 describe "loop forTagging images", () ->
 	it 'should work with a simple loop file', () ->
 		docX['tagLoopExample.docx']= new DocxGen(docX['tagLoopExample.docx'].loadedContent)
@@ -471,6 +472,7 @@ describe "loop forTagging images", () ->
 
 		expect(relationships.length).toEqual(16)
 		expect(contentTypes.length).toBe(3)
+###
 
 describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
