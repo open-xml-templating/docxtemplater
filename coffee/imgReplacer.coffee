@@ -82,36 +82,6 @@ ImgReplacer = class ImgReplacer
 								else
 									#remove the image from the list of images to be tested
 									@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
-
-
-		else if @xmlTemplater.currentScope["img"]? then if @xmlTemplater.currentScope["img"][u]?
-
-			imgName= @xmlTemplater.currentScope["img"][u].name
-			imgData= @xmlTemplater.currentScope["img"][u].data
-			throw 'DocxGen not defined' unless @xmlTemplater.DocxGen?
-			newId= @xmlTemplater.DocxGen.imgManager.addImageRels(imgName,imgData)
-			tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
-			if tag==undefined
-				#console.log 'tag not defined, trying alternate method'
-				tag=xmlImg.getElementsByTagName('wp:docPr')[0]
-			if tag!=undefined
-
-				@xmlTemplater.imageId++
-				tag.setAttribute('id',@xmlTemplater.imageId)
-				tag.setAttribute('name',"#{imgName}")
-
-				tagrId= xmlImg.getElementsByTagNameNS('*','blip')[0]
-				if tagrId==undefined
-					#console.log 'tagRid not defined, trying alternate method'
-					tagrId= xmlImg.getElementsByTagName("a:blip")[0]
-				if tagrId!=undefined
-					tagrId.setAttribute('r:embed',"rId#{newId}")
-					imageTag= xmlImg.getElementsByTagNameNS('*','drawing')[0]
-					if imageTag==undefined
-						#console.log 'imagetag not defined, trying alternate method'
-						imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
-
-					@xmlTemplater.content=@xmlTemplater.content.replace(match[0], DocUtils.xml2Str imageTag)
 	replaceImages: ()->
 		@qr=[]
 		@replaceImage(match,u) for match,u in @imgMatches
