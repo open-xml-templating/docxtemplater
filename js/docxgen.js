@@ -971,125 +971,114 @@ Created by Edgar HIPP
       return this;
     };
 
-    ImgReplacer.prototype.replaceImages = function() {
-      var callback, imageTag, imgData, imgName, match, newId, oldFile, qr, rId, replacement, tag, tagrId, u, xmlImg, _i, _len, _ref, _results;
-      qr = [];
-      callback = function(docxqrCode) {
-        docxqrCode.xmlTemplater.numQrCode--;
-        docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
-        return docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
-      };
-      _ref = this.imgMatches;
-      _results = [];
-      for (u = _i = 0, _len = _ref.length; _i < _len; u = ++_i) {
-        match = _ref[u];
-        xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
-        if (this.xmlTemplater.DocxGen.qrCode) {
-          tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
-          if (tagrId === void 0) {
-            tagrId = xmlImg.getElementsByTagName("a:blip")[0];
-          }
-          if (tagrId !== void 0) {
-            rId = tagrId.getAttribute('r:embed');
-            oldFile = this.xmlTemplater.DocxGen.imgManager.getImageByRid(rId);
-            if (oldFile !== null) {
-              tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
-              if (tag === void 0) {
-                tag = xmlImg.getElementsByTagName('wp:docPr')[0];
-              }
-              if (tag !== void 0) {
-                if (tag.getAttribute("name").substr(0, 6) !== "Copie_") {
-                  imgName = ("Copie_" + this.xmlTemplater.imageId + ".png").replace(/\x20/, "");
-                  this.xmlTemplater.DocxGen.qrCodeNumCallBack++;
-                  this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, true);
-                  newId = this.xmlTemplater.DocxGen.imgManager.addImageRels(imgName, "");
-                  this.xmlTemplater.imageId++;
-                  this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, oldFile.data);
-                  tag.setAttribute('name', "" + imgName);
-                  tagrId.setAttribute('r:embed', "rId" + newId);
-                  imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
-                  if (imageTag === void 0) {
-                    imageTag = xmlImg.getElementsByTagName('w:drawing')[0];
-                  }
-                  replacement = DocUtils.xml2Str(imageTag);
-                  this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
-                  this.xmlTemplater.numQrCode++;
-                  if (env === 'browser') {
-                    qr[u] = new DocxQrCode(oldFile.asBinary(), this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
-                    _results.push(qr[u].decode(callback));
-                  } else {
-                    if (/\.png$/.test(oldFile.name)) {
-                      _results.push((function(_this) {
-                        return function(imgName) {
-                          var base64, binaryData, dat, finished, png;
-                          base64 = JSZip.base64.encode(oldFile.asBinary());
-                          binaryData = new Buffer(base64, 'base64');
-                          png = new PNG(binaryData);
-                          finished = function(a) {
-                            png.decoded = a;
-                            qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
-                            return qr[u].decode(callback);
-                          };
-                          return dat = png.decode(finished);
-                        };
-                      })(this)(imgName));
-                    } else {
-                      _results.push(this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, false));
-                    }
-                  }
-                } else {
-                  _results.push(void 0);
-                }
-              } else {
-                _results.push(void 0);
-              }
-            } else {
-              _results.push(void 0);
-            }
-          } else {
-            _results.push(void 0);
-          }
-        } else if (this.xmlTemplater.currentScope["img"] != null) {
-          if (this.xmlTemplater.currentScope["img"][u] != null) {
-            imgName = this.xmlTemplater.currentScope["img"][u].name;
-            imgData = this.xmlTemplater.currentScope["img"][u].data;
-            if (this.xmlTemplater.DocxGen == null) {
-              throw 'DocxGen not defined';
-            }
-            newId = this.xmlTemplater.DocxGen.imgManager.addImageRels(imgName, imgData);
+    ImgReplacer.prototype.imageSetter = function(docxqrCode) {
+      docxqrCode.xmlTemplater.numQrCode--;
+      docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
+      return docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
+    };
+
+    ImgReplacer.prototype.replaceImage = function(match, u) {
+      var imageTag, imgData, imgName, newId, oldFile, rId, replacement, tag, tagrId, xmlImg;
+      xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
+      if (this.xmlTemplater.DocxGen.qrCode) {
+        tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
+        if (tagrId === void 0) {
+          tagrId = xmlImg.getElementsByTagName("a:blip")[0];
+        }
+        if (tagrId !== void 0) {
+          rId = tagrId.getAttribute('r:embed');
+          oldFile = this.xmlTemplater.DocxGen.imgManager.getImageByRid(rId);
+          if (oldFile !== null) {
             tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
             if (tag === void 0) {
               tag = xmlImg.getElementsByTagName('wp:docPr')[0];
             }
             if (tag !== void 0) {
-              this.xmlTemplater.imageId++;
-              tag.setAttribute('id', this.xmlTemplater.imageId);
-              tag.setAttribute('name', "" + imgName);
-              tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
-              if (tagrId === void 0) {
-                tagrId = xmlImg.getElementsByTagName("a:blip")[0];
-              }
-              if (tagrId !== void 0) {
+              if (tag.getAttribute("name").substr(0, 6) !== "Copie_") {
+                imgName = ("Copie_" + this.xmlTemplater.imageId + ".png").replace(/\x20/, "");
+                this.xmlTemplater.DocxGen.qrCodeNumCallBack++;
+                this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, true);
+                newId = this.xmlTemplater.DocxGen.imgManager.addImageRels(imgName, "");
+                this.xmlTemplater.imageId++;
+                this.xmlTemplater.DocxGen.setImage("word/media/" + imgName, oldFile.data);
+                tag.setAttribute('name', "" + imgName);
                 tagrId.setAttribute('r:embed', "rId" + newId);
                 imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
                 if (imageTag === void 0) {
                   imageTag = xmlImg.getElementsByTagName('w:drawing')[0];
                 }
-                _results.push(this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], DocUtils.xml2Str(imageTag)));
-              } else {
-                _results.push(void 0);
+                replacement = DocUtils.xml2Str(imageTag);
+                this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
+                this.xmlTemplater.numQrCode++;
+                if (env === 'browser') {
+                  this.qr[u] = new DocxQrCode(oldFile.asBinary(), this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+                  return this.qr[u].decode(this.imageSetter);
+                } else {
+                  if (/\.png$/.test(oldFile.name)) {
+                    return (function(_this) {
+                      return function(imgName) {
+                        var base64, binaryData, dat, finished, png;
+                        base64 = JSZip.base64.encode(oldFile.asBinary());
+                        binaryData = new Buffer(base64, 'base64');
+                        png = new PNG(binaryData);
+                        finished = function(a) {
+                          png.decoded = a;
+                          _this.qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+                          return _this.qr[u].decode(_this.imageSetter);
+                        };
+                        return dat = png.decode(finished);
+                      };
+                    })(this)(imgName);
+                  } else {
+                    return this.xmlTemplater.DocxGen.qrCodeCallBack(this.xmlTemplater.DocxGen.qrCodeNumCallBack, false);
+                  }
+                }
               }
-            } else {
-              _results.push(void 0);
             }
-          } else {
-            _results.push(void 0);
           }
-        } else {
-          _results.push(void 0);
+        }
+      } else if (this.xmlTemplater.currentScope["img"] != null) {
+        if (this.xmlTemplater.currentScope["img"][u] != null) {
+          imgName = this.xmlTemplater.currentScope["img"][u].name;
+          imgData = this.xmlTemplater.currentScope["img"][u].data;
+          if (this.xmlTemplater.DocxGen == null) {
+            throw 'DocxGen not defined';
+          }
+          newId = this.xmlTemplater.DocxGen.imgManager.addImageRels(imgName, imgData);
+          tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
+          if (tag === void 0) {
+            tag = xmlImg.getElementsByTagName('wp:docPr')[0];
+          }
+          if (tag !== void 0) {
+            this.xmlTemplater.imageId++;
+            tag.setAttribute('id', this.xmlTemplater.imageId);
+            tag.setAttribute('name', "" + imgName);
+            tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
+            if (tagrId === void 0) {
+              tagrId = xmlImg.getElementsByTagName("a:blip")[0];
+            }
+            if (tagrId !== void 0) {
+              tagrId.setAttribute('r:embed', "rId" + newId);
+              imageTag = xmlImg.getElementsByTagNameNS('*', 'drawing')[0];
+              if (imageTag === void 0) {
+                imageTag = xmlImg.getElementsByTagName('w:drawing')[0];
+              }
+              return this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], DocUtils.xml2Str(imageTag));
+            }
+          }
         }
       }
-      return _results;
+    };
+
+    ImgReplacer.prototype.replaceImages = function() {
+      var match, u, _i, _len, _ref;
+      this.qr = [];
+      _ref = this.imgMatches;
+      for (u = _i = 0, _len = _ref.length; _i < _len; u = ++_i) {
+        match = _ref[u];
+        this.replaceImage(match, u);
+      }
+      return this;
     };
 
     return ImgReplacer;
