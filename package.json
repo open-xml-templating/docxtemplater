@@ -35,7 +35,8 @@
     "gulp-concat": "~2.1.7",
     "gulp-uglify": "~0.2.1",
     "gulp-livereload": "~1.1.1",
-    "gulp-notify": "^1.2.5"
+    "gulp-notify": "^1.2.5",
+    "gulp-jasmine": "^0.2.0"
   },
   "license": "MIT",
   "engines": {

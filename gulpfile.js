@@ -109,6 +109,7 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 
 			if (failures==0)
 			{
+				notify('Passed');
 				gutil.log(gutil.colors.green(fullText));
 			}
 			else
