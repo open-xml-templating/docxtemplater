@@ -27,7 +27,7 @@ ImgReplacer = class ImgReplacer
 		if tagrId==undefined then throw 'tagRiD undefined !'
 		rId = tagrId.getAttribute('r:embed')
 		oldFile= @xmlTemplater.DocxGen.imgManager.getImageByRid(rId)
-		if oldFile==null then throw 'oldFile is not defined'
+		if oldFile==null then throw 'oldFile undefined'
 		if env=='browser' then tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 		if env=='node' then tag= xmlImg.getElementsByTagName("wp:docPr")[0]
 		if tag==undefined then throw 'tag undefined'
@@ -61,7 +61,7 @@ ImgReplacer = class ImgReplacer
 						@qr[u].decode(@imageSetter)
 					dat= png.decode(finished)
 			else
-				#remove the image from the list of images to be tested
-				@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,false)
+				mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary()}
+				@imageSetter(mockedQrCode)
 
 root.ImgReplacer=ImgReplacer
