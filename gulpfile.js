@@ -98,6 +98,8 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 
 	child.on('close', function(code) {
 		regex=/([0-9]+) tests, ([0-9]+) assertions, ([0-9]+) failures, ([0-9]+) skipped/;
+		var now=new Date();
+		var nowTime="---"+now.getHours()+":"+now.getMinutes()
 		if(regex.test(totalData))
 		{
 			matches=regex.exec(totalData);
@@ -109,18 +111,17 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 
 			if (failures==0)
 			{
-				var now=new Date();
-				gutil.log(gutil.colors.green(fullText+"---"+now.getHours()+":"+now.getMinutes()));
+				gutil.log(gutil.colors.green(fullText+nowTime));
 			}
 			else
 			{
-				gutil.log(gutil.colors.red(fullText));
+				gutil.log(gutil.colors.red(fullText+nowTime));
 				gutil.beep()
 			}
 		}
 		else
 			{
-				gutil.log(gutil.colors.red(totalData))
+				gutil.log(gutil.colors.red(totalData+nowTime))
 				gutil.beep()
 			}
 		cb();
