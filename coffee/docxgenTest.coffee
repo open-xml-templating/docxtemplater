@@ -693,3 +693,13 @@ describe 'SubContent', () ->
 		expect(sub.text).toBe('<w:table>Sample Table</w:table>')
 
 
+	it "shouldn't bug if some images don't contain a qrcode",()->
+		docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		expect(docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625)
+		endcallback= () -> 1
+		docX['imageExample.docx'].applyTags({},endcallback)
+		waitsFor () -> docX['imageExample.docx'].ready?
+		runs () ->
+			expect(docX['imageExample.docx'].zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625)
+
+			docX['imageExample.docx'].output()

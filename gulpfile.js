@@ -109,8 +109,8 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 
 			if (failures==0)
 			{
-				notify('Passed');
-				gutil.log(gutil.colors.green(fullText));
+				var now=new Date();
+				gutil.log(gutil.colors.green(fullText+"---"+now.getHours()+":"+now.getMinutes()));
 			}
 			else
 			{

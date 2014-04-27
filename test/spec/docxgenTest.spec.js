@@ -1351,10 +1351,29 @@
       sub.getOuterXml('w:t');
       return expect(sub.text).toBe('<w:t>text</w:t>');
     });
-    return it('should replace the inner text', function() {
+    it('should replace the inner text', function() {
       sub.replace('<w:table>Sample Table</w:table>');
       expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end');
       return expect(sub.text).toBe('<w:table>Sample Table</w:table>');
+    });
+    return it("shouldn't bug if some images don't contain a qrcode", function() {
+      var endcallback;
+      docX['imageExample.docx'] = new DocxGen(docX['imageExample.docx'].loadedContent, {}, {
+        intelligentTagging: false,
+        qrCode: true
+      });
+      expect(docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625);
+      endcallback = function() {
+        return 1;
+      };
+      docX['imageExample.docx'].applyTags({}, endcallback);
+      waitsFor(function() {
+        return docX['imageExample.docx'].ready != null;
+      });
+      return runs(function() {
+        expect(docX['imageExample.docx'].zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625);
+        return docX['imageExample.docx'].output();
+      });
     });
   });
 
