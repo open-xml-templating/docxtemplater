@@ -246,6 +246,11 @@ The rest of the json is used for the scope variables (eg, those not starting wit
             Type: function () [function that console.log(ready)]
                 This function is called if you specify qrCode argument to true in this constructor, and will be called when all qrCodes have been replaced (because the qrCode replacing functions are **async**)
 
+
+### Help 
+
+If you need some help, please look at the docs (just below) read the readme, and then file an issue or come to chat at http://chat.stackexchange.com/rooms/14185/docxtemplater
+
 ### Docxgen methods ###
 
     load(content)
