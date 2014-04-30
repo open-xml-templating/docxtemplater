@@ -439,13 +439,6 @@ describe 'qr code testing', () ->
 				expect(docX['qrCodeExample.docx'].zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name)
 				expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir)
 
-	it 'shouldn\'t bug if some images don\'t contain a qrcode',()->
-		docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		endcallback= () -> 1
-		docX['imageExample.docx'].applyTags({},endcallback)
-		waitsFor () -> docX['imageExample.docx'].ready?
-		runs () ->
-			#docX['imageExample.docx'].output()
 
 	it 'should work with local QRCODE with {tags}', () ->
 		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
@@ -691,8 +684,6 @@ describe 'SubContent', () ->
 		sub.replace('<w:table>Sample Table</w:table>')
 		expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
 		expect(sub.text).toBe('<w:table>Sample Table</w:table>')
-
-
 	it "shouldn't bug if some images don't contain a qrcode",()->
 		docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
 		expect(docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625)
@@ -701,5 +692,3 @@ describe 'SubContent', () ->
 		waitsFor () -> docX['imageExample.docx'].ready?
 		runs () ->
 			expect(docX['imageExample.docx'].zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625)
-
-			docX['imageExample.docx'].output()
