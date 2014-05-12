@@ -13,7 +13,7 @@ if env=='node'
 	global.vm = require('vm')
 	global.DOMParser = require('xmldom').DOMParser
 	global.XMLSerializer= require('xmldom').XMLSerializer
-	path=require('path');
+	path=require('path')
 	global.PNG= require(path.join(__dirname,'../vendor/pngjs/png-node'))
 	global.url= require('url')
 
@@ -119,6 +119,7 @@ root.DocxGen = class DocxGen
 			if env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
 					if err then throw err
+					if options.callback? then callback()
 			else
 				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"

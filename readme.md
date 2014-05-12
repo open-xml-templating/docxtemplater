@@ -137,7 +137,7 @@ Installation: `npm install docxtemplater`
 
 	//when finished
 	docxtemplater.finishedCallback=function () {
-  	  docxtemplater.output(true,"output.docx");
+  	  docxtemplater.output();
 	}
 
 	//apply the tags
@@ -282,13 +282,21 @@ If you need some help, please look at the docs (just below) read the readme, and
 
         options: object[{}]
 
+            name:
+                Type:string["output.docx"]
+                The name of the file that will be outputed (doesnt work in the browser because of dataUri download)
+
+            callback:
+               Type:function
+               Function that is called without arguments when the output is done. Is used only in Node (because in the browser, the operation is synchronous)
+
             download:
                 Type:boolean[true]
                 If download is true, file will be downloaded automatically with data URI.
                 returns the output file.
             
             type:
-                Type;string["base64"]
+                Type:string["base64"]
                 The type of zip to return. The possible values are : (same as in http://stuk.github.io/jszip/ @generate)
                 base64 (default) : the result will be a string, the binary in a base64 form.
                 string : the result will be a string in "binary" form, 1 byte per char.

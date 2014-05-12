@@ -892,6 +892,9 @@ Created by Edgar HIPP
             if (err) {
               throw err;
             }
+            if (options.callback != null) {
+              return callback();
+            }
           });
         } else {
           document.location.href = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64," + result;
