@@ -893,7 +893,7 @@ Created by Edgar HIPP
               throw err;
             }
             if (options.callback != null) {
-              return callback();
+              return options.callback();
             }
           });
         } else {

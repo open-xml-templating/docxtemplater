@@ -119,7 +119,7 @@ root.DocxGen = class DocxGen
 			if env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
 					if err then throw err
-					if options.callback? then callback()
+					if options.callback? then options.callback()
 			else
 				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
