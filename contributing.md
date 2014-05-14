@@ -6,9 +6,9 @@ This is an open-source project. Please be kind and have a positive attitude. You
 
 The best way to debug a problem is to **inspect** the docx. You can unzip a docx, the main files are the following:
 
-word/document.xml : contains the main part of the document
-word/media/ : contains the images
-word/_rels/ : contains the link to the images, other media
+ * `word/document.xml` : contains the main part of the document
+ * `word/media/` : contains the images
+ * `word/_rels/` : contains the link to the images, other media
 
 ## Issues
 
