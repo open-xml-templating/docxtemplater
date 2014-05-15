@@ -445,6 +445,7 @@ Todo:
  - [ ] Remove the node/browser specific code when possible
  - [ ] When not possible, create a NodeSpecific File or BrowserSpecific File
 - [x] Change signature of loadDoc function
+- [ ] Make more beautiful documentation (with https://readthedocs.org/)
 
 
 jszip-load.js, Ligne 82 Caractère 13 -> Getting binary data with IE 7+ doesn't seem to work, two ways:
