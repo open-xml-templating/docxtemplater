@@ -239,6 +239,38 @@
 
   root.docXData = [];
 
+  DocUtils.escapeRegExp = function(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  };
+
+  DocUtils.charMap = {
+    '"': "&quot;",
+    '&': "&amp;",
+    "'": "&apos;",
+    "<": "&lt;",
+    ">": "&gt;"
+  };
+
+  DocUtils.wordToUtf8 = function(string) {
+    var endchar, starchar, _ref;
+    _ref = DocUtils.charMap;
+    for (endchar in _ref) {
+      starchar = _ref[endchar];
+      string = string.replace(new RegExp(DocUtils.escapeRegExp(startChar), "g"), endChar);
+    }
+    return string;
+  };
+
+  DocUtils.utf8ToWord = function(string) {
+    var endChar, startChar, _ref;
+    _ref = DocUtils.charMap;
+    for (startChar in _ref) {
+      endChar = _ref[startChar];
+      string = string.replace(new RegExp(DocUtils.escapeRegExp(startChar), "g"), endChar);
+    }
+    return string;
+  };
+
   DocUtils.defaultParser = function(tag) {
     return {
       'get': function(scope) {
@@ -1266,7 +1298,7 @@ Created by Edgar HIPP
             m = _ref1[t];
             if (t === numXmlTag) {
               if (this.content[m.offset + this.templaterState.charactersAdded[t]] !== m[0][0]) {
-                throw "no < at the beginning of " + m[0][0] + " (2)";
+                throw new Error("no < at the beginning of " + m[0][0] + " (2)");
               }
             }
           }
@@ -1297,7 +1329,7 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.replaceSimpleTag = function() {
-      return this.content = this.replaceTagByValue(this.scopeManager.getValueFromScope(this.templaterState.textInsideTag));
+      return this.content = this.replaceTagByValue(DocUtils.utf8ToWord(this.scopeManager.getValueFromScope(this.templaterState.textInsideTag)));
     };
 
     XmlTemplater.prototype.replaceSimpleTagRawXml = function() {
@@ -1306,27 +1338,6 @@ Created by Edgar HIPP
       newText = this.scopeManager.getValueFromScope(this.templaterState.tag);
       this.templaterState.moveCharacters(this.templaterState.tagStart.numXmlTag, newText, subContent.text);
       return this.content = subContent.replace(newText).fullText;
-    };
-
-    XmlTemplater.prototype.getValueFromScope = function(tag) {
-      var parser, result, value;
-      parser = this.parser(tag);
-      result = parser.get(this.scopeManager.currentScope);
-      if (result != null) {
-        if (typeof result === 'string') {
-          this.scopeManager.useTag(tag);
-          value = result;
-          if (value.indexOf('{') !== -1 || value.indexOf('}') !== -1) {
-            throw "You can't enter { or  } inside the content of a variable";
-          }
-        } else {
-          value = result;
-        }
-      } else {
-        this.scopeManager.useTag(tag);
-        value = "undefined";
-      }
-      return value;
     };
 
     XmlTemplater.prototype.deleteOuterTags = function(outerXmlText, sharp) {
@@ -1722,6 +1733,8 @@ Created by Edgar HIPP
           if (value.indexOf('{') !== -1 || value.indexOf('}') !== -1) {
             throw "You can't enter { or  } inside the content of a variable";
           }
+        } else if (typeof result === "number") {
+          value = String(result);
         } else {
           value = result;
         }

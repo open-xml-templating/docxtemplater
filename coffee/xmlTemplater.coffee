@@ -49,7 +49,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
 				for m,t in @templaterState.matches when t==numXmlTag
 					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
-						throw "no < at the beginning of #{m[0][0]} (2)"
+						throw new Error("no < at the beginning of #{m[0][0]} (2)")
 				if character=='{'
 					@templaterState.startTag()
 				else if character == '}'
@@ -64,29 +64,14 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				else #if character != '{' and character != '}'
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		if @DocxGen? and @DocxGen.qrCode
-				new ImgReplacer(this).findImages().replaceImages()
+			new ImgReplacer(this).findImages().replaceImages()
 		this
-	replaceSimpleTag:()->@content = @replaceTagByValue(@scopeManager.getValueFromScope(@templaterState.textInsideTag))
+	replaceSimpleTag:()->@content = @replaceTagByValue(DocUtils.utf8ToWord(@scopeManager.getValueFromScope(@templaterState.textInsideTag)))
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
 		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText,subContent.text)
 		@content= subContent.replace(newText).fullText
-	getValueFromScope: (tag) ->
-		parser=@parser(tag)
-		result=parser.get(@scopeManager.currentScope)
-		if result?
-			if typeof result=='string'
-				@scopeManager.useTag(tag)
-				value= result
-				if value.indexOf('{')!=-1 or value.indexOf('}')!=-1
-					throw "You can't enter { or  } inside the content of a variable"
-			else value= result
-		else
-			@scopeManager.useTag(tag)
-			value= "undefined"
-		value
-	#set the tag as used, so that DocxGen can return the list off all tags
 	deleteOuterTags:(outerXmlText,sharp)->
 		#delete the opening tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}

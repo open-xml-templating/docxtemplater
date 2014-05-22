@@ -5,6 +5,27 @@ root.DocUtils= {}
 root.docX=[]
 root.docXData=[]
 
+DocUtils.escapeRegExp= (str) ->
+	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+
+
+DocUtils.charMap=
+	'"':"&quot;"
+	'&':"&amp;"
+	"'":"&apos;"
+	"<":"&lt;"
+	">":"&gt;"
+
+DocUtils.wordToUtf8= (string) ->
+	for endchar,starchar of DocUtils.charMap
+		string=string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
+	string
+
+DocUtils.utf8ToWord= (string) ->
+	for startChar,endChar of DocUtils.charMap
+		string=string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
+	string
+
 DocUtils.defaultParser=(tag) ->
 	return {
 	'get':(scope) -> return scope[tag]
