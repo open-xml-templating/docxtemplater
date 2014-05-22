@@ -17,7 +17,7 @@ DocUtils.charMap=
 	">":"&gt;"
 
 DocUtils.wordToUtf8= (string) ->
-	for endchar,starchar of DocUtils.charMap
+	for endChar,startChar of DocUtils.charMap
 		string=string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
 	string
 

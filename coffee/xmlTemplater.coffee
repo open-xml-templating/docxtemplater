@@ -36,7 +36,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 	getFullText:(@tagXml=@tagXml) ->
 		matcher=new XmlMatcher(@content).parse(@tagXml)
 		output= (match[2] for match in matcher.matches) #get only the text
-		DocUtils.convert_spaces(output.join("")) #join it
+		DocUtils.wordToUtf8(DocUtils.convert_spaces(output.join(""))) #join it
 	###
 	content is the whole content to be tagged
 	scope is the current scope

@@ -252,10 +252,10 @@
   };
 
   DocUtils.wordToUtf8 = function(string) {
-    var endchar, starchar, _ref;
+    var endChar, startChar, _ref;
     _ref = DocUtils.charMap;
-    for (endchar in _ref) {
-      starchar = _ref[endchar];
+    for (endChar in _ref) {
+      startChar = _ref[endChar];
       string = string.replace(new RegExp(DocUtils.escapeRegExp(startChar), "g"), endChar);
     }
     return string;
@@ -1270,7 +1270,7 @@ Created by Edgar HIPP
         }
         return _results;
       })();
-      return DocUtils.convert_spaces(output.join(""));
+      return DocUtils.wordToUtf8(DocUtils.convert_spaces(output.join("")));
     };
 
 
