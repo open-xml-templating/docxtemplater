@@ -30,8 +30,8 @@
   "devDependencies": {
     "gulp": "~3.5.2",
     "gulp-util": "~2.2.14",
-    "gulp-coffee": "~1.4.1",
-    "gulp-watch": "~0.5.0",
+    "gulp-coffee": "~1.4.3",
+    "gulp-watch": "~0.6.5",
     "gulp-concat": "~2.1.7",
     "gulp-uglify": "~0.2.1",
     "gulp-livereload": "~1.1.1",

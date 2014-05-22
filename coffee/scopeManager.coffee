@@ -4,7 +4,7 @@ env= if global? then 'node' else 'browser'
 #This class responsibility is to manage the scope
 
 root.ScopeManager =  class ScopeManager
-	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser)->
+	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser,@defaultTag)->
 	loopOver:(tag,callback)->
 		if !@get(tag)? then return
 		if @getTypeOf(tag) == 'object'
@@ -30,7 +30,10 @@ root.ScopeManager =  class ScopeManager
 			else value= result
 		else
 			@useTag(tag)
-			value= "undefined"
+			if @defaultTag
+				value=@defaultTag
+			else
+				value= "undefined"
 		value
 	#set the tag as used, so that DocxGen can return the list off all tags
 	useTag: (tag) ->
