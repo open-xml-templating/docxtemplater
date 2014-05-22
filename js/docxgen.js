@@ -1280,7 +1280,7 @@ Created by Edgar HIPP
     	returns the new content of the tagged content
      */
 
-    XmlTemplater.prototype.applyTags = function() {
+    XmlTemplater.prototype.applyTags = function(defaultTag) {
       var character, innerText, m, match, numCharacter, numXmlTag, t, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       this.templaterState.initialize();
       _ref = this.templaterState.matches;
@@ -1307,7 +1307,7 @@ Created by Edgar HIPP
           } else if (character === '}') {
             this.templaterState.endTag();
             if (this.templaterState.loopType() === 'simple') {
-              this.replaceSimpleTag();
+              this.replaceSimpleTag(defaultTag);
             }
             if (this.templaterState.loopType() === 'xml') {
               this.replaceSimpleTagRawXml();
@@ -1328,8 +1328,8 @@ Created by Edgar HIPP
       return this;
     };
 
-    XmlTemplater.prototype.replaceSimpleTag = function() {
-      return this.content = this.replaceTagByValue(DocUtils.utf8ToWord(this.scopeManager.getValueFromScope(this.templaterState.textInsideTag)));
+    XmlTemplater.prototype.replaceSimpleTag = function(defaultTag) {
+      return this.content = this.replaceTagByValue(DocUtils.utf8ToWord(this.scopeManager.getValueFromScope(this.templaterState.textInsideTag, defaultTag)));
     };
 
     XmlTemplater.prototype.replaceSimpleTagRawXml = function() {
@@ -1722,7 +1722,7 @@ Created by Edgar HIPP
       return typeof this.get(tag);
     };
 
-    ScopeManager.prototype.getValueFromScope = function(tag) {
+    ScopeManager.prototype.getValueFromScope = function(tag, defaultTag) {
       var parser, result, value;
       parser = this.parser(tag);
       result = parser.get(this.currentScope);
@@ -1740,7 +1740,12 @@ Created by Edgar HIPP
         }
       } else {
         this.useTag(tag);
-        value = "undefined";
+        if (defaultTag) {
+            value = defaultTag;
+        } else {
+            value = "undefined";
+        }
+
       }
       return value;
     };
