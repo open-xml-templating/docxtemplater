@@ -249,7 +249,7 @@ The rest of the json is used for the scope variables (eg, those not starting wit
 
 ### Help 
 
-If you need some help, please look at the docs (just below) read the readme, and then file an issue or come to chat at http://chat.stackexchange.com/rooms/14185/docxtemplater
+If you need some help, please look at the docs (just below) read the readme, and then file an issue.
 
 ### Docxgen methods ###
 
