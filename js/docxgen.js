@@ -1689,12 +1689,13 @@ Created by Edgar HIPP
   env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
   root.ScopeManager = ScopeManager = (function() {
-    function ScopeManager(tags, scopePath, usedTags, currentScope, parser) {
+    function ScopeManager(tags, scopePath, usedTags, currentScope, parser, defaultTag) {
       this.tags = tags;
       this.scopePath = scopePath;
       this.usedTags = usedTags;
       this.currentScope = currentScope;
       this.parser = parser;
+      this.defaultTag = defaultTag;
     }
 
     ScopeManager.prototype.loopOver = function(tag, callback) {
@@ -1740,7 +1741,11 @@ Created by Edgar HIPP
         }
       } else {
         this.useTag(tag);
-        value = "undefined";
+        if (this.defaultTag) {
+          value = this.defaultTag;
+        } else {
+          value = "undefined";
+        }
       }
       return value;
     };
