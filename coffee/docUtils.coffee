@@ -39,7 +39,7 @@ DocUtils.loadDoc= (path,options={}) ->
 	intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else false
 	callback=if options.callback? then options.callback else null
 	basePath=""
-	throw 'path not defined' unless path?
+	if !path? then throw new Error('path not defined')
 	if path.indexOf('/')!=-1
 		totalPath= path
 		fileName= totalPath
@@ -86,7 +86,7 @@ DocUtils.loadDoc= (path,options={}) ->
 				rejectUnauthorized:false
 
 			errorCallback= (e) ->
-				throw "Error on HTTPS Call"
+				throw new Error("Error on HTTPS Call")
 
 			reqCallback= (res)->
 				res.setEncoding('binary')
@@ -144,7 +144,7 @@ DocUtils.clone = (obj) ->
 
 DocUtils.xml2Str = (xmlNode) ->
 	if xmlNode==undefined
-		throw "xmlNode undefined!"
+		throw new Error("xmlNode undefined!")
 	try
 		if global?
 			a= new XMLSerializer()
@@ -183,7 +183,7 @@ DocUtils.decode_utf8= (s) ->
 		console.log s
 		console.log 'could not decode'
 		debugger
-		throw 'end'
+		throw new Error('end')
 
 DocUtils.base64encode= (b) ->
     btoa(unescape(encodeURIComponent(b)))

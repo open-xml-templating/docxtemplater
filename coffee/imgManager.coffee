@@ -45,7 +45,7 @@ ImgManager = class ImgManager
 			@setImage "[Content_Types].xml",DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 	addImageRels: (imageName,imageData) -> #Adding an image and returns it's Rid
 		if @zip.files["word/media/#{imageName}"]?
-			throw 'file already exists'
+			throw new Error('file already exists')
 			return false
 		@maxRid++
 		file=

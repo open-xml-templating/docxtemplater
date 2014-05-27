@@ -157,7 +157,7 @@
 
     TemplaterState.prototype.startTag = function(char) {
       if (this.inTag === true) {
-        throw "Tag already open with text: " + this.textInsideTag;
+        throw new Error("Tag already open with text: " + this.textInsideTag);
       }
       this.inTag = true;
       this.rawXmlTag = false;
@@ -185,7 +185,7 @@
     TemplaterState.prototype.endTag = function() {
       var dashInnerRegex;
       if (this.inTag === false) {
-        throw "Tag already closed";
+        throw new Error("Tag already closed");
       }
       this.inTag = false;
       this.tagEnd = this.currentStep;
@@ -293,7 +293,7 @@
     callback = options.callback != null ? options.callback : null;
     basePath = "";
     if (path == null) {
-      throw 'path not defined';
+      throw new Error('path not defined');
     }
     if (path.indexOf('/') !== -1) {
       totalPath = path;
@@ -353,7 +353,7 @@
           rejectUnauthorized: false
         };
         errorCallback = function(e) {
-          throw "Error on HTTPS Call";
+          throw new Error("Error on HTTPS Call");
         };
         reqCallback = function(res) {
           var data;
@@ -443,7 +443,7 @@
   DocUtils.xml2Str = function(xmlNode) {
     var a, content, e;
     if (xmlNode === void 0) {
-      throw "xmlNode undefined!";
+      throw new Error("xmlNode undefined!");
     }
     try {
       if (typeof global !== "undefined" && global !== null) {
@@ -496,7 +496,7 @@
       console.log(s);
       console.log('could not decode');
       debugger;
-      throw 'end';
+      throw new Error('end');
     }
   };
 
@@ -633,7 +633,7 @@
     ImgManager.prototype.addImageRels = function(imageName, imageData) {
       var extension, file, newTag, relationships;
       if (this.zip.files["word/media/" + imageName] != null) {
-        throw 'file already exists';
+        throw new Error('file already exists');
         return false;
       }
       this.maxRid++;
@@ -1032,12 +1032,12 @@ Created by Edgar HIPP
         tagrId = xmlImg.getElementsByTagName("a:blip")[0];
       }
       if (tagrId === void 0) {
-        throw 'tagRiD undefined !';
+        throw new Error('tagRiD undefined !');
       }
       rId = tagrId.getAttribute('r:embed');
       oldFile = this.xmlTemplater.DocxGen.imgManager.getImageByRid(rId);
       if (oldFile === null) {
-        throw 'oldFile undefined';
+        throw new Error('oldFile undefined');
       }
       if (env === 'browser') {
         tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
@@ -1046,7 +1046,7 @@ Created by Edgar HIPP
         tag = xmlImg.getElementsByTagName("wp:docPr")[0];
       }
       if (tag === void 0) {
-        throw 'tag undefined';
+        throw new Error('tag undefined');
       }
       if (tag.getAttribute("name").substr(0, 6) === "Copie_") {
         return;
@@ -1066,7 +1066,7 @@ Created by Edgar HIPP
         imageTag = xmlImg.getElementsByTagName('w:drawing')[0];
       }
       if (imageTag === void 0) {
-        throw 'imageTag undefined';
+        throw new Error('imageTag undefined');
       }
       replacement = DocUtils.xml2Str(imageTag);
       this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
@@ -1124,7 +1124,7 @@ Created by Edgar HIPP
       this.callback = callback;
       this.data = imageData;
       if (this.data === void 0) {
-        throw "data of qrcode can't be undefined";
+        throw new Error("data of qrcode can't be undefined");
       }
       if (env === 'browser') {
         this.base64Data = JSZip.base64.encode(this.data);
@@ -1409,7 +1409,7 @@ Created by Edgar HIPP
       startTag = this.templaterState.calcXmlTagPosition(xmlTagNumber);
       this.templaterState.moveCharacters(xmlTagNumber + 1, replacer, this.templaterState.matches[xmlTagNumber][0]);
       if (content.indexOf(this.templaterState.matches[xmlTagNumber][0]) === -1) {
-        throw "content " + this.templaterState.matches[xmlTagNumber][0] + " not found in content";
+        throw new Error("content " + this.templaterState.matches[xmlTagNumber][0] + " not found in content");
       }
       content = DocUtils.replaceFirstFrom(content, this.templaterState.matches[xmlTagNumber][0], replacer, startTag);
       this.templaterState.matches[xmlTagNumber][0] = replacer;
@@ -1422,10 +1422,10 @@ Created by Edgar HIPP
         content = this.content;
       }
       if ((this.templaterState.matches[this.templaterState.tagEnd.numXmlTag][2].indexOf('}')) === -1) {
-        throw "no closing tag at @templaterState.tagEnd.numXmlTag " + this.templaterState.matches[this.templaterState.tagEnd.numXmlTag][2];
+        throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag " + this.templaterState.matches[this.templaterState.tagEnd.numXmlTag][2]);
       }
       if ((this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2].indexOf('{')) === -1) {
-        throw "no opening tag at @templaterState.tagStart.numXmlTag " + this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2];
+        throw new Error("no opening tag at @templaterState.tagStart.numXmlTag " + this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2]);
       }
       if (this.templaterState.tagEnd.numXmlTag === this.templaterState.tagStart.numXmlTag) {
         options = {
@@ -1499,12 +1499,12 @@ Created by Edgar HIPP
       var endTag, startTag;
       endTag = text.indexOf('</' + xmlTag + '>', end);
       if (endTag === -1) {
-        throw "can't find endTag " + endTag;
+        throw new Error("can't find endTag " + endTag);
       }
       endTag += ('</' + xmlTag + '>').length;
       startTag = Math.max(text.lastIndexOf('<' + xmlTag + '>', start), text.lastIndexOf('<' + xmlTag + ' ', start));
       if (startTag === -1) {
-        throw "can't find startTag";
+        throw new Error("can't find startTag");
       }
       return {
         "text": text.substr(startTag, endTag - startTag),
@@ -1588,7 +1588,7 @@ Created by Edgar HIPP
       if (typeof content === "string") {
         this.load(content);
       } else {
-        throw "content must be string!";
+        throw new Error("content must be string!");
       }
     }
 
@@ -1735,7 +1735,7 @@ Created by Edgar HIPP
           this.useTag(tag);
           value = result;
           if (value.indexOf('{') !== -1 || value.indexOf('}') !== -1) {
-            throw "You can't enter { or  } inside the content of a variable";
+            throw new Error("You can't enter { or  } inside the content of a variable");
           }
         } else if (typeof result === "number") {
           value = String(result);
@@ -1800,12 +1800,12 @@ Created by Edgar HIPP
     SubContent.prototype.getOuterXml = function(xmlTag) {
       this.end = this.fullText.indexOf('</' + xmlTag + '>', this.end);
       if (this.end === -1) {
-        throw "can't find endTag " + this.end;
+        throw new Error("can't find endTag " + this.end);
       }
       this.end += ('</' + xmlTag + '>').length;
       this.start = Math.max(this.fullText.lastIndexOf('<' + xmlTag + '>', this.start), this.fullText.lastIndexOf('<' + xmlTag + ' ', this.start));
       if (this.start === -1) {
-        throw "can't find startTag";
+        throw new Error("can't find startTag");
       }
       return this.refreshText();
     };

@@ -17,10 +17,10 @@ root.SubContent =  class SubContent
 		this
 	getOuterXml:(xmlTag)->
 		@end= @fullText.indexOf('</'+xmlTag+'>',@end)
-		if @end==-1 then throw "can't find endTag #{@end}"
+		if @end==-1 then throw new Error("can't find endTag #{@end}")
 		@end+=('</'+xmlTag+'>').length
 		@start = Math.max @fullText.lastIndexOf('<'+xmlTag+'>',@start), @fullText.lastIndexOf('<'+xmlTag+' ',@start)
-		if @start==-1 then throw "can't find startTag"
+		if @start==-1 then throw new Error("can't find startTag")
 		@refreshText()
 	replace:(newText)->
 		@fullText=@fullText.substr(0,@start)+newText+@fullText.substr(@end)

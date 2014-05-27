@@ -24,7 +24,7 @@ root.ScopeManager =  class ScopeManager
 				@useTag(tag)
 				value= result
 				if value.indexOf('{')!=-1 or value.indexOf('}')!=-1
-					throw "You can't enter { or  } inside the content of a variable"
+					throw new Error("You can't enter { or  } inside the content of a variable")
 			else if typeof result=="number"
 				value=String(result)
 			else value= result

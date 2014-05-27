@@ -30,7 +30,7 @@ root.TemplaterState=  class TemplaterState
 		@rawXmlTag=false
 		@textInsideTag= ""
 	startTag:(char)->
-		if @inTag is true then throw "Tag already open with text: #{@textInsideTag}"
+		if @inTag is true then throw new Error("Tag already open with text: #{@textInsideTag}")
 		@inTag= true
 		@rawXmlTag=false
 		@textInsideTag= ""
@@ -43,7 +43,7 @@ root.TemplaterState=  class TemplaterState
 	isLoopClosingTag:()->
 		@textInsideTag[0]=='/' and ('/'+@loopOpen.tag == @textInsideTag)
 	endTag:()->
-		if @inTag is false then throw "Tag already closed"
+		if @inTag is false then throw new Error("Tag already closed")
 		@inTag= false
 		@tagEnd=@currentStep
 		if @textInsideTag[0]=='@' and @loopType()=='simple'

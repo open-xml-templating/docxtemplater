@@ -110,13 +110,13 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		startTag= @templaterState.calcXmlTagPosition(xmlTagNumber)#where the open tag starts: <w:t>
 		#calculate the replacer according to the params
 		@templaterState.moveCharacters(xmlTagNumber+1,replacer,@templaterState.matches[xmlTagNumber][0])
-		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw "content #{@templaterState.matches[xmlTagNumber][0]} not found in content"
+		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw new Error("content #{@templaterState.matches[xmlTagNumber][0]} not found in content")
 		content = DocUtils.replaceFirstFrom content,@templaterState.matches[xmlTagNumber][0], replacer, startTag
 		@templaterState.matches[xmlTagNumber][0]=replacer
 		content
 	replaceTagByValue: (newValue,content=@content) ->
-		if (@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].indexOf ('}'))==-1 then throw "no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.matches[@templaterState.tagEnd.numXmlTag][2]}"
-		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf ('{'))==-1 then throw "no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}"
+		if (@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].indexOf ('}'))==-1 then throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.matches[@templaterState.tagEnd.numXmlTag][2]}")
+		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf ('{'))==-1 then throw new Error("no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}")
 
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
 
@@ -181,10 +181,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		subsubfile
 	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
-		if endTag==-1 then throw "can't find endTag #{endTag}"
+		if endTag==-1 then throw new Error("can't find endTag #{endTag}")
 		endTag+=('</'+xmlTag+'>').length
 		startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
-		if startTag==-1 then throw "can't find startTag"
+		if startTag==-1 then throw new Error("can't find startTag")
 		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 	forLoop: (innerTagsContent=@templaterState.findInnerTagsContent(@content).content,outerTagsContent=@templaterState.findOuterTagsContent(@content).content)->
 		###
