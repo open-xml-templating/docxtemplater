@@ -10,7 +10,6 @@ DocUtils.escapeRegExp= (str) ->
 
 
 DocUtils.charMap=
-	'"':"&quot;"
 	'&':"&amp;"
 	"'":"&apos;"
 	"<":"&lt;"

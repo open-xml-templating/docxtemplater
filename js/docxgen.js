@@ -244,7 +244,6 @@
   };
 
   DocUtils.charMap = {
-    '"': "&quot;",
     '&': "&amp;",
     "'": "&apos;",
     "<": "&lt;",
