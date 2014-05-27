@@ -19,10 +19,14 @@ DocxQrCode = class DocxQrCode
 			testdoc.applyTags()
 			_this.result=testdoc.content
 			_this.searchImage()
-		if env=='browser'
-			@qr.decode("data:image/png;base64,#{@base64Data}")
-		else
-			@qr.decode(@data,@data.decoded)
+		try
+			if env=='browser'
+				@qr.decode("data:image/png;base64,#{@base64Data}")
+			else
+				@qr.decode(@data,@data.decoded)
+		catch
+			@qr.result=null
+			@qr.callback()
 
 	searchImage:() ->
 		if @result.substr(0,4)=='gen:'

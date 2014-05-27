@@ -1147,10 +1147,15 @@ Created by Edgar HIPP
         _this.result = testdoc.content;
         return _this.searchImage();
       };
-      if (env === 'browser') {
-        return this.qr.decode("data:image/png;base64," + this.base64Data);
-      } else {
-        return this.qr.decode(this.data, this.data.decoded);
+      try {
+        if (env === 'browser') {
+          return this.qr.decode("data:image/png;base64," + this.base64Data);
+        } else {
+          return this.qr.decode(this.data, this.data.decoded);
+        }
+      } catch (_error) {
+        this.qr.result = null;
+        return this.qr.callback();
       }
     };
 
