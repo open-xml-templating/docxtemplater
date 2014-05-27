@@ -57,7 +57,7 @@ if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null |
     if (debugBool)
       console.log('data:'+docXData[jsonFileName]);
     if (docXData[jsonFileName]==undefined) throw 'no data found in json file'
-    jsonInput=JSON.parse(docXData[jsonFileName])
+    //jsonInput=JSON.parse(docXData[jsonFileName])
     if (docX[docxFileName]==undefined) throw 'no data found in json file'
     if (debugBool)
       console.log('decoded',jsonInput);
