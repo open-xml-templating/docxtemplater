@@ -28,7 +28,7 @@
     "angular-expressions": "~0.1.0"
   },
   "devDependencies": {
-    "gulp": "~3.5.2",
+    "gulp": "~3.6.0",
     "gulp-util": "~2.2.14",
     "gulp-coffee": "~1.4.1",
     "gulp-watch": "~0.5.0",
