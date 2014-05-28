@@ -13,16 +13,22 @@ DocxQrCode = class DocxQrCode
 		_this= this
 		@qr= new QrCode()
 		@qr.callback= () ->
+			console.log this.result
 			_this.ready= true
 			_this.result= this.result
 			testdoc= new _this.xmlTemplater.currentClass this.result, _this.xmlTemplater.toJson()
 			testdoc.applyTags()
 			_this.result=testdoc.content
 			_this.searchImage()
-		if env=='browser'
-			@qr.decode("data:image/png;base64,#{@base64Data}")
-		else
-			@qr.decode(@data,@data.decoded)
+		try
+			if env=='browser'
+				@qr.decode("data:image/png;base64,#{@base64Data}")
+			else
+				@qr.decode(@data,@data.decoded)
+		catch e
+			console.log(data.length)
+			console.log("Exception")
+			console.log(e)
 
 	searchImage:() ->
 		if @result.substr(0,4)=='gen:'

@@ -997,6 +997,7 @@ Created by Edgar HIPP
     function ImgReplacer(xmlTemplater) {
       this.xmlTemplater = xmlTemplater;
       this.imgMatches = [];
+      this.xmlTemplater.numQrCode = 0;
       this;
     }
 
@@ -1018,6 +1019,7 @@ Created by Edgar HIPP
 
     ImgReplacer.prototype.imageSetter = function(docxqrCode) {
       docxqrCode.xmlTemplater.numQrCode--;
+      console.log(docxqrCode.xmlTemplater.numQrCode);
       docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
       return docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
     };
@@ -1070,6 +1072,7 @@ Created by Edgar HIPP
       }
       replacement = DocUtils.xml2Str(imageTag);
       this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
+      console.log(this.xmlTemplater.numQrCode);
       this.xmlTemplater.numQrCode++;
       if (env === 'browser') {
         this.qr[u] = new DocxQrCode(oldFile.asBinary(), this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
@@ -1134,12 +1137,13 @@ Created by Edgar HIPP
     }
 
     DocxQrCode.prototype.decode = function(callback) {
-      var _this;
+      var e, _this;
       this.callback = callback;
       _this = this;
       this.qr = new QrCode();
       this.qr.callback = function() {
         var testdoc;
+        console.log(this.result);
         _this.ready = true;
         _this.result = this.result;
         testdoc = new _this.xmlTemplater.currentClass(this.result, _this.xmlTemplater.toJson());
@@ -1147,10 +1151,17 @@ Created by Edgar HIPP
         _this.result = testdoc.content;
         return _this.searchImage();
       };
-      if (env === 'browser') {
-        return this.qr.decode("data:image/png;base64," + this.base64Data);
-      } else {
-        return this.qr.decode(this.data, this.data.decoded);
+      try {
+        if (env === 'browser') {
+          return this.qr.decode("data:image/png;base64," + this.base64Data);
+        } else {
+          return this.qr.decode(this.data, this.data.decoded);
+        }
+      } catch (_error) {
+        e = _error;
+        console.log(data.length);
+        console.log("Exception");
+        return console.log(e);
       }
     };
 

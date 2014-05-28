@@ -4,6 +4,7 @@ env= if global? then 'node' else 'browser'
 ImgReplacer = class ImgReplacer
 	constructor: (@xmlTemplater)->
 		@imgMatches=[]
+		@xmlTemplater.numQrCode=0
 		this
 	findImages:() ->
 		@imgMatches= DocUtils.preg_match_all ///
@@ -18,6 +19,7 @@ ImgReplacer = class ImgReplacer
 		this
 	imageSetter:(docxqrCode) ->
 		docxqrCode.xmlTemplater.numQrCode--
+		console.log(docxqrCode.xmlTemplater.numQrCode)
 		docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
 		docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
 	replaceImage:(match,u)->
@@ -45,6 +47,7 @@ ImgReplacer = class ImgReplacer
 		if imageTag==undefined then throw new Error('imageTag undefined')
 		replacement= DocUtils.xml2Str imageTag
 		@xmlTemplater.content= @xmlTemplater.content.replace(match[0], replacement)
+		console.log(@xmlTemplater.numQrCode)
 		@xmlTemplater.numQrCode++
 		if env=='browser'
 			@qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
