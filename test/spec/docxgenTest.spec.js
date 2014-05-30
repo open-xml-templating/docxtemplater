@@ -1372,8 +1372,8 @@
         return testDocx.ready != null;
       });
       return runs(function() {
-        expect(testDocx.zip.files["word/media/Copie_1.png"].asBinary().length).not.toBe(0);
-        return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).not.toBe(0);
+        expect(testDocx.zip.files["word/media/Copie_1.png"].asBinary().length).toBe(561513);
+        return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(18062);
       });
     });
   });

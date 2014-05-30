@@ -3,6 +3,7 @@ env= if global? then 'node' else 'browser'
 
 DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
+		@callbacked=false
 		@data=imageData
 		if @data==undefined then throw new Error("data of qrcode can't be undefined")
 		if env=='browser'
@@ -34,10 +35,7 @@ DocxQrCode = class DocxQrCode
 			loadDocCallback= (data) =>
 				@data=data
 				@callback(this,@imgName,@num)
-			try
-				DocUtils.loadDoc(@result,{docx:false,callback:loadDocCallback,async:false})
-			catch error
-				console.log error
+			DocUtils.loadDoc(@result,{docx:false,callback:loadDocCallback,async:false})
 		else
 			@callback(this,@imgName,@num)
 

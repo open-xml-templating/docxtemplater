@@ -15,9 +15,12 @@ ImgReplacer = class ImgReplacer
 		this
 	replaceImages: ()->
 		@qr=[]
+		@xmlTemplater.numQrCode+=@imgMatches.length
 		@replaceImage(match,u) for match,u in @imgMatches
 		this
 	imageSetter:(docxqrCode) ->
+		if docxqrCode.callbacked==true then return
+		docxqrCode.callbacked=true
 		docxqrCode.xmlTemplater.numQrCode--
 		docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
 		docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
@@ -46,7 +49,6 @@ ImgReplacer = class ImgReplacer
 		if imageTag==undefined then throw new Error('imageTag undefined')
 		replacement= DocUtils.xml2Str imageTag
 		@xmlTemplater.content= @xmlTemplater.content.replace(match[0], replacement)
-		@xmlTemplater.numQrCode++
 		if env=='browser'
 			@qr[u]= new DocxQrCode(oldFile.asBinary(),@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 			@qr[u].decode(@imageSetter)
@@ -62,16 +64,11 @@ ImgReplacer = class ImgReplacer
 							@qr[u]= new DocxQrCode(png,@xmlTemplater,imgName,@xmlTemplater.DocxGen.qrCodeNumCallBack)
 							@qr[u].decode(@imageSetter)
 						catch e
-							console.log e
-							setTimeout ()=>
-								mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary()}
-								@imageSetter(mockedQrCode)
-							,200
+							mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary()}
+							@imageSetter(mockedQrCode)
 					dat= png.decode(finished)
 			else
-				setTimeout ()=>
-					mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary()}
-					@imageSetter(mockedQrCode)
-				,200
+				mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary()}
+				@imageSetter(mockedQrCode)
 
 root.ImgReplacer=ImgReplacer
