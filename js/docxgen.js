@@ -495,7 +495,6 @@
       e = _error;
       console.log(s);
       console.log('could not decode');
-      debugger;
       throw new Error('end');
     }
   };
@@ -1019,13 +1018,12 @@ Created by Edgar HIPP
 
     ImgReplacer.prototype.imageSetter = function(docxqrCode) {
       docxqrCode.xmlTemplater.numQrCode--;
-      console.log(docxqrCode.xmlTemplater.numQrCode);
       docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
       return docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
     };
 
     ImgReplacer.prototype.replaceImage = function(match, u) {
-      var imageTag, imgName, mockedQrCode, newId, oldFile, rId, replacement, tag, tagrId, xmlImg;
+      var imageTag, imgName, newId, oldFile, rId, replacement, tag, tagrId, xmlImg;
       xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
       if (env === 'browser') {
         tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
@@ -1072,7 +1070,6 @@ Created by Edgar HIPP
       }
       replacement = DocUtils.xml2Str(imageTag);
       this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
-      console.log(this.xmlTemplater.numQrCode);
       this.xmlTemplater.numQrCode++;
       if (env === 'browser') {
         this.qr[u] = new DocxQrCode(oldFile.asBinary(), this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
@@ -1086,20 +1083,40 @@ Created by Edgar HIPP
               binaryData = new Buffer(base64, 'base64');
               png = new PNG(binaryData);
               finished = function(a) {
+                var e;
                 png.decoded = a;
-                _this.qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
-                return _this.qr[u].decode(_this.imageSetter);
+                try {
+                  _this.qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+                  return _this.qr[u].decode(_this.imageSetter);
+                } catch (_error) {
+                  e = _error;
+                  console.log(e);
+                  return setTimeout(function() {
+                    var mockedQrCode;
+                    mockedQrCode = {
+                      xmlTemplater: _this.xmlTemplater,
+                      imgName: imgName,
+                      data: oldFile.asBinary()
+                    };
+                    return _this.imageSetter(mockedQrCode);
+                  }, 200);
+                }
               };
               return dat = png.decode(finished);
             };
           })(this)(imgName);
         } else {
-          mockedQrCode = {
-            xmlTemplater: this.xmlTemplater,
-            imgName: imgName,
-            data: oldFile.asBinary()
-          };
-          return this.imageSetter(mockedQrCode);
+          return setTimeout((function(_this) {
+            return function() {
+              var mockedQrCode;
+              mockedQrCode = {
+                xmlTemplater: _this.xmlTemplater,
+                imgName: imgName,
+                data: oldFile.asBinary()
+              };
+              return _this.imageSetter(mockedQrCode);
+            };
+          })(this), 200);
         }
       }
     };
@@ -1137,13 +1154,12 @@ Created by Edgar HIPP
     }
 
     DocxQrCode.prototype.decode = function(callback) {
-      var e, _this;
+      var _this;
       this.callback = callback;
       _this = this;
       this.qr = new QrCode();
       this.qr.callback = function() {
         var testdoc;
-        console.log(this.result);
         _this.ready = true;
         _this.result = this.result;
         testdoc = new _this.xmlTemplater.currentClass(this.result, _this.xmlTemplater.toJson());
@@ -1151,17 +1167,10 @@ Created by Edgar HIPP
         _this.result = testdoc.content;
         return _this.searchImage();
       };
-      try {
-        if (env === 'browser') {
-          return this.qr.decode("data:image/png;base64," + this.base64Data);
-        } else {
-          return this.qr.decode(this.data, this.data.decoded);
-        }
-      } catch (_error) {
-        e = _error;
-        console.log(data.length);
-        console.log("Exception");
-        return console.log(e);
+      if (env === 'browser') {
+        return this.qr.decode("data:image/png;base64," + this.base64Data);
+      } else {
+        return this.qr.decode(this.data, this.data.decoded);
       }
     };
 

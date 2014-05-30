@@ -70,14 +70,12 @@ DocUtils.loadDoc= (path,options={}) ->
 				if this.status == 200
 					loadFile(this.response)
 				else
-					#console.error 'error loading doc'
 					if callback? then callback(true)
 		xhrDoc.send()
 	else
 		httpRegex= new RegExp "(https?)","i"
 		# httpsRegex= new RegExp "(https)://"
 		if httpRegex.test(path)
-			#console.log('http(s) url matched:'+path)
 			urloptions=(url.parse(path))
 			options =
 				hostname:urloptions.hostname
@@ -182,7 +180,6 @@ DocUtils.decode_utf8= (s) ->
 	catch e
 		console.log s
 		console.log 'could not decode'
-		debugger
 		throw new Error('end')
 
 DocUtils.base64encode= (b) ->
