@@ -495,7 +495,6 @@
       e = _error;
       console.log(s);
       console.log('could not decode');
-      debugger;
       throw new Error('end');
     }
   };
@@ -997,6 +996,7 @@ Created by Edgar HIPP
     function ImgReplacer(xmlTemplater) {
       this.xmlTemplater = xmlTemplater;
       this.imgMatches = [];
+      this.xmlTemplater.numQrCode = 0;
       this;
     }
 
@@ -1008,6 +1008,7 @@ Created by Edgar HIPP
     ImgReplacer.prototype.replaceImages = function() {
       var match, u, _i, _len, _ref;
       this.qr = [];
+      this.xmlTemplater.numQrCode += this.imgMatches.length;
       _ref = this.imgMatches;
       for (u = _i = 0, _len = _ref.length; _i < _len; u = ++_i) {
         match = _ref[u];
@@ -1017,6 +1018,10 @@ Created by Edgar HIPP
     };
 
     ImgReplacer.prototype.imageSetter = function(docxqrCode) {
+      if (docxqrCode.callbacked === true) {
+        return;
+      }
+      docxqrCode.callbacked = true;
       docxqrCode.xmlTemplater.numQrCode--;
       docxqrCode.xmlTemplater.DocxGen.setImage("word/media/" + docxqrCode.imgName, docxqrCode.data);
       return docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num, false);
@@ -1070,7 +1075,6 @@ Created by Edgar HIPP
       }
       replacement = DocUtils.xml2Str(imageTag);
       this.xmlTemplater.content = this.xmlTemplater.content.replace(match[0], replacement);
-      this.xmlTemplater.numQrCode++;
       if (env === 'browser') {
         this.qr[u] = new DocxQrCode(oldFile.asBinary(), this.xmlTemplater, imgName, this.xmlTemplater.DocxGen.qrCodeNumCallBack);
         return this.qr[u].decode(this.imageSetter);
@@ -1083,9 +1087,20 @@ Created by Edgar HIPP
               binaryData = new Buffer(base64, 'base64');
               png = new PNG(binaryData);
               finished = function(a) {
+                var e, mockedQrCode;
                 png.decoded = a;
-                _this.qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
-                return _this.qr[u].decode(_this.imageSetter);
+                try {
+                  _this.qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
+                  return _this.qr[u].decode(_this.imageSetter);
+                } catch (_error) {
+                  e = _error;
+                  mockedQrCode = {
+                    xmlTemplater: _this.xmlTemplater,
+                    imgName: imgName,
+                    data: oldFile.asBinary()
+                  };
+                  return _this.imageSetter(mockedQrCode);
+                }
               };
               return dat = png.decode(finished);
             };
@@ -1122,6 +1137,7 @@ Created by Edgar HIPP
       this.imgName = imgName != null ? imgName : "";
       this.num = num;
       this.callback = callback;
+      this.callbacked = false;
       this.data = imageData;
       if (this.data === void 0) {
         throw new Error("data of qrcode can't be undefined");
@@ -1147,20 +1163,15 @@ Created by Edgar HIPP
         _this.result = testdoc.content;
         return _this.searchImage();
       };
-      try {
-        if (env === 'browser') {
-          return this.qr.decode("data:image/png;base64," + this.base64Data);
-        } else {
-          return this.qr.decode(this.data, this.data.decoded);
-        }
-      } catch (_error) {
-        this.qr.result = null;
-        return this.qr.callback();
+      if (env === 'browser') {
+        return this.qr.decode("data:image/png;base64," + this.base64Data);
+      } else {
+        return this.qr.decode(this.data, this.data.decoded);
       }
     };
 
     DocxQrCode.prototype.searchImage = function() {
-      var callback, error, loadDocCallback;
+      var callback, loadDocCallback;
       if (this.result.substr(0, 4) === 'gen:') {
         return callback = (function(_this) {
           return function(data) {
@@ -1176,16 +1187,11 @@ Created by Edgar HIPP
             return _this.callback(_this, _this.imgName, _this.num);
           };
         })(this);
-        try {
-          return DocUtils.loadDoc(this.result, {
-            docx: false,
-            callback: loadDocCallback,
-            async: false
-          });
-        } catch (_error) {
-          error = _error;
-          return console.log(error);
-        }
+        return DocUtils.loadDoc(this.result, {
+          docx: false,
+          callback: loadDocCallback,
+          async: false
+        });
       } else {
         return this.callback(this, this.imgName, this.num);
       }
