@@ -671,10 +671,12 @@
           path = relationship.getAttribute('Target');
           if (path.substr(0, 6) === 'media/') {
             return this.zip.files["word/" + path];
+          } else {
+            throw new Error("Rid is not an image");
           }
         }
       }
-      return null;
+      throw new Error("No Media with this Rid found");
     };
 
     return ImgManager;
@@ -1041,9 +1043,6 @@ Created by Edgar HIPP
       }
       rId = tagrId.getAttribute('r:embed');
       oldFile = this.xmlTemplater.DocxGen.imgManager.getImageByRid(rId);
-      if (oldFile === null) {
-        throw new Error('oldFile undefined');
-      }
       if (env === 'browser') {
         tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
       }
@@ -1173,13 +1172,13 @@ Created by Edgar HIPP
     DocxQrCode.prototype.searchImage = function() {
       var callback, loadDocCallback;
       if (this.result.substr(0, 4) === 'gen:') {
-        return callback = (function(_this) {
+        callback = (function(_this) {
           return function(data) {
             _this.data = data;
-            _this.callback(_this, _this.imgName, _this.num);
-            return _this.xmlTemplater.DocxGen.localImageCreator(_this.result, callback);
+            return _this.callback(_this, _this.imgName, _this.num);
           };
         })(this);
+        return this.xmlTemplater.DocxGen.localImageCreator(this.result, callback);
       } else if (this.result !== null && this.result !== void 0 && this.result.substr(0, 22) !== 'error decoding QR Code') {
         loadDocCallback = (function(_this) {
           return function(data) {

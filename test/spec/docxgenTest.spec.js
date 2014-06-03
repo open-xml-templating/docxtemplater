@@ -32,7 +32,7 @@
     DocUtils.pathConfig.node = __dirname + '/../../examples/';
   }
 
-  fileNames = ["qrCodeAndNonQrCodeExample.docx", "imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx', 'tableComplex3Example.docx', 'xmlInsertionExpected.docx', 'xmlInsertionExample.docx', "angularExample.docx", "xmlInsertionComplexExpected.docx", "xmlInsertionComplexExample.docx"];
+  fileNames = ["qrCodeAndNonQrCodeExample.docx", "imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx', 'tableComplex3Example.docx', 'xmlInsertionExpected.docx', 'xmlInsertionExample.docx', "angularExample.docx", "xmlInsertionComplexExpected.docx", "xmlInsertionComplexExample.docx", "qrCodeCustomGen.docx"];
 
   for (_i = 0, _len = fileNames.length; _i < _len; _i++) {
     name = fileNames[_i];
@@ -1359,7 +1359,7 @@
         return expect(docX['imageExample.docx'].zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625);
       });
     });
-    return it('should work with some images containing a qrcode, some not', function() {
+    it('should work with some images containing a qrcode, some not', function() {
       var testDocx;
       testDocx = new DocxGen(docX["qrCodeAndNonQrCodeExample.docx"].loadedContent, {}, {
         intelligentTagging: false,
@@ -1372,6 +1372,22 @@
         return testDocx.ready != null;
       });
       return runs(function() {
+        expect(testDocx.zip.files["word/media/Copie_1.png"].asBinary().length).toBe(561513);
+        return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(18062);
+      });
+    });
+    return it('should work with custom generation', function() {
+      var testDocx;
+      testDocx = new DocxGen(docX["qrCodeCustomGen.docx"].loadedContent, {}, {
+        intelligentTagging: false,
+        qrCode: true
+      });
+      testDocx.applyTags();
+      waitsFor(function() {
+        return testDocx.ready != null;
+      });
+      return runs(function() {
+        testDocx.output();
         expect(testDocx.zip.files["word/media/Copie_1.png"].asBinary().length).toBe(561513);
         return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(18062);
       });

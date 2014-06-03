@@ -67,7 +67,6 @@ ImgManager = class ImgManager
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
 		newTag.setAttribute('Target',"media/#{imageName}")
 		relationships.appendChild newTag
-
 		@setImage("word/_rels/document.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid
 	getImageByRid:(rId)-> #This is to get an image by it's rId (returns null if no img was found)
@@ -78,6 +77,8 @@ ImgManager = class ImgManager
 				path=relationship.getAttribute('Target')
 				if path.substr(0,6)=='media/'
 					return @zip.files["word/#{path}"]
-		return null
+				else
+					throw new Error("Rid is not an image")
+		throw new Error("No Media with this Rid found")
 
 root.ImgManager=ImgManager

@@ -30,7 +30,7 @@ DocxQrCode = class DocxQrCode
 			callback= (data) =>
 				@data=data
 				@callback(this,@imgName,@num)
-				@xmlTemplater.DocxGen.localImageCreator(@result,callback)
+			@xmlTemplater.DocxGen.localImageCreator(@result,callback)
 		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
 			loadDocCallback= (data) =>
 				@data=data
