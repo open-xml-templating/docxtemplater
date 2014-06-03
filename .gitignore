@@ -23,3 +23,4 @@ docxgenNode/input.json
 .idea
 test/spec/output.docx
 /output.docx
+tags

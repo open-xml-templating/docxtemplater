@@ -160,14 +160,10 @@ You're finished.
 configFile Structure: json Structure
 
 required Properties:
-	"config.docxFile":"tagExample.docx",
-	"config.outputFile":"output.docx",
-	"config.baseNodePath":"../examples/",
-	"config.qrcode":false,
 
-	config.docxFile: The input file in docx format
-	config.outputFile: The outputfile of the document
-	config.qrcode:true if the images should be scanned to be replaced, false otherwise
+ * **config.docxFile**: The input file in docx format
+ * **config.outputFile**: The outputfile of the document
+ * **config.qrcode**:true if the images should be scanned to be replaced, false otherwise
 
 The rest of the json is used for the scope variables (eg, those not starting with config.)
 
