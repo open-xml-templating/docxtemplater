@@ -707,9 +707,4 @@ describe 'SubContent', () ->
 		testDocx.applyTags()
 		waitsFor () -> testDocx.ready?
 		runs () ->
-			testDocx.output()
-			expect(testDocx.zip.files["word/media/Copie_1.png"].asBinary().length).toBe(561513)
-			expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(18062)
-
-
-
+			expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(258)
