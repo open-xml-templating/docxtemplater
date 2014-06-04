@@ -14,8 +14,9 @@ Contents:
 
    goals
    installation
-   generate_document
+   generate
    configuration
+   cli
    copyright
 
 
