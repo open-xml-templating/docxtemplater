@@ -11,15 +11,21 @@ Synopsis
 
 A typical docxtemplater template:
 
+.. code-block:: javascript
+
     Hello {name} !
 
 Given the following hash:
+
+.. code-block:: javascript
 
     {
         name:'Edgar'
     }
 
 Will produce:
+
+.. code-block:: javascript
 
     Hello Edgar !
 
@@ -30,22 +36,28 @@ Like Mustache, it has the loopopening {#} and loopclosing {/} brackets
 
 The following template:
 
+.. code-block:: javascript
+
     {#products}
         {name}, {price} €
     {/products}
 
 Given the following hash:
 
+.. code-block:: javascript
+
     {
-    	"products":
-    		[
-    		 {name:"Windows",price:100},
-    		 {name:"Mac OSX",price:200},
-    		 {name:"Ubuntu",price:0}
-    		]
+        "products":
+    	    [
+    	     {name:"Windows",price:100},
+    	     {name:"Mac OSX",price:200},
+    	     {name:"Ubuntu",price:0}
+    	    ]
     }
 
 will result in :
+
+.. code-block:: javascript
 
     Windows, 100 €
     Mac OSX, 200 €
