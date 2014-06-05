@@ -19,21 +19,36 @@ Contents:
    cli
    copyright
 
-.. _Demos: http://javascript-ninja.fr/docxgenjs/examples/demo.html
+Demos_
+------
 
 Including:
 
-- .. _Replace Variables: http://javascript-ninja.fr/docxgenjs/examples/demo.html#variables
-- .. _Formating: http://javascript-ninja.fr/docxgenjs/examples/demo.html#formating
-- .. _Angular Parsing: http://javascript-ninja.fr/docxgenjs/examples/demo.html#parsing
-- .. _Loops: http://javascript-ninja.fr/docxgenjs/examples/demo.html#loops
-- .. _Loops and tables: http://javascript-ninja.fr/docxgenjs/examples/demo.html#tables
-- .. _Lists: http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists
-- .. _Replacing images: http://javascript-ninja.fr/docxgenjs/examples/demo.html#images
-- .. _Naming the output: http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming
-- .. _Using QrCodes: http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcode
-- .. _Replacing many images with QrCode: http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcodeloop
-- .. _Raw Xml Insertion: http://javascript-ninja.fr/docxgenjs/examples/demo.html#rawxml
+
+- `Replace Variables`_
+- `Formating`_
+- `Angular Parsing`_
+- `Loops`_
+- `Loops and tables`_
+- `Lists`_
+- `Replacing images`_
+- `Naming the output`_
+- `Using QrCodes`_
+- `Replacing many images with QrCode`_
+- `Raw Xml Insertion`_
+
+.. _Demos: http://javascript-ninja.fr/docxgenjs/examples/demo.html
+.. _Replace Variables: http://javascript-ninja.fr/docxgenjs/examples/demo.html#variables
+.. _Formating: http://javascript-ninja.fr/docxgenjs/examples/demo.html#formating
+.. _Angular Parsing: http://javascript-ninja.fr/docxgenjs/examples/demo.html#parsing
+.. _Loops: http://javascript-ninja.fr/docxgenjs/examples/demo.html#loops
+.. _Loops and tables: http://javascript-ninja.fr/docxgenjs/examples/demo.html#tables
+.. _Lists: http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists
+.. _Replacing images: http://javascript-ninja.fr/docxgenjs/examples/demo.html#images
+.. _Naming the output: http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming
+.. _Using QrCodes: http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcode
+.. _Replacing many images with QrCode: http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcodeloop
+.. _Raw Xml Insertion: http://javascript-ninja.fr/docxgenjs/examples/demo.html#rawxml
 
 Indices and tables
 ==================
