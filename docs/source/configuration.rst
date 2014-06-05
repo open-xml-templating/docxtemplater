@@ -1,0 +1,2 @@
+.. index::
+   single: Configuration
