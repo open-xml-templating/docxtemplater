@@ -6,6 +6,12 @@
 Welcome to docxtemplater's documentation!
 =========================================
 
+.. image:: https://travis-ci.org/edi9999/docxtemplater.svg?branch=master
+
+.. image:: http://img.shields.io/npm/dm/docxtemplater.svg
+
+.. image:: http://img.shields.io/npm/v/docxtemplater.svg
+
 Contents:
 
 .. toctree::
@@ -18,6 +24,7 @@ Contents:
    configuration
    cli
    copyright
+
 
 Demos_
 ------
