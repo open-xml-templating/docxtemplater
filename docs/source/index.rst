@@ -20,6 +20,7 @@ Contents:
 
    goals
    installation
+   syntax
    generate
    configuration
    cli
