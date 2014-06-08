@@ -3,7 +3,7 @@
     {
 	console.log('Usage: docxtemplater <configFilePath>');
 	console.log('--- ConfigFile Format: json');
-	console.log('--- see Config.json in docxgenjs/docxgenNode');
+	console.log('--- see http://docxtemplater.readthedocs.org/en/latest/cli.html');
     }
 
 if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null || process.argv[2]==undefined)
