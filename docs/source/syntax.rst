@@ -63,13 +63,4 @@ will result in :
     Mac OSX, 200 €
     Ubuntu, 0€
 
-Angular.js like parsing
------------------------
-
-
-	This year is {person.age+person.birthyear}
-
-	vars={person:{age:50,birthyear:1964}}
-
-
 .. _Mustache: http://mustache.github.io/
