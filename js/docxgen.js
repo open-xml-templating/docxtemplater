@@ -149,6 +149,7 @@
 
     TemplaterState.prototype.initialize = function() {
       this.inForLoop = false;
+      this.loopIsInverted = false;
       this.inTag = false;
       this.inDashLoop = false;
       this.rawXmlTag = false;
@@ -195,6 +196,15 @@
       }
       if (this.textInsideTag[0] === '#' && this.loopType() === 'simple') {
         this.inForLoop = true;
+        this.loopOpen = {
+          'start': this.tagStart,
+          'end': this.tagEnd,
+          'tag': this.textInsideTag.substr(1)
+        };
+      }
+      if (this.textInsideTag[0] === '^' && this.loopType() === 'simple') {
+        this.inForLoop = true;
+        this.loopIsInverted = true;
         this.loopOpen = {
           'start': this.tagStart,
           'end': this.tagEnd,
@@ -1547,7 +1557,7 @@ Created by Edgar HIPP
           });
           return newContent += subfile.content;
         };
-      })(this));
+      })(this), this.templaterState.loopIsInverted);
       if (this.scopeManager.get(tag) == null) {
         this.calcSubXmlTemplater(innerTagsContent, {
           Tags: {}
@@ -1705,8 +1715,23 @@ Created by Edgar HIPP
       this.parser = parser;
     }
 
-    ScopeManager.prototype.loopOver = function(tag, callback) {
+    ScopeManager.prototype.loopOver = function(tag, callback, inverted) {
       var i, scope, _i, _len, _ref;
+      if (inverted == null) {
+        inverted = false;
+      }
+      if (inverted) {
+        if (!this.get(tag)) {
+          return callback(this.currentScope);
+        }
+        if (this.getTypeOf(tag) === 'string') {
+          return;
+        }
+        if (this.getTypeOf(tag) === 'object' && this.get(tag).length < 1) {
+          callback(this.currentScope);
+        }
+        return;
+      }
       if (this.get(tag) == null) {
         return;
       }

@@ -25,6 +25,7 @@ root.TemplaterState=  class TemplaterState
 		{content:content.substr(start,end-start),start,end}
 	initialize:()->
 		@inForLoop= false # tag with sharp: {#forLoop}______{/forLoop}
+		@loopIsInverted= false # tag with caret: {^invertedForLoop}_____{/invertedForLoop}
 		@inTag= false # all tags  {___}
 		@inDashLoop = false	# tag with dash: {-w:tr dashLoop} {/dashLoop}
 		@rawXmlTag=false
@@ -51,6 +52,10 @@ root.TemplaterState=  class TemplaterState
 			@tag=@textInsideTag.substr 1
 		if @textInsideTag[0]=='#' and @loopType()=='simple'
 			@inForLoop= true #begin for loop
+			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
+		if @textInsideTag[0]=='^' and @loopType()=='simple'
+			@inForLoop= true #begin for loop
+			@loopIsInverted= true
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
 		if @textInsideTag[0]=='-' and @loopType()=='simple'
 			@inDashLoop= true
