@@ -1721,10 +1721,16 @@ Created by Edgar HIPP
         inverted = false;
       }
       if (inverted) {
-        if ((this.get(tag) == null) || (this.getTypeOf(tag) === 'object' && !this.get(tag).length)) {
-          callback(this.currentScope);
+        if (!this.get(tag)) {
+          return callback(this.currentScope);
+        }
+        if (this.getTypeOf(tag) === 'string') {
           return;
         }
+        if (this.getTypeOf(tag) === 'object' && this.get(tag).length < 1) {
+          callback(this.currentScope);
+        }
+        return;
       }
       if (this.get(tag) == null) {
         return;

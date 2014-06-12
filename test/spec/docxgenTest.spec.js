@@ -261,17 +261,51 @@
         return expect(text).toEqual(expectedText);
       });
       return it("should provide inverted loops", function() {
-        var Tags;
-        Tags = {
-          "nom": "Hipp",
-          "prenom": "Edgar",
-          "telephone": "0652455478",
-          "description": "New Website",
-          "offre": []
-        };
-        docX['tagInvertedLoopExample.docx'].setTags(Tags);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: []
+        });
         docX['tagInvertedLoopExample.docx'].applyTags();
-        return expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialeNonHippEdgar');
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: false
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({});
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: [
+            {
+              name: "Bread"
+            }
+          ]
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: true
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: "Bread"
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: {
+            name: "Bread"
+          }
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        return expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
       });
     });
   });
