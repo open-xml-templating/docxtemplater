@@ -121,15 +121,45 @@ describe "DocxGenTemplatingForLoop", () ->
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
 		it "should provide inverted loops", () ->
-			Tags =
-				"nom":"Hipp"
-				"prenom":"Edgar"
-				"telephone":"0652455478"
-				"description":"New Website"
-				"offre":[]
-			docX['tagInvertedLoopExample.docx'].setTags Tags
+			# shows if the key is []
+			docX['tagInvertedLoopExample.docx'].setTags products: []
 			docX['tagInvertedLoopExample.docx'].applyTags()
-			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialeNonHippEdgar')
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+
+			#shows if the key is false
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: false
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+
+			#shows if the key doesn't exist
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags {}
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+
+			#doesn't show if the key is an array with length>1
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: [ name: "Bread" ]
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+
+			#doesn't show if the key is true
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: true
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+
+			#doesn't show if the key is a string or object
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: "Bread"
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: {name: "Bread"}
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
 
 describe "Xml Util" , () ->
 	xmlUtil= new XmlUtil()

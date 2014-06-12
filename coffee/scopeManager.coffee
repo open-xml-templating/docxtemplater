@@ -7,9 +7,11 @@ root.ScopeManager =  class ScopeManager
 	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser)->
 	loopOver:(tag,callback,inverted=false)->
 		if inverted
-			if !@get(tag)? || (@getTypeOf(tag) == 'object' && !@get(tag).length)
+			return callback(@currentScope) unless @get(tag)
+			return if @getTypeOf(tag) == 'string'
+			if @getTypeOf(tag) == 'object' && @get(tag).length < 1
 				callback(@currentScope)
-				return
+			return
 		if !@get(tag)? then return
 		if @getTypeOf(tag) == 'object'
 			for scope,i in @get(tag)
