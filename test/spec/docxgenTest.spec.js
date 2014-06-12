@@ -32,7 +32,7 @@
     DocUtils.pathConfig.node = __dirname + '/../../examples/';
   }
 
-  fileNames = ["qrCodeAndNonQrCodeExample.docx", "imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx', 'tableComplex3Example.docx', 'xmlInsertionExpected.docx', 'xmlInsertionExample.docx', "angularExample.docx", "xmlInsertionComplexExpected.docx", "xmlInsertionComplexExample.docx", "qrCodeCustomGen.docx"];
+  fileNames = ["qrCodeAndNonQrCodeExample.docx", "imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagInvertedLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx', 'tableComplex3Example.docx', 'xmlInsertionExpected.docx', 'xmlInsertionExample.docx', "angularExample.docx", "xmlInsertionComplexExpected.docx", "xmlInsertionComplexExample.docx", "qrCodeCustomGen.docx"];
 
   for (_i = 0, _len = fileNames.length; _i < _len; _i++) {
     name = fileNames[_i];
@@ -194,7 +194,7 @@
         docX['tagLoopExample.docx'].applyTags();
         return expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar');
       });
-      return it("should work with loops inside loops", function() {
+      it("should work with loops inside loops", function() {
         var Tags, expectedText, text;
         Tags = {
           "products": [
@@ -259,6 +259,53 @@
         expectedText = "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
         expect(text.length).toEqual(expectedText.length);
         return expect(text).toEqual(expectedText);
+      });
+      return it("should provide inverted loops", function() {
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: []
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: false
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({});
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: [
+            {
+              name: "Bread"
+            }
+          ]
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: true
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: "Bread"
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
+        docX['tagInvertedLoopExample.docx'] = new DocxGen(docX['tagInvertedLoopExample.docx'].loadedContent);
+        docX['tagInvertedLoopExample.docx'].setTags({
+          products: {
+            name: "Bread"
+          }
+        });
+        docX['tagInvertedLoopExample.docx'].applyTags();
+        return expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('');
       });
     });
   });

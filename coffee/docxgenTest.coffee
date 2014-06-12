@@ -19,7 +19,7 @@ DocUtils.pathConfig=
 if env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
+fileNames=["qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
 
 
 for name in fileNames
@@ -120,6 +120,47 @@ describe "DocxGenTemplatingForLoop", () ->
 			expectedText= "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
+		it "should provide inverted loops", () ->
+			# shows if the key is []
+			docX['tagInvertedLoopExample.docx'].setTags products: []
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+
+			#shows if the key is false
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: false
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+
+			#shows if the key doesn't exist
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags {}
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+
+			#doesn't show if the key is an array with length>1
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: [ name: "Bread" ]
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+
+			#doesn't show if the key is true
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: true
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+
+			#doesn't show if the key is a string or object
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: "Bread"
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+
+			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			docX['tagInvertedLoopExample.docx'].setTags products: {name: "Bread"}
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+
 describe "Xml Util" , () ->
 	xmlUtil= new XmlUtil()
 	it "should compute the scope between 2 <w:t>" , () ->
