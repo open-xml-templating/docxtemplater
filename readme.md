@@ -1,4 +1,4 @@
-# DocxTemplater (also called docxgen.js) #
+# DocxTemplater
 
 [![Build Status](https://travis-ci.org/edi9999/docxtemplater.svg?branch=master)](https://travis-ci.org/edi9999/docxtemplater)
 [![Download count](http://img.shields.io/npm/dm/docxtemplater.svg)](https://www.npmjs.org/package/docxtemplater)
