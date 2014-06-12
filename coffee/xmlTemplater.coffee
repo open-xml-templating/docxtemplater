@@ -203,6 +203,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopeManager.loopOver tag, (subTags) =>
 			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:subTags})
 			newContent+=subfile.content
+		, @templaterState.loopIsInverted
 		if !@scopeManager.get(tag)?
 			# This line is only for having the ability to retrieve the tags from a document
 			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})

@@ -19,7 +19,7 @@ DocUtils.pathConfig=
 if env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
+fileNames=["qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
 
 
 for name in fileNames
@@ -120,6 +120,17 @@ describe "DocxGenTemplatingForLoop", () ->
 			expectedText= "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
 			expect(text.length).toEqual(expectedText.length)
 			expect(text).toEqual(expectedText)
+		it "should provide inverted loops", () ->
+			Tags =
+				"nom":"Hipp"
+				"prenom":"Edgar"
+				"telephone":"0652455478"
+				"description":"New Website"
+				"offre":[]
+			docX['tagInvertedLoopExample.docx'].setTags Tags
+			docX['tagInvertedLoopExample.docx'].applyTags()
+			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialeNonHippEdgar')
+
 describe "Xml Util" , () ->
 	xmlUtil= new XmlUtil()
 	it "should compute the scope between 2 <w:t>" , () ->
