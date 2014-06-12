@@ -103,12 +103,12 @@ Template:
 
 .. code-block:: javascript
 
-    {{#repo}}
-      <b>{{name}}</b>
-    {{/repo}}
-    {{^repo}}
+    {#repo}
+      <b>{name}</b>
+    {/repo}
+    {^repo}
       No repos :(
-    {{/repo}}
+    {/repo}
 
 Hash:
 

@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "author": "Edgar Hipp <hipp.edg@gmail.com>",
   "description": "A docX templater",
   "contributors": [
