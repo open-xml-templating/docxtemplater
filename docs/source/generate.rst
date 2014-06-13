@@ -1,3 +1,5 @@
+..  _generate:
+
 .. index::
    single: Generate a Document
 
@@ -38,7 +40,7 @@ However, loading the base64Data is not that easy, so I created a wrapper functio
 
 .. note::
 
-    The options parameter will be explained later on.
+    The options parameter are explained in :ref:`configuration`
 
 
 .. code-block:: javascript

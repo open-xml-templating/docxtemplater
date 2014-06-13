@@ -1,3 +1,5 @@
+..  _syntax:
+
 .. index::
    single: Syntax
 
@@ -72,6 +74,10 @@ The loop behaves in the following way:
 
  * If the value is an array, it will loop over all the elements of that array.
  * If the value is a boolean, it will loop once if the value is true, keeping the same scope, and not loop at all if the value is false
+
+.. note:: 
+
+    Because the loops work also with boolean values, you can also use them for conditions.
 
 
 Dash syntax

@@ -29,6 +29,8 @@ Including:
 
 docx is a zipped format that contains some xml. If you want to build a simple replace {tag} by value system, it can already become complicated, because the {tag} is internally separated into `<w:t>{</w:t><w:t>tag</w:t><w:t>}</w:t>`.  If you want to embed loops to iterate over an array, it becomes a real hassle.
 
+I have also written a blog post about [why you should use docxtemplater over POI or docx4j to generate documents](http://javascript-ninja.fr/why-docxtemplater-is-so-awesome-to-generate-docx-files/).
+
 ## Syntax ##
 
 The *syntax* is highly inspired by [Mustache](http://mustache.github.io/). The template is created in Microsoft Word or an equivalent docx saver.

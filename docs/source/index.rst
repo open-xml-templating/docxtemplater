@@ -22,7 +22,6 @@ Contents:
    installation
    syntax
    generate
-   special_options
    configuration
    cli
    copyright
