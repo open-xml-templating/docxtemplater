@@ -1,3 +1,5 @@
+..  _goals:
+
 .. index::
    single: Goals
    
