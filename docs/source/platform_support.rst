@@ -6,8 +6,9 @@
 Browser Support
 ===============
 
-docxgen.js works with
+docxtemplater works with
 
+- Node.js with 0.10 and 0.11
 - Chrome **tested** on version 26
 - Firefox 3+ (**tested** on version 21, but should work with 3+)
 - Safari **not tested**

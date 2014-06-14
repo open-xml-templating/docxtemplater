@@ -19,7 +19,7 @@ Contents:
 
 
    goals
-   browser_support
+   platform_support
    installation
    syntax
    generate
