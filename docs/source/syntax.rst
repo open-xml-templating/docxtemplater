@@ -55,11 +55,11 @@ Given the following hash:
 
     {
         "products":
-    	    [
-    	     {name:"Windows",price:100},
-    	     {name:"Mac OSX",price:200},
-    	     {name:"Ubuntu",price:0}
-    	    ]
+            [
+             {name:"Windows",price:100},
+             {name:"Mac OSX",price:200},
+             {name:"Ubuntu",price:0}
+            ]
     }
 
 will result in :
