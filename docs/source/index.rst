@@ -19,6 +19,7 @@ Contents:
 
 
    goals
+   browser_support
    installation
    syntax
    generate
