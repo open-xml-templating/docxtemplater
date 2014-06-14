@@ -51,13 +51,13 @@ Like Mustache, it has the loopopening {#} and loopclosing {/} brackets
     {/products}
 
     vars={
-    		products:
-    			[
-    			 {name:"Windows",price:100},
-    			 {name:"Mac OSX",price:200},
-    			 {name:"Ubuntu",price:0}
-    			]
-    	}
+            products:
+                [
+                 {name:"Windows",price:100},
+                 {name:"Mac OSX",price:200},
+                 {name:"Ubuntu",price:0}
+                ]
+        }
 
 will result in :
 
@@ -67,30 +67,30 @@ will result in :
 
 ## Angular.js like parsing
 
-	This year is {person.age+person.birthyear}
+    This year is {person.age+person.birthyear}
 
-	vars={person:{age:50,birthyear:1964}}
+    vars={person:{age:50,birthyear:1964}}
 
 will result in:
 
-	This year is 2014
+    This year is 2014
 
 To enable this, you need to specify a custom parser. See [Angular Parsing](http://javascript-ninja.fr/docxgenjs/examples/demo.html#parsing)
 You need to create a parser function:
 
 docxgen comes shipped with this parser:
 
-	parser=function(expression)
-	{
-		return {get:function(scope){return scope[expression]}}
-	}
+    parser=function(expression)
+    {
+        return {get:function(scope){return scope[expression]}}
+    }
 
 the angular-parser is the following:
-	
-	expressions= require('angular-expressions')
-	angularParser= (tag) ->
-		expr=expressions.compile(tag)
-		{get:expr}
+    
+    expressions= require('angular-expressions')
+    angularParser= (tag) ->
+        expr=expressions.compile(tag)
+        {get:expr}
 
 The require() works in the browser if you include vendor/angular-parser-browser.js
 
@@ -129,21 +129,21 @@ They are two ways to install docxtemplater:
 
 Installation: `npm install docxtemplater`
 
-	var DocXTemplater= require('docxtemplater');
+    var DocXTemplater= require('docxtemplater');
 
-	//loading the file
-	docxtemplater=new DocXTemplater().loadFromFile("input.docx");
+    //loading the file
+    docxtemplater=new DocXTemplater().loadFromFile("input.docx");
 
-	//setting the tags
-	docxtemplater.setTags({"name":"Edgar"});
+    //setting the tags
+    docxtemplater.setTags({"name":"Edgar"});
 
-	//when finished
-	docxtemplater.finishedCallback=function () {
-  	  docxtemplater.output();
-	}
+    //when finished
+    docxtemplater.finishedCallback=function () {
+        docxtemplater.output();
+    }
 
-	//apply the tags
-	docxtemplater.applyTags();
+    //apply the tags
+    docxtemplater.applyTags();
 
 You can download [input.docx](https://github.com/edi9999/docxtemplater/blob/master/input.docx?raw=true) and put it in the same folder than your script.
 
@@ -157,7 +157,7 @@ You're finished.
 
 ### Node Global Usage
 
-	`docxtemplater <configFile>`
+    `docxtemplater <configFile>`
 
 configFile Structure: json Structure
 
@@ -215,19 +215,19 @@ The rest of the json is used for the scope variables (eg, those not starting wit
 
         options: object
 
-			parser:
-				Type: function
-				A custom parser to use. See angular.js like parsing
+            parser:
+                Type: function
+                A custom parser to use. See angular.js like parsing
 
-        	intelligentTagging:
-            	Type: boolean [false]
-            	If intelligent Tagging is not set to true, when using recursive tags ({#tag} and {/tag}), the system will copy paste what is between the start tag and the endtag, this could basically corrupt the files if recursive tags are used inside tables.
-            	If intelligent Tagging is set to true, and when using recursive tags inside tables, the whole column will be copy pasted.
+            intelligentTagging:
+                Type: boolean [false]
+                If intelligent Tagging is not set to true, when using recursive tags ({#tag} and {/tag}), the system will copy paste what is between the start tag and the endtag, this could basically corrupt the files if recursive tags are used inside tables.
+                If intelligent Tagging is set to true, and when using recursive tags inside tables, the whole column will be copy pasted.
 
-        	qrCode:
-            	Type: boolean [false]
-            	If qrCode is set to true, DocxGen will look at all the images to find a Qr-Code. If the Qr-code matches to a URL, this URL will be loaded by ajax (Be aware that the server you want to access needs to allow your request, or it won't work. http://stackoverflow.com/questions/9310112/why-am-i-seeing-an-origin-is-not-allowed-by-access-control-allow-origin-error )
-            	**Important**: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
+            qrCode:
+                Type: boolean [false]
+                If qrCode is set to true, DocxGen will look at all the images to find a Qr-Code. If the Qr-code matches to a URL, this URL will be loaded by ajax (Be aware that the server you want to access needs to allow your request, or it won't work. http://stackoverflow.com/questions/9310112/why-am-i-seeing-an-origin-is-not-allowed-by-access-control-allow-origin-error )
+                **Important**: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
 
         localImageCreator
             Type: function(arg,callback) [function that returns an arrow]
@@ -258,9 +258,9 @@ If you need some help, please look at the docs (just below) read the readme, and
             The docx template you want to load as plain text
 
     loadFromFile(path)
-    	path
-    		Type: string
-    		Loads a docx from a file path
+        path
+            Type: string
+            Loads a docx from a file path
     setTags(Tags)
 
         Tags:
