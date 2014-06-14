@@ -110,7 +110,7 @@ Here's the different options parameters:
         Type:boolean[true]
         If download is true, file will be downloaded automatically with data URI.
         returns the output file.
-    
+
     type:
         Type:string["base64"]
         The type of zip to return. The possible values are : (same as in http://stuk.github.io/jszip/ @generate)
