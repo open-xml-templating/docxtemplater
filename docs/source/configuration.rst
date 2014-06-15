@@ -29,6 +29,11 @@ The option for this is `qrCode` (true for on, false for off, default off)
 
     If you don't use that functionality, you should disable it, because it is quite slow (the image decoding)
 
+.. warning::
+
+    The qrCode functionality only works for PNG !
+    They is no support for other file formats yet.
+
 Angular Parser
 --------------
 
