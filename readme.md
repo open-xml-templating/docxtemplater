@@ -37,7 +37,7 @@ Installation: `npm install docxtemplater`
     var DocXTemplater= require('docxtemplater');
 
     //loading the file
-    docxtemplater=new DocXTemplater().loadFromFile("input.docx");
+    docxtemplater=new DocXTemplater().loadFromFile("tagExample.docx");
 
     //setting the tags
     docxtemplater.setTags({"name":"Edgar"});
@@ -50,7 +50,7 @@ Installation: `npm install docxtemplater`
     //apply the tags
     docxtemplater.applyTags();
 
-You can download [input.docx](https://github.com/edi9999/docxtemplater/blob/master/input.docx?raw=true) and put it in the same folder than your script.
+You can download [tagExample.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
 
 ## Known issues

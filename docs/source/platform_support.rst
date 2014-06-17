@@ -1,10 +1,10 @@
-..  _browser_support:
+..  _platform_support:
 
 .. index::
-   single: Browser Support
+   single: platform_support
 
-Browser Support
-===============
+Platform Support
+================
 
 docxtemplater works with
 
