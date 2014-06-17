@@ -25,6 +25,7 @@ Contents:
    generate
    configuration
    cli
+   full_doc
    copyright
 
 
