@@ -5,7 +5,7 @@
   "description": "A docX templater",
   "contributors": [
     {
-      "name": "Edgar Hipp",
+      "name": "Edgar Hipp"
     }
   ],
   "main": "js/docxgen.js",
@@ -39,7 +39,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=0.8"
+    "node": ">=0.6"
   },
   "scripts": {
     "test": "jasmine-node test/spec/docxgenTest.spec.js"
