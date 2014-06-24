@@ -749,3 +749,22 @@ describe 'SubContent', () ->
 		waitsFor () -> testDocx.ready?
 		runs () ->
 			expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(258)
+
+	it 'should work with custom tags', () ->
+		content= """<w:t>Hello {name}</w:t>"""
+		scope= {"name":"Edgar"}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+
+		DocUtils.tags=
+			start:'['
+			end:']'
+		content= """<w:t>Hello [name]</w:t>"""
+		scope= {"name":"Edgar"}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+		DocUtils.tags=
+			start:'{'
+			end:'}'
