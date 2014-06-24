@@ -50,9 +50,9 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				for m,t in @templaterState.matches when t==numXmlTag
 					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
 						throw new Error("no < at the beginning of #{m[0][0]} (2)")
-				if character=='{'
+				if character==DocUtils.tags.start
 					@templaterState.startTag()
-				else if character == '}'
+				else if character == DocUtils.tags.end
 					@templaterState.endTag()
 					if @templaterState.loopType()=='simple'
 						@replaceSimpleTag()
@@ -61,12 +61,15 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 						break
 					else if @templaterState.isLoopClosingTag()
 						return @replaceLoopTag()
-				else #if character != '{' and character != '}'
+				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		if @DocxGen? and @DocxGen.qrCode
 			new ImgReplacer(this).findImages().replaceImages()
 		this
-	replaceSimpleTag:()->@content = @replaceTagByValue(DocUtils.utf8ToWord(@scopeManager.getValueFromScope(@templaterState.textInsideTag)))
+	replaceSimpleTag:()->
+		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
+		@content = @replaceTagByValue(DocUtils.utf8ToWord(newValue))
+		@content
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
@@ -115,21 +118,24 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@templaterState.matches[xmlTagNumber][0]=replacer
 		content
 	replaceTagByValue: (newValue,content=@content) ->
-		if (@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].indexOf ('}'))==-1 then throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.matches[@templaterState.tagEnd.numXmlTag][2]}")
-		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf ('{'))==-1 then throw new Error("no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}")
+		if (@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].indexOf (DocUtils.tags.end))==-1 then throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.matches[@templaterState.tagEnd.numXmlTag][2]}")
+		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf (DocUtils.tags.start))==-1 then throw new Error("no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}")
+
+		sTag=DocUtils.tags.start
+		eTag=DocUtils.tags.end
 
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
 
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				insideValue:@templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "{#{@templaterState.textInsideTag}}", newValue
+				insideValue:@templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
 				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
 			content= @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
 
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
-			regexRight= /^([^{]*){.*$/
+			regexRight= new RegExp("^([^#{sTag}]*)#{sTag}.*$")
 			subMatches= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].match regexRight
 
 			options=
@@ -154,7 +160,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				content= @replaceXmlTag(content, options)
 
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
-			regexLeft= /^[^}]*}(.*)$/
+			regexLeft= new RegExp ("^[^#{eTag}]*#{eTag}(.*)$")
 			options =
 				insideValue:@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].replace regexLeft, '$1'
 				spacePreserve:true

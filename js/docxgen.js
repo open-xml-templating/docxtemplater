@@ -419,6 +419,11 @@
     return fileName;
   };
 
+  DocUtils.tags = {
+    start: '{',
+    end: '}'
+  };
+
   DocUtils.clone = function(obj) {
     var flags, key, newInstance;
     if ((obj == null) || typeof obj !== 'object') {
@@ -1320,9 +1325,9 @@ Created by Edgar HIPP
               }
             }
           }
-          if (character === '{') {
+          if (character === DocUtils.tags.start) {
             this.templaterState.startTag();
-          } else if (character === '}') {
+          } else if (character === DocUtils.tags.end) {
             this.templaterState.endTag();
             if (this.templaterState.loopType() === 'simple') {
               this.replaceSimpleTag();
@@ -1347,7 +1352,10 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.replaceSimpleTag = function() {
-      return this.content = this.replaceTagByValue(DocUtils.utf8ToWord(this.scopeManager.getValueFromScope(this.templaterState.textInsideTag)));
+      var newValue;
+      newValue = this.scopeManager.getValueFromScope(this.templaterState.textInsideTag);
+      this.content = this.replaceTagByValue(DocUtils.utf8ToWord(newValue));
+      return this.content;
     };
 
     XmlTemplater.prototype.replaceSimpleTagRawXml = function() {
@@ -1431,25 +1439,27 @@ Created by Edgar HIPP
     };
 
     XmlTemplater.prototype.replaceTagByValue = function(newValue, content) {
-      var k, options, regexLeft, regexRight, subMatches, _i, _ref, _ref1;
+      var eTag, k, options, regexLeft, regexRight, sTag, subMatches, _i, _ref, _ref1;
       if (content == null) {
         content = this.content;
       }
-      if ((this.templaterState.matches[this.templaterState.tagEnd.numXmlTag][2].indexOf('}')) === -1) {
+      if ((this.templaterState.matches[this.templaterState.tagEnd.numXmlTag][2].indexOf(DocUtils.tags.end)) === -1) {
         throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag " + this.templaterState.matches[this.templaterState.tagEnd.numXmlTag][2]);
       }
-      if ((this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2].indexOf('{')) === -1) {
+      if ((this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2].indexOf(DocUtils.tags.start)) === -1) {
         throw new Error("no opening tag at @templaterState.tagStart.numXmlTag " + this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2]);
       }
+      sTag = DocUtils.tags.start;
+      eTag = DocUtils.tags.end;
       if (this.templaterState.tagEnd.numXmlTag === this.templaterState.tagStart.numXmlTag) {
         options = {
           xmlTagNumber: this.templaterState.tagStart.numXmlTag,
-          insideValue: this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2].replace("{" + this.templaterState.textInsideTag + "}", newValue),
+          insideValue: this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2].replace("" + sTag + this.templaterState.textInsideTag + eTag, newValue),
           noStartTag: (this.templaterState.matches[this.templaterState.tagStart.numXmlTag].first != null) || (this.templaterState.matches[this.templaterState.tagStart.numXmlTag].last != null)
         };
         content = this.replaceXmlTag(content, options);
       } else if (this.templaterState.tagEnd.numXmlTag > this.templaterState.tagStart.numXmlTag) {
-        regexRight = /^([^{]*){.*$/;
+        regexRight = new RegExp("^([^" + sTag + "]*)" + sTag + ".*$");
         subMatches = this.templaterState.matches[this.templaterState.tagStart.numXmlTag][2].match(regexRight);
         options = {
           xmlTagNumber: this.templaterState.tagStart.numXmlTag
@@ -1469,7 +1479,7 @@ Created by Edgar HIPP
           options.xmlTagNumber = k;
           content = this.replaceXmlTag(content, options);
         }
-        regexLeft = /^[^}]*}(.*)$/;
+        regexLeft = new RegExp("^[^" + eTag + "]*" + eTag + "(.*)$");
         options = {
           insideValue: this.templaterState.matches[this.templaterState.tagEnd.numXmlTag][2].replace(regexLeft, '$1'),
           spacePreserve: true,
@@ -1763,8 +1773,8 @@ Created by Edgar HIPP
         if (typeof result === 'string') {
           this.useTag(tag);
           value = result;
-          if (value.indexOf('{') !== -1 || value.indexOf('}') !== -1) {
-            throw new Error("You can't enter { or  } inside the content of a variable");
+          if (value.indexOf(DocUtils.tags.start) !== -1 || value.indexOf(DocUtils.tags.end) !== -1) {
+            throw new Error("You can't enter " + DocUtils.tags.start + " or  " + DocUtils.tags.end + " inside the content of a variable");
           }
         } else if (typeof result === "number") {
           value = String(result);

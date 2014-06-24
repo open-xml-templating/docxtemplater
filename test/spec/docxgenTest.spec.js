@@ -1423,7 +1423,7 @@
         return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(18062);
       });
     });
-    return it('should work with custom generation', function() {
+    it('should work with custom generation', function() {
       var testDocx;
       testDocx = new DocxGen(docX["qrCodeCustomGen.docx"].loadedContent, {}, {
         intelligentTagging: false,
@@ -1436,6 +1436,35 @@
       return runs(function() {
         return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(258);
       });
+    });
+    return it('should work with custom tags', function() {
+      var content, scope, xmlTemplater;
+      content = "<w:t>Hello {name}</w:t>";
+      scope = {
+        "name": "Edgar"
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
+      DocUtils.tags = {
+        start: '[',
+        end: ']'
+      };
+      content = "<w:t>Hello [name]</w:t>";
+      scope = {
+        "name": "Edgar"
+      };
+      xmlTemplater = new DocXTemplater(content, {
+        Tags: scope
+      });
+      xmlTemplater.applyTags();
+      expect(xmlTemplater.getFullText()).toBe('Hello Edgar');
+      return DocUtils.tags = {
+        start: '{',
+        end: '}'
+      };
     });
   });
 

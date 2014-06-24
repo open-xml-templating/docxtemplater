@@ -8,6 +8,15 @@ var spawn = require('child_process').spawn;
 var livereload = require('gulp-livereload');
 var server=null;
 
+try {
+    var Blink1 = require('node-blink1');
+    var blink1 = new Blink1();
+} catch (e) {
+    blink1={
+        fadeToRGB:function(){
+    }};
+}
+
 
 var config={uglify:false}
 
@@ -25,7 +34,7 @@ gulp.task('watch', function () {
 gulp.task('coffeeTest', function() {
 	a=gulp.src(paths.coffeeTest)
 		.pipe(coffee({map:true}))
-	
+
 	if(config.uglify)
 		a=a.pipe(uglify())
 
@@ -38,6 +47,7 @@ gulp.task('coffeeTest', function() {
 });
 
 gulp.task('coffee', function(cb) {
+    blink1.fadeToRGB(80, 255, 255, 0); // r, g, b: 0 - 255
 	a= gulp.src(paths.coffee)
 		.pipe(coffee({map:true}))
 
@@ -112,17 +122,18 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 			if (failures==0)
 			{
 				gutil.log(gutil.colors.green(fullText+nowTime));
+                blink1.fadeToRGB(80, 0, 255, 0); // r, g, b: 0 - 255
 			}
 			else
 			{
+                blink1.fadeToRGB(80, 255, 0, 0); // r, g, b: 0 - 255
 				gutil.log(gutil.colors.red(fullText+nowTime));
-				gutil.beep()
 			}
 		}
 		else
 			{
 				gutil.log(gutil.colors.red(totalData+nowTime))
-				gutil.beep()
+                blink1.fadeToRGB(80, 255, 0, 0); // r, g, b: 0 - 255
 			}
 		cb();
 	});

@@ -8,7 +8,6 @@ root.docXData=[]
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 
-
 DocUtils.charMap=
 	'&':"&amp;"
 	"'":"&apos;"
@@ -117,6 +116,10 @@ DocUtils.loadDoc= (path,options={}) ->
 				catch e
 					if callback? then callback()
 	return fileName
+
+DocUtils.tags=
+	start:'{'
+	end:'}'
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'
