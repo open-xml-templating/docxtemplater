@@ -53,27 +53,28 @@ docxtemplater comes shipped with this parser:
 
     parser=function(expression)
     {
-        return {get:function(scope){return scope[expression]}}
+        return {
+            get:function(scope) {
+                return scope[expression]
+            }
+        };
     }
 
 To use the angular-parser, do the following:
 
 .. code-block:: javascript
 
-    expressions= require('angular-expressions')
-    angularParser= (tag) ->
-        expr=expressions.compile(tag)
-        {get:expr}
-
-The require() works in the browser if you include vendor/angular-parser-browser.js
-
-
-For example:
-
-.. code-block:: javascript
-
+    expressions= require('angular-expressions');
+    angularParser= function(tag) {
+        return {
+            get:expressions.compile(tag)
+        };
+    }
     new DocxGen(data,{parser:angularParser})
 
+.. note::
+
+    The require() works in the browser if you include vendor/angular-parser-browser.js
 
 Intelligent LoopTagging
 -----------------------
@@ -81,7 +82,7 @@ Intelligent LoopTagging
 The name of this option `intelligentTagging` (boolean).
 
 When looping over an element, docxtemplater needs to know over which
-element you want to tag. By default, it tries to do that intelligently
+element you want to loop. By default, it tries to do that intelligently
 (by looking what XML Tags are between the {tags}). However, if you want
 to always use the <w:t> tag by default, set this option to false.
 
