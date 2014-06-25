@@ -830,11 +830,13 @@
       });
       it("should do it's thing with JSZip.base64", function() {
         var base64data, data;
-        data = qrcodezip.files['blabla.png'].asText();
+        data = qrcodezip.files['blabla.png'].asBinary();
+        console.log(qrcodezip.files['blabla.png']);
+        expect(data.length).toBe(1305);
         base64data = JSZip.base64.encode(data);
-        expect(base64data.length).toBe(624);
-        expect(base64data.substr(0, 50)).toBe("kcNChoKAAAADUlIRFIAAAAAIAAABOAAAAAZ0Uk5TAEAA07AAAE");
-        return expect(base64data).toBe("kcNChoKAAAADUlIRFIAAAAAIAAABOAAAAAZ0Uk5TAEAA07AAAEURBVHdQkUQ/RQDIg7ON9jXTF4flff17B0EYJEDoJQidBDPcfG30PMH+N1VJTkQOglCJ0Icn0rPTxJEDoJQidB0Egj89PenQhBCVg2Rk9c5RA6CUInQhBOPm8gdBCRA6CUInQfN3dBB0EYJEDoJQidheKSkkC0EYJEDoJs9P141dBB0EYJEDoJQidhm2fVzZlnQhBCRuRTcye633fQSkQOglCJ0IXX6KdHB0WEDoJQidB0Ec/dX/teYY/Tyc6CUInQhBCcv/Xic6CUInQhBCm/f+FP0EYJEDoJQidB9Fnvc1hBCRA6CWve0IQSkYWk3HuPcB0EYJEDoJQidBUcez9HP3fPE0EYJEDoJQidhOEc/p53vf6/PcB0EYJEDoJQidBHfhd8VPWfP59dBJEDoJQidBsH31kpVfkQOglCJ0I0fl1axBA6CUInQhBjn/mHdidB0EJwHPOXVPiAhBCRA6Cf3Xc/8n0EJ0IQSlYNkzedHd+Nfx9xHQSkQOglCJ08+H9QSRA6CUInQh+pnQhBCd/fUcMRdCJ0IQSnAfHhBCRA6CUIn0wsvkAAAAASUVORA");
+        expect(base64data.length).toBe(1740);
+        expect(base64data.substr(0, 50)).toBe("iVBORw0KGgoAAAANSUhEUgAAAPgAAAD4CAIAAABOs7xcAAAABn");
+        return expect(base64data).toBe("iVBORw0KGgoAAAANSUhEUgAAAPgAAAD4CAIAAABOs7xcAAAABnRSTlMA/gABAP1bbA07AAAEzklEQVR4nO3dQY5bKRRA0Xar97/l6g0UAyII4HvONNaPY10xeH7Bn5+fn3/g2/17+g3A3yB0EoROgtBJEDoJQidB6CT8N/qDz+fzN9/HHxt9DzB6/6u+N1j1/FWf8+7vQ17vwYlOgtBJEDoJQidB6CQInQShkzCco4+c2l+fneOummfvnou//j3AKz040UkQOglCJ0HoJAidBKGTIHQSpufoI7ftVc/OiVf9vbNz8dnP7bbPeeS29+lEJ0HoJAidBKGTIHQShE6C0ElYNke/zak98lmvvM/XOdFJEDoJQidB6CQInQShkyB0Er52jj5r9x787OvNv9dyopMgdBKEToLQSRA6CUInQegkLJuj3zb3PXWvyLf+zuis296PE50EoZMgdBKEToLQSRA6CUInYXqOvmrue8rs/eUjs3vkr79+5JUenOgkCJ0EoZMgdBKEToLQSRA6CZ/b9oZ32z0/XjWnH9n9Pr+VE50EoZMgdBKEToLQSRA6CUInYbiPfmq/efb9jOyeE6+al5+aZ5/6PmHVc2Zf70QnQegkCJ0EoZMgdBKEToLQSRjO0U/dBzJ6zm374rftc+++X2X383d/nk50EoROgtBJEDoJQidB6CQInYTpffTZ15+ai696zu75+iv3ruy+N90cHRYQOglCJ0HoJAidBKGTIHQSpu9HP3V/y233n8y67f3v/t5g93NmP08nOglCJ0HoJAidBKGTIHQShE7CcI7+yv3Zr7jtPpnb5uu7/14nOglCJ0HoJAidBKGTIHQShE7C8F6XkVP74qvmrKv+3t3PH/27ds+hT9n973KikyB0EoROgtBJEDoJQidB6CRMz9Fn58q37U+vmluvcurzvO3+9d2c6CQInQShkyB0EoROgtBJEDoJ03P03Vbtu5+aE5+a06/6XdiRU3v5q17vRCdB6CQInQShkyB0EoROgtBJGM7Rb7sn5NTvfe6+x/3Ufvmpe8pPcaKTIHQShE6C0EkQOglCJ0HoJCy71+XUnHvVHvZtc9+R1+9HP3XPjxOdBKGTIHQShE6C0EkQOglCJ2E4Rz+1f/zK3vOqefzsc3bvi+9+zqrXz3KikyB0EoROgtBJEDoJQidB6CR8ds+hd8/FT819Z9/Pt+67n3q+fXT4hdBJEDoJQidB6CQInQShk7BsH31k9+9urnr+qT3pV/b+X78X34lOgtBJEDoJQidB6CQInQShk7B9H/2U2+45mXVqj//U+x9xrwtMEDoJQidB6CQInQShkyB0Erbvo+926nuAV+burzx/lntd4BdCJ0HoJAidBKGTIHQShE7CcB/99bnpbc85dU/OqufPuu33Yp3oJAidBKGTIHQShE6C0EkQOgnDffRZt81xdz//1D767v8n8Mr/Q5jlRCdB6CQInQShkyB0EoROgtBJWDZH/1aze+e798VHds/jX9n7H3GikyB0EoROgtBJEDoJQidB6CR87Rx91fz11P767Jx+5JX98tn36X50+IXQSRA6CUInQegkCJ0EoZPgfvQ/fM4pt93v/srn70QnQegkCJ0EoZMgdBKEToLQSZjeR399v3n3vPbU74+u8sr3DPbR4RdCJ0HoJAidBKGTIHQShE7CcB8dvokTnQShkyB0EoROgtBJEDoJQifhf99MLPyIbss5AAAAAElFTkSuQmCC");
       });
       it("should work with Blablalalabioeajbiojbepbroji", function() {
         runs(function() {
@@ -1050,21 +1052,20 @@
         return docX['qrCodeTaggingExample.docx'].ready != null;
       });
       return runs(function() {
-        var i, _results;
+        var createdText, expectedText, i;
         expect(docX['qrCodeTaggingExample.docx'].zip.files['word/media/Copie_0.png'] != null).toBeTruthy();
-        _results = [];
         for (i in docX['qrCodeTaggingExample.docx'].zip.files) {
           expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date);
           expect(docX['qrCodeTaggingExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].name);
           expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir);
-          if ((docX['qrCodeTaggingExample.docx'].zip.files[i].asText()) !== null && i !== "word/document.xml") {
+          if ((docX['qrCodeTaggingExample.docx'].zip.files[i].asText()) !== null && i !== "word/document.xml" && i !== "word/_rels/document.xml.rels") {
             expect(docX['qrCodeTaggingExample.docx'].zip.files[i].asText().length).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText().length);
-            _results.push(expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText()));
-          } else {
-            _results.push(void 0);
+            expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText());
           }
         }
-        return _results;
+        createdText = docX['qrCodeTaggingExample.docx'].zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g, "").replace(/\x0a/g, "");
+        expectedText = docX['qrCodeTaggingExampleExpected.docx'].zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g, "").replace(/\x0a/g, "");
+        return expect(createdText).toEqual(expectedText);
       });
     });
     return it('should work with loop QRCODE with {tags}', function() {
