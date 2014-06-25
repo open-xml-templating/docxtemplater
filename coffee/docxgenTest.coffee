@@ -327,7 +327,6 @@ describe 'DocxQrCode module', () ->
 
 		it "should do it's thing with JSZip.base64", () ->
 			data=qrcodezip.files['blabla.png'].asBinary()
-			console.log qrcodezip.files['blabla.png']
 			expect(data.length).toBe(1305)
 			base64data=JSZip.base64.encode(data)
 			expect(base64data.length).toBe(1740)
