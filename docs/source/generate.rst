@@ -1,3 +1,5 @@
+..  _generate:
+
 .. index::
    single: Generate a Document
 
@@ -38,7 +40,7 @@ However, loading the base64Data is not that easy, so I created a wrapper functio
 
 .. note::
 
-    The options parameter will be explained later on.
+    The options parameter are explained in :ref:`configuration`
 
 
 .. code-block:: javascript
@@ -108,7 +110,7 @@ Here's the different options parameters:
         Type:boolean[true]
         If download is true, file will be downloaded automatically with data URI.
         returns the output file.
-    
+
     type:
         Type:string["base64"]
         The type of zip to return. The possible values are : (same as in http://stuk.github.io/jszip/ @generate)

@@ -1,3 +1,5 @@
+..  _copyright:
+
 .. index::
    single: Copyright
    

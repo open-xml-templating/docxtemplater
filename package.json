@@ -1,12 +1,11 @@
 {
   "name": "docxtemplater",
-  "version": "0.5.8",
-  "author": "Edgar Hipp <hipp.edg@gmail.com>",
+  "version": "0.6.0",
+  "author": "Edgar Hipp",
   "description": "A docX templater",
   "contributors": [
     {
-      "name": "Edgar Hipp",
-      "email": "hipp.edg@gmail.com"
+      "name": "Edgar Hipp"
     }
   ],
   "main": "js/docxgen.js",
@@ -25,16 +24,16 @@
   },
   "dependencies": {
     "xmldom": "0.1.x",
-    "angular-expressions": "~0.1.0"
+    "angular-expressions": "~0.2.1"
   },
   "devDependencies": {
-    "gulp": "~3.6.0",
+    "gulp": "~3.8.0",
     "gulp-util": "~2.2.14",
-    "gulp-coffee": "~1.4.1",
-    "gulp-watch": "~0.5.0",
-    "gulp-concat": "~2.1.7",
-    "gulp-uglify": "~0.2.1",
-    "gulp-livereload": "~1.1.1",
+    "gulp-coffee": "~2.0.1",
+    "gulp-watch": "~0.6.5",
+    "gulp-concat": "~2.2.0",
+    "gulp-uglify": "~0.3.0",
+    "gulp-livereload": "~2.1.0",
     "gulp-notify": "^1.2.5",
     "gulp-jasmine": "^0.2.0"
   },
