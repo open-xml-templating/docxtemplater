@@ -1044,7 +1044,7 @@ Created by Edgar HIPP
     };
 
     ImgReplacer.prototype.replaceImage = function(match, u) {
-      var imageTag, imgName, mockedQrCode, newId, oldFile, rId, replacement, tag, tagrId, xmlImg;
+      var e, imageTag, imgName, mockedQrCode, newId, oldFile, rId, replacement, tag, tagrId, xmlImg;
       xmlImg = DocUtils.Str2xml('<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">' + match[0] + '</w:document>');
       if (env === 'browser') {
         tagrId = xmlImg.getElementsByTagNameNS('*', 'blip')[0];
@@ -1056,7 +1056,12 @@ Created by Edgar HIPP
         throw new Error('tagRiD undefined !');
       }
       rId = tagrId.getAttribute('r:embed');
-      oldFile = this.xmlTemplater.DocxGen.imgManager.getImageByRid(rId);
+      try {
+        oldFile = this.xmlTemplater.DocxGen.imgManager.getImageByRid(rId);
+      } catch (_error) {
+        e = _error;
+        return;
+      }
       if (env === 'browser') {
         tag = xmlImg.getElementsByTagNameNS('*', 'docPr')[0];
       }
@@ -1100,7 +1105,7 @@ Created by Edgar HIPP
               binaryData = new Buffer(base64, 'base64');
               png = new PNG(binaryData);
               finished = function(a) {
-                var e, mockedQrCode;
+                var mockedQrCode;
                 png.decoded = a;
                 try {
                   _this.qr[u] = new DocxQrCode(png, _this.xmlTemplater, imgName, _this.xmlTemplater.DocxGen.qrCodeNumCallBack);
