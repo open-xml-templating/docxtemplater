@@ -110,12 +110,6 @@
       });
     });
     describe("image loading", function() {
-      it("should find one image (and not more than 1)", function() {
-        return expect(docX['imageExample.docx'].getImageList().length).toEqual(1);
-      });
-      it("should find the image named with the good name", function() {
-        return expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg');
-      });
       return it("should change the image with another one", function() {
         var newImageData, oldImageData;
         oldImageData = docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText();
@@ -1437,7 +1431,7 @@
         return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(258);
       });
     });
-    it('should work with custom tags', function() {
+    return it('should work with custom tags', function() {
       var content, scope, xmlTemplater;
       content = "<w:t>Hello {name}</w:t>";
       scope = {
@@ -1466,14 +1460,13 @@
         end: '}'
       };
     });
-    return it('should work with qrcode in footer', function() {
-      var testDocx;
-      testDocx = new DocxGen(docX["qrCodeFooter.docx"].loadedContent, {}, {
-        intelligentTagging: false,
-        qrCode: true
-      });
-      return testDocx.applyTags();
-    });
   });
+
+
+  /*
+  	it 'should work with qrcode in footer', () ->
+  		testDocx=new DocxGen(docX["qrCodeFooter.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
+  		testDocx.applyTags()
+   */
 
 }).call(this);

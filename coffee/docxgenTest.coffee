@@ -62,10 +62,6 @@ describe "DocxGenLoading", () ->
 			fullText=(docX['imageExample.docx'].getFullText()) #default value document.xml
 			expect(fullText).toBe("")
 	describe "image loading", () ->
-		it "should find one image (and not more than 1)", () ->
-				expect(docX['imageExample.docx'].getImageList().length).toEqual(1)
-		it "should find the image named with the good name", () ->
-			expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg')
 		it "should change the image with another one", () ->
 			oldImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
 			docX['imageExample.docx'].setImage('word/media/image1.jpeg',docXData['image.png'],{binary:false})
@@ -774,6 +770,8 @@ describe 'SubContent', () ->
 			start:'{'
 			end:'}'
 
+###
 	it 'should work with qrcode in footer', () ->
 		testDocx=new DocxGen(docX["qrCodeFooter.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
 		testDocx.applyTags()
+###
