@@ -32,7 +32,7 @@
     DocUtils.pathConfig.node = __dirname + '/../../examples/';
   }
 
-  fileNames = ["qrCodeAndNonQrCodeExample.docx", "imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagInvertedLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx', 'tableComplex3Example.docx', 'xmlInsertionExpected.docx', 'xmlInsertionExample.docx', "angularExample.docx", "xmlInsertionComplexExpected.docx", "xmlInsertionComplexExample.docx", "qrCodeCustomGen.docx"];
+  fileNames = ["qrCodeAndNonQrCodeExample.docx", "imageExample.docx", "tagExample.docx", "tagExampleExpected.docx", "tagLoopExample.docx", "tagInvertedLoopExample.docx", "tagExampleExpected.docx", "tagLoopExampleImageExpected.docx", "tagProduitLoop.docx", "tagDashLoop.docx", "tagDashLoopList.docx", "tagDashLoopTable.docx", 'tagDashLoop.docx', 'qrCodeExample.docx', 'qrCodeExampleExpected.docx', 'qrCodeTaggingExample.docx', 'qrCodeTaggingExampleExpected.docx', 'qrCodeTaggingLoopExample.docx', 'qrCodeTaggingLoopExampleExpected.docx', 'tagIntelligentLoopTableExpected.docx', 'cyrillic.docx', 'tableComplex2Example.docx', 'tableComplexExample.docx', 'tableComplex3Example.docx', 'xmlInsertionExpected.docx', 'xmlInsertionExample.docx', "angularExample.docx", "xmlInsertionComplexExpected.docx", "xmlInsertionComplexExample.docx", "qrCodeCustomGen.docx", "qrCodeFooter.docx"];
 
   for (_i = 0, _len = fileNames.length; _i < _len; _i++) {
     name = fileNames[_i];
@@ -1437,7 +1437,7 @@
         return expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(258);
       });
     });
-    return it('should work with custom tags', function() {
+    it('should work with custom tags', function() {
       var content, scope, xmlTemplater;
       content = "<w:t>Hello {name}</w:t>";
       scope = {
@@ -1465,6 +1465,14 @@
         start: '{',
         end: '}'
       };
+    });
+    return it('should work with qrcode in footer', function() {
+      var testDocx;
+      testDocx = new DocxGen(docX["qrCodeFooter.docx"].loadedContent, {}, {
+        intelligentTagging: false,
+        qrCode: true
+      });
+      return testDocx.applyTags();
     });
   });
 
