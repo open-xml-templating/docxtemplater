@@ -19,12 +19,13 @@ Contents:
 
 
    goals
+   platform_support
    installation
    syntax
    generate
-   special_options
    configuration
    cli
+   full_doc
    copyright
 
 

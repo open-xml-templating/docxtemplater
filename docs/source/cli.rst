@@ -1,3 +1,5 @@
+..  _cli:
+
 .. index::
    single: Command Line Interface (CLI)
 
