@@ -30,7 +30,10 @@ ImgReplacer = class ImgReplacer
 		if env=='node' then tagrId= xmlImg.getElementsByTagName("a:blip")[0]
 		if tagrId==undefined then throw new Error('tagRiD undefined !')
 		rId = tagrId.getAttribute('r:embed')
-		oldFile= @xmlTemplater.DocxGen.imgManager.getImageByRid(rId)
+		try
+			oldFile= @xmlTemplater.DocxGen.imgManager.getImageByRid(rId)
+		catch e
+			return
 		if env=='browser' then tag= xmlImg.getElementsByTagNameNS('*','docPr')[0]
 		if env=='node' then tag= xmlImg.getElementsByTagName("wp:docPr")[0]
 		if tag==undefined then throw new Error('tag undefined')
