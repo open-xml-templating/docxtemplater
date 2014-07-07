@@ -27,3 +27,4 @@ tags
 /docs/build
 *.spec.js
 *.spec.map
+/js

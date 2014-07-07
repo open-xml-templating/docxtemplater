@@ -79,6 +79,15 @@ gulp.task('allCoffee', function(cb) {
 		.pipe(concat('docxgen.js'))
 		.pipe(gulp.dest('./js/'));
 
+	a=gulp.src(paths.coffeeTest)
+		.pipe(coffee({map:true}))
+
+	if(config.uglify)
+		a=a.pipe(uglify())
+
+	a=a.pipe(concat('docxgenTest.spec.js'))
+		.pipe(gulp.dest('./test/spec'));
+
 	return a
 });
 
