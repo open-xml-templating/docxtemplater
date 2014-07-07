@@ -3,7 +3,6 @@ Docxgen.coffee
 Created by Edgar HIPP
 ###
 
-root= global ? window
 env= if global? then 'node' else 'browser'
 
 if env=='node'
@@ -22,7 +21,7 @@ if env=='node'
 	['jszip.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jszip2.0/dist/' + file), file)
 
-root.DocxGen = class DocxGen
+class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 	defaultImageCreator=(arg,callback) ->
 		#This is the image of an arrow, you can replace this function by whatever you want to generate an image
@@ -41,19 +40,6 @@ root.DocxGen = class DocxGen
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 			@qrCode= if @options.qrCode? then @options.qrCode else off
 			if @options.parser? then @parser=options.parser
-	loadFromFile:(path,options={})->
-		@setOptions(options)
-		promise=
-			success:(fun)->
-				this.successFun=fun
-			successFun:()->
-		if !options.docx? then options.docx=false
-		if !options.async? then options.async=false
-		if !options.callback? then options.callback=(rawData) =>
-			@load rawData
-			promise.successFun(this)
-		DocUtils.loadDoc(path,options)
-		if options.async==false then return this else return promise
 	qrCodeCallBack:(num,add=true) ->
 		if add==true
 			@qrCodeWaitingFor.push num
@@ -65,7 +51,6 @@ root.DocxGen = class DocxGen
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
-	getImageList:()-> @imgManager.getImageList()
 	setImage: (path,data,options={}) ->
 		if !options.binary? then options.binary=true
 		@imgManager.setImage(path,data,options)
@@ -142,5 +127,19 @@ root.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 
-if env=='node'
-	module.exports=root.DocxGen
+DocxGen.loadFromFile=(path,options={})->
+		docx=new DocxGen()
+		docx.setOptions(options)
+		promise=
+			success:(fun)->
+				this.successFun=fun
+			successFun:()->
+		if !options.docx? then options.docx=false
+		if !options.async? then options.async=false
+		if !options.callback? then options.callback=(rawData) ->
+			docx.load rawData
+			promise.successFun(this)
+		DocUtils.loadDoc(path,options)
+		if options.async==false then return docx else return promise
+
+module.exports=DocxGen

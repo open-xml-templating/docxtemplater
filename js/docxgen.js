@@ -709,9 +709,7 @@ Created by Edgar HIPP
  */
 
 (function() {
-  var DocxGen, env, path, root;
-
-  root = typeof global !== "undefined" && global !== null ? global : window;
+  var DocxGen, env, path;
 
   env = typeof global !== "undefined" && global !== null ? 'node' : 'browser';
 
@@ -733,7 +731,7 @@ Created by Edgar HIPP
     });
   }
 
-  root.DocxGen = DocxGen = (function() {
+  DocxGen = (function() {
     var defaultImageCreator, templatedFiles;
 
     templatedFiles = ["word/document.xml", "word/footer1.xml", "word/footer2.xml", "word/footer3.xml", "word/header1.xml", "word/header2.xml", "word/header3.xml"];
@@ -771,40 +769,6 @@ Created by Edgar HIPP
       }
     };
 
-    DocxGen.prototype.loadFromFile = function(path, options) {
-      var promise;
-      if (options == null) {
-        options = {};
-      }
-      this.setOptions(options);
-      promise = {
-        success: function(fun) {
-          return this.successFun = fun;
-        },
-        successFun: function() {}
-      };
-      if (options.docx == null) {
-        options.docx = false;
-      }
-      if (options.async == null) {
-        options.async = false;
-      }
-      if (options.callback == null) {
-        options.callback = (function(_this) {
-          return function(rawData) {
-            _this.load(rawData);
-            return promise.successFun(_this);
-          };
-        })(this);
-      }
-      DocUtils.loadDoc(path, options);
-      if (options.async === false) {
-        return this;
-      } else {
-        return promise;
-      }
-    };
-
     DocxGen.prototype.qrCodeCallBack = function(num, add) {
       var index;
       if (add == null) {
@@ -824,10 +788,6 @@ Created by Edgar HIPP
         this.ready = true;
         return this.finishedCallback();
       }
-    };
-
-    DocxGen.prototype.getImageList = function() {
-      return this.imgManager.getImageList();
     };
 
     DocxGen.prototype.setImage = function(path, data, options) {
@@ -995,9 +955,40 @@ Created by Edgar HIPP
 
   })();
 
-  if (env === 'node') {
-    module.exports = root.DocxGen;
-  }
+  DocxGen.loadFromFile = function(path, options) {
+    var docx, promise;
+    if (options == null) {
+      options = {};
+    }
+    docx = new DocxGen();
+    docx.setOptions(options);
+    promise = {
+      success: function(fun) {
+        return this.successFun = fun;
+      },
+      successFun: function() {}
+    };
+    if (options.docx == null) {
+      options.docx = false;
+    }
+    if (options.async == null) {
+      options.async = false;
+    }
+    if (options.callback == null) {
+      options.callback = function(rawData) {
+        docx.load(rawData);
+        return promise.successFun(this);
+      };
+    }
+    DocUtils.loadDoc(path, options);
+    if (options.async === false) {
+      return docx;
+    } else {
+      return promise;
+    }
+  };
+
+  module.exports = DocxGen;
 
 }).call(this);
 

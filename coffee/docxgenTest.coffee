@@ -23,9 +23,9 @@ fileNames=["qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx
 
 
 for name in fileNames
-	root.docX[name]=new DocxGen().loadFromFile(name)
+	root.docX[name]=DocxGen.loadFromFile(name)
 
-root.docX["tagExampleWithParser"]=new DocxGen().loadFromFile("tagExample.docx")
+root.docX["tagExampleWithParser"]=DocxGen.loadFromFile("tagExample.docx")
 
 DocUtils.loadDoc('tagIntelligentLoopTable.docx',{intelligentTagging:true})
 DocUtils.loadDoc('image.png',{docx:false})
