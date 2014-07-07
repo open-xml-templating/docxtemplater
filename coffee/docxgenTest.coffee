@@ -61,17 +61,6 @@ describe "DocxGenLoading", () ->
 		it "should load the right content for the document", () ->
 			fullText=(docX['imageExample.docx'].getFullText()) #default value document.xml
 			expect(fullText).toBe("")
-	describe "image loading", () ->
-		it "should find one image (and not more than 1)", () ->
-				expect(docX['imageExample.docx'].getImageList().length).toEqual(1)
-		it "should find the image named with the good name", () ->
-			expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg')
-		it "should change the image with another one", () ->
-			oldImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
-			docX['imageExample.docx'].setImage('word/media/image1.jpeg',docXData['image.png'],{binary:false})
-			newImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
-			expect(oldImageData).not.toEqual(newImageData)
-			expect(docXData['image.png']).toEqual(newImageData)
 	describe "output and input", () ->
 		it "should be the same" , () ->
 			doc=new DocxGen(root.docX['tagExample.docx'].loadedContent)
