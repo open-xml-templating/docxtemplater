@@ -60,13 +60,6 @@ describe "DocxGenLoading", () ->
 		it "should load the right content for the document", () ->
 			fullText=(docX['imageExample.docx'].getFullText()) #default value document.xml
 			expect(fullText).toBe("")
-	describe "image loading", () ->
-		it "should change the image with another one", () ->
-			oldImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
-			docX['imageExample.docx'].setImage('word/media/image1.jpeg',docXData['image.png'],{binary:false})
-			newImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
-			expect(oldImageData).not.toEqual(newImageData)
-			expect(docXData['image.png']).toEqual(newImageData)
 	describe "output and input", () ->
 		it "should be the same" , () ->
 			doc=new DocxGen(root.docX['tagExample.docx'].loadedContent)
@@ -439,26 +432,6 @@ describe 'DocxQrCode module', () ->
 				expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
 				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
-
-
-
-describe "image Loop Replacing", () ->
-	describe 'rels', () ->
-		it 'should load', () ->
-			expect(docX['imageExample.docx'].imgManager.loadImageRels().imageRels).toEqual([])
-			expect(docX['imageExample.docx'].imgManager.maxRid).toEqual(10)
-		it 'should add', () ->
-			oldData= docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()
-			expect(docX['imageExample.docx'].imgManager.addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
-			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()).not.toBe(oldData)
-			relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()
-			contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].asText()
-			relsXml= DocUtils.Str2xml(relsData)
-			contentTypeXml= DocUtils.Str2xml(contentTypeData)
-			relationships= relsXml.getElementsByTagName('Relationship')
-			contentTypes= contentTypeXml.getElementsByTagName('Default')
-			expect(relationships.length).toEqual(11)
-			expect(contentTypes.length).toBe(4)
 
 describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
