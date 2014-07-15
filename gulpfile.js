@@ -10,7 +10,7 @@ var server=null;
 
 try {
     var Blink1 = require('node-blink1');
-    var blink1 = new Blink1();
+    var blink1 = new Blink1('20002C4A');
 } catch (e) {
     blink1={
         fadeToRGB:function(){
@@ -47,7 +47,7 @@ gulp.task('coffeeTest', function() {
 });
 
 gulp.task('coffee', function(cb) {
-    blink1.fadeToRGB(80, 255, 255, 0); // r, g, b: 0 - 255
+    blink1.fadeToRGB(40, 120, 120, 0); // r, g, b: 0 - 255
 	a= gulp.src(paths.coffee)
 		.pipe(coffee({map:true}))
 
@@ -78,6 +78,15 @@ gulp.task('allCoffee', function(cb) {
 		.pipe(coffee({map:true}))
 		.pipe(concat('docxgen.js'))
 		.pipe(gulp.dest('./js/'));
+
+	a=gulp.src(paths.coffeeTest)
+		.pipe(coffee({map:true}))
+
+	if(config.uglify)
+		a=a.pipe(uglify())
+
+	a=a.pipe(concat('docxgenTest.spec.js'))
+		.pipe(gulp.dest('./test/spec'));
 
 	return a
 });
@@ -122,18 +131,18 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 			if (failures==0)
 			{
 				gutil.log(gutil.colors.green(fullText+nowTime));
-                blink1.fadeToRGB(80, 0, 255, 0); // r, g, b: 0 - 255
+                blink1.fadeToRGB(40, 0, 120, 0); // r, g, b: 0 - 255
 			}
 			else
 			{
-                blink1.fadeToRGB(80, 255, 0, 0); // r, g, b: 0 - 255
+                blink1.fadeToRGB(40, 120, 0, 0); // r, g, b: 0 - 255
 				gutil.log(gutil.colors.red(fullText+nowTime));
 			}
 		}
 		else
 			{
 				gutil.log(gutil.colors.red(totalData+nowTime))
-                blink1.fadeToRGB(80, 255, 0, 0); // r, g, b: 0 - 255
+                blink1.fadeToRGB(40, 120, 0, 0); // r, g, b: 0 - 255
 			}
 		cb();
 	});
