@@ -524,6 +524,13 @@ describe 'Changing the parser', () ->
 		docX["angularExample.docx"].applyTags()
 		expect(docX["angularExample.docx"].getFullText()).toEqual('Hipp Edgar 2014')
 
+	it 'should work with loops', ()->
+		content= """<w:t>Hello {#person.adult}you{/person.adult}</w:t>"""
+		scope= {"person":{"name":"Edgar","adult":true}}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope,parser:angularParser})
+		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello you')
+
 describe 'Non Utf-8 characters', () ->
 	it 'should read full text correctly', ()->
 		fullText=docX["cyrillic.docx"].getFullText()
