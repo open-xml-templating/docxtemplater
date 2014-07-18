@@ -9,7 +9,7 @@ ImgReplacer = class ImgReplacer
 	findImages:() ->
 		@imgMatches= DocUtils.preg_match_all ///
 		<w:drawing[^>]*>
-		.*?
+		.*?<a:blip.r:embed.*?
 		</w:drawing>
 		///g, @xmlTemplater.content
 		this

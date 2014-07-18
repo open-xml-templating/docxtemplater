@@ -6,4 +6,6 @@ node_js:
 
 before_script:
     - "npm install -g npm"
+    - "npm install -g gulp"
     - "npm install -g jasmine-node"
+    - "gulp allCoffee"
