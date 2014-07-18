@@ -86,7 +86,15 @@ root.DocxGen = class DocxGen
 				qrCodeCallback:qrCodeCallback
 				parser:@parser
 			})
-			@setData(fileName,currentFile.applyTags().content)
+			
+			
+			#@setData(fileName,currentFile.applyTags().content)
+			# ###
+			find = "</w:t></w:t>";
+			re = new RegExp(find, 'g');
+			@setData(fileName,currentFile.applyTags().content.replace(re,"</w:t>"))
+			# ###
+			
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()

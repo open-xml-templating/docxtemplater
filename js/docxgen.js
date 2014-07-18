@@ -848,7 +848,7 @@ Created by Edgar HIPP
     };
 
     DocxGen.prototype.applyTags = function(Tags, qrCodeCallback) {
-      var currentFile, fileName, _i, _j, _len, _len1;
+      var currentFile, fileName, find, re, _i, _j, _len, _len1;
       this.Tags = Tags != null ? Tags : this.Tags;
       if (qrCodeCallback == null) {
         qrCodeCallback = null;
@@ -871,7 +871,9 @@ Created by Edgar HIPP
           qrCodeCallback: qrCodeCallback,
           parser: this.parser
         });
-        this.setData(fileName, currentFile.applyTags().content);
+        find = "</w:t></w:t>";
+        re = new RegExp(find, 'g');
+        this.setData(fileName, currentFile.applyTags().content.replace(re, "</w:t>"));
         this.filesProcessed++;
       }
       return this.testReady();
@@ -1017,7 +1019,7 @@ Created by Edgar HIPP
     }
 
     ImgReplacer.prototype.findImages = function() {
-      this.imgMatches = DocUtils.preg_match_all(/<w:drawing[^>]*>.*?<\/w:drawing>/g, this.xmlTemplater.content);
+      this.imgMatches = DocUtils.preg_match_all(/<w:drawing[^>]*>.*?<a:blip.r:embed.*?<\/w:drawing>/g, this.xmlTemplater.content);
       return this;
     };
 
