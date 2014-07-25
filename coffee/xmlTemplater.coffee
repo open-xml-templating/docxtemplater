@@ -103,10 +103,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		if noStartTag == true 
 			return insideValue
 		else
-			# if spacePreserve==true
-				# return """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
-			# else
-			return @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
+			if spacePreserve==true
+				return """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
+			else
+				return @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
