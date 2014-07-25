@@ -53,9 +53,8 @@ ChartManager = class ChartManager
 				binary: true
 				compression: null
 				date: new Date()
-				dir: false
+				dir: false 
 		@zip.file file.name,file.data,file.options
-		extension= chartName.replace(/[^.]+\.([^.]+)/,'$1')
 		@addExtensionRels("application/vnd.openxmlformats-officedocument.drawingml.chart+xml", "/word/charts/#{chartName}")
 		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]
 		newTag= @xmlDoc.createElement 'Relationship' #,relationships.namespaceURI
@@ -69,17 +68,13 @@ ChartManager = class ChartManager
 		#content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].asText()
 		content = @zip.files["[Content_Types].xml"].asText()
 		xmlDoc= DocUtils.Str2xml content
-		addTag= true
 		defaultTags=xmlDoc.getElementsByTagName('Default')
-		for tag in defaultTags
-			if tag.getAttribute('Extension')==extension then addTag= false
-		if addTag
-			types=xmlDoc.getElementsByTagName("Types")[0]
-			newTag=xmlDoc.createElement 'Override'
-			newTag.namespaceURI= null
-			newTag.setAttribute('ContentType',contentType)
-			newTag.setAttribute('PartName',filePath)
-			types.appendChild newTag
-			@setChart "[Content_Types].xml",DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
+		types=xmlDoc.getElementsByTagName("Types")[0]
+		newTag=xmlDoc.createElement 'Override'
+		newTag.namespaceURI= null
+		newTag.setAttribute('ContentType',contentType)
+		newTag.setAttribute('PartName',filePath)
+		types.appendChild newTag
+		@setChart "[Content_Types].xml",DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
 
 root.ChartManager=ChartManager
