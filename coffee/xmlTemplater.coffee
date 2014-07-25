@@ -65,6 +65,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		if @DocxGen? and @DocxGen.qrCode
 			new ImgReplacer(this).findImages().replaceImages()
+		#console.log(@content, @chartId++)	
+		#@chartReplacer= new ChartReplacer(this).findCharts()
+		#for chart in @chartReplacer.chartMatches
+		#	console.log(chart)
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
@@ -96,13 +100,13 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
 		@forLoop(innerXmlText,outerXmlText)
 	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber)->
-		if noStartTag == true
+		if noStartTag == true 
 			return insideValue
 		else
-			if spacePreserve==true
-				return """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
-			else
-				return @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
+			# if spacePreserve==true
+				# return """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
+			# else
+			return @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
@@ -153,7 +157,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 
 			options=
 				insideValue:""
-				spacePreserve:false
+				spacePreserve:false 
 
 			for k in [(@templaterState.tagStart.numXmlTag+1)...@templaterState.tagEnd.numXmlTag]
 				options.xmlTagNumber=k
@@ -184,6 +188,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		subfile= new @currentClass innerTagsContent,options
 		subsubfile=subfile.applyTags()
 		@imageId=subfile.imageId
+		#@chartId=subfile.chartId
 		subsubfile
 	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)

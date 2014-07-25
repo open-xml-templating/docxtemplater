@@ -65,15 +65,20 @@ root.DocxGen = class DocxGen
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
+			
 	getImageList:()-> @imgManager.getImageList()
 	setImage: (path,data,options={}) ->
 		if !options.binary? then options.binary=true
 		@imgManager.setImage(path,data,options)
+		
+		
 	load: (content)->
 		@loadedContent=content
 		@zip = new JSZip content
 		@imgManager=(new ImgManager(@zip)).loadImageRels()
+		@chartManager=(new ChartManager(@zip)).loadChartRels()
 		this
+
 	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in templatedFiles when !@zip.files[fileName]?
@@ -86,18 +91,16 @@ root.DocxGen = class DocxGen
 				qrCodeCallback:qrCodeCallback
 				parser:@parser
 			})
-			
-			
-			#@setData(fileName,currentFile.applyTags().content)
-			# ###
-			find = "</w:t></w:t>";
-			re = new RegExp(find, 'g');
-			@setData(fileName,currentFile.applyTags().content.replace(re,"</w:t>"))
-			# ###
-			
+
+			@finalXML = @chartManager.changeCharts(currentFile.applyTags().content)
+
+			@setData(fileName,@finalXML)
+
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()
+	
+
 	setData:(fileName,data,options={})->
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
