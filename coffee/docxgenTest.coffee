@@ -799,6 +799,11 @@ describe 'SubContent', () ->
 		expect(text).toBe('')
 
 	it 'should work with loops', ()->
-		content= """<w:t>{#looptag}</w:t><w:t>{innertag</w:t><w:t>}{/looptag</w:t><w:t>}</w:t>"""
+		content="{innertag</w:t><w:t>}"
+		xmlt=new DocXTemplater(content,{Tags:{innertag:5}}).applyTags()
+		expect(xmlt.content).toBe('5</w:t><w:t xml:space="preserve">')
+
+	it 'should work with loops', ()->
+		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
 		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
 		expect(xmlt.content).not.toContain('</w:t></w:t>')
