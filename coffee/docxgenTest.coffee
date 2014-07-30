@@ -6,8 +6,19 @@ root.docXData={}
 
 expressions= require('angular-expressions')
 angularParser= (tag) ->
-	expr=expressions.compile(tag)
-	{get:expr}
+	try
+		expr=expressions.compile(tag)
+	catch e
+		console.log "parsing didn't work with #{tag}"
+	{get:(scope)->
+		if !scope?
+			console.log 'warning: scope undefined'
+		try
+			return expr(scope)
+		catch e
+			console.log "parsing didn't work with #{tag}"
+			return "undefined"
+}
 
 if env=='node'
 	path=require('path')
@@ -775,3 +786,13 @@ describe 'SubContent', () ->
 		doc.applyTags()
 		text=doc.getFullText()
 		expect(text).toBe('')
+
+	it 'should work with loops', ()->
+		content="{innertag</w:t><w:t>}"
+		xmlt=new DocXTemplater(content,{Tags:{innertag:5}}).applyTags()
+		expect(xmlt.content).toBe('5</w:t><w:t xml:space="preserve">')
+
+	it 'should work with loops', ()->
+		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
+		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
+		expect(xmlt.content).not.toContain('</w:t></w:t>')
