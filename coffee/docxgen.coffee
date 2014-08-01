@@ -19,7 +19,11 @@ if env=='node'
 
 	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jsqrcode/' + file), file)
+<<<<<<< HEAD
 	['jszip.js'].forEach (file) ->
+=======
+	['jszip.min.js'].forEach (file) ->
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jszip2.0/dist/' + file), file)
 
 root.DocxGen = class DocxGen
@@ -63,6 +67,7 @@ root.DocxGen = class DocxGen
 		@testReady()
 	testReady:()->
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
+<<<<<<< HEAD
 			@ready=true  
 			@finishedCallback()
 		
@@ -72,12 +77,28 @@ root.DocxGen = class DocxGen
 		@fileManager=(new FileManager(@zip)).loadFileRels()
 		this
 
+=======
+			@ready=true
+			@finishedCallback()
+	getImageList:()-> @imgManager.getImageList()
+	setImage: (path,data,options={}) ->
+		if !options.binary? then options.binary=true
+		@imgManager.setImage(path,data,options)
+	load: (content)->
+		@loadedContent=content
+		@zip = new JSZip content
+		@imgManager=(new ImgManager(@zip)).loadImageRels()
+		this
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
+<<<<<<< HEAD
 			
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
@@ -85,6 +106,7 @@ root.DocxGen = class DocxGen
 				qrCodeCallback:qrCodeCallback
 				parser:@parser
 			})
+<<<<<<< HEAD
 
 			@finalXML = currentFile.applyTags().content
 			@setData(fileName,@finalXML)		
@@ -93,6 +115,12 @@ root.DocxGen = class DocxGen
 		@testReady()	
 	
 	getImageList:()-> @fileManager.getImageList()
+=======
+			@setData(fileName,currentFile.applyTags().content)
+			@filesProcessed++
+		#When all files have been processed, check if the document is ready
+		@testReady()
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 	setData:(fileName,data,options={})->
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
@@ -113,7 +141,11 @@ root.DocxGen = class DocxGen
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (options={}) ->
+<<<<<<< HEAD
 		if !options.download? then options.download=true 
+=======
+		if !options.download? then options.download=true
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		if !options.name? then options.name="output.docx"
 		if !options.type? then options.type="base64"
 		result= @zip.generate({type:options.type})

@@ -24,4 +24,10 @@ docxgenNode/input.json
 test/spec/output.docx
 /output.docx
 tags
+<<<<<<< HEAD
 /docs/build
+=======
+/examples
+/coffee
+/docs
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d

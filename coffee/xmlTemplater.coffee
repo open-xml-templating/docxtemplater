@@ -21,7 +21,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
+<<<<<<< HEAD
 		@chartId=if options.chartId? then options.chartId else 0
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		@parser= if options.parser? then options.parser else root.DocUtils.defaultParser
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
 	toJson: () ->
@@ -32,7 +35,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		usedTags:@scopeManager.usedTags
 		localImageCreator:@localImageCreator
 		imageId:@imageId
+<<<<<<< HEAD
 		chartId:@chartId
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		parser:@parser
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	getFullText:(@tagXml=@tagXml) ->
@@ -67,7 +73,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		if @DocxGen? and @DocxGen.qrCode
 			new ImgReplacer(this).findImages().replaceImages()
+<<<<<<< HEAD
 			new ChartReplacer(this).findCharts().replaceCharts()
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
@@ -78,7 +87,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
 		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText,subContent.text)
 		@content= subContent.replace(newText).fullText
+<<<<<<< HEAD
 		
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 	deleteOuterTags:(outerXmlText,sharp)->
 		#delete the opening tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}
@@ -99,6 +111,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		outerXmlText= outerXml.text
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
 		@forLoop(innerXmlText,outerXmlText)
+<<<<<<< HEAD
 	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber)->
 		if noStartTag == true    
 			return insideValue
@@ -113,6 +126,24 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		spacePreserve= if options.spacePreserve? then options.spacePreserve else true 
 		noStartTag= if options.noStartTag? then options.noStartTag else false 
 		replacer=@xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber)
+=======
+	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber,noEndTag)->
+		if noStartTag == true
+			return insideValue
+		else
+			if spacePreserve==true
+				str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
+			else
+				str=@templaterState.matches[xmlTagNumber][1]+insideValue
+			if noEndTag==true then return str else return str+"</#{@tagXml}>"
+	replaceXmlTag: (content,options) ->
+		xmlTagNumber=options.xmlTagNumber
+		insideValue=options.insideValue
+		spacePreserve= if options.spacePreserve? then options.spacePreserve else true
+		noStartTag= if options.noStartTag? then options.noStartTag else false
+		noEndTag= if options.noEndTag? then options.noEndTag else false
+		replacer=@xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber,noEndTag)
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		@templaterState.matches[xmlTagNumber][2]=insideValue #so that the templaterState.matches are still correct
 		startTag= @templaterState.calcXmlTagPosition(xmlTagNumber)#where the open tag starts: <w:t>
 		#calculate the replacer according to the params
@@ -129,7 +160,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		eTag=DocUtils.tags.end
 
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
+<<<<<<< HEAD
 
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
 				insideValue:@templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
@@ -137,7 +171,10 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 
 			content= @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
+<<<<<<< HEAD
 
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 			regexRight= new RegExp("^([^#{sTag}]*)#{sTag}.*$")
 			subMatches= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].match regexRight
@@ -149,7 +186,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				options.insideValue=subMatches[1]+newValue
 			else #if the content starts with:  {tag</w:t> (when handling recursive cases)
 				options.insideValue=newValue
+<<<<<<< HEAD
 				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+=======
+				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 
 			content= @replaceXmlTag(content,options)
 
@@ -157,8 +198,13 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 
 			options=
 				insideValue:""
+<<<<<<< HEAD
 				spacePreserve:false    
  
+=======
+				spacePreserve:false
+
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			for k in [(@templaterState.tagStart.numXmlTag+1)...@templaterState.tagEnd.numXmlTag]
 				options.xmlTagNumber=k
 				content= @replaceXmlTag(content, options)
@@ -169,13 +215,21 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				insideValue:@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].replace regexLeft, '$1'
 				spacePreserve:true
 				xmlTagNumber:k
+<<<<<<< HEAD
+=======
+				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			content= @replaceXmlTag(content, options)
 		content
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
 			return @dashLoop(@templaterState.loopOpen.element)
+<<<<<<< HEAD
 		if @intelligentTagging==on 
+=======
+		if @intelligentTagging==on
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			dashElement=@calcIntellegentlyDashElement()
 			if dashElement!=false then return @dashLoop(dashElement,true)
 		@forLoop()
@@ -188,11 +242,18 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		subfile= new @currentClass innerTagsContent,options
 		subsubfile=subfile.applyTags()
 		@imageId=subfile.imageId
+<<<<<<< HEAD
 		@chartId=subfile.chartId
 		subsubfile
 	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
 		endTag= text.indexOf('</'+xmlTag+'>',end)
 		if endTag==-1 then throw new Error("can't find endTag #{xmlTag}")
+=======
+		subsubfile
+	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
+		endTag= text.indexOf('</'+xmlTag+'>',end)
+		if endTag==-1 then throw new Error("can't find endTag #{endTag}")
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		endTag+=('</'+xmlTag+'>').length
 		startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
 		if startTag==-1 then throw new Error("can't find startTag")
