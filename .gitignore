@@ -28,3 +28,6 @@ tags
 *.spec.js
 *.spec.map
 /js
+cli
+js
+test
