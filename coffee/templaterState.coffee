@@ -24,19 +24,11 @@ root.TemplaterState=  class TemplaterState
 		end= @calcStartTag @loopClose
 		{content:content.substr(start,end-start),start,end}
 	initialize:()->
-<<<<<<< HEAD
 		@inForLoop= false  # tag with sharp: {#forLoop}______{/forLoop}
 		@loopIsInverted= false # tag with caret: {^invertedForLoop}_____{/invertedForLoop}
 		@inTag= false  # all tags  {___}
 		@inDashLoop = false	# tag with dash: {-w:tr dashLoop} {/dashLoop}
 		@rawXmlTag=false 
-=======
-		@inForLoop= false # tag with sharp: {#forLoop}______{/forLoop}
-		@loopIsInverted= false # tag with caret: {^invertedForLoop}_____{/invertedForLoop}
-		@inTag= false # all tags  {___}
-		@inDashLoop = false	# tag with dash: {-w:tr dashLoop} {/dashLoop}
-		@rawXmlTag=false
->>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 		@textInsideTag= ""
 	startTag:(char)->
 		if @inTag is true then throw new Error("Tag already open with text: #{@textInsideTag}")
@@ -53,39 +45,21 @@ root.TemplaterState=  class TemplaterState
 		@textInsideTag[0]=='/' and ('/'+@loopOpen.tag == @textInsideTag)
 	endTag:()->
 		if @inTag is false then throw new Error("Tag already closed")
-<<<<<<< HEAD
 		@inTag= false 
 		@tagEnd=@currentStep
 		if @textInsideTag[0]=='@' and @loopType()=='simple'
 			@rawXmlTag=true 
-=======
-		@inTag= false
-		@tagEnd=@currentStep
-		if @textInsideTag[0]=='@' and @loopType()=='simple'
-			@rawXmlTag=true
->>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			@tag=@textInsideTag.substr 1
 		if @textInsideTag[0]=='#' and @loopType()=='simple'
 			@inForLoop= true #begin for loop
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
 		if @textInsideTag[0]=='^' and @loopType()=='simple'
 			@inForLoop= true #begin for loop
-<<<<<<< HEAD
 			@loopIsInverted= true 
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
 		if @textInsideTag[0]=='-' and @loopType()=='simple'
-			@inDashLoop= true 
-=======
-			@loopIsInverted= true
-			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
-		if @textInsideTag[0]=='-' and @loopType()=='simple'
 			@inDashLoop= true
->>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
 			dashInnerRegex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':(@textInsideTag.replace dashInnerRegex, '$2'),'element':(@textInsideTag.replace dashInnerRegex, '$1')}
 		if @textInsideTag[0]=='/'
 			@loopClose={'start':@tagStart,'end':@tagEnd}
-<<<<<<< HEAD
-
-=======
->>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
