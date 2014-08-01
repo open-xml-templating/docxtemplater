@@ -21,8 +21,7 @@ try {
 var config={uglify:false}
 
 var paths = {
-	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/fileManager.coffee','coffee/docxgen.coffee','coffee/chartReplacer.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
-
+	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/fileManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/chartReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
 	coffeeTest: ['coffee/docxgenTest.coffee'],
 	testDirectory:__dirname+'/test/spec'
 };
@@ -117,7 +116,7 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 	child.stderr.setEncoding('utf8');
 
 	child.on('close', function(code) {
-		regex=/([0-9]+) tests, ([0-9]+) assertions, ([0-9]+) failures, ([0-9]+) skipped/;
+		regex=/([0-9]+) tests?, ([0-9]+) assertions?, ([0-9]+) failures?, ([0-9]+) skipped/;
 		var now=new Date();
 		var nowTime="---"+now.getHours()+":"+now.getMinutes()
 		if(regex.test(totalData))
