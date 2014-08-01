@@ -63,20 +63,13 @@ root.DocxGen = class DocxGen
 		@testReady()
 	testReady:()->
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
-			@ready=true
+			@ready=true  
 			@finishedCallback()
-			
-	getImageList:()-> @imgManager.getImageList()
-	setImage: (path,data,options={}) ->
-		if !options.binary? then options.binary=true
-		@imgManager.setImage(path,data,options)
-		
 		
 	load: (content)->
 		@loadedContent=content
 		@zip = new JSZip content
-		@imgManager=(new ImgManager(@zip)).loadImageRels()
-		@chartManager=(new ChartManager(@zip)).loadChartRels()
+		@fileManager=(new FileManager(@zip)).loadFileRels()
 		this
 
 	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
@@ -84,6 +77,7 @@ root.DocxGen = class DocxGen
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
+			
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
@@ -92,15 +86,13 @@ root.DocxGen = class DocxGen
 				parser:@parser
 			})
 
-			@finalXML = @chartManager.changeCharts(currentFile.applyTags().content)
-
-			@setData(fileName,@finalXML)
-
+			@finalXML = currentFile.applyTags().content
+			@setData(fileName,@finalXML)		
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
-		@testReady()
+		@testReady()	
 	
-
+	getImageList:()-> @fileManager.getImageList()
 	setData:(fileName,data,options={})->
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
@@ -121,7 +113,7 @@ root.DocxGen = class DocxGen
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (options={}) ->
-		if !options.download? then options.download=true
+		if !options.download? then options.download=true 
 		if !options.name? then options.name="output.docx"
 		if !options.type? then options.type="base64"
 		result= @zip.generate({type:options.type})
