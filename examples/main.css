@@ -1,0 +1,72 @@
+img
+{
+	display:block;
+	width:100%;
+	margin:auto;
+	border:1px solid black;
+}
+
+tr > td > div
+{
+	vertical-align:middle;
+}
+
+tr > td > div
+{
+	min-height: 260px
+}
+
+table.demo
+{
+	margin: 0px;
+	width:100%;
+}
+
+section
+{
+	padding:20px 0px 25px 5px;
+	border-top:3px solid #DDDDDD;
+	border-bottom: 3px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	border-left: 1px solid #DDDDDD;
+
+	width:90%;
+	margin:auto;
+	margin-top:25px;
+	margin-bottom:100px;
+}
+
+h2
+{
+	text-align: center;
+}
+
+table.demo tr
+{
+	width:100%;
+}
+
+table.demo tr td:nth-child(2)
+{
+	background-size: 100% auto; 
+	background-image: url('images/arrow.png');
+	/*background-position: 15px 25px;*/
+	background-repeat:no-repeat;
+}
+
+table.demo tr td
+{
+	padding-top: 20px;
+	width:33%;
+	text-align: center;
+}
+
+textarea
+{
+	overflow: hidden;
+	display: block;
+	width:80%;
+	/*height:*/
+	margin:auto;
+	/*text-align: left;*/
+}
