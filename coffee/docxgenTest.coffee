@@ -6,10 +6,6 @@ root.docXData={}
 
 expressions= require('angular-expressions')
 angularParser= (tag) ->
-<<<<<<< Updated upstream
-	expr=expressions.compile(tag)
-	{get:expr}
-=======
 	try
 		expr=expressions.compile(tag)
 	catch e
@@ -23,7 +19,6 @@ angularParser= (tag) ->
 			console.log "parsing didn't work with #{tag}"
 			return "undefined"
 }
->>>>>>> Stashed changes
 
 if env=='node'
 	path=require('path')
@@ -580,16 +575,13 @@ describe 'Changing the parser', () ->
 		docX["angularExample.docx"].applyTags()
 		expect(docX["angularExample.docx"].getFullText()).toEqual('Hipp Edgar 2014')
 
-<<<<<<< Updated upstream
-=======
 	it 'should work with loops', ()->
 		content= """<w:t>Hello {#person.adult}you{/person.adult}</w:t>"""
 		scope= {"person":{"name":"Edgar","adult":true}}
 		xmlTemplater= new DocXTemplater(content,{Tags:scope,parser:angularParser})
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello you')
-
->>>>>>> Stashed changes
+		
 describe 'Non Utf-8 characters', () ->
 	it 'should read full text correctly', ()->
 		fullText=docX["cyrillic.docx"].getFullText()
@@ -808,20 +800,10 @@ describe 'SubContent', () ->
 			start:'{'
 			end:'}'
 
-<<<<<<< Updated upstream
-	it 'should work with qrcode in footer', () ->
- 		testDocx=new DocxGen(docX["header.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
- 		testDocx.applyTags()
-		
-=======
->>>>>>> Stashed changes
 	it 'should work with graphs with qrcode', ()->
 		doc=new DocxGen(docX["graph.docx"].loadedContent,{},{qrCode:true})
 		doc.applyTags()
 		text=doc.getFullText()
-<<<<<<< Updated upstream
-		expect(text).toBe('') 
-=======
 		expect(text).toBe('')
 
 	it 'should work with loops', ()->
@@ -833,7 +815,6 @@ describe 'SubContent', () ->
 		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
 		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
 		expect(xmlt.content).not.toContain('</w:t></w:t>')
->>>>>>> Stashed changes
 		
 describe 'FileManager', () ->
 		it 'should work with both graph and image together', () ->
@@ -845,9 +826,3 @@ describe 'FileManager', () ->
 				"loop":[{"name":"titre1"},{"name":"titre2"},{"name":"titre3"}]
 			doc.setTags Tags
 			doc.applyTags()
-<<<<<<< Updated upstream
-
-		
-		
-=======
->>>>>>> Stashed changes
