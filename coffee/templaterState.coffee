@@ -24,11 +24,11 @@ root.TemplaterState=  class TemplaterState
 		end= @calcStartTag @loopClose
 		{content:content.substr(start,end-start),start,end}
 	initialize:()->
-		@inForLoop= false  # tag with sharp: {#forLoop}______{/forLoop}
+		@inForLoop= false # tag with sharp: {#forLoop}______{/forLoop}
 		@loopIsInverted= false # tag with caret: {^invertedForLoop}_____{/invertedForLoop}
-		@inTag= false  # all tags  {___}
+		@inTag= false # all tags  {___}
 		@inDashLoop = false	# tag with dash: {-w:tr dashLoop} {/dashLoop}
-		@rawXmlTag=false 
+		@rawXmlTag=false
 		@textInsideTag= ""
 	startTag:(char)->
 		if @inTag is true then throw new Error("Tag already open with text: #{@textInsideTag}")
@@ -45,17 +45,17 @@ root.TemplaterState=  class TemplaterState
 		@textInsideTag[0]=='/' and ('/'+@loopOpen.tag == @textInsideTag)
 	endTag:()->
 		if @inTag is false then throw new Error("Tag already closed")
-		@inTag= false 
+		@inTag= false
 		@tagEnd=@currentStep
 		if @textInsideTag[0]=='@' and @loopType()=='simple'
-			@rawXmlTag=true 
+			@rawXmlTag=true
 			@tag=@textInsideTag.substr 1
 		if @textInsideTag[0]=='#' and @loopType()=='simple'
 			@inForLoop= true #begin for loop
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
 		if @textInsideTag[0]=='^' and @loopType()=='simple'
 			@inForLoop= true #begin for loop
-			@loopIsInverted= true 
+			@loopIsInverted= true
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
 		if @textInsideTag[0]=='-' and @loopType()=='simple'
 			@inDashLoop= true 

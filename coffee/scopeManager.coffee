@@ -34,7 +34,7 @@ root.ScopeManager =	class ScopeManager
 				@useTag(tag)
 				value= result
 				if value.indexOf(DocUtils.tags.start)!=-1 or value.indexOf(DocUtils.tags.end)!=-1
-					throw new Error("You can't enter #{DocUtils.tags.start} or #{DocUtils.tags.end} inside the content of a variable")
+					throw new Error("You can't enter #{DocUtils.tags.start} or	#{DocUtils.tags.end} inside the content of a variable")
 			else if typeof result=="number"
 				value=String(result)
 			else value= result

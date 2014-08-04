@@ -48,7 +48,7 @@ root.FileManager = class FileManager
 		newTag.namespaceURI= null  
 		newTag.setAttribute('Id',"rId#{@maxRid}")
 		if fileType=="Chart"
-			@addChartExtensionRels("application/vnd.openxmlformats-officedocument.drawingml.chart+xml", "/word/#{fullPath}")
+			@addChartExtensionRels("/word/#{fullPath}")
 			newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart')
 		else if fileType=="Image"
 			extension= fullPath.substring(6,fullPath.length).replace(/[^.]+\.([^.]+)/,'$1')
@@ -58,14 +58,14 @@ root.FileManager = class FileManager
 		relationships.appendChild newTag
 		@setFile("word/_rels/document.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid
-	addChartExtensionRels: (contentType,partName) -> #Add an extension type in the [Content_Types.xml], is used if for example you want word to be able to read png files (for every extension you add you need a contentType)
+	addChartExtensionRels: (partName) -> #Add an extension type in the [Content_Types.xml], is used if for example you want word to be able to read png files (for every extension you add you need a contentType)
 		#content = DocUtils.decode_utf8 @zip.files["[Content_Types].xml"].asText()
 		content = @zip.files["[Content_Types].xml"].asText()
 		xmlDoc= DocUtils.Str2xml content
 		types=xmlDoc.getElementsByTagName("Types")[0]
 		newTag=xmlDoc.createElement 'Override'
-		newTag.namespaceURI= null   
-		newTag.setAttribute('ContentType',contentType)
+		newTag.namespaceURI= null  
+		newTag.setAttribute('ContentType',"application/vnd.openxmlformats-officedocument.drawingml.chart+xml")
 		newTag.setAttribute('PartName',partName)
 		types.appendChild newTag
 		@setFile "[Content_Types].xml",DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc

@@ -6,8 +6,24 @@ root.docXData={}
 
 expressions= require('angular-expressions')
 angularParser= (tag) ->
+<<<<<<< Updated upstream
 	expr=expressions.compile(tag)
 	{get:expr}
+=======
+	try
+		expr=expressions.compile(tag)
+	catch e
+		console.log "parsing didn't work with #{tag}"
+	{get:(scope)->
+		if !scope?
+			console.log 'warning: scope undefined'
+		try
+			return expr(scope)
+		catch e
+			console.log "parsing didn't work with #{tag}"
+			return "undefined"
+}
+>>>>>>> Stashed changes
 
 if env=='node'
 	path=require('path')
@@ -19,7 +35,7 @@ DocUtils.pathConfig=
 if env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["loopGraphs.docx","graphAndImage.docx","header.docx","graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
+fileNames=["loopGraphs.docx","graphAndImage.docx","graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
 
 
 for name in fileNames
@@ -34,6 +50,7 @@ DocUtils.loadDoc('BMW_logo.png',{docx:false})
 DocUtils.loadDoc('Firefox_logo.png',{docx:false})
 DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
 DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
+DocUtils.loadDoc('chart.xml',{docx:false})
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -68,7 +85,7 @@ describe "DocxGenLoading", () ->
 			expect((docX['imageExample.docx'].getImageList())[0].path).toEqual('word/media/image1.jpeg')
 		it "should change the image with another one", () ->
 			oldImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
-			docX['imageExample.docx'].setData('word/media/image1.jpeg',docXData['image.png'],{binary:false})
+			docX['imageExample.docx'].setImage('word/media/image1.jpeg',docXData['image.png'],{binary:false})
 			newImageData= docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asText()
 			expect(oldImageData).not.toEqual(newImageData)
 			expect(docXData['image.png']).toEqual(newImageData)
@@ -447,14 +464,14 @@ describe 'DocxQrCode module', () ->
 
 
 
-describe "file Loop Replacing", () ->
+describe "image Loop Replacing", () ->
 	describe 'rels', () ->
 		it 'should load', () ->
 			expect(docX['imageExample.docx'].fileManager.loadFileRels().imageRels).toEqual([])
 			expect(docX['imageExample.docx'].fileManager.maxRid).toEqual(10)
 		it 'should add images', () ->
 			oldData= docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()
-			expect(docX['imageExample.docx'].fileManager.addFileRels('media/image1.png',docXData['bootstrap_logo.png'],'Image')).toBe(11)
+			expect(docX['imageExample.docx'].fileManager.addFileRels('image1.png',docXData['bootstrap_logo.png'],'Image')).toBe(11)
 			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()).not.toBe(oldData)
 			relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()
 			contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].asText()
@@ -563,6 +580,16 @@ describe 'Changing the parser', () ->
 		docX["angularExample.docx"].applyTags()
 		expect(docX["angularExample.docx"].getFullText()).toEqual('Hipp Edgar 2014')
 
+<<<<<<< Updated upstream
+=======
+	it 'should work with loops', ()->
+		content= """<w:t>Hello {#person.adult}you{/person.adult}</w:t>"""
+		scope= {"person":{"name":"Edgar","adult":true}}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope,parser:angularParser})
+		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello you')
+
+>>>>>>> Stashed changes
 describe 'Non Utf-8 characters', () ->
 	it 'should read full text correctly', ()->
 		fullText=docX["cyrillic.docx"].getFullText()
@@ -781,27 +808,46 @@ describe 'SubContent', () ->
 			start:'{'
 			end:'}'
 
+<<<<<<< Updated upstream
 	it 'should work with qrcode in footer', () ->
  		testDocx=new DocxGen(docX["header.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
  		testDocx.applyTags()
 		
+=======
+>>>>>>> Stashed changes
 	it 'should work with graphs with qrcode', ()->
 		doc=new DocxGen(docX["graph.docx"].loadedContent,{},{qrCode:true})
 		doc.applyTags()
 		text=doc.getFullText()
+<<<<<<< Updated upstream
 		expect(text).toBe('') 
+=======
+		expect(text).toBe('')
+
+	it 'should work with loops', ()->
+		content="{innertag</w:t><w:t>}"
+		xmlt=new DocXTemplater(content,{Tags:{innertag:5}}).applyTags()
+		expect(xmlt.content).toBe('5</w:t><w:t xml:space="preserve">')
+
+	it 'should work with loops', ()->
+		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
+		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
+		expect(xmlt.content).not.toContain('</w:t></w:t>')
+>>>>>>> Stashed changes
 		
 describe 'FileManager', () ->
 		it 'should work with both graph and image together', () ->
 			doc=new DocxGen(docX["graphAndImage.docx"].loadedContent,{},{qrCode:true})
 			doc.applyTags()
 		it 'should work with graphs in loop', () ->
-			oldData= docX['loopGraphs.docx'].zip.files['word/_rels/document.xml.rels'].asText()
 			doc=new DocxGen(docX["loopGraphs.docx"].loadedContent,{},{qrCode:true})
 			Tags =
 				"loop":[{"name":"titre1"},{"name":"titre2"},{"name":"titre3"}]
 			doc.setTags Tags
 			doc.applyTags()
+<<<<<<< Updated upstream
 
 		
 		
+=======
+>>>>>>> Stashed changes
