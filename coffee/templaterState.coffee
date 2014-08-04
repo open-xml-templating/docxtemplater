@@ -58,8 +58,9 @@ root.TemplaterState=  class TemplaterState
 			@loopIsInverted= true
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
 		if @textInsideTag[0]=='-' and @loopType()=='simple'
-			@inDashLoop= true
+			@inDashLoop= true 
 			dashInnerRegex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':(@textInsideTag.replace dashInnerRegex, '$2'),'element':(@textInsideTag.replace dashInnerRegex, '$1')}
 		if @textInsideTag[0]=='/'
 			@loopClose={'start':@tagStart,'end':@tagEnd}
+
