@@ -28,6 +28,15 @@ tags
 *.spec.js
 *.spec.map
 /js
+<<<<<<< HEAD
 cli
 js
 test
+=======
+<<<<<<< HEAD
+cli
+js
+test
+=======
+>>>>>>> adb49ed842843b42f3c57d44495a3a45028b361d
+>>>>>>> 567fdd0b57d6dc2ef2703eeadb287b2da4c3da52
