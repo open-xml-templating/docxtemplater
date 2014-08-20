@@ -1,8 +1,7 @@
-root= global ? window
 env= if global? then 'node' else 'browser'
 
-root.docX={}
-root.docXData={}
+docX={}
+docXData={}
 
 expressions= require('angular-expressions')
 angularParser= (tag) ->
@@ -20,9 +19,21 @@ angularParser= (tag) ->
 			return "undefined"
 }
 
+p=(a)->path.join(__dirname,'/../../js/'+a+'.js')
+
 if env=='node'
 	path=require('path')
-	root.DocxGen= require(path.join(__dirname,'/../../js/docxgen.js'))
+
+DocxGen= require(p('docxgen'))
+DocUtils=require(p('docUtils'))
+docX=DocUtils.docX
+docXData=DocUtils.docXData
+SubContent=require(p('subContent'))
+DocXTemplater=require(p('docxTemplater'))
+XmlUtil=require(p('xmlUtil'))
+JSZip=require('jszip')
+PNG=require('png-js')
+DocxQrCode=require(p('docxQrCode'))
 
 DocUtils.pathConfig=
 	"browser":'../examples/'
@@ -32,19 +43,19 @@ if env=='node'
 
 fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
 
-
 for name in fileNames
-	root.docX[name]=DocxGen.loadFromFile(name)
+	docX[name]=new DocxGen().loadFromFile(name)
 
-root.docX["tagExampleWithParser"]=DocxGen.loadFromFile("tagExample.docx")
+docX["tagExampleWithParser"]=new DocxGen().loadFromFile("tagExample.docx")
 
-DocUtils.loadDoc('tagIntelligentLoopTable.docx',{intelligentTagging:true})
-DocUtils.loadDoc('image.png',{docx:false})
-DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
-DocUtils.loadDoc('BMW_logo.png',{docx:false})
-DocUtils.loadDoc('Firefox_logo.png',{docx:false})
-DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
-DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
+docX['tagIntelligentLoopTable.docx']=new DocxGen().loadFromFile('tagIntelligentLoopTable.docx',{intelligentTagging:true})
+
+docXData['image.png']=DocUtils.loadDoc('image.png',{docx:false})
+docXData['bootstrap_logo.png']=DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
+docXData['BMW_logo.png']=DocUtils.loadDoc('BMW_logo.png',{docx:false})
+docXData['Firefox_logo.png']=DocUtils.loadDoc('Firefox_logo.png',{docx:false})
+docXData['Volkswagen_logo.png']=DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
+docXData['qrcodeTest.zip']=DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -74,7 +85,7 @@ describe "DocxGenLoading", () ->
 			expect(fullText).toBe("")
 	describe "output and input", () ->
 		it "should be the same" , () ->
-			doc=new DocxGen(root.docX['tagExample.docx'].loadedContent)
+			doc=new DocxGen(docX['tagExample.docx'].loadedContent)
 			output=doc.output(false)
 			expect(output.length).toEqual(91348)
 			expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')

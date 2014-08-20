@@ -1,9 +1,8 @@
-root= global ? window
 env= if global? then 'node' else 'browser'
 
-root.DocUtils= {}
-root.docX=[]
-root.docXData=[]
+DocUtils= {}
+DocUtils.docX=[]
+DocUtils.docXData=[]
 
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -51,14 +50,14 @@ DocUtils.loadDoc= (path,options={}) ->
 				basePath= DocUtils.pathConfig.node
 		totalPath= basePath+path
 	loadFile = (data) ->
-		root.docXData[fileName]=data
+		DocUtils.docXData[fileName]=data
 		if noDocx==false
-			root.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
-			return root.docX[fileName]
+			DocUtils.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
+			return DocUtils.docX[fileName]
 		if callback?
-			callback(root.docXData[fileName])
+			callback(DocUtils.docXData[fileName])
 		if async==false
-			return root.docXData[fileName]
+			return DocUtils.docXData[fileName]
 	if env=='browser'
 		xhrDoc= new XMLHttpRequest()
 		xhrDoc.open('GET', totalPath , async)
@@ -158,7 +157,7 @@ DocUtils.xml2Str = (xmlNode) ->
 	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
 
 DocUtils.Str2xml= (str) ->
-	if root.DOMParser #Chrome, Firefox, and modern browsers
+	if DOMParser #Chrome, Firefox, and modern browsers
 		parser=new DOMParser();
 		xmlDoc=parser.parseFromString(str,"text/xml")
 	else # Internet Explorer
@@ -212,3 +211,5 @@ DocUtils.sizeOfObject = (obj) ->
 
 Array.prototype.max = () -> Math.max.apply(null, this)
 Array.prototype.min = () -> Math.min.apply(null, this)
+
+module.exports=DocUtils

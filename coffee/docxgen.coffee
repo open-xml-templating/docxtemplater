@@ -5,6 +5,10 @@ Created by Edgar HIPP
 
 env= if global? then 'node' else 'browser'
 
+DocUtils=require('./docUtils')
+ImgManager=require('./imgManager')
+DocXTemplater=require('./docxTemplater')
+
 if env=='node'
 	global.http= require('http')
 	global.https= require('https')
@@ -21,7 +25,7 @@ if env=='node'
 	['jszip.min.js'].forEach (file) ->
 		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jszip2.0/dist/' + file), file)
 
-class DocxGen
+DocxGen=class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 	defaultImageCreator=(arg,callback) ->
 		#This is the image of an arrow, you can replace this function by whatever you want to generate an image

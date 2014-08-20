@@ -1,7 +1,6 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
+DocUtils=require('./docUtils')
 
-ImgManager = class ImgManager
+module.exports = class ImgManager
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor:(@zip)->
 	getImageList: () ->

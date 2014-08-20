@@ -1,12 +1,15 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
+DocUtils=require('./docUtils')
+ScopeManager=require('./scopeManager')
+SubContent=require('./subContent')
+TemplaterState=require('./templaterState')
+XmlMatcher=require('./xmlMatcher')
+ImgReplacer=require('./imgReplacer')
 #This is an abstract class, DocXTemplater is an example of inherited class
 
-root.XmlTemplater =  class XmlTemplater #abstract class !!
+module.exports=class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
-		@currentClass=root.XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
+		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@templaterState= new TemplaterState
 		@currentScope=@Tags
@@ -21,7 +24,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
-		@parser= if options.parser? then options.parser else root.DocUtils.defaultParser
+		@parser= if options.parser? then options.parser else DocUtils.defaultParser
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags

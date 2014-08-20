@@ -1,9 +1,6 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
 #This class responsibility is to store an xmlTemplater's state
 
-root.TemplaterState=  class TemplaterState
+module.exports=class TemplaterState
 	moveCharacters:(numXmlTag,newTextLength,oldTextLength)->
 		if typeof newTextLength!='number' then return @moveCharacters(numXmlTag,newTextLength.length,oldTextLength)
 		if typeof oldTextLength!='number' then return @moveCharacters(numXmlTag,newTextLength,oldTextLength.length)
