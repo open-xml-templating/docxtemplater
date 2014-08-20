@@ -1,7 +1,14 @@
-root= global ? window
 env= if global? then 'node' else 'browser'
 
-DocxQrCode = class DocxQrCode
+DocUtils=require('./docUtils')
+
+vm=require('vm')
+fs=require('fs')
+
+["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
+	vm.runInThisContext(fs.readFileSync(__dirname + '/../vendor/jsqrcode/' + file), file)
+
+module.exports= class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@callbacked=false
 		@data=imageData
@@ -38,5 +45,3 @@ DocxQrCode = class DocxQrCode
 			DocUtils.loadDoc(@result,{docx:false,callback:loadDocCallback,async:false})
 		else
 			@callback(this,@imgName,@num)
-
-root.DocxQrCode=DocxQrCode

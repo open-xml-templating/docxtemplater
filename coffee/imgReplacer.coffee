@@ -1,7 +1,9 @@
-root= global ? window
 env= if global? then 'node' else 'browser'
 
-ImgReplacer = class ImgReplacer
+DocUtils=require('./docUtils')
+DocxQrCode=require('./docxQrCode')
+
+module.exports= class ImgReplacer
 	constructor: (@xmlTemplater)->
 		@imgMatches=[]
 		@xmlTemplater.numQrCode=0
@@ -69,5 +71,3 @@ ImgReplacer = class ImgReplacer
 			else
 				mockedQrCode={xmlTemplater:@xmlTemplater,imgName:imgName,data:oldFile.asBinary()}
 				@imageSetter(mockedQrCode)
-
-root.ImgReplacer=ImgReplacer

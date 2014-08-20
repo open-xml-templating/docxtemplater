@@ -1,9 +1,6 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
 #This class responsibility is to deal with parts of the document
 
-root.SubContent =  class SubContent
+module.exports=class SubContent
 	constructor:(@fullText="")->
 		@text=""
 		@start=0
@@ -26,5 +23,3 @@ root.SubContent =  class SubContent
 		@fullText=@fullText.substr(0,@start)+newText+@fullText.substr(@end)
 		@end=@start+newText.length
 		@refreshText()
-
-
