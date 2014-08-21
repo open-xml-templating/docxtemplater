@@ -27,7 +27,6 @@
     "jszip": "^2.4.0",
     "png-js": "^0.1.1",
     "qrcode-reader": "0.0.5",
-    "segfault-handler": "git+https://github.com/ddopson/node-segfault-handler.git#af7c153",
     "xmldom": "0.1.x"
   },
   "devDependencies": {
