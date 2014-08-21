@@ -3,6 +3,10 @@ env= if global? then 'node' else 'browser'
 docX={}
 docXData={}
 
+SegfaultHandler = require('segfault-handler');
+
+SegfaultHandler.registerHandler();
+
 expressions= require('angular-expressions')
 angularParser= (tag) ->
 	try
@@ -348,6 +352,8 @@ describe 'DocxQrCode module', () ->
 			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
 
 		it "should do it's thing with JSZip.base64", () ->
+			console.log 'hello'
+			console.log 'text'
 			data=qrcodezip.files['blabla.png'].asBinary()
 			expect(data.length).toBe(1305)
 			base64data=JSZip.base64.encode(data)
@@ -365,13 +371,17 @@ describe 'DocxQrCode module', () ->
 					qr.decode(f.test)
 				else
 					base64= JSZip.base64.encode qrcodezip.files['blabla.png'].asBinary()
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
+					binaryData = new Buffer(base64, 'base64')
 					png= new PNG(binaryData)
+					console.log png
 					finished= (a) ->
+						console.log 'finished'
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"custom.png",6)
 						qr.decode(f.test)
+					console.log 'hhelloello'
 					dat= png.decode(finished)
+					console.log 'fini'
 
 			waitsFor( ()->fCalled)
 
@@ -385,6 +395,7 @@ describe 'DocxQrCode module', () ->
 		it "should work with long texts", () ->
 
 			runs () ->
+				console.log 'run'
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
@@ -392,14 +403,20 @@ describe 'DocxQrCode module', () ->
 					qr=new DocxQrCode(qrcodezip.files['custom.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
+					console.log 'unzipping'
 					base64= JSZip.base64.encode qrcodezip.files['custom.png'].asBinary()
+					console.log 'unzipped'
 					binaryData = new Buffer(base64, 'base64') #.toString('binary');
+					console.log 'pnging'
 					png= new PNG(binaryData)
+					console.log 'pnged'
 					finished= (a) ->
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"custom.png",6)
 						qr.decode(f.test)
+					console.log 'decoding'
 					dat= png.decode(finished)
+					console.log 'decoded'
 
 			waitsFor( ()->fCalled)
 
