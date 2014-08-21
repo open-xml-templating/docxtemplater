@@ -10,20 +10,8 @@ ImgManager=require('./imgManager')
 DocXTemplater=require('./docxTemplater')
 
 if env=='node'
-	global.http= require('http')
-	global.https= require('https')
-	global.fs= require('fs')
-	global.vm = require('vm')
-	global.DOMParser = require('xmldom').DOMParser
-	global.XMLSerializer= require('xmldom').XMLSerializer
-	path=require('path')
-	global.PNG= require(path.join(__dirname,'../vendor/pngjs/png-node'))
-	global.url= require('url')
-
-	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
-		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jsqrcode/' + file), file)
-	['jszip.min.js'].forEach (file) ->
-		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jszip2.0/dist/' + file), file)
+	fs= require('fs')
+	JSZip=require('jszip')
 
 module.exports=class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
