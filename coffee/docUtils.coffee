@@ -2,6 +2,7 @@ env= if global? then 'node' else 'browser'
 
 fs=require('fs')
 DOMParser = require('xmldom').DOMParser
+XMLSerializer= require('xmldom').XMLSerializer
 
 DocUtils= {}
 DocUtils.docX=[]
@@ -116,7 +117,6 @@ DocUtils.loadDoc= (path,options={}) ->
 					a=loadFile(data)
 					if callback? then callback(data) else return a
 				catch e
-					console.log 'nothing '+e
 					if callback? then callback()
 	return fileName
 

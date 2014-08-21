@@ -3,10 +3,6 @@ env= if global? then 'node' else 'browser'
 docX={}
 docXData={}
 
-SegfaultHandler = require('segfault-handler');
-
-SegfaultHandler.registerHandler();
-
 expressions= require('angular-expressions')
 angularParser= (tag) ->
 	try
@@ -75,7 +71,7 @@ describe "DocxGenLoading", () ->
 			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
 			docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent)
-			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(22)
+			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(16)
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
 			expect(typeof docX['imageExample.docx']).toBe('object');
@@ -102,7 +98,7 @@ describe "DocxGenLoading", () ->
 		it "should be the same" , () ->
 			doc=new DocxGen(docX['tagExample.docx'].loadedContent)
 			output=doc.output(false)
-			expect(output.length).toEqual(91348)
+			expect(output.length).toEqual(90732)
 			expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')
 
 describe "DocxGenTemplating", () ->
@@ -352,8 +348,6 @@ describe 'DocxQrCode module', () ->
 			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
 
 		it "should do it's thing with JSZip.base64", () ->
-			console.log 'hello'
-			console.log 'text'
 			data=qrcodezip.files['blabla.png'].asBinary()
 			expect(data.length).toBe(1305)
 			base64data=JSZip.base64.encode(data)
@@ -373,15 +367,11 @@ describe 'DocxQrCode module', () ->
 					base64= JSZip.base64.encode qrcodezip.files['blabla.png'].asBinary()
 					binaryData = new Buffer(base64, 'base64')
 					png= new PNG(binaryData)
-					console.log png
 					finished= (a) ->
-						console.log 'finished'
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"custom.png",6)
 						qr.decode(f.test)
-					console.log 'hhelloello'
 					dat= png.decode(finished)
-					console.log 'fini'
 
 			waitsFor( ()->fCalled)
 
@@ -395,7 +385,6 @@ describe 'DocxQrCode module', () ->
 		it "should work with long texts", () ->
 
 			runs () ->
-				console.log 'run'
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
@@ -403,20 +392,14 @@ describe 'DocxQrCode module', () ->
 					qr=new DocxQrCode(qrcodezip.files['custom.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
-					console.log 'unzipping'
 					base64= JSZip.base64.encode qrcodezip.files['custom.png'].asBinary()
-					console.log 'unzipped'
 					binaryData = new Buffer(base64, 'base64') #.toString('binary');
-					console.log 'pnging'
 					png= new PNG(binaryData)
-					console.log 'pnged'
 					finished= (a) ->
 						png.decoded= a
 						qr= new DocxQrCode(png,obj,"custom.png",6)
 						qr.decode(f.test)
-					console.log 'decoding'
 					dat= png.decode(finished)
-					console.log 'decoded'
 
 			waitsFor( ()->fCalled)
 

@@ -3,6 +3,7 @@ env= if global? then 'node' else 'browser'
 DocUtils=require('./docUtils')
 DocxQrCode=require('./docxQrCode')
 PNG=require('png-js')
+JSZip=require('jszip')
 
 module.exports= class ImgReplacer
 	constructor: (@xmlTemplater)->
