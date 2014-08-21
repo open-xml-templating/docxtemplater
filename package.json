@@ -26,6 +26,7 @@
     "angular-expressions": "~0.2.1",
     "jszip": "^2.4.0",
     "png-js": "^0.1.1",
+    "qrcode-reader": "0.0.5",
     "xmldom": "0.1.x"
   },
   "devDependencies": {

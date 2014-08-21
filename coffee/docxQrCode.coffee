@@ -1,12 +1,12 @@
 env= if global? then 'node' else 'browser'
 
 DocUtils=require('./docUtils')
+DocXTemplater=require('./docxTemplater')
 
 vm=require('vm')
 fs=require('fs')
 
-["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
-	vm.runInThisContext(fs.readFileSync(__dirname + '/../vendor/jsqrcode/' + file), file)
+QrCode=require('qrcode-reader')
 
 module.exports= class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
