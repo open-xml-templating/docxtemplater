@@ -39,7 +39,7 @@ else
     console.log(debug)
   if (debugBool) then console.log("loading docx:"+docxFileName)
   docs={}
-  docs[docxFileName]=new DocxGen().loadFromFile(currentPath+'cli/'+docxFileName,{intelligentTagging:true})
+  docs[docxFileName]=new DocxGen().loadFromFile(docxFileName,{intelligentTagging:true})
   if (debugBool) then console.log('data:'+docs[docxFileName])
   docs[jsonFileName]=DocUtils.loadDoc(currentPath+jsonFileName,{docx:false})
 
