@@ -31,17 +31,8 @@ module.exports= class DocxQrCode
 			@qr.decode("data:image/png;base64,#{@base64Data}")
 		else
 			@qr.decode(@data,@data.decoded)
-
 	searchImage:() ->
-		if @result.substr(0,4)=='gen:'
-			callback= (data) =>
-				@data=data
-				@callback(this,@imgName,@num)
-			@xmlTemplater.DocxGen.localImageCreator(@result,callback)
-		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
-			loadDocCallback= (err,data) =>
-				@data=data
-				@callback(this,@imgName,@num)
-			fs.readFile(DocUtils.pathConfig.node+@result,loadDocCallback)
-		else
+		cb=(err,data)=>
+			@data=data
 			@callback(this,@imgName,@num)
+		@xmlTemplater.DocxGen.qrCode(@result,cb,this)

@@ -66,7 +66,7 @@ module.exports=class XmlTemplater #abstract class !!
 						return @replaceLoopTag()
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
-		if @DocxGen? and @DocxGen.qrCode
+		if @DocxGen? and @DocxGen.qrCode!=false
 			new ImgReplacer(this).findImages().replaceImages()
 		this
 	replaceSimpleTag:()->

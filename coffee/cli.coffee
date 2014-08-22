@@ -52,6 +52,8 @@ else
 
   docs[docxFileName].setTags(jsonInput)
   docs[docxFileName].qrCode=DocUtils.config["qrcode"]
+  if docs[docxFile].qrCode==true
+    docs[docxFileName].qrCode=DocUtils.loadHttp
   docs[docxFileName].finishedCallback=()->
     this.output({download:true,name:outputFile})
     console.log('outputed')

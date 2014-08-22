@@ -344,7 +344,7 @@ describe 'DocxQrCode module', () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-			docx= new DocxGen()
+			docx= new DocxGen().setOptions({qrCode:true})
 			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
 
 		it "should do it's thing with JSZip.base64", () ->

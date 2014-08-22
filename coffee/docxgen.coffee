@@ -15,14 +15,9 @@ if env=='node'
 
 module.exports=class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
-	defaultImageCreator=(arg,callback) ->
-		#This is the image of an arrow, you can replace this function by whatever you want to generate an image
-		result=JSZip.base64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
-		callback(result)
 	constructor: (content, @Tags={},@options) ->
 		@setOptions(@options)
 		@finishedCallback=()->
-		@localImageCreator= defaultImageCreator
 		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
 		@qrCodeNumCallBack=0 #This is the order of the qrcode
 		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
@@ -30,8 +25,9 @@ module.exports=class DocxGen
 	setOptions:(@options)->
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-			@qrCode= if @options.qrCode? then @options.qrCode else off
+			@qrCode= if @options.qrCode? then DocUtils.unsecureQrCode else off
 			if @options.parser? then @parser=options.parser
+		this
 	loadFromFile:(path,options={})->
 		@setOptions(options)
 		promise=
