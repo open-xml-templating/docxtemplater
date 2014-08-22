@@ -17,13 +17,39 @@ It documents the options parameter when you do:
 Image Replacing
 ---------------
 
-The name of this option `qrCode` (boolean).
+The name of this option is `qrCode` (function) (This was a boolean in 0.6.3 and before).
 
-To stay a templating engine, I wanted that DocxTemplater doesn't add an image from scratch, but rather uses an existing image that can be detected, and DocxTemplater will just change the contents of that image, without changing it's style. The size of the replaced images will stay the same, ...
+To stay a templating engine, I wanted that DocxTemplater doesn't add an image from scratch, but rather uses an existing image that can be detected, and DocxTemplater will just change the contents of that image, without changing it's style (border, shades, ...). The size of the replaced images will stay the same, ...
 
 So I decided to use the qrCode format, which is a format that lets you identify images by their content.
 
-The option for this is `qrCode` (true for on, false for off, default off)
+The option for this is `qrCode` (false for off, a function for on, default off)
+
+The function takes two parameter: The first one is the string, the second the callback.
+
+For example your configuration could be:
+
+.. code-block:: javascript
+
+    new DocxGen(data,{qrCode:function(result,callback){
+    		urloptions=(result.parse(path))
+    		options =
+    			hostname:urloptions.hostname
+    			path:urloptions.path
+    			method: 'GET'
+    			rejectUnauthorized:false
+    		errorCallback= (e) ->
+    			throw new Error("Error on HTTPS Call")
+    		reqCallback= (res)->
+    			res.setEncoding('binary')
+    			data = ""
+    			res.on('data', (chunk)->
+    				data += chunk
+    			)
+    			res.on('end', ()->
+    				callback(null,data))
+    		req = http.request(options, reqCallback).on('error',errorCallback)
+    }})
 
 .. note::
 
@@ -33,6 +59,11 @@ The option for this is `qrCode` (true for on, false for off, default off)
 
     The qrCode functionality only works for PNG !
     They is no support for other file formats yet.
+
+.. warning::
+
+    They is a security warning if you use true as the value for qrCode, because this will use the older qrcode loading function.
+    This function can load any file on the filesystem, with a possible leak in api-keys or whatever you store on docxtemplater's server.
 
 Angular Parser
 --------------

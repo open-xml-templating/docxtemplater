@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "author": "Edgar Hipp",
   "description": "A docX templater",
   "contributors": [
@@ -10,7 +10,7 @@
   ],
   "main": "js/docxgen.js",
   "bin": {
-    "docxtemplater": "./cli/bin/docxgen.js"
+    "docxtemplater": "./js/cli.js"
   },
   "keywords": [
     "docx",
@@ -26,6 +26,7 @@
     "angular-expressions": "~0.2.1",
     "jszip": "^2.4.0",
     "png-js": "^0.1.1",
+    "qrcode-reader": "0.0.5",
     "xmldom": "0.1.x"
   },
   "devDependencies": {

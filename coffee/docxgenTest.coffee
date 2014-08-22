@@ -44,11 +44,11 @@ if env=='node'
 fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
 
 for name in fileNames
-	docX[name]=new DocxGen().loadFromFile(name)
+	docX[name]=DocxGen.loadFromFile(name)
 
-docX["tagExampleWithParser"]=new DocxGen().loadFromFile("tagExample.docx")
+docX["tagExampleWithParser"]=DocxGen.loadFromFile("tagExample.docx")
 
-docX['tagIntelligentLoopTable.docx']=new DocxGen().loadFromFile('tagIntelligentLoopTable.docx',{intelligentTagging:true})
+docX['tagIntelligentLoopTable.docx']=DocxGen.loadFromFile('tagIntelligentLoopTable.docx',{intelligentTagging:true})
 
 docXData['image.png']=DocUtils.loadDoc('image.png',{docx:false})
 docXData['bootstrap_logo.png']=DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
@@ -71,7 +71,7 @@ describe "DocxGenLoading", () ->
 			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
 			docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent)
-			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(22)
+			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(16)
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
 			expect(typeof docX['imageExample.docx']).toBe('object');
@@ -87,7 +87,7 @@ describe "DocxGenLoading", () ->
 		it "should be the same" , () ->
 			doc=new DocxGen(docX['tagExample.docx'].loadedContent)
 			output=doc.output(false)
-			expect(output.length).toEqual(91348)
+			expect(output.length).toEqual(90732)
 			expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')
 
 describe "DocxGenTemplating", () ->
@@ -333,7 +333,7 @@ describe 'DocxQrCode module', () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-			docx= new DocxGen()
+			docx= new DocxGen().setOptions({qrCode:true})
 			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
 
 		it "should do it's thing with JSZip.base64", () ->
@@ -354,7 +354,7 @@ describe 'DocxQrCode module', () ->
 					qr.decode(f.test)
 				else
 					base64= JSZip.base64.encode qrcodezip.files['blabla.png'].asBinary()
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
+					binaryData = new Buffer(base64, 'base64')
 					png= new PNG(binaryData)
 					finished= (a) ->
 						png.decoded= a

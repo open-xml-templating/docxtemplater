@@ -21,7 +21,7 @@ try {
 var config={uglify:false}
 
 var paths = {
-	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
+	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee','coffee/cli.coffee'],
 	coffeeTest: ['coffee/docxgenTest.coffee'],
 	testDirectory:__dirname+'/test/spec',
     js:'js/'
@@ -40,7 +40,7 @@ gulp.task('browserify', function() {
 
 gulp.task('allCoffee', function () {
 	gulp.src(paths.coffee)
-        .pipe(coffee())
+        .pipe(coffee({bare:true}))
         .pipe(gulp.dest(paths.js))
 
 	a=gulp.src(paths.coffeeTest)
@@ -56,7 +56,7 @@ gulp.task('allCoffee', function () {
 gulp.task('watch', function () {
 	gulp.src(paths.coffee)
 		.pipe(watch(function(files) {
-			var f=files.pipe(coffee())
+			var f=files.pipe(coffee({bare:true}))
 				.pipe(gulp.dest(paths.js))
 			gulp.run('browserify');
 			gulp.run('jasmine');

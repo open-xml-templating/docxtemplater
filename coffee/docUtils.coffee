@@ -1,5 +1,10 @@
 env= if global? then 'node' else 'browser'
 
+fs=require('fs')
+DOMParser = require('xmldom').DOMParser
+XMLSerializer= require('xmldom').XMLSerializer
+JSZip=require('jszip')
+
 DocUtils= {}
 DocUtils.docX=[]
 DocUtils.docXData=[]
@@ -114,7 +119,47 @@ DocUtils.loadDoc= (path,options={}) ->
 					if callback? then callback(data) else return a
 				catch e
 					if callback? then callback()
-	return fileName
+
+DocUtils.loadHttp=(result,callback)->
+	urloptions=(result.parse(path))
+	options =
+		hostname:urloptions.hostname
+		path:urloptions.path
+		method: 'GET'
+		rejectUnauthorized:false
+
+	errorCallback= (e) ->
+		throw new Error("Error on HTTPS Call")
+
+	reqCallback= (res)->
+		res.setEncoding('binary')
+		data = ""
+		res.on('data', (chunk)->
+			data += chunk
+		)
+		res.on('end', ()->
+			callback(null,data))
+	switch urloptions.protocol
+		when "https:"
+			req = https.request(options, reqCallback).on('error',errorCallback)
+		when 'http:'
+			req = http.request(options, reqCallback).on('error',errorCallback)
+	req.end()
+
+DocUtils.unsecureQrCode=(result,callback)->
+	console.log 'Your are using an insecure qrcode image finder. With this function, a malicious user could read anyfile that is on the server where docxtemplater resides. The qrcode module now accepts a function as its first parameter instead of a bool see http://docxtemplater.readthedocs.org/en/latest/configuration.html#image-replacing'
+	if result.substr(0,5)=='http:' or result.substr(0,6)=='https:'
+		DocUtils.loadHttp(result,callback)
+	else if result.substr(0,4)=='gen:'
+		defaultImageCreator=(arg,callback) ->
+			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
+			res=JSZip.base64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
+			callback(null,res)
+		defaultImageCreator(result,callback)
+	else if result!=null and result!= undefined and result.substr(0,22)!= 'error decoding QR Code'
+		fs.readFile(DocUtils.pathConfig.node+result,callback)
+	else
+		callback()
 
 DocUtils.tags=
 	start:'{'
