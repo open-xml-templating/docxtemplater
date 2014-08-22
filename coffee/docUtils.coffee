@@ -121,7 +121,7 @@ DocUtils.loadDoc= (path,options={}) ->
 					if callback? then callback()
 
 DocUtils.loadHttp=(result,callback)->
-	urloptions=(result.parse(path))
+	urloptions=(url.parse(result))
 	options =
 		hostname:urloptions.hostname
 		path:urloptions.path
@@ -129,16 +129,13 @@ DocUtils.loadHttp=(result,callback)->
 		rejectUnauthorized:false
 
 	errorCallback= (e) ->
-		throw new Error("Error on HTTPS Call")
+		callback(e)
 
 	reqCallback= (res)->
 		res.setEncoding('binary')
 		data = ""
-		res.on('data', (chunk)->
-			data += chunk
-		)
-		res.on('end', ()->
-			callback(null,data))
+		res.on 'data',(chunk)-> data += chunk
+		res.on 'end',()->callback(null,data)
 	switch urloptions.protocol
 		when "https:"
 			req = https.request(options, reqCallback).on('error',errorCallback)

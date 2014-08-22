@@ -25,7 +25,8 @@ module.exports=class DocxGen
 	setOptions:(@options)->
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-			@qrCode= if @options.qrCode? then DocUtils.unsecureQrCode else off
+			@qrCode= if @options.qrCode? then @options.qrCode else off
+			if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 			if @options.parser? then @parser=options.parser
 		this
 	loadFromFile:(path,options={})->
