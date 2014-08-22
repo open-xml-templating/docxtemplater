@@ -79,5 +79,3 @@ module.exports = class ImgManager
 				else
 					throw new Error("Rid is not an image")
 		throw new Error("No Media with this Rid found")
-
-root.ImgManager=ImgManager
