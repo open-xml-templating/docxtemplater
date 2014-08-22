@@ -40,7 +40,7 @@ gulp.task('browserify', function() {
 
 gulp.task('allCoffee', function () {
 	gulp.src(paths.coffee)
-        .pipe(coffee())
+        .pipe(coffee({bare:true}))
         .pipe(gulp.dest(paths.js))
 
 	a=gulp.src(paths.coffeeTest)
@@ -56,7 +56,7 @@ gulp.task('allCoffee', function () {
 gulp.task('watch', function () {
 	gulp.src(paths.coffee)
 		.pipe(watch(function(files) {
-			var f=files.pipe(coffee())
+			var f=files.pipe(coffee({bare:true}))
 				.pipe(gulp.dest(paths.js))
 			gulp.run('browserify');
 			gulp.run('jasmine');

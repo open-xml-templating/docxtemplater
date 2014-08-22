@@ -118,7 +118,6 @@ DocUtils.loadDoc= (path,options={}) ->
 					if callback? then callback(data) else return a
 				catch e
 					if callback? then callback()
-	return fileName
 
 DocUtils.tags=
 	start:'{'

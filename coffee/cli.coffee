@@ -1,5 +1,7 @@
-fs=require('fs')
+`#!/usr/bin/env node
+var fs=require('fs')`
 DocUtils=require('./docUtils')
+DocxGen=require('./docxgen')
 
 showHelp=()->
   console.log('Usage: docxtemplater <configFilePath>')
@@ -23,7 +25,6 @@ for key of jsonInput
 
 docxFileName=DocUtils.config["docxFile"]
 jsonFileName=process.argv[2]
-
 outputFile=DocUtils.config["outputFile"]
 debug= DocUtils.config["debug"]
 debugBool= DocUtils.config["debugBool"]
@@ -37,21 +38,21 @@ else
     console.log(process.cwd())
     console.log(debug)
   if (debugBool) then console.log("loading docx:"+docxFileName)
-  DocUtils.loadDoc(docxFileName,{intelligentTagging:true})
-  if (debugBool) then console.log('data:'+docXData[docxFileName])
-  DocUtils.loadDoc(jsonFileName,{noDocx:true})
+  docs={}
+  docs[docxFileName]=new DocxGen().loadFromFile(currentPath+'cli/'+docxFileName,{intelligentTagging:true})
+  if (debugBool) then console.log('data:'+docs[docxFileName])
+  docs[jsonFileName]=DocUtils.loadDoc(currentPath+jsonFileName,{docx:false})
 
-  if (debugBool) then console.log('data:'+docXData[jsonFileName])
-  if (docXData[jsonFileName]==undefined) then throw 'no data found in json file'
-  #jsonInput=JSON.parse(docXData[jsonFileName])
-  if (docX[docxFileName]==undefined) then throw 'no data found in json file'
+  if (debugBool) then console.log('data:'+docs[jsonFileName])
+  if (docs[jsonFileName]==undefined) then throw 'no data found in json file'
+  if (docs[docxFileName]==undefined) then throw 'no data found in json file'
   if (debugBool) then console.log('decoded',jsonInput)
   if (debugBool) then console.log(docX)
-  if (debugBool) then console.log(docX[docxFileName])
+  if (debugBool) then console.log(docs[docxFileName])
 
-  docX[docxFileName].setTags(jsonInput)
-  docX[docxFileName].qrCode=DocUtils.config["qrcode"]
-  docX[docxFileName].finishedCallback=()->
+  docs[docxFileName].setTags(jsonInput)
+  docs[docxFileName].qrCode=DocUtils.config["qrcode"]
+  docs[docxFileName].finishedCallback=()->
     this.output({download:true,name:outputFile})
     console.log('outputed')
-  docX[docxFileName].applyTags()
+  docs[docxFileName].applyTags()

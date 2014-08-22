@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "author": "Edgar Hipp",
   "description": "A docX templater",
   "contributors": [
@@ -10,7 +10,7 @@
   ],
   "main": "js/docxgen.js",
   "bin": {
-    "docxtemplater": "./cli/bin/docxgen.js"
+    "docxtemplater": "./js/cli.js"
   },
   "keywords": [
     "docx",
