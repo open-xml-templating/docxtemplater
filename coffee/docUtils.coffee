@@ -250,7 +250,6 @@ DocUtils.sizeOfObject = (obj) ->
 		size++
 	size
 
-Array.prototype.max = () -> Math.max.apply(null, this)
-Array.prototype.min = () -> Math.min.apply(null, this)
+DocUtils.maxArray = (a) -> Math.max.apply(null, a)
 
 module.exports=DocUtils

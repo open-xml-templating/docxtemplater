@@ -22,7 +22,7 @@ module.exports = class ImgManager
 		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].asText()
 		@xmlDoc= DocUtils.Str2xml content
 		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship')) #Get all Rids
-		@maxRid=RidArray.max()
+		@maxRid=DocUtils.maxArray(RidArray)
 		@imageRels=[]
 		this
 
