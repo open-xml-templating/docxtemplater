@@ -3,6 +3,9 @@ DocxGen=require('../js/docxgen.js')
 
 DocUtils.loadDoc("image.png",{docx:false})
 
+
+DocUtils.pathConfig={browser:window.location.toString().replace("demo.html","")}
+
 function textAreaAdjust(o) {
     o.style.height = "1px";
     o.style.height = (25+o.scrollHeight)+"px";

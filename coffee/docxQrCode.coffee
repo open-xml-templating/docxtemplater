@@ -2,7 +2,7 @@ DocUtils=require('./docUtils')
 DocXTemplater=require('./docxTemplater')
 
 vm=require('vm')
-fs=require('fs')
+JSZip=require('jszip')
 
 QrCode=require('qrcode-reader')
 

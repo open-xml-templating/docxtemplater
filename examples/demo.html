@@ -261,7 +261,6 @@ var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagExample.docx">
-var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
 new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
 	doc.setTags({
 			"first_name":"Hipp",
