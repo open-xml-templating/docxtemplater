@@ -243,33 +243,6 @@ var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success
 </section>
 
 <section>
-	<h2 id='images'><em>Images:</em>Retrieve and replace images</h2>
-	<table class="demo">
-		<tr>
-			<td><img src="images/imageTagging.PNG"></td>
-			<td>
-				<div>=> <br>Results in:</div>	
-			</td>
-			<td><img src="images/imageTaggingResult.PNG"></td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<h3>Code Used:</h3>
-				<textarea raw="imageExample.docx">
-var imgData=docXData["image.png"];
-new DocxGen().loadFromFile("imageExample.docx",{async:true}).success(function(doc){
-	imageList=doc.getImageList() //Get the array of images in the document
-	console.log(imageList); 
-	doc.setImage(imageList[0].path,imgData); //change the first image to imgData
-	doc.output() 
-});
-				</textarea>
-			</td>
-		</tr>
-	</table>
-</section>
-
-<section>
 	<h2 id='naming'><em>Naming:</em> Don't wanna see download.docx ?</h2>
 	<p>Sorry mate, if you want this, you're going to need flash :-(. This will open up a flash popup that will prompt the user to save the file where he wants to</p>
 	<table class="demo">
