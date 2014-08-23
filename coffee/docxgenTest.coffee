@@ -1,5 +1,3 @@
-env= if global? then 'node' else 'browser'
-
 docX={}
 docXData={}
 
@@ -19,10 +17,8 @@ angularParser= (tag) ->
 			return "undefined"
 }
 
+path=require('path')
 p=(a)->path.join(__dirname,'/../../js/'+a+'.js')
-
-if env=='node'
-	path=require('path')
 
 DocxGen= require(p('docxgen'))
 DocUtils=require(p('docUtils'))
@@ -38,7 +34,7 @@ DocxQrCode=require(p('docxQrCode'))
 DocUtils.pathConfig=
 	"browser":'../examples/'
 
-if env=='node'
+if DocUtils.env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
 fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
@@ -360,7 +356,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['blabla.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
@@ -388,7 +384,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['custom.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
@@ -417,7 +413,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodeTest.png'].asBinary(),obj,"qrcodeTest.png",4)
 					qr.decode(f.test)
 				else
@@ -445,7 +441,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodetag.png'].asBinary(),obj,"tag.png",2)
 					qr.decode(f.test)
 				else

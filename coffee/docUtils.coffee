@@ -1,11 +1,10 @@
-env= if global? then 'node' else 'browser'
-
 fs=require('fs')
 DOMParser = require('xmldom').DOMParser
 XMLSerializer= require('xmldom').XMLSerializer
 JSZip=require('jszip')
 
 DocUtils= {}
+DocUtils.env= if fs.readFile? then 'node' else 'browser'
 DocUtils.docX=[]
 DocUtils.docXData=[]
 
@@ -49,7 +48,7 @@ DocUtils.loadDoc= (path,options={}) ->
 	else
 		fileName= path
 		if basePath=="" && DocUtils.pathConfig? #set basePath only if it wasn't set as an argument
-			if env=='browser'
+			if DocUtils.env=='browser'
 				basePath= DocUtils.pathConfig.browser
 			else
 				basePath= DocUtils.pathConfig.node
@@ -63,7 +62,7 @@ DocUtils.loadDoc= (path,options={}) ->
 			callback(DocUtils.docXData[fileName])
 		if async==false
 			return DocUtils.docXData[fileName]
-	if env=='browser'
+	if DocUtils.env=='browser'
 		xhrDoc= new XMLHttpRequest()
 		xhrDoc.open('GET', totalPath , async)
 		if xhrDoc.overrideMimeType

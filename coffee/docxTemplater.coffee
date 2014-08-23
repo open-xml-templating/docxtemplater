@@ -1,5 +1,3 @@
-env= if global? then 'node' else 'browser'
-
 XmlTemplater=require('./xmlTemplater')
 XmlUtil=require('./xmlUtil')
 
