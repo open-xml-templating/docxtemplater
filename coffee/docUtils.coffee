@@ -1,11 +1,10 @@
-env= if global? then 'node' else 'browser'
-
 fs=require('fs')
 DOMParser = require('xmldom').DOMParser
 XMLSerializer= require('xmldom').XMLSerializer
 JSZip=require('jszip')
 
 DocUtils= {}
+DocUtils.env= if fs.readFile? then 'node' else 'browser'
 DocUtils.docX=[]
 DocUtils.docXData=[]
 
@@ -49,7 +48,7 @@ DocUtils.loadDoc= (path,options={}) ->
 	else
 		fileName= path
 		if basePath=="" && DocUtils.pathConfig? #set basePath only if it wasn't set as an argument
-			if env=='browser'
+			if DocUtils.env=='browser'
 				basePath= DocUtils.pathConfig.browser
 			else
 				basePath= DocUtils.pathConfig.node
@@ -63,7 +62,7 @@ DocUtils.loadDoc= (path,options={}) ->
 			callback(DocUtils.docXData[fileName])
 		if async==false
 			return DocUtils.docXData[fileName]
-	if env=='browser'
+	if DocUtils.env=='browser'
 		xhrDoc= new XMLHttpRequest()
 		xhrDoc.open('GET', totalPath , async)
 		if xhrDoc.overrideMimeType
@@ -121,7 +120,7 @@ DocUtils.loadDoc= (path,options={}) ->
 					if callback? then callback()
 
 DocUtils.loadHttp=(result,callback)->
-	urloptions=(result.parse(path))
+	urloptions=(url.parse(result))
 	options =
 		hostname:urloptions.hostname
 		path:urloptions.path
@@ -129,16 +128,13 @@ DocUtils.loadHttp=(result,callback)->
 		rejectUnauthorized:false
 
 	errorCallback= (e) ->
-		throw new Error("Error on HTTPS Call")
+		callback(e)
 
 	reqCallback= (res)->
 		res.setEncoding('binary')
 		data = ""
-		res.on('data', (chunk)->
-			data += chunk
-		)
-		res.on('end', ()->
-			callback(null,data))
+		res.on 'data',(chunk)-> data += chunk
+		res.on 'end',()->callback(null,data)
 	switch urloptions.protocol
 		when "https:"
 			req = https.request(options, reqCallback).on('error',errorCallback)
@@ -254,7 +250,6 @@ DocUtils.sizeOfObject = (obj) ->
 		size++
 	size
 
-Array.prototype.max = () -> Math.max.apply(null, this)
-Array.prototype.min = () -> Math.min.apply(null, this)
+DocUtils.maxArray = (a) -> Math.max.apply(null, a)
 
 module.exports=DocUtils

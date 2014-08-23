@@ -3,15 +3,11 @@ Docxgen.coffee
 Created by Edgar HIPP
 ###
 
-env= if global? then 'node' else 'browser'
-
 DocUtils=require('./docUtils')
 ImgManager=require('./imgManager')
 DocXTemplater=require('./docxTemplater')
-
-if env=='node'
-	fs= require('fs')
-	JSZip=require('jszip')
+JSZip=require('jszip')
+fs= require('fs')
 
 DocxGen=class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
@@ -25,7 +21,8 @@ DocxGen=class DocxGen
 	setOptions:(@options)->
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-			@qrCode= if @options.qrCode? then DocUtils.unsecureQrCode else off
+			@qrCode= if @options.qrCode? then @options.qrCode else off
+			if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 			if @options.parser? then @parser=options.parser
 		this
 	qrCodeCallBack:(num,add=true) ->
@@ -88,7 +85,7 @@ DocxGen=class DocxGen
 		if !options.type? then options.type="base64"
 		result= @zip.generate({type:options.type})
 		if options.download
-			if env=='node'
+			if DocUtils.env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
 					if err then throw err
 					if options.callback? then options.callback()

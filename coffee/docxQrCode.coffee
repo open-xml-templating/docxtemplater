@@ -1,5 +1,3 @@
-env= if global? then 'node' else 'browser'
-
 DocUtils=require('./docUtils')
 DocXTemplater=require('./docxTemplater')
 
@@ -13,7 +11,7 @@ module.exports= class DocxQrCode
 		@callbacked=false
 		@data=imageData
 		if @data==undefined then throw new Error("data of qrcode can't be undefined")
-		if env=='browser'
+		if DocUtils.env=='browser'
 			@base64Data=JSZip.base64.encode(@data)
 		@ready=false
 		@result=null
@@ -27,7 +25,7 @@ module.exports= class DocxQrCode
 			testdoc.applyTags()
 			_this.result=testdoc.content
 			_this.searchImage()
-		if env=='browser'
+		if DocUtils.env=='browser'
 			@qr.decode("data:image/png;base64,#{@base64Data}")
 		else
 			@qr.decode(@data,@data.decoded)
@@ -35,4 +33,4 @@ module.exports= class DocxQrCode
 		cb=(err,data)=>
 			@data=data
 			@callback(this,@imgName,@num)
-		@xmlTemplater.DocxGen.qrCode(@result,cb,this)
+		@xmlTemplater.DocxGen.qrCode(@result,cb)

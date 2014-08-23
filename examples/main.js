@@ -1,3 +1,6 @@
+DocUtils=require('../js/docUtils.js')
+DocxGen=require('../js/docxgen.js')
+
 DocUtils.loadDoc("image.png",{docx:false})
 
 function textAreaAdjust(o) {
@@ -32,7 +35,7 @@ for (var i = 0; i < executeButtonList.length; i++) {
 		for (var j = 0; j < childs.length; j++) {
 			if(childs[j].tagName=='TEXTAREA')
 			{
-				console.log(childs[j].value)	
+				console.log(childs[j].value)
 				eval(childs[j].value)
 			}
 		};
@@ -51,12 +54,10 @@ for (var i = 0; i < viewRawButtonList.length; i++) {
 			if(childs[j].tagName=='TEXTAREA')
 			{
 				raw=(childs[j].getAttribute("raw"))
-				var doc=new DocxGen(docXData[raw])
-				doc.output()
+				new DocxGen().loadFromFile(raw).output()
 			}
 		}
 	}
 }
 
 }
-
