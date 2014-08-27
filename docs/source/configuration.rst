@@ -65,6 +65,47 @@ For example your configuration could be:
     They is a security warning if you use true as the value for qrCode, because this will use the older qrcode loading function.
     This function can load any file on the filesystem, with a possible leak in api-keys or whatever you store on docxtemplater's server.
 
+To generate qrcodes with nodejs, you can use for example this script brought by @ssured in issue #69 https://github.com/edi9999/docxtemplater/issues/69
+
+`npm install qr-image canvas`
+
+To install the dependencies of canvas, look here (platform specific)
+https://github.com/Automattic/node-canvas/wiki
+
+
+.. code-block:: javascript
+
+    var Canvas, Image, canvas, column, ctx, fs, matrix, qr, qrString, size, textSize, value, x, y, _i, _j, _len, _len1;
+    qr = require('qr-image');
+    fs = require('fs');
+    Canvas = require('canvas');
+    Image = Canvas.Image;
+    qrString = 'gen:{image}';
+    size = 10;
+    matrix = qr.matrix(qrString);
+    canvas = new Canvas((2 + 5 + matrix.length) * size, (2 + 5 + matrix.length) * size);
+    ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(1, 1, canvas.width - 2, canvas.height - 2);
+    ctx.fillStyle = '#000';
+    for (y = _i = 0, _len = matrix.length; _i < _len; y = ++_i) {
+      column = matrix[y];
+      for (x = _j = 0, _len1 = column.length; _j < _len1; x = ++_j) {
+        value = column[x];
+        if (value === 1) {
+          ctx.fillRect((x + 1 + 2.5) * size, (y + 1) * size, size, size);
+        }
+      }
+    }
+    ctx.font = 4 * size + 'px Helvetica';
+    ctx.fillStyle = '#000';
+    textSize = ctx.measureText(qrString);
+    ctx.fillText(qrString, (canvas.width - textSize.width) / 2, canvas.height - size - textSize.actualBoundingBoxDescent);
+    canvas.pngStream().pipe(fs.createWriteStream('qr.png'));
+
+
 Angular Parser
 --------------
 
