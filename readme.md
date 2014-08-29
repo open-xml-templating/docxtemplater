@@ -52,6 +52,7 @@ Installation: `npm install docxtemplater`
 
 You can download [tagExample.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
+## Have 0.6.3 or less and using the qrcode module ? You probably have a security issue. See [upgrade.md](upgrade.md)
 
 ## Known issues
 

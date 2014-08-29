@@ -3,35 +3,17 @@ Docxgen.coffee
 Created by Edgar HIPP
 ###
 
-root= global ? window
-env= if global? then 'node' else 'browser'
+DocUtils=require('./docUtils')
+ImgManager=require('./imgManager')
+DocXTemplater=require('./docxTemplater')
+JSZip=require('jszip')
+fs= require('fs')
 
-if env=='node'
-	global.http= require('http')
-	global.https= require('https')
-	global.fs= require('fs')
-	global.vm = require('vm')
-	global.DOMParser = require('xmldom').DOMParser
-	global.XMLSerializer= require('xmldom').XMLSerializer
-	path=require('path')
-	global.PNG= require(path.join(__dirname,'../vendor/pngjs/png-node'))
-	global.url= require('url')
-
-	["grid.js","version.js","detector.js","formatinf.js","errorlevel.js","bitmat.js","datablock.js","bmparser.js","datamask.js","rsdecoder.js","gf256poly.js","gf256.js","decoder.js","qrcode.js","findpat.js","alignpat.js","databr.js"].forEach (file) ->
-		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jsqrcode/' + file), file)
-	['jszip.js'].forEach (file) ->
-		vm.runInThisContext(global.fs.readFileSync(__dirname + '/../vendor/jszip2.0/dist/' + file), file)
-
-root.DocxGen = class DocxGen
+module.exports=class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
-	defaultImageCreator=(arg,callback) ->
-		#This is the image of an arrow, you can replace this function by whatever you want to generate an image
-		result=JSZip.base64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
-		callback(result)
 	constructor: (content, @Tags={},@options) ->
 		@setOptions(@options)
 		@finishedCallback=()->
-		@localImageCreator= defaultImageCreator
 		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
 		@qrCodeNumCallBack=0 #This is the order of the qrcode
 		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
@@ -40,7 +22,9 @@ root.DocxGen = class DocxGen
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 			@qrCode= if @options.qrCode? then @options.qrCode else off
+			if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 			if @options.parser? then @parser=options.parser
+		this
 	loadFromFile:(path,options={})->
 		@setOptions(options)
 		promise=
@@ -116,7 +100,7 @@ root.DocxGen = class DocxGen
 		if !options.type? then options.type="base64"
 		result= @zip.generate({type:options.type})
 		if options.download
-			if env=='node'
+			if DocUtils.env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
 					if err then throw err
 					if options.callback? then options.callback()
@@ -143,5 +127,3 @@ root.DocxGen = class DocxGen
 			append: false
 			dataType:'base64'
 
-if env=='node'
-	module.exports=root.DocxGen

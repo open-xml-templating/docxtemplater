@@ -1,12 +1,15 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
+DocUtils=require('./docUtils')
+ScopeManager=require('./scopeManager')
+SubContent=require('./subContent')
+TemplaterState=require('./templaterState')
+XmlMatcher=require('./xmlMatcher')
+ImgReplacer=require('./imgReplacer')
 #This is an abstract class, DocXTemplater is an example of inherited class
 
-root.XmlTemplater =  class XmlTemplater #abstract class !!
+module.exports=class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
-		@currentClass=root.XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
+		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@templaterState= new TemplaterState
 		@currentScope=@Tags
@@ -21,7 +24,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
-		@parser= if options.parser? then options.parser else root.DocUtils.defaultParser
+		@parser= if options.parser? then options.parser else DocUtils.defaultParser
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
@@ -63,7 +66,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 						return @replaceLoopTag()
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
-		if @DocxGen? and @DocxGen.qrCode
+		if @DocxGen? and @DocxGen.qrCode!=false
 			new ImgReplacer(this).findImages().replaceImages()
 		this
 	replaceSimpleTag:()->
@@ -95,20 +98,22 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		outerXmlText= outerXml.text
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
 		@forLoop(innerXmlText,outerXmlText)
-	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber)->
+	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber,noEndTag)->
 		if noStartTag == true
 			return insideValue
 		else
 			if spacePreserve==true
-				return """<#{@tagXml} xml:space="preserve">#{insideValue}</#{@tagXml}>"""
+				str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
 			else
-				return @templaterState.matches[xmlTagNumber][1]+insideValue+"</#{@tagXml}>"
+				str=@templaterState.matches[xmlTagNumber][1]+insideValue
+			if noEndTag==true then return str else return str+"</#{@tagXml}>"
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
 		spacePreserve= if options.spacePreserve? then options.spacePreserve else true
 		noStartTag= if options.noStartTag? then options.noStartTag else false
-		replacer=@xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber)
+		noEndTag= if options.noEndTag? then options.noEndTag else false
+		replacer=@xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber,noEndTag)
 		@templaterState.matches[xmlTagNumber][2]=insideValue #so that the templaterState.matches are still correct
 		startTag= @templaterState.calcXmlTagPosition(xmlTagNumber)#where the open tag starts: <w:t>
 		#calculate the replacer according to the params
@@ -125,7 +130,6 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		eTag=DocUtils.tags.end
 
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
-
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
 				insideValue:@templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
@@ -133,7 +137,6 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 
 			content= @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
-
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 			regexRight= new RegExp("^([^#{sTag}]*)#{sTag}.*$")
 			subMatches= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].match regexRight
@@ -145,7 +148,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				options.insideValue=subMatches[1]+newValue
 			else #if the content starts with:  {tag</w:t> (when handling recursive cases)
 				options.insideValue=newValue
-				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
 
 			content= @replaceXmlTag(content,options)
 
@@ -165,6 +168,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				insideValue:@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].replace regexLeft, '$1'
 				spacePreserve:true
 				xmlTagNumber:k
+				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
 			content= @replaceXmlTag(content, options)
 		content
 	replaceLoopTag:()->

@@ -5,36 +5,12 @@
 	<title>Demo of DocxGenJS</title>
 	<link rel="stylesheet" href="main.css">
 
-	<!--Include this only if you want to use the qrcode functionality-->
-	<script type="text/javascript" src="../vendor/jsqrcode/grid.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/version.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/detector.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/formatinf.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/errorlevel.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/bitmat.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/datablock.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/bmparser.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/datamask.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/rsdecoder.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/gf256poly.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/gf256.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/decoder.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/qrcode.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/findpat.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/alignpat.js"></script>
-	<script type="text/javascript" src="../vendor/jsqrcode/databr.js"></script>
-	<script type="text/javascript" src="../vendor/angular-parse-browser.js"></script>
-
 	<!-- Mandatory js for the library to work -->
-	<script type="text/javascript" src="../vendor/base64.js"></script>
-	<script type="text/javascript" src="../vendor/jszip2.0/dist/jszip.js"></script>
-	<script type="text/javascript" src="../js/docxgen.js"></script>
+	<script type="text/javascript" src="../build/out.js"></script>
 
 	<!-- Include this only if you want to use downloadify (last example) -->
 	<script src="../vendor/downloadify/js/downloadify.min.js"></script>
 	<script src="../vendor/downloadify/js/swfobject.js"></script>
-
-	<script src="main.js"></script>
 </head>
 <body>
 
@@ -267,33 +243,6 @@ var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success
 </section>
 
 <section>
-	<h2 id='images'><em>Images:</em>Retrieve and replace images</h2>
-	<table class="demo">
-		<tr>
-			<td><img src="images/imageTagging.PNG"></td>
-			<td>
-				<div>=> <br>Results in:</div>	
-			</td>
-			<td><img src="images/imageTaggingResult.PNG"></td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<h3>Code Used:</h3>
-				<textarea raw="imageExample.docx">
-var imgData=docXData["image.png"];
-new DocxGen().loadFromFile("imageExample.docx",{async:true}).success(function(doc){
-	imageList=doc.getImageList() //Get the array of images in the document
-	console.log(imageList); 
-	doc.setImage(imageList[0].path,imgData); //change the first image to imgData
-	doc.output() 
-});
-				</textarea>
-			</td>
-		</tr>
-	</table>
-</section>
-
-<section>
 	<h2 id='naming'><em>Naming:</em> Don't wanna see download.docx ?</h2>
 	<p>Sorry mate, if you want this, you're going to need flash :-(. This will open up a flash popup that will prompt the user to save the file where he wants to</p>
 	<table class="demo">
@@ -312,7 +261,6 @@ new DocxGen().loadFromFile("imageExample.docx",{async:true}).success(function(do
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagExample.docx">
-var docData=docXData["tagExample.docx"]; //docXData is an array containing all the raw data for these examples
 new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
 	doc.setTags({
 			"first_name":"Hipp",

@@ -1,38 +1,57 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
-root.docX={}
-root.docXData={}
+docX={}
+docXData={}
 
 expressions= require('angular-expressions')
 angularParser= (tag) ->
-	expr=expressions.compile(tag)
-	{get:expr}
+	try
+		expr=expressions.compile(tag)
+	catch e
+		console.log "parsing didn't work with #{tag}"
+	{get:(scope)->
+		if !scope?
+			console.log 'warning: scope undefined'
+		try
+			return expr(scope)
+		catch e
+			console.log "parsing didn't work with #{tag}"
+			return "undefined"
+}
 
-if env=='node'
-	path=require('path')
-	root.DocxGen= require(path.join(__dirname,'/../../js/docxgen.js'))
+path=require('path')
+p=(a)->path.join(__dirname,'/../../js/'+a+'.js')
+
+DocxGen= require(p('docxgen'))
+DocUtils=require(p('docUtils'))
+docX=DocUtils.docX
+docXData=DocUtils.docXData
+SubContent=require(p('subContent'))
+DocXTemplater=require(p('docxTemplater'))
+XmlUtil=require(p('xmlUtil'))
+JSZip=require('jszip')
+PNG=require('png-js')
+DocxQrCode=require(p('docxQrCode'))
 
 DocUtils.pathConfig=
 	"browser":'../examples/'
 
-if env=='node'
+if DocUtils.env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
 fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx"]
 
 for name in fileNames
-	root.docX[name]=new DocxGen().loadFromFile(name)
+	docX[name]=new DocxGen().loadFromFile(name)
 
-root.docX["tagExampleWithParser"]=new DocxGen().loadFromFile("tagExample.docx")
+docX["tagExampleWithParser"]=new DocxGen().loadFromFile("tagExample.docx")
 
-DocUtils.loadDoc('tagIntelligentLoopTable.docx',{intelligentTagging:true})
-DocUtils.loadDoc('image.png',{docx:false})
-DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
-DocUtils.loadDoc('BMW_logo.png',{docx:false})
-DocUtils.loadDoc('Firefox_logo.png',{docx:false})
-DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
-DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
+docX['tagIntelligentLoopTable.docx']=new DocxGen().loadFromFile('tagIntelligentLoopTable.docx',{intelligentTagging:true})
+
+docXData['image.png']=DocUtils.loadDoc('image.png',{docx:false})
+docXData['bootstrap_logo.png']=DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
+docXData['BMW_logo.png']=DocUtils.loadDoc('BMW_logo.png',{docx:false})
+docXData['Firefox_logo.png']=DocUtils.loadDoc('Firefox_logo.png',{docx:false})
+docXData['Volkswagen_logo.png']=DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
+docXData['qrcodeTest.zip']=DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -48,7 +67,7 @@ describe "DocxGenLoading", () ->
 			expect(docXData['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
 			docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent)
-			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(22)
+			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(16)
 	describe "basic loading", () ->
 		it "should load file imageExample.docx", () ->
 			expect(typeof docX['imageExample.docx']).toBe('object');
@@ -62,9 +81,9 @@ describe "DocxGenLoading", () ->
 			expect(fullText).toBe("")
 	describe "output and input", () ->
 		it "should be the same" , () ->
-			doc=new DocxGen(root.docX['tagExample.docx'].loadedContent)
+			doc=new DocxGen(docX['tagExample.docx'].loadedContent)
 			output=doc.output(false)
-			expect(output.length).toEqual(91348)
+			expect(output.length).toEqual(90732)
 			expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')
 
 describe "DocxGenTemplating", () ->
@@ -310,7 +329,7 @@ describe 'DocxQrCode module', () ->
 		f=null; fCalled=null;qrcodezip=null;obj=null;
 		beforeEach () ->
 			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-			docx= new DocxGen()
+			docx= new DocxGen().setOptions({qrCode:true})
 			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
 
 		it "should do it's thing with JSZip.base64", () ->
@@ -326,12 +345,12 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['blabla.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
 					base64= JSZip.base64.encode qrcodezip.files['blabla.png'].asBinary()
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
+					binaryData = new Buffer(base64, 'base64')
 					png= new PNG(binaryData)
 					finished= (a) ->
 						png.decoded= a
@@ -354,7 +373,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['custom.png'].asBinary(),obj,"custom.png",6)
 					qr.decode(f.test)
 				else
@@ -383,7 +402,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodeTest.png'].asBinary(),obj,"qrcodeTest.png",4)
 					qr.decode(f.test)
 				else
@@ -411,7 +430,7 @@ describe 'DocxQrCode module', () ->
 				fCalled= false
 				f= {test:() -> fCalled= true}
 				spyOn(f,'test').andCallThrough()
-				if env=='browser'
+				if DocUtils.env=='browser'
 					qr=new DocxQrCode(qrcodezip.files['qrcodetag.png'].asBinary(),obj,"tag.png",2)
 					qr.decode(f.test)
 				else
@@ -760,3 +779,13 @@ describe 'SubContent', () ->
 		doc.applyTags()
 		text=doc.getFullText()
 		expect(text).toBe('')
+
+	it 'should work with loops', ()->
+		content="{innertag</w:t><w:t>}"
+		xmlt=new DocXTemplater(content,{Tags:{innertag:5}}).applyTags()
+		expect(xmlt.content).toBe('5</w:t><w:t xml:space="preserve">')
+
+	it 'should work with loops', ()->
+		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
+		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
+		expect(xmlt.content).not.toContain('</w:t></w:t>')

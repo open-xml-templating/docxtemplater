@@ -1,9 +1,18 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
+fs=require('fs')
+DOMParser = require('xmldom').DOMParser
+XMLSerializer= require('xmldom').XMLSerializer
+JSZip=require('jszip')
+url=require('url')
+http=require('http')
+https=require('https')
 
-root.DocUtils= {}
-root.docX=[]
-root.docXData=[]
+DocUtils= {}
+DocUtils.env= if fs.readFile? then 'node' else 'browser'
+DocUtils.docX=[]
+DocUtils.docXData=[]
+DocUtils.getPathConfig=()->
+	if !DocUtils.pathConfig? then return ""
+	return if DocUtils.pathConfig.node? then DocUtils.pathConfig.node else DocUtils.pathConfig.browser
 
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -45,21 +54,18 @@ DocUtils.loadDoc= (path,options={}) ->
 	else
 		fileName= path
 		if basePath=="" && DocUtils.pathConfig? #set basePath only if it wasn't set as an argument
-			if env=='browser'
-				basePath= DocUtils.pathConfig.browser
-			else
-				basePath= DocUtils.pathConfig.node
+			basePath=DocUtils.getPathConfig()
 		totalPath= basePath+path
 	loadFile = (data) ->
-		root.docXData[fileName]=data
+		DocUtils.docXData[fileName]=data
 		if noDocx==false
-			root.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
-			return root.docX[fileName]
+			DocUtils.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
+			return DocUtils.docX[fileName]
 		if callback?
-			callback(root.docXData[fileName])
+			callback(DocUtils.docXData[fileName])
 		if async==false
-			return root.docXData[fileName]
-	if env=='browser'
+			return DocUtils.docXData[fileName]
+	if DocUtils.env=='browser'
 		xhrDoc= new XMLHttpRequest()
 		xhrDoc.open('GET', totalPath , async)
 		if xhrDoc.overrideMimeType
@@ -115,7 +121,62 @@ DocUtils.loadDoc= (path,options={}) ->
 					if callback? then callback(data) else return a
 				catch e
 					if callback? then callback()
-	return fileName
+
+DocUtils.loadHttp=(result,callback)->
+	if DocUtils.env=='node'
+		urloptions=(url.parse(result))
+		options =
+			hostname:urloptions.hostname
+			path:urloptions.path
+			method: 'GET'
+			rejectUnauthorized:false
+
+
+		errorCallback= (e) ->
+			callback(e)
+
+		reqCallback= (res)->
+			res.setEncoding('binary')
+			data = ""
+			res.on 'data',(chunk)-> data += chunk
+			res.on 'end',()->callback(null,data)
+		switch urloptions.protocol
+			when "https:"
+				req = https.request(options, reqCallback).on('error',errorCallback)
+			when 'http:'
+				req = http.request(options, reqCallback).on('error',errorCallback)
+		req.end()
+	else
+		xhrDoc= new XMLHttpRequest()
+		xhrDoc.open('GET', result , false)
+		if xhrDoc.overrideMimeType
+			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+		xhrDoc.onreadystatechange =(e)->
+			if this.readyState == 4
+				if this.status == 200
+					callback(null,this.response)
+				else
+					callback(true)
+		xhrDoc.send()
+
+DocUtils.unsecureQrCode=(result,callback)->
+	if DocUtils.env=='node'
+		console.log 'Your are using an insecure qrcode image finder. With this function, a malicious user could read anyfile that is on the server where docxtemplater resides. The qrcode module now accepts a function as its first parameter instead of a bool see http://docxtemplater.readthedocs.org/en/latest/configuration.html#image-replacing'
+	if result.substr(0,5)=='http:' or result.substr(0,6)=='https:'
+		DocUtils.loadHttp(result,callback)
+	else if result.substr(0,4)=='gen:'
+		defaultImageCreator=(arg,callback) ->
+			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
+			res=JSZip.base64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
+			callback(null,res)
+		defaultImageCreator(result,callback)
+	else if result!=null and result!= undefined and result.substr(0,22)!= 'error decoding QR Code'
+		if DocUtils.env=='node'
+			fs.readFile(DocUtils.getPathConfig()+result,callback)
+		else
+			DocUtils.loadHttp(DocUtils.getPathConfig()+result,callback)
+	else
+		callback()
 
 DocUtils.tags=
 	start:'{'
@@ -158,7 +219,7 @@ DocUtils.xml2Str = (xmlNode) ->
 	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
 
 DocUtils.Str2xml= (str) ->
-	if root.DOMParser #Chrome, Firefox, and modern browsers
+	if DOMParser #Chrome, Firefox, and modern browsers
 		parser=new DOMParser();
 		xmlDoc=parser.parseFromString(str,"text/xml")
 	else # Internet Explorer
@@ -210,5 +271,6 @@ DocUtils.sizeOfObject = (obj) ->
 		size++
 	size
 
-Array.prototype.max = () -> Math.max.apply(null, this)
-Array.prototype.min = () -> Math.min.apply(null, this)
+DocUtils.maxArray = (a) -> Math.max.apply(null, a)
+
+module.exports=DocUtils

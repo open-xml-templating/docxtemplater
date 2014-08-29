@@ -21,13 +21,49 @@ try {
 var config={uglify:false}
 
 var paths = {
-	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
+	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/imgManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee','coffee/cli.coffee'],
 	coffeeTest: ['coffee/docxgenTest.coffee'],
-	testDirectory:__dirname+'/test/spec'
+	testDirectory:__dirname+'/test/spec',
+    js:'js/'
 };
 
+var browserify = require('gulp-browserify');
+
+gulp.task('browserify', function() {
+    // Single entry point to browserify
+    gulp.src(__dirname+'/js/main.js')
+        .pipe(browserify({
+          debug : true
+        }))
+        .pipe(gulp.dest(__dirname+'/browser/docxgen.js'))
+});
+
+gulp.task('allCoffee', function () {
+	gulp.src(paths.coffee)
+        .pipe(coffee({bare:true}))
+        .pipe(gulp.dest(paths.js))
+
+	a=gulp.src(paths.coffeeTest)
+		.pipe(coffee({map:true}))
+
+	if(config.uglify)
+		a=a.pipe(uglify())
+
+	a=a.pipe(concat('docxgenTest.spec.js'))
+		.pipe(gulp.dest('./test/spec'));
+});
+
 gulp.task('watch', function () {
-	gulp.watch(paths.coffee,['coffee','jasmine','livereload']);
+	gulp.src(paths.coffee)
+		.pipe(watch(function(files) {
+			var f=files.pipe(coffee({bare:true}))
+				.pipe(gulp.dest(paths.js))
+			gulp.run('browserify');
+			gulp.run('jasmine');
+			gulp.run('livereload');
+			return f;
+		}));
+
 	gulp.watch(paths.coffeeTest,['coffeeTest']);
 });
 
@@ -46,59 +82,14 @@ gulp.task('coffeeTest', function() {
 	return a;
 });
 
-gulp.task('coffee', function(cb) {
-    blink1.fadeToRGB(40, 120, 120, 0); // r, g, b: 0 - 255
-	a= gulp.src(paths.coffee)
-		.pipe(coffee({map:true}))
-
-	fileName='docxgen.js'
-	if (config.uglify)
-		{
-			fileName='docxgen.min.js'
-			a=a.pipe(uglify())
-		}
-
-	a=a
-		.pipe(concat(fileName))
-		.pipe(gulp.dest('./js/'));
-
-	return a;
-	cb(err)
-});
-
-
-gulp.task('allCoffee', function(cb) {
-	a= gulp.src(paths.coffee)
-		.pipe(coffee({map:true}))
-		.pipe(uglify())
-		.pipe(concat('docxgen.min.js'))
-		.pipe(gulp.dest('./js/'));
-
-	b= gulp.src(paths.coffee)
-		.pipe(coffee({map:true}))
-		.pipe(concat('docxgen.js'))
-		.pipe(gulp.dest('./js/'));
-
-	a=gulp.src(paths.coffeeTest)
-		.pipe(coffee({map:true}))
-
-	if(config.uglify)
-		a=a.pipe(uglify())
-
-	a=a.pipe(concat('docxgenTest.spec.js'))
-		.pipe(gulp.dest('./test/spec'));
-
-	return a
-});
-
-gulp.task('livereload',['coffee'],function(cb) {
+gulp.task('livereload',function(cb) {
 	if (server==null)
 		server=livereload();
 	server.changed('SpecRunner.html');
 	cb()
 })
 
-gulp.task('jasmine', ['coffee'], function(cb) {
+gulp.task('jasmine',function(cb) {
 	time=new Date();
 	var child = spawn( "jasmine-node",["docxgenTest.spec.js"], {cwd:paths.testDirectory});
 	stdout = '',
@@ -116,7 +107,7 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 	child.stderr.setEncoding('utf8');
 
 	child.on('close', function(code) {
-		regex=/([0-9]+) tests, ([0-9]+) assertions, ([0-9]+) failures, ([0-9]+) skipped/;
+		regex=/([0-9]+) tests?, ([0-9]+) assertions?, ([0-9]+) failures?, ([0-9]+) skipped/;
 		var now=new Date();
 		var nowTime="---"+now.getHours()+":"+now.getMinutes()
 		if(regex.test(totalData))
@@ -148,4 +139,4 @@ gulp.task('jasmine', ['coffee'], function(cb) {
 	});
 });
 
-gulp.task('default',['coffeeTest','coffee','jasmine','watch','livereload']);
+gulp.task('default',['coffeeTest','jasmine','watch','livereload']);
