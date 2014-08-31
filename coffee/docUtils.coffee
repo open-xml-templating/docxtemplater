@@ -35,7 +35,8 @@ DocUtils.utf8ToWord= (string) ->
 
 DocUtils.defaultParser=(tag) ->
 	return {
-	'get':(scope) -> return scope[tag]
+	'get':(scope) ->
+		if tag=='.' then return scope else return scope[tag]
 	}
 
 DocUtils.nl2br = (str,is_xhtml) ->
