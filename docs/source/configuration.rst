@@ -114,7 +114,9 @@ The name of this option `parser` (function).
 You can set the angular parser with the following code:
 
 With a custom parser you can parse the tags to for example add operators
-like '+', '-', or whatever the way you want to parse expressions.
+like '+', '-', or whatever the way you want to parse expressions. See for
+a complete reference of all possibilities
+http://teropa.info/blog/2014/03/23/angularjs-expressions-cheatsheet.html
 
 To enable this, you need to specify a custom parser.
 You need to create a parser function:
@@ -137,9 +139,11 @@ To use the angular-parser, do the following:
 .. code-block:: javascript
 
     expressions= require('angular-expressions');
+    // define your filter functions here, eg:
+    // expressions.filters.split = function(input, str) { return input.split(str); }
     angularParser= function(tag) {
         return {
-            get:expressions.compile(tag)
+            get: tag == '.' ? function(s){ return s;} : expressions.compile(tag)
         };
     }
     new DocxGen(data,{parser:angularParser})
