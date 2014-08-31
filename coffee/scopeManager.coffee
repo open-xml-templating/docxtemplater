@@ -16,15 +16,11 @@ module.exports=class ScopeManager
 				callback(scope)
 		if @getValue(tag) == true
 			callback(@currentScope)
-	get:(tag)->
-		@currentScope[tag]
 	getTypeOf:(tag)->
 		typeof @getValue(tag)
 	getValue:(tag)->
-		parser=@parser(tag)
+		parser=@parser(DocUtils.wordToUtf8(tag))
 		result=parser.get(@currentScope)
-		result
-
 	getValueFromScope: (tag) ->
 		result=@getValue(tag)
 		if result?

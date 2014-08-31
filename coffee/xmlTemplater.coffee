@@ -214,7 +214,7 @@ module.exports=class XmlTemplater #abstract class !!
 			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:subTags})
 			newContent+=subfile.content
 		, @templaterState.loopIsInverted
-		if !@scopeManager.get(tag)?
+		if !@scopeManager.getValue(tag)?
 			# This line is only for having the ability to retrieve the tags from a document
 			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
 		@content=@content.replace outerTagsContent, newContent
