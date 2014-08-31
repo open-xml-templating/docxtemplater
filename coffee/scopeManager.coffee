@@ -13,6 +13,10 @@ module.exports=class ScopeManager
 		if !@getValue(tag)? then return
 		if @getTypeOf(tag) == 'object'
 			for scope,i in @getValue(tag)
+				if 'string' == typeof scope
+					oldscope = scope
+					scope = {}
+					scope["."] = oldscope
 				callback(scope)
 		if @getValue(tag) == true
 			callback(@currentScope)
