@@ -31,11 +31,11 @@ var browserify = require('gulp-browserify');
 
 gulp.task('browserify', function() {
     // Single entry point to browserify
-    gulp.src(__dirname+'/js/main.js')
+    gulp.src(__dirname+'/examples/main.js')
         .pipe(browserify({
           debug : true
         }))
-        .pipe(gulp.dest(__dirname+'/browser/docxgen.js'))
+        .pipe(gulp.dest(__dirname+'/browser/'))
 });
 
 gulp.task('allCoffee', function () {

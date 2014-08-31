@@ -67,17 +67,14 @@ DocUtils.loadDoc= (path,options={}) ->
 		if async==false
 			return DocUtils.docXData[fileName]
 	if DocUtils.env=='browser'
-		xhrDoc= new XMLHttpRequest()
-		xhrDoc.open('GET', totalPath , async)
-		if xhrDoc.overrideMimeType
-			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-		xhrDoc.onreadystatechange =(e)->
-			if this.readyState == 4
-				if this.status == 200
-					loadFile(this.response)
-				else
-					if callback? then callback(true)
-		xhrDoc.send()
+		DocUtils.loadHttp path,(err,result)->
+			if err
+				console.log 'error'
+				if callback? then callback(true)
+				return
+			loadFile(result)
+			if callback? then callback(result)
+		,async
 	else
 		httpRegex= new RegExp "(https?)","i"
 		# httpsRegex= new RegExp "(https)://"
@@ -123,7 +120,7 @@ DocUtils.loadDoc= (path,options={}) ->
 				catch e
 					if callback? then callback()
 
-DocUtils.loadHttp=(result,callback)->
+DocUtils.loadHttp=(result,callback,async=false)->
 	if DocUtils.env=='node'
 		urloptions=(url.parse(result))
 		options =
@@ -149,7 +146,7 @@ DocUtils.loadHttp=(result,callback)->
 		req.end()
 	else
 		xhrDoc= new XMLHttpRequest()
-		xhrDoc.open('GET', result , false)
+		xhrDoc.open('GET', result , async)
 		if xhrDoc.overrideMimeType
 			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
 		xhrDoc.onreadystatechange =(e)->
