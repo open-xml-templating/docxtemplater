@@ -459,7 +459,7 @@ describe 'DocxQrCode module', () ->
 
 
 
-describe "image Loop Replacing", () ->
+describe "file Loop Replacing", () ->
 	describe 'rels', () ->
 		it 'should load', () ->
 			expect(docX['imageExample.docx'].fileManager.loadFileRels().imageRels).toEqual([])
@@ -477,11 +477,19 @@ describe "image Loop Replacing", () ->
 			expect(relationships.length).toEqual(11)
 			expect(contentTypes.length).toBe(4)
 		it 'should add charts', () ->
-			expect(docX['graph.docx'].fileManager.addFileRels('charts/chart2.xml',docXData['chart.xml'],'Chart')).toBe(7)
+			expect(docX['graph.docx'].fileManager.addFileRels('charts/chart2.xml',docXData['chart.xml'],'Chart')).toBe(5)
 			relsData = docX['graph.docx'].zip.files['word/_rels/document.xml.rels'].asText()
 			relsXml= DocUtils.Str2xml(relsData)
 			relationships= relsXml.getElementsByTagName('Relationship')
-			expect(relationships.length).toEqual(7)
+			expect(relationships.length).toEqual(5)
+		it 'should change charts',() ->
+			doc=new DocxGen(docX["graph.docx"].loadedContent,{},{qrCode:true})
+			oldData= doc.zip.files['word/charts/chart7.xml'].asText()
+			Tags = {"graph" : [{"column1":[{"value":10335,"key":2014},{"value":10748,"key":2015},{"value":11177,"key":2016},{"value":11624,"key":2017}],"column2":[{"value":12671,"key":2014},{"value":13177,"key":2015},{"value":13704,"key":2016},{"value":14252,"key":2017}]}]}
+			doc.setTags Tags
+			doc.applyTags()
+			newData = doc.zip.files['word/charts/Copie_0.xml'].asText()
+			expect(newData).not.toBe(oldData)
 			
 
 describe 'qr code testing', () ->

@@ -10,6 +10,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@fromJson(options)
 		@templaterState= new TemplaterState
 		@currentScope=@Tags
+		@valF=0
 	load: (@content) ->
 		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
@@ -102,7 +103,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		if noStartTag == true
 			return insideValue
 		else
-			if spacePreserve==true
+			if spacePreserve==true 
 				str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
 			else
 				str=@templaterState.matches[xmlTagNumber][1]+insideValue
@@ -211,6 +212,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
+
+		# if (Tags:subTags=="graph")
+			# console.log(Tags:subTags)
+			# return
+		
 		tag=@templaterState.loopOpen.tag
 		newContent=""
 		@scopeManager.loopOver tag, (subTags) =>
@@ -222,3 +228,89 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
 		@content=@content.replace outerTagsContent, newContent
 		@calcSubXmlTemplater(@content)
+		
+	replaceGraph:(chartXml)->
+		@newChart = chartXml
+		columnData=[]
+		if !(@Tags["graph"]) #If not graph data found, return with original data
+			return @newChart
+		for data in Object.keys(@Tags["graph"][0]) #Get all the columns in the "graph" tag
+			columnData.push(@Tags["graph"][0][data])
+		index=0
+		@seriesMatches= DocUtils.preg_match_all ///
+		<c:ser[^>]*>
+		(?:(?!<\/ser>).)*?
+		</c:ser>
+		///g, chartXml
+		for column in @seriesMatches
+			@replaceColumn(column,columnData[index])
+			index++
+		@newChart
+	replaceColumn:(ser,data)->
+		matchXml = DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+ser+'</w:document>'
+		
+		if env=='browser'
+			oldCat= matchXml.getElementsByTagNameNS('*','cat')[0]	
+			oldVal= matchXml.getElementsByTagNameNS('*','val')[0]
+					
+		if env=='node'
+			oldCat= matchXml.getElementsByTagName("c:cat")[0]
+			oldVal= matchXml.getElementsByTagName("c:val")[0]
+			
+		newCategorie = matchXml.createElement("c:cat")
+		newStrRef = matchXml.createElement("c:strRef")
+		newF = matchXml.createElement("c:f")
+		newFValue = matchXml.createTextNode("categories")
+		newF.appendChild(newFValue)
+		newStrRef.appendChild(newF)
+		newStrCache = matchXml.createElement("c:strCache")
+		newPtCount = matchXml.createElement("c:ptCount")
+		newPtCount.setAttribute('val',data.length)
+		newStrCache.appendChild(newPtCount)
+		id=0
+		for val in data
+			newPt = matchXml.createElement("c:pt")
+			newPt.setAttribute('idx',id++)
+			newV = matchXml.createElement("c:v")
+			newYear = matchXml.createTextNode(val["key"])
+			newV.appendChild(newYear)
+			newPt.appendChild(newV)
+			newStrCache.appendChild(newPt)
+		newStrRef.appendChild(newStrCache)
+		newCategorie.appendChild(newStrRef)
+		matchXml.replaceChild(newCategorie,oldCat)
+		
+		newVal = matchXml.createElement("c:val")
+		newNumRef = matchXml.createElement("c:numRef")
+		newF = matchXml.createElement("c:f")
+		newFValue = matchXml.createTextNode(@valF++)
+		newF.appendChild(newFValue)
+		newNumRef.appendChild(newF)
+		newNumCache = matchXml.createElement("c:numCache")
+		newFormatCode = matchXml.createElement("c:formatCode")
+		newFormatCodeValue = matchXml.createTextNode("General")
+		newFormatCode.appendChild(newFormatCodeValue)
+		newNumCache.appendChild(newFormatCode)
+		newPtCount = matchXml.createElement("c:ptCount")
+		newPtCount.setAttribute('val',data.length)
+		newNumCache.appendChild(newPtCount)
+		id=0
+		for val in data
+			newPt = matchXml.createElement("c:pt")
+			newPt.setAttribute('idx',id++)
+			newV = matchXml.createElement("c:v")
+			newYear = matchXml.createTextNode(val["value"])
+			newV.appendChild(newYear)
+			newPt.appendChild(newV)
+			newNumCache.appendChild(newPt)
+		newNumRef.appendChild(newNumCache)
+		newVal.appendChild(newNumRef)
+		matchXml.replaceChild(newVal,oldVal)
+		
+		if env=='browser' then chartTag= matchXml.getElementsByTagNameNS('*','ser')[0]
+		if env=='node' then chartTag=matchXml.getElementsByTagName('c:ser')[0]
+		#console.log(DocUtils.xml2Str matchXml)
+		replacement= DocUtils.xml2Str chartTag
+		@newChart = @newChart.replace(ser, replacement)
+		
+		
