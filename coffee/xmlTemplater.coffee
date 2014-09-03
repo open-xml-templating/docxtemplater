@@ -66,9 +66,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 						return @replaceLoopTag()
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
-		if @DocxGen? and @DocxGen.qrCode
-			new ImgReplacer(this).findImages().replaceImages()
+		if @DocxGen? 
 			new ChartReplacer(this).findCharts().replaceCharts()
+			if @DocxGen.qrCode
+				new ImgReplacer(this).findImages().replaceImages()
+
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
@@ -212,10 +214,6 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-
-		# if (Tags:subTags=="graph")
-			# console.log(Tags:subTags)
-			# return
 		
 		tag=@templaterState.loopOpen.tag
 		newContent=""
@@ -237,7 +235,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		for data in Object.keys(@Tags["graph"][0]) #Get all the columns in the "graph" tag
 			columnData.push(@Tags["graph"][0][data])
 		index=0
-		@seriesMatches= DocUtils.preg_match_all ///
+		@seriesMatches= DocUtils.preg_match_all /// #Find each series in graph xml, and replace its contents
 		<c:ser[^>]*>
 		(?:(?!<\/ser>).)*?
 		</c:ser>
@@ -246,7 +244,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			@replaceColumn(column,columnData[index])
 			index++
 		@newChart
-	replaceColumn:(ser,data)->
+	replaceColumn:(ser,data)-> #Replace chart xml with new data
 		matchXml = DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+ser+'</w:document>'
 		
 		if env=='browser'
@@ -257,7 +255,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			oldCat= matchXml.getElementsByTagName("c:cat")[0]
 			oldVal= matchXml.getElementsByTagName("c:val")[0]
 			
-		newCategorie = matchXml.createElement("c:cat")
+		newCategorie = matchXml.createElement("c:cat") #Create new categorie 'c:cat' node, and replace the old node
 		newStrRef = matchXml.createElement("c:strRef")
 		newF = matchXml.createElement("c:f")
 		newFValue = matchXml.createTextNode("categories")
@@ -272,7 +270,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			newPt = matchXml.createElement("c:pt")
 			newPt.setAttribute('idx',id++)
 			newV = matchXml.createElement("c:v")
-			newYear = matchXml.createTextNode(val["key"])
+			newYear = matchXml.createTextNode(val["key"]) #Define the new value for Row
 			newV.appendChild(newYear)
 			newPt.appendChild(newV)
 			newStrCache.appendChild(newPt)
@@ -280,7 +278,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		newCategorie.appendChild(newStrRef)
 		matchXml.replaceChild(newCategorie,oldCat)
 		
-		newVal = matchXml.createElement("c:val")
+		newVal = matchXml.createElement("c:val") #Create new value 'c:val' node, and replace the old node
 		newNumRef = matchXml.createElement("c:numRef")
 		newF = matchXml.createElement("c:f")
 		newFValue = matchXml.createTextNode(@valF++)
@@ -299,7 +297,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			newPt = matchXml.createElement("c:pt")
 			newPt.setAttribute('idx',id++)
 			newV = matchXml.createElement("c:v")
-			newYear = matchXml.createTextNode(val["value"])
+			newYear = matchXml.createTextNode(val["value"]) #Define the new value for column
 			newV.appendChild(newYear)
 			newPt.appendChild(newV)
 			newNumCache.appendChild(newPt)
@@ -309,7 +307,6 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		
 		if env=='browser' then chartTag= matchXml.getElementsByTagNameNS('*','ser')[0]
 		if env=='node' then chartTag=matchXml.getElementsByTagName('c:ser')[0]
-		#console.log(DocUtils.xml2Str matchXml)
 		replacement= DocUtils.xml2Str chartTag
 		@newChart = @newChart.replace(ser, replacement)
 		
