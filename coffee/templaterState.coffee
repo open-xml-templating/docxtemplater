@@ -1,9 +1,6 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
 #This class responsibility is to store an xmlTemplater's state
 
-root.TemplaterState=  class TemplaterState
+module.exports=class TemplaterState
 	moveCharacters:(numXmlTag,newTextLength,oldTextLength)->
 		if typeof newTextLength!='number' then return @moveCharacters(numXmlTag,newTextLength.length,oldTextLength)
 		if typeof oldTextLength!='number' then return @moveCharacters(numXmlTag,newTextLength,oldTextLength.length)
@@ -58,9 +55,8 @@ root.TemplaterState=  class TemplaterState
 			@loopIsInverted= true
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr 1}
 		if @textInsideTag[0]=='-' and @loopType()=='simple'
-			@inDashLoop= true 
-			dashInnerRegex= /^-([a-zA-Z_:]+) ([a-zA-Z_:]+)$/
+			@inDashLoop= true
+			dashInnerRegex= /^-([^\s]+)\s(.+)$/
 			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':(@textInsideTag.replace dashInnerRegex, '$2'),'element':(@textInsideTag.replace dashInnerRegex, '$1')}
 		if @textInsideTag[0]=='/'
 			@loopClose={'start':@tagStart,'end':@tagEnd}
-

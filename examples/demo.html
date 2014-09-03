@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Demo of DocxGenJS</title>
+	<link rel="stylesheet" href="main.css">
+
+	<!-- Mandatory js for the library to work -->
+	<script type="text/javascript" src="../browser/main.min.js"></script>
+
+	<!-- Include this only if you want to use downloadify (last example) -->
+	<script src="../vendor/downloadify/js/downloadify.min.js"></script>
+	<script src="../vendor/downloadify/js/swfobject.js"></script>
+</head>
+<body>
+
+<h1>DocxGenJS</h1>
+
+<p><b>docxgen.js</b> is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.</p>
+
+<a href="#variables">Replace Variables</a><br>
+<a href="#formating">Formating</a><br>
+<a href="#parsing">Parsing</a><br>
+<a href="#loops">Loops</a><br>
+<a href="#tables">Loops and tables</a><br>
+<a href="#lists">Lists</a><br>
+<a href="#images">Replacing images</a><br>
+<a href="#naming">Naming the output</a><br>
+<a href="#qrcode">Using QrCodes</a><br>
+<a href="#qrcodeloop">Replacing many images with QrCode</a><br>
+<a href="#rawxml">Raw Xml Insertion</a><br>
+
+<h1>Templates</h1>
+
+DocxGen is based on word templates.
+<section>
+<h2 id='variables'><em>Variables</em>: Use {tagName} to replace variables</h2>
+<table class="demo">
+<tr>
+	<td>
+		<img src="images/textTagging.PNG" alt="">
+	</td>
+	<td>
+	<div>=> <br>Results in:</div>
+	</td>
+	<td>
+		<img src="images/textTaggingResult.PNG" alt="">		
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+		<h3>Code Used:</h3>
+		<textarea raw='tagExample.docx'>
+new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
+	doc.setTags( {"first_name":"Hipp",
+		"last_name":"Edgar",
+		"phone":"0652455478",
+		"description":"New Website"
+		}
+	) //set the templateVariables
+	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.output() //Output the document using Data-URI
+});
+		</textarea>
+	</td>
+</tr>
+</table>
+</section>
+
+<section>
+<h2 id='formating'><em>Formating</em>: DocxGen doesn't ever change your formatting!</h2>
+<table class="demo">
+<tr>
+	<td>
+		<img src="images/formatTagging.png" alt="">
+	</td>
+	<td>
+	<div>=> <br>Results in:</div>
+	</td>
+	<td>
+		<img src="images/formatTaggingResult.png" alt="">		
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+		<h3>Code Used:</h3>
+		<textarea raw='tagFormating.docx'>
+new DocxGen().loadFromFile("tagFormating.docx",{async:true}).success(function(doc){
+	doc.setTags({
+		"first_name":"Hipp",
+		"last_name":"Edgar",
+		"phone":"0652455478",
+		"description":"New Website"
+		}); //set the templateVariables
+	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.output() //Output the document using Data-URI
+});
+		</textarea>
+	</td>
+</tr>
+</table>
+</section>
+
+<section>
+<h2 id='parsing'><em>Parsing</em> we enable you to use Angular Like Syntax</h2>
+<p>To enable this in the browser, you need to include vendor/angular-parser-browser.js</p>
+<table class="demo">
+<tr>
+	<td>
+		<img src="images/angularTagging.PNG" alt="">
+	</td>
+	<td>
+	<div>=> <br>Results in:</div>
+	</td>
+	<td>
+		<img src="images/angularTaggingResult.PNG" alt="">
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+		<h3>Code Used:</h3>
+		<textarea raw='angularExample.docx'>
+expressions= require('angular-expressions')
+angularParser= function(tag){ 
+	expr=expressions.compile(tag);
+	return {get:expr};
+}
+
+new DocxGen().loadFromFile("angularExample.docx",{async:true,parser:angularParser}).success(function(doc){
+	doc.setTags({
+		person:{
+			first_name:"Hipp",
+			last_name:"Edgar",
+			birth_year:1955,
+			age:59
+		}}); //set the templateVariables
+	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.output() //Output the document using Data-URI
+});
+		</textarea>
+	</td>
+</tr>
+</table>
+</section>
+<section>
+<h2 id='loops'><em>Loops</em>: You can use the mustache like syntax: {#tagName} {/tagname} to loop inside an array</h2>
+
+<p>tagName has to be an array of objects, every element of the array will be used to output what is between the opening loop tag and the closing loop tag.</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/loopTagging.png" alt=""></td>
+			<td>
+				<div>=> <br>Results in:</div>
+			</td>
+			<td><img src="images/loopTaggingResult.PNG" alt=""></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="tagLooping.docx">
+new DocxGen().loadFromFile("tagLooping.docx",{async:true}).success(function(doc){ 
+doc.setTags({
+	"products": [{
+ 	 	 "title":"Duk",
+ 	 	 "name":"DukSoftware",
+ 	 	 "reference":"DS0"
+		},{
+ 	 	 "title":"Tingerloo",
+ 	 	 "name":"Tingerlee",
+ 	 	 "reference":"T00"
+	}]}); //set the templateVariables
+doc.applyTags() //apply them
+doc.output() //Output the document using Data-URI
+});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+
+<section>
+	<h2 id='tables'><em>Tables</em>: loops work inside tables too!</h2>
+	<p>This also works with Bullet Lists</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/tableTagging.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/tableTaggingResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="tagIntelligentLoopTable.docx">
+var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,intelligentTagging:true}).success(function(doc){
+	doc.setTags({
+		"clients":[{
+			"first_name":"John",
+			"last_name":"Doe",
+			"phone":"+44546546454"
+		},{
+			"first_name":"Jane",
+			"last_name":"Doe",
+			"phone":"+445476454"
+		}]}); //set the templateVariables
+	doc.applyTags() //apply them
+	doc.output() //Output the document using Data-URI					
+});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='lists'><em>lists</em>: dash (-) loops works for any element</h2>
+	<p>This could work for lists, paragraphs, or any element that could be repeated. The syntax is {-element name} {/name}. When encountering such an element, docxgen will search for the first parent element that equals element, and loop over this.</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/listTagging.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/listTaggingResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="tagDashLoopList.docx">
+var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success(function(doc){ 
+	doc.setTags(
+	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
+	)
+	doc.applyTags()
+	doc.output()
+});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='naming'><em>Naming:</em> Don't wanna see download.docx ?</h2>
+	<p>Sorry mate, if you want this, you're going to need flash :-(. This will open up a flash popup that will prompt the user to save the file where he wants to</p>
+	<table class="demo">
+		<tr>
+			<td>
+				<img src="images/textTagging.PNG" alt="">
+			</td>
+			<td>
+			<div>=> <br>Results in:</div>
+			</td>
+			<td>
+				<img src="images/textTaggingResult.PNG" alt="">		
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="tagExample.docx">
+new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
+	doc.setTags({
+			"first_name":"Hipp",
+			"last_name":"Edgar",
+			"phone":"0652455478",
+			"description":"New Website"
+		});
+	doc.applyTags()
+	doc.download('../vendor/downloadify/media/downloadify.swf','../vendor/downloadify/images/download.png',"taggedDoc.docx")
+});
+				</textarea>
+			</td>
+		</tr>
+		<tr>
+		<td colspan="3">
+			<p id="downloadify"> You must have Flash 10 installed to download this file.  </p>
+		</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='qrcode'><em>QrCode:</em>Replace a specific image</h2>
+	<p>If you scan the qrcode on the left, you will get the value "Firefox_logo.png" So docxtemplater will load that image and replace the image, keeping the style of the original image (which is really great). You can put tags inside string if you want. For example put "{name}.png" and the image will be loaded depending on the tags.
+<b>Important</b>: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
+</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/qrCode.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/qrCodeResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="qrCodeExample.docx">
+					new DocxGen().loadFromFile("qrCodeExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
+						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
+						doc.applyTags();
+					});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='qrcodeloop'><em>QrCode:</em>Replace many images</h2>
+	<p>If you scan the qrcode on the left, you will get "{image}.png". Because the qrcode is inside a loop (inside a loop tag {#images} {/images}), it will loop over the array defined underneath:  {'images':[{image:'Firefox_logo'},{image:'image'}]}. So this will replace the whole by two images, the first one being the logo of firefox_logo, the second image.png . To create your own qrcodes, I recommend you <a href="http://qrcode.kaywa.com">http://qrcode.kaywa.com</a> with the <b>static</b> option</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/qrCodeLoop.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/qrCodeLoopResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="qrCodeTaggingLoopExample.docx">
+					new DocxGen().loadFromFile("qrCodeTaggingLoopExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
+						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
+						doc.applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]});
+					});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+<section>
+	<h2 id='rawxml'>Embed your own XML</h2>
+	<p>You can embed your own XML using the {@rawXml} syntax. DocXTemplater will replace the containing w:p tag to the xml you enter in the json. This can be particularly useful to embed: tables, user input that could be bold, italics, change the size, color, or whatever. However, you can't create some graphs, smartarts because they use multiple files and not just the one you're in.</p>
+	<table class="demo">
+		<tr>
+			<td><img src="images/xmlTagging.PNG"></td>
+			<td>
+				<div>=> <br>Results in:</div>	
+			</td>
+			<td><img src="images/xmlTaggingResult.PNG"></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				<h3>Code Used:</h3>
+				<textarea raw="xmlInsertionExample.docx">
+					new DocxGen().loadFromFile("xmlInsertionExample.docx",{async:true}).success(function(doc){
+					doc.applyTags({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
+						doc.output()
+					});
+				</textarea>
+			</td>
+		</tr>
+	</table>
+</section>
+
+</body>
+</html>

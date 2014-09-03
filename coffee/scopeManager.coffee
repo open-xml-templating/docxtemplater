@@ -1,9 +1,7 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
 #This class responsibility is to manage the scope
+DocUtils=require('./docUtils')
 
-root.ScopeManager =	class ScopeManager
+module.exports=class ScopeManager
 	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser)->
 	loopOver:(tag,callback,inverted=false)->
 		if inverted
@@ -18,15 +16,11 @@ root.ScopeManager =	class ScopeManager
 				callback(scope)
 		if @getValue(tag) == true
 			callback(@currentScope)
-	get:(tag)->
-		@currentScope[tag]
 	getTypeOf:(tag)->
 		typeof @getValue(tag)
 	getValue:(tag)->
-		parser=@parser(tag)
+		parser=@parser(DocUtils.wordToUtf8(tag))
 		result=parser.get(@currentScope)
-		result
-
 	getValueFromScope: (tag) ->
 		result=@getValue(tag)
 		if result?

@@ -1,9 +1,7 @@
-root= global ? window
-env= if global? then 'node' else 'browser'
-
 #This class responsibility is to parse the XML.
+DocUtils=require('./docUtils')
 
-root.XmlMatcher =  class XmlMatcher
+module.exports=class XmlMatcher
 	constructor:(@content)->
 
 	parse:(@tagXml)->

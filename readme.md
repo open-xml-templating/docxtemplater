@@ -52,6 +52,7 @@ Installation: `npm install docxtemplater`
 
 You can download [tagExample.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
+## Have 0.6.3 or less and using the qrcode module ? You probably have a security issue. See [upgrade.md](upgrade.md)
 
 ## Known issues
 
@@ -59,7 +60,7 @@ Todo:
 
  - [ ] Incompatibility with IE: Error : SCRIPT5022: End of stream reached (stream length = 14578, asked index = 18431). Corrupted zip ?
  - [ ] Use FileSaver API for output http://eligrey.com/blog/post/saving-generated-files-on-the-client-side
- - [ ] stop overflooding the global scope:
+ - [x] stop overflooding the global scope:
      - DocUtils
      - XmlTemplater
      - jsQrCode
@@ -68,5 +69,5 @@ Todo:
      - ScopeManager
      - XmlMatcher
  - [ ] output with FileSaver.js to name your file
- - [ ] Remove the node/browser specific code when possible
- - [ ] When not possible, create a NodeSpecific File or BrowserSpecific File
+ - [x] Remove the node/browser specific code when possible
+ - [x] When not possible, create a NodeSpecific File or BrowserSpecific File

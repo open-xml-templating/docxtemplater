@@ -27,7 +27,7 @@ tags
 /docs/build
 *.spec.js
 *.spec.map
+*.log
 /js
-cli
-js
-test
+/build
+/browser
