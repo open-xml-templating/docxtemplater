@@ -32,8 +32,8 @@ ChartReplacer = class ChartReplacer
 			oldFile= @xmlTemplater.DocxGen.fileManager.getFileByRid(rId,'Chart')
 		catch e
 			return
-			
-		newFileData = @xmlTemplater.replaceGraph(oldFile.asText()) #Replace chart data with JSON "graph" tag data
+		
+		newFileData = @xmlTemplater.replaceGraph(oldFile.asText())
 		
 		@chartName= ("Copie_"+@xmlTemplater.chartId+".xml").replace(/\x20/,"")
 		newId= @xmlTemplater.DocxGen.fileManager.addFileRels("charts/#{@chartName}","","Chart")

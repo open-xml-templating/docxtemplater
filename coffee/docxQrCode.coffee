@@ -1,17 +1,12 @@
-DocUtils=require('./docUtils')
-DocXTemplater=require('./docxTemplater')
+root= global ? window
+env= if global? then 'node' else 'browser'
 
-vm=require('vm')
-JSZip=require('jszip')
-
-QrCode=require('qrcode-reader')
-
-module.exports= class DocxQrCode
+DocxQrCode = class DocxQrCode
 	constructor:(imageData, @xmlTemplater,@imgName="",@num,@callback)->
 		@callbacked=false
 		@data=imageData
 		if @data==undefined then throw new Error("data of qrcode can't be undefined")
-		if DocUtils.env=='browser'
+		if env=='browser'
 			@base64Data=JSZip.base64.encode(@data)
 		@ready=false
 		@result=null
@@ -25,12 +20,23 @@ module.exports= class DocxQrCode
 			testdoc.applyTags()
 			_this.result=testdoc.content
 			_this.searchImage()
-		if DocUtils.env=='browser'
+		if env=='browser'
 			@qr.decode("data:image/png;base64,#{@base64Data}")
 		else
 			@qr.decode(@data,@data.decoded)
+
 	searchImage:() ->
-		cb=(err,data)=>
-			@data=data
+		if @result.substr(0,4)=='gen:'
+			callback= (data) =>
+				@data=data
+				@callback(this,@imgName,@num)
+			@xmlTemplater.DocxGen.localImageCreator(@result,callback)
+		else if @result!=null and @result!= undefined and @result.substr(0,22)!= 'error decoding QR Code'
+			loadDocCallback= (data) =>
+				@data=data
+				@callback(this,@imgName,@num)
+			DocUtils.loadDoc(@result,{docx:false,callback:loadDocCallback,async:false})
+		else
 			@callback(this,@imgName,@num)
-		@xmlTemplater.DocxGen.qrCode(@result,cb)
+
+root.DocxQrCode=DocxQrCode
