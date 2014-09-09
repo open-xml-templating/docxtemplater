@@ -63,7 +63,7 @@ DocUtils.loadDoc= (path,options={}) ->
 			DocUtils.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
 			return DocUtils.docX[fileName]
 		if callback?
-			callback(DocUtils.docXData[fileName])
+			return callback(DocUtils.docXData[fileName])
 		if async==false
 			return DocUtils.docXData[fileName]
 	if DocUtils.env=='browser'
@@ -73,7 +73,6 @@ DocUtils.loadDoc= (path,options={}) ->
 				if callback? then callback(true)
 				return
 			loadFile(result)
-			if callback? then callback(result)
 		,async
 	else
 		httpRegex= new RegExp "(https?)","i"
@@ -108,17 +107,17 @@ DocUtils.loadDoc= (path,options={}) ->
 			if async==true
 				fs.readFile totalPath,"binary", (err, data) ->
 					if err
-						if callback? then callback(true)
+						if callback? then return callback(true)
 					else
 						loadFile(data)
-						if callback? then callback(data)
+						if callback? then return callback(data)
 			else
 				try
 					data=fs.readFileSync(totalPath,"binary")
 					a=loadFile(data)
-					if callback? then callback(data) else return a
+					if callback? then return callback(data) else return a
 				catch e
-					if callback? then callback()
+					if callback? then return callback()
 
 DocUtils.loadHttp=(result,callback,async=false)->
 	if DocUtils.env=='node'
