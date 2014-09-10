@@ -4,20 +4,20 @@ DocUtils=require('./docUtils')
 module.exports=class ScopeManager
 	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser)->
 	loopOver:(tag,callback,inverted=false)->
+		value = @getValue(tag)
+		type = typeof value
 		if inverted
-			return callback(@currentScope) unless @getValue(tag)
-			return if @getTypeOf(tag) == 'string'
-			if @getTypeOf(tag) == 'object' && @getValue(tag).length < 1
+			return callback(@currentScope) unless value
+			return if type == 'string'
+			if type == 'object' && value.length < 1
 				callback(@currentScope)
 			return
-		if !@getValue(tag)? then return
-		if @getTypeOf(tag) == 'object'
-			for scope,i in @getValue(tag)
+		return unless value?
+		if type == 'object'
+			for scope,i in value
 				callback(scope)
-		if @getValue(tag) == true
+		if value == true
 			callback(@currentScope)
-	getTypeOf:(tag)->
-		typeof @getValue(tag)
 	getValue:(tag)->
 		parser=@parser(DocUtils.wordToUtf8(tag))
 		result=parser.get(@currentScope)
