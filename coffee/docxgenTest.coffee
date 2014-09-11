@@ -37,7 +37,7 @@ DocUtils.pathConfig=
 if DocUtils.env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx"]
+fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx"]
 
 for name in fileNames
 	docX[name]=new DocxGen().loadFromFile(name)
@@ -775,11 +775,29 @@ describe 'SubContent', () ->
 			start:'{'
 			end:'}'
 
-	###
-	it 'should work with qrcode in footer', () ->
+	it 'should work with image in footer when qrcode option is set on', () ->
 		testDocx=new DocxGen(docX["qrCodeFooter.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
 		testDocx.applyTags()
-	###
+
+		waitsFor () -> testDocx.ready?
+
+		runs () ->
+			i="word/media/image1.png"
+			expect(docX['qrCodeFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
+
+	it 'should work with qrcode in footer', () ->
+		testDocx=new DocxGen(docX["qrCodeRealFooter.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		console.log 'applying'
+		testDocx.applyTags()
+
+		waitsFor () -> testDocx.ready?
+
+		runs () ->
+			i="word/media/image1.png"
+			expect(docX['qrCodeRealFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
+			i="word/media/Copie_0.png"
+			expect(testDocx.zip.files[i].asBinary().length).not.toBe(0)
+			testDocx.output()
 
 	it 'should work with graphs with qrcode', ()->
 		doc=new DocxGen(docX["graph.docx"].loadedContent,{},{qrCode:true})
