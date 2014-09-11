@@ -24,7 +24,7 @@ module.exports= class ImgReplacer
 		if docxqrCode.callbacked==true then return
 		docxqrCode.callbacked=true
 		docxqrCode.xmlTemplater.numQrCode--
-		docxqrCode.xmlTemplater.DocxGen.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data)
+		docxqrCode.xmlTemplater.imgManager.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data,{binary:true})
 		docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.num,false)
 	replaceImage:(match,u)->
 		xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>'
@@ -40,7 +40,7 @@ module.exports= class ImgReplacer
 		@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
 		newId= @xmlTemplater.imgManager.addImageRels(imgName,"")
 		@xmlTemplater.imageId++
-		@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",oldFile.data)
+		@xmlTemplater.imgManager.setImage("word/media/#{imgName}",oldFile.data,{binary:true})
 		tag.setAttribute('name',"#{imgName}")
 		tagrId.setAttribute('r:embed',"rId#{newId}")
 		imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
