@@ -3,6 +3,7 @@ DocUtils=require('./docUtils')
 module.exports = class ImgManager
 	imageExtensions=['gif','jpeg','jpg','emf','png']
 	constructor:(@zip,@fileName)->
+		@endFileName=@fileName.replace(/^.*?([a-z0-9]+)\.xml$/,"$1")
 	getImageList: () ->
 		regex= ///
 		[^.]+  #name
@@ -19,8 +20,7 @@ module.exports = class ImgManager
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
 	loadImageRels: () ->
-		endFileName=@fileName.replace(/^.*?([a-z0-9]+)\.xml$/,"$1")
-		file=@zip.files["word/_rels/#{endFileName}.xml.rels"]
+		file=@zip.files["word/_rels/#{@endFileName}.xml.rels"]
 		if file==undefined then return
 		content= DocUtils.decode_utf8 file.asText()
 		@xmlDoc= DocUtils.Str2xml content
@@ -69,7 +69,7 @@ module.exports = class ImgManager
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
 		newTag.setAttribute('Target',"media/#{imageName}")
 		relationships.appendChild newTag
-		@setImage("word/_rels/document.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
+		@setImage("word/_rels/#{@endFileName}.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid
 	getImageByRid:(rId)-> #This is to get an image by it's rId (returns null if no img was found)
 		relationships= @xmlDoc.getElementsByTagName('Relationship')

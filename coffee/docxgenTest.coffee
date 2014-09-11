@@ -786,8 +786,7 @@ describe 'SubContent', () ->
 			expect(docX['qrCodeFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
 
 	it 'should work with qrcode in footer', () ->
-		testDocx=new DocxGen(docX["qrCodeRealFooter.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		console.log 'applying'
+		testDocx=new DocxGen(docX["qrCodeRealFooter.docx"].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
 		testDocx.applyTags()
 
 		waitsFor () -> testDocx.ready?
@@ -797,7 +796,7 @@ describe 'SubContent', () ->
 			expect(docX['qrCodeRealFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
 			i="word/media/Copie_0.png"
 			expect(testDocx.zip.files[i].asBinary().length).not.toBe(0)
-			testDocx.output()
+			expect(testDocx.zip.files[i].asBinary().length).toBe(561513)
 
 	it 'should work with graphs with qrcode', ()->
 		doc=new DocxGen(docX["graph.docx"].loadedContent,{},{qrCode:true})
