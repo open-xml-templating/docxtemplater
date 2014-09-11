@@ -31,14 +31,14 @@ module.exports= class ImgReplacer
 		tagrId= xmlImg.getElementsByTagName("a:blip")[0]
 		if tagrId==undefined then throw new Error('tagRiD undefined !')
 		rId = tagrId.getAttribute('r:embed')
-		oldFile= @xmlTemplater.DocxGen.imgManager.getImageByRid(rId)
+		oldFile= @xmlTemplater.imgManager.getImageByRid(rId)
 		tag= xmlImg.getElementsByTagName("wp:docPr")[0]
 		if tag==undefined then throw new Error('tag undefined')
 		if tag.getAttribute("name").substr(0,6)=="Copie_" then return #if image is already a replacement then do nothing
 		imgName= ("Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
 		@xmlTemplater.DocxGen.qrCodeNumCallBack++
 		@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
-		newId= @xmlTemplater.DocxGen.imgManager.addImageRels(imgName,"")
+		newId= @xmlTemplater.imgManager.addImageRels(imgName,"")
 		@xmlTemplater.imageId++
 		@xmlTemplater.DocxGen.setImage("word/media/#{imgName}",oldFile.data)
 		tag.setAttribute('name',"#{imgName}")

@@ -2,7 +2,7 @@ DocUtils=require('./docUtils')
 
 module.exports = class ImgManager
 	imageExtensions=['gif','jpeg','jpg','emf','png']
-	constructor:(@zip)->
+	constructor:(@zip,@fileName)->
 	getImageList: () ->
 		regex= ///
 		[^.]+  #name
@@ -19,7 +19,10 @@ module.exports = class ImgManager
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
 	loadImageRels: () ->
-		content= DocUtils.decode_utf8 @zip.files["word/_rels/document.xml.rels"].asText()
+		endFileName=@fileName.replace(/^.*?([a-z0-9]+)\.xml$/,"$1")
+		file=@zip.files["word/_rels/#{endFileName}.xml.rels"]
+		if file==undefined then return
+		content= DocUtils.decode_utf8 file.asText()
 		@xmlDoc= DocUtils.Str2xml content
 		RidArray = ((parseInt tag.getAttribute("Id").substr(3)) for tag in @xmlDoc.getElementsByTagName('Relationship')) #Get all Rids
 		@maxRid=DocUtils.maxArray(RidArray)

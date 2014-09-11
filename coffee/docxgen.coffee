@@ -58,12 +58,15 @@ module.exports=class DocxGen
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
+			imgManager=new ImgManager(@zip,fileName)
+			imgManager.loadImageRels()
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
 				qrCodeCallback:qrCodeCallback
 				parser:@parser
+				imgManager:imgManager
 			})
 			###
 			imgManager=new ImgManager()

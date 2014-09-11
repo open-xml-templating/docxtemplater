@@ -26,6 +26,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@imageId=if options.imageId? then options.imageId else 0
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
+		@imgManager=options.imgManager
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
 		DocxGen:@DocxGen
@@ -35,6 +36,7 @@ module.exports=class XmlTemplater #abstract class !!
 		localImageCreator:@localImageCreator
 		imageId:@imageId
 		parser:@parser
+		imgManager:@imgManager
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	getFullText:(@tagXml=@tagXml) ->
 		matcher=new XmlMatcher(@content).parse(@tagXml)
