@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var watch= require('gulp-watch');
+var rename= require('gulp-rename');
 var coffee= require('gulp-coffee');
 var concat= require('gulp-concat');
 var uglify= require('gulp-uglify');
@@ -31,11 +32,16 @@ var browserify = require('gulp-browserify');
 
 gulp.task('browserify', function() {
     // Single entry point to browserify
-    gulp.src(__dirname+'/js/main.js')
-        .pipe(browserify({
-          debug : true
-        }))
-        .pipe(gulp.dest(__dirname+'/browser/docxgen.js'))
+    browserified=gulp.src(__dirname+'/examples/main.js')
+        .pipe(browserify({}))
+
+    browserified
+        .pipe(uglify())
+        .pipe(rename('main.min.js'))
+        .pipe(gulp.dest(__dirname+'/browser'))
+
+    browserified
+        .pipe(gulp.dest(__dirname+'/browser/'))
 });
 
 gulp.task('allCoffee', function () {

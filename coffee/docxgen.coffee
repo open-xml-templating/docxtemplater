@@ -36,26 +36,31 @@ DocxGen=class DocxGen
 		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
-	setImage: (path,data,options={}) ->
-		if !options.binary? then options.binary=true
-		@imgManager.setImage(path,data,options)
 	load: (content)->
 		@loadedContent=content
 		@zip = new JSZip content
-		@imgManager=(new ImgManager(@zip)).loadImageRels()
 		this
 	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
+			imgManager=new ImgManager(@zip,fileName)
+			imgManager.loadImageRels()
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
 				qrCodeCallback:qrCodeCallback
 				parser:@parser
+				imgManager:imgManager
 			})
+			###
+			imgManager=new ImgManager()
+			setImage: (path,data,options={}) ->
+			if !options.binary? then options.binary=true
+			@imgManager.setImage(path,data,options)
+			###
 			@setData(fileName,currentFile.applyTags().content)
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready

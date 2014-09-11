@@ -37,7 +37,7 @@ DocUtils.pathConfig=
 if DocUtils.env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx"]
+fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx"]
 
 for name in fileNames
 	docX[name]=DocxGen.loadFromFile(name)
@@ -268,6 +268,13 @@ describe "xmlTemplater", ()->
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 
+	it "should work with {.} for this", ()->
+		content= """<w:t>Hello {.}</w:t>"""
+		scope='Edgar'
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.applyTags()
+		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+
 	it "should work with non w:t content", ()->
 		content= """{image}.png"""
 		scope= {"image":"edgar"}
@@ -451,26 +458,6 @@ describe 'DocxQrCode module', () ->
 				expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
 				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
 				expect(f.test.mostRecentCall.args[2]).toEqual(2);
-
-
-
-describe "image Loop Replacing", () ->
-	describe 'rels', () ->
-		it 'should load', () ->
-			expect(docX['imageExample.docx'].imgManager.loadImageRels().imageRels).toEqual([])
-			expect(docX['imageExample.docx'].imgManager.maxRid).toEqual(10)
-		it 'should add', () ->
-			oldData= docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()
-			expect(docX['imageExample.docx'].imgManager.addImageRels('image1.png',docXData['bootstrap_logo.png'])).toBe(11)
-			expect(docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()).not.toBe(oldData)
-			relsData = docX['imageExample.docx'].zip.files['word/_rels/document.xml.rels'].asText()
-			contentTypeData = docX['imageExample.docx'].zip.files['[Content_Types].xml'].asText()
-			relsXml= DocUtils.Str2xml(relsData)
-			contentTypeXml= DocUtils.Str2xml(contentTypeData)
-			relationships= relsXml.getElementsByTagName('Relationship')
-			contentTypes= contentTypeXml.getElementsByTagName('Default')
-			expect(relationships.length).toEqual(11)
-			expect(contentTypes.length).toBe(4)
 
 describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
@@ -787,6 +774,29 @@ describe 'SubContent', () ->
 		DocUtils.tags=
 			start:'{'
 			end:'}'
+
+	it 'should work with image in footer when qrcode option is set on', () ->
+		testDocx=new DocxGen(docX["qrCodeFooter.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		testDocx.applyTags()
+
+		waitsFor () -> testDocx.ready?
+
+		runs () ->
+			i="word/media/image1.png"
+			expect(docX['qrCodeFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
+
+	it 'should work with qrcode in footer', () ->
+		testDocx=new DocxGen(docX["qrCodeRealFooter.docx"].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
+		testDocx.applyTags()
+
+		waitsFor () -> testDocx.ready?
+
+		runs () ->
+			i="word/media/image1.png"
+			expect(docX['qrCodeRealFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
+			i="word/media/Copie_0.png"
+			expect(testDocx.zip.files[i].asBinary().length).not.toBe(0)
+			expect(testDocx.zip.files[i].asBinary().length).toBe(561513)
 
 	it 'should work with graphs with qrcode', ()->
 		doc=new DocxGen(docX["graph.docx"].loadedContent,{},{qrCode:true})
