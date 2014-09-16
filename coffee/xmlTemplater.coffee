@@ -73,8 +73,7 @@ module.exports=class XmlTemplater #abstract class !!
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
-		@content = @replaceTagByValue(DocUtils.utf8ToWord(newValue))
-		@content
+		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue))
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
@@ -84,14 +83,13 @@ module.exports=class XmlTemplater #abstract class !!
 		#delete the opening tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}
 		@templaterState.tagStart= {"numXmlTag":@templaterState.loopOpen.start.numXmlTag,"numCharacter":@templaterState.loopOpen.start.numCharacter}
-		if sharp==false then @templaterState.textInsideTag= "-"+@templaterState.loopOpen.element+" "+@templaterState.loopOpen.tag
-		if sharp==true then @templaterState.textInsideTag= "#"+@templaterState.loopOpen.tag
+		@templaterState.textInsideTag=@templaterState.loopOpen.raw
 		xmlText= @replaceTagByValue("",outerXmlText)
 
 		#delete the closing tag
 		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopClose.end.numXmlTag,"numCharacter":@templaterState.loopClose.end.numCharacter}
 		@templaterState.tagStart= {"numXmlTag":@templaterState.loopClose.start.numXmlTag,"numCharacter":@templaterState.loopClose.start.numCharacter}
-		@templaterState.textInsideTag= "/"+@templaterState.loopOpen.tag
+		@templaterState.textInsideTag=@templaterState.loopClose.raw
 		@replaceTagByValue("",xmlText)
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{_,start,end}= @templaterState.findOuterTagsContent(@content)
@@ -137,7 +135,7 @@ module.exports=class XmlTemplater #abstract class !!
 				insideValue:@templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
 				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
-			content= @replaceXmlTag(content,options)
+			return @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 			regexRight= new RegExp("^([^#{sTag}]*)#{sTag}.*$")
@@ -171,8 +169,7 @@ module.exports=class XmlTemplater #abstract class !!
 				spacePreserve:true
 				xmlTagNumber:k
 				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
-			content= @replaceXmlTag(content, options)
-		content
+			return @replaceXmlTag(content, options)
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
