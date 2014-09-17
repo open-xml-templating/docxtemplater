@@ -16,6 +16,7 @@ module.exports=class TemplaterState
 		start = @calcStartTag @loopOpen
 		end= @calcEndTag @loopClose
 		{content:content.substr(start,end-start),start,end}
+	innerContent:(type)->@matches[this[type].numXmlTag][2]
 	findInnerTagsContent: (content) ->
 		start= @calcEndTag @loopOpen
 		end= @calcStartTag @loopClose

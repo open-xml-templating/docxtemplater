@@ -73,27 +73,22 @@ module.exports=class XmlTemplater #abstract class !!
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
-		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue))
+		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue),@content)
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
 		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText,subContent.text)
 		@content= subContent.replace(newText).fullText
-	deleteOuterTags:(outerXmlText,sharp)->
-		#delete the opening tag
-		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopOpen.end.numXmlTag,"numCharacter":@templaterState.loopOpen.end.numCharacter}
-		@templaterState.tagStart= {"numXmlTag":@templaterState.loopOpen.start.numXmlTag,"numCharacter":@templaterState.loopOpen.start.numCharacter}
-		@templaterState.textInsideTag=@templaterState.loopOpen.raw
-		xmlText= @replaceTagByValue("",outerXmlText)
-
-		#delete the closing tag
-		@templaterState.tagEnd= {"numXmlTag":@templaterState.loopClose.end.numXmlTag,"numCharacter":@templaterState.loopClose.end.numCharacter}
-		@templaterState.tagStart= {"numXmlTag":@templaterState.loopClose.start.numXmlTag,"numCharacter":@templaterState.loopClose.start.numCharacter}
-		@templaterState.textInsideTag=@templaterState.loopClose.raw
-		@replaceTagByValue("",xmlText)
+	deleteTag:(xml,tag)->
+		@templaterState.tagStart=tag.start
+		@templaterState.tagEnd=tag.end
+		@templaterState.textInsideTag=tag.raw
+		xmlText=@replaceTagByValue("",xml)
+	deleteOuterTags:(outerXmlText)->
+		@deleteTag(@deleteTag(outerXmlText,@templaterState.loopOpen),@templaterState.loopClose)
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{_,start,end}= @templaterState.findOuterTagsContent(@content)
-		outerXml = @getOuterXml @content, start, end, elementDashLoop
+		outerXml = DocUtils.getOuterXml @content, start, end, elementDashLoop
 		@templaterState.moveCharacters(0,"",outerXml.startTag)
 		outerXmlText= outerXml.text
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
@@ -122,9 +117,9 @@ module.exports=class XmlTemplater #abstract class !!
 		content = DocUtils.replaceFirstFrom content,@templaterState.matches[xmlTagNumber][0], replacer, startTag
 		@templaterState.matches[xmlTagNumber][0]=replacer
 		content
-	replaceTagByValue: (newValue,content=@content) ->
-		if (@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].indexOf (DocUtils.tags.end))==-1 then throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.matches[@templaterState.tagEnd.numXmlTag][2]}")
-		if (@templaterState.matches[@templaterState.tagStart.numXmlTag][2].indexOf (DocUtils.tags.start))==-1 then throw new Error("no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.matches[@templaterState.tagStart.numXmlTag][2]}")
+	replaceTagByValue:(newValue,content) ->
+		if (@templaterState.innerContent('tagEnd').indexOf (DocUtils.tags.end))==-1 then throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.innerContent('tagEnd')}")
+		if (@templaterState.innerContent('tagStart').indexOf (DocUtils.tags.start))==-1 then throw new Error("no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.innerContent('tagStart')}")
 
 		sTag=DocUtils.tags.start
 		eTag=DocUtils.tags.end
@@ -132,14 +127,14 @@ module.exports=class XmlTemplater #abstract class !!
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				insideValue:@templaterState.matches[@templaterState.tagStart.numXmlTag][2].replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
+				insideValue:@templaterState.innerContent('tagStart').replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
 				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
 			return @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 			regexRight= new RegExp("^([^#{sTag}]*)#{sTag}.*$")
-			subMatches= @templaterState.matches[@templaterState.tagStart.numXmlTag][2].match regexRight
+			subMatches= @templaterState.innerContent('tagStart').match regexRight
 
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
@@ -165,7 +160,7 @@ module.exports=class XmlTemplater #abstract class !!
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
 			regexLeft= new RegExp ("^[^#{eTag}]*#{eTag}(.*)$")
 			options =
-				insideValue:@templaterState.matches[@templaterState.tagEnd.numXmlTag][2].replace regexLeft, '$1'
+				insideValue:@templaterState.innerContent('tagEnd').replace regexLeft, '$1'
 				spacePreserve:true
 				xmlTagNumber:k
 				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
@@ -188,13 +183,6 @@ module.exports=class XmlTemplater #abstract class !!
 		subsubfile=subfile.applyTags()
 		@imageId=subfile.imageId
 		subsubfile
-	getOuterXml: (text,start,end,xmlTag) -> #tag: w:t
-		endTag= text.indexOf('</'+xmlTag+'>',end)
-		if endTag==-1 then throw new Error("can't find endTag #{endTag}")
-		endTag+=('</'+xmlTag+'>').length
-		startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
-		if startTag==-1 then throw new Error("can't find startTag")
-		{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 	forLoop: (innerTagsContent=@templaterState.findInnerTagsContent(@content).content,outerTagsContent=@templaterState.findOuterTagsContent(@content).content)->
 		###
 			<w:t>{#forTag} blabla</w:t>

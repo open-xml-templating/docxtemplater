@@ -270,4 +270,12 @@ DocUtils.sizeOfObject = (obj) ->
 
 DocUtils.maxArray = (a) -> Math.max.apply(null, a)
 
+DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
+	endTag= text.indexOf('</'+xmlTag+'>',end)
+	if endTag==-1 then throw new Error("can't find endTag #{endTag}")
+	endTag+=('</'+xmlTag+'>').length
+	startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
+	if startTag==-1 then throw new Error("can't find startTag")
+	{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
+
 module.exports=DocUtils
