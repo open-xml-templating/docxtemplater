@@ -133,14 +133,14 @@ module.exports=class XmlTemplater #abstract class !!
 			return @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
-			regexRight= new RegExp("^([^#{sTag}]*)#{sTag}.*$")
-			subMatches= @templaterState.innerContent('tagStart').match regexRight
+			sInnerContent=@templaterState.innerContent('tagStart')
+			leftValue= sInnerContent.substr(0,sInnerContent.indexOf(sTag))
 
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
 
 			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
-				options.insideValue=subMatches[1]+newValue
+				options.insideValue=leftValue+newValue
 			else #if the content starts with:  {tag</w:t> (when handling recursive cases)
 				options.insideValue=newValue
 				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
@@ -158,9 +158,10 @@ module.exports=class XmlTemplater #abstract class !!
 				content= @replaceXmlTag(content, options)
 
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
-			regexLeft= new RegExp ("^[^#{eTag}]*#{eTag}(.*)$")
+			sInnerContent=@templaterState.innerContent('tagEnd')
+			leftValue= sInnerContent.substr(sInnerContent.indexOf(eTag)+1)
 			options =
-				insideValue:@templaterState.innerContent('tagEnd').replace regexLeft, '$1'
+				insideValue:leftValue
 				spacePreserve:true
 				xmlTagNumber:k
 				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
