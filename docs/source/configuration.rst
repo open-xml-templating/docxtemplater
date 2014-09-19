@@ -59,6 +59,8 @@ For example your configuration could be:
 
     The qrCode functionality only works for PNG !
     They is no support for other file formats yet.
+    The main problem being that their is no decoder for other file formats in Node.js 
+    The library https://github.com/zhangyuanwei/node-images does support decoding for more file formats (gif, png, jpeg), but depends on 3 other none node dependencies.
 
 .. warning::
 
