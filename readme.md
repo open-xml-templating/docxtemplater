@@ -54,6 +54,14 @@ You can download [tagExample.docx](https://github.com/edi9999/docxtemplater/raw/
 
 ## Have version 0.6.3 or less and using the qrcode module ? You probably have a security issue. See [upgrade.md](upgrade.md)
 
+
+## Similar libraries
+
+They are a few similar libraries that work with docx, here’s a list of those I know a bit about:
+
+ * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically 
+ * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
+
 ## Known issues
 
 Todo:
