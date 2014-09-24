@@ -22,6 +22,7 @@ module.exports=class TemplaterState
 		end= @calcStartTag @loopClose
 		{content:content.substr(start,end-start),start,end}
 	initialize:()->
+		@context=""
 		@inForLoop= false # tag with sharp: {#forLoop}______{/forLoop}
 		@loopIsInverted= false # tag with caret: {^invertedForLoop}_____{/invertedForLoop}
 		@inTag= false # all tags  {___}
@@ -29,7 +30,7 @@ module.exports=class TemplaterState
 		@rawXmlTag=false
 		@textInsideTag= ""
 	startTag:(char)->
-		if @inTag is true then throw new Error("Tag already open with text: #{@textInsideTag}")
+		if @inTag is true then throw new Error("Unclosed tag : '#{@textInsideTag}'")
 		@inTag= true
 		@rawXmlTag=false
 		@textInsideTag= ""
@@ -42,7 +43,7 @@ module.exports=class TemplaterState
 	isLoopClosingTag:()->
 		@textInsideTag[0]=='/' and ('/'+@loopOpen.tag == @textInsideTag)
 	endTag:()->
-		if @inTag is false then throw new Error("Tag already closed")
+		if @inTag is false then throw new Error("Unopened tag near : '#{@context.substr(@context.length-10,10)}'")
 		@inTag= false
 		@tagEnd=@currentStep
 		if @textInsideTag[0]=='@' and @loopType()=='simple'

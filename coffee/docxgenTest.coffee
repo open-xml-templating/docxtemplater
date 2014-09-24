@@ -813,3 +813,13 @@ describe 'SubContent', () ->
 		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
 		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
 		expect(xmlt.content).not.toContain('</w:t></w:t>')
+
+describe 'error messages', ()->
+	it 'should work with unclosed', ()->
+		content= """<w:t>{tag {age}</w:t>"""
+		f=()->new DocXTemplater(content).applyTags()
+		expect(f).toThrow "Unclosed tag : 'tag '"
+	it 'should work with unopened', ()->
+		content= """<w:t>tag }age</w:t>"""
+		f=()->new DocXTemplater(content).applyTags()
+		expect(f).toThrow "Unopened tag near : 'tag }'"

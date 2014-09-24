@@ -52,6 +52,7 @@ module.exports=class XmlTemplater #abstract class !!
 			innerText= match[2] #text inside the <w:t>
 			for character,numCharacter in innerText
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
+				@templaterState.context+=character
 				for m,t in @templaterState.matches when t==numXmlTag
 					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
 						throw new Error("no < at the beginning of #{m[0][0]} (2)")
