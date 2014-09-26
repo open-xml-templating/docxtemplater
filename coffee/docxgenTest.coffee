@@ -196,7 +196,7 @@ describe "scope inner text", () ->
 	it "should find the scope" , () ->
 		xmlTemplater= new DocXTemplater()
 		docX['tagProduitLoop.docx'].load(docX['tagProduitLoop.docx'].loadedContent)
-		scope= xmlTemplater.getOuterXml docX['tagProduitLoop.docx'].zip.files["word/document.xml"].asText() ,1195,1245,'w:p'
+		scope= DocUtils.getOuterXml docX['tagProduitLoop.docx'].zip.files["word/document.xml"].asText() ,1195,1245,'w:p'
 		obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
 		expect(scope.endTag).toEqual(obj.endTag)
 		expect(scope.startTag).toEqual(obj.startTag)
@@ -813,3 +813,13 @@ describe 'SubContent', () ->
 		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
 		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
 		expect(xmlt.content).not.toContain('</w:t></w:t>')
+
+describe 'error messages', ()->
+	it 'should work with unclosed', ()->
+		content= """<w:t>{tag {age}</w:t>"""
+		f=()->new DocXTemplater(content).applyTags()
+		expect(f).toThrow "Unclosed tag : 'tag '"
+	it 'should work with unopened', ()->
+		content= """<w:t>tag }age</w:t>"""
+		f=()->new DocXTemplater(content).applyTags()
+		expect(f).toThrow "Unopened tag near : 'tag }'"

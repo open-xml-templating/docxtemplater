@@ -52,7 +52,15 @@ Installation: `npm install docxtemplater`
 
 You can download [tagExample.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
-## Have 0.6.3 or less and using the qrcode module ? You probably have a security issue. See [upgrade.md](upgrade.md)
+## Have version 0.6.3 or less and using the qrcode module ? You probably have a security issue. See [upgrade.md](upgrade.md)
+
+
+## Similar libraries
+
+They are a few similar libraries that work with docx, here’s a list of those I know a bit about:
+
+ * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically 
+ * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
 
 ## Known issues
 
@@ -60,14 +68,3 @@ Todo:
 
  - [ ] Incompatibility with IE: Error : SCRIPT5022: End of stream reached (stream length = 14578, asked index = 18431). Corrupted zip ?
  - [ ] Use FileSaver API for output http://eligrey.com/blog/post/saving-generated-files-on-the-client-side
- - [x] stop overflooding the global scope:
-     - DocUtils
-     - XmlTemplater
-     - jsQrCode
-     - jsZip
-     - DocXTemplater
-     - ScopeManager
-     - XmlMatcher
- - [ ] output with FileSaver.js to name your file
- - [x] Remove the node/browser specific code when possible
- - [x] When not possible, create a NodeSpecific File or BrowserSpecific File
