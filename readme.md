@@ -1,4 +1,4 @@
-# DocxTemplater
+# docxtemplater
 
 [![Build Status](https://travis-ci.org/edi9999/docxtemplater.svg?branch=master)](https://travis-ci.org/edi9999/docxtemplater)
 [![Download count](http://img.shields.io/npm/dm/docxtemplater.svg)](https://www.npmjs.org/package/docxtemplater)
@@ -34,21 +34,19 @@ Including:
 
 Installation: `npm install docxtemplater`
 
-    var DocXTemplater= require('docxtemplater');
+    var Docxtemplater= require('docxtemplater');
 
     //loading the file
-    docxtemplater=new DocXTemplater().loadFromFile("tagExample.docx");
+    var docx=new Docxtemplater().loadFromFile("tagExample.docx");
 
     //setting the tags
-    docxtemplater.setTags({"name":"Edgar"});
-
-    //when finished
-    docxtemplater.finishedCallback=function () {
-        docxtemplater.output();
-    }
+    docx.setTags({"name":"Edgar"});
 
     //apply the tags
-    docxtemplater.applyTags();
+    docx.applyTags();
+
+    //output the docx using dataUri or fs in Node
+    docx.output();
 
 You can download [tagExample.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
