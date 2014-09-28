@@ -101,8 +101,8 @@ module.exports=class DocxGen
 		if !options.download? then options.download=true
 		if !options.name? then options.name="output.docx"
 		if !options.type? then options.type="base64"
-		if !options.compression? then options.compression = true
-		result = @zip.generate({type:options.type, compression: if options.compression then "DEFLATE" else "STORE"})
+		if !options.compression? then options.compression="DEFLATE"
+		result = @zip.generate({type:options.type, compression:options.compression})
 		if options.download
 			if DocUtils.env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
