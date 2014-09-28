@@ -101,7 +101,8 @@ module.exports=class DocxGen
 		if !options.download? then options.download=true
 		if !options.name? then options.name="output.docx"
 		if !options.type? then options.type="base64"
-		result= @zip.generate({type:options.type})
+		if !options.compression? then options.compression = true
+		result = @zip.generate({type:options.type, compression: if options.compression then "DEFLATE" else "STORE"})
 		if options.download
 			if DocUtils.env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
@@ -115,7 +116,7 @@ module.exports=class DocxGen
 		usedData=@zip.files[path].asText()
 		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
-		output=@zip.generate()
+		output=@zip.generate({compression: "DEFLATE"})
 		Downloadify.create 'downloadify',
 			filename: () ->return filename
 			data: () ->
