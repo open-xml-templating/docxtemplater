@@ -38,11 +38,11 @@ module.exports=class DocxGen
 			promise.successFun(this)
 		DocUtils.loadDoc(path,options)
 		if options.async==false then return this else return promise
-	qrCodeCallBack:(num,add=true) ->
+	qrCodeCallBack:(id,add=true)->
 		if add==true
-			@qrCodeWaitingFor.push num
+			@qrCodeWaitingFor.push id
 		else if add == false
-			index = @qrCodeWaitingFor.indexOf(num)
+			index = @qrCodeWaitingFor.indexOf(id)
 			@qrCodeWaitingFor.splice(index, 1)
 		@testReady()
 	testReady:()->
@@ -53,7 +53,7 @@ module.exports=class DocxGen
 		@loadedContent=content
 		@zip = new JSZip content
 		this
-	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
+	applyTags:(@Tags=@Tags)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
@@ -64,9 +64,9 @@ module.exports=class DocxGen
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
-				qrCodeCallback:qrCodeCallback
 				parser:@parser
 				imgManager:imgManager
+				fileName:fileName
 			})
 			###
 			imgManager=new ImgManager()
