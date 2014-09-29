@@ -215,9 +215,9 @@ DocUtils.xml2Str = (xmlNode) ->
 		content= xmlNode.xml;
 	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
 
-DocUtils.Str2xml= (str) ->
+DocUtils.Str2xml= (str,errorHandler) ->
 	if DOMParser #Chrome, Firefox, and modern browsers
-		parser=new DOMParser();
+		parser=new DOMParser({errorHandler})
 		xmlDoc=parser.parseFromString(str,"text/xml")
 	else # Internet Explorer
 		xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
