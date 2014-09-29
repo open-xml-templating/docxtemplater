@@ -33,4 +33,5 @@ module.exports= class DocxQrCode
 		cb=(err,data)=>
 			@data=data
 			@callback(this,@imgName,@num)
+		if !@result? then cb(null,@data)
 		@xmlTemplater.DocxGen.qrCode(@result,cb)
