@@ -809,10 +809,15 @@ describe 'SubContent', () ->
 		xmlt=new DocXTemplater(content,{Tags:{innertag:5}}).applyTags()
 		expect(xmlt.content).toBe('5</w:t><w:t xml:space="preserve">')
 
-	it 'should work with loops', ()->
+	it 'should work with complex loops (1)', ()->
 		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
 		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
 		expect(xmlt.content).not.toContain('</w:t></w:t>')
+
+	it 'should work with complex loops (2)', ()->
+		content= """<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>"""
+		xmlt=new DocXTemplater(content,{Tags:{person:[{name:"Henry"}]}}).applyTags()
+		expect(xmlt.content).not.toContain('</w:t>Henry</w:t>')
 
 describe 'error messages', ()->
 	it 'should work with unclosed', ()->
