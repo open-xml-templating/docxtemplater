@@ -25,6 +25,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
+		@fileName=options.fileName
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
 		@imgManager=options.imgManager
 	toJson: () ->
@@ -37,6 +38,7 @@ module.exports=class XmlTemplater #abstract class !!
 		imageId:@imageId
 		parser:@parser
 		imgManager:@imgManager
+		fileName:@fileName
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	getFullText:(@tagXml=@tagXml) ->
 		matcher=new XmlMatcher(@content).parse(@tagXml)
@@ -129,7 +131,8 @@ module.exports=class XmlTemplater #abstract class !!
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
 				insideValue:@templaterState.innerContent('tagStart').replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
-				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
 			return @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse

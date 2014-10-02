@@ -45,13 +45,13 @@ module.exports = class ImgManager
 			newTag.setAttribute('Extension',extension)
 			types.appendChild newTag
 			@setImage "[Content_Types].xml",DocUtils.encode_utf8 DocUtils.xml2Str xmlDoc
-	addImageRels: (imageName,imageData) -> #Adding an image and returns it's Rid
-		if @zip.files["word/media/#{imageName}"]?
-			throw new Error('file already exists')
-			return false
+	addImageRels: (imageName,imageData,i=0) -> #Adding an image and returns it's Rid
+		realImageName=if i==0 then imageName else imageName+"(#{i})"
+		if @zip.files["word/media/#{realImageName}"]?
+			return @addImageRels(imageName,imageData,i+1)
 		@maxRid++
 		file=
-			'name':"word/media/#{imageName}"
+			'name':"word/media/#{realImageName}"
 			'data':imageData
 			'options':
 				base64: false
@@ -60,14 +60,14 @@ module.exports = class ImgManager
 				date: new Date()
 				dir: false
 		@zip.file file.name,file.data,file.options
-		extension= imageName.replace(/[^.]+\.([^.]+)/,'$1')
+		extension= realImageName.replace(/[^.]+\.([^.]+)/,'$1')
 		@addExtensionRels("image/#{extension}",extension)
 		relationships= @xmlDoc.getElementsByTagName("Relationships")[0]
 		newTag= @xmlDoc.createElement 'Relationship' #,relationships.namespaceURI
 		newTag.namespaceURI= null
 		newTag.setAttribute('Id',"rId#{@maxRid}")
 		newTag.setAttribute('Type','http://schemas.openxmlformats.org/officeDocument/2006/relationships/image')
-		newTag.setAttribute('Target',"media/#{imageName}")
+		newTag.setAttribute('Target',"media/#{realImageName}")
 		relationships.appendChild newTag
 		@setImage("word/_rels/#{@endFileName}.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid

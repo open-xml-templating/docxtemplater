@@ -25,11 +25,11 @@ DocxGen=class DocxGen
 			if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 			if @options.parser? then @parser=options.parser
 		this
-	qrCodeCallBack:(num,add=true) ->
+	qrCodeCallBack:(id,add=true)->
 		if add==true
-			@qrCodeWaitingFor.push num
+			@qrCodeWaitingFor.push id
 		else if add == false
-			index = @qrCodeWaitingFor.indexOf(num)
+			index = @qrCodeWaitingFor.indexOf(id)
 			@qrCodeWaitingFor.splice(index, 1)
 		@testReady()
 	testReady:()->
@@ -40,7 +40,7 @@ DocxGen=class DocxGen
 		@loadedContent=content
 		@zip = new JSZip content
 		this
-	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
+	applyTags:(@Tags=@Tags)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
@@ -51,9 +51,9 @@ DocxGen=class DocxGen
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
-				qrCodeCallback:qrCodeCallback
 				parser:@parser
 				imgManager:imgManager
+				fileName:fileName
 			})
 			###
 			imgManager=new ImgManager()
@@ -88,7 +88,8 @@ DocxGen=class DocxGen
 		if !options.download? then options.download=true
 		if !options.name? then options.name="output.docx"
 		if !options.type? then options.type="base64"
-		result= @zip.generate({type:options.type})
+		if !options.compression? then options.compression="DEFLATE"
+		result = @zip.generate({type:options.type, compression:options.compression})
 		if options.download
 			if DocUtils.env=='node'
 				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
@@ -102,7 +103,7 @@ DocxGen=class DocxGen
 		usedData=@zip.files[path].asText()
 		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
-		output=@zip.generate()
+		output=@zip.generate({compression: "DEFLATE"})
 		Downloadify.create 'downloadify',
 			filename: () ->return filename
 			data: () ->
