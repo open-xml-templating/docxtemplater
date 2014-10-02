@@ -813,11 +813,17 @@ describe 'SubContent', () ->
 		content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
 		xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).applyTags()
 		expect(xmlt.content).not.toContain('</w:t></w:t>')
-
+	###
 	it 'should work with complex loops (2)', ()->
 		content= """<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>"""
 		xmlt=new DocXTemplater(content,{Tags:{person:[{name:"Henry"}]}}).applyTags()
 		expect(xmlt.content).not.toContain('</w:t>Henry</w:t>')
+	###
+	it 'should work with start and end', ()->
+		content= """</w:t><w:t>{name}"""
+		xmlt=new DocXTemplater(content,{Tags:{name:"Henry"}}).applyTags()
+		console.log xmlt.content
+		expect(xmlt.content).toBe('</w:t><w:t>Henry')
 
 describe 'error messages', ()->
 	it 'should work with unclosed', ()->
