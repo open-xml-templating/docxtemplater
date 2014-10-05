@@ -75,9 +75,7 @@ DocUtils.loadDoc= (path,options={}) ->
 			loadFile(result)
 		,async
 	else
-		httpRegex= new RegExp "(https?)","i"
-		# httpsRegex= new RegExp "(https)://"
-		if httpRegex.test(path)
+		if path.indexOf("http")==0
 			urloptions=(url.parse(path))
 			options =
 				hostname:urloptions.hostname
@@ -102,22 +100,19 @@ DocUtils.loadDoc= (path,options={}) ->
 				when 'http:'
 					req = http.request(options, reqCallback).on('error',errorCallback)
 			req.end();
-
 		else
 			if async==true
 				fs.readFile totalPath,"binary", (err, data) ->
 					if err
-						if callback? then return callback(true)
+						if callback? then return callback(err)
 					else
-						loadFile(data)
-						if callback? then return callback(data)
+						return loadFile(data)
 			else
 				try
 					data=fs.readFileSync(totalPath,"binary")
-					a=loadFile(data)
-					if callback? then return callback(data) else return a
+					return loadFile(data)
 				catch e
-					if callback? then return callback()
+					if callback? then return callback(e)
 
 DocUtils.loadHttp=(result,callback,async=false)->
 	if DocUtils.env=='node'
