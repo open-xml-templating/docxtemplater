@@ -29,7 +29,6 @@ DocXTemplater=require(p('docxTemplater'))
 XmlUtil=require(p('xmlUtil'))
 JSZip=require('jszip')
 PNG=require('png-js')
-DocxQrCode=require(p('docxQrCode'))
 
 DocUtils.pathConfig=
 	"browser":'../examples/'
@@ -37,7 +36,7 @@ DocUtils.pathConfig=
 if DocUtils.env=='node'
 	DocUtils.pathConfig.node=__dirname+'/../../examples/'
 
-fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx"]
+fileNames=["graph.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx"]
 
 for name in fileNames
 	docX[name]=DocxGen.loadFromFile(name)
@@ -51,7 +50,6 @@ docXData['bootstrap_logo.png']=DocUtils.loadDoc('bootstrap_logo.png',{docx:false
 docXData['BMW_logo.png']=DocUtils.loadDoc('BMW_logo.png',{docx:false})
 docXData['Firefox_logo.png']=DocUtils.loadDoc('Firefox_logo.png',{docx:false})
 docXData['Volkswagen_logo.png']=DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
-docXData['qrcodeTest.zip']=DocUtils.loadDoc('qrcodeTest.zip',{docx:false})
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -253,10 +251,6 @@ describe "getTags", () ->
 		docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
 		tempVars= docX['tagLoopExample.docx'].getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
-	it 'should work if there are no Tags', () ->
-		docX['qrCodeExample.docx']=new DocxGen docX['qrCodeExample.docx'].loadedContent,{},{intelligentTagging:off}
-		tempVars= docX['qrCodeExample.docx'].getTags()
-		expect(tempVars).toEqual([])
 
 
 
@@ -328,196 +322,6 @@ describe "xmlTemplater", ()->
 		xmlTemplater= new DocXTemplater(content,{Tags:scope})
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,')
-
-
-describe 'DocxQrCode module', () ->
-
-	describe "Calculate simple Docx", () ->
-		f=null; fCalled=null;qrcodezip=null;obj=null;
-		beforeEach () ->
-			qrcodezip= new JSZip(docXData['qrcodeTest.zip'])
-			docx= new DocxGen().setOptions({qrCode:true})
-			obj= new DocXTemplater("",{DocxGen:docx,Tags:{Tag:"tagValue"}})
-
-		it "should do it's thing with JSZip.base64", () ->
-			data=qrcodezip.files['blabla.png'].asBinary()
-			expect(data.length).toBe(1305)
-			base64data=JSZip.base64.encode(data)
-			expect(base64data.length).toBe(1740)
-			expect(base64data.substr(0,50)).toBe("iVBORw0KGgoAAAANSUhEUgAAAPgAAAD4CAIAAABOs7xcAAAABn")
-			expect(base64data).toBe("iVBORw0KGgoAAAANSUhEUgAAAPgAAAD4CAIAAABOs7xcAAAABnRSTlMA/gABAP1bbA07AAAEzklEQVR4nO3dQY5bKRRA0Xar97/l6g0UAyII4HvONNaPY10xeH7Bn5+fn3/g2/17+g3A3yB0EoROgtBJEDoJQidB6CT8N/qDz+fzN9/HHxt9DzB6/6u+N1j1/FWf8+7vQ17vwYlOgtBJEDoJQidB6CQInQShkzCco4+c2l+fneOummfvnou//j3AKz040UkQOglCJ0HoJAidBKGTIHQSpufoI7ftVc/OiVf9vbNz8dnP7bbPeeS29+lEJ0HoJAidBKGTIHQShE6C0ElYNke/zak98lmvvM/XOdFJEDoJQidB6CQInQShkyB0Er52jj5r9x787OvNv9dyopMgdBKEToLQSRA6CUInQegkLJuj3zb3PXWvyLf+zuis296PE50EoZMgdBKEToLQSRA6CUInYXqOvmrue8rs/eUjs3vkr79+5JUenOgkCJ0EoZMgdBKEToLQSRA6CZ/b9oZ32z0/XjWnH9n9Pr+VE50EoZMgdBKEToLQSRA6CUInYbiPfmq/efb9jOyeE6+al5+aZ5/6PmHVc2Zf70QnQegkCJ0EoZMgdBKEToLQSRjO0U/dBzJ6zm374rftc+++X2X383d/nk50EoROgtBJEDoJQidB6CQInYTpffTZ15+ai696zu75+iv3ruy+N90cHRYQOglCJ0HoJAidBKGTIHQSpu9HP3V/y233n8y67f3v/t5g93NmP08nOglCJ0HoJAidBKGTIHQShE7CcI7+yv3Zr7jtPpnb5uu7/14nOglCJ0HoJAidBKGTIHQShE7C8F6XkVP74qvmrKv+3t3PH/27ds+hT9n973KikyB0EoROgtBJEDoJQidB6CRMz9Fn58q37U+vmluvcurzvO3+9d2c6CQInQShkyB0EoROgtBJEDoJ03P03Vbtu5+aE5+a06/6XdiRU3v5q17vRCdB6CQInQShkyB0EoROgtBJGM7Rb7sn5NTvfe6+x/3Ufvmpe8pPcaKTIHQShE6C0EkQOglCJ0HoJCy71+XUnHvVHvZtc9+R1+9HP3XPjxOdBKGTIHQShE6C0EkQOglCJ2E4Rz+1f/zK3vOqefzsc3bvi+9+zqrXz3KikyB0EoROgtBJEDoJQidB6CR8ds+hd8/FT819Z9/Pt+67n3q+fXT4hdBJEDoJQidB6CQInQShk7BsH31k9+9urnr+qT3pV/b+X78X34lOgtBJEDoJQidB6CQInQShk7B9H/2U2+45mXVqj//U+x9xrwtMEDoJQidB6CQInQShkyB0Erbvo+926nuAV+burzx/lntd4BdCJ0HoJAidBKGTIHQShE7CcB/99bnpbc85dU/OqufPuu33Yp3oJAidBKGTIHQShE6C0EkQOgnDffRZt81xdz//1D767v8n8Mr/Q5jlRCdB6CQInQShkyB0EoROgtBJWDZH/1aze+e798VHds/jX9n7H3GikyB0EoROgtBJEDoJQidB6CR87Rx91fz11P767Jx+5JX98tn36X50+IXQSRA6CUInQegkCJ0EoZPgfvQ/fM4pt93v/srn70QnQegkCJ0EoZMgdBKEToLQSZjeR399v3n3vPbU74+u8sr3DPbR4RdCJ0HoJAidBKGTIHQShE7CcB8dvokTnQShkyB0EoROgtBJEDoJQifhf99MLPyIbss5AAAAAElFTkSuQmCC")
-
-		it "should work with Blablalalabioeajbiojbepbroji", () ->
-			runs () ->
-				fCalled= false
-				f= {test:() -> fCalled= true}
-				spyOn(f,'test').andCallThrough()
-				if DocUtils.env=='browser'
-					qr=new DocxQrCode(qrcodezip.files['blabla.png'].asBinary(),obj,"custom.png",6)
-					qr.decode(f.test)
-				else
-					base64= JSZip.base64.encode qrcodezip.files['blabla.png'].asBinary()
-					binaryData = new Buffer(base64, 'base64')
-					png= new PNG(binaryData)
-					finished= (a) ->
-						png.decoded= a
-						qr= new DocxQrCode(png,obj,"custom.png",6)
-						qr.decode(f.test)
-					dat= png.decode(finished)
-
-			waitsFor( ()->fCalled)
-
-			runs () ->
-				expect(f.test).toHaveBeenCalled()
-				expect(f.test.calls.length).toEqual(1)
-				expect(f.test.mostRecentCall.args[0].result).toEqual("Blablalalabioeajbiojbepbroji")
-				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png")
-				expect(f.test.mostRecentCall.args[2]).toEqual(6)
-
-		it "should work with long texts", () ->
-
-			runs () ->
-				fCalled= false
-				f= {test:() -> fCalled= true}
-				spyOn(f,'test').andCallThrough()
-				if DocUtils.env=='browser'
-					qr=new DocxQrCode(qrcodezip.files['custom.png'].asBinary(),obj,"custom.png",6)
-					qr.decode(f.test)
-				else
-					base64= JSZip.base64.encode qrcodezip.files['custom.png'].asBinary()
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
-					png= new PNG(binaryData)
-					finished= (a) ->
-						png.decoded= a
-						qr= new DocxQrCode(png,obj,"custom.png",6)
-						qr.decode(f.test)
-					dat= png.decode(finished)
-
-			waitsFor( ()->fCalled)
-
-
-			runs () ->
-				expect(f.test).toHaveBeenCalled();
-				expect(f.test.calls.length).toEqual(1);
-				expect(f.test.mostRecentCall.args[0].result).toEqual("Some custom text");
-				expect(f.test.mostRecentCall.args[1]).toEqual("custom.png");
-				expect(f.test.mostRecentCall.args[2]).toEqual(6);
-
-
-		it "should work with basic image", () ->
-			runs () ->
-				fCalled= false
-				f= {test:() -> fCalled= true}
-				spyOn(f,'test').andCallThrough()
-				if DocUtils.env=='browser'
-					qr=new DocxQrCode(qrcodezip.files['qrcodeTest.png'].asBinary(),obj,"qrcodeTest.png",4)
-					qr.decode(f.test)
-				else
-					base64= JSZip.base64.encode qrcodezip.files['qrcodeTest.png'].asBinary()
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
-					png= new PNG(binaryData)
-					finished= (a) ->
-						png.decoded= a
-						qr= new DocxQrCode(png,obj,"qrcodeTest.png",4)
-						qr.decode(f.test)
-					dat= png.decode(finished)
-
-			waitsFor( ()->fCalled)
-
-			runs () ->
-				expect(f.test).toHaveBeenCalled();
-				expect(f.test.calls.length).toEqual(1);
-				expect(f.test.mostRecentCall.args[0].result).toEqual("test");
-				expect(f.test.mostRecentCall.args[1]).toEqual("qrcodeTest.png");
-				expect(f.test.mostRecentCall.args[2]).toEqual(4);
-
-		it "should work with image with {tags}", () ->
-
-			runs () ->
-				fCalled= false
-				f= {test:() -> fCalled= true}
-				spyOn(f,'test').andCallThrough()
-				if DocUtils.env=='browser'
-					qr=new DocxQrCode(qrcodezip.files['qrcodetag.png'].asBinary(),obj,"tag.png",2)
-					qr.decode(f.test)
-				else
-					base64= JSZip.base64.encode qrcodezip.files['qrcodetag.png'].asBinary()
-					binaryData = new Buffer(base64, 'base64') #.toString('binary');
-					png= new PNG(binaryData)
-					finished= (a) ->
-						png.decoded= a
-						qr= new DocxQrCode(png,obj,"tag.png",2)
-						qr.decode(f.test)
-					dat= png.decode(finished)
-
-			waitsFor( ()->fCalled)
-
-			runs () ->
-				expect(f.test).toHaveBeenCalled();
-				expect(f.test.calls.length).toEqual(1);
-				expect(f.test.mostRecentCall.args[0].result).toEqual("tagValue");
-				expect(f.test.mostRecentCall.args[1]).toEqual("tag.png");
-				expect(f.test.mostRecentCall.args[2]).toEqual(2);
-
-describe 'qr code testing', () ->
-	it 'should work with local QRCODE without tags', () ->
-		docX['qrCodeExample.docx']=new DocxGen(docX['qrCodeExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		endcallback= () -> 1
-		docX['qrCodeExample.docx'].applyTags({},endcallback)
-
-		waitsFor () -> docX['qrCodeExample.docx'].ready?
-
-		runs () ->
-			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-			for i of docX['qrCodeExample.docx'].zip.files
-				#Everything but the date should be different
-				expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date)
-				expect(docX['qrCodeExample.docx'].zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name)
-				expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir)
-
-
-	it 'should work with local QRCODE with {tags}', () ->
-		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
-		endcallback= () -> 1
-		docX['qrCodeTaggingExample.docx'].applyTags({'image':'Firefox_logo'},endcallback)
-
-		waitsFor () -> docX['qrCodeTaggingExample.docx'].ready?
-
-		runs () ->
-			expect(docX['qrCodeTaggingExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-			for i of docX['qrCodeTaggingExample.docx'].zip.files
-				#Everything but the date should be different
-				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date)
-				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].name)
-				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir)
-
-				if (docX['qrCodeTaggingExample.docx'].zip.files[i].asText())!=null and i!="word/document.xml" and i!="word/_rels/document.xml.rels"
-					expect(docX['qrCodeTaggingExample.docx'].zip.files[i].asText().length).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText().length)
-					expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
-
-			createdText=docX['qrCodeTaggingExample.docx'].zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g,"").replace(/\x0a/g,"")
-			expectedText=docX['qrCodeTaggingExampleExpected.docx'].zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g,"").replace(/\x0a/g,"")
-			expect(createdText).toEqual(expectedText)
-
-	it 'should work with loop QRCODE with {tags}', () ->
-		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docX['qrCodeTaggingLoopExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		endcallback= () -> 1
-		docX['qrCodeTaggingLoopExample.docx'].applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
-		docX['qrCodeTaggingLoopExample.docx']
-
-		waitsFor () -> docX['qrCodeTaggingLoopExample.docx'].ready?
-
-		runs () ->
-
-			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_1.png']?).toBeTruthy()
-			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_2.png']?).toBeFalsy()
-
-			for i of docX['qrCodeTaggingLoopExample.docx'].zip.files
-				#Everything but the date should be different
-				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date)
-				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name)
-				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir)
 
 describe 'Changing the parser', () ->
 	it 'should work with uppercassing', () ->
@@ -731,30 +535,6 @@ describe 'SubContent', () ->
 		sub.replace('<w:table>Sample Table</w:table>')
 		expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
 		expect(sub.text).toBe('<w:table>Sample Table</w:table>')
-	it "shouldn't bug if some images don't contain a qrcode",()->
-		docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		expect(docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625)
-		endcallback= () -> 1
-		docX['imageExample.docx'].applyTags({},endcallback)
-		waitsFor () -> docX['imageExample.docx'].ready?
-		runs () ->
-			expect(docX['imageExample.docx'].zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625)
-
-
-	it 'should work with some images containing a qrcode, some not', () ->
-		testDocx=new DocxGen(docX["qrCodeAndNonQrCodeExample.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		testDocx.applyTags({"image":"image"})
-		waitsFor () -> testDocx.ready?
-		runs () ->
-			expect(testDocx.zip.files["word/media/Copie_1.png"].asBinary().length).toBe(561513)
-			expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(18062)
-
-	it 'should work with custom generation', () ->
-		testDocx=new DocxGen(docX["qrCodeCustomGen.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		testDocx.applyTags()
-		waitsFor () -> testDocx.ready?
-		runs () ->
-			expect(testDocx.zip.files["word/media/Copie_0.png"].asBinary().length).toBe(258)
 
 	it 'should work with custom tags', () ->
 		content= """<w:t>Hello {name}</w:t>"""
@@ -774,35 +554,6 @@ describe 'SubContent', () ->
 		DocUtils.tags=
 			start:'{'
 			end:'}'
-
-	it 'should work with image in footer when qrcode option is set on', () ->
-		testDocx=new DocxGen(docX["qrCodeFooter.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		testDocx.applyTags()
-
-		waitsFor () -> testDocx.ready?
-
-		runs () ->
-			i="word/media/image1.png"
-			expect(docX['qrCodeFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
-
-	it 'should work with qrcode in footer', () ->
-		testDocx=new DocxGen(docX["qrCodeRealFooter.docx"].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
-		testDocx.applyTags()
-
-		waitsFor () -> testDocx.ready?
-
-		runs () ->
-			i="word/media/image1.png"
-			expect(docX['qrCodeRealFooter.docx'].zip.files[i].asBinary().length).toBe(testDocx.zip.files[i].asBinary().length)
-			i="word/media/Copie_0.png"
-			expect(testDocx.zip.files[i].asBinary().length).not.toBe(0)
-			expect(testDocx.zip.files[i].asBinary().length).toBe(561513)
-
-	it 'should work with graphs with qrcode', ()->
-		doc=new DocxGen(docX["graph.docx"].loadedContent,{},{qrCode:true})
-		doc.applyTags()
-		text=doc.getFullText()
-		expect(text).toBe('')
 
 	it 'should work with loops', ()->
 		content="{innertag</w:t><w:t>}"

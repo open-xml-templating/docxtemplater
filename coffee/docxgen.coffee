@@ -4,67 +4,35 @@ Created by Edgar HIPP
 ###
 
 DocUtils=require('./docUtils')
-ImgManager=require('./imgManager')
 DocXTemplater=require('./docxTemplater')
 JSZip=require('jszip')
-fs= require('fs')
 
 DocxGen=class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 	constructor: (content, @Tags={},@options) ->
 		@setOptions(@options)
 		@finishedCallback=()->
-		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
-		@qrCodeNumCallBack=0 #This is the order of the qrcode
-		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
 		if content? then if content.length>0 then @load(content)
 	setOptions:(@options)->
 		if @options?
 			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-			@qrCode= if @options.qrCode? then @options.qrCode else off
-			if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 			if @options.parser? then @parser=options.parser
 		this
-	qrCodeCallBack:(id,add=true)->
-		if add==true
-			@qrCodeWaitingFor.push id
-		else if add == false
-			index = @qrCodeWaitingFor.indexOf(id)
-			@qrCodeWaitingFor.splice(index, 1)
-		@testReady()
-	testReady:()->
-		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
-			@ready=true
-			@finishedCallback()
 	load: (content)->
 		@loadedContent=content
 		@zip = new JSZip content
 		this
 	applyTags:(@Tags=@Tags)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
-		for fileName in templatedFiles when !@zip.files[fileName]?
-			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
-			imgManager=new ImgManager(@zip,fileName)
-			imgManager.loadImageRels()
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
 				intelligentTagging:@intelligentTagging
 				parser:@parser
-				imgManager:imgManager
 				fileName:fileName
 			})
-			###
-			imgManager=new ImgManager()
-			setImage: (path,data,options={}) ->
-			if !options.binary? then options.binary=true
-			@imgManager.setImage(path,data,options)
-			###
 			@setData(fileName,currentFile.applyTags().content)
-			@filesProcessed++
-		#When all files have been processed, check if the document is ready
-		@testReady()
 	setData:(fileName,data,options={})->
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
@@ -85,39 +53,13 @@ DocxGen=class DocxGen
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
 	output: (options={}) ->
-		if !options.download? then options.download=true
-		if !options.name? then options.name="output.docx"
 		if !options.type? then options.type="base64"
 		if !options.compression? then options.compression="DEFLATE"
-		result = @zip.generate({type:options.type, compression:options.compression})
-		if options.download
-			if DocUtils.env=='node'
-				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
-					if err then throw err
-					if options.callback? then options.callback()
-			else
-				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
-				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
-		result
+		@zip.generate({type:options.type, compression:options.compression})
 	getFullText:(path="word/document.xml") ->
 		usedData=@zip.files[path].asText()
 		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 
 DocxGen.DocUtils=DocUtils
-
-DocxGen.loadFromFile=(path,options={})->
-		docx=new DocxGen()
-		docx.setOptions(options)
-		promise=
-			success:(fun)->
-				this.successFun=fun
-			successFun:()->
-		if !options.docx? then options.docx=false
-		if !options.async? then options.async=false
-		if !options.callback? then options.callback=(rawData) ->
-			docx.load rawData
-			promise.successFun(this)
-		DocUtils.loadDoc(path,options)
-		if options.async==false then return docx else return promise
 
 module.exports=DocxGen

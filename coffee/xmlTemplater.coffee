@@ -3,7 +3,6 @@ ScopeManager=require('./scopeManager')
 SubContent=require('./subContent')
 TemplaterState=require('./templaterState')
 XmlMatcher=require('./xmlMatcher')
-ImgReplacer=require('./imgReplacer')
 #This is an abstract class, DocXTemplater is an example of inherited class
 
 module.exports=class XmlTemplater #abstract class !!
@@ -71,8 +70,6 @@ module.exports=class XmlTemplater #abstract class !!
 						return @replaceLoopTag()
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
-		if @DocxGen? and @DocxGen.qrCode!=false
-			new ImgReplacer(this).findImages().replaceImages()
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
