@@ -22,34 +22,53 @@ p=(a)->path.join(__dirname,'/../../js/'+a+'.js')
 
 DocxGen= require(p('docxgen'))
 DocUtils=require(p('docUtils'))
-docX=DocUtils.docX
-docXData=DocUtils.docXData
 SubContent=require(p('subContent'))
 DocXTemplater=require(p('docxTemplater'))
 XmlUtil=require(p('xmlUtil'))
 JSZip=require('jszip')
-PNG=require('png-js')
+fs=require('fs')
+docX={}
+data={}
 
-DocUtils.pathConfig=
-	"browser":'../examples/'
+fileNames=["graph.docx",
+"imageExample.docx",
+"tagExample.docx",
+"tagExampleExpected.docx",
+"tagLoopExample.docx",
+"tagInvertedLoopExample.docx",
+"tagExampleExpected.docx",
+"tagLoopExampleImageExpected.docx",
+"tagProduitLoop.docx",
+"tagDashLoop.docx",
+"tagDashLoopList.docx",
+"tagDashLoopTable.docx",
+'tagDashLoop.docx',
+'tagIntelligentLoopTableExpected.docx',
+'cyrillic.docx',
+'tableComplex2Example.docx',
+'tableComplexExample.docx',
+'tableComplex3Example.docx',
+'xmlInsertionExpected.docx',
+'xmlInsertionExample.docx',
+"angularExample.docx",
+"xmlInsertionComplexExpected.docx",
+"xmlInsertionComplexExample.docx"]
 
-if DocUtils.env=='node'
-	DocUtils.pathConfig.node=__dirname+'/../../examples/'
-
-fileNames=["graph.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx"]
+fileSpecialOptions=[{name:'tagIntelligentLoopTable.docx',options:{intelligentTagging:true}}
+]
 
 for name in fileNames
-	docX[name]=DocxGen.loadFromFile(name)
+	content=fs.readFileSync("../../examples/"+name,"binary")
+	docX[name]=new DocxGen(content)
 
-docX["tagExampleWithParser"]=DocxGen.loadFromFile("tagExample.docx")
+for file in fileSpecialOptions
+	content=fs.readFileSync("../../examples/"+file.name,"binary")
+	docX[name]=new DocxGen(content,file.options)
 
-docX['tagIntelligentLoopTable.docx']=DocxGen.loadFromFile('tagIntelligentLoopTable.docx',{intelligentTagging:true})
+pngFiles=['image.png','bootstrap_logo.png','BMW_logo.png','Firefox_logo.png','Volkswagen_logo.png']
 
-docXData['image.png']=DocUtils.loadDoc('image.png',{docx:false})
-docXData['bootstrap_logo.png']=DocUtils.loadDoc('bootstrap_logo.png',{docx:false})
-docXData['BMW_logo.png']=DocUtils.loadDoc('BMW_logo.png',{docx:false})
-docXData['Firefox_logo.png']=DocUtils.loadDoc('Firefox_logo.png',{docx:false})
-docXData['Volkswagen_logo.png']=DocUtils.loadDoc('Volkswagen_logo.png',{docx:false})
+for file in pngFiles
+	data[file]=fs.readFileSync("../../examples/"+file,"binary")
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
