@@ -102,21 +102,8 @@ DocxGen=class DocxGen
 	getFullText:(path="word/document.xml") ->
 		usedData=@zip.files[path].asText()
 		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
-	download: (swfpath, imgpath, filename="default.docx") ->
-		output=@zip.generate({compression: "DEFLATE"})
-		Downloadify.create 'downloadify',
-			filename: () ->return filename
-			data: () ->
-				return output
-			onCancel: () -> alert 'You have cancelled the saving of this file.'
-			onError: () -> alert 'You must put something in the File Contents or there will be nothing to save!'
-			swf: swfpath
-			downloadImage: imgpath
-			width: 100
-			height: 30
-			transparent: true
-			append: false
-			dataType:'base64'
+
+DocxGen.DocUtils=DocUtils
 
 DocxGen.loadFromFile=(path,options={})->
 		docx=new DocxGen()
