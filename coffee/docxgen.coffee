@@ -13,10 +13,10 @@ DocxGen=class DocxGen
 		@setOptions(@options)
 		@finishedCallback=()->
 		if content? then if content.length>0 then @load(content)
-	setOptions:(@options)->
-		if @options?
-			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-			if @options.parser? then @parser=options.parser
+	setOptions:(@options={})->
+		@intelligentTagging=on
+		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
+		if @options.parser? then @parser=options.parser
 		this
 	load: (content)->
 		@loadedContent=content
