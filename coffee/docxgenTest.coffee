@@ -64,7 +64,7 @@ for name in fileNames
 
 for file in fileSpecialOptions
 	content=fs.readFileSync(__dirname+"/../../examples/"+file.name,"binary")
-	docX[file.name]=new DocxGen(content,file.options)
+	docX[file.name]=new DocxGen(content,{},file.options)
 	docX[file.name].loadedContent=content
 
 pngFiles=['image.png','bootstrap_logo.png','BMW_logo.png','Firefox_logo.png','Volkswagen_logo.png']
