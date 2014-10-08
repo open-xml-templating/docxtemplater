@@ -58,17 +58,19 @@ fileSpecialOptions=[{name:'tagIntelligentLoopTable.docx',options:{intelligentTag
 ]
 
 for name in fileNames
-	content=fs.readFileSync("../../examples/"+name,"binary")
+	content=fs.readFileSync(__dirname+"/../../examples/"+name,"binary")
 	docX[name]=new DocxGen(content)
+	docX[name].loadedContent=content
 
 for file in fileSpecialOptions
-	content=fs.readFileSync("../../examples/"+file.name,"binary")
-	docX[name]=new DocxGen(content,file.options)
+	content=fs.readFileSync(__dirname+"/../../examples/"+file.name,"binary")
+	docX[file.name]=new DocxGen(content,file.options)
+	docX[file.name].loadedContent=content
 
 pngFiles=['image.png','bootstrap_logo.png','BMW_logo.png','Firefox_logo.png','Volkswagen_logo.png']
 
 for file in pngFiles
-	data[file]=fs.readFileSync("../../examples/"+file,"binary")
+	data[file]=fs.readFileSync(__dirname+"/../../examples/"+file,"binary")
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
@@ -81,7 +83,7 @@ describe "DocxGenLoading", () ->
 	describe "ajax done correctly", () ->
 		it "doc and img Data should have the expected length", () ->
 			expect(docX['imageExample.docx'].loadedContent.length).toEqual(729580)
-			expect(docXData['image.png'].length).toEqual(18062)
+			expect(data['image.png'].length).toEqual(18062)
 		it "should have the right number of files (the docx unzipped)", ()->
 			docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent)
 			expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(16)
@@ -352,18 +354,19 @@ describe 'Changing the parser', () ->
 		xmlTemplater.applyTags()
 		expect(xmlTemplater.getFullText()).toBe('Hello EDGAR')
 	it 'should work when setting from the DocXGen interface', () ->
+		d=new DocxGen(docX["tagExample.docx"].loadedContent)
 		Tags=
 			"first_name":"Hipp"
 			"last_name":"Edgar",
 			"phone":"0652455478"
 			"description":"New Website"
-		docX["tagExampleWithParser"].setTags Tags
-		docX["tagExampleWithParser"].parser= (tag) ->
+		d.setTags Tags
+		d.parser= (tag) ->
 			return {'get':(scope) -> scope[tag].toUpperCase()}
-		docX['tagExampleWithParser'].applyTags()
-		expect(docX['tagExampleWithParser'].getFullText()).toEqual('EDGAR HIPP')
-		expect(docX['tagExampleWithParser'].getFullText("word/header1.xml")).toEqual('EDGAR HIPP0652455478NEW WEBSITE')
-		expect(docX['tagExampleWithParser'].getFullText("word/footer1.xml")).toEqual('EDGARHIPP0652455478')
+		d.applyTags()
+		expect(d.getFullText()).toEqual('EDGAR HIPP')
+		expect(d.getFullText("word/header1.xml")).toEqual('EDGAR HIPP0652455478NEW WEBSITE')
+		expect(d.getFullText("word/footer1.xml")).toEqual('EDGARHIPP0652455478')
 
 	it 'should work with angular parser', () ->
 		Tags=
