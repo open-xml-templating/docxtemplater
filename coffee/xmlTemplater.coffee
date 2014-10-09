@@ -80,7 +80,7 @@ module.exports=class XmlTemplater #abstract class !!
 	replaceSimpleTagRawXml:()->
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
-		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText,subContent.text)
+		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText.length,subContent.text.length)
 		@content= subContent.replace(newText).fullText
 	deleteTag:(xml,tag)->
 		@templaterState.tagStart=tag.start
@@ -92,7 +92,7 @@ module.exports=class XmlTemplater #abstract class !!
 	dashLoop: (elementDashLoop,sharp=false) ->
 		{_,start,end}= @templaterState.findOuterTagsContent(@content)
 		outerXml = DocUtils.getOuterXml @content, start, end, elementDashLoop
-		@templaterState.moveCharacters(0,"",outerXml.startTag)
+		@templaterState.moveCharacters(0,0,outerXml.startTag)
 		outerXmlText= outerXml.text
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
 		@forLoop(innerXmlText,outerXmlText)
@@ -115,7 +115,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@templaterState.matches[xmlTagNumber][2]=insideValue #so that the templaterState.matches are still correct
 		startTag= @templaterState.calcXmlTagPosition(xmlTagNumber)#where the open tag starts: <w:t>
 		#calculate the replacer according to the params
-		@templaterState.moveCharacters(xmlTagNumber+1,replacer,@templaterState.matches[xmlTagNumber][0])
+		@templaterState.moveCharacters(xmlTagNumber+1,replacer.length,@templaterState.matches[xmlTagNumber][0].length)
 		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw new Error("content #{@templaterState.matches[xmlTagNumber][0]} not found in content")
 		content = DocUtils.replaceFirstFrom content,@templaterState.matches[xmlTagNumber][0], replacer, startTag
 		@templaterState.matches[xmlTagNumber][0]=replacer
