@@ -137,12 +137,11 @@ module.exports=class XmlTemplater #abstract class !!
 
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
+				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
 
+			options.insideValue=newValue
 			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
 				options.insideValue=leftValue+newValue
-			else #if the content starts with:  {tag</w:t> (when handling recursive cases)
-				options.insideValue=newValue
-				options.noStartTag=@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
 
 			content= @replaceXmlTag(content,options)
 
