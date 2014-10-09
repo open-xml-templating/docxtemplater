@@ -132,7 +132,8 @@ module.exports=class XmlTemplater #abstract class !!
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
 				insideValue:@templaterState.innerContent('tagStart').replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
-				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first? or @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
 			return @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
