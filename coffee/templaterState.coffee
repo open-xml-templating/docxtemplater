@@ -2,8 +2,6 @@
 
 module.exports=class TemplaterState
 	moveCharacters:(numXmlTag,newTextLength,oldTextLength)->
-		if typeof newTextLength!='number' then return @moveCharacters(numXmlTag,newTextLength.length,oldTextLength)
-		if typeof oldTextLength!='number' then return @moveCharacters(numXmlTag,newTextLength,oldTextLength.length)
 		for k in [numXmlTag..@matches.length]
 			@charactersAdded[k]+=newTextLength-oldTextLength
 	calcStartTag: (tag) -> @calcPosition(tag.start)
