@@ -1,8 +1,7 @@
 XmlTemplater=require('./xmlTemplater')
-XmlUtil=require('./xmlUtil')
+xmlUtil=require('./xmlUtil')
 
 DocXTemplater = class DocXTemplater extends XmlTemplater
-	xmlUtil=new XmlUtil()
 	constructor:(content="",options={}) ->
 		super("",options)
 		@currentClass=DocXTemplater
