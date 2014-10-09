@@ -62,18 +62,9 @@ DocUtils.clone = (obj) ->
 	return newInstance
 
 DocUtils.xml2Str = (xmlNode) ->
-	if xmlNode==undefined
-		throw new Error("xmlNode undefined!")
-	try
-		if global?
-			a= new XMLSerializer()
-			content= a.serializeToString(xmlNode)
-		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
-		else
-			content=(new XMLSerializer()).serializeToString(xmlNode);
-	catch e
-		content= xmlNode.xml;
-	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
+	a= new XMLSerializer()
+	content= a.serializeToString(xmlNode)
+	content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
 
 DocUtils.Str2xml= (str,errorHandler) ->
 	parser=new DOMParser({errorHandler})
