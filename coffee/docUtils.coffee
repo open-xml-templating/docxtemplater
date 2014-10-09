@@ -39,9 +39,6 @@ DocUtils.defaultParser=(tag) ->
 		if tag=='.' then return scope else return scope[tag]
 	}
 
-DocUtils.nl2br = (str,is_xhtml) ->
-	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
-
 DocUtils.loadDoc= (path,options={}) ->
 	noDocx= if options.docx? then !options.docx else false
 	async=if options.async? then options.async else false
@@ -198,8 +195,7 @@ DocUtils.clone = (obj) ->
 
 DocUtils.xml2Str = (xmlNode) ->
 	a= new XMLSerializer()
-	content= a.serializeToString(xmlNode)
-	content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
+	a.serializeToString(xmlNode)
 
 DocUtils.Str2xml= (str,errorHandler) ->
 	parser=new DOMParser({errorHandler})

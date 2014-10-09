@@ -18,12 +18,11 @@ module.exports=class DocxGen
 		@qrCodeNumCallBack=0 #This is the order of the qrcode
 		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
 		if content? then if content.length>0 then @load(content)
-	setOptions:(@options)->
-		if @options?
-			@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-			@qrCode= if @options.qrCode? then @options.qrCode else off
-			if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
-			if @options.parser? then @parser=options.parser
+	setOptions:(@options={})->
+		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
+		@qrCode= if @options.qrCode? then @options.qrCode else off
+		if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
+		if @options.parser? then @parser=options.parser
 		this
 	loadFromFile:(path,options={})->
 		@setOptions(options)
@@ -79,7 +78,6 @@ module.exports=class DocxGen
 		#When all files have been processed, check if the document is ready
 		@testReady()
 	setData:(fileName,data,options={})->
-		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
 	getTags:()->
 		usedTags=[]
