@@ -12,7 +12,6 @@ module.exports=class XmlTemplater #abstract class !!
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@templaterState= new TemplaterState
-		@currentScope=@Tags
 	load: (@content) ->
 		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
@@ -22,17 +21,19 @@ module.exports=class XmlTemplater #abstract class !!
 		@DocxGen= if options.DocxGen? then options.DocxGen else null
 		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
 		@scopePath=if options.scopePath? then options.scopePath else []
+		@scopeList= if options.scopeList? then options.scopeList else [@Tags]
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@imageId=if options.imageId? then options.imageId else 0
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
 		@fileName=options.fileName
-		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
+		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser)
 		@imgManager=options.imgManager
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
 		DocxGen:@DocxGen
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopeManager.scopePath
+		scopeList: DocUtils.clone @scopeManager.scopeList
 		usedTags:@scopeManager.usedTags
 		localImageCreator:@localImageCreator
 		imageId:@imageId
@@ -182,6 +183,7 @@ module.exports=class XmlTemplater #abstract class !!
 		if argOptions?
 			if argOptions.Tags?
 				options.Tags=argOptions.Tags
+				options.scopeList = options.scopeList.concat(argOptions.Tags)
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
 		subfile= new @currentClass innerTagsContent,options
 		subsubfile=subfile.applyTags()
