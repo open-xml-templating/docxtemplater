@@ -26,7 +26,7 @@ docX=DocUtils.docX
 docXData=DocUtils.docXData
 SubContent=require(p('subContent'))
 DocXTemplater=require(p('docxTemplater'))
-XmlUtil=require(p('xmlUtil'))
+xmlUtil=require(p('xmlUtil'))
 JSZip=require('jszip')
 PNG=require('png-js')
 DocxQrCode=require(p('docxQrCode'))
@@ -169,7 +169,6 @@ describe "DocxGenTemplatingForLoop", () ->
 			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
 
 describe "Xml Util" , () ->
-	xmlUtil= new XmlUtil()
 	it "should compute the scope between 2 <w:t>" , () ->
 		scope= xmlUtil.getListXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '<w:p>', offset : 27 }, { tag : '<w:r>', offset : 162 }, { tag : '<w:t>', offset : 188 } ])
@@ -181,7 +180,6 @@ describe "Xml Util" , () ->
 		expect(scope).toEqual([ { tag : '</w:t>', offset : 8 }, { tag : '</w:r>', offset : 14 }, { tag : '</w:p>', offset : 20 }, { tag : '</w:tc>', offset : 26 }, { tag : '</w:tr>', offset : 33 }, { tag : '</w:tbl>', offset : 40 }, { tag : '<w:p>', offset : 188 }, { tag : '<w:r>', offset : 257 }, { tag : '<w:t>', offset : 306 } ])
 
 describe "scope diff calculation", () ->
-	xmlUtil= new XmlUtil()
 	it "should compute the scopeDiff between 2 <w:t>" , () ->
 		scope= xmlUtil.getListDifferenceXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
 		expect(scope).toEqual([])
