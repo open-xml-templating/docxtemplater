@@ -51,21 +51,14 @@ fileNames=["graph.docx",
 'xmlInsertionExpected.docx',
 'xmlInsertionExample.docx',
 "angularExample.docx",
+'tagIntelligentLoopTable.docx',
 "xmlInsertionComplexExpected.docx",
 "xmlInsertionComplexExample.docx"]
-
-fileSpecialOptions=[{name:'tagIntelligentLoopTable.docx',options:{intelligentTagging:true}}
-]
 
 for name in fileNames
 	content=fs.readFileSync(__dirname+"/../../examples/"+name,"binary")
 	docX[name]=new DocxGen(content)
 	docX[name].loadedContent=content
-
-for file in fileSpecialOptions
-	content=fs.readFileSync(__dirname+"/../../examples/"+file.name,"binary")
-	docX[file.name]=new DocxGen(content,{},file.options)
-	docX[file.name].loadedContent=content
 
 pngFiles=['image.png','bootstrap_logo.png','BMW_logo.png','Firefox_logo.png','Volkswagen_logo.png']
 
@@ -153,39 +146,39 @@ describe "DocxGenTemplatingForLoop", () ->
 			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
 
 			#shows if the key is false
-			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
-			docX['tagInvertedLoopExample.docx'].setTags products: false
-			docX['tagInvertedLoopExample.docx'].applyTags()
-			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+			d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			d.setTags products: false
+			d.applyTags()
+			expect(d.getFullText()).toEqual('No products found')
 
 			#shows if the key doesn't exist
-			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
-			docX['tagInvertedLoopExample.docx'].setTags {}
-			docX['tagInvertedLoopExample.docx'].applyTags()
-			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
+			d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			d.setTags {}
+			d.applyTags()
+			expect(d.getFullText()).toEqual('No products found')
 
 			#doesn't show if the key is an array with length>1
-			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
-			docX['tagInvertedLoopExample.docx'].setTags products: [ name: "Bread" ]
-			docX['tagInvertedLoopExample.docx'].applyTags()
-			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+			d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			d.setTags products: [ name: "Bread" ]
+			d.applyTags()
+			expect(d.getFullText()).toEqual('')
 
 			#doesn't show if the key is true
-			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
-			docX['tagInvertedLoopExample.docx'].setTags products: true
-			docX['tagInvertedLoopExample.docx'].applyTags()
-			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+			d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			d.setTags products: true
+			d.applyTags()
+			expect(d.getFullText()).toEqual('')
 
 			#doesn't show if the key is a string or object
-			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
-			docX['tagInvertedLoopExample.docx'].setTags products: "Bread"
-			docX['tagInvertedLoopExample.docx'].applyTags()
-			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+			d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			d.setTags products: "Bread"
+			d.applyTags()
+			expect(d.getFullText()).toEqual('')
 
-			docX['tagInvertedLoopExample.docx']=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
-			docX['tagInvertedLoopExample.docx'].setTags products: {name: "Bread"}
-			docX['tagInvertedLoopExample.docx'].applyTags()
-			expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('')
+			d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
+			d.setTags products: {name: "Bread"}
+			d.applyTags()
+			expect(d.getFullText()).toEqual('')
 
 describe "Xml Util" , () ->
 	xmlUtil= new XmlUtil()
@@ -265,8 +258,8 @@ describe "Intelligent Loop Tagging", () ->
 
 describe "getTags", () ->
 	it "should work with simple document", () ->
-		docX['tagExample.docx']=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:off}
-		tempVars= docX['tagExample.docx'].getTags()
+		d=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:off}
+		tempVars= d.getTags()
 		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { last_name : true, first_name : true } }, { fileName : 'word/footer1.xml', vars : { last_name : true, first_name : true, phone : true } }, { fileName : 'word/header1.xml', vars : { last_name : true, first_name : true, phone : true, description : true } }])
 	it "should work with loop document", () ->
 		docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
@@ -410,8 +403,9 @@ describe 'Non Utf-8 characters', () ->
 		russianText=[1055, 1091, 1087, 1082, 1080, 1085, 1072]
 		russian= (String.fromCharCode(char) for char in russianText)
 		russian=russian.join('')
-		docX["tagExample.docx"].applyTags({last_name:russian})
-		outputText=docX["tagExample.docx"].getFullText()
+		d=new DocxGen(docX["tagExample.docx"].loadedContent)
+		d.applyTags({last_name:russian})
+		outputText=d.getFullText()
 		expect(outputText.substr(0,7)).toBe(russian)
 
 describe 'Complex table example' , () ->

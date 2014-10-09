@@ -77,7 +77,7 @@ DocUtils.xml2Str = (xmlNode) ->
 
 DocUtils.Str2xml= (str,errorHandler) ->
 	parser=new DOMParser({errorHandler})
-	parser.parseFromString(str,"text/xml")
+	xmlDoc=parser.parseFromString(str,"text/xml")
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)

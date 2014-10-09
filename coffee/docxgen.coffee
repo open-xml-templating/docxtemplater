@@ -9,17 +9,14 @@ JSZip=require('jszip')
 
 DocxGen=class DocxGen
 	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
-	constructor: (content, @Tags={},@options) ->
-		@setOptions(@options)
-		@finishedCallback=()->
+	constructor:(content) ->
+		@setOptions({})
 		if content? then if content.length>0 then @load(content)
 	setOptions:(@options={})->
-		@intelligentTagging=on
 		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 		if @options.parser? then @parser=options.parser
 		this
 	load: (content)->
-		@loadedContent=content
 		@zip = new JSZip content
 		this
 	applyTags:(@Tags=@Tags)->
@@ -33,8 +30,8 @@ DocxGen=class DocxGen
 				fileName:fileName
 			})
 			@setData(fileName,currentFile.applyTags().content)
+		this
 	setData:(fileName,data,options={})->
-		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
 	getTags:()->
 		usedTags=[]
