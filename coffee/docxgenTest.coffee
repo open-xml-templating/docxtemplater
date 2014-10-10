@@ -827,6 +827,17 @@ describe 'SubContent', () ->
 		xmlt=new DocXTemplater(content,{Tags:{name:"Henry"}}).applyTags()
 		expect(xmlt.content).toContain('Henry</w:t><w:t')
 
+describe 'getting parents context',()->
+	it 'should work with simple loops',()->
+		content= """{#loop}{name}{/loop}"""
+		xmlt=new DocXTemplater(content,{Tags:{loop:[1],name:"Henry"}}).applyTags()
+		expect(xmlt.content).toBe("Henry")
+
+	it 'should work with double loops',()->
+		content= """{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}"""
+		xmlt=new DocXTemplater(content,{Tags:{loop_first:[1],loop_second:[{name_inner:"John"}],name_outer:"Henry"}}).applyTags()
+		expect(xmlt.content).toBe("John Henry")
+
 describe 'error messages', ()->
 	it 'should work with unclosed', ()->
 		content= """<w:t>{tag {age}</w:t>"""
