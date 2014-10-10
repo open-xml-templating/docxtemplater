@@ -1,5 +1,4 @@
 docX={}
-docXData={}
 
 expressions= require('angular-expressions')
 angularParser= (tag) ->
@@ -127,10 +126,10 @@ describe "DocxGenTemplatingForLoop", () ->
 				"prenom":"Edgar"
 				"telephone":"0652455478"
 				"description":"New Website"
-				"offre":[{"titre":"titre1","prix":"1250"},{"titre":"titre2","prix":"2000"},{"titre":"titre3","prix":"1400"}]
+				"offre":[{"titre":"titre1","prix":"1250"},{"titre":"titre2","prix":"2000"},{"titre":"titre3","prix":"1400", "nom": "Offre"}]
 			docX['tagLoopExample.docx'].setTags Tags
 			docX['tagLoopExample.docx'].applyTags()
-			expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialePrix: 1250Titre titre1Prix: 2000Titre titre2Prix: 1400Titre titre3HippEdgar')
+			expect(docX['tagLoopExample.docx'].getFullText()).toEqual('Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar')
 		it "should work with loops inside loops", () ->
 			Tags = {"products":[{"title":"Microsoft","name":"DOS","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
 			docX['tagProduitLoop.docx'].setTags Tags
@@ -262,9 +261,7 @@ describe "getTags", () ->
 	it "should work with loop document", () ->
 		docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
 		tempVars= docX['tagLoopExample.docx'].getTags()
-		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
-
-
+		expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { nom: true, prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
 
 describe "xmlTemplater", ()->
 	it "should work with simpleContent", ()->
@@ -593,6 +590,17 @@ describe 'SubContent', () ->
 		content= """{name}</w:t><w:t>a"""
 		xmlt=new DocXTemplater(content,{Tags:{name:"Henry"}}).applyTags()
 		expect(xmlt.content).toContain('Henry</w:t><w:t')
+
+describe 'getting parents context',()->
+	it 'should work with simple loops',()->
+		content= """{#loop}{name}{/loop}"""
+		xmlt=new DocXTemplater(content,{Tags:{loop:[1],name:"Henry"}}).applyTags()
+		expect(xmlt.content).toBe("Henry")
+
+	it 'should work with double loops',()->
+		content= """{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}"""
+		xmlt=new DocXTemplater(content,{Tags:{loop_first:[1],loop_second:[{name_inner:"John"}],name_outer:"Henry"}}).applyTags()
+		expect(xmlt.content).toBe("John Henry")
 
 describe 'error messages', ()->
 	it 'should work with unclosed', ()->

@@ -2,27 +2,31 @@
 DocUtils=require('./docUtils')
 
 module.exports=class ScopeManager
-	constructor:(@tags,@scopePath,@usedTags,@currentScope,@parser)->
+	constructor:(@tags,@scopePath,@usedTags,@scopeList,@parser)->
 	loopOver:(tag,callback,inverted=false)->
 		value = @getValue(tag)
 		type = typeof value
 		if inverted
-			return callback(@currentScope) unless value
+			return callback(@scopeList[@num]) unless value
 			return if type == 'string'
 			if type == 'object' && value.length < 1
-				callback(@currentScope)
+				callback(@scopeList[@num])
 			return
 		return unless value?
 		if type == 'object'
 			for scope,i in value
 				callback(scope)
 		if value == true
-			callback(@currentScope)
-	getValue:(tag)->
+			callback(@scopeList[@num])
+	getValue:(tag,@num=@scopeList.length-1)->
+		scope=@scopeList[@num]
 		parser=@parser(DocUtils.wordToUtf8(tag))
-		result=parser.get(@currentScope)
+		result=parser.get(scope)
+		if result==undefined and @num>0 then return @getValue(tag,@num-1)
+		result
 	getValueFromScope: (tag) ->
-		result=@getValue(tag)
+		# search in the scopes (in reverse order) and keep the first defined value
+		result = @getValue(tag)
 		if result?
 			if typeof result=='string'
 				@useTag(tag)
