@@ -46,7 +46,7 @@ module.exports=class XmlTemplater #abstract class !!
 	content is the whole content to be tagged
 	scope is the current scope
 	returns the new content of the tagged content###
-	applyTags:()->
+	render:()->
 		@templaterState.initialize()
 		for match,numXmlTag in @templaterState.matches
 			innerText= match[2] #text inside the <w:t>
@@ -181,7 +181,7 @@ module.exports=class XmlTemplater #abstract class !!
 				options.scopeList = options.scopeList.concat(argOptions.Tags)
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
 		subfile= new @currentClass innerTagsContent,options
-		subsubfile=subfile.applyTags()
+		subsubfile=subfile.render()
 		@imageId=subfile.imageId
 		subsubfile
 	forLoop: (innerTagsContent=@templaterState.findInnerTagsContent(@content).content,outerTagsContent=@templaterState.findOuterTagsContent(@content).content)->
