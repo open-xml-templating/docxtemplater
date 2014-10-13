@@ -25,7 +25,7 @@ So I decided to use the qrCode format, which is a format that lets you identify 
 
 The option for this is `qrCode` (false for off, a function for on, default off)
 
-The function takes two parameter: The first one is the string, the second the callback.
+The function takes two parameter: The first one is the string that was decoded by the qrcode module, the second the callback.
 
 For example your configuration could be:
 
@@ -53,13 +53,13 @@ For example your configuration could be:
 
 .. note::
 
-    If you don't use that functionality, you should disable it, because it is quite slow (the image decoding)
+    If you don't use that functionality, you should not enable it (you don't have to do anything), because the qrcode module is quite slow.
 
 .. warning::
 
     The qrCode functionality only works for PNG !
     They is no support for other file formats yet.
-    The main problem being that their is no decoder for other file formats in Node.js 
+    The main problem being that their is no decoder for other file formats in Node.js.
     The library https://github.com/zhangyuanwei/node-images does support decoding for more file formats (gif, png, jpeg), but depends on 3 other none node dependencies.
 
 .. warning::
@@ -108,16 +108,14 @@ https://github.com/Automattic/node-canvas/wiki
     canvas.pngStream().pipe(fs.createWriteStream('qr.png'));
 
 
-Angular Parser
+Custom Parser
 --------------
 
 The name of this option is `parser` (function).
 
-You can set the angular parser with the following code:
-
 With a custom parser you can parse the tags to for example add operators
 like '+', '-', or whatever the way you want to parse expressions. See for
-a complete reference of all possibilities
+a complete reference of all possibilities of angularjs parsing:
 http://teropa.info/blog/2014/03/23/angularjs-expressions-cheatsheet.html
 
 To enable this, you need to specify a custom parser.
@@ -131,6 +129,7 @@ docxtemplater comes shipped with this parser:
     {
         return {
             get:function(scope) {
+                if (expression===".") return scope;
                 return scope[expression]
             }
         };

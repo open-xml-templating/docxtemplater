@@ -23,7 +23,6 @@
     "url": "https://github.com/edi9999/docxtemplater"
   },
   "dependencies": {
-    "angular-expressions": "~0.2.1",
     "jszip": "^2.4.0",
     "png-js": "^0.1.1",
     "qrcode-reader": "0.0.5",
@@ -31,6 +30,7 @@
     "xmldom": "0.1.x"
   },
   "devDependencies": {
+    "angular-expressions": "~0.2.1",
     "gulp": "~3.8.0",
     "gulp-browserify": "^0.5.0",
     "gulp-coffee": "~2.0.1",

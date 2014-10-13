@@ -244,7 +244,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'docxtemplater', u'docxtemplater Documentation',
-   u'Edgar Hipp', 'docxtemplater', 'One line description of project.',
+   u'Edgar Hipp', 'docxtemplater', 'Generate docx documents from docx templates',
    'Miscellaneous'),
 ]
 
