@@ -35,6 +35,7 @@ I recommend you to use browserify.
     npm install -g gulp jasmine-node uglify-js
     npm install
     gulp allCoffee
+    mkdir build -p
     browserify -r './js/docxgen.js' > build/docxgen.js
     uglifyjs build/docxgen.js > build/docxgen.min.js
 

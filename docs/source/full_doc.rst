@@ -137,26 +137,6 @@ Docxgen methods
 
         This requires to include Downloadify.js, that needs flash version 10. Have a look at the *output* function if you don't want to depend on it. This function has the advantage that it works regardless of the file size
 
-    getImageList()
-
-        this gets all images that have one of the following extension: 'gif','jpeg','jpg','emf','png'
-        Return format: Array of Object:
-        [{path:string,files:ZipFile Object}]
-
-        You should'nt call this method before calling **applyTags()**, because applyTags can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTags()** without any problems
-
-    setImage(path,imgData)
-
-        path
-            Type:"String"
-            Path of the image, given by getImageList()
-        imgData
-            Type:"String"
-            imgData in txt/plain
-
-        This sets the image given by a path and an imgData in txt/plain.
-        You should'nt call this method before calling **applyTags()**, because applyTags can modify the images or their path when replacing images with other (particularly when qrCode is set to true, which is not the default case). You can call this method after **applyTags()** without any problems
-
     getFullText:([path])
 
         path

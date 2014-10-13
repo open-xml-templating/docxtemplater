@@ -111,7 +111,7 @@ https://github.com/Automattic/node-canvas/wiki
 Angular Parser
 --------------
 
-The name of this option `parser` (function).
+The name of this option is `parser` (function).
 
 You can set the angular parser with the following code:
 
@@ -157,7 +157,7 @@ To use the angular-parser, do the following:
 Intelligent LoopTagging
 -----------------------
 
-The name of this option `intelligentTagging` (boolean).
+The name of this option is `intelligentTagging` (boolean).
 
 When looping over an element, docxtemplater needs to know over which
 element you want to loop. By default, it tries to do that intelligently

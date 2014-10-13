@@ -67,12 +67,6 @@ module.exports=class DocxGen
 				imgManager:imgManager
 				fileName:fileName
 			})
-			###
-			imgManager=new ImgManager()
-			setImage: (path,data,options={}) ->
-			if !options.binary? then options.binary=true
-			@imgManager.setImage(path,data,options)
-			###
 			@setData(fileName,currentFile.applyTags().content)
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
