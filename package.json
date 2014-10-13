@@ -24,9 +24,6 @@
   },
   "dependencies": {
     "jszip": "^2.4.0",
-    "png-js": "^0.1.1",
-    "qrcode-reader": "0.0.5",
-    "url": "^0.10.1",
     "xmldom": "0.1.x"
   },
   "devDependencies": {
