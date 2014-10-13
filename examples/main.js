@@ -1,11 +1,25 @@
 DocUtils=require('../js/docUtils.js')
 DocxGen=require('../js/docxgen.js')
 
-DocUtils.loadDoc("image.png",{docx:false})
-
 function textAreaAdjust(o) {
     o.style.height = "1px";
     o.style.height = (25+o.scrollHeight)+"px";
+}
+
+load=function(url,callback){
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET', fileName , true)
+	if (xhrDoc.overrideMimeType)
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =function(e){
+		if this.readyState == 4 {
+			if this.status == 200
+				callback(null,this.response)
+			else
+				callback(true)
+        }
+    }
+	xhrDoc.send()
 }
 
 window.onload=  function () {
@@ -54,7 +68,7 @@ for (var i = 0; i < viewRawButtonList.length; i++) {
 			if(childs[j].tagName=='TEXTAREA')
 			{
 				raw=(childs[j].getAttribute("raw"))
-				new DocxGen().loadFromFile(raw).output()
+				//new DocxGen().loadFromFile(raw).output()
 			}
 		}
 	}

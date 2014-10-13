@@ -51,17 +51,19 @@ DocxGen is based on word templates.
 	<td colspan="3">
 		<h3>Code Used:</h3>
 		<textarea raw='tagExample.docx'>
-new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
-	doc.setTags( {"first_name":"Hipp",
-		"last_name":"Edgar",
-		"phone":"0652455478",
-		"description":"New Website"
-		}
-	) //set the templateVariables
-	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	doc.output() //Output the document using Data-URI
-});
-		</textarea>
+            loadFile("tagExample.docx",function(err,content){
+                doc=new DocxGen(content)
+                doc.setData( {"first_name":"Hipp",
+                    "last_name":"Edgar",
+                    "phone":"0652455478",
+                    "description":"New Website"
+                    }
+                ) //set the templateVariables
+                doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+                out=doc.getZip().generate({type:"base64"}) //Output the document using Data-URI
+                console.log(out);
+            })
+	</textarea>
 	</td>
 </tr>
 </table>
@@ -86,14 +88,14 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 		<h3>Code Used:</h3>
 		<textarea raw='tagFormating.docx'>
 new DocxGen().loadFromFile("tagFormating.docx",{async:true}).success(function(doc){
-	doc.setTags({
+	doc.setData({
 		"first_name":"Hipp",
 		"last_name":"Edgar",
 		"phone":"0652455478",
 		"description":"New Website"
 		}); //set the templateVariables
-	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	doc.output() //Output the document using Data-URI
+	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.getZip().generate({type:"base64"}) //Output the document using Data-URI
 });
 		</textarea>
 	</td>
@@ -127,15 +129,15 @@ angularParser= function(tag){
 }
 
 new DocxGen().loadFromFile("angularExample.docx",{async:true,parser:angularParser}).success(function(doc){
-	doc.setTags({
+	doc.setData({
 		person:{
 			first_name:"Hipp",
 			last_name:"Edgar",
 			birth_year:1955,
 			age:59
 		}}); //set the templateVariables
-	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	doc.output() //Output the document using Data-URI
+	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	doc.getZip().generate({type:"base64"}) //Output the document using Data-URI
 });
 		</textarea>
 	</td>
@@ -159,7 +161,7 @@ new DocxGen().loadFromFile("angularExample.docx",{async:true,parser:angularParse
 				<h3>Code Used:</h3>
 				<textarea raw="tagLooping.docx">
 new DocxGen().loadFromFile("tagLooping.docx",{async:true}).success(function(doc){ 
-doc.setTags({
+doc.setData({
 	"products": [{
  	 	 "title":"Duk",
  	 	 "name":"DukSoftware",
@@ -169,8 +171,8 @@ doc.setTags({
  	 	 "name":"Tingerlee",
  	 	 "reference":"T00"
 	}]}); //set the templateVariables
-doc.applyTags() //apply them
-doc.output() //Output the document using Data-URI
+doc.render() //apply them
+doc.getZip().generate({type:"base64"}) //Output the document using Data-URI
 });
 				</textarea>
 			</td>
@@ -195,7 +197,7 @@ doc.output() //Output the document using Data-URI
 				<h3>Code Used:</h3>
 				<textarea raw="tagIntelligentLoopTable.docx">
 var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,intelligentTagging:true}).success(function(doc){
-	doc.setTags({
+	doc.setData({
 		"clients":[{
 			"first_name":"John",
 			"last_name":"Doe",
@@ -205,8 +207,8 @@ var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,i
 			"last_name":"Doe",
 			"phone":"+445476454"
 		}]}); //set the templateVariables
-	doc.applyTags() //apply them
-	doc.output() //Output the document using Data-URI					
+	doc.render() //apply them
+	doc.getZip().generate({type:"base64"}) //Output the document using Data-URI					
 });
 				</textarea>
 			</td>
@@ -230,11 +232,11 @@ var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,i
 				<h3>Code Used:</h3>
 				<textarea raw="tagDashLoopList.docx">
 var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success(function(doc){ 
-	doc.setTags(
+	doc.setData(
 	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
 	)
-	doc.applyTags()
-	doc.output()
+	doc.render()
+	doc.getZip().generate({type:"base64"})
 });
 				</textarea>
 			</td>
@@ -262,13 +264,13 @@ var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success
 				<h3>Code Used:</h3>
 				<textarea raw="tagExample.docx">
 new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
-	doc.setTags({
+	doc.setData({
 			"first_name":"Hipp",
 			"last_name":"Edgar",
 			"phone":"0652455478",
 			"description":"New Website"
 		});
-	doc.applyTags()
+	doc.render()
 	doc.download('../vendor/downloadify/media/downloadify.swf','../vendor/downloadify/images/download.png',"taggedDoc.docx")
 });
 				</textarea>
@@ -300,8 +302,8 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 				<h3>Code Used:</h3>
 				<textarea raw="qrCodeExample.docx">
 					new DocxGen().loadFromFile("qrCodeExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
-						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
-						doc.applyTags();
+						doc.finishedCallback=function(){doc.getZip().generate({type:"base64"})} //Set the callback to run when the docx has been created (because the qrcode operation is async)
+						doc.render();
 					});
 				</textarea>
 			</td>
@@ -325,8 +327,8 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 				<h3>Code Used:</h3>
 				<textarea raw="qrCodeTaggingLoopExample.docx">
 					new DocxGen().loadFromFile("qrCodeTaggingLoopExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
-						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
-						doc.applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]});
+						doc.finishedCallback=function(){doc.getZip().generate({type:"base64"})} //Set the callback to run when the docx has been created (because the qrcode operation is async)
+						doc.render({'images':[{image:'Firefox_logo'},{image:'image'}]});
 					});
 				</textarea>
 			</td>
@@ -350,8 +352,8 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 				<h3>Code Used:</h3>
 				<textarea raw="xmlInsertionExample.docx">
 					new DocxGen().loadFromFile("xmlInsertionExample.docx",{async:true}).success(function(doc){
-					doc.applyTags({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
-						doc.output()
+					doc.render({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
+						doc.getZip().generate({type:"base64"})
 					});
 				</textarea>
 			</td>
