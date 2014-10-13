@@ -10,7 +10,9 @@ JSZip=require('jszip')
 fs= require('fs')
 
 module.exports=class DocxGen
-	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+	templatedFilesforDOCX = ["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+	templatedFilesforPPTX = ["ppt/presentation.xml", "ppt/slides/slide1.xml"]
+	fileExts = ["pptx", "docx"]
 	constructor: (content, @Tags={},@options) ->
 		@setOptions(@options)
 		@finishedCallback=()->
@@ -26,6 +28,8 @@ module.exports=class DocxGen
 		this
 	loadFromFile:(path,options={})->
 		@setOptions(options)
+		@fileTypeFromPath(path)
+		@templateFileStructure()
 		promise=
 			success:(fun)->
 				this.successFun=fun
@@ -37,6 +41,19 @@ module.exports=class DocxGen
 			promise.successFun(this)
 		DocUtils.loadDoc(path,options)
 		if options.async==false then return this else return promise
+	fileTypeFromPath:(path)->
+		extensions_found = fileExts.filter (extension) -> ~path.indexOf "."+extension
+		if extensions_found.length == 0
+			throw new Error("Invalid file extension; allowed types are: "+fileExts.join(", "))
+		else
+			@fileType = extensions_found[0]
+	templateFileStructure: ->
+		if @fileType == "docx"
+			@templatedFiles = templatedFilesforDOCX
+			@baseDoc = "word/document.xml"
+		else
+			@templatedFiles = templatedFilesforPPTX
+			@baseDoc = "ppt/presentation.xml"
 	qrCodeCallBack:(id,add=true)->
 		if add==true
 			@qrCodeWaitingFor.push id
@@ -45,7 +62,7 @@ module.exports=class DocxGen
 			@qrCodeWaitingFor.splice(index, 1)
 		@testReady()
 	testReady:()->
-		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
+		if @qrCodeWaitingFor.length==0 and @filesProcessed== @templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
 			@ready=true
 			@finishedCallback()
 	load: (content)->
@@ -54,9 +71,9 @@ module.exports=class DocxGen
 		this
 	applyTags:(@Tags=@Tags)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
-		for fileName in templatedFiles when !@zip.files[fileName]?
+		for fileName in @templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
-		for fileName in templatedFiles when @zip.files[fileName]?
+		for fileName in @templatedFiles when @zip.files[fileName]?
 			imgManager=new ImgManager(@zip,fileName)
 			imgManager.loadImageRels()
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
@@ -66,6 +83,7 @@ module.exports=class DocxGen
 				parser:@parser
 				imgManager:imgManager
 				fileName:fileName
+				fileType: @fileType
 			})
 			###
 			imgManager=new ImgManager()
@@ -81,7 +99,7 @@ module.exports=class DocxGen
 		@zip.file(fileName,data,options)
 	getTags:()->
 		usedTags=[]
-		for fileName in templatedFiles when @zip.files[fileName]?
+		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
 				DocxGen:this
 				Tags:@Tags
@@ -110,7 +128,8 @@ module.exports=class DocxGen
 				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
-	getFullText:(path="word/document.xml") ->
+	getFullText:(path="") ->
+		path = @baseDoc if path == ""
 		usedData=@zip.files[path].asText()
 		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
@@ -128,4 +147,3 @@ module.exports=class DocxGen
 			transparent: true
 			append: false
 			dataType:'base64'
-
