@@ -17,25 +17,20 @@ angularParser= (tag) ->
 			return "undefined"
 }
 
-path=require('path')
-p=(a)->path.join(__dirname,'/../../js/'+a+'.js')
-
-DocxGen= require(p('docxgen'))
-DocUtils=require(p('docUtils'))
+DocxGen= require('../../js/docxgen.js')
+DocUtils=require('../../js/docUtils.js')
 docX=DocUtils.docX
 docXData=DocUtils.docXData
-SubContent=require(p('subContent'))
-DocXTemplater=require(p('docxTemplater'))
-xmlUtil=require(p('xmlUtil'))
+SubContent=require('../../js/subContent.js')
+DocXTemplater=require('../../js/docxTemplater.js')
+xmlUtil=require('../../js/xmlUtil.js')
 JSZip=require('jszip')
 PNG=require('png-js')
-DocxQrCode=require(p('docxQrCode'))
+DocxQrCode=require('../../js/docxQrCode.js')
 
 DocUtils.pathConfig=
 	"browser":'../examples/'
-
-if DocUtils.env=='node'
-	DocUtils.pathConfig.node=__dirname+'/../../examples/'
+	"node":__dirname+'/../../examples/'
 
 fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx"]
 
@@ -730,14 +725,12 @@ describe 'SubContent', () ->
 		expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
 		expect(sub.text).toBe('<w:table>Sample Table</w:table>')
 	it "shouldn't bug if some images don't contain a qrcode",()->
-		docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		expect(docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625)
-		endcallback= () -> 1
-		docX['imageExample.docx'].applyTags({},endcallback)
-		waitsFor () -> docX['imageExample.docx'].ready?
+		doc=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		expect(doc.zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625)
+		doc.applyTags()
+		waitsFor () -> doc.ready?
 		runs () ->
-			expect(docX['imageExample.docx'].zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625)
-
+			expect(doc.zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625)
 
 	it 'should work with some images containing a qrcode, some not', () ->
 		testDocx=new DocxGen(docX["qrCodeAndNonQrCodeExample.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})

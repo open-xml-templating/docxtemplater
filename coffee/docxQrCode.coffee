@@ -30,8 +30,7 @@ module.exports= class DocxQrCode
 		else
 			@qr.decode(@data,@data.decoded)
 	searchImage:() ->
-		cb=(err,data)=>
-			@data=data
+		cb=(err,@data=@data)=>
 			@callback(this,@imgName,@num)
-		if !@result? then return cb(null,@data)
+		if !@result? then return cb()
 		@xmlTemplater.DocxGen.qrCode(@result,cb)
