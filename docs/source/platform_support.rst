@@ -15,7 +15,7 @@ docxtemplater works with
 
 Internet explorer is not supported -even IE10- (basically because xhr Requests can't be made on binary files)
 
-You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxgenjs/test/SpecRunner.html
+You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxtemplater/v1/test/SpecRunner.html
 
 Dependencies
 ============
