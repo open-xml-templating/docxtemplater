@@ -51,15 +51,24 @@ fileNames=["graph.docx",
 "xmlInsertionComplexExpected.docx",
 "xmlInsertionComplexExample.docx"]
 
+loadFile=(name)->
+	if fs.readFileSync? then return fs.readFileSync(__dirname+"/../../examples/"+name,"binary")
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET',"../examples/"+name,false)
+	if (xhrDoc.overrideMimeType)
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.send()
+	xhrDoc.response
+
 for name in fileNames
-	content=fs.readFileSync(__dirname+"/../../examples/"+name,"binary")
+	content=loadFile(name)
 	docX[name]=new DocxGen(content)
 	docX[name].loadedContent=content
 
 pngFiles=['image.png','bootstrap_logo.png','BMW_logo.png','Firefox_logo.png','Volkswagen_logo.png']
 
 for file in pngFiles
-	data[file]=fs.readFileSync(__dirname+"/../../examples/"+file,"binary")
+	data[file]=loadFile(file)
 
 describe "DocxGenBasis", () ->
 	it "should be defined", () ->
