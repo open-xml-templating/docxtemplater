@@ -11,7 +11,7 @@ var server=null;
 
 try {
     var Blink1 = require('node-blink1');
-    var blink1 = new Blink1('20002C4A');
+    var blink1 = new Blink1();
 } catch (e) {
     blink1={
         fadeToRGB:function(){

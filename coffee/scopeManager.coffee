@@ -7,25 +7,26 @@ module.exports=class ScopeManager
 		value = @getValue(tag)
 		type = typeof value
 		if inverted
-			return callback(@scopeList[@scopeList.length-1]) unless value
+			return callback(@scopeList[@num]) unless value
 			return if type == 'string'
 			if type == 'object' && value.length < 1
-				callback(@scopeList[@scopeList.length-1])
+				callback(@scopeList[@num])
 			return
 		return unless value?
 		if type == 'object'
 			for scope,i in value
 				callback(scope)
 		if value == true
-			callback(@scopeList[@scopeList.length-1])
-	getValue:(tag, scope=@scopeList[@scopeList.length-1])->
+			callback(@scopeList[@num])
+	getValue:(tag,@num=@scopeList.length-1)->
+		scope=@scopeList[@num]
 		parser=@parser(DocUtils.wordToUtf8(tag))
 		result=parser.get(scope)
+		if result==undefined and @num>0 then return @getValue(tag,@num-1)
+		result
 	getValueFromScope: (tag) ->
 		# search in the scopes (in reverse order) and keep the first defined value
-		result = undefined
-		for index in [@scopeList.length-1..0]
-			result or= @getValue(tag, @scopeList[index])
+		result = @getValue(tag)
 		if result?
 			if typeof result=='string'
 				@useTag(tag)
