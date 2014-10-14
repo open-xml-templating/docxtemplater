@@ -11,7 +11,6 @@ fs= require('fs')
 
 module.exports=class DocxGen
 	templatedFilesforDOCX = ["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
-	templatedFilesforPPTX = ["ppt/presentation.xml", "ppt/slides/slide1.xml"]
 	fileExts = ["pptx", "docx"]
 	constructor: (content, @Tags={},@options) ->
 		@setOptions(@options)
@@ -29,7 +28,6 @@ module.exports=class DocxGen
 	loadFromFile:(path,options={})->
 		@setOptions(options)
 		@fileTypeFromPath(path)
-		@templateFileStructure()
 		promise=
 			success:(fun)->
 				this.successFun=fun
@@ -52,8 +50,13 @@ module.exports=class DocxGen
 			@templatedFiles = templatedFilesforDOCX
 			@baseDoc = "word/document.xml"
 		else
-			@templatedFiles = templatedFilesforPPTX
+			@templatedFiles = @templatedFilesforPPTX()
 			@baseDoc = "ppt/presentation.xml"
+		this
+	templatedFilesforPPTX:->
+		templateArray = [1..100].map (i) -> "ppt/slides/slide"+i+".xml"
+		templateArray.unshift("ppt/presentation.xml")
+		templateArray
 	qrCodeCallBack:(id,add=true)->
 		if add==true
 			@qrCodeWaitingFor.push id
@@ -71,6 +74,7 @@ module.exports=class DocxGen
 		this
 	applyTags:(@Tags=@Tags)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
+		@templateFileStructure()
 		for fileName in @templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in @templatedFiles when @zip.files[fileName]?
