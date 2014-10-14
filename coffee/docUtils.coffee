@@ -5,7 +5,8 @@ JSZip=require('jszip')
 DocUtils= {}
 DocUtils.getPathConfig=()->
 	if !DocUtils.pathConfig? then return ""
-	return if DocUtils.pathConfig.node? then DocUtils.pathConfig.node else DocUtils.pathConfig.browser
+	if DocUtils.env=='node' then return DocUtils.pathConfig.node
+	DocUtils.pathConfig.browser
 
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");

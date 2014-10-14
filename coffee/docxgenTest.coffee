@@ -16,18 +16,15 @@ angularParser= (tag) ->
 			return "undefined"
 }
 
-path=require('path')
-p=(a)->path.join(__dirname,'/../../js/'+a+'.js')
 
-DocxGen= require(p('docxgen'))
-DocUtils=require(p('docUtils'))
-SubContent=require(p('subContent'))
-DocXTemplater=require(p('docxTemplater'))
-xmlUtil=require(p('xmlUtil'))
-JSZip=require('jszip')
-fs=require('fs')
+DocxGen= require('../../js/docxgen.js')
+DocUtils=require('../../js/docUtils.js')
 docX={}
 data={}
+SubContent=require('../../js/subContent.js')
+DocXTemplater=require('../../js/docxTemplater.js')
+xmlUtil=require('../../js/xmlUtil.js')
+fs=require('fs')
 
 fileNames=["graph.docx",
 "imageExample.docx",
