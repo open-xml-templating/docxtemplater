@@ -17,25 +17,20 @@ angularParser= (tag) ->
 			return "undefined"
 }
 
-path=require('path')
-p=(a)->path.join(__dirname,'/../../js/'+a+'.js')
-
-DocxGen= require(p('docxgen'))
-DocUtils=require(p('docUtils'))
+DocxGen= require('../../js/docxgen.js')
+DocUtils=require('../../js/docUtils.js')
 docX=DocUtils.docX
 docXData=DocUtils.docXData
-SubContent=require(p('subContent'))
-DocXTemplater=require(p('docxTemplater'))
-xmlUtil=require(p('xmlUtil'))
+SubContent=require('../../js/subContent.js')
+DocXTemplater=require('../../js/docxTemplater.js')
+xmlUtil=require('../../js/xmlUtil.js')
 JSZip=require('jszip')
 PNG=require('png-js')
-DocxQrCode=require(p('docxQrCode'))
+DocxQrCode=require('../../js/docxQrCode.js')
 
 DocUtils.pathConfig=
 	"browser":'../examples/'
-
-if DocUtils.env=='node'
-	DocUtils.pathConfig.node=__dirname+'/../../examples/'
+	"node":__dirname+'/../../examples/'
 
 fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx"]
 
@@ -459,63 +454,57 @@ describe 'DocxQrCode module', () ->
 
 describe 'qr code testing', () ->
 	it 'should work with local QRCODE without tags', () ->
-		docX['qrCodeExample.docx']=new DocxGen(docX['qrCodeExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		endcallback= () -> 1
-		docX['qrCodeExample.docx'].applyTags({},endcallback)
-
-		waitsFor () -> docX['qrCodeExample.docx'].ready?
-
-		runs () ->
-			expect(docX['qrCodeExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-			for i of docX['qrCodeExample.docx'].zip.files
+		doc=new DocxGen(docX['qrCodeExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		doc.applyTags()
+		waitsFor ()->doc.ready?
+		runs ()->
+			expect(doc.zip.files['word/media/Copie_0.png']?).toBeTruthy()
+			for i of doc.zip.files
 				#Everything but the date should be different
-				expect(docX['qrCodeExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date)
-				expect(docX['qrCodeExample.docx'].zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name)
-				expect(docX['qrCodeExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir)
+				expect(doc.zip.files[i].options.date).not.toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.date)
+				expect(doc.zip.files[i].name).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].name)
+				expect(doc.zip.files[i].options.dir).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].options.dir)
 
 
 	it 'should work with local QRCODE with {tags}', () ->
-		docX['qrCodeTaggingExample.docx']=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
-		endcallback= () -> 1
-		docX['qrCodeTaggingExample.docx'].applyTags({'image':'Firefox_logo'},endcallback)
+		doc=new DocxGen(docX['qrCodeTaggingExample.docx'].loadedContent,{'image':'Firefox_logo'},{intelligentTagging:off,qrCode:true})
+		doc.applyTags({'image':'Firefox_logo_small'})
 
-		waitsFor () -> docX['qrCodeTaggingExample.docx'].ready?
+		waitsFor () -> doc.ready?
 
 		runs () ->
-			expect(docX['qrCodeTaggingExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-			for i of docX['qrCodeTaggingExample.docx'].zip.files
+			expect(doc.zip.files['word/media/Copie_0.png']?).toBeTruthy()
+			for i of doc.zip.files
 				#Everything but the date should be different
-				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date)
-				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].name)
-				expect(docX['qrCodeTaggingExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir)
+				expect(doc.zip.files[i].options.date).not.toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.date)
+				expect(doc.zip.files[i].name).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].name)
+				expect(doc.zip.files[i].options.dir).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].options.dir)
+				b=doc.zip.files[i].asText()
 
-				if (docX['qrCodeTaggingExample.docx'].zip.files[i].asText())!=null and i!="word/document.xml" and i!="word/_rels/document.xml.rels"
-					expect(docX['qrCodeTaggingExample.docx'].zip.files[i].asText().length).toBe(docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText().length)
-					expect(docX['qrCodeExample.docx'].zip.files[i].asText()).toBe(docX['qrCodeExampleExpected.docx'].zip.files[i].asText())
+				if b!=null and i!="word/document.xml" and i!="word/_rels/document.xml.rels"
+					c=docX['qrCodeTaggingExampleExpected.docx'].zip.files[i].asText()
+					expect(b.length).toBe(c.length)
 
-			createdText=docX['qrCodeTaggingExample.docx'].zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g,"").replace(/\x0a/g,"")
-			expectedText=docX['qrCodeTaggingExampleExpected.docx'].zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g,"").replace(/\x0a/g,"")
+			createdText=doc.zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g,"").replace(/\x0a/g,"")
+			expectedText=doc.zip.files['word/_rels/document.xml.rels'].asText().replace(/\x20/g,"").replace(/\x0a/g,"")
 			expect(createdText).toEqual(expectedText)
 
 	it 'should work with loop QRCODE with {tags}', () ->
-		docX['qrCodeTaggingLoopExample.docx']=new DocxGen(docX['qrCodeTaggingLoopExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		endcallback= () -> 1
-		docX['qrCodeTaggingLoopExample.docx'].applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]},endcallback)
-		docX['qrCodeTaggingLoopExample.docx']
+		doc=new DocxGen(docX['qrCodeTaggingLoopExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		doc.applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]})
 
-		waitsFor () -> docX['qrCodeTaggingLoopExample.docx'].ready?
+		waitsFor () -> doc.ready?
 
 		runs () ->
+			expect(doc.zip.files['word/media/Copie_0.png']?).toBeTruthy()
+			expect(doc.zip.files['word/media/Copie_1.png']?).toBeTruthy()
+			expect(doc.zip.files['word/media/Copie_2.png']?).toBeFalsy()
 
-			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_0.png']?).toBeTruthy()
-			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_1.png']?).toBeTruthy()
-			expect(docX['qrCodeTaggingLoopExample.docx'].zip.files['word/media/Copie_2.png']?).toBeFalsy()
-
-			for i of docX['qrCodeTaggingLoopExample.docx'].zip.files
+			for i of doc.zip.files
 				#Everything but the date should be different
-				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date)
-				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name)
-				expect(docX['qrCodeTaggingLoopExample.docx'].zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir)
+				expect(doc.zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date)
+				expect(doc.zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name)
+				expect(doc.zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir)
 
 describe 'Changing the parser', () ->
 	it 'should work with uppercassing', () ->
@@ -730,14 +719,12 @@ describe 'SubContent', () ->
 		expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
 		expect(sub.text).toBe('<w:table>Sample Table</w:table>')
 	it "shouldn't bug if some images don't contain a qrcode",()->
-		docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
-		expect(docX['imageExample.docx'].zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625)
-		endcallback= () -> 1
-		docX['imageExample.docx'].applyTags({},endcallback)
-		waitsFor () -> docX['imageExample.docx'].ready?
+		doc=new DocxGen(docX['imageExample.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		expect(doc.zip.files['word/media/image1.jpeg'].asBinary().length).toBe(713625)
+		doc.applyTags()
+		waitsFor () -> doc.ready?
 		runs () ->
-			expect(docX['imageExample.docx'].zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625)
-
+			expect(doc.zip.files['word/media/Copie_0.png'].asBinary().length).toBe(713625)
 
 	it 'should work with some images containing a qrcode, some not', () ->
 		testDocx=new DocxGen(docX["qrCodeAndNonQrCodeExample.docx"].loadedContent,{},{intelligentTagging:off,qrCode:true})

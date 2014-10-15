@@ -12,7 +12,8 @@ DocUtils.docX=[]
 DocUtils.docXData=[]
 DocUtils.getPathConfig=()->
 	if !DocUtils.pathConfig? then return ""
-	return if DocUtils.pathConfig.node? then DocUtils.pathConfig.node else DocUtils.pathConfig.browser
+	if DocUtils.env=='node' then return DocUtils.pathConfig.node
+	DocUtils.pathConfig.browser
 
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -64,7 +65,7 @@ DocUtils.loadDoc= (path,options={}) ->
 		if async==false
 			return DocUtils.docXData[fileName]
 	if DocUtils.env=='browser'
-		DocUtils.loadHttp path,(err,result)->
+		return DocUtils.loadHttp totalPath,(err,result)->
 			if err
 				console.log 'error'
 				if callback? then callback(true)
@@ -136,6 +137,7 @@ DocUtils.loadHttp=(result,callback,async=false)->
 				req = http.request(options, reqCallback).on('error',errorCallback)
 		req.end()
 	else
+		response=""
 		xhrDoc= new XMLHttpRequest()
 		xhrDoc.open('GET', result , async)
 		if xhrDoc.overrideMimeType
@@ -143,10 +145,12 @@ DocUtils.loadHttp=(result,callback,async=false)->
 		xhrDoc.onreadystatechange =(e)->
 			if this.readyState == 4
 				if this.status == 200
+					response=this.response
 					callback(null,this.response)
 				else
 					callback(true)
 		xhrDoc.send()
+		return response
 
 DocUtils.unsecureQrCode=(result,callback)->
 	if DocUtils.env=='node'

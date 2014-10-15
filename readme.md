@@ -13,21 +13,21 @@ The full documentation can be found on [read the docs](http://docxtemplater.read
 
 ## Demo
 
-[All demos can be found here](http://javascript-ninja.fr/docxgenjs/examples/demo.html)
+[All demos can be found here](http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html)
 
 Including:
 
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#variables">Replace Variables</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#formating">Formating</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#parsing">Angular Parsing</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#loops">Loops</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#tables">Loops and tables</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#lists">Lists</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#images">Replacing images</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#naming">Naming the output</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcode">Using QrCodes</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#qrcodeloop">Replacing many images with QrCode</a><br>
-- <a href="http://javascript-ninja.fr/docxgenjs/examples/demo.html#rawxml">Raw Xml Insertion</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#variables">Replace Variables</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#formating">Formating</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#parsing">Angular Parsing</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#loops">Loops</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#tables">Loops and tables</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#lists">Lists</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#images">Replacing images</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#naming">Naming the output</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#qrcode">Using QrCodes</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#qrcodeloop">Replacing many images with QrCode</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v0/examples/demo.html#rawxml">Raw Xml Insertion</a><br>
 
 
 
@@ -60,10 +60,3 @@ They are a few similar libraries that work with docx, here’s a list of those I
 
  * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically 
  * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
-
-## Known issues
-
-Todo:
-
- - [ ] Incompatibility with IE: Error : SCRIPT5022: End of stream reached (stream length = 14578, asked index = 18431). Corrupted zip ?
- - [ ] Use FileSaver API for output http://eligrey.com/blog/post/saving-generated-files-on-the-client-side

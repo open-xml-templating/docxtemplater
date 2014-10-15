@@ -7,6 +7,7 @@ var concat= require('gulp-concat');
 var uglify= require('gulp-uglify');
 var spawn = require('child_process').spawn;
 var livereload = require('gulp-livereload');
+var browserify = require('gulp-browserify');
 var server=null;
 
 try {
@@ -28,9 +29,14 @@ var paths = {
     js:'js/'
 };
 
-var browserify = require('gulp-browserify');
 
 gulp.task('browserify', function() {
+    browserified=gulp.src(__dirname+'/test/spec/docxgenTest.spec.js')
+        .pipe(browserify({}))
+
+    browserified
+        .pipe(gulp.dest(__dirname+'/browser/'))
+
     // Single entry point to browserify
     browserified=gulp.src(__dirname+'/examples/main.js')
         .pipe(browserify({}))
