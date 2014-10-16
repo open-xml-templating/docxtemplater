@@ -24,10 +24,12 @@ module.exports=class DocxGen
 		@qrCode= if @options.qrCode? then @options.qrCode else off
 		if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 		if @options.parser? then @parser=options.parser
+		@fileType = @fileTypeFromPath(@options.path) if @options.path != "" and @options.path != undefined
+		@templateFileStructure()
 		this
 	loadFromFile:(path,options={})->
+		options.path = path
 		@setOptions(options)
-		@fileTypeFromPath(path)
 		promise=
 			success:(fun)->
 				this.successFun=fun
@@ -39,19 +41,20 @@ module.exports=class DocxGen
 			promise.successFun(this)
 		DocUtils.loadDoc(path,options)
 		if options.async==false then return this else return promise
+		this
 	fileTypeFromPath:(path)->
 		extensions_found = fileExts.filter (extension) -> ~path.indexOf "."+extension
 		if extensions_found.length == 0
 			throw new Error("Invalid file extension; allowed types are: "+fileExts.join(", "))
 		else
-			@fileType = extensions_found[0]
+			extensions_found[0]
 	templateFileStructure: ->
-		if @fileType == "docx"
-			@templatedFiles = templatedFilesforDOCX
-			@baseDoc = "word/document.xml"
-		else
+		if @fileType == "pptx"
 			@templatedFiles = @templatedFilesforPPTX()
 			@baseDoc = "ppt/presentation.xml"
+		else
+			@baseDoc = "word/document.xml"
+			@templatedFiles = templatedFilesforDOCX
 		this
 	templatedFilesforPPTX:->
 		templateArray = [1..100].map (i) -> "ppt/slides/slide"+i+".xml"
@@ -74,7 +77,6 @@ module.exports=class DocxGen
 		this
 	applyTags:(@Tags=@Tags)->
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
-		@templateFileStructure()
 		for fileName in @templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in @templatedFiles when @zip.files[fileName]?
@@ -127,7 +129,7 @@ module.exports=class DocxGen
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
 	getFullText:(path="") ->
-		path = @baseDoc if path == ""
+		path = @baseDoc if path == "" or path == undefined
 		usedData=@zip.files[path].asText()
 		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
