@@ -24,7 +24,7 @@ module.exports=class DocxGen
 		@qrCode= if @options.qrCode? then @options.qrCode else off
 		if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 		if @options.parser? then @parser=options.parser
-		@fileType = @fileTypeFromPath(@options.path) if @options.path != "" and @options.path != undefined
+		@fileType = @fileTypeFromPath(@options.path) if @options.path? and @options.path != ""
 		@templateFileStructure()
 		this
 	loadFromFile:(path,options={})->
@@ -129,7 +129,7 @@ module.exports=class DocxGen
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
 	getFullText:(path="") ->
-		path = @baseDoc if path == "" or path == undefined
+		path = @baseDoc if not path? or path == ""
 		usedData=@zip.files[path].asText()
 		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
 	download: (swfpath, imgpath, filename="default.docx") ->
