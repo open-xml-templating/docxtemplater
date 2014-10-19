@@ -1,7 +1,3 @@
-DOMParser = require('xmldom').DOMParser
-XMLSerializer= require('xmldom').XMLSerializer
-JSZip=require('jszip')
-
 DocUtils= {}
 DocUtils.getPathConfig=()->
 	if !DocUtils.pathConfig? then return ""
@@ -57,15 +53,7 @@ DocUtils.clone = (obj) ->
 	for key of obj
 		newInstance[key] = DocUtils.clone obj[key]
 
-	return newInstance
-
-DocUtils.xml2Str = (xmlNode) ->
-	a= new XMLSerializer()
-	a.serializeToString(xmlNode)
-
-DocUtils.Str2xml= (str,errorHandler) ->
-	parser=new DOMParser({errorHandler})
-	xmlDoc=parser.parseFromString(str,"text/xml")
+	newInstance
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
@@ -109,8 +97,6 @@ DocUtils.sizeOfObject = (obj) ->
 	for key of obj
 		size++
 	size
-
-DocUtils.maxArray = (a) -> Math.max.apply(null, a)
 
 DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
 	endTag= text.indexOf('</'+xmlTag+'>',end)
