@@ -2,10 +2,11 @@ XmlTemplater=require('./xmlTemplater')
 xmlUtil=require('./xmlUtil')
 
 DocXTemplater = class DocXTemplater extends XmlTemplater
+	tagByFileType = {pptx: "a:t", docx: "w:t"}
 	constructor:(content="",options={}) ->
 		super("",options)
 		@currentClass=DocXTemplater
-		@tagXml='w:t'
+		@tagXml = (tagByFileType[options.fileType] ||= tagByFileType["docx"])
 		if typeof content=="string" then @load content else throw new Error("content must be string!")
 	calcIntellegentlyDashElement:()->
 		{content,start,end}= @templaterState.findOuterTagsContent(@content)
