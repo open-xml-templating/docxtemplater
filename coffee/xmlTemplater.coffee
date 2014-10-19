@@ -10,6 +10,7 @@ module.exports=class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
+		@fileType = options.fileType
 		@fromJson(options)
 		@templaterState= new TemplaterState
 	load: (@content) ->
@@ -101,7 +102,7 @@ module.exports=class XmlTemplater #abstract class !!
 		if noStartTag == true
 			return insideValue
 		else
-			if spacePreserve==true
+			if spacePreserve==true && @fileType != "pptx"
 				str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
 			else
 				str=@templaterState.matches[xmlTagNumber][1]+insideValue
