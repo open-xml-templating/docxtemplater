@@ -23,8 +23,7 @@
     "url": "https://github.com/edi9999/docxtemplater"
   },
   "dependencies": {
-    "jszip": "^2.4.0",
-    "xmldom": "0.1.x"
+    "jszip": "^2.4.0"
   },
   "devDependencies": {
     "angular-expressions": "~0.2.1",
