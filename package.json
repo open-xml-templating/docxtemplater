@@ -8,7 +8,7 @@
       "name": "Edgar Hipp"
     }
   ],
-  "main": "js/docxgen.js",
+  "main": "js/index.js",
   "bin": {
     "docxtemplater": "./js/cli.js"
   },
