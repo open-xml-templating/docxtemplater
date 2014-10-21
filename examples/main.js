@@ -1,11 +1,25 @@
 DocUtils=require('../js/docUtils.js')
 DocxGen=require('../js/docxgen.js')
 
-DocUtils.loadDoc("image.png",{docx:false})
-
 function textAreaAdjust(o) {
     o.style.height = "1px";
     o.style.height = (25+o.scrollHeight)+"px";
+}
+
+loadFile=function(url,callback){
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET', url , true)
+	if (xhrDoc.overrideMimeType)
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =function(e){
+		if (this.readyState == 4) {
+			if (this.status == 200)
+				callback(null,this.response)
+			else
+				callback(e);
+        }
+    }
+	xhrDoc.send()
 }
 
 window.onload=  function () {
@@ -35,7 +49,6 @@ for (var i = 0; i < executeButtonList.length; i++) {
 		for (var j = 0; j < childs.length; j++) {
 			if(childs[j].tagName=='TEXTAREA')
 			{
-				console.log(childs[j].value)
 				eval(childs[j].value)
 			}
 		};
@@ -48,13 +61,16 @@ var viewRawButtonList= document.getElementsByClassName('raw');
 for (var i = 0; i < viewRawButtonList.length; i++) {
 	viewRawButtonList[i].onclick=function()
 	{
-		childs=(this.parentNode.childNodes)
+		var childs=(this.parentNode.childNodes)
 
 		for (var j = 0; j < childs.length; j++) {
 			if(childs[j].tagName=='TEXTAREA')
 			{
-				raw=(childs[j].getAttribute("raw"))
-				new DocxGen().loadFromFile(raw).output()
+				var raw=(childs[j].getAttribute("raw"))
+                loadFile(raw,function(err,content){
+                    output=new DocxGen(content).getZip().generate({"type":"blob"})
+                    saveAs(output,"raw.docx")
+                })
 			}
 		}
 	}

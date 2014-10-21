@@ -1,15 +1,4 @@
-fs=require('fs')
-DOMParser = require('xmldom').DOMParser
-XMLSerializer= require('xmldom').XMLSerializer
-JSZip=require('jszip')
-url=require('url')
-http=require('http')
-https=require('https')
-
 DocUtils= {}
-DocUtils.env= if fs.readFile? then 'node' else 'browser'
-DocUtils.docX=[]
-DocUtils.docXData=[]
 DocUtils.getPathConfig=()->
 	if !DocUtils.pathConfig? then return ""
 	if DocUtils.env=='node' then return DocUtils.pathConfig.node
@@ -40,137 +29,6 @@ DocUtils.defaultParser=(tag) ->
 		if tag=='.' then return scope else return scope[tag]
 	}
 
-DocUtils.loadDoc= (path,options={}) ->
-	noDocx= if options.docx? then !options.docx else false
-	async=if options.async? then options.async else false
-	intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else false
-	callback=if options.callback? then options.callback else null
-	basePath=""
-	if !path? then throw new Error('path not defined')
-	if path.indexOf('/')!=-1
-		totalPath= path
-		fileName= totalPath
-	else
-		fileName= path
-		if basePath=="" && DocUtils.pathConfig? #set basePath only if it wasn't set as an argument
-			basePath=DocUtils.getPathConfig()
-		totalPath= basePath+path
-	loadFile = (data) ->
-		DocUtils.docXData[fileName]=data
-		if noDocx==false
-			DocUtils.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
-			return DocUtils.docX[fileName]
-		if callback?
-			return callback(DocUtils.docXData[fileName])
-		if async==false
-			return DocUtils.docXData[fileName]
-	if DocUtils.env=='browser'
-		return DocUtils.loadHttp totalPath,(err,result)->
-			if err
-				console.log 'error'
-				if callback? then callback(true)
-				return
-			loadFile(result)
-		,async
-	else
-		if path.indexOf("http")==0
-			urloptions=(url.parse(path))
-			options =
-				hostname:urloptions.hostname
-				path:urloptions.path
-				method: 'GET'
-				rejectUnauthorized:false
-
-			errorCallback= (e) ->
-				throw new Error("Error on HTTPS Call")
-
-			reqCallback= (res)->
-				res.setEncoding('binary')
-				data = ""
-				res.on('data', (chunk)->
-					data += chunk
-				)
-				res.on('end', ()->
-					loadFile(data))
-			switch urloptions.protocol
-				when "https:"
-					req = https.request(options, reqCallback).on('error',errorCallback)
-				when 'http:'
-					req = http.request(options, reqCallback).on('error',errorCallback)
-			req.end();
-		else
-			if async==true
-				fs.readFile totalPath,"binary", (err, data) ->
-					if err
-						if callback? then return callback(err)
-					else
-						return loadFile(data)
-			else
-				try
-					data=fs.readFileSync(totalPath,"binary")
-					return loadFile(data)
-				catch e
-					if callback? then return callback(e)
-
-DocUtils.loadHttp=(result,callback,async=false)->
-	if DocUtils.env=='node'
-		urloptions=(url.parse(result))
-		options =
-			hostname:urloptions.hostname
-			path:urloptions.path
-			method: 'GET'
-			rejectUnauthorized:false
-
-
-		errorCallback= (e) ->
-			callback(e)
-
-		reqCallback= (res)->
-			res.setEncoding('binary')
-			data = ""
-			res.on 'data',(chunk)-> data += chunk
-			res.on 'end',()->callback(null,data)
-		switch urloptions.protocol
-			when "https:"
-				req = https.request(options, reqCallback).on('error',errorCallback)
-			when 'http:'
-				req = http.request(options, reqCallback).on('error',errorCallback)
-		req.end()
-	else
-		response=""
-		xhrDoc= new XMLHttpRequest()
-		xhrDoc.open('GET', result , async)
-		if xhrDoc.overrideMimeType
-			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-		xhrDoc.onreadystatechange =(e)->
-			if this.readyState == 4
-				if this.status == 200
-					response=this.response
-					callback(null,this.response)
-				else
-					callback(true)
-		xhrDoc.send()
-		return response
-
-DocUtils.unsecureQrCode=(result,callback)->
-	if DocUtils.env=='node'
-		console.log 'Your are using an insecure qrcode image finder. With this function, a malicious user could read anyfile that is on the server where docxtemplater resides. The qrcode module now accepts a function as its first parameter instead of a bool see http://docxtemplater.readthedocs.org/en/latest/configuration.html#image-replacing'
-	if result.substr(0,5)=='http:' or result.substr(0,6)=='https:'
-		DocUtils.loadHttp(result,callback)
-	else if result.substr(0,4)=='gen:'
-		defaultImageCreator=(arg,callback) ->
-			#This is the image of an arrow, you can replace this function by whatever you want to generate an image
-			res=JSZip.base64.decode("iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAIAAABvSEP3AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACXSURBVDhPtY7BDYAwDAMZhCf7b8YMxeCoatOQJhWc/KGxT2zlCyaWcz8Y+X7Bs1TFVJSwIHIYyFkQufWIRVX9cNJyW1QpEo4rixaEe7JuQagAUctb7ZFYFh5MVJPBe84CVBnB42//YsZRgKjFDBVg3cI9WbRwXLktQJX8cNIiFhM1ZuTWk7PIYSBhkVcLzwIiCjCxhCjlAkBqYnqFoQQ2AAAAAElFTkSuQmCC")
-			callback(null,res)
-		defaultImageCreator(result,callback)
-	else if result!=null and result!= undefined and result.substr(0,22)!= 'error decoding QR Code'
-		if DocUtils.env=='node'
-			fs.readFile(DocUtils.getPathConfig()+result,callback)
-		else
-			DocUtils.loadHttp(DocUtils.getPathConfig()+result,callback)
-	else
-		callback()
-
 DocUtils.tags=
 	start:'{'
 	end:'}'
@@ -195,15 +53,7 @@ DocUtils.clone = (obj) ->
 	for key of obj
 		newInstance[key] = DocUtils.clone obj[key]
 
-	return newInstance
-
-DocUtils.xml2Str = (xmlNode) ->
-	a= new XMLSerializer()
-	a.serializeToString(xmlNode)
-
-DocUtils.Str2xml= (str,errorHandler) ->
-	parser=new DOMParser({errorHandler})
-	xmlDoc=parser.parseFromString(str,"text/xml")
+	newInstance
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
@@ -247,8 +97,6 @@ DocUtils.sizeOfObject = (obj) ->
 	for key of obj
 		size++
 	size
-
-DocUtils.maxArray = (a) -> Math.max.apply(null, a)
 
 DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
 	endTag= text.indexOf('</'+xmlTag+'>',end)

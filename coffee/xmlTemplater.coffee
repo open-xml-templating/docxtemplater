@@ -3,7 +3,6 @@ ScopeManager=require('./scopeManager')
 SubContent=require('./subContent')
 TemplaterState=require('./templaterState')
 XmlMatcher=require('./xmlMatcher')
-ImgReplacer=require('./imgReplacer')
 #This is an abstract class, DocXTemplater is an example of inherited class
 
 module.exports=class XmlTemplater #abstract class !!
@@ -27,7 +26,6 @@ module.exports=class XmlTemplater #abstract class !!
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
 		@fileName=options.fileName
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser)
-		@imgManager=options.imgManager
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
 		DocxGen:@DocxGen
@@ -38,7 +36,6 @@ module.exports=class XmlTemplater #abstract class !!
 		localImageCreator:@localImageCreator
 		imageId:@imageId
 		parser:@parser
-		imgManager:@imgManager
 		fileName:@fileName
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	getFullText:(@tagXml=@tagXml) ->
@@ -49,7 +46,7 @@ module.exports=class XmlTemplater #abstract class !!
 	content is the whole content to be tagged
 	scope is the current scope
 	returns the new content of the tagged content###
-	applyTags:()->
+	render:()->
 		@templaterState.initialize()
 		for match,numXmlTag in @templaterState.matches
 			innerText= match[2] #text inside the <w:t>
@@ -72,8 +69,6 @@ module.exports=class XmlTemplater #abstract class !!
 						return @replaceLoopTag()
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
-		if @DocxGen? and @DocxGen.qrCode!=false
-			new ImgReplacer(this).findImages().replaceImages()
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
@@ -186,7 +181,7 @@ module.exports=class XmlTemplater #abstract class !!
 				options.scopeList = options.scopeList.concat(argOptions.Tags)
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
 		subfile= new @currentClass innerTagsContent,options
-		subsubfile=subfile.applyTags()
+		subsubfile=subfile.render()
 		@imageId=subfile.imageId
 		subsubfile
 	forLoop: (innerTagsContent=@templaterState.findInnerTagsContent(@content).content,outerTagsContent=@templaterState.findOuterTagsContent(@content).content)->
