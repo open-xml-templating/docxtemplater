@@ -17,7 +17,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@templaterState.charactersAdded= xmlMatcher.charactersAdded
 	fromJson:(options={})->
 		@Tags= if options.Tags? then options.Tags else {}
-		@DocxGen= if options.DocxGen? then options.DocxGen else null
+		@Gen= if options.Gen? then options.Gen else null
 		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@scopeList= if options.scopeList? then options.scopeList else [@Tags]
@@ -28,7 +28,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser)
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
-		DocxGen:@DocxGen
+		Gen:@Gen
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopeManager.scopePath
 		scopeList: DocUtils.clone @scopeManager.scopeList
