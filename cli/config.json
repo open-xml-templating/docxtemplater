@@ -1,8 +1,6 @@
 {
-	"config.docxFile":"tagExample.docx",
-	"config.outputFile":"output.docx",
-	"config.baseNodePath":"../examples/",
-	"config.qrcode":false,
+	"config.inputFile":"cli/tagExample.docx",
+	"config.outputFile":"cli/output.docx",
 	"first_name":"Edgar",
 	"last_name":"Gri",
 	"phone":"045546846",
