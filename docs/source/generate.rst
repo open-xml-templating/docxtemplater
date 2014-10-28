@@ -26,5 +26,5 @@ Here's a sample code to generate a document:
     zip=doc.getZip() //Get the zip representation of the docx
 
     //Only for Node Usage
-    output=zip.generate({type:"base64"})
-    fs.writeFileSync(__dirname+"/output.docx",output,"binary")
+    output=doc.getZip().generate({type:"nodebuffer"})
+    fs.writeFileSync("output.docx",output)
