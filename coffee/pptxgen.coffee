@@ -16,6 +16,6 @@ PptxGen = class PptxGen extends DocxGen
 	getTemplatedFiles: ()->
 		["ppt/presentation.xml"].concat @slideTemplates()
 	slideTemplates: ()->
-		@slides ||= @zip.file(/ppt\/slides\/slide\d\.xml/).map (file) -> file.name
+		@slides ||= @zip.file(/ppt\/(slides|slideMasters)\/(slide|slideMaster)\d\.xml/).map (file) -> file.name
 
 module.exports=PptxGen
