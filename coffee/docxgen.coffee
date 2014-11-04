@@ -33,6 +33,7 @@ module.exports=class DocxGen
 		if !options.docx? then options.docx=false
 		if !options.async? then options.async=false
 		if !options.callback? then options.callback=(rawData) =>
+			if rawData==true then throw new Error "File `#{path}` was not Found"
 			@load rawData
 			promise.successFun(this)
 		DocUtils.loadDoc(path,options)
