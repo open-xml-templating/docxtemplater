@@ -34,6 +34,8 @@ module.exports= class ImgReplacer
 		nameCandidate
 	getFullPath:(imgName)->"word/media/#{imgName}"
 	replaceImage:(match,u)->
+		num=@xmlTemplater.DocxGen.qrCodeNumCallBack
+		@xmlTemplater.DocxGen.qrCodeNumCallBack++
 		try
 			xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>',(_i,type)->if _i=='fatalError' then throw "fatalError"
 		catch e
@@ -45,9 +47,8 @@ module.exports= class ImgReplacer
 		tag= xmlImg.getElementsByTagName("wp:docPr")[0]
 		if tag==undefined then throw new Error('tag undefined')
 		if tag.getAttribute("name").substr(0,6)=="Copie_" then return #if image is already a replacement then do nothing
-		@xmlTemplater.DocxGen.qrCodeNumCallBack++
-		@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.fileName+'-'+@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
 		imgName= @getImageName()
+		@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.fileName+'-'+num,true)
 		newId= @xmlTemplater.imgManager.addImageRels(imgName,"")
 		@xmlTemplater.imageId++
 		@xmlTemplater.imgManager.setImage(@getFullPath(imgName),oldFile.data,{binary:true})

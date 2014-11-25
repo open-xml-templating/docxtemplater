@@ -58,6 +58,8 @@ module.exports=class DocxGen
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
+			@qrCodeCallBack(fileName,true)
+		for fileName in templatedFiles when @zip.files[fileName]?
 			imgManager=new ImgManager(@zip,fileName)
 			imgManager.loadImageRels()
 			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
@@ -69,6 +71,7 @@ module.exports=class DocxGen
 				fileName:fileName
 			})
 			@setData(fileName,currentFile.applyTags().content)
+			@qrCodeCallBack(fileName,false)
 			@filesProcessed++
 		#When all files have been processed, check if the document is ready
 		@testReady()
