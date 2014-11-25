@@ -19,6 +19,8 @@ module.exports = class ImgManager
 	setImage:(fileName,data,options={})->
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
+	hasImage:(fileName)->
+		@zip.files[fileName]?
 	loadImageRels: () ->
 		file=@zip.files["word/_rels/#{@endFileName}.xml.rels"]
 		if file==undefined then return

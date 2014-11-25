@@ -26,6 +26,13 @@ module.exports= class ImgReplacer
 		docxqrCode.xmlTemplater.numQrCode--
 		docxqrCode.xmlTemplater.imgManager.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data,{binary:true})
 		docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.xmlTemplater.fileName+'-'+docxqrCode.num,false)
+	getImageName:(id=@xmlTemplater.imageId)->
+		nameCandidate="Copie_"+id+".png"
+		fullPath=@getFullPath(nameCandidate)
+		if @xmlTemplater.imgManager.hasImage(fullPath)
+			return @getImageName(id+1)
+		nameCandidate
+	getFullPath:(imgName)->"word/media/#{imgName}"
 	replaceImage:(match,u)->
 		try
 			xmlImg= DocUtils.Str2xml '<?xml version="1.0" ?><w:document mc:Ignorable="w14 wp14" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+match[0]+'</w:document>',(_i,type)->if _i=='fatalError' then throw "fatalError"
@@ -38,12 +45,12 @@ module.exports= class ImgReplacer
 		tag= xmlImg.getElementsByTagName("wp:docPr")[0]
 		if tag==undefined then throw new Error('tag undefined')
 		if tag.getAttribute("name").substr(0,6)=="Copie_" then return #if image is already a replacement then do nothing
-		imgName= ("Copie_"+@xmlTemplater.imageId+".png").replace(/\x20/,"")
 		@xmlTemplater.DocxGen.qrCodeNumCallBack++
 		@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.fileName+'-'+@xmlTemplater.DocxGen.qrCodeNumCallBack,true)
+		imgName= @getImageName()
 		newId= @xmlTemplater.imgManager.addImageRels(imgName,"")
 		@xmlTemplater.imageId++
-		@xmlTemplater.imgManager.setImage("word/media/#{imgName}",oldFile.data,{binary:true})
+		@xmlTemplater.imgManager.setImage(@getFullPath(imgName),oldFile.data,{binary:true})
 		tag.setAttribute('name',"#{imgName}")
 		tagrId.setAttribute('r:embed',"rId#{newId}")
 		imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
