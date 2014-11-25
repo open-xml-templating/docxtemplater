@@ -43,6 +43,7 @@ module.exports=class DocxGen
 			@qrCodeWaitingFor.push id
 		else if add == false
 			index = @qrCodeWaitingFor.indexOf(id)
+			if index==-1 then throw new Error("image:"+id+"removed twice")
 			@qrCodeWaitingFor.splice(index, 1)
 		@testReady()
 	testReady:()->

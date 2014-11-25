@@ -31,6 +31,7 @@ module.exports= class DocxQrCode
 			@qr.decode(@data,@data.decoded)
 	searchImage:() ->
 		cb=(err,@data=@data.data)=>
+			if err then console.log err
 			@callback(this,@imgName,@num)
 		if !@result? then return cb()
 		@xmlTemplater.DocxGen.qrCode(@result,cb)

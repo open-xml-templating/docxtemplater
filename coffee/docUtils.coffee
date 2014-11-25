@@ -169,7 +169,7 @@ DocUtils.unsecureQrCode=(result,callback)->
 		else
 			DocUtils.loadHttp(DocUtils.getPathConfig()+result,callback)
 	else
-		callback()
+		callback(new Error("Image undefined"))
 
 DocUtils.tags=
 	start:'{'
@@ -219,8 +219,8 @@ DocUtils.decode_utf8= (s) ->
 		if s==undefined then return undefined
 		return decodeURIComponent(escape(DocUtils.convert_spaces(s))) #replace Ascii 160 space by the normal space, Ascii 32
 	catch e
-		console.log s
-		console.log 'could not decode'
+		console.err s
+		console.err 'could not decode'
 		throw new Error('end')
 
 DocUtils.base64encode= (b) ->
