@@ -32,7 +32,7 @@ DocUtils.pathConfig=
 	"browser":'../examples/'
 	"node":__dirname+'/../../examples/'
 
-fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx"]
+fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx","qrCodeFooterAndDocument.docx"]
 
 for name in fileNames
 	docX[name]=new DocxGen().loadFromFile(name)
@@ -505,6 +505,19 @@ describe 'qr code testing', () ->
 				expect(doc.zip.files[i].options.date).not.toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.date)
 				expect(doc.zip.files[i].name).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].name)
 				expect(doc.zip.files[i].options.dir).toBe(docX['qrCodeTaggingLoopExampleExpected.docx'].zip.files[i].options.dir)
+
+	it 'should work when they is a qrcode in both document and footer', ()->
+		doc=new DocxGen(docX['qrCodeFooterAndDocument.docx'].loadedContent,{},{intelligentTagging:off,qrCode:true})
+		doc.applyTags({'image':'Firefox_logo_small','Tag':'image.png'})
+
+		waitsFor () -> doc.ready?
+
+		runs () ->
+			expect(doc.zip.files['word/_rels/document.xml.rels']?).toBeTruthy('document.xml missing !')
+			expect(doc.zip.files['word/_rels/footer1.xml.rels']?).toBeTruthy('footer1.xml missing !')
+			expect(doc.zip.files['word/media/Copie_0.png']?).toBeTruthy('Copie_0 missing')
+			expect(doc.zip.files['word/media/Copie_1.png']?).toBeTruthy('Copie_1 missing')
+			expect(doc.zip.files['word/media/Copie_2.png']?).toBeFalsy("Copie_2 shouldn't exist")
 
 describe 'Changing the parser', () ->
 	it 'should work with uppercassing', () ->
