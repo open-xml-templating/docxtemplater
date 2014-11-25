@@ -32,7 +32,42 @@ DocUtils.pathConfig=
 	"browser":'../examples/'
 	"node":__dirname+'/../../examples/'
 
-fileNames=["graph.docx","qrCodeAndNonQrCodeExample.docx","imageExample.docx","tagExample.docx","tagExampleExpected.docx","tagLoopExample.docx","tagInvertedLoopExample.docx", "tagExampleExpected.docx","tagLoopExampleImageExpected.docx","tagProduitLoop.docx","tagDashLoop.docx","tagDashLoopList.docx","tagDashLoopTable.docx",'tagDashLoop.docx','qrCodeExample.docx','qrCodeExampleExpected.docx','qrCodeTaggingExample.docx','qrCodeTaggingExampleExpected.docx','qrCodeTaggingLoopExample.docx','qrCodeTaggingLoopExampleExpected.docx','tagIntelligentLoopTableExpected.docx','cyrillic.docx','tableComplex2Example.docx','tableComplexExample.docx','tableComplex3Example.docx','xmlInsertionExpected.docx','xmlInsertionExample.docx',"angularExample.docx","xmlInsertionComplexExpected.docx","xmlInsertionComplexExample.docx","qrCodeCustomGen.docx","qrCodeFooter.docx","qrCodeRealFooter.docx","qrCodeFooterAndDocument.docx"]
+fileNames=[
+	"angularExample.docx",
+	"graph.docx",
+	"imageExample.docx",
+	"tagDashLoop.docx",
+	"tagDashLoopList.docx",
+	"tagDashLoopTable.docx",
+	"tagExample.docx",
+	"tagExampleExpected.docx",
+	"tagInvertedLoopExample.docx",
+	"tagLoopExample.docx",
+	"tagLoopExampleImageExpected.docx",
+	"tagProduitLoop.docx",
+	"xmlInsertionComplexExample.docx",
+	"xmlInsertionComplexExpected.docx",
+	'cyrillic.docx',
+	'tableComplex2Example.docx',
+	'tableComplex3Example.docx',
+	'tableComplexExample.docx',
+	'tagDashLoop.docx',
+	'tagIntelligentLoopTableExpected.docx',
+	'xmlInsertionExample.docx',
+	'xmlInsertionExpected.docx',
+
+	"qrCodeAndNonQrCodeExample.docx",
+	"qrCodeCustomGen.docx",
+	"qrCodeFooter.docx",
+	"qrCodeFooterAndDocument.docx"
+	"qrCodeRealFooter.docx",
+	'qrCodeExample.docx',
+	'qrCodeExampleExpected.docx',
+	'qrCodeTaggingExample.docx',
+	'qrCodeTaggingExampleExpected.docx',
+	'qrCodeTaggingLoopExample.docx',
+	'qrCodeTaggingLoopExampleExpected.docx',
+]
 
 for name in fileNames
 	docX[name]=new DocxGen().loadFromFile(name)
