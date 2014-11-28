@@ -63,13 +63,16 @@ module.exports=class XmlTemplater #abstract class !!
 					@templaterState.startTag()
 				else if character == DocUtils.tags.end
 					@templaterState.endTag()
-					if @templaterState.loopType()=='simple'
+					loopType=@templaterState.loopType()
+					if loopType=='simple'
 						@replaceSimpleTag()
-					if @templaterState.loopType()=='xml'
+					if loopType=='xml'
 						@replaceSimpleTagRawXml()
-						break
-					else if @templaterState.isLoopClosingTag()
-						return @replaceLoopTag()
+					if loopType=='dash' or loopType=='for'
+						if @templaterState.isLoopClosingTag()
+							return @replaceLoopTag()
+					if ['simple','dash','for','xml'].indexOf(loopType)==-1
+						@moduleManager.handle('replaceTag',loopType)
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		this
