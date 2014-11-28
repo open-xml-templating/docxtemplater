@@ -1,6 +1,3 @@
-module.exports = {
-   DocxGen : require('./docxgen'),
-   PptxGen : require('./pptxgen'),
-   DocXTemplater : require('./docxTemplater'),
-   PptXTemplater : require('./pptxTemplater')
-}
+DocxGen = require('./docxgen')
+DocxGen.PptxGen=require('./pptxgen')
+module.exports=DocxGen
