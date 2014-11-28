@@ -3,6 +3,7 @@ ScopeManager=require('./scopeManager')
 SubContent=require('./subContent')
 TemplaterState=require('./templaterState')
 XmlMatcher=require('./xmlMatcher')
+ModuleManager=require('./moduleManager')
 #This is an abstract class, DocXTemplater is an example of inherited class
 
 module.exports=class XmlTemplater #abstract class !!
@@ -10,7 +11,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
-		@templaterState= new TemplaterState
+		@templaterState= new TemplaterState @moduleManager
 	load: (@content) ->
 		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
@@ -26,6 +27,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
 		@fileName=options.fileName
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser)
+		@moduleManager=if options.moduleManager? then options.moduleManager else new ModuleManager()
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
 		Gen:@Gen
@@ -37,6 +39,7 @@ module.exports=class XmlTemplater #abstract class !!
 		imageId:@imageId
 		parser:@parser
 		fileName:@fileName
+		moduleManager:@moduleManager
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	getFullText:(@tagXml=@tagXml) ->
 		matcher=new XmlMatcher(@content).parse(@tagXml)

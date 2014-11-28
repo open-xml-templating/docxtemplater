@@ -23,7 +23,7 @@ try {
 var config={uglify:false}
 
 var paths = {
-	coffee: ['coffee/index.coffee','coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/docxgen.coffee','coffee/pptxgen.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/pptxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee','coffee/cli.coffee'],
+	coffee: ['coffee/moduleManager.coffee','coffee/index.coffee','coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/docxgen.coffee','coffee/pptxgen.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/pptxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee','coffee/cli.coffee'],
 	coffeeTest: ['coffee/docxgenTest.coffee'],
 	testDirectory:__dirname+'/test/spec',
     js:'js/'

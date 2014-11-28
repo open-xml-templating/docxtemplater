@@ -1,6 +1,7 @@
 #This class responsibility is to store an xmlTemplater's state
 
 module.exports=class TemplaterState
+	constructor:(@moduleManager)->@moduleManager.templaterState=this
 	moveCharacters:(numXmlTag,newTextLength,oldTextLength)->
 		for k in [numXmlTag..@matches.length]
 			@charactersAdded[k]+=newTextLength-oldTextLength

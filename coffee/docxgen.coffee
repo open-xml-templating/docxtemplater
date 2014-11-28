@@ -6,37 +6,32 @@ Created by Edgar HIPP
 DocUtils=require('./docUtils')
 DocXTemplater=require('./docxTemplater')
 JSZip=require('jszip')
+ModuleManager=require('./moduleManager')
 
 DocxGen=class DocxGen
 	constructor:(content,options) ->
 		@templateClass = DocXTemplater
-		@modules = []
+		@moduleManager=new ModuleManager()
 		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 		@setOptions({})
 		if content? then @load(content,options)
-	attachModule:(module)->
-		@modules.push module
-		this
-	sendEvent:(eventName,data)->
-		@modules.forEach (m)->
-			m.handleEvent(eventName)
+	attachModule:(module)->@moduleManager.attachModule(module)
 	setOptions:(@options={})->
 		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 		if @options.parser? then @parser=options.parser
 		this
 	load: (content,options)->
-		@sendEvent('loading')
+		@moduleManager.sendEvent('loading')
 		if content.file?
 			@zip=content
 		else
 			@zip = new JSZip content,options
-		@sendEvent('loaded')
+		@moduleManager.sendEvent('loaded')
 		this
 	render:()->
-		@sendEvent('rendering')
+		@moduleManager.sendEvent('rendering')
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			@sendEvent('rendering-file',fileName)
 			currentFile= new @templateClass(@zip.files[fileName].asText(),{
 				Gen:this
 				Tags:@Tags
@@ -44,9 +39,10 @@ DocxGen=class DocxGen
 				parser:@parser
 				fileName:fileName
 			})
+			@moduleManager.sendEvent('rendering-file',fileName)
 			@zip.file(fileName,currentFile.render().content)
-			@sendEvent('rendered-file',fileName)
-		@sendEvent('rendered')
+			@moduleManager.sendEvent('rendered-file',fileName)
+		@moduleManager.sendEvent('rendered')
 		this
 	getTags:()->
 		usedTags=[]
