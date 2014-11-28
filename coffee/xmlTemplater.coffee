@@ -18,27 +18,20 @@ module.exports=class XmlTemplater #abstract class !!
 		@templaterState.charactersAdded= xmlMatcher.charactersAdded
 	fromJson:(options={})->
 		@Tags= if options.Tags? then options.Tags else {}
-		@Gen= if options.Gen? then options.Gen else null
 		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@scopeList= if options.scopeList? then options.scopeList else [@Tags]
 		@usedTags=if options.usedTags? then options.usedTags else {}
-		@imageId=if options.imageId? then options.imageId else 0
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
-		@fileName=options.fileName
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser)
 		@moduleManager=if options.moduleManager? then options.moduleManager else new ModuleManager()
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
-		Gen:@Gen
 		intelligentTagging:DocUtils.clone @intelligentTagging
 		scopePath:DocUtils.clone @scopeManager.scopePath
 		scopeList: DocUtils.clone @scopeManager.scopeList
 		usedTags:@scopeManager.usedTags
-		localImageCreator:@localImageCreator
-		imageId:@imageId
 		parser:@parser
-		fileName:@fileName
 		moduleManager:@moduleManager
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
 	getFullText:(@tagXml=@tagXml) ->
@@ -186,10 +179,8 @@ module.exports=class XmlTemplater #abstract class !!
 				options.Tags=argOptions.Tags
 				options.scopeList = options.scopeList.concat(argOptions.Tags)
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-		subfile= new @currentClass innerTagsContent,options
-		subsubfile=subfile.render()
-		@imageId=subfile.imageId
-		subsubfile
+		(new @currentClass innerTagsContent,options)
+			.render()
 	forLoop: (innerTagsContent=@templaterState.findInnerTagsContent(@content).content,outerTagsContent=@templaterState.findOuterTagsContent(@content).content)->
 		###
 			<w:t>{#forTag} blabla</w:t>
