@@ -32,14 +32,8 @@ DocxGen=class DocxGen
 		@moduleManager.sendEvent('rendering')
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new @templateClass(@zip.files[fileName].asText(),{
-				Gen:this
-				Tags:@Tags
-				intelligentTagging:@intelligentTagging
-				parser:@parser
-				fileName:fileName
-			})
 			@moduleManager.sendEvent('rendering-file',fileName)
+			currentFile= @createTemplateClass(fileName)
 			@zip.file(fileName,currentFile.render().content)
 			@moduleManager.sendEvent('rendered-file',fileName)
 		@moduleManager.sendEvent('rendered')
@@ -47,12 +41,7 @@ DocxGen=class DocxGen
 	getTags:()->
 		usedTags=[]
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			currentFile= new @templateClass(@zip.files[fileName].asText(),{
-				Gen:this
-				Tags:@Tags
-				intelligentTagging:@intelligentTagging
-				parser:@parser
-			})
+			currentFile = @createTemplateClass(fileName)
 			usedTemplateV= currentFile.render().usedTags
 			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}
@@ -62,9 +51,16 @@ DocxGen=class DocxGen
 	#output all files, if docx has been loaded via javascript, it will be available
 	getZip:()->
 		@zip
-	getFullText:(path="word/document.xml") ->
+	createTemplateClass:(path)->
 		usedData=@zip.files[path].asText()
-		(new @templateClass(usedData,{Gen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
+		new @templateClass(usedData,{
+			Tags:@Tags
+			intelligentTagging:@intelligentTagging
+			parser:@parser
+			moduleManager:@moduleManager
+		})
+	getFullText:(path="word/document.xml") ->
+		@createTemplateClass(path).getFullText()
 
 DocxGen.DocUtils=DocUtils
 
