@@ -24,3 +24,4 @@ module.exports = class ModuleManager
 	getInstance:(obj)->
 		if obj=='templaterState'
 			return @templaterState
+		return @[obj]
