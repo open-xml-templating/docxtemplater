@@ -12,6 +12,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@templaterState= new TemplaterState @moduleManager
+		@moduleManager.xmlTemplater=this
 	load: (@content) ->
 		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
@@ -23,8 +24,8 @@ module.exports=class XmlTemplater #abstract class !!
 		@scopeList= if options.scopeList? then options.scopeList else [@Tags]
 		@usedTags=if options.usedTags? then options.usedTags else {}
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
-		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser)
 		@moduleManager=if options.moduleManager? then options.moduleManager else new ModuleManager()
+		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager)
 	toJson: () ->
 		Tags:DocUtils.clone @scopeManager.tags
 		intelligentTagging:DocUtils.clone @intelligentTagging
