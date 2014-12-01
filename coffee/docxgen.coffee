@@ -12,6 +12,7 @@ DocxGen=class DocxGen
 	constructor:(content,options) ->
 		@templateClass = DocXTemplater
 		@moduleManager=new ModuleManager()
+		@moduleManager.gen=this
 		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 		@setOptions({})
 		if content? then @load(content,options)
