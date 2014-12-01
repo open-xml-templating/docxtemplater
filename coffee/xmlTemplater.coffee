@@ -74,8 +74,10 @@ module.exports=class XmlTemplater #abstract class !!
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
 		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue),@content)
 	replaceSimpleTagRawXml:()->
-		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
+		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
+		@replaceXml(subContent,newText)
+	replaceXml:(subContent,newText)->
 		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText.length,subContent.text.length)
 		@content= subContent.replace(newText).fullText
 	deleteTag:(xml,tag)->
