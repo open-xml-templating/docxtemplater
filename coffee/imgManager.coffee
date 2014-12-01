@@ -73,6 +73,13 @@ module.exports = class ImgManager
 		relationships.appendChild newTag
 		@setImage("word/_rels/#{@endFileName}.xml.rels",DocUtils.encode_utf8 DocUtils.xml2Str @xmlDoc)
 		@maxRid
+	getImageName:(id)->
+		nameCandidate="Copie_"+id+".png"
+		fullPath=@getFullPath(nameCandidate)
+		if @hasImage(fullPath)
+			return @getImageName(id+1)
+		nameCandidate
+	getFullPath:(imgName)->"word/media/#{imgName}"
 	getImageByRid:(rId)-> #This is to get an image by it's rId (returns null if no img was found)
 		relationships= @xmlDoc.getElementsByTagName('Relationship')
 		for relationship in relationships

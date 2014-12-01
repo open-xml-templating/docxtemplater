@@ -26,13 +26,6 @@ module.exports= class ImgReplacer
 		docxqrCode.xmlTemplater.numQrCode--
 		docxqrCode.xmlTemplater.imgManager.setImage("word/media/#{docxqrCode.imgName}",docxqrCode.data,{binary:true})
 		docxqrCode.xmlTemplater.DocxGen.qrCodeCallBack(docxqrCode.xmlTemplater.fileName+'-'+docxqrCode.num,false)
-	getImageName:(id=@xmlTemplater.imageId)->
-		nameCandidate="Copie_"+id+".png"
-		fullPath=@getFullPath(nameCandidate)
-		if @xmlTemplater.imgManager.hasImage(fullPath)
-			return @getImageName(id+1)
-		nameCandidate
-	getFullPath:(imgName)->"word/media/#{imgName}"
 	replaceImage:(match,u)->
 		num=@xmlTemplater.DocxGen.qrCodeNumCallBack
 		@xmlTemplater.DocxGen.qrCodeNumCallBack++
@@ -47,11 +40,11 @@ module.exports= class ImgReplacer
 		tag= xmlImg.getElementsByTagName("wp:docPr")[0]
 		if tag==undefined then throw new Error('tag undefined')
 		if tag.getAttribute("name").substr(0,6)=="Copie_" then return #if image is already a replacement then do nothing
-		imgName= @getImageName()
+		imgName= @xmlTemplater.imgManager.getImageName(@xmlTemplater.imageId)
 		@xmlTemplater.DocxGen.qrCodeCallBack(@xmlTemplater.fileName+'-'+num,true)
 		newId= @xmlTemplater.imgManager.addImageRels(imgName,"")
 		@xmlTemplater.imageId++
-		@xmlTemplater.imgManager.setImage(@getFullPath(imgName),oldFile.data,{binary:true})
+		@xmlTemplater.imgManager.setImage(@xmlTemplater.imgManager.getFullPath(imgName),oldFile.data,{binary:true})
 		tag.setAttribute('name',"#{imgName}")
 		tagrId.setAttribute('r:embed',"rId#{newId}")
 		imageTag=xmlImg.getElementsByTagName('w:drawing')[0]
