@@ -52,6 +52,9 @@ module.exports=class XmlTemplater #abstract class !!
 				@templaterState.context+=character
 				for m,t in @templaterState.matches when t==numXmlTag
 					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
+						console.error @content[m.offset+@templaterState.charactersAdded[t]]
+						console.error @content
+						console.error m[0]
 						throw new Error("no < at the beginning of #{m[0][0]} (2)")
 				if character==DocUtils.tags.start
 					@templaterState.startTag()

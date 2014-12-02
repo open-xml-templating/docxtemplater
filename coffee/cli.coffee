@@ -6,10 +6,10 @@ PptxGen=require('./pptxgen')
 fileExts = ["pptx", "docx"]
 
 showHelp=()->
-  console.log('Usage: docxtemplater <configFilePath>')
-  console.log('--- ConfigFile Format: json')
-  console.log('--- Supports filetypes: '+fileExts.join(","))
-  console.log('--- see http://docxtemplater.readthedocs.org/en/latest/cli.html')
+  console.info('Usage: docxtemplater <configFilePath>')
+  console.info('--- ConfigFile Format: json')
+  console.info('--- Supports filetypes: '+fileExts.join(","))
+  console.info('--- see http://docxtemplater.readthedocs.org/en/latest/cli.html')
 
 if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null || process.argv[2]==undefined)
   showHelp()
@@ -38,9 +38,9 @@ else
   if (debug=='-d' || debug == '--debug') then debugBool=true
 
   if debugBool
-    console.log(process.cwd())
-    console.log(debug)
-  if (debugBool) then console.log("loading docx:"+inputFileName)
+    console.info(process.cwd())
+    console.info(debug)
+  if (debugBool) then console.info("loading docx:"+inputFileName)
   content=fs.readFileSync(currentPath+inputFileName,"binary")
   doc = new genClass(content)
   doc.setData(jsonInput)

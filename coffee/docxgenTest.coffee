@@ -5,14 +5,14 @@ angularParser= (tag) ->
 	try
 		expr=expressions.compile(tag)
 	catch e
-		console.log "parsing didn't work with #{tag}"
+		console.error "parsing didn't work with #{tag}"
 	{get:(scope)->
 		if !scope?
-			console.log 'warning: scope undefined'
+			console.warn 'warning: scope undefined'
 		try
 			return expr(scope)
 		catch e
-			console.log "parsing didn't work with #{tag}"
+			console.error "parsing didn't work with #{tag}"
 			return "undefined"
 }
 

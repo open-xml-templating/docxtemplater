@@ -69,8 +69,8 @@ DocUtils.decode_utf8= (s) ->
 		if s==undefined then return undefined
 		return decodeURIComponent(escape(DocUtils.convert_spaces(s))) #replace Ascii 160 space by the normal space, Ascii 32
 	catch e
-		console.err s
-		console.err 'could not decode'
+		console.error s
+		console.error 'could not decode'
 		throw new Error('end')
 
 DocUtils.base64encode= (b) ->
