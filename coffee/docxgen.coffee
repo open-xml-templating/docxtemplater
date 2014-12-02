@@ -16,7 +16,9 @@ DocxGen=class DocxGen
 		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 		@setOptions({})
 		if content? then @load(content,options)
-	attachModule:(module)->@moduleManager.attachModule(module)
+	attachModule:(module)->
+		@moduleManager.attachModule(module)
+		this
 	setOptions:(@options={})->
 		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 		if @options.parser? then @parser=options.parser
