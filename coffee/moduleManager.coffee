@@ -22,6 +22,4 @@ module.exports = class ModuleManager
 			result=if aux!=null then aux else result
 		return result
 	getInstance:(obj)->
-		if obj=='templaterState'
-			return @templaterState
 		return @[obj]
