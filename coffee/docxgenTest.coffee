@@ -284,6 +284,13 @@ describe "xmlTemplater", ()->
 		xmlTemplater.render()
 		expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 
+	it "should work with {.} for this inside loop", ()->
+		content= """<w:t>Hello {#names}{.},{/names}</w:t>"""
+		scope={names:['Edgar','John']}
+		xmlTemplater= new DocXTemplater(content,{Tags:scope})
+		xmlTemplater.render()
+		expect(xmlTemplater.getFullText()).toBe('Hello Edgar,John,')
+
 	it "should work with non w:t content", ()->
 		content= """{image}.png"""
 		scope= {"image":"edgar"}
