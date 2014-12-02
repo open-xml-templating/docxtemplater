@@ -39,6 +39,11 @@ module.exports=class XmlTemplater #abstract class !!
 		matcher=new XmlMatcher(@content).parse(@tagXml)
 		output= (match[2] for match in matcher.matches) #get only the text
 		DocUtils.wordToUtf8(DocUtils.convert_spaces(output.join(""))) #join it
+	handleModuleManager:(type,data)->
+		@moduleManager.xmlTemplater=this
+		@moduleManager.templaterState=@templaterState
+		@moduleManager.scopeManager=@scopeManager
+		@moduleManager.handle(type,data)
 	###
 	content is the whole content to be tagged
 	scope is the current scope
@@ -69,7 +74,7 @@ module.exports=class XmlTemplater #abstract class !!
 						if @templaterState.isLoopClosingTag()
 							return @replaceLoopTag()
 					if ['simple','dash','for','xml'].indexOf(loopType)==-1
-						@moduleManager.handle('replaceTag',loopType)
+						@handleModuleManager('replaceTag',loopType)
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 		this
