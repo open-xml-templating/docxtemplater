@@ -47,19 +47,20 @@ module.exports=class TemplaterState
 		if @inTag is false then throw new Error("Unopened tag near : '#{@context.substr(@context.length-10,10)}'")
 		@inTag= false
 		@tagEnd=@currentStep
-		if @textInsideTag[0]=='@' and @loopType()=='simple'
-			@rawXmlTag=true
-			@tag=@textInsideTag.substr 1
-		if @textInsideTag[0]=='#' and @loopType()=='simple'
-			@inForLoop= true #begin for loop
-			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr(1),'raw':@textInsideTag}
-		if @textInsideTag[0]=='^' and @loopType()=='simple'
-			@inForLoop= true #begin for loop
-			@loopIsInverted= true
-			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr(1),'raw':@textInsideTag}
-		if @textInsideTag[0]=='-' and @loopType()=='simple'
-			@inDashLoop= true
-			dashInnerRegex= /^-([^\s]+)\s(.+)$/
-			@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':(@textInsideTag.replace dashInnerRegex, '$2'),'element':(@textInsideTag.replace dashInnerRegex, '$1'),'raw':@textInsideTag}
+		if @loopType()=='simple'
+			if @textInsideTag[0]=='@'
+				@rawXmlTag=true
+				@tag=@textInsideTag.substr 1
+			if @textInsideTag[0]=='#'
+				@inForLoop= true #begin for loop
+				@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr(1),'raw':@textInsideTag}
+			if @textInsideTag[0]=='^'
+				@inForLoop= true #begin for loop
+				@loopIsInverted= true
+				@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':@textInsideTag.substr(1),'raw':@textInsideTag}
+			if @textInsideTag[0]=='-' and @loopType()=='simple'
+				@inDashLoop= true
+				dashInnerRegex= /^-([^\s]+)\s(.+)$/
+				@loopOpen={'start':@tagStart,'end':@tagEnd,'tag':(@textInsideTag.replace dashInnerRegex, '$2'),'element':(@textInsideTag.replace dashInnerRegex, '$1'),'raw':@textInsideTag}
 		if @textInsideTag[0]=='/'
 			@loopClose={'start':@tagStart,'end':@tagEnd,'raw':@textInsideTag}
