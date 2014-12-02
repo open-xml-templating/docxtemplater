@@ -18,8 +18,10 @@ angularParser= (tag) ->
 
 
 DocxGen= require('../../js/docxgen.js')
+PptxGen= require('../../js/index.js').PptxGen
 DocUtils=require('../../js/docUtils.js')
 docX={}
+pptX={}
 data={}
 SubContent=require('../../js/subContent.js')
 DocXTemplater=require('../../js/docxTemplater.js')
@@ -64,6 +66,8 @@ for name in fileNames
 	content=loadFile(name)
 	docX[name]=new DocxGen(content)
 	docX[name].loadedContent=content
+
+pptX['simpleExample.pptx']=new PptxGen(loadFile('simpleExample.pptx'))
 
 pngFiles=['image.png','bootstrap_logo.png','BMW_logo.png','Firefox_logo.png','Volkswagen_logo.png']
 
@@ -626,3 +630,11 @@ describe 'error messages', ()->
 		content= """<w:t>tag }age</w:t>"""
 		f=()->new DocXTemplater(content).render()
 		expect(f).toThrow "Unopened tag near : 'tag }'"
+
+describe 'pptx generation', ()->
+	it 'should work with simple pptx', ()->
+		p=pptX['simpleExample.pptx']
+			.setData({'name':'Edgar'})
+			.render()
+
+		expect(p.getFullText()).toBe('Hello Edgar')
