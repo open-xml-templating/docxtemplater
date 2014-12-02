@@ -35,10 +35,10 @@ module.exports=class TemplaterState
 		@textInsideTag= ""
 		@tagStart=@currentStep
 	loopType:()->
-		getFromModule=@moduleManager.get('loopType')
-		if getFromModule!=null then return getFromModule
 		if @inDashLoop then return 'dash'
 		if @inForLoop then return 'for'
+		getFromModule=@moduleManager.get('loopType')
+		if getFromModule!=null then return getFromModule
 		if @rawXmlTag then return 'xml'
 		return 'simple'
 	isLoopClosingTag:()->
