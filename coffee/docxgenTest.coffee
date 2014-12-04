@@ -53,6 +53,8 @@ fileNames=["graph.docx",
 "xmlInsertionComplexExpected.docx",
 "xmlInsertionComplexExample.docx"]
 
+getLength=(d)->if d.length? then d.length else d.byteLength
+
 startTest=->
 	describe "DocxGenBasis", () ->
 		it "should be defined", () ->
@@ -64,8 +66,8 @@ startTest=->
 	describe "DocxGenLoading", () ->
 		describe "ajax done correctly", () ->
 			it "doc and img Data should have the expected length", () ->
-				# expect(docX['imageExample.docx'].loadedContent.length).toEqual(729580)
-				expect(data['image.png'].length).toEqual(18062)
+				expect(getLength(docX['imageExample.docx'].loadedContent)).toEqual(729580)
+				expect(getLength(data['image.png'])).toEqual(18062)
 			it "should have the right number of files (the docx unzipped)", ()->
 				docX['imageExample.docx']=new DocxGen(docX['imageExample.docx'].loadedContent)
 				expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).toEqual(16)
@@ -644,14 +646,6 @@ loadFile=(name,callback)->
 	countFiles+=1
 	if fs.readFileSync?
 		callback(name,fs.readFileSync(__dirname+"/../../examples/"+name,"binary"))
-		return endLoadFile(-1)
-	if name.indexOf('.png')!=-1
-		xhrDoc= new XMLHttpRequest()
-		xhrDoc.open('GET',"../examples/"+name,false)
-		if (xhrDoc.overrideMimeType)
-			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-		xhrDoc.send()
-		callback(name,xhrDoc.response)
 		return endLoadFile(-1)
 	JSZipUtils.getBinaryContent '../examples/'+name,(err,data)->
 		callback name,data
