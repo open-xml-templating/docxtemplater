@@ -6,17 +6,17 @@ module.exports = class ModuleManager
 		module.manager=this
 		this
 	sendEvent:(eventName,data)->
-		@modules.forEach (m)->
+		for m in @modules
 			m.handleEvent(eventName,data)
 	get:(value)->
 		result=null
-		@modules.forEach (m)->
+		for m in @modules
 			aux=m.get(value)
 			result=if aux!=null then aux else result
 		return result
 	handle:(type,data)->
 		result=null
-		@modules.forEach (m)->
+		for m in @modules
 			if result!=null then return
 			aux=m.handle(type,data)
 			result=if aux!=null then aux else result
