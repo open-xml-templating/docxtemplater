@@ -1,4 +1,5 @@
 #This class responsibility is to store an xmlTemplater's state
+DocUtils=require('./docUtils')
 
 module.exports=class TemplaterState
 	constructor:(@moduleManager)->@moduleManager.templaterState=this
@@ -53,6 +54,7 @@ module.exports=class TemplaterState
 		if @inTag is false then throw new Error("Unopened tag near : '#{@context.substr(@context.length-10,10)}'")
 		@inTag= false
 		@tagEnd=@currentStep
+		@textInsideTag=@textInsideTag.substr(0,@textInsideTag.length+1-DocUtils.tags.end.length)
 		if @loopType()=='simple'
 			if @textInsideTag[0]=='@'
 				@rawXmlTag=true

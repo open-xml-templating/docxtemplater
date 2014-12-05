@@ -50,22 +50,33 @@ module.exports=class XmlTemplater #abstract class !!
 	returns the new content of the tagged content###
 	render:()->
 		@templaterState.initialize()
+		trail=""
+		trailSteps=[]
 		@templaterState.offset=[]
 		for match,numXmlTag in @templaterState.matches
 			innerText= match[2] #text inside the <w:t>
 			@templaterState.offset[numXmlTag]=0
 			for character,numCharacter in innerText
+				trail+=character
+				length=if !@templaterState.inTag then DocUtils.tags.start.length else DocUtils.tags.end.length
+				trail=trail.substr(-length,length)
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
+				trailSteps.push({'numXmlTag':numXmlTag,'numCharacter':numCharacter})
+				trailSteps=trailSteps.splice(-DocUtils.tags.start.length,DocUtils.tags.start.length)
+
+				if numCharacter+@templaterState.offset[numXmlTag]<0 then throw new Error "Shouldn't be less than 0"
 				@templaterState.context+=character
+
 				for m,t in @templaterState.matches when t==numXmlTag
 					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
 						console.error @content[m.offset+@templaterState.charactersAdded[t]]
 						console.error @content
 						console.error m[0]
 						throw new Error("no < at the beginning of #{m[0][0]} (2)")
-				if character==DocUtils.tags.start
+				if trail == DocUtils.tags.start
+					@templaterState.currentStep=trailSteps[0]
 					@templaterState.startTag()
-				else if character == DocUtils.tags.end
+				else if trail == DocUtils.tags.end
 					@templaterState.endTag()
 					loopType=@templaterState.loopType()
 					if loopType=='simple'
