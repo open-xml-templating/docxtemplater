@@ -50,8 +50,10 @@ module.exports=class XmlTemplater #abstract class !!
 	returns the new content of the tagged content###
 	render:()->
 		@templaterState.initialize()
+		@templaterState.offset=[]
 		for match,numXmlTag in @templaterState.matches
 			innerText= match[2] #text inside the <w:t>
+			@templaterState.offset[numXmlTag]=0
 			for character,numCharacter in innerText
 				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
 				@templaterState.context+=character
@@ -114,6 +116,7 @@ module.exports=class XmlTemplater #abstract class !!
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
+		@templaterState.offset[xmlTagNumber]+=options.insideValue.length-@templaterState.matches[xmlTagNumber][2].length
 		spacePreserve= if options.spacePreserve? then options.spacePreserve else true
 		noStartTag= if options.noStartTag? then options.noStartTag else false
 		noEndTag= if options.noEndTag? then options.noEndTag else false
@@ -127,24 +130,16 @@ module.exports=class XmlTemplater #abstract class !!
 		@templaterState.matches[xmlTagNumber][0]=replacer
 		content
 	replaceTagByValue:(newValue,content) ->
-		if (@templaterState.innerContent('tagEnd').indexOf (DocUtils.tags.end))==-1 then throw new Error("no closing tag at @templaterState.tagEnd.numXmlTag #{@templaterState.innerContent('tagEnd')}")
-		if (@templaterState.innerContent('tagStart').indexOf (DocUtils.tags.start))==-1 then throw new Error("no opening tag at @templaterState.tagStart.numXmlTag #{@templaterState.innerContent('tagStart')}")
-
-		sTag=DocUtils.tags.start
-		eTag=DocUtils.tags.end
-
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				insideValue:@templaterState.innerContent('tagStart').replace "#{sTag}#{@templaterState.textInsideTag}#{eTag}", newValue
+				insideValue:@templaterState.getLeftValue()+newValue+@templaterState.getRightValue()
 				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
 				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
 			return @replaceXmlTag(content,options)
 		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
-			sInnerContent=@templaterState.innerContent('tagStart')
-			leftValue= sInnerContent.substr(0,sInnerContent.indexOf(sTag))
 
 			options=
 				xmlTagNumber:@templaterState.tagStart.numXmlTag
@@ -152,7 +147,7 @@ module.exports=class XmlTemplater #abstract class !!
 
 			options.insideValue=newValue
 			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
-				options.insideValue=leftValue+newValue
+				options.insideValue=@templaterState.getLeftValue()+newValue
 
 			content= @replaceXmlTag(content,options)
 
@@ -167,10 +162,8 @@ module.exports=class XmlTemplater #abstract class !!
 				content= @replaceXmlTag(content, options)
 
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
-			sInnerContent=@templaterState.innerContent('tagEnd')
-			leftValue= sInnerContent.substr(sInnerContent.indexOf(eTag)+1)
 			options =
-				insideValue:leftValue
+				insideValue:@templaterState.getRightValue()
 				spacePreserve:true
 				xmlTagNumber:k
 				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?

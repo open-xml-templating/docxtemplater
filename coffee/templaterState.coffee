@@ -43,6 +43,12 @@ module.exports=class TemplaterState
 		return 'simple'
 	isLoopClosingTag:()->
 		@textInsideTag[0]=='/' and ('/'+@loopOpen.tag == @textInsideTag)
+	getLeftValue:()->
+		@innerContent('tagStart')
+			.substr(0,@tagStart.numCharacter+@offset[@tagStart.numXmlTag])
+	getRightValue:()->
+		@innerContent('tagEnd').
+			substr(@tagEnd.numCharacter+1+@offset[@tagEnd.numXmlTag])
 	endTag:()->
 		if @inTag is false then throw new Error("Unopened tag near : '#{@context.substr(@context.length-10,10)}'")
 		@inTag= false
