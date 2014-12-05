@@ -549,12 +549,6 @@ startTest=->
 			expect(sub.text).toBe('<w:table>Sample Table</w:table>')
 	
 		it 'should work with custom tags', () ->
-			content= """<w:t>Hello {name}</w:t>"""
-			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{Tags:scope})
-			xmlTemplater.render()
-			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
-	
 			DocUtils.tags=
 				start:'['
 				end:']'
@@ -563,6 +557,41 @@ startTest=->
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+			DocUtils.tags=
+				start:'{'
+				end:'}'
+
+		it 'should work with custom tags as strings', () ->
+			DocUtils.tags=
+				start:'[['
+				end:']]'
+			content= """<w:t>Hello [[name]]</w:t>"""
+			scope= {"name":"Edgar"}
+			xmlTemplater= new DocXTemplater(content,{Tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.usedTags).toEqual({'name':true})
+			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+
+		it 'should work with custom tags as strings with different length', () ->
+			DocUtils.tags=
+				start:'[[['
+				end:']]'
+			content= """<w:t>Hello [[[name]]</w:t>"""
+			scope= {"name":"Edgar"}
+			xmlTemplater= new DocXTemplater(content,{Tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.usedTags).toEqual({'name':true})
+			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+
+		it 'should work with custom tags and loops', ()->
+			DocUtils.tags=
+				start:'[[['
+				end:']]'
+			content= """<w:t>Hello [[[#names]][[[.]],[[[/names]]</w:t>"""
+			scope= {"names":["Edgar","Mary","John"]}
+			xmlTemplater= new DocXTemplater(content,{Tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.getFullText()).toBe('Hello Edgar,Mary,John,')
 			DocUtils.tags=
 				start:'{'
 				end:'}'
