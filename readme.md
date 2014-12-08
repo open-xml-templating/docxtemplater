@@ -1,19 +1,19 @@
-# docxtemplater
+# docxtemplater v1
 
-You can now use the v1 package (which is still in beta and may change). See [here for the new readme](https://github.com/edi9999/docxtemplater/tree/1.x)
 [![Build Status](https://travis-ci.org/edi9999/docxtemplater.svg?branch=master)](https://travis-ci.org/edi9999/docxtemplater)
 [![Download count](http://img.shields.io/npm/dm/docxtemplater.svg)](https://www.npmjs.org/package/docxtemplater)
 [![Current tag](http://img.shields.io/npm/v/docxtemplater.svg)](https://www.npmjs.org/package/docxtemplater)
 
-**docxtemplater** is a library to generate docx documents from a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
+**docxtemplater** is a library to generate docx documents from a docx template.
+It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
 
-## Documentation (V1)
+## Documentation
 
-The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/1.x/).
+The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
 
-docxtemplater@1.0.0 is still in beta and can be installed with: `npm install docxtemplater@beta`
+See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
 
-They may be some breaking changes when the 1.0.0 version comes out.
+docxtemplater@1.0.0 can be installed with: `npm install docxtemplater`
 
 ## Demo
 
@@ -36,7 +36,7 @@ Including:
 
 ## Quickstart
 
-Installation: `npm install docxtemplater@beta`
+Installation: `npm install docxtemplater`
 
     //Only for Node Usage
     DocxGen=require('docxtemplater'); 
