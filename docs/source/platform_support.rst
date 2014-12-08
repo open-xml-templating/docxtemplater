@@ -11,11 +11,12 @@ docxtemplater works with
 - Node.js with 0.10 and 0.11
 - Chrome **tested** on version 26
 - Firefox 3+ (**tested** on version 21, but should work with 3+)
-- Safari **not tested**
+- Safari **tested**
+- IE9+ **tested**
+- Android 4.2+ **tested**
+- iPads and iPhones v8.1 **tested**
 
-Internet explorer is not supported -even IE10- (basically because xhr Requests can't be made on binary files)
-
-You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxtemplater/v0/test/SpecRunner.html
+You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxtemplater/v1/test/SpecRunner.html
 
 Dependencies
 ============

@@ -4,127 +4,67 @@ Created by Edgar HIPP
 ###
 
 DocUtils=require('./docUtils')
-ImgManager=require('./imgManager')
 DocXTemplater=require('./docxTemplater')
 JSZip=require('jszip')
-fs= require('fs')
+ModuleManager=require('./moduleManager')
 
-module.exports=class DocxGen
-	templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
-	constructor: (content, @Tags={},@options) ->
-		@setOptions(@options)
-		@finishedCallback=()->
-		@filesProcessed=0  # This is the number of files that were processed, When all files are processed and all qrcodes are decoded, the finished Callback is called
-		@qrCodeNumCallBack=0 #This is the order of the qrcode
-		@qrCodeWaitingFor= [] #The templater waits till all the qrcodes are decoded, This is the list of the remaining qrcodes to decode (only their order in the document is stored)
-		if content? then if content.length>0 then @load(content)
+DocxGen=class DocxGen
+	constructor:(content,options) ->
+		@templateClass = DocXTemplater
+		@moduleManager=new ModuleManager()
+		@moduleManager.gen=this
+		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+		@setOptions({})
+		if content? then @load(content,options)
+	attachModule:(module)->
+		@moduleManager.attachModule(module)
+		this
 	setOptions:(@options={})->
 		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-		@qrCode= if @options.qrCode? then @options.qrCode else off
-		if @qrCode==true then @qrCode=DocUtils.unsecureQrCode
 		if @options.parser? then @parser=options.parser
 		this
-	loadFromFile:(path,options={})->
-		@setOptions(options)
-		promise=
-			success:(fun)->
-				this.successFun=fun
-			successFun:()->
-		if !options.docx? then options.docx=false
-		if !options.async? then options.async=false
-		if !options.callback? then options.callback=(rawData) =>
-			if rawData==true then throw new Error "File `#{path}` was not Found"
-			@load rawData
-			promise.successFun(this)
-		DocUtils.loadDoc(path,options)
-		if options.async==false then return this else return promise
-	qrCodeCallBack:(id,add=true)->
-		if add==true
-			@qrCodeWaitingFor.push id
-		else if add == false
-			index = @qrCodeWaitingFor.indexOf(id)
-			if index==-1 then throw new Error("image:"+id+"removed twice")
-			@qrCodeWaitingFor.splice(index, 1)
-		@testReady()
-	testReady:()->
-		if @qrCodeWaitingFor.length==0 and @filesProcessed== templatedFiles.length ## When all files are processed and all qrCodes are processed too, the finished callback can be called
-			@ready=true
-			@finishedCallback()
-	load: (content)->
-		@loadedContent=content
-		@zip = new JSZip content
+	load: (content,options)->
+		@moduleManager.sendEvent('loading')
+		if content.file?
+			@zip=content
+		else
+			@zip = new JSZip content,options
+		@moduleManager.sendEvent('loaded')
 		this
-	applyTags:(@Tags=@Tags)->
+	render:()->
+		@moduleManager.sendEvent('rendering')
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
-		for fileName in templatedFiles when !@zip.files[fileName]?
-			@filesProcessed++ #count  files that don't exist as processed
-		for fileName in templatedFiles when @zip.files[fileName]?
-			@qrCodeCallBack(fileName,true)
-		for fileName in templatedFiles when @zip.files[fileName]?
-			imgManager=new ImgManager(@zip,fileName)
-			imgManager.loadImageRels()
-			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
-				DocxGen:this
-				Tags:@Tags
-				intelligentTagging:@intelligentTagging
-				parser:@parser
-				imgManager:imgManager
-				fileName:fileName
-			})
-			@setData(fileName,currentFile.applyTags().content)
-			@qrCodeCallBack(fileName,false)
-			@filesProcessed++
-		#When all files have been processed, check if the document is ready
-		@testReady()
-	setData:(fileName,data,options={})->
-		@zip.file(fileName,data,options)
+		for fileName in @templatedFiles when @zip.files[fileName]?
+			@moduleManager.sendEvent('rendering-file',fileName)
+			currentFile= @createTemplateClass(fileName)
+			@zip.file(fileName,currentFile.render().content)
+			@moduleManager.sendEvent('rendered-file',fileName)
+		@moduleManager.sendEvent('rendered')
+		this
 	getTags:()->
 		usedTags=[]
-		for fileName in templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
-				DocxGen:this
-				Tags:@Tags
-				intelligentTagging:@intelligentTagging
-				parser:@parser
-			})
-			usedTemplateV= currentFile.applyTags().usedTags
+		for fileName in @templatedFiles when @zip.files[fileName]?
+			currentFile = @createTemplateClass(fileName)
+			usedTemplateV= currentFile.render().usedTags
 			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}
 		usedTags
-	setTags: (@Tags) ->
+	setData:(@Tags) ->
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
-	output: (options={}) ->
-		if !options.download? then options.download=true
-		if !options.name? then options.name="output.docx"
-		if !options.type? then options.type="base64"
-		if !options.compression? then options.compression="DEFLATE"
-		result = @zip.generate({type:options.type, compression:options.compression})
-		if options.download
-			if DocUtils.env=='node'
-				fs.writeFile process.cwd()+'/'+options.name, result, 'base64', (err) ->
-					if err then throw err
-					if options.callback? then options.callback()
-			else
-				#Be aware that data-uri doesn't work for too big files: More Info http://stackoverflow.com/questions/17082286/getting-max-data-uri-size-in-javascript
-				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
-		result
-	getFullText:(path="word/document.xml") ->
+	getZip:()->
+		@zip
+	createTemplateClass:(path)->
 		usedData=@zip.files[path].asText()
-		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
-	download: (swfpath, imgpath, filename="default.docx") ->
-		output=@zip.generate({compression: "DEFLATE"})
-		Downloadify.create 'downloadify',
-			filename: () ->return filename
-			data: () ->
-				return output
-			onCancel: () -> alert 'You have cancelled the saving of this file.'
-			onError: () -> alert 'You must put something in the File Contents or there will be nothing to save!'
-			swf: swfpath
-			downloadImage: imgpath
-			width: 100
-			height: 30
-			transparent: true
-			append: false
-			dataType:'base64'
+		new @templateClass(usedData,{
+			Tags:@Tags
+			intelligentTagging:@intelligentTagging
+			parser:@parser
+			moduleManager:@moduleManager
+		})
+	getFullText:(path="word/document.xml") ->
+		@createTemplateClass(path).getFullText()
 
+DocxGen.DocUtils=DocUtils
+
+module.exports=DocxGen

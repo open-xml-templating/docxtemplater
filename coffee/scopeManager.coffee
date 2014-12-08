@@ -2,7 +2,7 @@
 DocUtils=require('./docUtils')
 
 module.exports=class ScopeManager
-	constructor:(@tags,@scopePath,@usedTags,@scopeList,@parser)->
+	constructor:(@tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager)->@moduleManager.scopeManager=this
 	loopOver:(tag,callback,inverted=false)->
 		value = @getValue(tag)
 		type = typeof value
