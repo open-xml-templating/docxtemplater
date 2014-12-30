@@ -62,7 +62,7 @@ startTest=->
 		it "should construct", () ->
 			a= new DocxGen()
 			expect(a).not.toBe(undefined)
-	
+
 	describe "DocxGenLoading", () ->
 		describe "ajax done correctly", () ->
 			it "doc and img Data should have the expected length", () ->
@@ -88,7 +88,7 @@ startTest=->
 				output=doc.getZip().generate({type:"base64"})
 				expect(output.length).toEqual(90732)
 				expect(output.substr(0,50)).toEqual('UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn')
-	
+
 	describe "DocxGenTemplating", () ->
 		describe "text templating", () ->
 			it "should change values with template vars", () ->
@@ -109,7 +109,7 @@ startTest=->
 					expect(docX['tagExample.docx'].zip.files[i].name).toBe(docX['tagExampleExpected.docx'].zip.files[i].name)
 					expect(docX['tagExample.docx'].zip.files[i].options.dir).toBe(docX['tagExampleExpected.docx'].zip.files[i].options.dir)
 					expect(docX['tagExample.docx'].zip.files[i].asText()).toBe(docX['tagExampleExpected.docx'].zip.files[i].asText())
-	
+
 	describe "DocxGenTemplatingForLoop", () ->
 		describe "textLoop templating", () ->
 			it "should replace all the tags", () ->
@@ -135,42 +135,42 @@ startTest=->
 				docX['tagInvertedLoopExample.docx'].setData products: []
 				docX['tagInvertedLoopExample.docx'].render()
 				expect(docX['tagInvertedLoopExample.docx'].getFullText()).toEqual('No products found')
-	
+
 				#shows if the key is false
 				d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
 				d.setData products: false
 				d.render()
 				expect(d.getFullText()).toEqual('No products found')
-	
+
 				#shows if the key doesn't exist
 				d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
 				d.setData {}
 				d.render()
 				expect(d.getFullText()).toEqual('No products found')
-	
+
 				#doesn't show if the key is an array with length>1
 				d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
 				d.setData products: [ name: "Bread" ]
 				d.render()
 				expect(d.getFullText()).toEqual('')
-	
+
 				#doesn't show if the key is true
 				d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
 				d.setData products: true
 				d.render()
 				expect(d.getFullText()).toEqual('')
-	
+
 				#doesn't show if the key is a string or object
 				d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
 				d.setData products: "Bread"
 				d.render()
 				expect(d.getFullText()).toEqual('')
-	
+
 				d=new DocxGen docX['tagInvertedLoopExample.docx'].loadedContent
 				d.setData products: {name: "Bread"}
 				d.render()
 				expect(d.getFullText()).toEqual('')
-	
+
 	describe "Xml Util" , () ->
 		it "should compute the scope between 2 <w:t>" , () ->
 			scope= xmlUtil.getListXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
@@ -181,7 +181,7 @@ startTest=->
 		it 'should compute the scope between a w:t in an array and the other outside', () ->
 			scope= xmlUtil.getListXmlElements """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
 			expect(scope).toEqual([ { tag : '</w:t>', offset : 8 }, { tag : '</w:r>', offset : 14 }, { tag : '</w:p>', offset : 20 }, { tag : '</w:tc>', offset : 26 }, { tag : '</w:tr>', offset : 33 }, { tag : '</w:tbl>', offset : 40 }, { tag : '<w:p>', offset : 188 }, { tag : '<w:r>', offset : 257 }, { tag : '<w:t>', offset : 306 } ])
-	
+
 	describe "scope diff calculation", () ->
 		it "should compute the scopeDiff between 2 <w:t>" , () ->
 			scope= xmlUtil.getListDifferenceXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
@@ -192,7 +192,7 @@ startTest=->
 		it 'should compute the scopeDiff between a w:t in an array and the other outside', () ->
 			scope= xmlUtil.getListDifferenceXmlElements """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
 			expect(scope).toEqual([ { tag : '</w:tc>', offset : 26 }, { tag : '</w:tr>', offset : 33 }, { tag : '</w:tbl>', offset : 40 } ])
-	
+
 	describe "scope inner text", () ->
 		it "should find the scope" , () ->
 			xmlTemplater= new DocXTemplater()
@@ -203,7 +203,7 @@ startTest=->
 			expect(scope.startTag).toEqual(obj.startTag)
 			expect(scope.text.length).toEqual(obj.text.length)
 			expect(scope.text).toEqual(obj.text)
-	
+
 	describe "Dash Loop Testing", () ->
 		it "dash loop ok on simple table -> w:tr" , () ->
 			Tags=
@@ -229,7 +229,7 @@ startTest=->
 			expectedText= 'linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX '
 			text=docX['tagDashLoopList.docx'].getFullText()
 			expect(text).toBe(expectedText)
-	
+
 	describe "Intelligent Loop Tagging", () ->
 		it "should work with tables" , () ->
 			Tags={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
@@ -244,7 +244,7 @@ startTest=->
 				expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].name).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].name)
 				expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.dir).toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.dir)
 				expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.date).not.toBe(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.date)
-	
+
 	describe "getTags", () ->
 		it "should work with simple document", () ->
 			d=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:off}
@@ -254,7 +254,7 @@ startTest=->
 			docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
 			tempVars= docX['tagLoopExample.docx'].getTags()
 			expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { nom: true, prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
-	
+
 	describe "xmlTemplater", ()->
 		it "should work with simpleContent", ()->
 			content= """<w:t>Hello {name}</w:t>"""
@@ -262,21 +262,21 @@ startTest=->
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
-	
+
 		it "should work with {.} for this", ()->
 			content= """<w:t>Hello {.}</w:t>"""
 			scope='Edgar'
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
-	
+
 		it "should work with {.} for this inside loop", ()->
 			content= """<w:t>Hello {#names}{.},{/names}</w:t>"""
 			scope={names:['Edgar','John']}
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar,John,')
-	
+
 		it "should work with non w:t content", ()->
 			content= """{image}.png"""
 			scope= {"image":"edgar"}
@@ -301,7 +301,7 @@ startTest=->
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar,')
-	
+
 			scope= {"showName":false,"name":"Edgar"}
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
@@ -330,7 +330,7 @@ startTest=->
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.content).toBe('Hello Edgar,Mary,John,')
-	
+
 	describe 'Changing the parser', () ->
 		it 'should work with uppercassing', () ->
 			content= """<w:t>Hello {name}</w:t>"""
@@ -354,7 +354,7 @@ startTest=->
 			expect(d.getFullText()).toEqual('EDGAR HIPP')
 			expect(d.getFullText("word/header1.xml")).toEqual('EDGAR HIPP0652455478NEW WEBSITE')
 			expect(d.getFullText("word/footer1.xml")).toEqual('EDGARHIPP0652455478')
-	
+
 		it 'should work with angular parser', () ->
 			Tags=
 				person:{first_name:"Hipp",last_name:"Edgar",birth_year:1955,age:59}
@@ -362,14 +362,14 @@ startTest=->
 			docX["angularExample.docx"].parser=angularParser
 			docX["angularExample.docx"].render()
 			expect(docX["angularExample.docx"].getFullText()).toEqual('Hipp Edgar 2014')
-	
+
 		it 'should work with loops', ()->
 			content= """<w:t>Hello {#person.adult}you{/person.adult}</w:t>"""
 			scope= {"person":{"name":"Edgar","adult":true}}
 			xmlTemplater= new DocXTemplater(content,{Tags:scope,parser:angularParser})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).toBe('Hello you')
-	
+
 	describe 'Non Utf-8 characters', () ->
 		it 'should read full text correctly', ()->
 			fullText=docX["cyrillic.docx"].getFullText()
@@ -403,7 +403,7 @@ startTest=->
 			d.render()
 			outputText=d.getFullText()
 			expect(outputText.substr(0,7)).toBe(russian)
-	
+
 	describe 'Complex table example' , () ->
 		it 'should work with simple table', () ->
 			docX["tableComplex2Example.docx"].setData({
@@ -493,13 +493,13 @@ startTest=->
 			}); #set the templateVariables
 			docX["tableComplex3Example.docx"].render() #apply them
 			fullText=docX["tableComplex3Example.docx"].getFullText() #apply them
-	
+
 			expect(fullText).toBe("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data")
-	
+
 	describe 'Raw Xml Insertion' , () ->
 		docX["xmlInsertionExample.docx"].setData({"complexXml":"""<w:p w:rsidR="00612058" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom XML</w:t></w:r></w:p><w:tbl><w:tblPr><w:tblStyle w:val="Grilledutableau"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid><w:gridCol w:w="2952"/><w:gridCol w:w="2952"/><w:gridCol w:w="2952"/></w:tblGrid><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="DDD9C3" w:themeFill="background2" w:themeFillShade="E6"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:b/><w:color w:val="000000" w:themeColor="text1"/></w:rPr></w:pPr><w:r><w:rPr><w:b/><w:color w:val="000000" w:themeColor="text1"/></w:rPr><w:t>Test</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="DDD9C3" w:themeFill="background2" w:themeFillShade="E6"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:b/><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:b/><w:color w:val="FF0000"/></w:rPr><w:t>Xml</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="DDD9C3" w:themeFill="background2" w:themeFillShade="E6"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>Generated</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="C6D9F1" w:themeFill="text2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="000000" w:themeColor="text1"/><w:u w:val="single"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:color w:val="000000" w:themeColor="text1"/><w:u w:val="single"/></w:rPr><w:t>Underline</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="C6D9F1" w:themeFill="text2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:color w:val="FF0000"/><w:highlight w:val="yellow"/></w:rPr><w:t>Highlighting</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="C6D9F1" w:themeFill="text2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:rFonts w:ascii="Bauhaus 93" w:hAnsi="Bauhaus 93"/><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:rFonts w:ascii="Bauhaus 93" w:hAnsi="Bauhaus 93"/><w:color w:val="FF0000"/></w:rPr><w:t>Font</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F2DBDB" w:themeFill="accent2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00EA4B08"><w:pPr><w:jc w:val="center"/><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>Centering</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F2DBDB" w:themeFill="accent2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:i/><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:i/><w:color w:val="FF0000"/></w:rPr><w:t>Italic</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F2DBDB" w:themeFill="accent2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E5DFEC" w:themeFill="accent4" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E5DFEC" w:themeFill="accent4" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E5DFEC" w:themeFill="accent4" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="FDE9D9" w:themeFill="accent6" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="FDE9D9" w:themeFill="accent6" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="FDE9D9" w:themeFill="accent6" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc></w:tr></w:tbl>"""}) #apply them
 		docX["xmlInsertionExample.docx"].render()
-	
+
 		it "should work with simple example", () ->
 			for i of docX['xmlInsertionExample.docx'].zip.files
 				#Everything but the date should be different
@@ -508,8 +508,8 @@ startTest=->
 				expect(docX['xmlInsertionExample.docx'].zip.files[i].options.dir).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].options.dir)
 				expect(docX['xmlInsertionExample.docx'].zip.files[i].asText().length).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].asText().length)
 				expect(docX['xmlInsertionExample.docx'].zip.files[i].asText()).toBe(docX['xmlInsertionExpected.docx'].zip.files[i].asText())
-	
-	
+
+
 		it 'should work even when tags are after the xml', () ->
 			docX["xmlInsertionComplexExample.docx"].setData(
 				{
@@ -530,16 +530,16 @@ startTest=->
 				expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].options.dir).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].options.dir)
 				expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].asText().length).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].asText().length)
 				expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].asText()).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].asText())
-	
+
 	describe 'SubContent', () ->
 		sub=new SubContent("start<w:t>text</w:t>end")
 		sub.start=10
 		sub.end=14
 		sub.refreshText()
-	
+
 		it "should get the text inside the tags correctly", ()->
 			expect(sub.text).toBe('text')
-	
+
 		it 'should get the text expanded to the outer xml', () ->
 			sub.getOuterXml('w:t')
 			expect(sub.text).toBe('<w:t>text</w:t>')
@@ -547,7 +547,7 @@ startTest=->
 			sub.replace('<w:table>Sample Table</w:table>')
 			expect(sub.fullText).toBe('start<w:table>Sample Table</w:table>end')
 			expect(sub.text).toBe('<w:table>Sample Table</w:table>')
-	
+
 		it 'should work with custom tags', () ->
 			DocUtils.tags=
 				start:'['
@@ -595,43 +595,43 @@ startTest=->
 			DocUtils.tags=
 				start:'{'
 				end:'}'
-	
+
 		it 'should work with loops', ()->
 			content="{innertag</w:t><w:t>}"
 			xmlt=new DocXTemplater(content,{Tags:{innertag:5}}).render()
 			expect(xmlt.content).toBe('5</w:t><w:t xml:space="preserve">')
-	
+
 		it 'should work with complex loops (1)', ()->
 			content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
 			xmlt=new DocXTemplater(content,{Tags:{looptag:true}}).render()
 			expect(xmlt.content).not.toContain('</w:t></w:t>')
-	
+
 		it 'should work with complex loops (2)', ()->
 			content= """<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>"""
 			xmlt=new DocXTemplater(content,{Tags:{person:[{name:"Henry"}]}}).render()
 			expect(xmlt.content).not.toContain('</w:t>Henry</w:t>')
-	
+
 		it 'should work with start and end (1)', ()->
 			content= """a</w:t><w:t>{name}"""
 			xmlt=new DocXTemplater(content,{Tags:{name:"Henry"}}).render()
 			expect(xmlt.content).toContain('a</w:t><w:t')
-	
+
 		it 'should work with start and end (2)', ()->
 			content= """{name}</w:t><w:t>a"""
 			xmlt=new DocXTemplater(content,{Tags:{name:"Henry"}}).render()
 			expect(xmlt.content).toContain('Henry</w:t><w:t')
-	
+
 	describe 'getting parents context',()->
 		it 'should work with simple loops',()->
 			content= """{#loop}{name}{/loop}"""
 			xmlt=new DocXTemplater(content,{Tags:{loop:[1],name:"Henry"}}).render()
 			expect(xmlt.content).toBe("Henry")
-	
+
 		it 'should work with double loops',()->
 			content= """{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}"""
 			xmlt=new DocXTemplater(content,{Tags:{loop_first:[1],loop_second:[{name_inner:"John"}],name_outer:"Henry"}}).render()
 			expect(xmlt.content).toBe("John Henry")
-	
+
 	describe 'error messages', ()->
 		it 'should work with unclosed', ()->
 			content= """<w:t>{tag {age}</w:t>"""
@@ -641,13 +641,13 @@ startTest=->
 			content= """<w:t>tag }age</w:t>"""
 			f=()->new DocXTemplater(content).render()
 			expect(f).toThrow "Unopened tag near : 'tag }'"
-	
+
 	describe 'pptx generation', ()->
 		it 'should work with simple pptx', ()->
 			p=pptX['simpleExample.pptx']
 				.setData({'name':'Edgar'})
 				.render()
-	
+
 			expect(p.getFullText()).toBe('Hello Edgar')
 
 	if window?
