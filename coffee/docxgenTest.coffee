@@ -289,6 +289,14 @@ startTest=->
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+
+		it "should work with simple loop with object value", ()->
+			content= """<w:t>Hello {#person}{name}{/person}</w:t>"""
+			scope= {"person":{"name":"Edgar"}}
+			xmlTemplater= new DocXTemplater(content,{Tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+
 		it "should work with simple Loop", ()->
 			content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
 			scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
