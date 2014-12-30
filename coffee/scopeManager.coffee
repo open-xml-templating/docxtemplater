@@ -5,17 +5,19 @@ module.exports=class ScopeManager
 	constructor:(@tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager)->@moduleManager.scopeManager=this
 	loopOver:(tag,callback,inverted=false)->
 		value = @getValue(tag)
-		type = typeof value
+		type = Object.prototype.toString.call(value)
 		if inverted
 			return callback(@scopeList[@num]) unless value
-			return if type == 'string'
-			if type == 'object' && value.length < 1
+			return if type == '[object String]'
+			if type=='[object Array]' && value.length < 1
 				callback(@scopeList[@num])
 			return
 		return unless value?
-		if type == 'object'
+		if type == '[object Array]'
 			for scope,i in value
 				callback(scope)
+		if type == '[object Object]'
+			callback(value)
 		if value == true
 			callback(@scopeList[@num])
 	getValue:(tag,@num=@scopeList.length-1)->
