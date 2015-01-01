@@ -30,8 +30,6 @@ Including:
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#lists">Lists</a><br>
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#images">Replacing images</a><br>
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#naming">Naming the output</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#qrcode">Using QrCodes</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#qrcodeloop">Replacing many images with QrCode</a><br>
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Raw Xml Insertion</a><br>
 
 
