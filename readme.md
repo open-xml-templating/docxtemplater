@@ -37,23 +37,25 @@ Including:
 
 Installation: `npm install docxtemplater`
 
-    //Only for Node Usage
-    DocxGen=require('docxtemplater'); 
-    content=fs.readFileSync(__dirname+"/input.docx","binary")
+    fs=require(‘fs’)
+    Docxtemplater=require('docxtemplater');
+                                            //Load the docx file as a binary
+    content=fs
+        .readFileSync(__dirname+"/input.docx","binary")
 
-    doc=new DocxGen(content);
-    doc.setData({
+    doc=new Docxtemplater(content);
+    doc.setData({                           //set the templateVariables
         "first_name":"Hipp",
         "last_name":"Edgar",
         "phone":"0652455478",
         "description":"New Website"
-    }) //set the templateVariables
-    doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-    zip=doc.getZip() //Get the zip representation of the docx
+    });
+    doc.render();                           //apply them (replace all occurences of {first_name} by Hipp, ...)
+    zip=doc.getZip()                        //Get the zip representation of the docx
 
-    //Only for Node Usage
-    output=zip.generate({type:"base64"})
-    fs.writeFileSync(__dirname+"/output.docx",output,"binary")
+                                            //Output the docx to a file
+    output=zip.generate({type:"base64"});
+    fs.writeFileSync(__dirname+"/output.docx",output,"binary");
 
 You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
