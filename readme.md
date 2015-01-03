@@ -65,3 +65,8 @@ They are a few similar libraries that work with docx, here’s a list of those I
 
  * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically 
  * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
+
+# Modules
+
+Functionality can be added with modules. They is yet no doc for the modules because it is not completely mature yet, but you can open an issue if you have any question about it. 
+I have already created one module that can add images using the syntax: `{%image}`, which is documented here: https://github.com/edi9999/docxtemplater-image-module
