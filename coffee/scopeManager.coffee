@@ -7,12 +7,13 @@ module.exports=class ScopeManager
 		value = @getValue(tag)
 		type = Object.prototype.toString.call(value)
 		if inverted
-			return callback(@scopeList[@num]) unless value
-			return if type == '[object String]'
-			if type=='[object Array]' && value.length < 1
+			if !value? then return callback(@scopeList[@num])
+			if !value then return callback(@scopeList[@num])
+			if type=='[object Array]' && value.length == 0
 				callback(@scopeList[@num])
 			return
-		return unless value?
+
+		if !value? then return
 		if type == '[object Array]'
 			for scope,i in value
 				callback(scope)
@@ -42,7 +43,7 @@ module.exports=class ScopeManager
 			@useTag(tag)
 			value= "undefined"
 		value
-	#set the tag as used, so that DocxGen can return the list off all tags
+	#set the tag as used, so that DocxGen can return the list of all tags
 	useTag: (tag) ->
 		u = @usedTags
 		for s,i in @scopePath
