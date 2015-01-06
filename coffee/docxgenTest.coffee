@@ -17,15 +17,15 @@ angularParser= (tag) ->
 }
 
 
-DocxGen= require('../../js/docxgen.js')
-PptxGen= require('../../js/index.js').PptxGen
-DocUtils=require('../../js/docUtils.js')
+DocxGen= require('../../js/index.js')
+PptxGen=DocxGen.PptxGen
+DocUtils=DocxGen.DocUtils
 docX={}
 pptX={}
 data={}
-SubContent=require('../../js/subContent.js')
-DocXTemplater=require('../../js/docxTemplater.js')
-xmlUtil=require('../../js/xmlUtil.js')
+SubContent=DocxGen.SubContent
+DocXTemplater=DocxGen.DocXTemplater
+xmlUtil=DocxGen.XmlUtil
 fs=require('fs')
 
 fileNames=["graph.docx",

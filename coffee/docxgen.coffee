@@ -3,15 +3,10 @@ Docxgen.coffee
 Created by Edgar HIPP
 ###
 
-DocUtils=require('./docUtils')
-DocXTemplater=require('./docxTemplater')
-JSZip=require('jszip')
-ModuleManager=require('./moduleManager')
-
 DocxGen=class DocxGen
 	constructor:(content,options) ->
-		@templateClass = DocXTemplater
-		@moduleManager=new ModuleManager()
+		@templateClass = DocxGen.DocXTemplater
+		@moduleManager=new DocxGen.ModuleManager()
 		@moduleManager.gen=this
 		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 		@setOptions({})
@@ -28,7 +23,7 @@ DocxGen=class DocxGen
 		if content.file?
 			@zip=content
 		else
-			@zip = new JSZip content,options
+			@zip = new DocxGen.JSZip content,options
 		@moduleManager.sendEvent('loaded')
 		this
 	render:()->
@@ -46,7 +41,7 @@ DocxGen=class DocxGen
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile = @createTemplateClass(fileName)
 			usedTemplateV= currentFile.render().usedTags
-			if DocUtils.sizeOfObject(usedTemplateV)
+			if DocxGen.DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}
 		usedTags
 	setData:(@Tags) ->
@@ -65,6 +60,12 @@ DocxGen=class DocxGen
 	getFullText:(path="word/document.xml") ->
 		@createTemplateClass(path).getFullText()
 
-DocxGen.DocUtils=DocUtils
-
+DocxGen.DocUtils=require('./docUtils')
+DocxGen.DocXTemplater=require('./docxTemplater')
+DocxGen.JSZip=require('jszip')
+DocxGen.ModuleManager=require('./moduleManager')
+DocxGen.XmlTemplater=require('./xmlTemplater')
+DocxGen.XmlMatcher=require('./xmlMatcher')
+DocxGen.XmlUtil=require('./xmlUtil')
+DocxGen.SubContent=require('./subContent')
 module.exports=DocxGen
