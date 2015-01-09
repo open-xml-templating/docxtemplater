@@ -16,7 +16,7 @@ DocxGen=class DocxGen
 		this
 	setOptions:(@options={})->
 		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-		if @options.parser? then @parser=options.parser
+		if @options.parser? then @parser=@options.parser
 		this
 	load: (content,options)->
 		@moduleManager.sendEvent('loading')
