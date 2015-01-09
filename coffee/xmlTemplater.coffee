@@ -141,20 +141,17 @@ module.exports=class XmlTemplater #abstract class !!
 		@templaterState.matches[xmlTagNumber][0]=replacer
 		content
 	replaceTagByValue:(newValue,content) ->
+		options=
+			xmlTagNumber:@templaterState.tagStart.numXmlTag
+			noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+			noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
-			options=
-				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				insideValue:@templaterState.getLeftValue()+newValue+@templaterState.getRightValue()
-				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
-				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
-
+			options.insideValue=@templaterState.getLeftValue()+newValue+@templaterState.getRightValue()
 			return @replaceXmlTag(content,options)
-		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
-			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
-			options=
-				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w>
+			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
 			options.insideValue=newValue
 			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
@@ -176,8 +173,9 @@ module.exports=class XmlTemplater #abstract class !!
 			options =
 				insideValue:@templaterState.getRightValue()
 				spacePreserve:true
-				xmlTagNumber:k
-				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+				xmlTagNumber:@templaterState.tagEnd.numXmlTag
+				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+
 			return @replaceXmlTag(content, options)
 	replaceLoopTag:()->
 		#You DashLoop= take the outer scope only if you are in a table
