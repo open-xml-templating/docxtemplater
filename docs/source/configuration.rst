@@ -67,6 +67,22 @@ To use the angular-parser, do the following:
 
     The require() works in the browser if you include vendor/angular-parser-browser.js
 
+
+Custom delimiters
+-----------------
+
+You can set up your custom delimiters with this syntax:
+
+.. code-block:: javascript
+
+    new DocxGen(data)
+        .setOptions({delimiters:{start:'[[',end:']]'}})
+
+.. warning::
+
+    In previous versions, you could write `DocUtils.Tags={start:'[[',end:']]'};`, but this is deprecated now and will be removed in future versions.
+
+
 Intelligent LoopTagging
 -----------------------
 

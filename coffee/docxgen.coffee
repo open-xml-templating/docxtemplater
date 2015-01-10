@@ -17,6 +17,7 @@ DocxGen=class DocxGen
 	setOptions:(@options={})->
 		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
 		if @options.parser? then @parser=@options.parser
+		if @options.delimiters? then DocUtils.tags=@options.delimiters
 		this
 	load: (content,options)->
 		@moduleManager.sendEvent('loading')
