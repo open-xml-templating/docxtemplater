@@ -20,7 +20,7 @@ Image Replacing
 
 .. note::
 
-    The imageReplacing feature has been removed from the main docxtemplater package. This feature will be implemented in the future in an external module.
+    The imageReplacing feature has been removed from the main docxtemplater package. This feature has been implemented in an external module that can be found here : https://github.com/edi9999/docxtemplater-image-module.
 
 Custom Parser
 --------------
