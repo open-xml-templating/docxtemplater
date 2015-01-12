@@ -116,14 +116,13 @@ module.exports=class XmlTemplater #abstract class !!
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
 		@forLoop(innerXmlText,outerXmlText)
 	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber,noEndTag)->
-		if noStartTag == true
+		if noStartTag
 			return insideValue
+		if spacePreserve
+			str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
 		else
-			if spacePreserve==true
-				str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
-			else
-				str=@templaterState.matches[xmlTagNumber][1]+insideValue
-			if noEndTag==true then return str else return str+"</#{@tagXml}>"
+			str=@templaterState.matches[xmlTagNumber][1]+insideValue
+		if noEndTag then return str else return str+"</#{@tagXml}>"
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
