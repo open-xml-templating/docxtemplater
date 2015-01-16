@@ -14,7 +14,7 @@ matrix:
         - env: NODE_SCRIPT=./iojs-v1.0.2-linux-x64/bin/iojs
 
 script:
-    - $NODE_SCRIPT /home/travis/.nvm/$(node --version)/bin/jasmine-node test/spec/docxgenTest.spec.js
+    - $NODE_SCRIPT $(whereis jasmine-node | awk "{print $(NF-1)}") test/spec/docxgenTest.spec.js
 
 before_script:
     - "npm install -g npm"
@@ -23,3 +23,6 @@ before_script:
     - "gulp allCoffee"
     - "wget https://iojs.org/dist/v1.0.2/iojs-v1.0.2-linux-x64.tar.xz"
     - "tar xvfJ iojs-v1.0.2-linux-x64.tar.xz"
+    - "echo $(whereis jasmine-node)"
+    - "echo $(whereis ls)"
+    - "echo $(whereis jasmine-node | awk '{print $(NF-1)}')"
