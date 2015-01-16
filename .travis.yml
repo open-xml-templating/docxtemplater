@@ -8,11 +8,6 @@ env:
     - NODE_SCRIPT=node
     - NODE_SCRIPT=./iojs-v1.0.2-linux-x64/bin/iojs
 
-matrix:
-    exclude:
-        - node_js: 0.10.32
-        - env: NODE_SCRIPT=./iojs-v1.0.2-linux-x64/bin/iojs
-
 script:
     - $NODE_SCRIPT /home/travis/.nvm/$(node --version)/bin/jasmine-node test/spec/docxgenTest.spec.js
 
