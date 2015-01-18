@@ -5,7 +5,7 @@ matrix:
         - env: NODE_SCRIPT=node
           node_js: "0.11"
         - env: NODE_SCRIPT=node
-          node_js: "0.10.32"
+          node_js: "0.10"
         - env: NODE_SCRIPT=./iojs-v1.0.2-linux-x64/bin/iojs
 
 script:
