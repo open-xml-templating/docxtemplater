@@ -278,11 +278,11 @@ startTest=->
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar,John,')
 
 		it "should work with non w:t content", ()->
-			content= """{image}.png"""
-			scope= {"image":"edgar"}
+			content= """Hello {name}"""
+			scope= {"name":"edgar"}
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
-			expect(xmlTemplater.content).toBe('edgar.png')
+			expect(xmlTemplater.content).toBe('Hello edgar')
 		it "should work with tag in two elements", ()->
 			content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 			scope= {"name":"Edgar"}
