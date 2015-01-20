@@ -693,7 +693,7 @@ for name in fileNames
 
 loadFile('simpleExample.pptx',loadPptx)
 
-pngFiles=['image.png','bootstrap_logo.png','BMW_logo.png','Firefox_logo.png','Volkswagen_logo.png']
+pngFiles=['image.png']
 
 for file in pngFiles
 	loadFile(file,loadImage)
