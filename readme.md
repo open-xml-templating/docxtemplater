@@ -39,23 +39,28 @@ Installation: `npm install docxtemplater`
 
     fs=require(‘fs’)
     Docxtemplater=require('docxtemplater');
-                                            //Load the docx file as a binary
+
+    //Load the docx file as a binary
     content=fs
         .readFileSync(__dirname+"/input.docx","binary")
 
     doc=new Docxtemplater(content);
-    doc.setData({                           //set the templateVariables
+
+   //set the templateVariables
+    doc.setData({
         "first_name":"Hipp",
         "last_name":"Edgar",
         "phone":"0652455478",
         "description":"New Website"
     });
-    doc.render();                           //apply them (replace all occurences of {first_name} by Hipp, ...)
-    zip=doc.getZip()                        //Get the zip representation of the docx
 
-                                            //Output the docx to a file
-    output=zip.generate({type:"base64"});
-    fs.writeFileSync(__dirname+"/output.docx",output,"binary");
+    //apply them (replace all occurences of {first_name} by Hipp, ...)
+    doc.render();
+
+    var buf = doc.getZip()
+                 .generate({type:"nodebuffer"});
+
+    fs.writeFileSync(__dirname+"/output.docx",buf);
 
 You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
@@ -63,10 +68,10 @@ You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/maste
 
 They are a few similar libraries that work with docx, here’s a list of those I know a bit about:
 
- * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically 
+ * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically
  * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
 
 # Modules
 
-Functionality can be added with modules. They is yet no doc for the modules because it is not completely mature yet, but you can open an issue if you have any question about it. 
+Functionality can be added with modules. They is yet no doc for the modules because it is not completely mature yet, but you can open an issue if you have any question about it.
 I have already created one module that can add images using the syntax: `{%image}`, which is documented here: https://github.com/edi9999/docxtemplater-image-module
