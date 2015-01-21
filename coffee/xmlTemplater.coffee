@@ -73,10 +73,11 @@ module.exports=class XmlTemplater #abstract class !!
 						console.error @content
 						console.error m[0]
 						throw new Error("no < at the beginning of #{m[0][0]} (2)")
-				if trail == DocUtils.tags.start
+				@sameTags = DocUtils.tags.start == DocUtils.tags.end
+				if (@sameTags is true and @templaterState.inTag is false and trail == DocUtils.tags.start) or (@sameTags is false and trail == DocUtils.tags.start)
 					@templaterState.currentStep=trailSteps[0]
 					@templaterState.startTag()
-				else if trail == DocUtils.tags.end
+				else if (@sameTags is true and @templaterState.inTag is true and trail == DocUtils.tags.end) or (@sameTags is false and trail == DocUtils.tags.end)
 					@templaterState.endTag()
 					loopType=@templaterState.loopType()
 					if loopType=='simple'

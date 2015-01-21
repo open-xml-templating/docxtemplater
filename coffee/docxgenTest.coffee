@@ -604,6 +604,19 @@ startTest=->
 				start:'{'
 				end:'}'
 
+		it 'should work with custom tags, same for start and end', () ->
+			DocUtils.tags=
+				start:'@'
+				end:'@'
+			content= """<w:t>Hello @name@</w:t>"""
+			scope= {"name":"Edgar"}
+			xmlTemplater= new DocXTemplater(content,{Tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
+			DocUtils.tags=
+				start:'{'
+				end:'}'
+
 		it 'should work with loops', ()->
 			content="{innertag</w:t><w:t>}"
 			xmlt=new DocXTemplater(content,{Tags:{innertag:5}}).render()
