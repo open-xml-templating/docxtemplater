@@ -249,11 +249,11 @@ startTest=->
 		it "should work with simple document", () ->
 			d=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:off}
 			tempVars= d.getTags()
-			expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { last_name : true, first_name : true } }, { fileName : 'word/footer1.xml', vars : { last_name : true, first_name : true, phone : true } }, { fileName : 'word/header1.xml', vars : { last_name : true, first_name : true, phone : true, description : true } }])
+			expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { def : {  }, undef : { last_name : true, first_name : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true } } }, { fileName : 'word/header1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true, description : true } } } ])
 		it "should work with loop document", () ->
 			docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
 			tempVars= docX['tagLoopExample.docx'].getTags()
-			expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { offre : { nom: true, prix : true, titre : true }, nom : true, prenom : true } }, { fileName : 'word/footer1.xml', vars : { nom : true, prenom : true, telephone : true } }, { fileName : 'word/header1.xml', vars : { nom : true, prenom : true } } ])
+			expect(tempVars).toEqual( [ { fileName : 'word/document.xml', vars : { def : {  }, undef : { offre : { nom : true, prix : true, titre : true }, nom : true, prenom : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { nom : true, prenom : true, telephone : true } } }, { fileName : 'word/header1.xml', vars : { def : {  }, undef : { nom : true, prenom : true } } } ] )
 
 	describe "xmlTemplater", ()->
 		it "should work with simpleContent", ()->
@@ -577,7 +577,7 @@ startTest=->
 			scope= {"name":"Edgar"}
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
-			expect(xmlTemplater.usedTags).toEqual({'name':true})
+			expect(xmlTemplater.usedTags.def).toEqual({'name':true})
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 
 		it 'should work with custom tags as strings with different length', () ->
@@ -588,7 +588,7 @@ startTest=->
 			scope= {"name":"Edgar"}
 			xmlTemplater= new DocXTemplater(content,{Tags:scope})
 			xmlTemplater.render()
-			expect(xmlTemplater.usedTags).toEqual({'name':true})
+			expect(xmlTemplater.usedTags.def).toEqual({'name':true})
 			expect(xmlTemplater.getFullText()).toBe('Hello Edgar')
 
 		it 'should work with custom tags and loops', ()->

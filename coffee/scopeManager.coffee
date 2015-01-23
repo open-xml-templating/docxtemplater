@@ -32,7 +32,7 @@ module.exports=class ScopeManager
 		result = @getValue(tag)
 		if result?
 			if typeof result=='string'
-				@useTag(tag)
+				@useTag(tag,true)
 				value= result
 				if value.indexOf(DocUtils.tags.start)!=-1 or value.indexOf(DocUtils.tags.end)!=-1
 					throw new Error("You can't enter #{DocUtils.tags.start} or	#{DocUtils.tags.end} inside the content of the variable. Tag: #{tag}, Value: #{result}")
@@ -40,12 +40,15 @@ module.exports=class ScopeManager
 				value=String(result)
 			else value= result
 		else
-			@useTag(tag)
+			@useTag(tag,false)
 			value= "undefined"
 		value
 	#set the tag as used, so that DocxGen can return the list of all tags
-	useTag: (tag) ->
-		u = @usedTags
+	useTag: (tag,val) ->
+		if val
+			u = @usedTags.def
+		else
+			u = @usedTags.undef
 		for s,i in @scopePath
 			u[s]={} unless u[s]?
 			u = u[s]
