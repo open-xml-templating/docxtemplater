@@ -5,7 +5,7 @@
 [![Current tag](http://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater)
 [![Issues closed](http://issuestats.com/github/edi9999/docxtemplater/badge/issue?style=flat)](http://issuestats.com/github/edi9999/docxtemplater)
 
-![docxtemplater logo](https://raw.githubusercontent.com/edi9999/docxtemplater/master/logo.png)
+![docxtemplater logo](https://raw.githubusercontent.com/edi9999/docxtemplater/master/logo_small.png)
 
 **docxtemplater** is a library to generate docx documents from a docx template.
 It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
