@@ -20,7 +20,7 @@ docxtemplater@1.0.0 can be installed with: `npm install docxtemplater`
 
 ## Demo
 
-[All demos can be found here](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
+[Demo Site](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
 
 Including:
 
