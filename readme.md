@@ -10,29 +10,17 @@
 **docxtemplater** is a library to generate docx documents from a docx template.
 It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
 
-## Documentation
-
-The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
-
-See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
-
-docxtemplater@1.0.0 can be installed with: `npm install docxtemplater`
-
-## Demo
+## Features
 
 [Demo Site](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
 
-Including:
-
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace Variables</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#formating">Formating</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Angular Parsing</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Loops</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Loops and tables</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#lists">Lists</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#images">Replacing images</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#naming">Naming the output</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Raw Xml Insertion</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace a {placeholder} by a value</a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Use loops in tables to generate columns</a>
+- Use loops in tables to generate columns
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#images">Replace {%images}</a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
 
 
 ## Quickstart
@@ -48,7 +36,7 @@ Installation: `npm install docxtemplater`
 
     doc=new Docxtemplater(content);
 
-   //set the templateVariables
+    //set the templateVariables
     doc.setData({
         "first_name":"Hipp",
         "last_name":"Edgar",
@@ -65,6 +53,14 @@ Installation: `npm install docxtemplater`
     fs.writeFileSync(__dirname+"/output.docx",buf);
 
 You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
+
+## Documentation
+
+The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
+
+See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
+
+docxtemplater@1.0.0 can be installed with: `npm install docxtemplater`
 
 ## Similar libraries
 
