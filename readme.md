@@ -17,7 +17,6 @@ It can replace tags by their values and replace images with other images. It is 
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace a {placeholder} by a value</a>
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Use loops in tables to generate columns</a>
-- Use loops in tables to generate columns
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#images">Replace {%images}</a>
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
@@ -28,10 +27,10 @@ It can replace tags by their values and replace images with other images. It is 
 Installation: `npm install docxtemplater`
 
     fs=require(‘fs’)
-    Docxtemplater=require('docxtemplater');
+    Docxtemplater = require('docxtemplater');
 
     //Load the docx file as a binary
-    content=fs
+    content = fs
         .readFileSync(__dirname+"/input.docx","binary")
 
     doc=new Docxtemplater(content);
