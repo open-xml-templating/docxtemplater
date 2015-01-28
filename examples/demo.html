@@ -10,6 +10,15 @@
 	<script src="../build/angular-expressions.js"></script>
 
 	<script src="../vendor/FileSaver.min.js"></script>
+    <script src="../vendor/jszip-utils.js"></script>
+
+  <!--
+  Mandatory in IE 6, 7, 8 and 9.
+  -->
+  <!--[if IE]>
+  <script type="text/javascript" src="../vendor/jszip-utils-ie.js"></script>
+  <![endif]-->
+
 	<!-- Include this only if you want to use downloadify (last example) -->
 	<script src="../vendor/downloadify/js/downloadify.min.js"></script>
 	<script src="../vendor/downloadify/js/swfobject.js"></script>
@@ -48,7 +57,7 @@ DocxGen is based on word templates.
 	<div>=> <br>Results in:</div>
 	</td>
 	<td>
-		<img src="images/textTaggingResult.PNG" alt="">		
+		<img src="images/textTaggingResult.PNG" alt="">
 	</td>
 </tr>
 <tr>
@@ -79,19 +88,9 @@ loadFile is the following function:
 
 <pre>
 loadFile=function(url,callback){
-	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', url , true)
-	if (xhrDoc.overrideMimeType)
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =function(e){
-		if (this.readyState == 4) {
-			if (this.status == 200)
-				callback(null,this.response)
-			else
-				callback(e);
-        }
-    }
-	xhrDoc.send()
+    JSZipUtils.getBinaryContent(url,function(err,data){
+		callback(null,data)
+    });
 }
 </pre>
 
@@ -106,7 +105,7 @@ loadFile=function(url,callback){
 	<div>=> <br>Results in:</div>
 	</td>
 	<td>
-		<img src="images/formatTaggingResult.png" alt="">		
+		<img src="images/formatTaggingResult.png" alt="">
 	</td>
 </tr>
 <tr>
@@ -152,7 +151,7 @@ loadFile=function(url,callback){
 		<h3>Code Used:</h3>
 		<textarea raw='angularExample.docx'>
 expressions= require('angular-expressions')
-angularParser= function(tag){ 
+angularParser= function(tag){
 	expr=expressions.compile(tag);
 	return {get:expr};
 }
@@ -222,7 +221,7 @@ saveAs(output,"output.docx")
 		<tr>
 			<td><img src="images/tableTagging.PNG"></td>
 			<td>
-				<div>=> <br>Results in:</div>	
+				<div>=> <br>Results in:</div>
 			</td>
 			<td><img src="images/tableTaggingResult.PNG"></td>
 		</tr>
@@ -243,7 +242,7 @@ saveAs(output,"output.docx")
 			"phone":"+445476454"
 		}]}); //set the templateVariables
 	doc.render() //apply them
-	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI					
+	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
 	saveAs(output,"output.docx")
 });
 				</textarea>
@@ -259,7 +258,7 @@ saveAs(output,"output.docx")
 		<tr>
 			<td><img src="images/listTagging.PNG"></td>
 			<td>
-				<div>=> <br>Results in:</div>	
+				<div>=> <br>Results in:</div>
 			</td>
 			<td><img src="images/listTaggingResult.PNG"></td>
 		</tr>
@@ -270,7 +269,7 @@ saveAs(output,"output.docx")
 	loadFile("tagDashLoopList.docx",function(err,content){
 	doc=new DocxGen(content)
 	doc.setData(
-	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
+	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]}
 	)
 	doc.render()
 	output=doc.getZip().generate({type:"blob"})
@@ -289,7 +288,7 @@ saveAs(output,"output.docx")
 		<tr>
 			<td><img src="images/xmlTagging.PNG"></td>
 			<td>
-				<div>=> <br>Results in:</div>	
+				<div>=> <br>Results in:</div>
 			</td>
 			<td><img src="images/xmlTaggingResult.PNG"></td>
 		</tr>
