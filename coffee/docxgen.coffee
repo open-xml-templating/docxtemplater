@@ -5,10 +5,9 @@ Created by Edgar HIPP
 
 DocxGen=class DocxGen
 	constructor:(content,options) ->
-		@templateClass = DocxGen.DocXTemplater
 		@moduleManager=new DocxGen.ModuleManager()
 		@moduleManager.gen=this
-		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+		@templateClass=@getTemplateClass()
 		@setOptions({})
 		if content? then @load(content,options)
 	attachModule:(module)->
@@ -19,6 +18,8 @@ DocxGen=class DocxGen
 		if @options.parser? then @parser=@options.parser
 		if @options.delimiters? then DocxGen.DocUtils.tags=@options.delimiters
 		this
+	getTemplateClass:->DocxGen.DocXTemplater
+	getTemplatedFiles:->["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
 	load: (content,options)->
 		@moduleManager.sendEvent('loading')
 		if content.file?
@@ -26,6 +27,7 @@ DocxGen=class DocxGen
 		else
 			@zip = new DocxGen.JSZip content,options
 		@moduleManager.sendEvent('loaded')
+		@templatedFiles = @getTemplatedFiles()
 		this
 	render:()->
 		@moduleManager.sendEvent('rendering')
