@@ -677,11 +677,14 @@ countFiles=0
 allStarted=false
 
 loadDocx=(name,content)->
-	docX[name]=new DocxGen(content)
+	docX[name]=new DocxGen()
+	docX[name].load(content)
 	docX[name].loadedContent=content
 
 loadPptx=(name,content)->
-	pptX[name]=new PptxGen(content)
+	pptX[name]=new PptxGen()
+	pptX[name].load(content)
+	pptX[name].loadedContent=content
 
 loadImage=(name,content)->
 	data[name]=content
