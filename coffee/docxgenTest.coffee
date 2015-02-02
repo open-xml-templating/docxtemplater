@@ -248,11 +248,11 @@ startTest=->
 		it "should work with simple document", () ->
 			d=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:off}
 			tempVars= d.getTags()
-			expect(tempVars).toEqual([ { fileName : 'word/document.xml', vars : { def : {  }, undef : { last_name : true, first_name : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true } } }, { fileName : 'word/header1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true, description : true } } } ])
+			expect(tempVars).toEqual([ { fileName : 'word/header1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true, description : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true } } }, { fileName : 'word/document.xml', vars : { def : {  }, undef : { last_name : true, first_name : true } } } ] )
 		it "should work with loop document", () ->
 			docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
 			tempVars= docX['tagLoopExample.docx'].getTags()
-			expect(tempVars).toEqual( [ { fileName : 'word/document.xml', vars : { def : {  }, undef : { offre : { nom : true, prix : true, titre : true }, nom : true, prenom : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { nom : true, prenom : true, telephone : true } } }, { fileName : 'word/header1.xml', vars : { def : {  }, undef : { nom : true, prenom : true } } } ] )
+			expect(tempVars).toEqual([ { fileName : 'word/header1.xml', vars : { def : {  }, undef : { nom : true, prenom : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { nom : true, prenom : true, telephone : true } } }, { fileName : 'word/document.xml', vars : { def : {  }, undef : { offre : { nom : true, prix : true, titre : true }, nom : true, prenom : true } } } ])
 
 	describe "xmlTemplater", ()->
 		it "should work with simpleContent", ()->
