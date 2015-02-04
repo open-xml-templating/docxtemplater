@@ -7,8 +7,9 @@
 
 ![docxtemplater logo](https://raw.githubusercontent.com/edi9999/docxtemplater/master/logo_small.png)
 
-**docxtemplater** is a library to generate docx documents from a docx template.
-It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
+**docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template.
+It can replace {placeholders} with data and also supports loops and conditions.
+The templates can be edited by non-programmers, eg for example your clients.
 
 ## Features
 
@@ -59,14 +60,13 @@ The full documentation of v1 can be found on [read the docs](http://docxtemplate
 
 See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
 
-docxtemplater@1.0.0 can be installed with: `npm install docxtemplater`
-
 ## Similar libraries
 
 They are a few similar libraries that work with docx, here’s a list of those I know a bit about:
 
  * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically
  * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
+ * xlsx-templater : its working quite well, does the same as here but for xlsx
 
 # Modules
 
