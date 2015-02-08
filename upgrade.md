@@ -1,6 +1,11 @@
 ### master
 
+
+### 1.0.4
+
   * pptx generation was repaired 2be10b69d47e8c4ba0f541e4d201b29ef6281505
+  * header generation works with any amount of headers/footers
+  * slide generation works with any amount of slides
 
 ### 1.0.3
 
