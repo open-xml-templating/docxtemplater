@@ -41,4 +41,4 @@ I recommend you to use browserify.
 
 The -s Docxgen will export docxgen to window.Docxgen for easy usage
 
-Your version of docxtemplater will be in /build (minified and non minified options).
+Your version of docxtemplater will be in /build (minified and non minified options) and already include all dependencies
