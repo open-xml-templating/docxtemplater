@@ -23,7 +23,7 @@ The templates can be edited by non-programmers, eg for example your clients.
 - <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
 
 
-## Quickstart
+## Quickstart in Node
 
 Installation: `npm install docxtemplater`
 
@@ -53,6 +53,54 @@ Installation: `npm install docxtemplater`
     fs.writeFileSync(__dirname+"/output.docx",buf);
 
 You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
+
+## Quickstart in the browser
+
+Installation:
+
+    git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
+    # git checkout v1.0.4 # Optional
+    npm install -g gulp jasmine-node uglify-js browserify
+    npm install
+    gulp allCoffee
+    mkdir build -p
+    browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
+    uglifyjs build/docxgen.js > build/docxgen.min.js # Optional
+
+The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/edi9999/docxtemplater/issues/118))
+
+create demo.html
+
+
+    <html>
+        <script src="build/docxgen.js"></script>
+        <script src="vendor/FileSaver.min.js"></script>
+        <script src="vendor/jszip-utils.js"></script>
+        <!--
+        Mandatory in IE 6, 7, 8 and 9.
+        -->
+        <!--[if IE]>
+            <script type="text/javascript" src="examples/vendor/jszip-utils-ie.js"></script>
+        <![endif]-->
+        <script>
+        var loadFile=function(url,callback){
+            JSZipUtils.getBinaryContent(url,callback);
+        }
+        loadFile("examples/tagExample.docx",function(err,content){
+            if (err) { throw e};
+            doc=new Docxgen(content);
+            doc.setData( {"first_name":"Hipp",
+                "last_name":"Edgar",
+                "phone":"0652455478",
+                "description":"New Website"
+                }
+            ) //set the templateVariables
+            doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+            out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+            saveAs(out,"output.docx")
+        })
+        </script>
+    </html>
 
 ## Documentation
 
