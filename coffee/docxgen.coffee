@@ -31,14 +31,16 @@ DocxGen=class DocxGen
 		@moduleManager.sendEvent('loaded')
 		@templatedFiles = @getTemplatedFiles()
 		this
+	renderFile:(fileName)->
+		@moduleManager.sendEvent('rendering-file',fileName)
+		currentFile= @createTemplateClass(fileName)
+		@zip.file(fileName,currentFile.render().content)
+		@moduleManager.sendEvent('rendered-file',fileName)
 	render:()->
 		@moduleManager.sendEvent('rendering')
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		for fileName in @templatedFiles when @zip.files[fileName]?
-			@moduleManager.sendEvent('rendering-file',fileName)
-			currentFile= @createTemplateClass(fileName)
-			@zip.file(fileName,currentFile.render().content)
-			@moduleManager.sendEvent('rendered-file',fileName)
+			@renderFile(fileName)
 		@moduleManager.sendEvent('rendered')
 		this
 	getTags:()->
