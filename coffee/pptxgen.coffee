@@ -1,6 +1,25 @@
 ###
 PptxGen.coffee
 Created by @contextmatters, based on DocxGen by Edgar HIPP
+
+Notes:
+Based on DocxGen, this class implements specifics for working with PPTx files.
+Most of the code below exists to manage the relationships necessary to support
+adding slides when content in a table spills over.
+
+0) render -> does the search/replacements as per DocXGen
+1) post render, it checks each slide for a table with more rows than the @chunkSize() (set in DocUtils.config["pptx.splitRows"]; 5 is the default)
+2) for each overflow table:
+ - figure out how many slides must be added
+ - use @splitTableIntoChunks() to break the table into bounded pieces based on the original slide; repeat header if desireed (set in DocUtils.config["pptx.repeatHeader"]; defaults to true)
+ - each addition is added to the updated TOC in @all_slides
+3) for each slide in @all_slides, add the file and the relationships to support it via @presentationLinks()
+ - pptx is a zip that keeps slides in "ppt/slides/slideN.xml"
+ - "[Content_Types].xml" keeps a list of files included
+ - "ppt/presentation.xml" - keeps a list of slide relationships (i.e. what slideLayout, master, handoutmaster, etc are used)
+ - "ppt/_rels/presentation.xml.rels" keeps a TOC that connects a filename to a relationship id (relId) via a "slidelst" entry
+4) once all of that is done, resume normal operations
+
 ###
 
 DocUtils=require('./docUtils')
@@ -15,7 +34,7 @@ PptxGen = class PptxGen extends DocxGen
 		if addition["first"]
 			@zip.file(addition["original_file_name"], addition["chunk"])
 		else
-			@addSlide(addition["original_index"], addition["new_index"], addition["chunk"]) #if addition["new_index"] != addition["original_index"]
+			@addSlide(addition["original_index"], addition["new_index"], addition["chunk"])
 
 	addSlide:(source, num, content)->
 		@zip.file("ppt/slides/slide"+num+".xml",content)
