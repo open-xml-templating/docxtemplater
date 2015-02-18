@@ -53,6 +53,7 @@ module.exports=class XmlTemplater #abstract class !!
 		trail=""
 		trailSteps=[]
 		@templaterState.offset=[]
+		@handleModuleManager('xmlRendering')
 		for match,numXmlTag in @templaterState.matches
 			innerText= match[2] #text inside the <w:t>
 			@templaterState.offset[numXmlTag]=0
@@ -91,6 +92,7 @@ module.exports=class XmlTemplater #abstract class !!
 						@handleModuleManager('replaceTag',loopType)
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
+		@handleModuleManager('xmlRendered')
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
