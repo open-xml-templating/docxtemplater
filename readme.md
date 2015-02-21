@@ -27,6 +27,7 @@ The templates can be edited by non-programmers, eg for example your clients.
 
 Installation: `npm install docxtemplater`
 
+```javascript
     fs=require(‘fs’)
     Docxtemplater = require('docxtemplater');
 
@@ -51,6 +52,7 @@ Installation: `npm install docxtemplater`
                  .generate({type:"nodebuffer"});
 
     fs.writeFileSync(__dirname+"/output.docx",buf);
+```
 
 You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
@@ -58,6 +60,7 @@ You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/maste
 
 Installation:
 
+```bash
     git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
     # git checkout v1.0.4 # Optional
     npm install -g gulp jasmine-node uglify-js browserify
@@ -66,12 +69,13 @@ Installation:
     mkdir build -p
     browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
     uglifyjs build/docxgen.js > build/docxgen.min.js # Optional
+```
 
 The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/edi9999/docxtemplater/issues/118))
 
 create demo.html
 
-
+```html
     <html>
         <script src="build/docxgen.js"></script>
         <script src="vendor/FileSaver.min.js"></script>
@@ -101,6 +105,7 @@ create demo.html
         })
         </script>
     </html>
+```
 
 ## Documentation
 
