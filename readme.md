@@ -28,7 +28,7 @@ The templates can be edited by non-programmers, eg for example your clients.
 Installation: `npm install docxtemplater`
 
 ```javascript
-    fs=require(‘fs’)
+    fs=require('fs')
     Docxtemplater = require('docxtemplater');
 
     //Load the docx file as a binary
