@@ -11,6 +11,8 @@
 It can replace {placeholders} with data and also supports loops and conditions.
 The templates can be edited by non-programmers, eg for example your clients.
 
+*Note*: The CLI will soon be moved to another repository : keep posted on https://github.com/open-xml-templating/docxtemplater-cli
+
 ## Features
 
 [Demo Site](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
