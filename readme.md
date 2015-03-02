@@ -1,11 +1,11 @@
 # docxtemplater v1
 
-[![Build Status](https://travis-ci.org/edi9999/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/edi9999/docxtemplater)
+[![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater)
 [![Download count](http://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater)
 [![Current tag](http://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater)
-[![Issues closed](http://issuestats.com/github/edi9999/docxtemplater/badge/issue?style=flat)](http://issuestats.com/github/edi9999/docxtemplater)
+[![Issues closed](http://issuestats.com/github/open-xml-templating/docxtemplater/badge/issue?style=flat)](http://issuestats.com/github/open-xml-templating/docxtemplater)
 
-![docxtemplater logo](https://raw.githubusercontent.com/edi9999/docxtemplater/master/logo_small.png)
+![docxtemplater logo](https://raw.githubusercontent.com/open-xml-templating/docxtemplater/master/logo_small.png)
 
 **docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template.
 It can replace {placeholders} with data and also supports loops and conditions.
@@ -56,14 +56,14 @@ Installation: `npm install docxtemplater`
     fs.writeFileSync(__dirname+"/output.docx",buf);
 ```
 
-You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
+You can download [input.docx](https://github.com/open-xml-templating/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
 ## Quickstart in the browser
 
 Installation:
 
 ```bash
-    git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
+    git clone git@github.com:open-xml-templating/docxtemplater.git && cd docxtemplater
     # git checkout v1.0.4 # Optional
     npm install -g gulp jasmine-node uglify-js browserify
     npm install
@@ -73,7 +73,7 @@ Installation:
     uglifyjs build/docxgen.js > build/docxgen.min.js # Optional
 ```
 
-The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/edi9999/docxtemplater/issues/118))
+The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/open-xml-templating/docxtemplater/issues/118))
 
 create demo.html
 
@@ -126,4 +126,4 @@ They are a few similar libraries that work with docx, here’s a list of those I
 # Modules
 
 Functionality can be added with modules. They is yet no doc for the modules because it is not completely mature yet, but you can open an issue if you have any question about it.
-I have already created one module that can add images using the syntax: `{%image}`, which is documented here: https://github.com/edi9999/docxtemplater-image-module
+I have already created one module that can add images using the syntax: `{%image}`, which is documented here: https://github.com/open-xml-templating/docxtemplater-image-module
