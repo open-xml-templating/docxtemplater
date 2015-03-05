@@ -29,7 +29,7 @@ module.exports=class TemplaterState
 		@inDashLoop = false	# tag with dash: {-w:tr dashLoop} {/dashLoop}
 		@rawXmlTag=false
 		@textInsideTag= ""
-	startTag:(char)->
+	startTag:()->
 		if @inTag is true then throw new Error("Unclosed tag : '#{@textInsideTag}'")
 		@inTag= true
 		@rawXmlTag=false
