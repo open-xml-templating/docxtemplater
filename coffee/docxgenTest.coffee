@@ -538,6 +538,16 @@ startTest=->
 				expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].asText().length).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].asText().length)
 				expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].asText()).toBe(docX['xmlInsertionComplexExpected.docx'].zip.files[i].asText())
 
+		it 'should work with closing tag in the form of <w:t>}{/body}</w:t>', () ->
+			scope = {body:[{paragraph:"hello"}]}
+			xmlTemplater= new DocXTemplater("""
+			  <w:t>{#body}</w:t>
+			  <w:t>{paragraph</w:t>
+			  <w:t>}{/body}</w:t>""",{Tags:scope})
+
+			xmlTemplater.render()
+			expect(xmlTemplater.content).not.toContain('</w:t></w:t>')
+
 	describe 'SubContent', () ->
 		sub=new SubContent("start<w:t>text</w:t>end")
 		sub.start=10
