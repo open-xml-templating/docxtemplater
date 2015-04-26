@@ -176,7 +176,7 @@ module.exports=class XmlTemplater #abstract class !!
 				insideValue:@templaterState.getRightValue()
 				spacePreserve:true
 				xmlTagNumber:@templaterState.tagEnd.numXmlTag
-				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+				noEndTag:@templaterState.matches[@templaterState.tagEnd.numXmlTag].last?
 
 			return @replaceXmlTag(content, options)
 	replaceLoopTag:()->
