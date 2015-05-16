@@ -98,6 +98,25 @@ With the Dash syntax you pass as a first argument the tag you want to loop on:
 
 In this case this will loop over the first parent <w:p> tag
 
+Raw Xml syntax
+-----------
+
+Sometimes, you would like to insert your custom XML (a complex table, a formula, ...)
+
+With the RawXml syntax the variable is interpreted as XML and replaced in the formula
+
+.. code-block:: javascript
+
+    {@rawXml}
+
+with this data:
+
+.. code-block:: javascript
+
+    {rawXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'}
+
+This will loop over the first parent <w:p> tag
+
 Inverted Selections
 -------------------
 
