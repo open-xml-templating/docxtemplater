@@ -20,7 +20,7 @@ Image Replacing
 
 .. note::
 
-    The imageReplacing feature has been removed from the main docxtemplater package. This feature will be implemented in the future in an external module.
+    The imageReplacing feature has been removed from the main docxtemplater package. This feature has been implemented in an external module that can be found here : https://github.com/edi9999/docxtemplater-image-module.
 
 Custom Parser
 --------------
@@ -66,6 +66,22 @@ To use the angular-parser, do the following:
 .. note::
 
     The require() works in the browser if you include vendor/angular-parser-browser.js
+
+
+Custom delimiters
+-----------------
+
+You can set up your custom delimiters with this syntax:
+
+.. code-block:: javascript
+
+    new DocxGen(data)
+        .setOptions({delimiters:{start:'[[',end:']]'}})
+
+.. warning::
+
+    In previous versions, you could write `DocUtils.Tags={start:'[[',end:']]'};`, but this is deprecated now and will be removed in future versions.
+
 
 Intelligent LoopTagging
 -----------------------

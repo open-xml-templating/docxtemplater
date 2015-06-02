@@ -34,6 +34,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@scopeList= if options.scopeList? then options.scopeList else [@Tags]
+<<<<<<< HEAD
 		@usedTags=if options.usedTags? then options.usedTags else {}
 <<<<<<< HEAD
 		@imageId=if options.imageId? then options.imageId else 0
@@ -41,6 +42,9 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@parser= if options.parser? then options.parser else root.DocUtils.defaultParser
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@Tags,@parser)
 =======
+=======
+		@usedTags=if options.usedTags? then options.usedTags else {def:{},undef:{}}
+>>>>>>> upstream/master
 		@parser= if options.parser? then options.parser else DocUtils.defaultParser
 		@moduleManager=if options.moduleManager? then options.moduleManager else new ModuleManager()
 		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager)
@@ -78,6 +82,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		trail=""
 		trailSteps=[]
 		@templaterState.offset=[]
+		@handleModuleManager('xmlRendering')
 		for match,numXmlTag in @templaterState.matches
 			innerText= match[2] #text inside the <w:t>
 			@templaterState.offset[numXmlTag]=0
@@ -98,10 +103,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 						console.error @content
 						console.error m[0]
 						throw new Error("no < at the beginning of #{m[0][0]} (2)")
-				if trail == DocUtils.tags.start
+				@sameTags = DocUtils.tags.start == DocUtils.tags.end
+				if (@sameTags is true and @templaterState.inTag is false and trail == DocUtils.tags.start) or (@sameTags is false and trail == DocUtils.tags.start)
 					@templaterState.currentStep=trailSteps[0]
 					@templaterState.startTag()
-				else if trail == DocUtils.tags.end
+				else if (@sameTags is true and @templaterState.inTag is true and trail == DocUtils.tags.end) or (@sameTags is false and trail == DocUtils.tags.end)
 					@templaterState.endTag()
 					loopType=@templaterState.loopType()
 					if loopType=='simple'
@@ -116,11 +122,15 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 				else
 					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if @DocxGen? and @DocxGen.qrCode
 			new ImgReplacer(this).findImages().replaceImages()
 			new ChartReplacer(this).findCharts().replaceCharts()
 =======
 >>>>>>> upstream/1.x
+=======
+		@handleModuleManager('xmlRendered')
+>>>>>>> upstream/master
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
@@ -147,14 +157,21 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
 		@forLoop(innerXmlText,outerXmlText)
 	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber,noEndTag)->
-		if noStartTag == true
+		if noStartTag
 			return insideValue
+		if spacePreserve
+			str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
 		else
+<<<<<<< HEAD
 			if spacePreserve==true 
 				str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
 			else
 				str=@templaterState.matches[xmlTagNumber][1]+insideValue
 			if noEndTag==true then return str else return str+"</#{@tagXml}>"
+=======
+			str=@templaterState.matches[xmlTagNumber][1]+insideValue
+		if noEndTag then return str else return str+"</#{@tagXml}>"
+>>>>>>> upstream/master
 	replaceXmlTag: (content,options) ->
 		xmlTagNumber=options.xmlTagNumber
 		insideValue=options.insideValue
@@ -172,20 +189,17 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 		@templaterState.matches[xmlTagNumber][0]=replacer
 		content
 	replaceTagByValue:(newValue,content) ->
+		options=
+			xmlTagNumber:@templaterState.tagStart.numXmlTag
+			noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+			noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
-			options=
-				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				insideValue:@templaterState.getLeftValue()+newValue+@templaterState.getRightValue()
-				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
-				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
-
+			options.insideValue=@templaterState.getLeftValue()+newValue+@templaterState.getRightValue()
 			return @replaceXmlTag(content,options)
-		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w> or worse
-			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
-			options=
-				xmlTagNumber:@templaterState.tagStart.numXmlTag
-				noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w>
+			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
 			options.insideValue=newValue
 			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
@@ -207,6 +221,7 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			options =
 				insideValue:@templaterState.getRightValue()
 				spacePreserve:true
+<<<<<<< HEAD
 				xmlTagNumber:k
 
 				noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last? or @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
@@ -215,6 +230,11 @@ root.XmlTemplater =  class XmlTemplater #abstract class !!
 			content= @replaceXmlTag(content, options)
 		content
 =======
+=======
+				xmlTagNumber:@templaterState.tagEnd.numXmlTag
+				noEndTag:@templaterState.matches[@templaterState.tagEnd.numXmlTag].last?
+
+>>>>>>> upstream/master
 			return @replaceXmlTag(content, options)
 >>>>>>> upstream/1.x
 	replaceLoopTag:()->

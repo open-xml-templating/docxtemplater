@@ -17,7 +17,7 @@ The full config.json should be something like that:
 .. code-block:: javascript
 
     {
-        "config.docxFile":"input.docx",
+        "config.inputFile":"input.docx",
         "config.outputFile":"output.docx",
         "config.qrcode":true,
         "config.debug":true,
