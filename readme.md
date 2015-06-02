@@ -1,66 +1,135 @@
-# docxtemplater
+# docxtemplater v1
 
-You can now use the v1 package (which is still in beta and may change). See [here for the new readme](https://github.com/edi9999/docxtemplater/tree/1.x)
-[![Build Status](https://travis-ci.org/edi9999/docxtemplater.svg?branch=master)](https://travis-ci.org/edi9999/docxtemplater)
-[![Download count](http://img.shields.io/npm/dm/docxtemplater.svg)](https://www.npmjs.org/package/docxtemplater)
-[![Current tag](http://img.shields.io/npm/v/docxtemplater.svg)](https://www.npmjs.org/package/docxtemplater)
+[![Join the chat at https://gitter.im/open-xml-templating/docxtemplater](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/open-xml-templating/docxtemplater?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**docxtemplater** is a library to generate docx documents from a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.
+[![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater)
+[![Download count](http://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater)
+[![Current tag](http://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater)
+[![Issues closed](http://issuestats.com/github/open-xml-templating/docxtemplater/badge/issue?style=flat)](http://issuestats.com/github/open-xml-templating/docxtemplater)
 
-## Documentation (V1)
+![docxtemplater logo](https://raw.githubusercontent.com/open-xml-templating/docxtemplater/master/logo_small.png)
 
-The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/1.x/).
+**docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template.
+It can replace {placeholders} with data and also supports loops and conditions.
+The templates can be edited by non-programmers, eg for example your clients.
 
-docxtemplater@1.0.0 is still in beta and can be installed with: `npm install docxtemplater@beta`
+*Note*: The CLI will soon be moved to another repository : keep posted on https://github.com/open-xml-templating/docxtemplater-cli
 
-They may be some breaking changes when the 1.0.0 version comes out.
+## Features
 
-## Demo
+[Demo Site](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
 
-[All demos can be found here](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
-
-Including:
-
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace Variables</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#formating">Formating</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Angular Parsing</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Loops</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Loops and tables</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#lists">Lists</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#images">Replacing images</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#naming">Naming the output</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#qrcode">Using QrCodes</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#qrcodeloop">Replacing many images with QrCode</a><br>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Raw Xml Insertion</a><br>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace a {placeholder} by a value</a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Use loops in tables to generate columns</a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#images">Replace {%images}</a>
+- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
 
 
-## Quickstart
+## Quickstart in Node
 
-Installation: `npm install docxtemplater@beta`
+Installation: `npm install docxtemplater`
 
-    //Only for Node Usage
-    DocxGen=require('docxtemplater'); 
-    content=fs.readFileSync(__dirname+"/input.docx","binary")
+```javascript
+fs=require('fs')
+Docxtemplater = require('docxtemplater');
 
-    doc=new DocxGen(content);
-    doc.setData({
-        "first_name":"Hipp",
-        "last_name":"Edgar",
-        "phone":"0652455478",
-        "description":"New Website"
-    }) //set the templateVariables
-    doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-    zip=doc.getZip() //Get the zip representation of the docx
+//Load the docx file as a binary
+content = fs
+    .readFileSync(__dirname+"/input.docx","binary")
 
-    //Only for Node Usage
-    output=zip.generate({type:"base64"})
-    fs.writeFileSync(__dirname+"/output.docx",output,"binary")
+doc=new Docxtemplater(content);
 
-You can download [input.docx](https://github.com/edi9999/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
+//set the templateVariables
+doc.setData({
+    "first_name":"Hipp",
+    "last_name":"Edgar",
+    "phone":"0652455478",
+    "description":"New Website"
+});
+
+//apply them (replace all occurences of {first_name} by Hipp, ...)
+doc.render();
+
+var buf = doc.getZip()
+             .generate({type:"nodebuffer"});
+
+fs.writeFileSync(__dirname+"/output.docx",buf);
+```
+
+You can download [input.docx](https://github.com/open-xml-templating/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
+
+## Quickstart in the browser
+
+Installation:
+
+```bash
+git clone git@github.com:open-xml-templating/docxtemplater.git && cd docxtemplater
+# git checkout v1.0.4 # Optional
+npm install -g gulp jasmine-node uglify-js browserify
+npm install
+gulp allCoffee
+mkdir build -p
+browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
+uglifyjs build/docxgen.js > build/docxgen.min.js # Optional
+```
+
+The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/open-xml-templating/docxtemplater/issues/118))
+
+create demo.html
+
+```html
+<html>
+    <script src="build/docxgen.js"></script>
+    <script src="vendor/FileSaver.min.js"></script>
+    <script src="vendor/jszip-utils.js"></script>
+    <!--
+    Mandatory in IE 6, 7, 8 and 9.
+    -->
+    <!--[if IE]>
+        <script type="text/javascript" src="examples/vendor/jszip-utils-ie.js"></script>
+    <![endif]-->
+    <script>
+    var loadFile=function(url,callback){
+        JSZipUtils.getBinaryContent(url,callback);
+    }
+    loadFile("examples/tagExample.docx",function(err,content){
+        if (err) { throw e};
+        doc=new Docxgen(content);
+        doc.setData( {"first_name":"Hipp",
+            "last_name":"Edgar",
+            "phone":"0652455478",
+            "description":"New Website"
+            }
+        ) //set the templateVariables
+        doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+        out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+        saveAs(out,"output.docx")
+    })
+    </script>
+</html>
+```
+
+## Documentation
+
+The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
+
+See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
 
 ## Similar libraries
 
 They are a few similar libraries that work with docx, here’s a list of those I know a bit about:
 
- * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically 
+ * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically
  * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
+ * xlsx-templater : its working quite well, does the same as here but for xlsx
+
+# Modules
+
+Functionality can be added with modules. They is yet no doc for the modules because it is not completely mature yet, but you can open an issue if you have any question about it.
+I have already created one module that can add images using the syntax: `{%image}`, which is documented here: https://github.com/open-xml-templating/docxtemplater-image-module
+
+# Professional Support
+
+I can give your company support for installing, extending, answering support questions, or maintainning your app that runs docxtemplater. You can find my email address on my [profile](https://github.com/edi9999)

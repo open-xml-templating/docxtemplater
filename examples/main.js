@@ -7,19 +7,9 @@ function textAreaAdjust(o) {
 }
 
 loadFile=function(url,callback){
-	xhrDoc= new XMLHttpRequest()
-	xhrDoc.open('GET', url , true)
-	if (xhrDoc.overrideMimeType)
-		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
-	xhrDoc.onreadystatechange =function(e){
-		if (this.readyState == 4) {
-			if (this.status == 200)
-				callback(null,this.response)
-			else
-				callback(e);
-        }
-    }
-	xhrDoc.send()
+    JSZipUtils.getBinaryContent(url,function(err,data){
+		callback(null,data)
+    });
 }
 
 window.onload=  function () {

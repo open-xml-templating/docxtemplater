@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+root= global ? window
+env= if global? then 'node' else 'browser'
+
+root.DocXTemplater = class DocXTemplater extends XmlTemplater
+	xmlUtil=new XmlUtil()
+=======
 XmlTemplater=require('./xmlTemplater')
 xmlUtil=require('./xmlUtil')
 
 DocXTemplater = class DocXTemplater extends XmlTemplater
+>>>>>>> upstream/1.x
 	constructor:(content="",options={}) ->
 		super("",options)
-		@currentClass=DocXTemplater
+		@currentClass=root.DocXTemplater
 		@tagXml='w:t'
 		if typeof content=="string" then @load content else throw new Error("content must be string!")
 	calcIntellegentlyDashElement:()->
@@ -14,5 +22,3 @@ DocXTemplater = class DocXTemplater extends XmlTemplater
 			if t.tag=='<w:tc>'
 				return 'w:tr'
 		return super()
-
-module.exports=DocXTemplater

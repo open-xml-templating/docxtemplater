@@ -3,7 +3,7 @@ xmlUtil=require('./xmlUtil')
 
 PptXTemplater = class PptXTemplater extends XmlTemplater
 	constructor:(content="",options={}) ->
-		super("",options)
+		super(content,options)
 		@currentClass=PptXTemplater
 		@tagXml='a:t'
 		if typeof content=="string" then @load content else throw new Error("content must be string!")

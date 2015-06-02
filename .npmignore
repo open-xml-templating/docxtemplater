@@ -24,6 +24,7 @@ docxgenNode/input.json
 test/spec/output.docx
 /output.docx
 tags
+/docs/build
 /examples
 /coffee
 /docs

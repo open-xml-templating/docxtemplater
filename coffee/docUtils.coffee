@@ -1,8 +1,17 @@
+<<<<<<< HEAD
+root= global ? window
+env= if global? then 'node' else 'browser'
+
+root.DocUtils= {}
+root.docX=[]
+root.docXData=[]
+=======
 DocUtils= {}
 DocUtils.getPathConfig=()->
 	if !DocUtils.pathConfig? then return ""
 	if DocUtils.env=='node' then return DocUtils.pathConfig.node
 	DocUtils.pathConfig.browser
+>>>>>>> upstream/1.x
 
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -25,10 +34,100 @@ DocUtils.utf8ToWord= (string) ->
 
 DocUtils.defaultParser=(tag) ->
 	return {
-	'get':(scope) ->
-		if tag=='.' then return scope else return scope[tag]
+	'get':(scope) -> return scope[tag]
 	}
 
+<<<<<<< HEAD
+DocUtils.nl2br = (str,is_xhtml) ->
+	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+
+DocUtils.loadDoc= (path,options={}) ->
+	noDocx= if options.docx? then !options.docx else false
+	async=if options.async? then options.async else false
+	intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else false
+	callback=if options.callback? then options.callback else null
+	basePath=""
+	if !path? then throw new Error('path not defined')
+	if path.indexOf('/')!=-1
+		totalPath= path
+		fileName= totalPath
+	else
+		fileName= path
+		if basePath=="" && DocUtils.pathConfig? #set basePath only if it wasn't set as an argument
+			if env=='browser'
+				basePath= DocUtils.pathConfig.browser
+			else
+				basePath= DocUtils.pathConfig.node
+		totalPath= basePath+path
+	loadFile = (data) ->
+		root.docXData[fileName]=data
+		if noDocx==false
+			root.docX[fileName]=new DocxGen(data,{},{intelligentTagging:intelligentTagging})
+			return root.docX[fileName]
+		if callback?
+			callback(root.docXData[fileName])
+		if async==false
+			return root.docXData[fileName]
+	if env=='browser'
+		xhrDoc= new XMLHttpRequest()
+		xhrDoc.open('GET', totalPath , async)
+		if xhrDoc.overrideMimeType
+			xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+		xhrDoc.onreadystatechange =(e)->
+			if this.readyState == 4
+				if this.status == 200
+					loadFile(this.response)
+				else
+					if callback? then callback(true)
+		xhrDoc.send()
+	else
+		httpRegex= new RegExp "(https?)","i"
+		# httpsRegex= new RegExp "(https)://"
+		if httpRegex.test(path)
+			urloptions=(url.parse(path))
+			options =
+				hostname:urloptions.hostname
+				path:urloptions.path
+				method: 'GET'
+				rejectUnauthorized:false
+
+			errorCallback= (e) ->
+				throw new Error("Error on HTTPS Call")
+
+			reqCallback= (res)->
+				res.setEncoding('binary')
+				data = ""
+				res.on('data', (chunk)->
+					data += chunk
+				)
+				res.on('end', ()->
+					loadFile(data))
+			switch urloptions.protocol
+				when "https:"
+					req = https.request(options, reqCallback).on('error',errorCallback)
+				when 'http:'
+					req = http.request(options, reqCallback).on('error',errorCallback)
+			req.end();
+
+		else
+			if async==true
+				fs.readFile totalPath,"binary", (err, data) ->
+					if err
+						if callback? then callback(true)
+					else
+						loadFile(data)
+						if callback? then callback(data)
+			else
+				try
+					data=fs.readFileSync(totalPath,"binary")
+					a=loadFile(data)
+					if callback? then callback(data) else return a
+				catch e
+					if callback? then callback()
+	return fileName
+
+=======
+>>>>>>> upstream/1.x
 DocUtils.tags=
 	start:'{'
 	end:'}'
@@ -53,7 +152,35 @@ DocUtils.clone = (obj) ->
 	for key of obj
 		newInstance[key] = DocUtils.clone obj[key]
 
+<<<<<<< HEAD
+	return newInstance
+
+DocUtils.xml2Str = (xmlNode) ->
+	if xmlNode==undefined
+		throw new Error("xmlNode undefined!")
+	try
+		if global?
+			a= new XMLSerializer()
+			content= a.serializeToString(xmlNode)
+		# Gecko- and Webkit-based browsers (Firefox, Chrome), Opera.
+		else
+			content=(new XMLSerializer()).serializeToString(xmlNode);
+	catch e
+		content= xmlNode.xml;
+	content= content.replace /\x20xmlns=""/g, '' #remove all added xmlns="" (these cause the file to be corrupt and was a problem for firefox)
+
+DocUtils.Str2xml= (str) ->
+	if root.DOMParser #Chrome, Firefox, and modern browsers
+		parser=new DOMParser();
+		xmlDoc=parser.parseFromString(str,"text/xml")
+	else # Internet Explorer
+		xmlDoc=new ActiveXObject("Microsoft.XMLDOM")
+		xmlDoc.async=false
+		xmlDoc.loadXML(str)
+	xmlDoc
+=======
 	newInstance
+>>>>>>> upstream/1.x
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
@@ -98,6 +225,10 @@ DocUtils.sizeOfObject = (obj) ->
 		size++
 	size
 
+<<<<<<< HEAD
+Array.prototype.max = () -> Math.max.apply(null, this)
+Array.prototype.min = () -> Math.min.apply(null, this)
+=======
 DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
 	endTag= text.indexOf('</'+xmlTag+'>',end)
 	if endTag==-1 then throw new Error("can't find endTag #{endTag}")
@@ -107,3 +238,4 @@ DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
 	{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 
 module.exports=DocUtils
+>>>>>>> upstream/1.x

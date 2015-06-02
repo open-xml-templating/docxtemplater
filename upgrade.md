@@ -1,3 +1,24 @@
+### master
+
+
+### 1.0.4
+
+  * pptx generation was repaired 2be10b69d47e8c4ba0f541e4d201b29ef6281505
+  * header generation works with any amount of headers/footers
+  * slide generation works with any amount of slides
+
+### 1.0.3
+
+  * docx.setOptions({delimiters:{start:”[“,end:”]”}}) now works e2d06dedd88860d2dac3d598b590bf81e2d113a6
+
+### 1.0.2
+
+  * allowing same tag as start and end delimiter (eg @user@ instead of {user}) 32b9a7645f659ae835fd695e4d8ea99cc6bbec94
+
+### 1.0.1
+
+  * made it possible to use objects to loop over (eg {#user} {name} {/user}) 97411cb3537be08f48ff707ac34d6aac8b008c50
+
 ### From 0.7.x to 1
 
  * docxtemplater doesn’t depend on fs anymore, for transparency and security reasons.

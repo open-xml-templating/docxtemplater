@@ -1,8 +1,10 @@
 language: node_js
 
 node_js:
+    - "0.12"
     - "0.11"
-    - "0.10.32"
+    - "0.10"
+    - "iojs"
 
 before_script:
     - "npm install -g npm"

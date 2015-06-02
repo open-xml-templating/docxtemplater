@@ -1,4 +1,4 @@
-DocxGenJS is dual licensed. You may use it under the MIT license *or* the GPLv3
+docxtemplater is dual licensed. You may use it under the MIT license *or* the GPLv3
 license.
 
 The MIT License

@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var watch= require('gulp-watch');
-var rename= require('gulp-rename');
 var coffee= require('gulp-coffee');
 var concat= require('gulp-concat');
 var uglify= require('gulp-uglify');
@@ -23,12 +22,20 @@ try {
 var config={uglify:false}
 
 var paths = {
+<<<<<<< HEAD
+	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/fileManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/chartReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
+=======
 	coffee: ['coffee/moduleManager.coffee','coffee/index.coffee','coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/docxgen.coffee','coffee/pptxgen.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/pptxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee','coffee/cli.coffee'],
+>>>>>>> upstream/1.x
 	coffeeTest: ['coffee/docxgenTest.coffee'],
-	testDirectory:__dirname+'/test/spec',
-    js:'js/'
+	testDirectory:__dirname+'/test/spec'
 };
 
+<<<<<<< HEAD
+gulp.task('watch', function () {
+	gulp.watch(paths.coffee,['coffee','jasmine','livereload']);
+	gulp.watch(paths.coffeeTest,['coffeeTest']);
+=======
 
 gulp.task('browserify', function() {
     browserified=gulp.src(__dirname+'/test/spec/docxgenTest.spec.js')
@@ -48,35 +55,7 @@ gulp.task('browserify', function() {
 
     browserified
         .pipe(gulp.dest(__dirname+'/browser/'))
-});
-
-gulp.task('allCoffee', function () {
-	gulp.src(paths.coffee)
-        .pipe(coffee({bare:true}))
-        .pipe(gulp.dest(paths.js))
-
-	a=gulp.src(paths.coffeeTest)
-		.pipe(coffee({map:true}))
-
-	if(config.uglify)
-		a=a.pipe(uglify())
-
-	a=a.pipe(concat('docxgenTest.spec.js'))
-		.pipe(gulp.dest('./test/spec'));
-});
-
-gulp.task('watch', function () {
-	gulp.src(paths.coffee)
-		.pipe(watch(function(files) {
-			var f=files.pipe(coffee({bare:true}))
-				.pipe(gulp.dest(paths.js))
-			gulp.run('browserify');
-			gulp.run('jasmine');
-			gulp.run('livereload');
-			return f;
-		}));
-
-	gulp.watch(paths.coffeeTest,['coffeeTest']);
+>>>>>>> upstream/1.x
 });
 
 gulp.task('coffeeTest', function() {
@@ -94,14 +73,59 @@ gulp.task('coffeeTest', function() {
 	return a;
 });
 
-gulp.task('livereload',function(cb) {
+gulp.task('coffee', function(cb) {
+    blink1.fadeToRGB(40, 120, 120, 0); // r, g, b: 0 - 255
+	a= gulp.src(paths.coffee)
+		.pipe(coffee({map:true}))
+
+	fileName='docxgen.js'
+	if (config.uglify)
+		{
+			fileName='docxgen.min.js'
+			a=a.pipe(uglify())
+		}
+
+	a=a
+		.pipe(concat(fileName))
+		.pipe(gulp.dest('./js/'));
+
+	return a;
+	cb(err)
+});
+
+
+gulp.task('allCoffee', function(cb) {
+	a= gulp.src(paths.coffee)
+		.pipe(coffee({map:true}))
+		.pipe(uglify())
+		.pipe(concat('docxgen.min.js'))
+		.pipe(gulp.dest('./js/'));
+
+	b= gulp.src(paths.coffee)
+		.pipe(coffee({map:true}))
+		.pipe(concat('docxgen.js'))
+		.pipe(gulp.dest('./js/'));
+
+	a=gulp.src(paths.coffeeTest)
+		.pipe(coffee({map:true}))
+
+	if(config.uglify)
+		a=a.pipe(uglify())
+
+	a=a.pipe(concat('docxgenTest.spec.js'))
+		.pipe(gulp.dest('./test/spec'));
+
+	return a
+});
+
+gulp.task('livereload',['coffee'],function(cb) {
 	if (server==null)
 		server=livereload();
 	server.changed('SpecRunner.html');
 	cb()
 })
 
-gulp.task('jasmine',function(cb) {
+gulp.task('jasmine', ['coffee'], function(cb) {
 	time=new Date();
 	var child = spawn( "jasmine-node",["docxgenTest.spec.js"], {cwd:paths.testDirectory});
 	stdout = '',
@@ -151,4 +175,4 @@ gulp.task('jasmine',function(cb) {
 	});
 });
 
-gulp.task('default',['coffeeTest','jasmine','watch','livereload']);
+gulp.task('default',['coffeeTest','coffee','jasmine','watch','livereload']);
