@@ -27,4 +27,18 @@ If you want to use the command line interface, you should use the global flag, e
 Browser
 -------
 
-You will just have to include the docxgen.js or docxgen.min.js file.
+I recommend you to use browserify.
+
+.. code-block:: javascript
+
+    git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
+    npm install -g gulp jasmine-node uglify-js
+    npm install
+    gulp allCoffee
+    mkdir build -p
+    browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
+    uglifyjs build/docxgen.js > build/docxgen.min.js
+
+The -s Docxgen will export docxgen to window.Docxgen for easy usage
+
+Your version of docxtemplater will be in /build (minified and non minified options).

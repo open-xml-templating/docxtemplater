@@ -1,0 +1,8 @@
+{
+	"config.inputFile":"cli/tagExample.docx",
+	"config.outputFile":"cli/output.docx",
+	"first_name":"Edgar",
+	"last_name":"Gri",
+	"phone":"045546846",
+	"description":"Contractor"
+}

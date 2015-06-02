@@ -2,21 +2,25 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Demo of DocxGenJS</title>
+	<title>Demo of docxtemplater</title>
 	<link rel="stylesheet" href="main.css">
 
 	<!-- Mandatory js for the library to work -->
 	<script type="text/javascript" src="../browser/main.min.js"></script>
+	<script src="../build/angular-expressions.js"></script>
 
+	<script src="../vendor/FileSaver.min.js"></script>
 	<!-- Include this only if you want to use downloadify (last example) -->
 	<script src="../vendor/downloadify/js/downloadify.min.js"></script>
 	<script src="../vendor/downloadify/js/swfobject.js"></script>
 </head>
 <body>
 
-<h1>DocxGenJS</h1>
 
-<p><b>docxgen.js</b> is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.</p>
+
+<h1>docxtemplater v1</h1>
+
+<p><b>docxtemplater</b> is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.</p>
 
 <a href="#variables">Replace Variables</a><br>
 <a href="#formating">Formating</a><br>
@@ -24,11 +28,11 @@
 <a href="#loops">Loops</a><br>
 <a href="#tables">Loops and tables</a><br>
 <a href="#lists">Lists</a><br>
-<a href="#images">Replacing images</a><br>
 <a href="#naming">Naming the output</a><br>
 <a href="#qrcode">Using QrCodes</a><br>
 <a href="#qrcodeloop">Replacing many images with QrCode</a><br>
 <a href="#rawxml">Raw Xml Insertion</a><br>
+
 
 <h1>Templates</h1>
 
@@ -51,21 +55,45 @@ DocxGen is based on word templates.
 	<td colspan="3">
 		<h3>Code Used:</h3>
 		<textarea raw='tagExample.docx'>
-new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
-	doc.setTags( {"first_name":"Hipp",
-		"last_name":"Edgar",
-		"phone":"0652455478",
-		"description":"New Website"
-		}
-	) //set the templateVariables
-	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	doc.output() //Output the document using Data-URI
-});
-		</textarea>
+            loadFile("tagExample.docx",function(err,content){
+                doc=new DocxGen(content)
+                doc.setData( {"first_name":"Hipp",
+                    "last_name":"Edgar",
+                    "phone":"0652455478",
+                    "description":"New Website"
+                    }
+                ) //set the templateVariables
+                doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+                out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+                saveAs(out,"output.docx")
+            })
+	</textarea>
 	</td>
 </tr>
 </table>
 </section>
+
+<h2>loadFile</h2>
+
+loadFile is the following function:
+
+<pre>
+loadFile=function(url,callback){
+	xhrDoc= new XMLHttpRequest()
+	xhrDoc.open('GET', url , true)
+	if (xhrDoc.overrideMimeType)
+		xhrDoc.overrideMimeType('text/plain; charset=x-user-defined')
+	xhrDoc.onreadystatechange =function(e){
+		if (this.readyState == 4) {
+			if (this.status == 200)
+				callback(null,this.response)
+			else
+				callback(e);
+        }
+    }
+	xhrDoc.send()
+}
+</pre>
 
 <section>
 <h2 id='formating'><em>Formating</em>: DocxGen doesn't ever change your formatting!</h2>
@@ -85,15 +113,18 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 	<td colspan="3">
 		<h3>Code Used:</h3>
 		<textarea raw='tagFormating.docx'>
-new DocxGen().loadFromFile("tagFormating.docx",{async:true}).success(function(doc){
-	doc.setTags({
+
+            loadFile("tagFormating.docx",function(err,content){
+	doc=new DocxGen(content)
+	doc.setData({
 		"first_name":"Hipp",
 		"last_name":"Edgar",
 		"phone":"0652455478",
 		"description":"New Website"
 		}); //set the templateVariables
-	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	doc.output() //Output the document using Data-URI
+	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+	saveAs(output,"output.docx")
 });
 		</textarea>
 	</td>
@@ -126,16 +157,19 @@ angularParser= function(tag){
 	return {get:expr};
 }
 
-new DocxGen().loadFromFile("angularExample.docx",{async:true,parser:angularParser}).success(function(doc){
-	doc.setTags({
+	loadFile("angularExample.docx",function(err,content){
+	doc=new DocxGen(content)
+	doc.setOptions({parser:angularParser})
+	doc.setData({
 		person:{
 			first_name:"Hipp",
 			last_name:"Edgar",
 			birth_year:1955,
 			age:59
 		}}); //set the templateVariables
-	doc.applyTags() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	doc.output() //Output the document using Data-URI
+	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+	saveAs(output,"output.docx")
 });
 		</textarea>
 	</td>
@@ -158,8 +192,9 @@ new DocxGen().loadFromFile("angularExample.docx",{async:true,parser:angularParse
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagLooping.docx">
-new DocxGen().loadFromFile("tagLooping.docx",{async:true}).success(function(doc){ 
-doc.setTags({
+	loadFile("tagLooping.docx",function(err,content){
+	doc=new DocxGen(content)
+doc.setData({
 	"products": [{
  	 	 "title":"Duk",
  	 	 "name":"DukSoftware",
@@ -169,8 +204,9 @@ doc.setTags({
  	 	 "name":"Tingerlee",
  	 	 "reference":"T00"
 	}]}); //set the templateVariables
-doc.applyTags() //apply them
-doc.output() //Output the document using Data-URI
+doc.render() //apply them
+output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+saveAs(output,"output.docx")
 });
 				</textarea>
 			</td>
@@ -194,8 +230,9 @@ doc.output() //Output the document using Data-URI
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagIntelligentLoopTable.docx">
-var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,intelligentTagging:true}).success(function(doc){
-	doc.setTags({
+	loadFile("tagIntelligentLoopTable.docx",function(err,content){
+	doc=new DocxGen(content)
+	doc.setData({
 		"clients":[{
 			"first_name":"John",
 			"last_name":"Doe",
@@ -205,8 +242,9 @@ var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,i
 			"last_name":"Doe",
 			"phone":"+445476454"
 		}]}); //set the templateVariables
-	doc.applyTags() //apply them
-	doc.output() //Output the document using Data-URI					
+	doc.render() //apply them
+	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI					
+	saveAs(output,"output.docx")
 });
 				</textarea>
 			</td>
@@ -229,105 +267,15 @@ var doc= new DocxGen().loadFromFile("tagIntelligentLoopTable.docx",{async:true,i
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="tagDashLoopList.docx">
-var doc= new DocxGen().loadFromFile("tagDashLoopList.docx",{async:true}).success(function(doc){ 
-	doc.setTags(
+	loadFile("tagDashLoopList.docx",function(err,content){
+	doc=new DocxGen(content)
+	doc.setData(
 	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]} 
 	)
-	doc.applyTags()
-	doc.output()
+	doc.render()
+	output=doc.getZip().generate({type:"blob"})
+	saveAs(output,"output.docx")
 });
-				</textarea>
-			</td>
-		</tr>
-	</table>
-</section>
-
-<section>
-	<h2 id='naming'><em>Naming:</em> Don't wanna see download.docx ?</h2>
-	<p>Sorry mate, if you want this, you're going to need flash :-(. This will open up a flash popup that will prompt the user to save the file where he wants to</p>
-	<table class="demo">
-		<tr>
-			<td>
-				<img src="images/textTagging.PNG" alt="">
-			</td>
-			<td>
-			<div>=> <br>Results in:</div>
-			</td>
-			<td>
-				<img src="images/textTaggingResult.PNG" alt="">		
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<h3>Code Used:</h3>
-				<textarea raw="tagExample.docx">
-new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc){
-	doc.setTags({
-			"first_name":"Hipp",
-			"last_name":"Edgar",
-			"phone":"0652455478",
-			"description":"New Website"
-		});
-	doc.applyTags()
-	doc.download('../vendor/downloadify/media/downloadify.swf','../vendor/downloadify/images/download.png',"taggedDoc.docx")
-});
-				</textarea>
-			</td>
-		</tr>
-		<tr>
-		<td colspan="3">
-			<p id="downloadify"> You must have Flash 10 installed to download this file.  </p>
-		</td>
-		</tr>
-	</table>
-</section>
-
-<section>
-	<h2 id='qrcode'><em>QrCode:</em>Replace a specific image</h2>
-	<p>If you scan the qrcode on the left, you will get the value "Firefox_logo.png" So docxtemplater will load that image and replace the image, keeping the style of the original image (which is really great). You can put tags inside string if you want. For example put "{name}.png" and the image will be loaded depending on the tags.
-<b>Important</b>: the qrCode functionality only works for PNG, I don't think I will enable this for other fileformats in the near future.
-</p>
-	<table class="demo">
-		<tr>
-			<td><img src="images/qrCode.PNG"></td>
-			<td>
-				<div>=> <br>Results in:</div>	
-			</td>
-			<td><img src="images/qrCodeResult.PNG"></td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<h3>Code Used:</h3>
-				<textarea raw="qrCodeExample.docx">
-					new DocxGen().loadFromFile("qrCodeExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
-						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
-						doc.applyTags();
-					});
-				</textarea>
-			</td>
-		</tr>
-	</table>
-</section>
-
-<section>
-	<h2 id='qrcodeloop'><em>QrCode:</em>Replace many images</h2>
-	<p>If you scan the qrcode on the left, you will get "{image}.png". Because the qrcode is inside a loop (inside a loop tag {#images} {/images}), it will loop over the array defined underneath:  {'images':[{image:'Firefox_logo'},{image:'image'}]}. So this will replace the whole by two images, the first one being the logo of firefox_logo, the second image.png . To create your own qrcodes, I recommend you <a href="http://qrcode.kaywa.com">http://qrcode.kaywa.com</a> with the <b>static</b> option</p>
-	<table class="demo">
-		<tr>
-			<td><img src="images/qrCodeLoop.PNG"></td>
-			<td>
-				<div>=> <br>Results in:</div>	
-			</td>
-			<td><img src="images/qrCodeLoopResult.PNG"></td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<h3>Code Used:</h3>
-				<textarea raw="qrCodeTaggingLoopExample.docx">
-					new DocxGen().loadFromFile("qrCodeTaggingLoopExample.docx",{async:true,intelligentTagging:false,qrCode:true}).success(function(doc){
-						doc.finishedCallback=function(){doc.output()} //Set the callback to run when the docx has been created (because the qrcode operation is async)
-						doc.applyTags({'images':[{image:'Firefox_logo'},{image:'image'}]});
-					});
 				</textarea>
 			</td>
 		</tr>
@@ -349,9 +297,12 @@ new DocxGen().loadFromFile("tagExample.docx",{async:true}).success(function(doc)
 			<td colspan="3">
 				<h3>Code Used:</h3>
 				<textarea raw="xmlInsertionExample.docx">
-					new DocxGen().loadFromFile("xmlInsertionExample.docx",{async:true}).success(function(doc){
-					doc.applyTags({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
-						doc.output()
+					loadFile("xmlInsertionExample.docx",function(err,content){
+					doc=new DocxGen(content)
+					doc.setData({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
+					doc.render();
+					output=doc.getZip().generate({type:"blob"})
+					saveAs(output,"output.docx")
 					});
 				</textarea>
 			</td>

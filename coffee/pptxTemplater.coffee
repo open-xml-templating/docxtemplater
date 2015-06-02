@@ -1,24 +1,24 @@
-<<<<<<< HEAD
-root= global ? window
-env= if global? then 'node' else 'browser'
-
-root.DocXTemplater = class DocXTemplater extends XmlTemplater
-	xmlUtil=new XmlUtil()
-=======
 XmlTemplater=require('./xmlTemplater')
 xmlUtil=require('./xmlUtil')
 
-DocXTemplater = class DocXTemplater extends XmlTemplater
->>>>>>> upstream/1.x
+PptXTemplater = class PptXTemplater extends XmlTemplater
 	constructor:(content="",options={}) ->
 		super("",options)
-		@currentClass=root.DocXTemplater
-		@tagXml='w:t'
+		@currentClass=PptXTemplater
+		@tagXml='a:t'
 		if typeof content=="string" then @load content else throw new Error("content must be string!")
+	xmlToBeReplaced:(noStartTag, spacePreserve, insideValue,xmlTagNumber,noEndTag)->
+		if noStartTag == true
+			return insideValue
+		else
+			str=@templaterState.matches[xmlTagNumber][1]+insideValue
+			if noEndTag==true then return str else return str+"</#{@tagXml}>"
 	calcIntellegentlyDashElement:()->
 		{content,start,end}= @templaterState.findOuterTagsContent(@content)
 		scopeContent= xmlUtil.getListXmlElements @content, start,end-start
 		for t in scopeContent
-			if t.tag=='<w:tc>'
-				return 'w:tr'
+			if t.tag=='<a:tc>'
+				return 'a:tr'
 		return super()
+
+module.exports=PptXTemplater

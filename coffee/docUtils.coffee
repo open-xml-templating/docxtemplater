@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 root= global ? window
 env= if global? then 'node' else 'browser'
 
 root.DocUtils= {}
 root.docX=[]
 root.docXData=[]
+=======
+DocUtils= {}
+DocUtils.getPathConfig=()->
+	if !DocUtils.pathConfig? then return ""
+	if DocUtils.env=='node' then return DocUtils.pathConfig.node
+	DocUtils.pathConfig.browser
+>>>>>>> upstream/1.x
 
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -29,6 +37,7 @@ DocUtils.defaultParser=(tag) ->
 	'get':(scope) -> return scope[tag]
 	}
 
+<<<<<<< HEAD
 DocUtils.nl2br = (str,is_xhtml) ->
 	(str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
@@ -117,6 +126,8 @@ DocUtils.loadDoc= (path,options={}) ->
 					if callback? then callback()
 	return fileName
 
+=======
+>>>>>>> upstream/1.x
 DocUtils.tags=
 	start:'{'
 	end:'}'
@@ -141,6 +152,7 @@ DocUtils.clone = (obj) ->
 	for key of obj
 		newInstance[key] = DocUtils.clone obj[key]
 
+<<<<<<< HEAD
 	return newInstance
 
 DocUtils.xml2Str = (xmlNode) ->
@@ -166,6 +178,9 @@ DocUtils.Str2xml= (str) ->
 		xmlDoc.async=false
 		xmlDoc.loadXML(str)
 	xmlDoc
+=======
+	newInstance
+>>>>>>> upstream/1.x
 
 DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 	string.substr(0,from)+string.substr(from).replace(search,replace)
@@ -181,8 +196,8 @@ DocUtils.decode_utf8= (s) ->
 		if s==undefined then return undefined
 		return decodeURIComponent(escape(DocUtils.convert_spaces(s))) #replace Ascii 160 space by the normal space, Ascii 32
 	catch e
-		console.log s
-		console.log 'could not decode'
+		console.error s
+		console.error 'could not decode'
 		throw new Error('end')
 
 DocUtils.base64encode= (b) ->
@@ -210,5 +225,17 @@ DocUtils.sizeOfObject = (obj) ->
 		size++
 	size
 
+<<<<<<< HEAD
 Array.prototype.max = () -> Math.max.apply(null, this)
 Array.prototype.min = () -> Math.min.apply(null, this)
+=======
+DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
+	endTag= text.indexOf('</'+xmlTag+'>',end)
+	if endTag==-1 then throw new Error("can't find endTag #{endTag}")
+	endTag+=('</'+xmlTag+'>').length
+	startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
+	if startTag==-1 then throw new Error("can't find startTag")
+	{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
+
+module.exports=DocUtils
+>>>>>>> upstream/1.x

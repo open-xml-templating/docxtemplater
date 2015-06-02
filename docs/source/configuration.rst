@@ -12,110 +12,24 @@ It documents the options parameter when you do:
 
 .. code-block:: javascript
 
-    new DocxGen(data,options);
+    var doc=new DocxGen(content);
+    doc.setOptions(options)
 
 Image Replacing
 ---------------
 
-The name of this option is `qrCode` (function) (This was a boolean in 0.6.3 and before).
-
-To stay a templating engine, I wanted that DocxTemplater doesn't add an image from scratch, but rather uses an existing image that can be detected, and DocxTemplater will just change the contents of that image, without changing it's style (border, shades, ...). The size of the replaced images will stay the same, ...
-
-So I decided to use the qrCode format, which is a format that lets you identify images by their content.
-
-The option for this is `qrCode` (false for off, a function for on, default off)
-
-The function takes two parameter: The first one is the string, the second the callback.
-
-For example your configuration could be:
-
-.. code-block:: javascript
-
-    new DocxGen(data,{qrCode:function(result,callback){
-    		urloptions=(result.parse(path))
-    		options =
-    			hostname:urloptions.hostname
-    			path:urloptions.path
-    			method: 'GET'
-    			rejectUnauthorized:false
-    		errorCallback= (e) ->
-    			throw new Error("Error on HTTPS Call")
-    		reqCallback= (res)->
-    			res.setEncoding('binary')
-    			data = ""
-    			res.on('data', (chunk)->
-    				data += chunk
-    			)
-    			res.on('end', ()->
-    				callback(null,data))
-    		req = http.request(options, reqCallback).on('error',errorCallback)
-    }})
-
 .. note::
 
-    If you don't use that functionality, you should disable it, because it is quite slow (the image decoding)
+    The imageReplacing feature has been removed from the main docxtemplater package. This feature will be implemented in the future in an external module.
 
-.. warning::
-
-    The qrCode functionality only works for PNG !
-    They is no support for other file formats yet.
-
-.. warning::
-
-    They is a security warning if you use true as the value for qrCode, because this will use the older qrcode loading function.
-    This function can load any file on the filesystem, with a possible leak in api-keys or whatever you store on docxtemplater's server.
-
-To generate qrcodes with nodejs, you can use for example this script brought by @ssured in issue #69 https://github.com/edi9999/docxtemplater/issues/69
-
-`npm install qr-image canvas`
-
-To install the dependencies of canvas, look here (platform specific)
-https://github.com/Automattic/node-canvas/wiki
-
-
-.. code-block:: javascript
-
-    var Canvas, Image, canvas, column, ctx, fs, matrix, qr, qrString, size, textSize, value, x, y, _i, _j, _len, _len1;
-    qr = require('qr-image');
-    fs = require('fs');
-    Canvas = require('canvas');
-    Image = Canvas.Image;
-    qrString = 'gen:{image}';
-    size = 10;
-    matrix = qr.matrix(qrString);
-    canvas = new Canvas((2 + 5 + matrix.length) * size, (2 + 5 + matrix.length) * size);
-    ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(1, 1, canvas.width - 2, canvas.height - 2);
-    ctx.fillStyle = '#000';
-    for (y = _i = 0, _len = matrix.length; _i < _len; y = ++_i) {
-      column = matrix[y];
-      for (x = _j = 0, _len1 = column.length; _j < _len1; x = ++_j) {
-        value = column[x];
-        if (value === 1) {
-          ctx.fillRect((x + 1 + 2.5) * size, (y + 1) * size, size, size);
-        }
-      }
-    }
-    ctx.font = 4 * size + 'px Helvetica';
-    ctx.fillStyle = '#000';
-    textSize = ctx.measureText(qrString);
-    ctx.fillText(qrString, (canvas.width - textSize.width) / 2, canvas.height - size - textSize.actualBoundingBoxDescent);
-    canvas.pngStream().pipe(fs.createWriteStream('qr.png'));
-
-
-Angular Parser
+Custom Parser
 --------------
 
-The name of this option `parser` (function).
-
-You can set the angular parser with the following code:
+The name of this option is `parser` (function).
 
 With a custom parser you can parse the tags to for example add operators
 like '+', '-', or whatever the way you want to parse expressions. See for
-a complete reference of all possibilities
+a complete reference of all possibilities of angularjs parsing:
 http://teropa.info/blog/2014/03/23/angularjs-expressions-cheatsheet.html
 
 To enable this, you need to specify a custom parser.
@@ -129,6 +43,7 @@ docxtemplater comes shipped with this parser:
     {
         return {
             get:function(scope) {
+                if (expression===".") return scope;
                 return scope[expression]
             }
         };
@@ -146,7 +61,7 @@ To use the angular-parser, do the following:
             get: tag == '.' ? function(s){ return s;} : expressions.compile(tag)
         };
     }
-    new DocxGen(data,{parser:angularParser})
+    new DocxGen(data).setOptions({parser:angularParser})
 
 .. note::
 
@@ -155,7 +70,7 @@ To use the angular-parser, do the following:
 Intelligent LoopTagging
 -----------------------
 
-The name of this option `intelligentTagging` (boolean).
+The name of this option is `intelligentTagging` (boolean).
 
 When looping over an element, docxtemplater needs to know over which
 element you want to loop. By default, it tries to do that intelligently

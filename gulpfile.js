@@ -6,11 +6,12 @@ var concat= require('gulp-concat');
 var uglify= require('gulp-uglify');
 var spawn = require('child_process').spawn;
 var livereload = require('gulp-livereload');
+var browserify = require('gulp-browserify');
 var server=null;
 
 try {
     var Blink1 = require('node-blink1');
-    var blink1 = new Blink1('20002C4A');
+    var blink1 = new Blink1();
 } catch (e) {
     blink1={
         fadeToRGB:function(){
@@ -21,14 +22,40 @@ try {
 var config={uglify:false}
 
 var paths = {
+<<<<<<< HEAD
 	coffee: ['coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/fileManager.coffee','coffee/docxgen.coffee','coffee/imgReplacer.coffee','coffee/chartReplacer.coffee','coffee/docxQrCode.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee'],
+=======
+	coffee: ['coffee/moduleManager.coffee','coffee/index.coffee','coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/docxgen.coffee','coffee/pptxgen.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/pptxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee','coffee/cli.coffee'],
+>>>>>>> upstream/1.x
 	coffeeTest: ['coffee/docxgenTest.coffee'],
 	testDirectory:__dirname+'/test/spec'
 };
 
+<<<<<<< HEAD
 gulp.task('watch', function () {
 	gulp.watch(paths.coffee,['coffee','jasmine','livereload']);
 	gulp.watch(paths.coffeeTest,['coffeeTest']);
+=======
+
+gulp.task('browserify', function() {
+    browserified=gulp.src(__dirname+'/test/spec/docxgenTest.spec.js')
+        .pipe(browserify({}))
+
+    browserified
+        .pipe(gulp.dest(__dirname+'/browser/'))
+
+    // Single entry point to browserify
+    browserified=gulp.src(__dirname+'/examples/main.js')
+        .pipe(browserify({}))
+
+    browserified
+        .pipe(uglify())
+        .pipe(rename('main.min.js'))
+        .pipe(gulp.dest(__dirname+'/browser'))
+
+    browserified
+        .pipe(gulp.dest(__dirname+'/browser/'))
+>>>>>>> upstream/1.x
 });
 
 gulp.task('coffeeTest', function() {

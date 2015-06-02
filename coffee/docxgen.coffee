@@ -3,6 +3,7 @@ Docxgen.coffee
 Created by Edgar HIPP
 ###
 
+<<<<<<< HEAD
 root= global ? window
 env= if global? then 'node' else 'browser'
 
@@ -75,9 +76,40 @@ root.DocxGen = class DocxGen
 		@loadedContent=content
 		@zip = new JSZip content
 		@fileManager=(new FileManager(@zip)).loadFileRels()
+=======
+DocUtils=require('./docUtils')
+DocXTemplater=require('./docxTemplater')
+JSZip=require('jszip')
+ModuleManager=require('./moduleManager')
+
+DocxGen=class DocxGen
+	constructor:(content,options) ->
+		@templateClass = DocXTemplater
+		@moduleManager=new ModuleManager()
+		@moduleManager.gen=this
+		@templatedFiles=["word/document.xml","word/footer1.xml","word/footer2.xml","word/footer3.xml","word/header1.xml","word/header2.xml","word/header3.xml"]
+		@setOptions({})
+		if content? then @load(content,options)
+	attachModule:(module)->
+		@moduleManager.attachModule(module)
 		this
-	applyTags:(@Tags=@Tags,qrCodeCallback=null)->
+	setOptions:(@options={})->
+		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
+		if @options.parser? then @parser=options.parser
+>>>>>>> upstream/1.x
+		this
+	load: (content,options)->
+		@moduleManager.sendEvent('loading')
+		if content.file?
+			@zip=content
+		else
+			@zip = new JSZip content,options
+		@moduleManager.sendEvent('loaded')
+		this
+	render:()->
+		@moduleManager.sendEvent('rendering')
 		#Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
+<<<<<<< HEAD
 		for fileName in templatedFiles when !@zip.files[fileName]?
 			@filesProcessed++ #count  files that don't exist as processed
 		for fileName in templatedFiles when @zip.files[fileName]?
@@ -96,22 +128,27 @@ root.DocxGen = class DocxGen
 	setData:(fileName,data,options={})->
 		@zip.remove(fileName)
 		@zip.file(fileName,data,options)
+=======
+		for fileName in @templatedFiles when @zip.files[fileName]?
+			@moduleManager.sendEvent('rendering-file',fileName)
+			currentFile= @createTemplateClass(fileName)
+			@zip.file(fileName,currentFile.render().content)
+			@moduleManager.sendEvent('rendered-file',fileName)
+		@moduleManager.sendEvent('rendered')
+		this
+>>>>>>> upstream/1.x
 	getTags:()->
 		usedTags=[]
-		for fileName in templatedFiles when @zip.files[fileName]?
-			currentFile= new DocXTemplater(@zip.files[fileName].asText(),{
-				DocxGen:this
-				Tags:@Tags
-				intelligentTagging:@intelligentTagging
-				parser:@parser
-			})
-			usedTemplateV= currentFile.applyTags().usedTags
+		for fileName in @templatedFiles when @zip.files[fileName]?
+			currentFile = @createTemplateClass(fileName)
+			usedTemplateV= currentFile.render().usedTags
 			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}
 		usedTags
-	setTags: (@Tags) ->
+	setData:(@Tags) ->
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
+<<<<<<< HEAD
 	output: (options={}) ->
 		if !options.download? then options.download=true
 		if !options.name? then options.name="output.docx"
@@ -127,23 +164,26 @@ root.DocxGen = class DocxGen
 				document.location.href= "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,#{result}"
 		result
 	getFullText:(path="word/document.xml") ->
+=======
+	getZip:()->
+		@zip
+	createTemplateClass:(path)->
+>>>>>>> upstream/1.x
 		usedData=@zip.files[path].asText()
-		(new DocXTemplater(usedData,{DocxGen:this,Tags:@Tags,intelligentTagging:@intelligentTagging})).getFullText()
-	download: (swfpath, imgpath, filename="default.docx") ->
-		output=@zip.generate()
-		Downloadify.create 'downloadify',
-			filename: () ->return filename
-			data: () ->
-				return output
-			onCancel: () -> alert 'You have cancelled the saving of this file.'
-			onError: () -> alert 'You must put something in the File Contents or there will be nothing to save!'
-			swf: swfpath
-			downloadImage: imgpath
-			width: 100
-			height: 30
-			transparent: true
-			append: false
-			dataType:'base64'
+		new @templateClass(usedData,{
+			Tags:@Tags
+			intelligentTagging:@intelligentTagging
+			parser:@parser
+			moduleManager:@moduleManager
+		})
+	getFullText:(path="word/document.xml") ->
+		@createTemplateClass(path).getFullText()
 
+DocxGen.DocUtils=DocUtils
+
+<<<<<<< HEAD
 if env=='node'
 	module.exports=root.DocxGen
+=======
+module.exports=DocxGen
+>>>>>>> upstream/1.x
