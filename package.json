@@ -20,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/edi9999/docxtemplater"
+    "url": "https://github.com/open-xml-templating/docxtemplater"
   },
   "dependencies": {
     "jszip": "^2.4.0"
