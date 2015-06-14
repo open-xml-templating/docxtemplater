@@ -1,8 +1,4 @@
 DocUtils= {}
-DocUtils.getPathConfig=()->
-	if !DocUtils.pathConfig? then return ""
-	if DocUtils.env=='node' then return DocUtils.pathConfig.node
-	DocUtils.pathConfig.browser
 
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
