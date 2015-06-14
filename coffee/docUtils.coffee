@@ -1,4 +1,6 @@
-DocUtils= {}
+DocUtils=
+	env:if typeof window == 'undefined' then 'node' else 'browser'
+
 DocUtils.getPathConfig=()->
 	if !DocUtils.pathConfig? then return ""
 	if DocUtils.env=='node' then return DocUtils.pathConfig.node
