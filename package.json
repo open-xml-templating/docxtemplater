@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "angular-expressions": "~0.2.1",
+    "chai": "^3.0.0",
     "gulp": "~3.8.0",
     "gulp-browserify": "^0.5.0",
     "gulp-coffee": "~2.0.1",
@@ -44,6 +45,6 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "test": "jasmine-node test/spec/docxgenTest.spec.js"
+    "test": "mocha test/spec/docxgenTest.spec.js"
   }
 }
