@@ -17,7 +17,7 @@
   "ignore": [
     "**/.*",
     "**/*",
-    "!browser",
+    "!browser"
   ],
   "repository": {
     "type": "git",
