@@ -1,8 +1,8 @@
 {
-  "name": "docxtemplater",
-  "version": "v1.0.6-browser",
+  "name": "docxtemplater-pykiss",
+  "version": "v1.0.6",
   "authors": [
-    "Edgar Hipp <contact@javascript-ninja.fr>"
+    "Edgar Hipp <contact@javascript-ninja.fr>", "Antonio Fernández Porrúa <antonio@pykiss.com>"
   ],
   "description": "docxtemplater is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, eg for example your clients.",
   "main": "browser/docxgen.js",
