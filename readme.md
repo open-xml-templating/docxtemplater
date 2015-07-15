@@ -65,7 +65,7 @@ You can download [input.docx](https://github.com/open-xml-templating/docxtemplat
 With bower:
 
 ```bash
-bower install --save docxtemplater#v1.0.6-browser
+bower install --save docxtemplater-pykiss
 ```
 
 
