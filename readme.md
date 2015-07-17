@@ -64,6 +64,15 @@ You can download [input.docx](https://github.com/open-xml-templating/docxtemplat
 
 Installation:
 
+Thanks to pykiss, it's now possible to install docxtemplater with bower:
+This in an unofficial method to install docxtemplater in the browser
+
+```bash
+bower install --save docxtemplater-pykiss
+```
+
+The official method to install docxtemplater is the following
+
 ```bash
 git clone git@github.com:open-xml-templating/docxtemplater.git && cd docxtemplater
 # git checkout v1.0.4 # Optional
