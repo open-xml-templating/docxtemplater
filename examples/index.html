@@ -26,13 +26,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html"><img src="../logo_tiny.png" alt="logo"></a> </div>
+            <!-- <a class="navbar-brand" href="index.html"><img src="../logo_tiny.png" alt="logo"></a> </div> -->
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li><a href="http://docs.phinx.org">DOCS</a></li>
+              <li><a href="http://docxtemplater.readthedocs.org/en/latest/">DOCS</a></li>
               <li><a href="#installModal" role="button" data-toggle="modal">INSTALL</a></li>
-              <li><a href="#screencast">SCREENCAST</a></li>
               <li><a href="#support">SUPPORT</a></li>
             </ul>
           </div>
@@ -50,9 +49,9 @@
       <div class="col-xs-12 col-sm-4 col-md-5 text-center"><img src="../logo_small.png" alt="imahe"></div>
       <div class="col-xs-12 col-sm-8 col-md-7">
       <h1>docxtemplater</h1>
-      <h2>PHP Database Migrations For Everyone</h2>
-      <p><a type="button" class="btn btn-primary" href="#installModal" role="button" data-toggle="modal" onclick="_gaq.push(['_trackEvent', 'Hero Unit actions', 'Install', 'Install v0.4.4']);">INSTALL NOW v0.4.4</a>
-      <a href="https://github.com/robmorgan/phinx" class="btn btn-success">VIEW ON Github</a></p>
+      <h2>Generate docx and pptx with ease</h2>
+      <p><a type="button" class="btn btn-primary" href="#installModal" role="button" data-toggle="modal">INSTALL NOW v1.0.5</a>
+      <a href="https://github.com/open-xml-templating/docxtemplater" class="btn btn-success">VIEW ON Github</a></p>
       </div>
       </div>
       </div>
@@ -69,10 +68,9 @@
  <div class="row">
   <div class="col-sm-2 col-md-2 text-center"><img src="img/icon1.png" class="img-rounded" alt=""></div>
   <div class="col-sm-10 col-md-8">
-   <h2>Super easy to install</h2>
+   <h2>Super easy to install and set up</h2>
    <p>
-       Most database migration tools are framework dependent, complicated, confusing to install/configure and a pain in the ass to write migrations for.
-       In less than 5 minutes you can install docxtemplater, create and execute your first migration.
+       In less than 5 minutes you can install docxtemplater, create your first template and generate some docx from data.
    </p>
   </div>
  </div>
@@ -80,24 +78,23 @@
   <div class="row">
   <div class="col-sm-2 col-md-2 text-center label-warning"><img src="img/icon2.png" class="img-rounded" alt=""></div>
   <div class="col-sm-10 col-md-8 col-md-offset-2 lead">
-   <h2>Write migrations in Pure PHP or SQL</h2>
-   <p>docxtemplater supports migrations written in both PHP and SQL. Use the PHP syntax to make your migrations portable between different database vendors or hand-code advanced queries. It's your choice.</p>
+   <h2>Works everywhere</h2>
+   <p>docxtemplater works with nodejs version 0.10+, and in most modern browsers (Chrome,Firefox,Safari,IE9+). It also has a command line. If you like to be on edge and use io.js, docxtemplater works with it too</p>
   </div>
-
  </div>
 
   <div class="row">
   <div class="col-sm-2 col-md-2 text-center"><img src="img/icon3.png" class="img-rounded" alt=""></div>
   <div class="col-sm-10 col-md-8">
    <h2>Full Documentation</h2>
-   <p>docxtemplater has extensive documentation available at <a href="http://docs.phinx.org">http://docs.phinx.org</a>.</p>
+   <p>docxtemplater has extensive documentation available at <a href="http://docxtemplater.readthedocs.org/en/latest/">http://docxtemplater.readthedocs.org/en/latest/</a>.</p>
   </div>
  </div>
 
   <div class="row">
   <div class="col-sm-2 col-md-2 text-center label-warning"><img src="img/icon4.png" class="img-rounded" alt=""></div>
   <div class="col-sm-10 col-md-8 col-md-offset-2 lead">
-   <h2>Integrates with your Deploy Tool</h2>
+   <h2>Features many different types of tags</h2>
    <p>As docxtemplater executes from the command-line, it is painless to integrate with your deploy, build or CI tool.</p>
   </div>
  </div>
@@ -105,11 +102,29 @@
   <div class="row">
   <div class="col-sm-2 col-md-2 text-center"><img src="img/icon5.png" class="img-rounded" alt=""></div>
   <div class="col-sm-10 col-md-8">
-   <h2>Completely Free</h2>
+   <h2>Open for extension</h2>
    <p>docxtemplater is and will always remain completely free, open-source software. Developers are encouraged to fork, hack and modify docxtemplater. If you use Phinx commercially then please consider making a donation or purchasing the screencast below.</p>
   </div>
  </div>
+
+  <div class="row">
+  <div class="col-sm-2 col-md-2 text-center label-warning"><img src="img/icon4.png" class="img-rounded" alt=""></div>
+  <div class="col-sm-10 col-md-8 col-md-offset-2 lead">
+   <h2>Free as in bier</h2>
+   <p>As docxtemplater executes from the command-line, it is painless to integrate with your deploy, build or CI tool.</p>
+  </div>
+ </div>
+
+  <div class="row">
+  <div class="col-sm-2 col-md-2 text-center"><img src="img/icon5.png" class="img-rounded" alt=""></div>
+  <div class="col-sm-10 col-md-8">
+   <h2>Fully tested</h2>
+   <p>docxtemplater is and will always remain completely free, open-source software. Developers are encouraged to fork, hack and modify docxtemplater. If you use Phinx commercially then please consider making a donation or purchasing the screencast below.</p>
+  </div>
+ </div>
+
 </div>
+
 </section>
 
 
@@ -146,11 +161,9 @@
   <div class="row">
    <div class="col-xs-12">
     <h1 class="text-center">Support</h1>
-    <p class="text-center">docxtemplater has comprehensive documentation available at <a href="http://docs.phinx.org/">http://docs.phinx.org/</a> or check out
-   		the <a href="http://robmorgan.id.au/post/33558666279/getting-started-with-phinx">Getting Started guide</a>. Alternatively you may email me directly.</p>
-    <address class="text-center"><img src="img/mail.png" alt=" "><a href="/cdn-cgi/l/email-protection#d0a2bfb2b2a9bd90b7bdb1b9bcfeb3bfbd"><span class="__cf_email__" data-cfemail="0f7d606d6d76624f68626e6663216c6062">[email&#160;protected]</span><script cf-hash='f9e31' type="text/javascript">
-/* <![CDATA[ */!function(){try{var t="currentScript"in document?document.currentScript:function(){for(var t=document.getElementsByTagName("script"),e=t.length;e--;)if(t[e].getAttribute("cf-hash"))return t[e]}();if(t&&t.previousSibling){var e,r,n,i,c=t.previousSibling,a=c.getAttribute("data-cfemail");if(a){for(e="",r=parseInt(a.substr(0,2),16),n=2;a.length-n;n+=2)i=parseInt(a.substr(n,2),16)^r,e+=String.fromCharCode(i);e=document.createTextNode(e),c.parentNode.replaceChild(e,c)}}}catch(u){}}();/* ]]> */</script></a>
-    </address>
+    <p class="text-center">docxtemplater has comprehensive documentation available at <a href="http://docxtemplater.readthedocs.org/en/latest/">http://docxtemplater.readthedocs.org/en/latest/</a></p>
+    <p class="text-center">If you have some general questions / bugs to report, please use <a href="https://github.com/open-xml-templating/docxtemplater/issues/">the github issue tracker.</a></p>
+    <p class="text-center">I also provide professional support for companies with an SLA (My email address can be found on this site: https://github.com/edi9999)</p>
    </div>
   </div>
  </div>
@@ -212,33 +225,34 @@
         <h4 class="modal-title">Install &amp; Run</h4>
       </div>
       <div class="modal-body">
-          <p>The best way to get docxtemplater is is via Composer
-             (<a href="https://getcomposer.org" target="_blank">https://getcomposer.org</a>):
-          </p>
+          <p>The best way to get docxtemplater is is via npm</p>
 
-<pre><code>curl -s https://getcomposer.org/installer | php
+<pre><code>npm install docxtemplater --save</code></pre>
+
+<p>Then create "input.docx" file containing "Hello {firstname} {lastname} !"</p>
+<p>And create the following index.js file:</p>
+
+          <pre><code>var fs=require('fs');
+Docxtemplater = require('docxtemplater');
+
+content = fs
+    .readFileSync(__dirname+"/input.docx","binary");
+
+doc=new Docxtemplater(content);
+
+doc.setData({
+    "firstname":"John",
+    "lastname":"Doe"
+});
+
+doc.render();
+
+var buf = doc.getZip()
+             .generate({type:"nodebuffer"});
+
+fs.writeFileSync(__dirname+"/output.docx",buf);
 </code></pre>
-
-          <p>Then install docxtemplater:</p>
-
-<pre><code>php composer.phar require robmorgan/phinx
-php composer.phar install --no-dev
-</code></pre>
-
-          <p>Then docxtemplater can be executed using:</p>
-
-          <pre><code>php vendor/bin/phinx</code></pre>
-
-          <p>Now write your first migration:</p>
-
-<pre><code>$ php vendor/bin/phinx init .
-$ vim phinx.yml
-$ mkdir migrations
-$ php vendor/bin/phinx create MyFirstMigration
-$ php vendor/bin/phinx migrate -e development
-</code></pre>
-
-          <p>And that's it! docxtemplater will connect to your development database and execute your first migration.</p>
+          <p>And that's it! docxtemplater will replace all keys passed to setData inside the input docx</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -258,13 +272,8 @@ $ php vendor/bin/phinx migrate -e development
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 </script>
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.js"></script>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-<script type="text/javascript">
-/* <![CDATA[ */
-(function(){try{var s,a,i,j,r,c,l=document.getElementsByTagName("a"),t=document.createElement("textarea");for(i=0;l.length-i;i++){try{a=l[i].getAttribute("href");if(a&&a.indexOf("/cdn-cgi/l/email-protection") > -1  && (a.length > 28)){s='';j=27+ 1 + a.indexOf("/cdn-cgi/l/email-protection");if (a.length > j) {r=parseInt(a.substr(j,2),16);for(j+=2;a.length>j&&a.substr(j,1)!='X';j+=2){c=parseInt(a.substr(j,2),16)^r;s+=String.fromCharCode(c);}j+=1;s+=a.substr(j,a.length-j);}t.innerHTML=s.replace(/</g,"&lt;").replace(/>/g,"&gt;");l[i].setAttribute("href","mailto:"+t.value);}}catch(e){}}}catch(e){}})();
-/* ]]> */
-</script>
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </body>
 </html>
