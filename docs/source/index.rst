@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to docxtemplater's documentation!
-=========================================
+Docxtemplater's documentation
+=============================
 
 .. image:: https://travis-ci.org/edi9999/docxtemplater.svg?branch=master
 
