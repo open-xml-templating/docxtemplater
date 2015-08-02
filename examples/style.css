@@ -348,15 +348,8 @@ footer p{
 
 }
 
-
-
-
 @media (max-width: 992px) {
-
 }
-
-
-
 
 @media (max-width: 768px) {
 
@@ -365,7 +358,7 @@ footer p{
 	padding-bottom: 15px;
 }
 	header .label-info h1{
-	font-size: 100px;
+	font-size: 40px;
 	margin-top:20px;
 }
 	h1 {
