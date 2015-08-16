@@ -32,7 +32,7 @@ I recommend you to use browserify.
 .. code-block:: javascript
 
     git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
-    npm install -g gulp jasmine-node uglify-js
+    npm install -g gulp jasmine-node uglify-js browserify
     npm install
     gulp allCoffee
     mkdir build -p
