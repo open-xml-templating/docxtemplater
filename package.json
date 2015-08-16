@@ -46,7 +46,7 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "compile": "gulp allCoffee",
+    "compile": "gulp allCoffee && node examples/compile_site.js",
     "test": "mocha test/spec/docxgenTest.spec.js"
   }
 }
