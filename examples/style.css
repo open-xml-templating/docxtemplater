@@ -36,11 +36,9 @@ input:focus {
 img {
 	max-width:100%;
 }
-
-
-svg
-{
-    fill:#4520B0;
+svg {
+	max-width:100%;
+	fill:#4520B0;
 }
 
 /*css*/
