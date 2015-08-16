@@ -31,7 +31,7 @@
           <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li><a href="http://docxtemplater.readthedocs.org/en/latest/">DOCS</a></li>
-              <li><a href="#installModal" role="button" data-toggle="modal">INSTALL</a></li>
+              <li><a href="#install">INSTALL</a></li>
               <li><a href="#support">SUPPORT</a></li>
             </ul>
           </div>
@@ -50,7 +50,7 @@
       <div class="col-xs-12 col-sm-8 col-md-7">
       <h1>docxtemplater</h1>
       <h2>Generate docx and pptx with ease</h2>
-      <p><a type="button" class="btn btn-primary" href="#installModal" role="button" data-toggle="modal">INSTALL NOW v1.0.6</a>
+      <p><a type="button" class="btn btn-primary" href="#install">INSTALL NOW v1.0.6</a>
       <a href="https://github.com/open-xml-templating/docxtemplater" class="btn btn-success">VIEW ON Github</a></p>
       </div>
       </div>
@@ -140,58 +140,14 @@
 </div>
 
 </section>
-
-<section id="support" class="label-primary">
- <div class="container help-block">
-  <div class="row">
-   <div class="col-xs-12">
-    <h1 class="text-center">Support</h1>
-    <p class="text-center">docxtemplater has comprehensive documentation available at <a href="http://docxtemplater.readthedocs.org/en/latest/">http://docxtemplater.readthedocs.org/en/latest/</a></p>
-    <p class="text-center">If you have some general questions / bugs to report, please use <a href="https://github.com/open-xml-templating/docxtemplater/issues/">the github issue tracker.</a></p>
-    <p class="text-center">I also provide professional support for companies with an SLA (My email address can be found on this site: https://github.com/edi9999)</p>
-   </div>
-  </div>
- </div>
-</section>
-
 <section>
-<div class="container help-block">
- <div class="row">
-  <div class="col-sm-2 col-sm-offset-1 col-md-2 col-md-offset-2 text-center"><img src="https://avatars3.githubusercontent.com/u/2071336?v=3&s=130" alt=""></div>
-  <div class="col-sm-9 col-md-8">
-  <h1>Edgar Hipp</h1>
-  <h3>Hi, I'm the lead developer of docxtemplater and it has been more than 2 years that I started creating this project, still maintaining and developping it actively now.
-  </h3>
-  <div class="row">
-  <div class="col-xs-12 col-sm-6 col-md-6"><p><a href="https://twitter.com/EdgarHipp" class="twitter-follow-button" data-show-count="false">Follow @EdgarHipp</a></p></div>
-  <div class="col-xs-12 col-sm-6 col-md-6"><p><strong><a href="http://javascript-ninja.fr" target="_blank">http://javascript-ninja.fr</a></strong></p></div>
-  </div>
-  </div>
- </div>
-</div>
-</section>
 
-
-
-
-<footer>
-<div class="container">
- <div class="row">
-  <div class="col-xs-12">
-  <p>Icons made by <a title="Freepik" href="http://www.freepik.com">Freepik</a> from <a title="Flaticon" href="http://www.flaticon.com">www.flaticon.com</a>&nbsp;</p>
-  <p>Icons made by <a href="http://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>             is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></p>
-  <p>Copyright &copy; 2015 - docxtemplater is open-source software.</p>
-  </div>
-  </div>
-  </div>
-</footer>
 
 <!-- Install Modal -->
-<div id="installModal" class="modal fade">
+<div id="install">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Install &amp; Run</h4>
       </div>
       <div class="modal-body">
@@ -226,50 +182,54 @@ fs.writeFileSync(__dirname+"/output.docx",buf);
           <p>To get started in the browser, view the <a href="https://github.com/open-xml-templating/docxtemplater#quickstart-in-the-browser">quickstart in the browser</a></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+</section>
 
+<section id="support" class="label-primary">
+ <div class="container help-block">
+  <div class="row">
+   <div class="col-xs-12">
+    <h1 class="text-center">Support</h1>
+    <p class="text-center">docxtemplater has comprehensive documentation available at <a href="http://docxtemplater.readthedocs.org/en/latest/">http://docxtemplater.readthedocs.org/en/latest/</a></p>
+    <p class="text-center">If you have some general questions / bugs to report, please use <a href="https://github.com/open-xml-templating/docxtemplater/issues/">the github issue tracker.</a></p>
+    <p class="text-center">I also provide professional support for companies with an SLA (My email address can be found on this site: https://github.com/edi9999)</p>
+   </div>
+  </div>
+ </div>
+</section>
 
-<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<section>
+<div class="container help-block">
+ <div class="row">
+  <div class="col-sm-2 col-sm-offset-1 col-md-2 col-md-offset-2 text-center"><img src="https://avatars3.githubusercontent.com/u/2071336?v=3&s=130" alt=""></div>
+  <div class="col-sm-9 col-md-8">
+  <h1>Edgar Hipp</h1>
+  <h3>Hi, I'm the lead developer of docxtemplater and it has been more than 2 years that I started creating this project, still maintaining and developping it actively now.
+  </h3>
+  <div class="row">
+  <div class="col-xs-12 col-sm-6 col-md-6"><p><a href="https://twitter.com/EdgarHipp" class="twitter-follow-button" data-show-count="false">Follow @EdgarHipp</a></p></div>
+  <div class="col-xs-12 col-sm-6 col-md-6"><p><strong><a href="http://javascript-ninja.fr" target="_blank">http://javascript-ninja.fr</a></strong></p></div>
+  </div>
+  </div>
+ </div>
+</div>
+</section>
 
-<script>
-    /*
-     * Replace all SVG images with inline SVG
-     */
-        jQuery('img.svg').each(function(){
-            var $img = jQuery(this);
-            var imgID = $img.attr('id');
-            var imgClass = $img.attr('class');
-            var imgURL = $img.attr('src');
-
-            jQuery.get(imgURL, function(data) {
-                // Get the SVG tag, ignore the rest
-                var $svg = jQuery(data).find('svg');
-
-                // Add replaced image's ID to the new SVG
-                if(typeof imgID !== 'undefined') {
-                    $svg = $svg.attr('id', imgID);
-                }
-                // Add replaced image's classes to the new SVG
-                if(typeof imgClass !== 'undefined') {
-                    $svg = $svg.attr('class', imgClass+' replaced-svg');
-                }
-
-                // Remove any invalid XML tags as per http://validator.w3.org
-                $svg = $svg.removeAttr('xmlns:a');
-
-                // Replace image with new SVG
-                $img.replaceWith($svg);
-
-            }, 'xml');
-
-        });
-</script>
+<footer>
+<div class="container">
+ <div class="row">
+  <div class="col-xs-12">
+  <p>Icons made by <a title="Freepik" href="http://www.freepik.com">Freepik</a> from <a title="Flaticon" href="http://www.flaticon.com">www.flaticon.com</a>&nbsp;</p>
+  <p>Icons made by <a href="http://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>             is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></p>
+  <p>The site design is highly inspired by <a href="https://phinx.org" title="Phinx">phinx.org</a> with permission</p>
+  <p>Copyright &copy; 2015 - docxtemplater is open-source software.</p>
+  </div>
+  </div>
+  </div>
+</footer>
 
 </body>
 </html>
