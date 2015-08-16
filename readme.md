@@ -62,16 +62,16 @@ You can download [input.docx](https://github.com/open-xml-templating/docxtemplat
 
 ## Quickstart in the browser
 
-Installation:
+1. JS download : You can directly download built versions from github : https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
 
-Thanks to pykiss, it's now possible to install docxtemplater with bower:
+2. Bower Thanks to pykiss, it's now possible to install docxtemplater with bower:
 This in an unofficial method to install docxtemplater in the browser
 
 ```bash
 bower install --save docxtemplater-pykiss
 ```
 
-The official method to install docxtemplater is the following
+3. Build it yourself
 
 ```bash
 git clone git@github.com:open-xml-templating/docxtemplater.git && cd docxtemplater
