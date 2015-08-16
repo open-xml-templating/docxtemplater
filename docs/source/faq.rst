@@ -41,6 +41,30 @@ How to insert linebreaks
 
 then in your template, just put {@text} instead of the usual {text}
 
+If you use the angular-parser, you can also write a filter like this:
+
+.. code-block:: javascript
+
+    angularexpressions.filters.raw = function (text) {
+        var lines = text.split("\n");
+        var pre = '<w:p><w:r><w:t>';
+        var post = '</w:t></w:r></w:p>';
+        var lineBreak = '<w:br/>';
+        var fullText = pre;
+        fullText += lines.join(lineBreak);
+        fullText += post;
+        return fullText;
+    }
+
+and then have your docx as : {@text|rawHtml}
+
+with
+
+.. code-block:: javascript
+
+    data = {text: 'testing line 1 \n testing line 2'};
+    docx.setData(data)
+
 Smaller docx output
 -------------------
 
