@@ -40,3 +40,21 @@ How to insert linebreaks
     docx.setData(data)
 
 then in your template, just put {@text} instead of the usual {text}
+
+Smaller docx output
+-------------------
+
+The size of the docx output can be big, in the case where you generate the zip the following way:
+
+.. code-block:: javascript
+
+    docx.getZip().generate({ type: 'nodebuffer'})
+
+This is because the zip will not be compressed in that case. To force the compression (which could be slow because it is running in JS for files bigger than 10 MB)
+
+.. code-block:: javascript
+
+    var zip = docx.getZip().generate({
+            type: 'nodebuffer',
+            compression: 'DEFLATE'
+    });
