@@ -62,16 +62,22 @@ You can download [input.docx](https://github.com/open-xml-templating/docxtemplat
 
 ## Quickstart in the browser
 
-1. JS download : You can directly download built versions from github : https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
+### Installation
 
-2. Bower Thanks to pykiss, it's now possible to install docxtemplater with bower:
+#### JS download
+
+You can directly download built versions from github : https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
+
+#### Bower
+
+Thanks to pykiss, it's now possible to install docxtemplater with bower:
 This in an unofficial method to install docxtemplater in the browser
 
 ```bash
 bower install --save docxtemplater-pykiss
 ```
 
-3. Build it yourself
+#### Build it yourself
 
 ```bash
 git clone git@github.com:open-xml-templating/docxtemplater.git && cd docxtemplater
@@ -86,7 +92,9 @@ uglifyjs build/docxgen.js > build/docxgen.min.js # Optional
 
 The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/open-xml-templating/docxtemplater/issues/118))
 
-create demo.html
+### Html demo
+
+Create the following html
 
 ```html
 <html>
