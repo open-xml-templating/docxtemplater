@@ -1,64 +1,4 @@
 *{border:0px;}
-@font-face {
-    font-family: 'myriad_pro_lightregular';
-    src: url('../fonts/myriadpro-light-webfont.eot');
-    src: url('../fonts/myriadpro-light-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/myriadpro-light-webfont.woff') format('woff'),
-         url('../fonts/myriadpro-light-webfont.ttf') format('truetype'),
-         url('../fonts/myriadpro-light-webfont.svg#myriad_pro_lightregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-@font-face {
-    font-family: 'MyriadProRegular';
-    src: url('../fonts/pro-regular-webfont.eot');
-    src: url('../fonts/pro-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/pro-regular-webfont.woff') format('woff'),
-         url('../fonts/pro-regular-webfont.ttf') format('truetype'),
-         url('../fonts/pro-regular-webfont.svg#MyriadProRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-@font-face {
-    font-family: 'MyriadProSemibold';
-    src: url('../fonts/myriadpro-semibold-webfont.eot');
-    src: url('../fonts/myriadpro-semibold-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/myriadpro-semibold-webfont.woff') format('woff'),
-         url('../fonts/myriadpro-semibold-webfont.ttf') format('truetype'),
-         url('../fonts/myriadpro-semibold-webfont.svg#MyriadProSemibold') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-@font-face {
-    font-family: 'MyriadProBold';
-    src: url('../fonts/pro-bold-webfont.eot');
-    src: url('../fonts/pro-bold-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/pro-bold-webfont.woff') format('woff'),
-         url('../fonts/pro-bold-webfont.ttf') format('truetype'),
-         url('../fonts/pro-bold-webfont.svg#MyriadProBold') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-@font-face {
-font-family: TCM;
-src: url("../fonts/TCM.eot") /* EOT file for IE */
-}
-@font-face {
-font-family: TCM;
-src: url("../fonts/TCM.TTF") /* TTF file for CSS3 browsers */
-}
-@font-face {
-font-family: TCB;
-src: url("../fonts/TCB.eot") /* EOT file for IE */
-}
-@font-face {
-font-family: TCB;
-src: url("../fonts/TCB.TTF") /* TTF file for CSS3 browsers */
-}
 /*reset*/
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, ul, li {
 	margin: 0px;
@@ -195,7 +135,6 @@ header .label-info .btn-success{
 	border-left-style: none;
 	text-shadow: 1px 1px 1px #8585CD;
 	border-radius: 0px;
-	font-family: TCB;
 	border-bottom-width: 3px;
 }
 header .label-info .btn-success:hover{
@@ -213,7 +152,6 @@ header .label-info .btn-success:hover{
 
 .navbar-default .navbar-nav > li > a {
 	color: #FFF;
-	font-family: TCB;
 	font-size: 16px;
 	text-transform: uppercase;
 	line-height: 35px;
@@ -262,7 +200,6 @@ header .label-info .btn-success:hover{
 	background-color:#f1ad1d;
 	border-radius:0px;
 	border:none;
-	font-family:TCB;
 	font-size:22px;
 	text-transform:uppercase;
 	text-shadow:1px 1px 1px #ef8e0e;
