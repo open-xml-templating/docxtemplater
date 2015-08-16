@@ -26,6 +26,7 @@ Contents:
    configuration
    cli
    full_doc
+   faq
    copyright
 
 
