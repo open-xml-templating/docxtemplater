@@ -1,5 +1,16 @@
 ### master
 
+  * Created new docxtemplater.com website
+  * Using mocha instead of jasmine-node
+  * New FAQ section in docs
+
+### 1.0.6
+
+  * Corrupt documents when `<w:t>}{/body}</w:t>`
+
+### 1.0.5
+
+  * New events for moduleManager : `xmlRendering` and `xmlRendered`
 
 ### 1.0.4
 
