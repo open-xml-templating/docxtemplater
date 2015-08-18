@@ -1,75 +1,127 @@
-DocUtils=require('./docUtils')
-ScopeManager=require('./scopeManager')
-SubContent=require('./subContent')
-TemplaterState=require('./templaterState')
-XmlMatcher=require('./xmlMatcher')
-ModuleManager=require('./moduleManager')
+DocUtils = require('./docUtils')
+ScopeManager = require('./scopeManager')
+SubContent = require('./subContent')
+TemplaterState = require('./templaterState')
+XmlMatcher = require('./xmlMatcher')
+ModuleManager = require('./moduleManager')
 #This is an abstract class, DocXTemplater is an example of inherited class
 
-module.exports=class XmlTemplater #abstract class !!
-	constructor: (content="",options={}) ->
-		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
-		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
+module.exports = class XmlTemplater #abstract class !!
+	###*
+	 * [constructor description]
+	 * @param  {[type]} content =             ""   [description]
+	 * @param  {[type]} options =             {} [description]
+	 * @return {[type]}         [description]
+	###
+	constructor: (content = "", options = {}) ->
+		@tagXml = '' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
+		@currentClass = XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
-		@templaterState= new TemplaterState @moduleManager
-		@moduleManager.xmlTemplater=this
+		@templaterState = new TemplaterState @moduleManager
+		@moduleManager.xmlTemplater = this
+
+	###*
+	 * [load description]
+	 * @param  {[type]} @content [description]
+	 * @return {[type]}          [description]
+	###
 	load: (@content) ->
-		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
+		xmlMatcher = new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
-		@templaterState.charactersAdded= xmlMatcher.charactersAdded
-	fromJson:(options={})->
-		@Tags= if options.Tags? then options.Tags else {}
-		@intelligentTagging=if options.intelligentTagging? then options.intelligentTagging else off
-		@scopePath=if options.scopePath? then options.scopePath else []
-		@scopeList= if options.scopeList? then options.scopeList else [@Tags]
-		@usedTags=if options.usedTags? then options.usedTags else {def:{},undef:{}}
-		@parser= if options.parser? then options.parser else DocUtils.defaultParser
-		@moduleManager=if options.moduleManager? then options.moduleManager else new ModuleManager()
-		@scopeManager=new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager)
+		@templaterState.charactersAdded = xmlMatcher.charactersAdded
+
+	###*
+	 * [fromJson description]
+	 * @param  {[type]} options =             {} [description]
+	 * @return {[type]}         [description]
+	###
+	fromJson: (options = {}) ->
+		@Tags = if options.Tags? then options.Tags else {}
+		@intelligentTagging = if options.intelligentTagging? then options.intelligentTagging else off
+		@scopePath = if options.scopePath? then options.scopePath else []
+		@scopeList = if options.scopeList? then options.scopeList else [@Tags]
+		@usedTags = if options.usedTags? then options.usedTags else {def:{},undef:{}}
+		@parser = if options.parser? then options.parser else DocUtils.defaultParser
+		@moduleManager = if options.moduleManager? then options.moduleManager else new ModuleManager()
+		@scopeManager = new ScopeManager(@Tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager)
+
+	###*
+	 * [toJson description]
+	 * @return {[type]} [description]
+	###
 	toJson: () ->
-		Tags:DocUtils.clone @scopeManager.tags
-		intelligentTagging:DocUtils.clone @intelligentTagging
-		scopePath:DocUtils.clone @scopeManager.scopePath
+		Tags: DocUtils.clone @scopeManager.tags
+		intelligentTagging: DocUtils.clone @intelligentTagging
+		scopePath: DocUtils.clone @scopeManager.scopePath
 		scopeList: DocUtils.clone @scopeManager.scopeList
-		usedTags:@scopeManager.usedTags
-		parser:@parser
-		moduleManager:@moduleManager
+		usedTags: @scopeManager.usedTags
+		parser: @parser
+		moduleManager: @moduleManager
+
+	###*
+	 * [calcIntellegentlyDashElement description]
+	 * @return {[type]} [description]
+	###
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
-	getFullText:(@tagXml=@tagXml) ->
-		matcher=new XmlMatcher(@content).parse(@tagXml)
-		output= (match[2] for match in matcher.matches) #get only the text
+
+	###*
+	 * [getFullText description]
+	 * @param  {[type]} @tagXml         [description]
+	 * @return {[type]}                 [description]
+	###
+	getFullText: (@tagXml = @tagXml) ->
+		matcher = new XmlMatcher(@content).parse(@tagXml)
+		output = (match[2] for match in matcher.matches) #get only the text
 		DocUtils.wordToUtf8(DocUtils.convert_spaces(output.join(""))) #join it
-	handleModuleManager:(type,data)->
-		@moduleManager.xmlTemplater=this
-		@moduleManager.templaterState=@templaterState
-		@moduleManager.scopeManager=@scopeManager
-		@moduleManager.handle(type,data)
+
+	###*
+	 * [handleModuleManager description]
+	 * @param  {[type]} type [description]
+	 * @param  {[type]} data [description]
+	 * @return {[type]}      [description]
+	###
+	handleModuleManager: (type, data) ->
+		@moduleManager.xmlTemplater = this
+		@moduleManager.templaterState = @templaterState
+		@moduleManager.scopeManager = @scopeManager
+		@moduleManager.handle(type, data)
 	###
 	content is the whole content to be tagged
 	scope is the current scope
-	returns the new content of the tagged content###
-	render:()->
+	returns the new content of the tagged content
+	###
+	###*
+	 * [render description]
+	 * @return {[type]} [description]
+	###
+	render: () ->
 		@templaterState.initialize()
-		trail=""
-		trailSteps=[]
-		@templaterState.offset=[]
+		trail = ""
+		trailSteps = []
+		@templaterState.offset = []
 		@handleModuleManager('xmlRendering')
 		for match,numXmlTag in @templaterState.matches
-			innerText= match[2] #text inside the <w:t>
-			@templaterState.offset[numXmlTag]=0
+			innerText = match[2] #text inside the <w:t>
+			@templaterState.offset[numXmlTag] = 0
 			for character,numCharacter in innerText
-				trail+=character
-				length=if !@templaterState.inTag then DocUtils.tags.start.length else DocUtils.tags.end.length
-				trail=trail.substr(-length,length)
-				@templaterState.currentStep={'numXmlTag':numXmlTag,'numCharacter':numCharacter}
-				trailSteps.push({'numXmlTag':numXmlTag,'numCharacter':numCharacter})
-				trailSteps=trailSteps.splice(-DocUtils.tags.start.length,DocUtils.tags.start.length)
+				trail += character
+				length = if !@templaterState.inTag then DocUtils.tags.start.length else DocUtils.tags.end.length
+				trail = trail.substr(-length, length)
+				@templaterState.currentStep = {
+					'numXmlTag': numXmlTag,
+					'numCharacter': numCharacter
+				}
+				trailSteps.push({
+					'numXmlTag': numXmlTag,
+					'numCharacter': numCharacter
+				})
+				trailSteps = trailSteps.splice(-DocUtils.tags.start.length,DocUtils.tags.start.length)
 
-				if numCharacter+@templaterState.offset[numXmlTag]<0 then throw new Error "Shouldn't be less than 0"
-				@templaterState.context+=character
+				if numCharacter + @templaterState.offset[numXmlTag] < 0 then throw new Error "Shouldn't be less than 0"
+				@templaterState.context += character
 
-				for m,t in @templaterState.matches when t==numXmlTag
-					if @content[m.offset+@templaterState.charactersAdded[t]]!=m[0][0]
+				for m,t in @templaterState.matches when t == numXmlTag
+					if @content[m.offset+@templaterState.charactersAdded[t]] != m[0][0]
 						console.error @content[m.offset+@templaterState.charactersAdded[t]]
 						console.error @content
 						console.error m[0]
@@ -80,123 +132,203 @@ module.exports=class XmlTemplater #abstract class !!
 					@templaterState.startTag()
 				else if (@sameTags is true and @templaterState.inTag is true and trail == DocUtils.tags.end) or (@sameTags is false and trail == DocUtils.tags.end)
 					@templaterState.endTag()
-					loopType=@templaterState.loopType()
-					if loopType=='simple'
+					loopType = @templaterState.loopType()
+					if loopType == 'simple'
 						@replaceSimpleTag()
-					if loopType=='xml'
+					if loopType == 'xml'
 						@replaceSimpleTagRawXml()
-					if loopType=='dash' or loopType=='for'
+					if loopType == 'dash' or loopType == 'for'
 						if @templaterState.isLoopClosingTag()
 							return @replaceLoopTag()
-					if ['simple','dash','for','xml'].indexOf(loopType)==-1
-						@handleModuleManager('replaceTag',loopType)
+					if ['simple','dash','for','xml'].indexOf(loopType) == -1
+						@handleModuleManager('replaceTag', loopType)
 				else
-					if @templaterState.inTag is true then @templaterState.textInsideTag+=character
+					if @templaterState.inTag is true then @templaterState.textInsideTag += character
 		@handleModuleManager('xmlRendered')
 		this
-	replaceSimpleTag:()->
-		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
-		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue),@content)
-	replaceSimpleTagRawXml:()->
-		newText=@scopeManager.getValueFromScope(@templaterState.tag)
-		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
+
+	###*
+	 * [replaceSimpleTag description]
+	 * @return {[type]} [description]
+	###
+	replaceSimpleTag: () ->
+		newValue = @scopeManager.getValueFromScope(@templaterState.textInsideTag)
+		@content = @replaceTagByValue(DocUtils.utf8ToWord(newValue),@content)
+
+	###*
+	 * [replaceSimpleTagRawXml description]
+	 * @return {[type]} [description]
+	###
+	replaceSimpleTagRawXml: () ->
+		newText = @scopeManager.getValueFromScope(@templaterState.tag)
+		subContent = new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
 		@replaceXml(subContent,newText)
-	replaceXml:(subContent,newText)->
+
+	###*
+	 * [replaceXml description]
+	 * @param  {[type]} subContent [description]
+	 * @param  {[type]} newText    [description]
+	 * @return {[type]}            [description]
+	###
+	replaceXml: (subContent, newText) ->
 		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText.length,subContent.text.length)
-		@content= subContent.replace(newText).fullText
-	deleteTag:(xml,tag)->
-		@templaterState.tagStart=tag.start
-		@templaterState.tagEnd=tag.end
-		@templaterState.textInsideTag=tag.raw
-		xmlText=@replaceTagByValue("",xml)
-	deleteOuterTags:(outerXmlText)->
-		@deleteTag(@deleteTag(outerXmlText,@templaterState.loopOpen),@templaterState.loopClose)
-	dashLoop: (elementDashLoop,sharp=false) ->
-		{_,start,end}= @templaterState.findOuterTagsContent(@content)
-		outerXml = DocUtils.getOuterXml @content, start, end, elementDashLoop
-		@templaterState.moveCharacters(0,0,outerXml.startTag)
-		outerXmlText= outerXml.text
-		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
+		@content = subContent.replace(newText).fullText
+
+	###*
+	 * [deleteTag description]
+	 * @param  {[type]} xml [description]
+	 * @param  {[type]} tag [description]
+	 * @return {[type]}     [description]
+	###
+	deleteTag: (xml, tag) ->
+		@templaterState.tagStart = tag.start
+		@templaterState.tagEnd = tag.end
+		@templaterState.textInsideTag = tag.raw
+		xmlText = @replaceTagByValue("", xml)
+
+	###*
+	 * [deleteOuterTags description]
+	 * @param  {[type]} outerXmlText [description]
+	 * @return {[type]}              [description]
+	###
+	deleteOuterTags: (outerXmlText) ->
+		@deleteTag(@deleteTag(outerXmlText, @templaterState.loopOpen), @templaterState.loopClose)
+
+	###*
+	 * [dashLoop description]
+	 * @param  {[type]} elementDashLoop [description]
+	 * @param  {[type]} sharp=false     [description]
+	 * @return {[type]}                 [description]
+	###
+	dashLoop: (elementDashLoop, sharp = false) ->
+		{_, start, end} = @templaterState.findOuterTagsContent(@content)
+		outerXml = DocUtils.getOuterXml(@content, start, end, elementDashLoop)
+		@templaterState.moveCharacters(0, 0, outerXml.startTag)
+		outerXmlText = outerXml.text
+		innerXmlText = @deleteOuterTags(outerXmlText, sharp)
 		@forLoop(innerXmlText,outerXmlText)
-	xmlToBeReplaced:(noStartTag,spacePreserve, insideValue,xmlTagNumber,noEndTag)->
+
+	###*
+	 * [xmlToBeReplaced description]
+	 * @param  {[type]} noStartTag    [description]
+	 * @param  {[type]} spacePreserve [description]
+	 * @param  {[type]} insideValue   [description]
+	 * @param  {[type]} xmlTagNumber  [description]
+	 * @param  {[type]} noEndTag      [description]
+	 * @return {[type]}               [description]
+	###
+	xmlToBeReplaced: (noStartTag, spacePreserve, insideValue, xmlTagNumber, noEndTag) ->
 		if noStartTag
 			return insideValue
 		if spacePreserve
-			str="""<#{@tagXml} xml:space="preserve">#{insideValue}"""
+			str = """<#{@tagXml} xml:space="preserve">#{insideValue}"""
 		else
-			str=@templaterState.matches[xmlTagNumber][1]+insideValue
-		if noEndTag then return str else return str+"</#{@tagXml}>"
-	replaceXmlTag: (content,options) ->
-		xmlTagNumber=options.xmlTagNumber
-		insideValue=options.insideValue
-		@templaterState.offset[xmlTagNumber]+=options.insideValue.length-@templaterState.matches[xmlTagNumber][2].length
-		spacePreserve= if options.spacePreserve? then options.spacePreserve else true
-		noStartTag= if options.noStartTag? then options.noStartTag else false
-		noEndTag= if options.noEndTag? then options.noEndTag else false
-		replacer=@xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber,noEndTag)
-		@templaterState.matches[xmlTagNumber][2]=insideValue #so that the templaterState.matches are still correct
-		startTag= @templaterState.calcXmlTagPosition(xmlTagNumber)#where the open tag starts: <w:t>
+			str = @templaterState.matches[xmlTagNumber][1] + insideValue
+		if noEndTag then return str else return str + "</#{@tagXml}>"
+
+	###*
+	 * [replaceXmlTag description]
+	 * @param  {[type]} content [description]
+	 * @param  {[type]} options [description]
+	 * @return {[type]}         [description]
+	###
+	replaceXmlTag: (content, options) ->
+		xmlTagNumber = options.xmlTagNumber
+		insideValue = options.insideValue
+		@templaterState.offset[xmlTagNumber] += options.insideValue.length - @templaterState.matches[xmlTagNumber][2].length
+		spacePreserve = if options.spacePreserve? then options.spacePreserve else true
+		noStartTag = if options.noStartTag? then options.noStartTag else false
+		noEndTag = if options.noEndTag? then options.noEndTag else false
+		replacer = @xmlToBeReplaced(noStartTag,spacePreserve,insideValue,xmlTagNumber,noEndTag)
+		@templaterState.matches[xmlTagNumber][2] = insideValue #so that the templaterState.matches are still correct
+		startTag = @templaterState.calcXmlTagPosition(xmlTagNumber)#where the open tag starts: <w:t>
 		#calculate the replacer according to the params
-		@templaterState.moveCharacters(xmlTagNumber+1,replacer.length,@templaterState.matches[xmlTagNumber][0].length)
-		if content.indexOf(@templaterState.matches[xmlTagNumber][0])==-1 then throw new Error("content #{@templaterState.matches[xmlTagNumber][0]} not found in content")
-		content = DocUtils.replaceFirstFrom content,@templaterState.matches[xmlTagNumber][0], replacer, startTag
-		@templaterState.matches[xmlTagNumber][0]=replacer
-		content
-	replaceTagByValue:(newValue,content) ->
-		options=
-			xmlTagNumber:@templaterState.tagStart.numXmlTag
-			noStartTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].first?
-			noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+		@templaterState.moveCharacters(xmlTagNumber + 1, replacer.length, @templaterState.matches[xmlTagNumber][0].length)
+		if content.indexOf(@templaterState.matches[xmlTagNumber][0]) == -1 then throw new Error("content #{@templaterState.matches[xmlTagNumber][0]} not found in content")
+		content = DocUtils.replaceFirstFrom(content,@templaterState.matches[xmlTagNumber][0], replacer, startTag)
+		@templaterState.matches[xmlTagNumber][0] = replacer
+		return content
 
-		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
-			options.insideValue=@templaterState.getLeftValue()+newValue+@templaterState.getRightValue()
-			return @replaceXmlTag(content,options)
+	###*
+	 * [replaceTagByValue description]
+	 * @param  {[type]} newValue [description]
+	 * @param  {[type]} content  [description]
+	 * @return {[type]}          [description]
+	###
+	replaceTagByValue: (newValue, content) ->
+		options = {
+			xmlTagNumber: @templaterState.tagStart.numXmlTag
+			noStartTag: @templaterState.matches[@templaterState.tagStart.numXmlTag].first?
+			noEndTag: @templaterState.matches[@templaterState.tagStart.numXmlTag].last?
+		}
 
-		else if @templaterState.tagEnd.numXmlTag>@templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w>
+		if @templaterState.tagEnd.numXmlTag == @templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
+			options.insideValue = @templaterState.getLeftValue() + newValue + @templaterState.getRightValue()
+			return @replaceXmlTag(content, options)
+
+		else if @templaterState.tagEnd.numXmlTag > @templaterState.tagStart.numXmlTag #<w>{aaa</w> ... <w> aaa} </w>
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
-			options.insideValue=newValue
+			options.insideValue = newValue
 			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
-				options.insideValue=@templaterState.getLeftValue()+newValue
+				options.insideValue = @templaterState.getLeftValue()+newValue
 
-			content= @replaceXmlTag(content,options)
+			content = @replaceXmlTag(content, options)
 
 			#2. for in between (@templaterState.tagStart.numXmlTag+1...@templaterState.tagEnd.numXmlTag) replace whole by ""
 
-			options=
-				insideValue:""
-				spacePreserve:false
+			options = {
+				insideValue: ""
+				spacePreserve: false
+			}
 
 			for k in [(@templaterState.tagStart.numXmlTag+1)...@templaterState.tagEnd.numXmlTag]
-				options.xmlTagNumber=k
-				content= @replaceXmlTag(content, options)
+				options.xmlTagNumber = k
+				content = @replaceXmlTag(content, options)
 
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
-			options =
-				insideValue:@templaterState.getRightValue()
-				spacePreserve:true
-				xmlTagNumber:@templaterState.tagEnd.numXmlTag
-				noEndTag:@templaterState.matches[@templaterState.tagEnd.numXmlTag].last?
-
+			options = {
+				insideValue: @templaterState.getRightValue()
+				spacePreserve: true
+				xmlTagNumber: @templaterState.tagEnd.numXmlTag
+				noEndTag: @templaterState.matches[@templaterState.tagEnd.numXmlTag].last?
+			}
 			return @replaceXmlTag(content, options)
-	replaceLoopTag:()->
+
+	###*
+	 * [replaceLoopTag description]
+	 * @return {[type]} [description]
+	###
+	replaceLoopTag: () ->
 		#You DashLoop= take the outer scope only if you are in a table
-		if @templaterState.loopType()=='dash'
+		if @templaterState.loopType() == 'dash'
 			return @dashLoop(@templaterState.loopOpen.element)
-		if @intelligentTagging==on
-			dashElement=@calcIntellegentlyDashElement()
-			if dashElement!=false then return @dashLoop(dashElement,true)
+		if @intelligentTagging == on
+			dashElement = @calcIntellegentlyDashElement()
+			if dashElement != false then return @dashLoop(dashElement,true)
 		@forLoop()
-	calcSubXmlTemplater:(innerTagsContent,argOptions)->
-		options= @toJson()
+
+	###*
+	 * [calcSubXmlTemplater description]
+	 * @param  {[type]} innerTagsContent [description]
+	 * @param  {[type]} argOptions       [description]
+	 * @return {[type]}                  [description]
+	###
+	calcSubXmlTemplater: (innerTagsContent, argOptions) ->
+		options = @toJson()
 		if argOptions?
 			if argOptions.Tags?
-				options.Tags=argOptions.Tags
+				options.Tags = argOptions.Tags
 				options.scopeList = options.scopeList.concat(argOptions.Tags)
-				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
+				options.scopePath = options.scopePath.concat(@templaterState.loopOpen.tag)
 		(new @currentClass innerTagsContent,options)
 			.render()
-	forLoop: (innerTagsContent=@templaterState.findInnerTagsContent(@content).content,outerTagsContent=@templaterState.findOuterTagsContent(@content).content)->
+
+	###*
+	 * [description]
+	 * @return {[type]} [description]
+	###
+	forLoop: (innerTagsContent = @templaterState.findInnerTagsContent(@content).content,outerTagsContent = @templaterState.findOuterTagsContent(@content).content) ->
 		###
 			<w:t>{#forTag} blabla</w:t>
 			Blabla1
@@ -208,14 +340,14 @@ module.exports=class XmlTemplater #abstract class !!
 			We replace outerTagsContent by n*innerTagsContent, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		###
-		tag=@templaterState.loopOpen.tag
-		newContent=""
+		tag = @templaterState.loopOpen.tag
+		newContent = ""
 		@scopeManager.loopOver tag, (subTags) =>
-			subfile=@calcSubXmlTemplater(innerTagsContent,{Tags:subTags})
-			newContent+=subfile.content
+			subfile = @calcSubXmlTemplater(innerTagsContent,{Tags: subTags})
+			newContent += subfile.content
 		, @templaterState.loopIsInverted
 		if !@scopeManager.getValue(tag)?
 			# This line is only for having the ability to retrieve the tags from a document
-			@calcSubXmlTemplater(innerTagsContent,{Tags:{}})
-		@content=@content.replace outerTagsContent, newContent
+			@calcSubXmlTemplater(innerTagsContent,{Tags: {}})
+		@content = @content.replace outerTagsContent, newContent
 		@calcSubXmlTemplater(@content)
