@@ -1,14 +1,14 @@
 module.exports = class ModuleManager
 	###*
-	 * [constructor description]
-	 * @return {[type]} [description]
+	 * initiate modules with empty array
 	###
-	constructor: -> @modules = []
+	constructor: () -> 
+		@modules = []
 
 	###*
 	 * [attachModule description]
 	 * @param  {[type]} module [description]
-	 * @return {[type]}        [description]
+	 * @return {Object}         this for chaining
 	###
 	attachModule: (module) ->
 		@modules.push module
@@ -22,8 +22,8 @@ module.exports = class ModuleManager
 	 * @return {[type]}           [description]
 	###
 	sendEvent: (eventName, data) ->
-		for m in @modules
-			m.handleEvent(eventName,data)
+		for module in @modules
+			module.handleEvent(eventName, data)
 
 	###*
 	 * [get description]
@@ -32,10 +32,10 @@ module.exports = class ModuleManager
 	###
 	get: (value) ->
 		result = null
-		for m in @modules
-			aux = m.get(value)
+		for module in @modules
+			aux = module.get(value)
 			result = if aux != null then aux else result
-		result
+		return result
 
 	###*
 	 * [handle description]
@@ -43,17 +43,17 @@ module.exports = class ModuleManager
 	 * @param  {[type]} data [description]
 	 * @return {[type]}      [description]
 	###
-	handle:(type,data)->
-		result=null
+	handle: (type, data) ->
+		result = null
 		for m in @modules
-			if result!=null then return
-			aux=m.handle(type,data)
-			result=if aux!=null then aux else result
-		result
+			if result != null then return
+			aux = module.handle(type, data)
+			result = if aux != null then aux else result
+		return result
 
 	###*
-	 * [getInstance description]
-	 * @param  {[type]} obj [description]
-	 * @return {[type]}     [description]
+	 * @param  {[type]} name name of the manager property to return
+	 * @return {[type]}      object property
 	###
-	getInstance:(obj)-> @[obj]
+	getInstance: (name) -> 
+		return @[name]
