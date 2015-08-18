@@ -1,33 +1,34 @@
-DocUtils= {}
+DocUtils = {}
 
-DocUtils.escapeRegExp= (str) ->
-	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+DocUtils.escapeRegExp = (str) -> str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 
-DocUtils.charMap=
-	'&':"&amp;"
-	"'":"&apos;"
-	"<":"&lt;"
-	">":"&gt;"
+DocUtils.charMap = {
+	'&': "&amp;",
+	"'": "&apos;",
+	"<": "&lt;",
+	">": "&gt;"
+}
 
-DocUtils.wordToUtf8= (string) ->
+DocUtils.wordToUtf8 = (string) ->
 	for endChar,startChar of DocUtils.charMap
-		string=string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
+		string = string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
 	string
 
-DocUtils.utf8ToWord= (string) ->
+DocUtils.utf8ToWord = (string) ->
 	for startChar,endChar of DocUtils.charMap
-		string=string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
+		string = string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
 	string
 
-DocUtils.defaultParser=(tag) ->
+DocUtils.defaultParser = (tag) ->
 	return {
-	'get':(scope) ->
-		if tag=='.' then return scope else return scope[tag]
+		'get': (scope) ->
+			return if tag == '.' then scope else scope[tag]
 	}
 
-DocUtils.tags=
-	start:'{'
-	end:'}'
+DocUtils.tags = {
+	start: '{',
+	end: '}'	
+}
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'
@@ -51,55 +52,60 @@ DocUtils.clone = (obj) ->
 
 	newInstance
 
-DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
-	string.substr(0,from)+string.substr(from).replace(search,replace)
+# replace first occurence of search (can be regex) after *from* offset
+DocUtils.replaceFirstFrom = (string,search,replace,from) ->
+	string.substr(0,from) + string.substr(from).replace(search,replace)
 
 DocUtils.encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 
-DocUtils.convert_spaces= (s) ->
+DocUtils.convert_spaces = (s) ->
 	s.replace(new RegExp(String.fromCharCode(160),"g")," ")
 
-DocUtils.decode_utf8= (s) ->
+DocUtils.decode_utf8 = (s) ->
 	try
-		if s==undefined then return undefined
-		return decodeURIComponent(escape(DocUtils.convert_spaces(s))) #replace Ascii 160 space by the normal space, Ascii 32
+		return undefined if s == undefined
+		# replace Ascii 160 space by the normal space, Ascii 32
+		return decodeURIComponent(escape(DocUtils.convert_spaces(s)))
 	catch e
 		console.error s
 		console.error 'could not decode'
 		throw new Error('end')
 
-DocUtils.base64encode= (b) ->
+DocUtils.base64encode = (b) ->
     btoa(unescape(encodeURIComponent(b)))
 
-DocUtils.preg_match_all= (regex, content) ->
-	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
-	regex=la
-	content=lolalolilala
-	returns: [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
-	###
-	regex= (new RegExp(regex,'g')) unless (typeof regex=='object')
-	matchArray= []
+###*
+ * regex is a string, content is the content. It returns an array of all matches with their offset
+ * @param  {String} regex   example: la
+ * @param  {String} content example: lolalolilala
+ * @return {Array}          [{0:'la',offset:2},{0:'la',offset:8},{0:'la',offset:10}]
+###
+DocUtils.preg_match_all = (regex, content) ->
+	regex = (new RegExp(regex,'g')) unless (typeof regex == 'object')
+	matchArray = []
 	replacer = (match,pn ..., offset, string)->
 		pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 		pn.offset= offset
 		matchArray.push pn
 	content.replace regex,replacer
-	matchArray
+	return matchArray
 
 DocUtils.sizeOfObject = (obj) ->
-	size=0
+	size = 0
 	log = 0
 	for key of obj
 		size++
-	size
+	return size
 
 DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
-	endTag= text.indexOf('</'+xmlTag+'>',end)
-	if endTag==-1 then throw new Error("can't find endTag #{endTag}")
-	endTag+=('</'+xmlTag+'>').length
+	endTag = text.indexOf('</'+xmlTag+'>',end)
+	if endTag == -1 then throw new Error("can't find endTag #{endTag}")
+	endTag += ('</'+xmlTag+'>').length
 	startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
-	if startTag==-1 then throw new Error("can't find startTag")
-	{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
+	if startTag == -1 then throw new Error("can't find startTag")
+	return {
+		"text": text.substr(startTag,endTag - startTag),startTag,endTag
+	}
 
-module.exports=DocUtils
+module.exports = DocUtils

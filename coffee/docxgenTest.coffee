@@ -1,7 +1,7 @@
-docX={}
+docX = {}
 
-expressions= require('angular-expressions')
-angularParser= (tag) ->
+expressions = require('angular-expressions')
+angularParser = (tag) ->
 	try
 		expr=expressions.compile(tag)
 	catch e
@@ -18,44 +18,46 @@ angularParser= (tag) ->
 
 expect = require('chai').expect
 
-DocxGen= require('../../js/index.js')
-PptxGen=DocxGen.PptxGen
-DocUtils=DocxGen.DocUtils
-docX={}
-pptX={}
-data={}
-SubContent=DocxGen.SubContent
-DocXTemplater=DocxGen.DocXTemplater
-xmlUtil=DocxGen.XmlUtil
-fs=require('fs')
+DocxGen = require('../../js/index.js')
+PptxGen = DocxGen.PptxGen
+DocUtils = DocxGen.DocUtils
+docX = {}
+pptX = {}
+data = {}
+SubContent = DocxGen.SubContent
+DocXTemplater = DocxGen.DocXTemplater
+xmlUtil = DocxGen.XmlUtil
+fs = require('fs')
 
-fileNames=["graph.docx",
-"imageExample.docx",
-"tagExample.docx",
-"tagExampleExpected.docx",
-"tagLoopExample.docx",
-"tagInvertedLoopExample.docx",
-"tagExampleExpected.docx",
-"tagLoopExampleImageExpected.docx",
-"tagProduitLoop.docx",
-"tagDashLoop.docx",
-"tagDashLoopList.docx",
-"tagDashLoopTable.docx",
-'tagIntelligentLoopTableExpected.docx',
-'cyrillic.docx',
-'tableComplex2Example.docx',
-'tableComplexExample.docx',
-'tableComplex3Example.docx',
-'xmlInsertionExpected.docx',
-'xmlInsertionExample.docx',
-"angularExample.docx",
-'tagIntelligentLoopTable.docx',
-"xmlInsertionComplexExpected.docx",
-"xmlInsertionComplexExample.docx"]
+fileNames = [
+	"graph.docx",
+	"imageExample.docx",
+	"tagExample.docx",
+	"tagExampleExpected.docx",
+	"tagLoopExample.docx",
+	"tagInvertedLoopExample.docx",
+	"tagExampleExpected.docx",
+	"tagLoopExampleImageExpected.docx",
+	"tagProduitLoop.docx",
+	"tagDashLoop.docx",
+	"tagDashLoopList.docx",
+	"tagDashLoopTable.docx",
+	'tagIntelligentLoopTableExpected.docx',
+	'cyrillic.docx',
+	'tableComplex2Example.docx',
+	'tableComplexExample.docx',
+	'tableComplex3Example.docx',
+	'xmlInsertionExpected.docx',
+	'xmlInsertionExample.docx',
+	"angularExample.docx",
+	'tagIntelligentLoopTable.docx',
+	"xmlInsertionComplexExpected.docx",
+	"xmlInsertionComplexExample.docx"
+]
 
-getLength=(d)->if d.length? then d.length else d.byteLength
+getLength = (d) -> if d.length? then d.length else d.byteLength
 
-startTest=->
+startTest = ->
 	describe "DocxGenBasis", () ->
 		it "should be defined", () ->
 			expect(DocxGen).not.to.be.equal(undefined)
