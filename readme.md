@@ -145,7 +145,11 @@ They are a few similar libraries that work with docx, here’s a list of those I
 # Modules
 
 Functionality can be added with modules. They is yet no doc for the modules because it is not completely mature yet, but you can open an issue if you have any question about it.
-I have already created one module that can add images using the syntax: `{%image}`, which is documented here: https://github.com/open-xml-templating/docxtemplater-image-module
+
+Here is the list of existing modules:
+
+ * Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module
+ * Image module using the syntax: `{%image}`, https://github.com/open-xml-templating/docxtemplater-image-module
 
 # Professional Support
 
