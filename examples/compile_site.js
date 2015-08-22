@@ -8,7 +8,7 @@ var view = {
     fulldocumentation:fs.readFileSync(__dirname+"/text150.svg").toString(),
     manytags:fs.readFileSync(__dirname+"/open112.svg").toString(),
     openextension:fs.readFileSync(__dirname+"/puzzle37.svg").toString(),
-    freebier:fs.readFileSync(__dirname+"/drink24.svg").toString(),
+    freebeer:fs.readFileSync(__dirname+"/drink24.svg").toString(),
     fullytested:fs.readFileSync(__dirname+"/test-tube12.svg").toString(),
   }
 };
