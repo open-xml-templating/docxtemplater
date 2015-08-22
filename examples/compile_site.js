@@ -2,6 +2,7 @@ var Mustache = require('mustache');
 var fs = require('fs');
 
 var view = {
+  mainlogo:fs.readFileSync(__dirname+"/docxtemplater.svg").toString(),
   features: {
     easy:fs.readFileSync(__dirname+"/basic14.svg").toString(),
     everywhere:fs.readFileSync(__dirname+"/cellphone106.svg").toString(),

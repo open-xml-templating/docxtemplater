@@ -41,6 +41,10 @@ svg {
 	fill:#4520B0;
 }
 
+svg.logo {
+    fill:#FFFFFF;
+}
+
 /*css*/
 body {
 	background-color: #f6f7f8;
