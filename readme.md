@@ -32,14 +32,14 @@ The templates can be edited by non-programmers, eg for example your clients.
 Installation: `npm install docxtemplater`
 
 ```javascript
-fs=require('fs')
-Docxtemplater = require('docxtemplater');
+var fs = require('fs');
+var Docxtemplater = require('docxtemplater');
 
 //Load the docx file as a binary
-content = fs
-    .readFileSync(__dirname+"/input.docx","binary")
+var content = fs
+    .readFileSync(__dirname + "/input.docx", "binary");
 
-doc=new Docxtemplater(content);
+var doc = new Docxtemplater(content);
 
 //set the templateVariables
 doc.setData({
