@@ -9,6 +9,7 @@ ModuleManager=require('./moduleManager')
 module.exports=class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
+		@tagRawXml='' #tagRawXml represents the name of the tag that needs to be replaced when embedding raw XML using `{@rawXml}`.
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@templaterState= new TemplaterState @moduleManager
@@ -99,7 +100,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue),@content)
 	replaceSimpleTagRawXml:()->
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
-		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml('w:p')
+		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml(@tagRawXml)
 		@replaceXml(subContent,newText)
 	replaceXml:(subContent,newText)->
 		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText.length,subContent.text.length)
