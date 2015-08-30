@@ -46,6 +46,7 @@
     "node": ">=0.10"
   },
   "scripts": {
+    "preversion": "npm run compile && npm test",
     "compile": "gulp allCoffee && node examples/compile_site.js",
     "test": "mocha test/spec/docxgenTest.spec.js"
   }
