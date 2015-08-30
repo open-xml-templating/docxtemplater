@@ -1,5 +1,8 @@
 ### master
 
+### 1.0.7
+
+  * {@rawXml} works in pptx
   * Created new docxtemplater.com website
   * Using mocha instead of jasmine-node
   * New FAQ section in docs
