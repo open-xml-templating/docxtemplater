@@ -5,6 +5,8 @@ module.exports=class ScopeManager
 	constructor:(@tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager)->@moduleManager.scopeManager=this
 	loopOver:(tag,callback,inverted=false)->
 		value = @getValue(tag)
+		@loopOverValue(value,callback,inverted)
+	loopOverValue:(value,callback,inverted=false)->
 		type = Object.prototype.toString.call(value)
 		if inverted
 			if !value? then return callback(@scopeList[@num])
