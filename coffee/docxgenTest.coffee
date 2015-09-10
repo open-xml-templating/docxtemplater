@@ -16,6 +16,17 @@ angularParser= (tag) ->
 			return "undefined"
 }
 
+shouldBeSame = (zip1,zip2)->
+	if typeof zip1 == "string" then zip1 = docX[zip1].getZip()
+	if typeof zip2 == "string" then zip2 = docX[zip2].getZip()
+
+	for i of zip1.files
+		expect(zip1.files[i].options.date).not.to.be.equal(zip2.files[i].options.date, "Date differs")
+		expect(zip1.files[i].name).to.be.equal(zip2.files[i].name, "Name differs")
+		expect(zip1.files[i].options.dir).to.be.equal(zip2.files[i].options.dir, "IsDir differs")
+		expect(zip1.files[i].asText().length).to.be.equal(zip2.files[i].asText().length, "Content differs")
+		expect(zip1.files[i].asText()).to.be.equal(zip2.files[i].asText(), "Content differs")
+
 expect = require('chai').expect
 
 DocxGen= require('../../js/index.js')
@@ -103,12 +114,7 @@ startTest=->
 				expect(docX['tagExample.docx'].getFullText("word/header1.xml")).to.be.equal('Edgar Hipp0652455478New Website')
 				expect(docX['tagExample.docx'].getFullText("word/footer1.xml")).to.be.equal('EdgarHipp0652455478')
 			it "should export the good file", () ->
-				for i of docX['tagExample.docx'].zip.files
-					#Everything but the date should be different
-					expect(docX['tagExample.docx'].zip.files[i].options.date).not.to.be.equal(docX['tagExampleExpected.docx'].zip.files[i].options.date)
-					expect(docX['tagExample.docx'].zip.files[i].name).to.be.equal(docX['tagExampleExpected.docx'].zip.files[i].name)
-					expect(docX['tagExample.docx'].zip.files[i].options.dir).to.be.equal(docX['tagExampleExpected.docx'].zip.files[i].options.dir)
-					expect(docX['tagExample.docx'].zip.files[i].asText()).to.be.equal(docX['tagExampleExpected.docx'].zip.files[i].asText())
+				shouldBeSame('tagExample.docx', 'tagExampleExpected.docx')
 
 	describe "DocxGenTemplatingForLoop", () ->
 		describe "textLoop templating", () ->
@@ -238,12 +244,7 @@ startTest=->
 			expectedText= 'JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984'
 			text= docX['tagIntelligentLoopTableExpected.docx'].getFullText()
 			expect(text).to.be.equal(expectedText)
-			for i of docX['tagIntelligentLoopTable.docx'].zip.files
-				# Everything but the date should be different
-				expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].asText()).to.be.equal(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].asText())
-				expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].name).to.be.equal(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].name)
-				expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.dir).to.be.equal(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.dir)
-				expect(docX['tagIntelligentLoopTable.docx'].zip.files[i].options.date).not.to.be.equal(docX['tagIntelligentLoopTableExpected.docx'].zip.files[i].options.date)
+			shouldBeSame('tagIntelligentLoopTable.docx', 'tagIntelligentLoopTableExpected.docx')
 
 	describe "getTags", () ->
 		it "should work with simple document", () ->
@@ -508,14 +509,7 @@ startTest=->
 		docX["xmlInsertionExample.docx"].render()
 
 		it "should work with simple example", () ->
-			for i of docX['xmlInsertionExample.docx'].zip.files
-				#Everything but the date should be different
-				expect(docX['xmlInsertionExample.docx'].zip.files[i].options.date).not.to.be.equal(docX['xmlInsertionExpected.docx'].zip.files[i].options.date)
-				expect(docX['xmlInsertionExample.docx'].zip.files[i].name).to.be.equal(docX['xmlInsertionExpected.docx'].zip.files[i].name)
-				expect(docX['xmlInsertionExample.docx'].zip.files[i].options.dir).to.be.equal(docX['xmlInsertionExpected.docx'].zip.files[i].options.dir)
-				expect(docX['xmlInsertionExample.docx'].zip.files[i].asText().length).to.be.equal(docX['xmlInsertionExpected.docx'].zip.files[i].asText().length)
-				expect(docX['xmlInsertionExample.docx'].zip.files[i].asText()).to.be.equal(docX['xmlInsertionExpected.docx'].zip.files[i].asText())
-
+			shouldBeSame('xmlInsertionExample.docx','xmlInsertionExpected.docx')
 
 		it 'should work even when tags are after the xml', () ->
 			docX["xmlInsertionComplexExample.docx"].setData(
@@ -530,6 +524,7 @@ startTest=->
 				]
 				})
 			docX["xmlInsertionComplexExample.docx"].render()
+			shouldBeSame('xmlInsertionComplexExample.docx','xmlInsertionComplexExpected.docx')
 			for i of docX['xmlInsertionComplexExample.docx'].zip.files
 				#Everything but the date should be different
 				expect(docX['xmlInsertionComplexExample.docx'].zip.files[i].options.date).not.to.be.equal(docX['xmlInsertionComplexExpected.docx'].zip.files[i].options.date)
