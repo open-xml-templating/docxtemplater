@@ -6,7 +6,7 @@
 Docxtemplater's documentation
 =============================
 
-.. image:: https://travis-ci.org/edi9999/docxtemplater.svg?branch=master
+.. image:: https://api.travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master
 
 .. image:: http://img.shields.io/npm/dm/docxtemplater.svg
 
