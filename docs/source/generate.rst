@@ -11,7 +11,7 @@ Here's a sample code to generate a document:
 
 .. code-block:: javascript
 
-    fs=require(‘fs’)
+    fs=require('fs')
     Docxtemplater = require('docxtemplater');
 
     //Load the docx file as a binary
