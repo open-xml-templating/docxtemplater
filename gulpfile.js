@@ -5,16 +5,6 @@ var concat= require('gulp-concat');
 var uglify= require('gulp-uglify');
 var browserify = require('gulp-browserify');
 
-try {
-    var Blink1 = require('node-blink1');
-    var blink1 = new Blink1();
-} catch (e) {
-    blink1={
-        fadeToRGB:function(){
-    }};
-}
-
-
 var config={uglify:false}
 
 var paths = {
