@@ -5,10 +5,9 @@ node_js:
     - "0.11"
     - "0.10"
     - "iojs"
+    - "4.0"
+    - "4.1"
     - "4"
 
 before_script:
-    - "npm install -g npm"
-    - "npm install -g gulp"
-    - "npm install -g mocha"
-    - "gulp allCoffee"
+    - "npm run compile"
