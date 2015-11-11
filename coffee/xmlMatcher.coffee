@@ -5,7 +5,7 @@ module.exports=class XmlMatcher
 	constructor:(@content)->
 
 	parse:(@tagXml)->
-		@matches=DocUtils.preg_match_all("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
+		@matches=DocUtils.pregMatchAll("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 		@charactersAdded= (0 for i in [0...@matches.length])
 		@handleRecursiveCase()
 		return this

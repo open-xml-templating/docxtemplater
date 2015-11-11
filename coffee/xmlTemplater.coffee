@@ -39,7 +39,7 @@ module.exports=class XmlTemplater #abstract class !!
 	getFullText:(@tagXml=@tagXml) ->
 		matcher=new XmlMatcher(@content).parse(@tagXml)
 		output= (match[2] for match in matcher.matches) #get only the text
-		DocUtils.wordToUtf8(DocUtils.convert_spaces(output.join(""))) #join it
+		DocUtils.wordToUtf8(DocUtils.convertSpaces(output.join(""))) #join it
 	handleModuleManager:(type,data)->
 		@moduleManager.xmlTemplater=this
 		@moduleManager.templaterState=@templaterState

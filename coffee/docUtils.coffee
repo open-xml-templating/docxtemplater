@@ -62,12 +62,10 @@ DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occu
 		throw new Error "replaced can't be the same as substring"
 	string.substr(0,from)+replaced
 
-
-DocUtils.convert_spaces= (s) ->
+DocUtils.convertSpaces= (s) ->
 	s.replace(new RegExp(String.fromCharCode(160),"g")," ")
 
-
-DocUtils.preg_match_all= (regex, content) ->
+DocUtils.pregMatchAll= (regex, content) ->
 	###regex is a string, content is the content. It returns an array of all matches with their offset, for example:
 	regex=la
 	content=lolalolilala
