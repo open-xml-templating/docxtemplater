@@ -47,7 +47,7 @@ module.exports=class ScopeManager
 			else value= result
 		else
 			@useTag(tag,false)
-			value= @nullGetter(tag)
+			return null
 		value
 	#set the tag as used, so that DocxGen can return the list of all tags
 	useTag: (tag,val) ->

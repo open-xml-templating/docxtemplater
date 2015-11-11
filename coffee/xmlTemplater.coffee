@@ -27,7 +27,7 @@ module.exports=class XmlTemplater #abstract class !!
 		for key,defaultValue of DocUtils.defaults
 			this[key]=if options[key]? then options[key] else defaultValue
 		@moduleManager=if options.moduleManager? then options.moduleManager else new ModuleManager()
-		@scopeManager=new ScopeManager({tags:@tags,scopePath:@scopePath,usedTags:@usedTags,scopeList:@scopeList,parser:@parser,moduleManager:@moduleManager,nullGetter:@nullGetter,delimiters:@delimiters})
+		@scopeManager=new ScopeManager({tags:@tags,scopePath:@scopePath,usedTags:@usedTags,scopeList:@scopeList,parser:@parser,moduleManager:@moduleManager,delimiters:@delimiters})
 	toJson: () ->
 		obj =
 			tags:DocUtils.clone @scopeManager.tags
@@ -96,6 +96,8 @@ module.exports=class XmlTemplater #abstract class !!
 		this
 	replaceSimpleTag:()->
 		newValue=@scopeManager.getValueFromScope(@templaterState.textInsideTag)
+		if !newValue?
+			newValue = @nullGetter(@templaterState.textInsideTag)
 		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue),@content)
 	replaceSimpleTagRawXml:()->
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
