@@ -29,6 +29,7 @@ shouldBeSame = (zip1,zip2)->
 
 expect = require('chai').expect
 
+XmlMatcher= require('../../js/xmlMatcher.js')
 DocxGen= require('../../js/index.js')
 PptxGen=DocxGen.PptxGen
 DocUtils=DocxGen.DocUtils
@@ -73,6 +74,63 @@ startTest=->
 		it "should construct", () ->
 			a= new DocxGen()
 			expect(a).not.to.be.equal(undefined)
+
+	describe "XmlMatcher", () ->
+		it 'should work with simple tag',->
+			tag='w:t'
+			matcher=new XmlMatcher('<w:t>Text</w:t>')
+			matcher.parse('w:t')
+			expect(matcher.matches[0][0]).to.be.equal('<w:t>Text</w:t>')
+			expect(matcher.matches[0][1]).to.be.equal('<w:t>')
+			expect(matcher.matches[0][2]).to.be.equal('Text')
+			expect(matcher.matches[0].offset).to.be.equal(0)
+
+		it 'should work with multiple tags',->
+			tag='w:t'
+			matcher=new XmlMatcher('<w:t>Text</w:t> TAG <w:t>Text2</w:t>')
+			matcher.parse('w:t')
+			expect(matcher.matches[1][0]).to.be.equal('<w:t>Text2</w:t>')
+			expect(matcher.matches[1][1]).to.be.equal('<w:t>')
+			expect(matcher.matches[1][2]).to.be.equal('Text2')
+			expect(matcher.matches[1].offset).to.be.equal(20)
+
+		it 'should work with no tag, with w:t',->
+			tag='w:t'
+			matcher=new XmlMatcher('Text1</w:t><w:t>Text2')
+			matcher.parse('w:t')
+			expect(matcher.matches[0][0]).to.be.equal('Text1')
+			expect(matcher.matches[0][1]).to.be.equal('')
+			expect(matcher.matches[0][2]).to.be.equal('Text1')
+			expect(matcher.matches[0].offset).to.be.equal(0)
+
+			expect(matcher.matches[1][0]).to.be.equal('<w:t>Text2')
+			expect(matcher.matches[1][1]).to.be.equal('<w:t>')
+			expect(matcher.matches[1][2]).to.be.equal('Text2')
+			expect(matcher.matches[1].offset).to.be.equal(11)
+
+		it 'should work with no tag, no w:t',->
+			tag='w:t'
+			matcher=new XmlMatcher('Text1')
+			matcher.parse('w:t')
+			expect(matcher.matches[0][0]).to.be.equal('Text1')
+			expect(matcher.matches[0][1]).to.be.equal('')
+			expect(matcher.matches[0][2]).to.be.equal('Text1')
+			expect(matcher.matches[0].offset).to.be.equal(0)
+
+		it 'should not match with no </w:t> starter',->
+			tag='w:t'
+			matcher=new XmlMatcher('TAG<w:t>Text1</w:t>')
+			matcher.parse('w:t')
+			expect(matcher.matches[0][0]).to.be.equal('<w:t>Text1</w:t>')
+			expect(matcher.matches[0][1]).to.be.equal('<w:t>')
+			expect(matcher.matches[0][2]).to.be.equal('Text1')
+			expect(matcher.matches[0].offset).to.be.equal(3)
+
+		it 'should not match with no <w:t> ender',->
+			tag='w:t'
+			matcher=new XmlMatcher('<w:t>Text1</w:t>TAG')
+			matcher.parse('w:t')
+			expect(matcher.matches.length).to.be.equal(1)
 
 	describe "DocxGenLoading", () ->
 		describe "ajax done correctly", () ->

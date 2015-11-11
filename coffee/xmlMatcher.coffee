@@ -19,13 +19,20 @@ module.exports=class XmlMatcher
 		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
 		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
 		###
+
 		replacerUnshift = (match,pn ..., offset, string)=>
+			match=pn[0]+pn[1]
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
 			pn.first= true
 			@matches.unshift pn #add at the beginning
 			@charactersAdded.unshift 0
-		@content.replace /^()([^<]+)/,replacerUnshift
+
+		if @content.indexOf('<')==-1 &&  @content.indexOf('>')==-1
+			@content.replace /^()([^<>]*)$/,replacerUnshift
+
+		regex="^()([^<]+)<\/#{@tagXml}>"
+		@content.replace (new RegExp(regex)),replacerUnshift
 
 		replacerPush = (match,pn ..., offset, string)=>
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
