@@ -17,19 +17,18 @@ XmlUtil.getListXmlElements= (text,start=0,end=text.length-1) ->
 				innerCurrentTag= tag[1].substr(1)
 				if innerLastTag==innerCurrentTag then justOpened= true #tag was just opened
 			if justOpened then result.pop() else result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
-		else if tag[2][tag[2].length-1]=='/' #open/closing tag aren't taken into account(for example <w:style/>)
-		else	#opening tag
+		else if tag[2][tag[2].length-1]!='/'
 			result.push {tag:'<'+tag[1]+'>',offset:tag.offset}
 	result
 XmlUtil.getListDifferenceXmlElements= (text,start=0,end=text.length-1) -> #it returns the difference between two scopes, ie simplifyes closes and opens. If it is not null, it means that the beginning is for example in a table, and the second one is not. If you hard copy this text, the XML will  break
 	scope= @getListXmlElements text,start,end
 	while(1)
 		if (scope.length<=1) #if scope.length==1, then they can't be an opeining and closing tag
-			break;
+			break
 		if ((scope[0]).tag.substr(2)==(scope[scope.length-1]).tag.substr(1)) #if the first closing is the same than the last opening, ie: [</tag>,...,<tag>]
 			scope.pop() #remove both the first and the last one
 			scope.shift()
-		else break;
+		else break
 	scope
 
 module.exports=XmlUtil

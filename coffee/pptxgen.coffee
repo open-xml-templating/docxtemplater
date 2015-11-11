@@ -3,10 +3,8 @@ PptxGen.coffee
 Created by @contextmatters, based on DocxGen by Edgar HIPP
 ###
 
-DocUtils=require('./docUtils')
 DocxGen=require('./docxgen')
 PptXTemplater=require('./pptxTemplater')
-JSZip=require('jszip')
 
 PptxGen = class PptxGen extends DocxGen
 	getTemplateClass:->PptXTemplater

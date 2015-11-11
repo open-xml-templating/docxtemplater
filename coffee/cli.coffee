@@ -47,4 +47,4 @@ else
   doc.render()
   zip=doc.getZip()
   output = zip.generate({type:"nodebuffer"})
-  fs.writeFileSync(currentPath + outputFile, output);
+  fs.writeFileSync(currentPath + outputFile, output)

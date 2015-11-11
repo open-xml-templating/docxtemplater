@@ -4,7 +4,7 @@ DocUtils=require('./docUtils')
 module.exports=class TemplaterState
 	constructor:(@moduleManager)->@moduleManager.templaterState=this
 	moveCharacters:(numXmlTag,newTextLength,oldTextLength)->
-		for k in [numXmlTag..@matches.length]
+		for k in [numXmlTag...@matches.length]
 			@charactersAdded[k]+=newTextLength-oldTextLength
 	calcStartTag: (tag) -> @calcPosition(tag.start)
 	calcXmlTagPosition:(xmlTagNumber)->
