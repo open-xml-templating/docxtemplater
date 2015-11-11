@@ -3,6 +3,19 @@ DocUtils= {}
 DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
 
+DocUtils.defaults =
+	nullGetter:(tag)->
+		return "undefined"
+	parser:(tag) ->
+		return {
+			'get':(scope) ->
+				if tag=='.' then return scope else return scope[tag]
+		}
+	intelligentTagging:on
+	delimiters:
+		start:'{'
+		end:'}'
+
 DocUtils.charMap=
 	'&':"&amp;"
 	"'":"&apos;"
@@ -22,16 +35,6 @@ DocUtils.utf8ToWord= (string) ->
 	for startChar,endChar of DocUtils.charMap
 		string=string.replace(new RegExp(DocUtils.escapeRegExp(startChar),"g"),endChar)
 	string
-
-DocUtils.defaultParser=(tag) ->
-	return {
-	'get':(scope) ->
-		if tag=='.' then return scope else return scope[tag]
-	}
-
-DocUtils.tags=
-	start:'{'
-	end:'}'
 
 DocUtils.clone = (obj) ->
 	if not obj? or typeof obj isnt 'object'

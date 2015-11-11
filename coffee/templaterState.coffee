@@ -2,7 +2,7 @@
 DocUtils=require('./docUtils')
 
 module.exports=class TemplaterState
-	constructor:(@moduleManager)->@moduleManager.templaterState=this
+	constructor:(@moduleManager,@delimiters)->@moduleManager.templaterState=this
 	moveCharacters:(numXmlTag,newTextLength,oldTextLength)->
 		for k in [numXmlTag...@matches.length]
 			@charactersAdded[k]+=newTextLength-oldTextLength
@@ -12,15 +12,7 @@ module.exports=class TemplaterState
 	calcEndTag: (tag)-> @calcPosition(tag.end)+1
 	calcPosition:(bracket)->
 		@matches[bracket.numXmlTag].offset+@matches[bracket.numXmlTag][1].length+@charactersAdded[bracket.numXmlTag]+bracket.numCharacter
-	findOuterTagsContent: (content) ->
-		start = @calcStartTag @loopOpen
-		end= @calcEndTag @loopClose
-		{content:content.substr(start,end-start),start,end}
 	innerContent:(type)->@matches[this[type].numXmlTag][2]
-	findInnerTagsContent: (content) ->
-		start= @calcEndTag @loopOpen
-		end= @calcStartTag @loopClose
-		{content:content.substr(start,end-start),start,end}
 	initialize:()->
 		@context=""
 		@inForLoop= false # tag with sharp: {#forLoop}______{/forLoop}
@@ -29,12 +21,17 @@ module.exports=class TemplaterState
 		@inDashLoop = false	# tag with dash: {-w:tr dashLoop} {/dashLoop}
 		@rawXmlTag=false
 		@textInsideTag= ""
+		@trail=""
+		@trailSteps=[]
+		@offset=[]
 	startTag:()->
 		if @inTag is true then throw new Error("Unclosed tag : '#{@textInsideTag}'")
+		@currentStep=@trailSteps[0]
 		@inTag= true
 		@rawXmlTag=false
 		@textInsideTag= ""
 		@tagStart=@currentStep
+		@trail=""
 	loopType:()->
 		if @inDashLoop then return 'dash'
 		if @inForLoop then return 'for'
@@ -44,6 +41,16 @@ module.exports=class TemplaterState
 		return 'simple'
 	isLoopClosingTag:()->
 		@textInsideTag[0]=='/' and ('/'+@loopOpen.tag == @textInsideTag)
+	finishLoop:()->
+		@context=""
+		@rawXmlTag=false
+		@inForLoop=false
+		@loopIsInverted=false
+		@loopOpen=null
+		@loopClose=null
+		@inDashLoop=false
+		@inTag=false
+		@textInsideTag=""
 	getLeftValue:()->
 		@innerContent('tagStart')
 			.substr(0,@tagStart.numCharacter+@offset[@tagStart.numXmlTag])
@@ -54,7 +61,8 @@ module.exports=class TemplaterState
 		if @inTag is false then throw new Error("Unopened tag near : '#{@context.substr(@context.length-10,10)}'")
 		@inTag= false
 		@tagEnd=@currentStep
-		@textInsideTag=@textInsideTag.substr(0,@textInsideTag.length+1-DocUtils.tags.end.length)
+		@textInsideTag=@textInsideTag.substr(0,@textInsideTag.length+1-@delimiters.end.length)
+		@textInsideTag=DocUtils.wordToUtf8 @textInsideTag
 		if @loopType()=='simple'
 			if @textInsideTag[0]=='@'
 				@rawXmlTag=true

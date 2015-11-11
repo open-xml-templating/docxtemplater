@@ -1,5 +1,6 @@
 XmlTemplater=require('./xmlTemplater')
 xmlUtil=require('./xmlUtil')
+SubContent=require('./subContent')
 
 PptXTemplater = class PptXTemplater extends XmlTemplater
 	constructor:(content="",options={}) ->
@@ -8,14 +9,14 @@ PptXTemplater = class PptXTemplater extends XmlTemplater
 		@tagXml='a:t'
 		@tagRawXml='p:sp'
 		if typeof content=="string" then @load content else throw new Error("content must be string!")
-	xmlToBeReplaced:(noStartTag, spacePreserve, insideValue,xmlTagNumber,noEndTag)->
-		if noStartTag == true
-			return insideValue
+	xmlToBeReplaced:(options)->
+		if options.noStartTag
+			return options.insideValue
 		else
-			str=@templaterState.matches[xmlTagNumber][1]+insideValue
-			if noEndTag==true then return str else return str+"</#{@tagXml}>"
+			str=@templaterState.matches[options.xmlTagNumber][1]+options.insideValue
+			if options.noEndTag==true then return str else return str+"</#{@tagXml}>"
 	calcIntellegentlyDashElement:()->
-		{content,start,end}= @templaterState.findOuterTagsContent(@content)
+		{content,start,end} = new SubContent(@content).getOuterLoop(@templaterState)
 		scopeContent= xmlUtil.getListXmlElements @content, start,end-start
 		for t in scopeContent
 			if t.tag=='<a:tc>'

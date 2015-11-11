@@ -14,9 +14,8 @@ DocxGen=class DocxGen
 		@moduleManager.attachModule(module)
 		this
 	setOptions:(@options={})->
-		@intelligentTagging= if @options.intelligentTagging? then @options.intelligentTagging else on
-		if @options.parser? then @parser=@options.parser
-		if @options.delimiters? then DocxGen.DocUtils.tags=@options.delimiters
+		for key,defaultValue of DocxGen.DocUtils.defaults
+			this[key]=if @options[key]? then @options[key] else defaultValue
 		this
 	getTemplateClass:->DocxGen.DocXTemplater
 	getTemplatedFiles:->
@@ -51,19 +50,19 @@ DocxGen=class DocxGen
 			if DocxGen.DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}
 		usedTags
-	setData:(@Tags) ->
+	setData:(@tags) ->
 		this
 	#output all files, if docx has been loaded via javascript, it will be available
 	getZip:()->
 		@zip
 	createTemplateClass:(path)->
 		usedData=@zip.files[path].asText()
-		new @templateClass(usedData,{
-			Tags:@Tags
-			intelligentTagging:@intelligentTagging
-			parser:@parser
+		obj =
+			tags:@tags
 			moduleManager:@moduleManager
-		})
+		for key,_ of DocxGen.DocUtils.defaults
+			obj[key]=this[key]
+		new @templateClass(usedData,obj)
 	getFullText:(path="word/document.xml") ->
 		@createTemplateClass(path).getFullText()
 
