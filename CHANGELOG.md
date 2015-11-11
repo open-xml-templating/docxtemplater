@@ -1,5 +1,24 @@
 ### master
 
+### 2.0.0
+
+Breaking changes:
+
+  * docxtemplater is now much faster to process loops #131
+  * docutils should not be used any more except for `DocUtils.defaults`
+  * Most modules should be updated to work with docxtemplater
+    2.0.0 (because of the changes in DocUtils) : Module maintainers: please don't rely on docUtils anymore, except for docUtils.defaults
+  * Some templates would output corrupt templates, this should not happen anymore (if it still does, please open an issue)
+
+Upgrade guide :
+
+ * No external methods have changed
+ * If you use modules (image-module, chart-module, or others) you have to update those because you shouldn't use DocUtils anymore
+
+### 1.0.8
+
+  * Add ScopeManager.loopOverValue
+
 ### 1.0.7
 
   * {@rawXml} works in pptx
