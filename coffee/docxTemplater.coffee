@@ -1,4 +1,5 @@
 XmlTemplater=require('./xmlTemplater')
+SubContent=require('./subContent')
 xmlUtil=require('./xmlUtil')
 
 DocXTemplater = class DocXTemplater extends XmlTemplater
@@ -9,7 +10,7 @@ DocXTemplater = class DocXTemplater extends XmlTemplater
 		@tagRawXml='w:p'
 		if typeof content=="string" then @load content else throw new Error("content must be string!")
 	calcIntellegentlyDashElement:()->
-		{content,start,end}= @templaterState.findOuterTagsContent(@content)
+		{content,start,end} = new SubContent(@content).getOuterLoop(@templaterState)
 		scopeContent= xmlUtil.getListXmlElements @content, start,end-start
 		for t in scopeContent
 			if t.tag=='<w:tc>'
