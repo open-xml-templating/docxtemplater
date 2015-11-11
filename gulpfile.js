@@ -8,7 +8,24 @@ var browserify = require('gulp-browserify');
 var config={uglify:false}
 
 var paths = {
-	coffee: ['coffee/moduleManager.coffee','coffee/index.coffee','coffee/xmlUtil.coffee','coffee/templaterState.coffee','coffee/docUtils.coffee','coffee/docxgen.coffee','coffee/pptxgen.coffee','coffee/xmlTemplater.coffee','coffee/docxTemplater.coffee','coffee/pptxTemplater.coffee','coffee/xmlMatcher.coffee','coffee/scopeManager.coffee','coffee/subContent.coffee','coffee/cli.coffee'],
+	coffee: [
+        'coffee/moduleManager.coffee',
+        'coffee/index.coffee',
+        'coffee/xmlUtil.coffee',
+        'coffee/compiledTemplate.coffee',
+        'coffee/compiledXmlTag.coffee',
+        'coffee/templaterState.coffee',
+        'coffee/docUtils.coffee',
+        'coffee/docxgen.coffee',
+        'coffee/pptxgen.coffee',
+        'coffee/xmlTemplater.coffee',
+        'coffee/docxTemplater.coffee',
+        'coffee/pptxTemplater.coffee',
+        'coffee/xmlMatcher.coffee',
+        'coffee/scopeManager.coffee',
+        'coffee/subContent.coffee',
+        'coffee/cli.coffee'
+    ],
 	coffeeTest: ['coffee/docxgenTest.coffee'],
 	testDirectory:__dirname+'/test/spec',
     js:'js/'
@@ -16,7 +33,7 @@ var paths = {
 
 
 gulp.task('browserify', function() {
-    browserified=gulp.src(__dirname+'/test/spec/docxgenTest.spec.js')
+    browserified=gulp.src(__dirname+'/test/spec/docxgenTest.js')
         .pipe(browserify({}))
 
     browserified
