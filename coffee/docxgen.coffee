@@ -2,6 +2,7 @@
 Docxgen.coffee
 Created by Edgar HIPP
 ###
+DocUtils=require('./docUtils')
 
 DocxGen=class DocxGen
 	constructor:(content,options) ->
@@ -14,7 +15,7 @@ DocxGen=class DocxGen
 		@moduleManager.attachModule(module)
 		this
 	setOptions:(@options={})->
-		for key,defaultValue of DocxGen.DocUtils.defaults
+		for key,defaultValue of DocUtils.defaults
 			this[key]=if @options[key]? then @options[key] else defaultValue
 		this
 	getTemplateClass:->DocxGen.DocXTemplater
@@ -47,7 +48,7 @@ DocxGen=class DocxGen
 		for fileName in @templatedFiles when @zip.files[fileName]?
 			currentFile = @createTemplateClass(fileName)
 			usedTemplateV= currentFile.render().usedTags
-			if DocxGen.DocUtils.sizeOfObject(usedTemplateV)
+			if DocUtils.sizeOfObject(usedTemplateV)
 				usedTags.push {fileName,vars:usedTemplateV}
 		usedTags
 	setData:(@tags) ->
@@ -60,7 +61,7 @@ DocxGen=class DocxGen
 		obj =
 			tags:@tags
 			moduleManager:@moduleManager
-		for key,_ of DocxGen.DocUtils.defaults
+		for key,_ of DocUtils.defaults
 			obj[key]=this[key]
 		new @templateClass(usedData,obj)
 	getFullText:(path="word/document.xml") ->
