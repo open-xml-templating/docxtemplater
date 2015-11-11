@@ -43,7 +43,7 @@
   },
   "scripts": {
     "preversion": "npm run compile && npm test",
-    "compile": "gulp allCoffee && node examples/compile_site.js",
+    "compile": "rm js -r; gulp allCoffee && node examples/compile_site.js",
     "browserify:test": "browserify -r ./test/spec/docxgenTest.spec.js -s DocxgenTest > browser/docxgenTest.spec.js",
     "browserify:lib": "browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js",
     "uglify:lib": "uglifyjs build/docxgen.js > build/docxgen.min.js",
