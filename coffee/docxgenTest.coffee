@@ -161,12 +161,12 @@ startTest=->
 	describe "DocxGenTemplating", () ->
 		describe "text templating", () ->
 			it "should change values with template vars", () ->
-				Tags=
+				tags=
 					"first_name":"Hipp"
 					"last_name":"Edgar",
 					"phone":"0652455478"
 					"description":"New Website"
-				docX['tagExample.docx'].setData Tags
+				docX['tagExample.docx'].setData tags
 				docX['tagExample.docx'].render()
 				expect(docX['tagExample.docx'].getFullText()).to.be.equal('Edgar Hipp')
 				expect(docX['tagExample.docx'].getFullText("word/header1.xml")).to.be.equal('Edgar Hipp0652455478New Website')
@@ -177,18 +177,18 @@ startTest=->
 	describe "DocxGenTemplatingForLoop", () ->
 		describe "textLoop templating", () ->
 			it "should replace all the tags", () ->
-				Tags =
+				tags =
 					"nom":"Hipp"
 					"prenom":"Edgar"
 					"telephone":"0652455478"
 					"description":"New Website"
 					"offre":[{"titre":"titre1","prix":"1250"},{"titre":"titre2","prix":"2000"},{"titre":"titre3","prix":"1400", "nom": "Offre"}]
-				docX['tagLoopExample.docx'].setData Tags
+				docX['tagLoopExample.docx'].setData tags
 				docX['tagLoopExample.docx'].render()
 				expect(docX['tagLoopExample.docx'].getFullText()).to.be.equal('Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar')
 			it "should work with loops inside loops", () ->
-				Tags = {"products":[{"title":"Microsoft","name":"DOS","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
-				docX['tagProduitLoop.docx'].setData Tags
+				tags = {"products":[{"title":"Microsoft","name":"DOS","reference":"Win7","avantages":[{"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}]},{"title":"Linux","name":"Ubuntu","reference":"Ubuntu10","avantages":[{"title":"It's very powerful","proof":[{"reason":"the terminal is your friend"},{"reason":"Hello world"},{"reason":"it's free"}]}]},{"title":"Apple","name":"Mac","reference":"OSX","avantages":[{"title":"It's very easy","proof":[{"reason":"you can do a lot just with the mouse"},{"reason":"It's nicely designed"}]}]},]}
+				docX['tagProduitLoop.docx'].setData tags
 				docX['tagProduitLoop.docx'].render()
 				text= docX['tagProduitLoop.docx'].getFullText()
 				expectedText= "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed"
@@ -270,25 +270,25 @@ startTest=->
 
 	describe "Dash Loop Testing", () ->
 		it "dash loop ok on simple table -> w:tr" , () ->
-			Tags=
+			tags=
 				"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-			docX['tagDashLoop.docx'].setData(Tags)
+			docX['tagDashLoop.docx'].setData(tags)
 			docX['tagDashLoop.docx'].render()
 			expectedText= "linux0Ubuntu10DOS500Win7apple1200MACOSX"
 			text=docX['tagDashLoop.docx'].getFullText()
 			expect(text).to.be.equal(expectedText)
 		it "dash loop ok on simple table -> w:table" , () ->
-			Tags=
+			tags=
 				"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-			docX['tagDashLoopTable.docx'].setData(Tags)
+			docX['tagDashLoopTable.docx'].setData(tags)
 			docX['tagDashLoopTable.docx'].render()
 			expectedText= "linux0Ubuntu10DOS500Win7apple1200MACOSX"
 			text=docX['tagDashLoopTable.docx'].getFullText()
 			expect(text).to.be.equal(expectedText)
 		it "dash loop ok on simple list -> w:p" , () ->
-			Tags=
+			tags=
 				"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"DOS","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]
-			docX['tagDashLoopList.docx'].setData(Tags)
+			docX['tagDashLoopList.docx'].setData(tags)
 			docX['tagDashLoopList.docx'].render()
 			expectedText= 'linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX '
 			text=docX['tagDashLoopList.docx'].getFullText()
@@ -296,8 +296,8 @@ startTest=->
 
 	describe "Intelligent Loop Tagging", () ->
 		it "should work with tables" , () ->
-			Tags={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
-			docX['tagIntelligentLoopTable.docx'].setData(Tags)
+			tags={clients:[{first_name:"John",last_name:"Doe",phone:"+33647874513"},{first_name:"Jane",last_name:"Doe",phone:"+33454540124"},{first_name:"Phil",last_name:"Kiel",phone:"+44578451245"},{first_name:"Dave",last_name:"Sto",phone:"+44548787984"}]}
+			docX['tagIntelligentLoopTable.docx'].setData(tags)
 			docX['tagIntelligentLoopTable.docx'].render()
 			expectedText= 'JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984'
 			text= docX['tagIntelligentLoopTableExpected.docx'].getFullText()
@@ -422,9 +422,9 @@ startTest=->
 			expect(d.getFullText("word/footer1.xml")).to.be.equal('EDGARHIPP0652455478')
 
 		it 'should work with angular parser', () ->
-			Tags=
+			tags=
 				person:{first_name:"Hipp",last_name:"Edgar",birth_year:1955,age:59}
-			docX["angularExample.docx"].setData Tags
+			docX["angularExample.docx"].setData tags
 			docX["angularExample.docx"].parser=angularParser
 			docX["angularExample.docx"].render()
 			expect(docX["angularExample.docx"].getFullText()).to.be.equal('Hipp Edgar 2014')
@@ -493,7 +493,7 @@ startTest=->
 			"t1total1":"t1total1-data",
 			"t1total2":"t1total2-data",
 			"t1total3":"t1total3-data"
-			});
+			})
 			docX["tableComplex2Example.docx"].render()
 			fullText=docX["tableComplex2Example.docx"].getFullText()
 			expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data")
