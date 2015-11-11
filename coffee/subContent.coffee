@@ -5,9 +5,21 @@ module.exports=class SubContent
 		@text=""
 		@start=0
 		@end=0
+	getInnerLoop:(templaterState)->
+		@start= templaterState.calcEndTag templaterState.loopOpen
+		@end= templaterState.calcStartTag templaterState.loopClose
+		@refreshText()
+	getOuterLoop:(templaterState)->
+		@start = templaterState.calcStartTag templaterState.loopOpen
+		@end= templaterState.calcEndTag templaterState.loopClose
+		@refreshText()
 	getInnerTag:(templaterState)->
 		@start=templaterState.calcPosition(templaterState.tagStart)
 		@end=templaterState.calcPosition(templaterState.tagEnd)+1
+		if @fullText[@start]!='{'
+			throw new Error "Invalid state near: #{@fullText.substr(@start,100)}"
+		if @fullText[@end-1]!='}'
+			throw new Error "Invalid state near #{@fullText.substr(@end-100,100)}"
 		@refreshText()
 	refreshText:()->
 		@text=@fullText.substr(@start,@end-@start)
