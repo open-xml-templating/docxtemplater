@@ -631,6 +631,18 @@ TAG2
 			xmlTemplater= new DocXTemplater(content,{tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.content).to.be.equal('Hello Edgar,Mary,John,')
+		it "should work with delimiter in value", ()->
+			content= """<w:t>Hello {name}</w:t>"""
+			scope= {"name":"{edgar}"}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.getFullText()).to.be.equal('Hello {edgar}')
+		it 'should work with delimiter in value )with loop)', ()->
+			content= """Hello {#names}{name},{/names}"""
+			scope= {"names":[{"name":"{John}"},{"name":"M}}{ary"},{"name":"Di{{{gory"}]}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.getFullText()).to.be.equal('Hello {John},M}}{ary,Di{{{gory,')
 
 	describe 'Change the nullGetter', ()->
 		it 'should work with null', () ->

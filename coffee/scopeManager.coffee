@@ -40,8 +40,6 @@ module.exports=class ScopeManager
 			if typeof result=='string'
 				@useTag(tag,true)
 				value= result
-				if value.indexOf(@delimiters.start)!=-1 or value.indexOf(@delimiters.end)!=-1
-					throw new Error("You can't enter #{@delimiters.start} or	#{@delimiters.end} inside the content of the variable. Tag: #{tag}, Value: #{result}")
 			else if typeof result=="number"
 				value=String(result)
 			else value= result
