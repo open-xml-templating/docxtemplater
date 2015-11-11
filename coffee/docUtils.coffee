@@ -101,4 +101,25 @@ DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
 		throw new Error("can't find startTag")
 	{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
 
+# Deprecated methods, to be removed
+
+DocUtils.encode_utf8 = (s)->
+	unescape(encodeURIComponent(s))
+DocUtils.decode_utf8= (s) ->
+	try
+		if s==undefined then return undefined
+		return decodeURIComponent(escape(DocUtils.convert_spaces(s))) #replace Ascii 160 space by the normal space, Ascii 32
+	catch e
+		console.error s
+		console.error 'could not decode'
+		throw new Error('end')
+
+DocUtils.base64encode= (b) ->
+    btoa(unescape(encodeURIComponent(b)))
+
+DocUtils.tags = DocUtils.defaults.delimiters
+DocUtils.defaultParser  = DocUtils.defaults.parser
+DocUtils.convert_spaces = DocUtils.convertSpaces
+DocUtils.preg_match_all = DocUtils.pregMatchAll
+
 module.exports=DocUtils
