@@ -16,10 +16,6 @@ module.exports=class SubContent
 	getInnerTag:(templaterState)->
 		@start=templaterState.calcPosition(templaterState.tagStart)
 		@end=templaterState.calcPosition(templaterState.tagEnd)+1
-		if @fullText[@start]!='{'
-			throw new Error "Invalid state near: #{@fullText.substr(@start,100)}"
-		if @fullText[@end-1]!='}'
-			throw new Error "Invalid state near #{@fullText.substr(@end-100,100)}"
 		@refreshText()
 	refreshText:()->
 		@text=@fullText.substr(@start,@end-@start)
