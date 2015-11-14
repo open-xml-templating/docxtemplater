@@ -101,6 +101,8 @@ module.exports=class XmlTemplater #abstract class !!
 		@content=@replaceTagByValue(DocUtils.utf8ToWord(newValue),@content)
 	replaceSimpleTagRawXml:()->
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
+		if !newText?
+			newText = ""
 		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml(@tagRawXml)
 		startTag = subContent.start
 		preContent = @content.substr(@lastStart,startTag-@lastStart)

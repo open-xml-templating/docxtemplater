@@ -483,6 +483,20 @@ startTest=->
 				"<w:t>Ho</w:t>"
 			])
 
+		it "should not error with raw tag", ()->
+			content= """<w:t>Hi</w:t><w:p><w:t> Hi {@raw} </w:t></w:p><w:t>Ho</w:t>"""
+			scope = {}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater.render()
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+				"<w:t>Hi</w:t>"
+				{ type: 'raw', tag: 'raw'}
+				"<w:t>Ho</w:t>"
+			])
+			expect(xmlTemplater.content).to.be.deep.equal(
+				"<w:t>Hi</w:t><w:t>Ho</w:t>"
+			)
+
 		it "should work with complicated loop", ()->
 			content= """<w:t> {#users} {name} </w:t>TAG..TAG<w:t>{/users}</w:t>TAG2<w:t>{name}"""
 			scope = {users:[{user:"Edgar"}]}
