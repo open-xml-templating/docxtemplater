@@ -43,10 +43,12 @@ module.exports=class XmlTemplater #abstract class !!
 		matcher=new XmlMatcher(@content).parse(@tagXml)
 		output= (match[2] for match in matcher.matches) #get only the text
 		DocUtils.wordToUtf8(DocUtils.convertSpaces(output.join(""))) #join it
-	handleModuleManager:(type,data)->
+	updateModuleManager:()->
 		@moduleManager.xmlTemplater=this
 		@moduleManager.templaterState=@templaterState
 		@moduleManager.scopeManager=@scopeManager
+	handleModuleManager:(type,data)->
+		@updateModuleManager()
 		@moduleManager.handle(type,data)
 	###
 	content is the whole content to be tagged
@@ -77,6 +79,7 @@ module.exports=class XmlTemplater #abstract class !!
 					@templaterState.startTag()
 				else if (@sameTags is true and @templaterState.inTag is true and @templaterState.trail == @delimiters.end) or (@sameTags is false and @templaterState.trail == @delimiters.end)
 					@templaterState.endTag()
+					@updateModuleManager()
 					loopType=@templaterState.loopType()
 					if loopType=='simple'
 						@replaceSimpleTag()
