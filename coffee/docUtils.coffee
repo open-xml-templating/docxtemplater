@@ -4,8 +4,12 @@ DocUtils.escapeRegExp= (str) ->
 	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
 
 DocUtils.defaults =
-	nullGetter:(tag)->
-		return "undefined"
+	nullGetter:(tag, props)->
+		if props.tag == "simple"
+			return "undefined"
+		if props.tag == "raw"
+			return ""
+		return ""
 	parser:(tag) ->
 		return {
 			'get':(scope) ->
