@@ -1,5 +1,26 @@
 ### master
 
+### 1.1.5
+
+  * feature : it is now possible to set the nullgetter for simple tags and for raw xml tags.
+
+### 1.1.4
+
+  * bugfix for the modulemanager : it was not in sync in some cases
+
+### 1.1.3
+
+  * They now is a default value for rawtags {@rawXml}, which is '' (this will delete the paragraph)
+
+### 1.1.2
+
+  * bugfix (There was still '{' and '}' hardcoded)
+
+### 1.1.1
+
+  * It is now possible to output the delimiters in the output (for example output "Mark } Z" with the template {name}
+  * scopeManager now doesn't return the string 'undefined' when the parser returns null. That behaviour is moved to the xmlTemplater class
+
 ### 1.1.0
 
   * docxtemplater is now much faster to process loops #131
