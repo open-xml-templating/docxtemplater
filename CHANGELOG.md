@@ -1,5 +1,9 @@
 ### master
 
+### 1.1.6
+
+  * fix : When using loops with images inside, the modulemanager was not updated and would continue to return 'image' for the type of the tag even if the type changed
+
 ### 1.1.5
 
   * feature : it is now possible to set the nullgetter for simple tags and for raw xml tags.
