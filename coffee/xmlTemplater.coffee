@@ -78,8 +78,8 @@ module.exports=class XmlTemplater #abstract class !!
 				if (@sameTags is true and @templaterState.inTag is false and @templaterState.trail == @delimiters.start) or (@sameTags is false and @templaterState.trail == @delimiters.start)
 					@templaterState.startTag()
 				else if (@sameTags is true and @templaterState.inTag is true and @templaterState.trail == @delimiters.end) or (@sameTags is false and @templaterState.trail == @delimiters.end)
-					@templaterState.endTag()
 					@updateModuleManager()
+					@templaterState.endTag()
 					loopType=@templaterState.loopType()
 					if loopType=='simple'
 						@replaceSimpleTag()
