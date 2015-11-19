@@ -8,7 +8,7 @@ Platform Support
 
 docxtemplater works with
 
-- Node.js versions 0.10, 0.11, 0.12 and io.js
+- Node.js versions 0.10, 0.11, 0.12 ,iojs, 4, and 5
 - Chrome **tested** on version 26
 - Firefox 3+ (**tested** on version 21, but should work with 3+)
 - Safari **tested**
@@ -21,4 +21,4 @@ You can test if everything works fine on your browser by using the test runner: 
 Dependencies
 ============
 
-1. **docxgen.js** uses [jszip.js](http://stuk.github.io/jszip/) to zip and unzip the docx files
+1. [jszip.js](http://stuk.github.io/jszip/) to zip and unzip the docx files

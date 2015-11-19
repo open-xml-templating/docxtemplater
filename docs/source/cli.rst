@@ -12,14 +12,13 @@ The syntax is the following:
 
     docxtemplater config.json
 
-The full config.json should be something like that:
+The full config.json should be the following:
 
 .. code-block:: javascript
 
     {
         "config.inputFile":"input.docx",
         "config.outputFile":"output.docx",
-        "config.qrcode":true,
         "config.debug":true,
         "first_name":"John",
         "last_name":"Smith",
@@ -41,7 +40,6 @@ These are the properties to configure docxtemplater:
     {
         "config.docxFile":"input.docx", //The input file path
         "config.outputFile":"output.docx", //The output file path
-        "config.qrcode":true, //whether the images should be scanned to replace them by qrcodes (slows down the cli a lot)
         "config.debug":true //whether to show debug output or not
     }
 
