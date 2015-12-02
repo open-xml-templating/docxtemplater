@@ -78,6 +78,7 @@ module.exports=class TemplaterState
 		@tagEnd=@currentStep
 		@textInsideTag=@textInsideTag.substr(0,@textInsideTag.length+1-@delimiters.end.length)
 		@textInsideTag=DocUtils.wordToUtf8 @textInsideTag
+		@fullTextTag = @delimiters.start + @textInsideTag + @delimiters.end
 		if @loopType()=='simple'
 			if @textInsideTag[0]=='@'
 				@rawXmlTag=true

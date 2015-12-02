@@ -7,8 +7,13 @@ ModuleManager=require('./moduleManager')
 CompiledTemplate = require('./compiledTemplate')
 CompiledXmlTag = require('./compiledXmlTag')
 Errors = require("./errors")
-#This is an abstract class, DocXTemplater is an example of inherited class
 
+getFullText = (content, tagXml)->
+	matcher=new XmlMatcher(content).parse(tagXml)
+	output= (match[2] for match in matcher.matches) #get only the text
+	DocUtils.wordToUtf8(DocUtils.convertSpaces(output.join(""))) #join it
+
+#This is an abstract class, DocXTemplater is an example of inherited class
 module.exports=class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
 		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
@@ -44,10 +49,7 @@ module.exports=class XmlTemplater #abstract class !!
 			obj[key]=this[key]
 		obj
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
-	getFullText:(@tagXml=@tagXml) ->
-		matcher=new XmlMatcher(@content).parse(@tagXml)
-		output= (match[2] for match in matcher.matches) #get only the text
-		DocUtils.wordToUtf8(DocUtils.convertSpaces(output.join(""))) #join it
+	getFullText:() -> getFullText(@content, @tagXml)
 	updateModuleManager:()->
 		@moduleManager.xmlTemplater=this
 		@moduleManager.templaterState=@templaterState
@@ -121,6 +123,16 @@ module.exports=class XmlTemplater #abstract class !!
 				error.properties.xtag = @templaterState.textInsideTag
 				error.properties.explanation = "The raw tag #{error.properties.xtag} is not valid in this context."
 			throw error
+		fullText = getFullText(outerXml.text, @tagXml)
+		if @templaterState.fullTextTag != fullText
+			err = new Errors.XTTemplateError("Raw xml tag should be the only text in paragraph")
+			err.properties =
+				id : "raw_xml_tag_should_be_only_text_in_paragraph"
+				paragraphContent : fullText
+				fullTag : @templaterState.fullTextTag
+				xtag : @templaterState.textInsideTag
+				explanation: "The tag : '#{@templaterState.fullTextTag}' should be the the only text in the paragraph (it contains '#{fullText}')"
+			throw err
 		startTag = outerXml.start
 		preContent = @content.substr(@lastStart,startTag-@lastStart)
 		@compiled.appendText(preContent)
