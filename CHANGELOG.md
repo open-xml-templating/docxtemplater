@@ -1,5 +1,9 @@
 ### master
 
+### 1.2.0
+
+This release adds error management, all errors that are thrown by docxtemplater are now typed and contain additional properties.
+
 ### 1.1.6
 
   * fix : When using loops with images inside, the modulemanager was not updated and would continue to return 'image' for the type of the tag even if the type changed
