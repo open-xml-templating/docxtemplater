@@ -769,6 +769,7 @@ TAG2
 				message:"Unclosed tag"
 				properties:
 					id:"unclosed_tag"
+					context:"{user {"
 					xtag:"user "
 			expectToThrow(xmlTemplater, 'render', Errors.XTTemplateError, expectedError)
 
@@ -780,6 +781,7 @@ TAG2
 				message:"Unopened tag"
 				properties:
 					id:"unopened_tag"
+					context:"foobar}"
 			expectToThrow(xmlTemplater, 'render', Errors.XTTemplateError, expectedError)
 
 		it 'should fail when customparser fails to compile', ()->

@@ -32,7 +32,8 @@ module.exports=class TemplaterState
 			err.properties =
 				xtag:xtag
 				id: "unclosed_tag"
-				explanation: "The tag beginning with #{xtag.substr(10)} is unclosed"
+				context: @context
+				explanation: "The tag beginning with '#{xtag.substr(10)}' is unclosed"
 			throw err
 		@currentStep=@trailSteps[0]
 		@inTag= true
@@ -71,6 +72,7 @@ module.exports=class TemplaterState
 			err.properties =
 				id: "unopened_tag"
 				explanation: "Unopened tag near : '#{@context.substr(@context.length-10,10)}'"
+				context: @context
 			throw err
 		@inTag= false
 		@tagEnd=@currentStep

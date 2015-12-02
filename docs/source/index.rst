@@ -24,6 +24,7 @@ Contents:
    syntax
    generate
    configuration
+   errors
    cli
    full_doc
    faq
