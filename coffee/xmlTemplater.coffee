@@ -171,10 +171,6 @@ module.exports=class XmlTemplater #abstract class !!
 	replaceFirstFrom:(string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
 		substr = string.substr(from)
 		replaced = substr.replace(search,replace)
-		if substr == replaced
-			err = new Errors.XTInternalError("Replaced can't be the same as substring")
-			err.properties.id = "xmltemplater_replaced_cant_be_same_as_substring"
-			throw err
 		string.substr(0,from)+replaced
 	replaceXmlTag: (content,options) ->
 		@templaterState.offset[options.xmlTagNumber]+=options.insideValue.length-@templaterState.matches[options.xmlTagNumber][2].length

@@ -647,6 +647,13 @@ TAG2
 			xmlTemplater= new DocXTemplater(content,{tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello {John},M}}{ary,Di{{{gory,')
+		it 'should work when replacing with exact same value',()->
+			content= """<w:p><w:t xml:space="preserve">Hello {name}</w:t></w:p>"""
+			scope= {"name":"{name}"}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater.render()
+			xmlTemplater.getFullText()
+			expect(xmlTemplater.getFullText()).to.be.equal('Hello {name}')
 
 	describe 'Change the nullGetter', ()->
 		it 'should work with null', () ->
