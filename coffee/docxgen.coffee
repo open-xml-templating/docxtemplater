@@ -70,6 +70,7 @@ DocxGen=class DocxGen
 DocxGen.DocUtils=require('./docUtils')
 DocxGen.DocXTemplater=require('./docxTemplater')
 DocxGen.JSZip=require('jszip')
+DocxGen.Errors=require('./errors')
 DocxGen.ModuleManager=require('./moduleManager')
 DocxGen.XmlTemplater=require('./xmlTemplater')
 DocxGen.XmlMatcher=require('./xmlMatcher')

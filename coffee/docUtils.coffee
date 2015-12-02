@@ -1,3 +1,5 @@
+Errors = require("./errors")
+
 DocUtils= {}
 
 DocUtils.escapeRegExp= (str) ->
@@ -62,13 +64,6 @@ DocUtils.clone = (obj) ->
 
 	newInstance
 
-DocUtils.replaceFirstFrom = (string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
-	substr = string.substr(from)
-	replaced = substr.replace(search,replace)
-	if substr == replaced
-		throw new Error "replaced can't be the same as substring"
-	string.substr(0,from)+replaced
-
 DocUtils.convertSpaces= (s) ->
 	s.replace(new RegExp(String.fromCharCode(160),"g")," ")
 
@@ -95,18 +90,7 @@ DocUtils.sizeOfObject = (obj) ->
 		size++
 	size
 
-DocUtils.getOuterXml=(text,start,end,xmlTag)-> #tag: w:t
-	endTag= text.indexOf('</'+xmlTag+'>',end)
-	if endTag==-1
-		throw new Error("can't find endTag #{endTag}")
-	endTag+=('</'+xmlTag+'>').length
-	startTag = Math.max text.lastIndexOf('<'+xmlTag+'>',start), text.lastIndexOf('<'+xmlTag+' ',start)
-	if startTag==-1
-		throw new Error("can't find startTag")
-	{"text":text.substr(startTag,endTag-startTag),startTag,endTag}
-
 # Deprecated methods, to be removed
-
 DocUtils.encode_utf8 = (s)->
 	unescape(encodeURIComponent(s))
 DocUtils.decode_utf8= (s) ->
@@ -114,9 +98,11 @@ DocUtils.decode_utf8= (s) ->
 		if s==undefined then return undefined
 		return decodeURIComponent(escape(DocUtils.convert_spaces(s))) #replace Ascii 160 space by the normal space, Ascii 32
 	catch e
-		console.error s
-		console.error 'could not decode'
-		throw new Error('end')
+		err = new Errors.XTError('Could not decode utf8')
+		err.properties =
+			toDecode: s
+			baseErr: e
+		throw err
 
 DocUtils.base64encode= (b) ->
     btoa(unescape(encodeURIComponent(b)))

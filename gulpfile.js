@@ -9,6 +9,7 @@ var config={uglify:false}
 
 var paths = {
 	coffee: [
+        'coffee/errors.coffee',
         'coffee/moduleManager.coffee',
         'coffee/index.coffee',
         'coffee/xmlUtil.coffee',

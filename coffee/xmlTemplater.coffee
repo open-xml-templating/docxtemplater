@@ -6,6 +6,7 @@ XmlMatcher=require('./xmlMatcher')
 ModuleManager=require('./moduleManager')
 CompiledTemplate = require('./compiledTemplate')
 CompiledXmlTag = require('./compiledXmlTag')
+Errors = require("./errors")
 #This is an abstract class, DocXTemplater is an example of inherited class
 
 module.exports=class XmlTemplater #abstract class !!
@@ -16,6 +17,10 @@ module.exports=class XmlTemplater #abstract class !!
 		@fromJson(options)
 		@templaterState= new TemplaterState @moduleManager,@delimiters
 	load: (@content) ->
+		if typeof @content!="string"
+			err = new Errors.XTInternalError("Content must be a string")
+			err.properties.id = "xmltemplater_content_must_be_string"
+			throw err
 		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
 		@templaterState.matches = xmlMatcher.matches
 		@templaterState.charactersAdded= xmlMatcher.charactersAdded
@@ -106,13 +111,22 @@ module.exports=class XmlTemplater #abstract class !!
 		newText=@scopeManager.getValueFromScope(@templaterState.tag)
 		if !newText?
 			newText = @nullGetter(@templaterState.tag, {tag:'raw'})
-		subContent=new SubContent(@content).getInnerTag(@templaterState).getOuterXml(@tagRawXml)
-		startTag = subContent.start
+		subContent = new SubContent(@content)
+		subContent.getInnerTag(@templaterState)
+		try
+			outerXml = subContent.getOuterXml(@tagRawXml)
+		catch error
+			if error instanceof Errors.XTTemplateError
+				error.properties.id = "raw_tag_outerxml_invalid"
+				error.properties.xtag = @templaterState.textInsideTag
+				error.properties.explanation = "The raw tag #{error.properties.xtag} is not valid in this context."
+			throw error
+		startTag = outerXml.start
 		preContent = @content.substr(@lastStart,startTag-@lastStart)
 		@compiled.appendText(preContent)
 		@lastStart=startTag
 		@compiled.appendRaw(@templaterState.tag)
-		@replaceXml(subContent,newText)
+		@replaceXml(outerXml,newText)
 	replaceXml:(subContent,newText)->
 		@templaterState.moveCharacters(@templaterState.tagStart.numXmlTag,newText.length,subContent.text.length)
 		@content= subContent.replace(newText).fullText
@@ -124,9 +138,16 @@ module.exports=class XmlTemplater #abstract class !!
 	deleteOuterTags:(outerXmlText)->
 		@deleteTag(@deleteTag(outerXmlText,@templaterState.loopOpen),@templaterState.loopClose)
 	dashLoop: (elementDashLoop,sharp=false) ->
-		outerXml = new SubContent(@content)
-			.getInnerLoop(@templaterState)
-			.getOuterXml(elementDashLoop)
+		subContent = new SubContent(@content)
+		subContent.getInnerLoop(@templaterState)
+		try
+			outerXml = subContent.getOuterXml(elementDashLoop)
+		catch error
+			if error instanceof Errors.XTTemplateError
+				error.properties.id = "dashloop_tag_outerxml_invalid"
+				error.properties.xtag = @templaterState.textInsideTag
+				error.properties.explanation = "The dashLoop tag #{error.properties.xtag} is not valid in this context."
+			throw error
 		@templaterState.moveCharacters(0,0,outerXml.start)
 		outerXmlText= outerXml.text
 		innerXmlText=@deleteOuterTags(outerXmlText,sharp)
@@ -147,6 +168,14 @@ module.exports=class XmlTemplater #abstract class !!
 		@currentCompiledTag.prependText(before)
 		@currentCompiledTag.appendText(after)
 		return before+options.insideValue+after
+	replaceFirstFrom:(string,search,replace,from) ->  #replace first occurence of search (can be regex) after *from* offset
+		substr = string.substr(from)
+		replaced = substr.replace(search,replace)
+		if substr == replaced
+			err = new Errors.XTInternalError("Replaced can't be the same as substring")
+			err.properties.id = "xmltemplater_replaced_cant_be_same_as_substring"
+			throw err
+		string.substr(0,from)+replaced
 	replaceXmlTag: (content,options) ->
 		@templaterState.offset[options.xmlTagNumber]+=options.insideValue.length-@templaterState.matches[options.xmlTagNumber][2].length
 		options.spacePreserve= if options.spacePreserve? then options.spacePreserve else true
@@ -158,8 +187,12 @@ module.exports=class XmlTemplater #abstract class !!
 		#calculate the replacer according to the params
 		@templaterState.moveCharacters(options.xmlTagNumber+1,replacer.length,@templaterState.matches[options.xmlTagNumber][0].length)
 		if content.indexOf(@templaterState.matches[options.xmlTagNumber][0])==-1
-			throw new Error("content #{@templaterState.matches[options.xmlTagNumber][0]} not found in content")
-		content = DocUtils.replaceFirstFrom content,@templaterState.matches[options.xmlTagNumber][0], replacer, startTag
+			err = new Errors.XTInternalError("Match not found in content")
+			err.properties.id = "xmltemplater_replaced_cant_be_same_as_substring"
+			err.properties.expectedMatch = @templaterState.matches[options.xmlTagNumber][0]
+			err.properties.content = content
+			throw err
+		content = @replaceFirstFrom content,@templaterState.matches[options.xmlTagNumber][0], replacer, startTag
 		@templaterState.matches[options.xmlTagNumber][0]=replacer
 		preContent = content.substr(@lastStart,startTag-@lastStart)
 		if @templaterState.loopType()=="simple"

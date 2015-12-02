@@ -8,7 +8,7 @@ PptXTemplater = class PptXTemplater extends XmlTemplater
 		@currentClass=PptXTemplater
 		@tagXml='a:t'
 		@tagRawXml='p:sp'
-		if typeof content=="string" then @load content else throw new Error("content must be string!")
+		@load content
 	xmlToBeReplaced:(options)->
 		if options.noStartTag
 			return options.insideValue

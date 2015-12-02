@@ -1,5 +1,6 @@
 #This class responsibility is to store an xmlTemplater's state
 DocUtils=require('./docUtils')
+Errors = require("./errors")
 
 module.exports=class TemplaterState
 	constructor:(@moduleManager,@delimiters)->@moduleManager.templaterState=this
@@ -25,7 +26,14 @@ module.exports=class TemplaterState
 		@trailSteps=[]
 		@offset=[]
 	startTag:()->
-		if @inTag is true then throw new Error("Unclosed tag : '#{@textInsideTag}'")
+		if @inTag is true
+			err = new Errors.XTTemplateError("Unclosed tag")
+			xtag = @textInsideTag
+			err.properties =
+				xtag:xtag
+				id: "unclosed_tag"
+				explanation: "The tag beginning with #{xtag.substr(10)} is unclosed"
+			throw err
 		@currentStep=@trailSteps[0]
 		@inTag= true
 		@rawXmlTag=false
@@ -58,7 +66,12 @@ module.exports=class TemplaterState
 		@innerContent('tagEnd').
 			substr(@tagEnd.numCharacter+1+@offset[@tagEnd.numXmlTag])
 	endTag:()->
-		if @inTag is false then throw new Error("Unopened tag near : '#{@context.substr(@context.length-10,10)}'")
+		if @inTag is false
+			err = new Errors.XTTemplateError("Unopened tag")
+			err.properties =
+				id: "unopened_tag"
+				explanation: "Unopened tag near : '#{@context.substr(@context.length-10,10)}'"
+			throw err
 		@inTag= false
 		@tagEnd=@currentStep
 		@textInsideTag=@textInsideTag.substr(0,@textInsideTag.length+1-@delimiters.end.length)

@@ -2,19 +2,11 @@ docX={}
 
 expressions= require('angular-expressions')
 angularParser= (tag) ->
-	try
-		expr=expressions.compile(tag)
-	catch e
-		console.error "parsing didn't work with #{tag}"
-	{get:(scope)->
-		if !scope?
-			console.warn 'warning: scope undefined'
-		try
+	expr=expressions.compile(tag)
+	return {
+		get:(scope)->
 			return expr(scope)
-		catch e
-			console.error "parsing didn't work with #{tag}"
-			return "undefined"
-}
+	}
 
 shouldBeSame = (zip1,zip2)->
 	if typeof zip1 == "string" then zip1 = docX[zip1].getZip()
@@ -29,6 +21,26 @@ shouldBeSame = (zip1,zip2)->
 
 expect = require('chai').expect
 
+expectToThrow = (obj, method, type, expectedError) ->
+	e=null
+	try
+		obj[method]()
+	catch error
+		e=error
+	expect(e).not.to.be.equal(null)
+	expect(e).to.be.an('object')
+	expect(e).to.be.instanceOf(Error)
+	expect(e).to.be.instanceOf(type)
+	expect(e).to.have.property('properties')
+	expect(e.properties).to.be.a('object')
+	expect(e.properties).to.have.property('explanation')
+	expect(e.properties.explanation).to.be.a('string')
+	expect(e.properties).to.have.property('id')
+	expect(e.properties.id).to.be.a('string')
+	delete e.properties.explanation
+	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError)
+
+Errors = require('../../js/errors.js')
 XmlMatcher= require('../../js/xmlMatcher.js')
 DocxGen= require('../../js/index.js')
 PptxGen=DocxGen.PptxGen
@@ -256,17 +268,6 @@ startTest=->
 		it 'should compute the scopeDiff between a w:t in an array and the other outside', () ->
 			scope= xmlUtil.getListDifferenceXmlElements """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
 			expect(scope).to.be.eql([ { tag : '</w:tc>', offset : 26 }, { tag : '</w:tr>', offset : 33 }, { tag : '</w:tbl>', offset : 40 } ])
-
-	describe "scope inner text", () ->
-		it "should find the scope" , () ->
-			xmlTemplater= new DocXTemplater()
-			docX['tagProduitLoop.docx'].load(docX['tagProduitLoop.docx'].loadedContent)
-			scope= DocUtils.getOuterXml docX['tagProduitLoop.docx'].zip.files["word/document.xml"].asText() ,1195,1245,'w:p'
-			obj= { text : """<w:p w:rsidR="00923B77" w:rsidRDefault="00923B77"><w:r><w:t>{#</w:t></w:r><w:r w:rsidR="00713414"><w:t>products</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p>""", startTag : 1134, endTag : 1286 }
-			expect(scope.endTag).to.be.equal(obj.endTag)
-			expect(scope.startTag).to.be.equal(obj.startTag)
-			expect(scope.text.length).to.be.equal(obj.text.length)
-			expect(scope.text).to.be.equal(obj.text)
 
 	describe "Dash Loop Testing", () ->
 		it "dash loop ok on simple table -> w:tr" , () ->
@@ -739,6 +740,93 @@ TAG2
 			outputText=d.getFullText()
 			expect(outputText.substr(0,7)).to.be.equal(russian)
 
+	describe "errors", ()->
+		it 'should fail when rawtag not in paragraph', ()->
+			content= """<w:t>{@myrawtag}</w:t>"""
+			scope= {"myrawtag":"<w:p><w:t>foobar</w:t></w:p>"}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			expectedError =
+				name:"TemplateError"
+				message:"Can't find endTag"
+				properties:
+					id:"raw_tag_outerxml_invalid"
+					text:"<w:t>{@myrawtag}</w:t>"
+					xmlTag:"w:p"
+					previousEnd:16
+					start:5
+					xtag:"@myrawtag"
+			expectToThrow(xmlTemplater, 'render', Errors.XTTemplateError, expectedError)
+
+			content= """<w:t>{@myrawtag}</w:t></w:p>"""
+			scope= {"myrawtag":"<w:p><w:t>foobar</w:t></w:p>"}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			expectedError =
+				name:"TemplateError"
+				message:"Can't find startTag"
+				properties:
+					id:"raw_tag_outerxml_invalid"
+					text:"<w:t>{@myrawtag}</w:t></w:p>"
+					xmlTag:"w:p"
+					previousEnd:16
+					start:5
+					xtag:"@myrawtag"
+			expectToThrow(xmlTemplater, 'render', Errors.XTTemplateError, expectedError)
+
+		it 'should fail when tag already opened', ()->
+			content= """<w:t>{user {name}</w:t>"""
+			xmlTemplater= new DocXTemplater(content)
+			expectedError =
+				name:"TemplateError"
+				message:"Unclosed tag"
+				properties:
+					id:"unclosed_tag"
+					xtag:"user "
+			expectToThrow(xmlTemplater, 'render', Errors.XTTemplateError, expectedError)
+
+		it 'should fail when tag already closed', ()->
+			content= """<w:t>foobar}age</w:t>"""
+			xmlTemplater= new DocXTemplater(content)
+			expectedError =
+				name:"TemplateError"
+				message:"Unopened tag"
+				properties:
+					id:"unopened_tag"
+			expectToThrow(xmlTemplater, 'render', Errors.XTTemplateError, expectedError)
+
+		it 'should fail when customparser fails to compile', ()->
+			content= """<w:t>{name++}</w:t>"""
+			xmlTemplater= new DocXTemplater(content, {tags:{name:3},parser:angularParser})
+			expectedError =
+				name:"ScopeParserError"
+				message:"Scope parser compilation failed"
+				properties:
+					id:"scopeparser_compilation_failed"
+					tag:"name++"
+			expectToThrow(xmlTemplater, 'render', Errors.XTScopeParserError, expectedError)
+
+		it 'should fail when customparser fails to execute', ()->
+			content= """<w:t>{name|upper}</w:t>"""
+			xmlTemplater= new DocXTemplater(content, {tags:{name:3},parser:angularParser})
+			expectedError =
+				name:"ScopeParserError"
+				message:"Scope parser execution failed"
+				properties:
+					id:"scopeparser_execution_failed"
+					tag:"name|upper"
+					scope:{name:3}
+			expectToThrow(xmlTemplater, 'render', Errors.XTScopeParserError, expectedError)
+
+		describe 'internal errors', ()->
+			it 'should fail', ()->
+				expectedError =
+					name:"InternalError"
+					message:"Content must be a string"
+					properties:
+						id:"xmltemplater_content_must_be_string"
+				test=
+					fn:()->new DocXTemplater(1)
+				expectToThrow(test,'fn', Errors.XTInternalError, expectedError)
+
 	describe 'Complex table example' , () ->
 		it 'should work with simple table', () ->
 			docX["tableComplex2Example.docx"].setData({
@@ -1024,16 +1112,6 @@ TAG
 			content= """{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}"""
 			xmlt=new DocXTemplater(content,{tags:{loop_first:[1],loop_second:[{name_inner:"John"}],name_outer:"Henry"}}).render()
 			expect(xmlt.content).to.be.equal("John Henry")
-
-	describe 'error messages', ()->
-		it 'should work with unclosed', ()->
-			content= """<w:t>{tag {age}</w:t>"""
-			f=()->new DocXTemplater(content).render()
-			expect(f).to.throw "Unclosed tag : 'tag '"
-		it 'should work with unopened', ()->
-			content= """<w:t>tag }age</w:t>"""
-			f=()->new DocXTemplater(content).render()
-			expect(f).to.throw "Unopened tag near : 'tag }'"
 
 	describe 'speed test', ()->
 		it 'should be fast for simple tags', ()->

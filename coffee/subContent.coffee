@@ -1,4 +1,5 @@
 #This class responsibility is to deal with parts of the document
+Errors = require("./errors")
 
 module.exports=class SubContent
 	constructor:(@fullText="")->
@@ -20,12 +21,24 @@ module.exports=class SubContent
 	refreshText:()->
 		@text=@fullText.substr(@start,@end-@start)
 		this
+	getErrorProps:(xmlTag)->
+		xmlTag: xmlTag
+		text: @fullText
+		start: @start
+		previousEnd: @end
 	getOuterXml:(xmlTag)->
-		@end= @fullText.indexOf('</'+xmlTag+'>',@end)
-		if @end==-1 then throw new Error("can't find endTag #{@end}")
-		@end+=('</'+xmlTag+'>').length
-		@start = Math.max @fullText.lastIndexOf('<'+xmlTag+'>',@start), @fullText.lastIndexOf('<'+xmlTag+' ',@start)
-		if @start==-1 then throw new Error("can't find startTag")
+		endCandidate = @fullText.indexOf('</'+xmlTag+'>',@end)
+		startCandiate = Math.max @fullText.lastIndexOf('<'+xmlTag+'>',@start), @fullText.lastIndexOf('<'+xmlTag+' ',@start)
+		if endCandidate == -1
+			err = new Errors.XTTemplateError("Can't find endTag")
+			err.properties = @getErrorProps(xmlTag)
+			throw err
+		if startCandiate==-1
+			err = new Errors.XTTemplateError("Can't find startTag")
+			err.properties = @getErrorProps(xmlTag)
+			throw err
+		@end= endCandidate + ('</'+xmlTag+'>').length
+		@start = startCandiate
 		@refreshText()
 	replace:(newText)->
 		@fullText=@fullText.substr(0,@start)+newText+@fullText.substr(@end)

@@ -1,5 +1,6 @@
 #This class responsibility is to manage the scope
 DocUtils=require('./docUtils')
+Errors = require("./errors")
 
 module.exports=class ScopeManager
 	constructor:({@tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager,@nullGetter,@delimiters})->
@@ -28,9 +29,23 @@ module.exports=class ScopeManager
 		scope=@scopeList[@num]
 		try
 			parser=@parser(tag)
+		catch error
+			err = new Errors.XTScopeParserError("Scope parser compilation failed")
+			err.properties =
+				id: "scopeparser_compilation_failed"
+				tag: tag
+				explanation: "The scope parser for the tag #{tag} failed to compile"
+			throw err
+		try
 			result=parser.get(scope)
-		catch e
-			result=null
+		catch error
+			err = new Errors.XTScopeParserError("Scope parser execution failed")
+			err.properties =
+				id: "scopeparser_execution_failed"
+				explanation: "The scope parser for the tag #{tag} failed to execute"
+				scope: scope
+				tag: tag
+			throw err
 		if !result? and @num>0 then return @getValue(tag,@num-1)
 		result
 	getValueFromScope: (tag) ->

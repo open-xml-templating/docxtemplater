@@ -8,7 +8,7 @@ DocXTemplater = class DocXTemplater extends XmlTemplater
 		@currentClass=DocXTemplater
 		@tagXml='w:t'
 		@tagRawXml='w:p'
-		if typeof content=="string" then @load content else throw new Error("content must be string!")
+		@load content
 	calcIntellegentlyDashElement:()->
 		{content,start,end} = new SubContent(@content).getOuterLoop(@templaterState)
 		scopeContent= xmlUtil.getListXmlElements @content, start,end-start

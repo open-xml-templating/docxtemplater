@@ -1,3 +1,5 @@
+Errors = require("./errors")
+
 CompiledTemplate=class CompiledTemplate
 	constructor:() ->
 		@compiled = []
@@ -7,7 +9,9 @@ CompiledTemplate=class CompiledTemplate
 		this
 	appendTag:(compiledTag) ->
 		if !compiledTag
-			throw new Error "compiled tag empty!"
+			err = new Errors.XTInternalError("Compiled tag empty")
+			err.properties.id = "tag_appended_empty"
+			throw err
 		@compiled = @compiled.concat(compiledTag.compiled)
 		this
 	appendRaw:(tag) ->
@@ -19,7 +23,9 @@ CompiledTemplate=class CompiledTemplate
 		this
 	appendSubTemplate:(subTemplate,tag, inverted) ->
 		if !subTemplate
-			throw new Error "subTemplate empty!"
+			err = new Errors.XTInternalError("Subtemplate empty")
+			err.properties.id = "subtemplate_appended_empty"
+			throw err
 		@compiled.push {type:'loop',tag, inverted, template:subTemplate}
 
 module.exports=CompiledTemplate

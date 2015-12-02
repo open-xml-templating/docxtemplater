@@ -38,7 +38,7 @@ module.exports=class XmlMatcher
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
 			pn.last= true
-			@matches.push pn #add at the beginning
+			@matches.push pn #add at the end
 			@charactersAdded.push 0
 
 		regex= "(<#{@tagXml}[^>]*>)([^>]+)$"
