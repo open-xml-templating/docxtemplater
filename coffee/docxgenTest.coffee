@@ -463,28 +463,28 @@ startTest=->
 				])
 
 		it "should work with raw tag", ()->
-			content= """<w:t>Hi</w:t><w:p><w:t> Hi {@raw} </w:t></w:p><w:t>Ho</w:t>"""
+			content= """<w:t>Hi Hi </w:t><w:p><w:t>{@raw}</w:t></w:p><w:t>Ho</w:t>"""
 			scope = {raw:""}
 			xmlTemplater= new DocXTemplater(content,{tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
-				"<w:t>Hi</w:t>"
+				"<w:t>Hi Hi </w:t>"
 				{ type: 'raw', tag: 'raw'}
 				"<w:t>Ho</w:t>"
 			])
 
 		it "should not error with raw tag", ()->
-			content= """<w:t>Hi</w:t><w:p><w:t> Hi {@raw} </w:t></w:p><w:t>Ho</w:t>"""
+			content= """<w:t>Hi Hi </w:t><w:p><w:t>{@raw}</w:t></w:p><w:t>Ho</w:t>"""
 			scope = {}
 			xmlTemplater= new DocXTemplater(content,{tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
-				"<w:t>Hi</w:t>"
+				"<w:t>Hi Hi </w:t>"
 				{ type: 'raw', tag: 'raw'}
 				"<w:t>Ho</w:t>"
 			])
 			expect(xmlTemplater.content).to.be.deep.equal(
-				"<w:t>Hi</w:t><w:t>Ho</w:t>"
+				"<w:t>Hi Hi </w:t><w:t>Ho</w:t>"
 			)
 
 		it "should work with complicated loop", ()->
@@ -813,6 +813,20 @@ TAG2
 					tag:"name|upper"
 					scope:{name:3}
 			expectToThrow(xmlTemplater, 'render', Errors.XTScopeParserError, expectedError)
+
+		it 'should fail when rawtag is not only text in paragraph', ()->
+			content= """<w:p><w:t>{@myrawtag}</w:t><w:t>foobar</w:t></w:p>"""
+			scope= {"myrawtag":"<w:p><w:t>foobar</w:t></w:p>"}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			expectedError =
+				name:"TemplateError"
+				message:"Raw xml tag should be the only text in paragraph"
+				properties:
+					id:"raw_xml_tag_should_be_only_text_in_paragraph"
+					paragraphContent:"{@myrawtag}foobar"
+					xtag:"@myrawtag"
+					fullTag:"{@myrawtag}"
+			expectToThrow(xmlTemplater, 'render', Errors.XTTemplateError, expectedError)
 
 		describe 'internal errors', ()->
 			it 'should fail', ()->
