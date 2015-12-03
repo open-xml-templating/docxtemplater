@@ -86,6 +86,7 @@ The nullGetter option is a function
 By default the nullGetter is the following function
 
 .. code-block:: javascript
+
     nullGetter: function(tag, props) {
         if (props.tag === "simple") {
             return "undefined";
