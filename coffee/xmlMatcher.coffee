@@ -8,7 +8,7 @@ module.exports=class XmlMatcher
 		@matches=DocUtils.pregMatchAll("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
 		@charactersAdded= (0 for i in [0...@matches.length])
 		@handleRecursiveCase()
-		return this
+		this
 
 	handleRecursiveCase:()->
 		###
@@ -20,7 +20,7 @@ module.exports=class XmlMatcher
 		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
 		###
 
-		replacerUnshift = (match,pn ..., offset, string)=>
+		replacerUnshift = (match,pn..., offset, string)=>
 			match=pn[0]+pn[1]
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
@@ -34,7 +34,7 @@ module.exports=class XmlMatcher
 		regex="^()([^<]+)<\/#{@tagXml}>"
 		@content.replace (new RegExp(regex)),replacerUnshift
 
-		replacerPush = (match,pn ..., offset, string)=>
+		replacerPush = (match,pn..., offset, string)=>
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 			pn.offset= offset
 			pn.last= true

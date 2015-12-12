@@ -6,6 +6,7 @@ CompiledXmlTag=class CompiledXmlTag
 		for text in compiled
 			if text!=''
 				@compiled.push(text)
+		this
 	prependText:(text) ->
 		if @null then return this
 		if text!=''

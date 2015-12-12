@@ -149,7 +149,7 @@ startTest=->
 				expect(DocUtils.sizeOfObject(docX['imageExample.docx'].zip.files)).to.be.equal(16)
 		describe "basic loading", () ->
 			it "should load file imageExample.docx", () ->
-				expect(typeof docX['imageExample.docx']).to.be.equal('object');
+				expect(typeof docX['imageExample.docx']).to.be.equal('object')
 		describe "content_loading", () ->
 			it "should load the right content for the footer", () ->
 				fullText=(docX['imageExample.docx'].getFullText("word/footer1.xml"))
@@ -339,28 +339,22 @@ startTest=->
 			scope= "Edgar"
 			xmlTemplater= new DocXTemplater(content,{tags:scope})
 			xmlTemplater.render()
-			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(['<w:t xml:space="preserve">',
-				'Hello ',
-				{ type: 'tag', tag: '.' },
-				'</w:t>'])
+			expected = ['<w:t xml:space="preserve">', 'Hello ', { type: 'tag', tag: '.' }, '</w:t>' ]
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected)
 		it "should work with text with special characters", ()->
 			content= """<w:t>Hello {&gt;name}</w:t>"""
 			scope= {">name":"Edgar"}
 			xmlTemplater= new DocXTemplater(content,{tags:scope})
 			xmlTemplater.render()
-			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(['<w:t xml:space="preserve">',
-				'Hello ',
-				{ type: 'tag', tag: '>name' },
-				'</w:t>'])
+			expected = ['<w:t xml:space="preserve">', 'Hello ', { type: 'tag', tag: '>name' }, '</w:t>']
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected)
 		it "should work with simple text", ()->
 			content= """<w:t>Hello {name}</w:t>"""
 			scope= {"name":"Edgar"}
 			xmlTemplater= new DocXTemplater(content,{tags:scope})
 			xmlTemplater.render()
-			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(['<w:t xml:space="preserve">',
-				'Hello ',
-				{ type: 'tag', tag: 'name' },
-				'</w:t>'])
+			expected = ['<w:t xml:space="preserve">', 'Hello ', { type: 'tag', tag: 'name' }, '</w:t>']
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected)
 		it "should work with two tags", ()->
 			content= """
 				<w:t>Hello {name}</w:t>
@@ -521,8 +515,8 @@ TAG2
 <w:t>{key}</w:t>
 			""".replace(/\n/g,"")
 			scope= {
-			"table1":[1],
-			"key":"value",
+				"table1":[1],
+				"key":"value",
 			}
 			xmlTemplater= new DocXTemplater(content,{tags:scope,intelligentTagging:true})
 			xmlTemplater.render()
@@ -842,57 +836,59 @@ TAG2
 	describe 'Complex table example' , () ->
 		it 'should work with simple table', () ->
 			docX["tableComplex2Example.docx"].setData({
-			"table1":[{
-				"t1data1":"t1-1row-data1",
-				"t1data2":"t1-1row-data2",
-				"t1data3":"t1-1row-data3",
-				"t1data4":"t1-1row-data4"
-			},{
-				"t1data1":"t1-2row-data1",
-				"t1data2":"t1-2row-data2",
-				"t1data3":"t1-2row-data3",
-				"t1data4":"t1-2row-data4"
-			},
-			{
-				"t1data1":"t1-3row-data1",
-				"t1data2":"t1-3row-data2",
-				"t1data3":"t1-3row-data3",
-				"t1data4":"t1-3row-data4"
-			}],
-			"t1total1":"t1total1-data",
-			"t1total2":"t1total2-data",
-			"t1total3":"t1total3-data"
+				"table1":[{
+					"t1data1":"t1-1row-data1",
+					"t1data2":"t1-1row-data2",
+					"t1data3":"t1-1row-data3",
+					"t1data4":"t1-1row-data4"
+				},{
+					"t1data1":"t1-2row-data1",
+					"t1data2":"t1-2row-data2",
+					"t1data3":"t1-2row-data3",
+					"t1data4":"t1-2row-data4"
+				},
+				{
+					"t1data1":"t1-3row-data1",
+					"t1data2":"t1-3row-data2",
+					"t1data3":"t1-3row-data3",
+					"t1data4":"t1-3row-data4"
+				}],
+				"t1total1":"t1total1-data",
+				"t1total2":"t1total2-data",
+				"t1total3":"t1total3-data"
 			})
 			docX["tableComplex2Example.docx"].render()
 			fullText=docX["tableComplex2Example.docx"].getFullText()
 			expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data")
 		it 'should work with more complex table', () ->
 			docX["tableComplexExample.docx"].setData({
-			"table2":[{
-				"t2data1":"t2-1row-data1",
-				"t2data2":"t2-1row-data2",
-				"t2data3":"t2-1row-data3",
-				"t2data4":"t2-1row-data4"
-			},{
-				"t2data1":"t2-2row-data1",
-				"t2data2":"t2-2row-data2",
-				"t2data3":"t2-2row-data3",
-				"t2data4":"t2-2row-data4"
-			}],
-			"t1total1":"t1total1-data",
-			"t1total2":"t1total2-data",
-			"t1total3":"t1total3-data",
-			"t2total1":"t2total1-data",
-			"t2total2":"t2total2-data",
-			"t2total3":"t2total3-data"
+				"table2":[{
+					"t2data1":"t2-1row-data1",
+					"t2data2":"t2-1row-data2",
+					"t2data3":"t2-1row-data3",
+					"t2data4":"t2-1row-data4"
+				},
+				{
+					"t2data1":"t2-2row-data1",
+					"t2data2":"t2-2row-data2",
+					"t2data3":"t2-2row-data3",
+					"t2data4":"t2-2row-data4"
+				}],
+				"t1total1":"t1total1-data",
+				"t1total2":"t1total2-data",
+				"t1total3":"t1total3-data",
+				"t2total1":"t2total1-data",
+				"t2total2":"t2total2-data",
+				"t2total3":"t2total3-data"
 			}); #set the templateVariables
+
 			docX["tableComplexExample.docx"].render() #apply them
 			fullText=docX["tableComplexExample.docx"].getFullText() #apply them
 			expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data")
 		it 'should work with two tables and intelligentTagging', () ->
 			tags= {
-			"table1":[1],
-			"key":"value",
+				"table1":[1],
+				"key":"value",
 			}
 			template="""
 TAG
@@ -1145,9 +1141,7 @@ TAG
 
 	describe 'pptx generation', ()->
 		it 'should work with simple pptx', ()->
-			p=pptX['simpleExample.pptx']
-				.setData({'name':'Edgar'})
-				.render()
+			p=pptX['simpleExample.pptx'].setData({'name':'Edgar'}).render()
 
 			expect(p.getFullText()).to.be.equal('Hello Edgar')
 	if window?

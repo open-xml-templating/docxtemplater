@@ -3,7 +3,8 @@ DocUtils=require('./docUtils')
 Errors = require("./errors")
 
 module.exports=class TemplaterState
-	constructor:(@moduleManager,@delimiters)->@moduleManager.templaterState=this
+	constructor:(@moduleManager,@delimiters)->
+		@moduleManager.templaterState=this
 	moveCharacters:(numXmlTag,newTextLength,oldTextLength)->
 		for k in [numXmlTag...@matches.length]
 			@charactersAdded[k]+=newTextLength-oldTextLength
@@ -64,8 +65,7 @@ module.exports=class TemplaterState
 		@innerContent('tagStart')
 			.substr(0,@tagStart.numCharacter+@offset[@tagStart.numXmlTag])
 	getRightValue:()->
-		@innerContent('tagEnd').
-			substr(@tagEnd.numCharacter+1+@offset[@tagEnd.numXmlTag])
+		@innerContent('tagEnd').substr(@tagEnd.numCharacter+1+@offset[@tagEnd.numXmlTag])
 	endTag:()->
 		if @inTag is false
 			err = new Errors.XTTemplateError("Unopened tag")

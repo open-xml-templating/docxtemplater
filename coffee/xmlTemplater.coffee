@@ -288,11 +288,11 @@ module.exports=class XmlTemplater #abstract class !!
 
 		tag=@templaterState.loopOpen.tag
 		newContent=""
-		@scopeManager.loopOver tag, (subTags) =>
+		loopFn = (subTags) =>
 			subfile=@calcSubXmlTemplater(subTemplate,{tags:subTags})
 			newContent+=subfile.content
-		, @templaterState.loopIsInverted
 
+		@scopeManager.loopOver tag, loopFn, @templaterState.loopIsInverted
 		subfile=@calcSubXmlTemplater(subTemplate,{tags:{}})
 		@compiled.appendSubTemplate(subfile.compiled.compiled,tag,@templaterState.loopIsInverted)
 		@lastStart+=newContent.length - outerTags.text.length
