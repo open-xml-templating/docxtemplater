@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "Edgar Hipp",
   "description": ".docx generator working with templates and data (like Mustache)",
   "contributors": [
