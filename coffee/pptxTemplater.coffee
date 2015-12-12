@@ -6,15 +6,10 @@ PptXTemplater = class PptXTemplater extends XmlTemplater
 	constructor:(content="",options={}) ->
 		super(content,options)
 		@currentClass=PptXTemplater
+		@tagsXmlArray=['a:t', 'm:t']
 		@tagXml='a:t'
 		@tagRawXml='p:sp'
 		@load content
-	xmlToBeReplaced:(options)->
-		if options.noStartTag
-			return options.insideValue
-		else
-			str=@templaterState.matches[options.xmlTagNumber][1]+options.insideValue
-			if options.noEndTag==true then return str else return str+"</#{@tagXml}>"
 	calcIntellegentlyDashElement:()->
 		{content,start,end} = new SubContent(@content).getOuterLoop(@templaterState)
 		scopeContent= xmlUtil.getListXmlElements @content, start,end-start

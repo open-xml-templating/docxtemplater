@@ -6,6 +6,7 @@ DocXTemplater = class DocXTemplater extends XmlTemplater
 	constructor:(content="",options={}) ->
 		super("",options)
 		@currentClass=DocXTemplater
+		@tagsXmlArray=['w:t','m:t']
 		@tagXml='w:t'
 		@tagRawXml='w:p'
 		@load content

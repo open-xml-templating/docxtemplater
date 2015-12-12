@@ -4,8 +4,9 @@ DocUtils=require('./docUtils')
 module.exports=class XmlMatcher
 	constructor:(@content)->
 
-	parse:(@tagXml)->
-		@matches=DocUtils.pregMatchAll("(<#{@tagXml}[^>]*>)([^<>]*)</#{@tagXml}>",@content)
+	parse:(@tagsXmlArray)->
+		@tagsXmlArrayJoined=@tagsXmlArray.join('|')
+		@matches=DocUtils.pregMatchAll("(<(?:#{@tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:#{@tagsXmlArrayJoined})>",@content)
 		@charactersAdded= (0 for i in [0...@matches.length])
 		@handleRecursiveCase()
 		this
@@ -31,7 +32,7 @@ module.exports=class XmlMatcher
 		if @content.indexOf('<')==-1 &&  @content.indexOf('>')==-1
 			@content.replace /^()([^<>]*)$/,replacerUnshift
 
-		regex="^()([^<]+)<\/#{@tagXml}>"
+		regex="^()([^<]+)<\/(?:#{@tagsXmlArrayJoined})>"
 		@content.replace (new RegExp(regex)),replacerUnshift
 
 		replacerPush = (match,pn..., offset, string)=>
@@ -41,6 +42,6 @@ module.exports=class XmlMatcher
 			@matches.push pn #add at the end
 			@charactersAdded.push 0
 
-		regex= "(<#{@tagXml}[^>]*>)([^>]+)$"
+		regex= "(<(?:#{@tagsXmlArrayJoined})[^>]*>)([^>]+)$"
 		@content.replace (new RegExp(regex)),replacerPush
 		return this

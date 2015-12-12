@@ -86,7 +86,7 @@ startTest=->
 		it 'should work with simple tag',->
 			tag='w:t'
 			matcher=new XmlMatcher('<w:t>Text</w:t>')
-			matcher.parse('w:t')
+			matcher.parse(['w:t'])
 			expect(matcher.matches[0][0]).to.be.equal('<w:t>Text</w:t>')
 			expect(matcher.matches[0][1]).to.be.equal('<w:t>')
 			expect(matcher.matches[0][2]).to.be.equal('Text')
@@ -95,7 +95,7 @@ startTest=->
 		it 'should work with multiple tags',->
 			tag='w:t'
 			matcher=new XmlMatcher('<w:t>Text</w:t> TAG <w:t>Text2</w:t>')
-			matcher.parse('w:t')
+			matcher.parse(['w:t'])
 			expect(matcher.matches[1][0]).to.be.equal('<w:t>Text2</w:t>')
 			expect(matcher.matches[1][1]).to.be.equal('<w:t>')
 			expect(matcher.matches[1][2]).to.be.equal('Text2')
@@ -104,7 +104,7 @@ startTest=->
 		it 'should work with no tag, with w:t',->
 			tag='w:t'
 			matcher=new XmlMatcher('Text1</w:t><w:t>Text2')
-			matcher.parse('w:t')
+			matcher.parse(['w:t'])
 			expect(matcher.matches[0][0]).to.be.equal('Text1')
 			expect(matcher.matches[0][1]).to.be.equal('')
 			expect(matcher.matches[0][2]).to.be.equal('Text1')
@@ -118,7 +118,7 @@ startTest=->
 		it 'should work with no tag, no w:t',->
 			tag='w:t'
 			matcher=new XmlMatcher('Text1')
-			matcher.parse('w:t')
+			matcher.parse(['w:t'])
 			expect(matcher.matches[0][0]).to.be.equal('Text1')
 			expect(matcher.matches[0][1]).to.be.equal('')
 			expect(matcher.matches[0][2]).to.be.equal('Text1')
@@ -127,7 +127,7 @@ startTest=->
 		it 'should not match with no </w:t> starter',->
 			tag='w:t'
 			matcher=new XmlMatcher('TAG<w:t>Text1</w:t>')
-			matcher.parse('w:t')
+			matcher.parse(['w:t'])
 			expect(matcher.matches[0][0]).to.be.equal('<w:t>Text1</w:t>')
 			expect(matcher.matches[0][1]).to.be.equal('<w:t>')
 			expect(matcher.matches[0][2]).to.be.equal('Text1')
@@ -136,7 +136,7 @@ startTest=->
 		it 'should not match with no <w:t> ender',->
 			tag='w:t'
 			matcher=new XmlMatcher('<w:t>Text1</w:t>TAG')
-			matcher.parse('w:t')
+			matcher.parse(['w:t'])
 			expect(matcher.matches.length).to.be.equal(1)
 
 	describe "DocxGenLoading", () ->
@@ -648,6 +648,53 @@ TAG2
 			xmlTemplater.render()
 			xmlTemplater.getFullText()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello {name}')
+
+		it 'should work with equations', ()->
+			content = """
+			<w:p>
+				<m:oMathPara>
+					<m:oMath>
+					<m:sSup>
+						<m:e>
+						<m:r>
+							<m:t>y</m:t>
+						</m:r>
+						</m:e>
+						<m:sup>
+						<m:r>
+							<m:t>{bar}</m:t>
+						</m:r>
+						</m:sup>
+					</m:sSup>
+					<m:r>
+						<m:t>*</m:t>
+					</m:r>
+					<m:r>
+						<m:t>cos⁡</m:t>
+					</m:r>
+					<m:r>
+						<m:t>(</m:t>
+					</m:r>
+					<m:r>
+						<m:t xml:space="preserve"> {foo}</m:t>
+					</m:r>
+					<m:r>
+						<m:t>+{baz})</m:t>
+					</m:r>
+					</m:oMath>
+				</m:oMathPara>
+				</w:p>
+				<w:p>
+					<w:t>Hello {</w:t>
+					<w:t>name</w:t>
+					<w:t>}</w:t>
+			</w:p>
+			"""
+			scope= {"name":"John", foo:"MyFoo", bar:"MyBar", baz:"MyBaz"}
+			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			expect(xmlTemplater.getFullText()).to.be.equal('y{bar}*cos⁡( {foo}+{baz})Hello {name}')
+			xmlTemplater.render()
+			expect(xmlTemplater.getFullText()).to.be.equal('yMyBar*cos⁡( MyFoo+MyBaz)Hello John')
 
 	describe 'Change the nullGetter', ()->
 		it 'should work with null', () ->

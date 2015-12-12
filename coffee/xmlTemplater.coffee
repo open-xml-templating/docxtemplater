@@ -8,15 +8,16 @@ CompiledTemplate = require('./compiledTemplate')
 CompiledXmlTag = require('./compiledXmlTag')
 Errors = require("./errors")
 
-getFullText = (content, tagXml)->
-	matcher=new XmlMatcher(content).parse(tagXml)
+getFullText = (content, tagsXmlArray)->
+	matcher=new XmlMatcher(content).parse(tagsXmlArray)
 	output= (match[2] for match in matcher.matches) #get only the text
 	DocUtils.wordToUtf8(DocUtils.convertSpaces(output.join(""))) #join it
 
 #This is an abstract class, DocXTemplater is an example of inherited class
 module.exports=class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
-		@tagXml='' #tagXml represents the name of the tag that contains text. For example, in docx, @tagXml='w:t'
+		@tagsXmlArray=[] #tagsXmlArray represents the array of tags that contains text. For example, in docx, @tagsXmlArray=['w:t','m:t']
+		@tagXml=''
 		@tagRawXml='' #tagRawXml represents the name of the tag that needs to be replaced when embedding raw XML using `{@rawXml}`.
 		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
@@ -26,7 +27,7 @@ module.exports=class XmlTemplater #abstract class !!
 			err = new Errors.XTInternalError("Content must be a string")
 			err.properties.id = "xmltemplater_content_must_be_string"
 			throw err
-		xmlMatcher=new XmlMatcher(@content).parse(@tagXml)
+		xmlMatcher=new XmlMatcher(@content).parse(@tagsXmlArray)
 		@templaterState.matches = xmlMatcher.matches
 		@templaterState.charactersAdded= xmlMatcher.charactersAdded
 	fromJson:(options={})->
@@ -49,7 +50,7 @@ module.exports=class XmlTemplater #abstract class !!
 			obj[key]=this[key]
 		obj
 	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
-	getFullText:() -> getFullText(@content, @tagXml)
+	getFullText:() -> getFullText(@content, @tagsXmlArray)
 	updateModuleManager:()->
 		@moduleManager.xmlTemplater=this
 		@moduleManager.templaterState=@templaterState
@@ -123,7 +124,7 @@ module.exports=class XmlTemplater #abstract class !!
 				error.properties.xtag = @templaterState.textInsideTag
 				error.properties.explanation = "The raw tag #{error.properties.xtag} is not valid in this context."
 			throw error
-		fullText = getFullText(outerXml.text, @tagXml)
+		fullText = getFullText(outerXml.text, @tagsXmlArray)
 		if @templaterState.fullTextTag != fullText
 			err = new Errors.XTTemplateError("Raw xml tag should be the only text in paragraph")
 			err.properties =
@@ -171,12 +172,12 @@ module.exports=class XmlTemplater #abstract class !!
 		after=""
 		if options.noStartTag
 			return options.insideValue
-		if options.spacePreserve
-			before="<#{@tagXml} xml:space=\"preserve\">"
+		if options.spacePreserve && options.tag == 'w:t'
+			before="<#{options.fullTag} xml:space=\"preserve\">"
 		else
 			before=@templaterState.matches[options.xmlTagNumber][1]
 		if !options.noEndTag
-			after="</#{@tagXml}>"
+			after="</#{options.tag}>"
 		@currentCompiledTag.prependText(before)
 		@currentCompiledTag.appendText(after)
 		return before+options.insideValue+after
@@ -186,7 +187,10 @@ module.exports=class XmlTemplater #abstract class !!
 		string.substr(0,from)+replaced
 	replaceXmlTag: (content,options) ->
 		@templaterState.offset[options.xmlTagNumber]+=options.insideValue.length-@templaterState.matches[options.xmlTagNumber][2].length
-		options.spacePreserve= if options.spacePreserve? then options.spacePreserve else true
+		options.fullTag = @templaterState.matches[options.xmlTagNumber][1].replace(/^<([^>]+)>$/,"$1")
+		options.tag = options.fullTag.replace(/([^ ]*).*/, "$1")
+		options.spacePreserve = if options.spacePreserve? then options.spacePreserve else true
+		options.spacePreserve = options.spacePreserve && @templaterState.matches[options.xmlTagNumber][1].indexOf('xml:space="preserve"')==-1
 		options.noStartTag= if options.noStartTag? then options.noStartTag else false
 		options.noEndTag= if options.noEndTag? then options.noEndTag else false
 		replacer=@xmlToBeReplaced(options)
