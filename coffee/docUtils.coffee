@@ -2,9 +2,6 @@ Errors = require("./errors")
 
 DocUtils= {}
 
-DocUtils.escapeRegExp= (str) ->
-	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
-
 DocUtils.defaults =
 	nullGetter:(tag, props)->
 		if props.tag == "simple"
@@ -17,7 +14,7 @@ DocUtils.defaults =
 			'get':(scope) ->
 				if tag=='.' then return scope else return scope[tag]
 		}
-	intelligentTagging:on
+	intelligentTagging:true
 	delimiters:
 		start:'{'
 		end:'}'
@@ -76,9 +73,10 @@ DocUtils.pregMatchAll= (regex, content) ->
 	if (typeof regex!='object')
 		regex= (new RegExp(regex,'g'))
 	matchArray= []
-	replacer = (match,pn..., offset, string)->
+	replacer = (pn...)->
+		string = pn.pop()
+		offset = pn.pop()
 		#add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-		pn.unshift match
 		pn.offset= offset
 		matchArray.push pn
 	content.replace regex,replacer
@@ -111,5 +109,8 @@ DocUtils.tags = DocUtils.defaults.delimiters
 DocUtils.defaultParser  = DocUtils.defaults.parser
 DocUtils.convert_spaces = DocUtils.convertSpaces
 DocUtils.preg_match_all = DocUtils.pregMatchAll
+
+DocUtils.escapeRegExp= (str) ->
+	str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
 
 module.exports=DocUtils
