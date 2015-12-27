@@ -13,7 +13,7 @@ showHelp=()->
 
 if(process.argv[2]=='--help' || process.argv[2]=='-h' || process.argv[2]==null || process.argv[2]==undefined)
   showHelp()
-  return
+  process.exit(1)
 
 res=fs.readFileSync(process.argv[2],'utf-8')
 jsonInput=JSON.parse(res)
