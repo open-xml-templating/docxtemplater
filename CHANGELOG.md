@@ -1,5 +1,12 @@
 ### master
 
+**Breaking** : To choose between docx or pptx, you now have to pass docx.setOptions({fileType:'docx'}) where the fileTypes are one of 'pptx', 'docx'
+Using es6 instead of coffeescript to code (code is still compiled to es5, eg current implemented version of js)
+
+### 1.2.1
+
+It is now possible to use tags inside of docx equations
+
 ### 1.2.0
 
 This release adds error management, all errors that are thrown by docxtemplater are now typed and contain additional properties.
