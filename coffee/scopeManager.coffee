@@ -3,7 +3,15 @@ DocUtils=require('./docUtils')
 Errors = require("./errors")
 
 module.exports=class ScopeManager
-	constructor:({@tags,@scopePath,@usedTags,@scopeList,@parser,@moduleManager,@nullGetter,@delimiters})->
+	constructor:(options)->
+		@tags = options.tags
+		@scopePath = options.scopePath
+		@usedTags = options.usedTags
+		@scopeList = options.scopeList
+		@parser = options.parser
+		@moduleManager = options.moduleManager
+		@nullGetter = options.nullGetter
+		@delimiters = options.delimiters
 		@moduleManager.scopeManager=this
 	loopOver:(tag,callback,inverted=false)->
 		value = @getValue(tag)

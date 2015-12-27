@@ -21,9 +21,12 @@ module.exports=class XmlMatcher
 		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
 		###
 
-		replacerUnshift = (match,pn..., offset, string)=>
+		replacerUnshift = (pn...)=>
+			pn.shift()
 			match=pn[0]+pn[1]
 			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+			string = pn.pop()
+			offset = pn.pop()
 			pn.offset= offset
 			pn.first= true
 			@matches.unshift pn #add at the beginning
@@ -33,15 +36,18 @@ module.exports=class XmlMatcher
 			@content.replace /^()([^<>]*)$/,replacerUnshift
 
 		regex="^()([^<]+)<\/(?:#{@tagsXmlArrayJoined})>"
-		@content.replace (new RegExp(regex)),replacerUnshift
+		r = new RegExp(regex)
+		@content.replace r,replacerUnshift
 
-		replacerPush = (match,pn..., offset, string)=>
-			pn.unshift match #add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+		replacerPush = (pn...)=>
+			string = pn.pop()
+			offset = pn.pop()
 			pn.offset= offset
 			pn.last= true
 			@matches.push pn #add at the end
 			@charactersAdded.push 0
 
 		regex= "(<(?:#{@tagsXmlArrayJoined})[^>]*>)([^>]+)$"
-		@content.replace (new RegExp(regex)),replacerPush
+		r = new RegExp(regex)
+		@content.replace r,replacerPush
 		return this

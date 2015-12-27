@@ -227,9 +227,9 @@ module.exports=class XmlTemplater #abstract class !!
 			# 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
 			options.insideValue=newValue
-			@currentCompiledTag = new CompiledXmlTag ([{type:'tag',tag:@templaterState.textInsideTag}])
+			@currentCompiledTag = new CompiledXmlTag([{type:'tag',tag:@templaterState.textInsideTag}])
 			if !@templaterState.matches[@templaterState.tagStart.numXmlTag].first? and !@templaterState.matches[@templaterState.tagStart.numXmlTag].last?  #normal case
-				@currentCompiledTag = new CompiledXmlTag ([ @templaterState.getLeftValue(), {type:'tag',tag:@templaterState.textInsideTag} ])
+				@currentCompiledTag = new CompiledXmlTag([@templaterState.getLeftValue(), {type:'tag',tag:@templaterState.textInsideTag} ])
 				options.insideValue=@templaterState.getLeftValue()+newValue
 
 			content= @replaceXmlTag(content,options)
@@ -242,7 +242,7 @@ module.exports=class XmlTemplater #abstract class !!
 
 			for k in [(@templaterState.tagStart.numXmlTag+1)...@templaterState.tagEnd.numXmlTag]
 				options.xmlTagNumber=k
-				@currentCompiledTag = new CompiledXmlTag ([])
+				@currentCompiledTag = new CompiledXmlTag([])
 				content= @replaceXmlTag(content, options)
 
 			#3. for the last (@templaterState.tagEnd.numXmlTag) replace ..}__ by ".." ###
@@ -258,8 +258,8 @@ module.exports=class XmlTemplater #abstract class !!
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
 			return @dashLoop(@templaterState.loopOpen.element)
-		if @intelligentTagging==on
 			dashElement=@calcIntellegentlyDashElement()
+		if @intelligentTagging==true
 			if dashElement!=false then return @dashLoop(dashElement,true)
 		outerLoop=new SubContent(@content).getOuterLoop(@templaterState)
 		innerTemplate=new SubContent(@content).getInnerLoop(@templaterState).text
