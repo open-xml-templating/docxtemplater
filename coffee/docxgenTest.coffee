@@ -27,16 +27,17 @@ expectToThrow = (obj, method, type, expectedError) ->
 		obj[method]()
 	catch error
 		e=error
-	expect(e).not.to.be.equal(null)
-	expect(e).to.be.an('object')
-	expect(e).to.be.instanceOf(Error)
-	expect(e).to.be.instanceOf(type)
-	expect(e).to.have.property('properties')
-	expect(e.properties).to.be.a('object')
-	expect(e.properties).to.have.property('explanation')
-	expect(e.properties.explanation).to.be.a('string')
-	expect(e.properties).to.have.property('id')
-	expect(e.properties.id).to.be.a('string')
+	toShowOnFail = e.stack
+	expect(e,toShowOnFail).not.to.be.equal(null)
+	expect(e,toShowOnFail).to.be.an('object')
+	expect(e,toShowOnFail).to.be.instanceOf(Error)
+	expect(e,toShowOnFail).to.be.instanceOf(type)
+	expect(e,toShowOnFail).to.have.property('properties')
+	expect(e.properties,toShowOnFail).to.be.a('object')
+	expect(e.properties,toShowOnFail).to.have.property('explanation')
+	expect(e.properties.explanation,toShowOnFail).to.be.a('string')
+	expect(e.properties,toShowOnFail).to.have.property('id')
+	expect(e.properties.id,toShowOnFail).to.be.a('string')
 	delete e.properties.explanation
 	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError)
 
@@ -45,11 +46,13 @@ XmlMatcher= require('../../js/xmlMatcher.js')
 DocxGen= require('../../js/index.js')
 PptxGen=DocxGen.PptxGen
 DocUtils= require('../../js/docUtils.js')
+XmlTemplater = require('../../js/xmlTemplater.js')
+FileTypeConfig = require('../../js/fileTypeConfig.js')
+
 docX={}
 pptX={}
 data={}
 SubContent=DocxGen.SubContent
-DocXTemplater=DocxGen.DocXTemplater
 xmlUtil=DocxGen.XmlUtil
 fs=require('fs')
 
@@ -72,7 +75,11 @@ fileNames=["graph.docx",
 'tagIntelligentLoopTable.docx',
 ]
 
-getLength=(d)->if d.length? then d.length else d.byteLength
+getLength=(d)->
+	if d.length?
+		return d.length
+	else
+		return d.byteLength
 
 startTest=->
 	describe "DocxGenBasis", () ->
@@ -206,25 +213,27 @@ startTest=->
 <w:t>{^todos}No {/todos}Todos</w:t>
 <w:t>{#todos}{.}{/todos}</w:t>
 """
-				scope= {"todos":["A","B","C"]}
-				xmlTemplater= new DocXTemplater(content,{tags:scope})
-				xmlTemplater.render()
-				expect(xmlTemplater.content).to.be.deep.equal("""
+				expectedContent= """
 <w:t>Todos</w:t>
 <w:t>ABC</w:t>
-				""")
+"""
+				scope= {"todos":["A","B","C"]}
+				xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
+				xmlTemplater.render()
+				expect(xmlTemplater.content).to.be.deep.equal(expectedContent)
 			it 'should not have sideeffects with inverted with empty array', () ->
 				content= """
 <w:t>{^todos}No {/todos}Todos</w:t>
 <w:t>{#todos}{.}{/todos}</w:t>
 """
-				scope= {"todos":[]}
-				xmlTemplater= new DocXTemplater(content,{tags:scope})
-				xmlTemplater.render()
-				expect(xmlTemplater.content).to.be.deep.equal("""
+				expectedContent="""
 <w:t>No Todos</w:t>
 <w:t></w:t>
-				""")
+"""
+				scope= {"todos":[]}
+				xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
+				xmlTemplater.render()
+				expect(xmlTemplater.content).to.be.deep.equal(expectedContent)
 
 			it "should provide inverted loops", () ->
 				# shows if the key is []
@@ -234,7 +243,7 @@ startTest=->
 				{products:false},
 				{},
 				].forEach (tags)->
-					doc = new DocXTemplater(content,{tags:tags})
+					doc = new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:tags})
 					doc.render()
 					expect(doc.getFullText()).to.be.equal('No products found')
 
@@ -243,19 +252,22 @@ startTest=->
 				{products:"Bread"},
 				{products:{name:"Bread"}},
 				].forEach (tags)->
-					doc = new DocXTemplater(content,{tags:tags})
+					doc = new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:tags})
 					doc.render()
 					expect(doc.getFullText()).to.be.equal('')
 
 	describe "Xml Util" , () ->
 		it "should compute the scope between 2 <w:t>" , () ->
-			scope= xmlUtil.getListXmlElements """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
+			c = """undefined</w:t></w:r></w:p><w:p w:rsidP="008A4B3C" w:rsidR="007929C1" w:rsidRDefault="007929C1" w:rsidRPr="008A4B3C"><w:pPr><w:pStyle w:val="Sous-titre"/></w:pPr><w:r w:rsidRPr="008A4B3C"><w:t xml:space="preserve">Audit réalisé le """
+			scope= xmlUtil.getListXmlElements c
 			expect(scope).to.be.eql([ { tag : '</w:t>', offset : 9 }, { tag : '</w:r>', offset : 15 }, { tag : '</w:p>', offset : 21 }, { tag : '<w:p>', offset : 27 }, { tag : '<w:r>', offset : 162 }, { tag : '<w:t>', offset : 188 } ])
 		it "should compute the scope between 2 <w:t> in an Array", () ->
-			scope= xmlUtil.getListXmlElements """urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
+			c="""urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type="dxa" w:w="4140"/></w:tcPr><w:p w:rsidP="00CE524B" w:rsidR="00CE524B" w:rsidRDefault="00CE524B"><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="auto"/></w:rPr><w:t>Sur exté"""
+			scope= xmlUtil.getListXmlElements c
 			expect(scope).to.be.eql([ { tag : '</w:t>', offset : 3 }, { tag : '</w:r>', offset : 9 }, { tag : '</w:p>', offset : 15 }, { tag : '</w:tc>', offset : 21 }, { tag : '<w:tc>', offset : 28 }, { tag : '<w:p>', offset : 83 }, { tag : '<w:r>', offset : 268 }, { tag : '<w:t>', offset : 374 } ])
 		it 'should compute the scope between a w:t in an array and the other outside', () ->
-			scope= xmlUtil.getListXmlElements """defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
+			c="""defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00BE3585" w:rsidRDefault="00BE3585"/><w:p w:rsidP="00CA7135" w:rsidR="00137C91" w:rsidRDefault="00137C91"><w:r w:rsidRPr="00B12C70"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources """
+			scope= xmlUtil.getListXmlElements c
 			expect(scope).to.be.eql([ { tag : '</w:t>', offset : 8 }, { tag : '</w:r>', offset : 14 }, { tag : '</w:p>', offset : 20 }, { tag : '</w:tc>', offset : 26 }, { tag : '</w:tr>', offset : 33 }, { tag : '</w:tbl>', offset : 40 }, { tag : '<w:p>', offset : 188 }, { tag : '<w:r>', offset : 257 }, { tag : '<w:t>', offset : 306 } ])
 
 	describe "Dash Loop Testing", () ->
@@ -297,38 +309,38 @@ startTest=->
 	describe 'intelligent tagging multiple tables',()->
 		it 'should work with multiple rows', () ->
 			content="""
-			<w:tbl>
-				<w:tr>
-					<w:tc>
-						<w:p>
-							<w:r>
-								<w:t>{#clauses} Clause</w:t>
-							</w:r>
-						</w:p>
-					</w:tc>
-				</w:tr>
-				<w:tr>
-					<w:tc>
-						<w:p>
-							<w:r>
-								<w:t>{/clauses}</w:t>
-							</w:r>
-						</w:p>
-					</w:tc>
-				</w:tr>
-			</w:tbl>
+<w:tbl>
+	<w:tr>
+		<w:tc>
+			<w:p>
+				<w:r>
+					<w:t>{#clauses} Clause</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+	</w:tr>
+	<w:tr>
+		<w:tc>
+			<w:p>
+				<w:r>
+					<w:t>{/clauses}</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+	</w:tr>
+</w:tbl>
 			"""
 			scope={}
-			doc= new DocXTemplater(content,{tags:scope,intelligentTagging:true})
+			doc= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,intelligentTagging:true})
 			doc.render()
 
 	describe "getTags", () ->
 		it "should work with simple document", () ->
-			d=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:off}
+			d=new DocxGen docX['tagExample.docx'].loadedContent,{},{intelligentTagging:false}
 			tempVars= d.getTags()
 			expect(tempVars).to.be.eql([ { fileName : 'word/header1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true, description : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { last_name : true, first_name : true, phone : true } } }, { fileName : 'word/document.xml', vars : { def : {  }, undef : { last_name : true, first_name : true } } } ] )
 		it "should work with loop document", () ->
-			docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:off}
+			docX['tagLoopExample.docx']=new DocxGen docX['tagLoopExample.docx'].loadedContent,{},{intelligentTagging:false}
 			tempVars= docX['tagLoopExample.docx'].getTags()
 			expect(tempVars).to.be.eql([ { fileName : 'word/header1.xml', vars : { def : {  }, undef : { nom : true, prenom : true } } }, { fileName : 'word/footer1.xml', vars : { def : {  }, undef : { nom : true, prenom : true, telephone : true } } }, { fileName : 'word/document.xml', vars : { def : {  }, undef : { offre : { nom : true, prix : true, titre : true }, nom : true, prenom : true } } } ])
 
@@ -337,31 +349,31 @@ startTest=->
 		it "should work with dot", ()->
 			content= """<w:t>Hello {.}</w:t>"""
 			scope= "Edgar"
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expected = ['<w:t xml:space="preserve">', 'Hello ', { type: 'tag', tag: '.' }, '</w:t>' ]
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected)
 		it "should work with text with special characters", ()->
 			content= """<w:t>Hello {&gt;name}</w:t>"""
 			scope= {">name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expected = ['<w:t xml:space="preserve">', 'Hello ', { type: 'tag', tag: '>name' }, '</w:t>']
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected)
 		it "should work with simple text", ()->
 			content= """<w:t>Hello {name}</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expected = ['<w:t xml:space="preserve">', 'Hello ', { type: 'tag', tag: 'name' }, '</w:t>']
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected)
 		it "should work with two tags", ()->
 			content= """
-				<w:t>Hello {name}</w:t>
-				<w:t>Hello {name2}</w:t>
-				"""
+<w:t>Hello {name}</w:t>
+<w:t>Hello {name2}</w:t>
+"""
 			scope= {"name":"Edgar","name2":"John"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'<w:t xml:space="preserve">',
@@ -377,7 +389,7 @@ startTest=->
 		it "should compile without start Tag", ()->
 			content= """Hello </w:t>TAGS...TAGS<w:t> {name}"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'Hello </w:t>TAGS...TAGS',
@@ -389,7 +401,7 @@ startTest=->
 		it "should compile without end Tag and without start tag", ()->
 			content= """Hello </w:t>TAGS...TAGS<w:t> {name} </w:t>TAGS2...TAGS2<w:t> {name} </w:t>TAGS3...TAGS3<w:t> Bye"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'Hello </w:t>TAGS...TAGS',
@@ -410,7 +422,7 @@ startTest=->
 		it "should with splitted tags", ()->
 			content= """{</w:t>TAGS...TAGS<w:t>name</w:t>TAGS2...TAGS2<w:t>} {name} </w:t>TAGS3...TAGS3<w:t> Bye"""
 			scope= {}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				{ type: 'tag', tag: 'name' },
@@ -429,7 +441,7 @@ startTest=->
 		it "should work with loops", ()->
 			content= """<w:t> {#users} {name} {/users}</w:t>"""
 			scope = {users:[{name:"Edgar"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'<w:t> ',
@@ -444,7 +456,7 @@ startTest=->
 		it "should work with inverted loops", ()->
 			content= """<w:t> {^users} {name} {/users}</w:t>"""
 			scope = {users:[{name:"Edgar"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'<w:t> ',
@@ -459,7 +471,7 @@ startTest=->
 		it "should work with raw tag", ()->
 			content= """<w:t>Hi Hi </w:t><w:p><w:t>{@raw}</w:t></w:p><w:t>Ho</w:t>"""
 			scope = {raw:""}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"<w:t>Hi Hi </w:t>"
@@ -470,7 +482,7 @@ startTest=->
 		it "should not error with raw tag", ()->
 			content= """<w:t>Hi Hi </w:t><w:p><w:t>{@raw}</w:t></w:p><w:t>Ho</w:t>"""
 			scope = {}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"<w:t>Hi Hi </w:t>"
@@ -484,7 +496,7 @@ startTest=->
 		it "should work with complicated loop", ()->
 			content= """<w:t> {#users} {name} </w:t>TAG..TAG<w:t>{/users}</w:t>TAG2<w:t>{name}"""
 			scope = {users:[{user:"Edgar"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'<w:t> ',
@@ -499,7 +511,7 @@ startTest=->
 				{ type: 'tag', tag: 'name' },])
 
 		it "should work with intelligent tagging", ()->
-			content="""
+			baseContent = """
 <w:t>Hello {name}</w:t>
 TAG
 <w:tr>
@@ -512,13 +524,13 @@ TAG2
 <w:tc><w:p><w:t>{/table2}</w:t></w:p>
 </w:tc>
 </w:tr>
-<w:t>{key}</w:t>
-			""".replace(/\n/g,"")
+<w:t>{key}</w:t>"""
+			content= baseContent.replace(/\n/g,"")
 			scope= {
 				"table1":[1],
 				"key":"value",
 			}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,intelligentTagging:true})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,intelligentTagging:true})
 			xmlTemplater.render()
 
 			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
@@ -544,154 +556,154 @@ TAG2
 		it "should work with simpleContent", ()->
 			content= """<w:t>Hello {name}</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar')
 		it "should work with {.} for this", ()->
 			content= """<w:t>Hello {.}</w:t>"""
 			scope='Edgar'
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar')
 
 		it "should work with {.} for this inside loop", ()->
 			content= """<w:t>Hello {#names}{.},{/names}</w:t>"""
 			scope={names:['Edgar','John']}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar,John,')
 
 		it "should work with non w:t content", ()->
 			content= """Hello {name}"""
 			scope= {"name":"edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.content).to.be.equal('Hello edgar')
 		it "should work with tag in two elements", ()->
 			content= """<w:t>Hello {</w:t><w:t>name}</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar')
 
 		it "should work with splitted tag in three elements", ()->
 			content= """<w:t>Hello {</w:t><w:t>name</w:t><w:t>}</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar')
 
 		it "should work with simple loop with object value", ()->
 			content= """<w:t>Hello {#person}{name}{/person}</w:t>"""
 			scope= {"person":{"name":"Edgar"}}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar')
 
 		it "should work with simple Loop", ()->
 			content= """<w:t>Hello {#names}{name},{/names}</w:t>"""
 			scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar,Mary,John,')
 		it "should work with simple Loop with boolean value", ()->
 			content= """<w:t>Hello {#showName}{name},{/showName}</w:t>"""
 			scope= {"showName":true,"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar,')
 
 			scope= {"showName":false,"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello ')
 		it "should work with dash Loop", ()->
 			content= """<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>"""
 			scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar,Hello Mary,Hello John,')
 		it "should work with loop and innerContent", ()->
 			content= """</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>"""
 			scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware')
 		it "should work with loop and innerContent (with last)", ()->
 			content= """Start </w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> End"""
 			scope= {"title":"Everyone uses it","proof":[{"reason":"it is quite cheap"},{"reason":"it is quit simple"},{"reason":"it works on a lot of different Hardware"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Start Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware End')
 		it 'should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ', ()->
 			content= """Hello {#names}{name},{/names}"""
 			scope= {"names":[{"name":"Edgar"},{"name":"Mary"},{"name":"John"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.content).to.be.equal('Hello Edgar,Mary,John,')
 		it "should work with delimiter in value", ()->
 			content= """<w:t>Hello {name}</w:t>"""
 			scope= {"name":"{edgar}"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello {edgar}')
 		it 'should work with delimiter in value )with loop)', ()->
 			content= """Hello {#names}{name},{/names}"""
 			scope= {"names":[{"name":"{John}"},{"name":"M}}{ary"},{"name":"Di{{{gory"}]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello {John},M}}{ary,Di{{{gory,')
 		it 'should work when replacing with exact same value',()->
 			content= """<w:p><w:t xml:space="preserve">Hello {name}</w:t></w:p>"""
 			scope= {"name":"{name}"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			xmlTemplater.render()
 			xmlTemplater.getFullText()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello {name}')
 
 		it 'should work with equations', ()->
 			content = """
-			<w:p>
-				<m:oMathPara>
-					<m:oMath>
-					<m:sSup>
-						<m:e>
-						<m:r>
-							<m:t>y</m:t>
-						</m:r>
-						</m:e>
-						<m:sup>
-						<m:r>
-							<m:t>{bar}</m:t>
-						</m:r>
-						</m:sup>
-					</m:sSup>
-					<m:r>
-						<m:t>*</m:t>
-					</m:r>
-					<m:r>
-						<m:t>cos⁡</m:t>
-					</m:r>
-					<m:r>
-						<m:t>(</m:t>
-					</m:r>
-					<m:r>
-						<m:t xml:space="preserve"> {foo}</m:t>
-					</m:r>
-					<m:r>
-						<m:t>+{baz})</m:t>
-					</m:r>
-					</m:oMath>
-				</m:oMathPara>
-				</w:p>
-				<w:p>
-					<w:t>Hello {</w:t>
-					<w:t>name</w:t>
-					<w:t>}</w:t>
-			</w:p>
+<w:p>
+	<m:oMathPara>
+		<m:oMath>
+		<m:sSup>
+			<m:e>
+			<m:r>
+				<m:t>y</m:t>
+			</m:r>
+			</m:e>
+			<m:sup>
+			<m:r>
+				<m:t>{bar}</m:t>
+			</m:r>
+			</m:sup>
+		</m:sSup>
+		<m:r>
+			<m:t>*</m:t>
+		</m:r>
+		<m:r>
+			<m:t>cos⁡</m:t>
+		</m:r>
+		<m:r>
+			<m:t>(</m:t>
+		</m:r>
+		<m:r>
+			<m:t xml:space="preserve"> {foo}</m:t>
+		</m:r>
+		<m:r>
+			<m:t>+{baz})</m:t>
+		</m:r>
+		</m:oMath>
+	</m:oMathPara>
+	</w:p>
+	<w:p>
+		<w:t>Hello {</w:t>
+		<w:t>name</w:t>
+		<w:t>}</w:t>
+</w:p>
 			"""
 			scope= {"name":"John", foo:"MyFoo", bar:"MyBar", baz:"MyBaz"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			expect(xmlTemplater.getFullText()).to.be.equal('y{bar}*cos⁡( {foo}+{baz})Hello {name}')
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('yMyBar*cos⁡( MyFoo+MyBaz)Hello John')
@@ -701,7 +713,7 @@ TAG2
 			content= """<w:t>Hello {name}</w:t>"""
 			scope= {}
 			parser= (tag) -> return "null"
-			xmlTemplater= new DocXTemplater(content,{tags:scope,nullGetter:parser})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,nullGetter:parser})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello null')
 	describe 'Changing the parser', () ->
@@ -710,7 +722,7 @@ TAG2
 			scope= {"name":"Edgar"}
 			parser= (tag) ->
 				return {'get':(scope) -> scope[tag].toUpperCase()}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,parser:parser})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,parser:parser})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello EDGAR')
 		it 'should work when setting from the DocXGen interface', () ->
@@ -739,7 +751,7 @@ TAG2
 		it 'should work with loops', ()->
 			content= """<w:t>Hello {#person.adult}you{/person.adult}</w:t>"""
 			scope= {"person":{"name":"Edgar","adult":true}}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,parser:angularParser})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,parser:angularParser})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello you')
 
@@ -781,7 +793,7 @@ TAG2
 		it 'should fail when rawtag not in paragraph', ()->
 			content= """<w:t>{@myrawtag}</w:t>"""
 			scope= {"myrawtag":"<w:p><w:t>foobar</w:t></w:p>"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			expectedError =
 				name:"TemplateError"
 				message:"Can't find endTag"
@@ -796,7 +808,7 @@ TAG2
 
 			content= """<w:t>{@myrawtag}</w:t></w:p>"""
 			scope= {"myrawtag":"<w:p><w:t>foobar</w:t></w:p>"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			expectedError =
 				name:"TemplateError"
 				message:"Can't find startTag"
@@ -811,7 +823,7 @@ TAG2
 
 		it 'should fail when tag already opened', ()->
 			content= """<w:t>{user {name}</w:t>"""
-			xmlTemplater= new DocXTemplater(content)
+			xmlTemplater= new XmlTemplater(content, {fileTypeConfig:FileTypeConfig.docx,})
 			expectedError =
 				name:"TemplateError"
 				message:"Unclosed tag"
@@ -823,7 +835,7 @@ TAG2
 
 		it 'should fail when tag already closed', ()->
 			content= """<w:t>foobar}age</w:t>"""
-			xmlTemplater= new DocXTemplater(content)
+			xmlTemplater= new XmlTemplater(content, {fileTypeConfig:FileTypeConfig.docx,})
 			expectedError =
 				name:"TemplateError"
 				message:"Unopened tag"
@@ -834,7 +846,7 @@ TAG2
 
 		it 'should fail when customparser fails to compile', ()->
 			content= """<w:t>{name++}</w:t>"""
-			xmlTemplater= new DocXTemplater(content, {tags:{name:3},parser:angularParser})
+			xmlTemplater= new XmlTemplater(content, {fileTypeConfig:FileTypeConfig.docx,tags:{name:3},parser:angularParser})
 			expectedError =
 				name:"ScopeParserError"
 				message:"Scope parser compilation failed"
@@ -845,7 +857,7 @@ TAG2
 
 		it 'should fail when customparser fails to execute', ()->
 			content= """<w:t>{name|upper}</w:t>"""
-			xmlTemplater= new DocXTemplater(content, {tags:{name:3},parser:angularParser})
+			xmlTemplater= new XmlTemplater(content, {fileTypeConfig:FileTypeConfig.docx,tags:{name:3},parser:angularParser})
 			expectedError =
 				name:"ScopeParserError"
 				message:"Scope parser execution failed"
@@ -858,7 +870,7 @@ TAG2
 		it 'should fail when rawtag is not only text in paragraph', ()->
 			content= """<w:p><w:t>{@myrawtag}</w:t><w:t>foobar</w:t></w:p>"""
 			scope= {"myrawtag":"<w:p><w:t>foobar</w:t></w:p>"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			expectedError =
 				name:"TemplateError"
 				message:"Raw xml tag should be the only text in paragraph"
@@ -877,7 +889,7 @@ TAG2
 					properties:
 						id:"xmltemplater_content_must_be_string"
 				test=
-					fn:()->new DocXTemplater(1)
+					fn:()->new XmlTemplater(1,{fileTypeConfig:FileTypeConfig.docx,})
 				expectToThrow(test,'fn', Errors.XTInternalError, expectedError)
 
 	describe 'Complex table example' , () ->
@@ -951,7 +963,7 @@ TAG
 <w:t>{key}</w:t>
 TAG
 """
-			doc = new DocXTemplater(template,{tags:tags,intelligentTagging:true})
+			doc = new XmlTemplater(template,{fileTypeConfig:FileTypeConfig.docx,tags:tags,intelligentTagging:true})
 			doc.render()
 			fullText=doc.getFullText()
 
@@ -975,65 +987,65 @@ TAG
 			inner="<w:p><w:r><w:t>{@complexXml}</w:t></w:r></w:p>"
 			content="<w:document>#{inner}</w:document>"
 			scope={"complexXml":"""<w:p w:rsidR="00612058" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom XML</w:t></w:r></w:p><w:tbl><w:tblPr><w:tblStyle w:val="Grilledutableau"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid><w:gridCol w:w="2952"/><w:gridCol w:w="2952"/><w:gridCol w:w="2952"/></w:tblGrid><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="DDD9C3" w:themeFill="background2" w:themeFillShade="E6"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:b/><w:color w:val="000000" w:themeColor="text1"/></w:rPr></w:pPr><w:r><w:rPr><w:b/><w:color w:val="000000" w:themeColor="text1"/></w:rPr><w:t>Test</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="DDD9C3" w:themeFill="background2" w:themeFillShade="E6"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:b/><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:b/><w:color w:val="FF0000"/></w:rPr><w:t>Xml</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="DDD9C3" w:themeFill="background2" w:themeFillShade="E6"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>Generated</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="C6D9F1" w:themeFill="text2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="000000" w:themeColor="text1"/><w:u w:val="single"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:color w:val="000000" w:themeColor="text1"/><w:u w:val="single"/></w:rPr><w:t>Underline</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="C6D9F1" w:themeFill="text2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:color w:val="FF0000"/><w:highlight w:val="yellow"/></w:rPr><w:t>Highlighting</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="C6D9F1" w:themeFill="text2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:rFonts w:ascii="Bauhaus 93" w:hAnsi="Bauhaus 93"/><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:rFonts w:ascii="Bauhaus 93" w:hAnsi="Bauhaus 93"/><w:color w:val="FF0000"/></w:rPr><w:t>Font</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F2DBDB" w:themeFill="accent2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00EA4B08"><w:pPr><w:jc w:val="center"/><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>Centering</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F2DBDB" w:themeFill="accent2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRPr="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:i/><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r w:rsidRPr="00EA4B08"><w:rPr><w:i/><w:color w:val="FF0000"/></w:rPr><w:t>Italic</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F2DBDB" w:themeFill="accent2" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E5DFEC" w:themeFill="accent4" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E5DFEC" w:themeFill="accent4" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E5DFEC" w:themeFill="accent4" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR="00EA4B08" w:rsidTr="00EA4B08"><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="FDE9D9" w:themeFill="accent6" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="FDE9D9" w:themeFill="accent6" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2952" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="FDE9D9" w:themeFill="accent6" w:themeFillTint="33"/></w:tcPr><w:p w:rsidR="00EA4B08" w:rsidRDefault="00EA4B08" w:rsidP="00612058"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr></w:p></w:tc></w:tr></w:tbl>"""}
-			doc = new DocXTemplater(content,{tags:scope})
+			doc = new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			doc.render()
 			expect(doc.content.length).to.be.equal(content.length+scope.complexXml.length-(inner.length))
 			expect(doc.content).to.contain(scope.complexXml)
 
 		it 'should work even when tags are after the xml', () ->
 			content="""
-        <w:tbl>
-            <w:tr>
-                  <w:tc>
-                        <w:p>
-                            <w:r>
-                            <w:t>{@complexXml}</w:t>
-                        </w:r>
-                    </w:p>
-                </w:tc>
-            </w:tr>
-            <w:tr>
-                <w:tc>
-                    <w:p>
-                        <w:r>
-                            <w:t>{name}</w:t>
-                        </w:r>
-                    </w:p>
-                </w:tc>
-            </w:tr>
-            <w:tr>
-                <w:tc>
-                    <w:p>
-                        <w:r>
-                            <w:t>{first_name}</w:t>
-                        </w:r>
-                    </w:p>
-                </w:tc>
-            </w:tr>
-            <w:tr>
-                <w:tc>
-                    <w:p>
-                        <w:r>
-                            <w:t>{#products} {year}</w:t>
-                        </w:r>
-                    </w:p>
-                </w:tc>
-                <w:tc>
-                    <w:p>
-                        <w:r>
-                            <w:t>{name}</w:t>
-                        </w:r>
-                    </w:p>
-                </w:tc>
-                <w:tc>
-                    <w:p>
-                        <w:r>
-                            <w:t>{company}{/products}</w:t>
-                        </w:r>
-                    </w:p>
-                </w:tc>
-            </w:tr>
-        </w:tbl>
+<w:tbl>
+	<w:tr>
+		  <w:tc>
+				<w:p>
+					<w:r>
+					<w:t>{@complexXml}</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+	</w:tr>
+	<w:tr>
+		<w:tc>
+			<w:p>
+				<w:r>
+					<w:t>{name}</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+	</w:tr>
+	<w:tr>
+		<w:tc>
+			<w:p>
+				<w:r>
+					<w:t>{first_name}</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+	</w:tr>
+	<w:tr>
+		<w:tc>
+			<w:p>
+				<w:r>
+					<w:t>{#products} {year}</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+		<w:tc>
+			<w:p>
+				<w:r>
+					<w:t>{name}</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+		<w:tc>
+			<w:p>
+				<w:r>
+					<w:t>{company}{/products}</w:t>
+				</w:r>
+			</w:p>
+		</w:tc>
+	</w:tr>
+</w:tbl>
 			"""
 			scope= {
 				"complexXml":"<w:p><w:r><w:t>Hello</w:t></w:r></w:p>",
@@ -1045,17 +1057,18 @@ TAG
 					{"year":2010,"name":"Bread","company":"Yu"}
 				]
 			}
-			doc = new DocXTemplater(content,{tags:scope})
+			doc = new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 			doc.render()
 			expect(doc.content).to.contain(scope.complexXml)
 			expect(doc.getFullText()).to.be.equal("HelloJohnDoe 1550MotoFein 1987WaterTest 2010BreadYu")
 
 		it 'should work with closing tag in the form of <w:t>}{/body}</w:t>', () ->
 			scope = {body:[{paragraph:"hello"}]}
-			xmlTemplater= new DocXTemplater("""
-			  <w:t>{#body}</w:t>
-			  <w:t>{paragraph</w:t>
-			  <w:t>}{/body}</w:t>""",{tags:scope})
+			content = """
+<w:t>{#body}</w:t>
+<w:t>{paragraph</w:t>
+<w:t>}{/body}</w:t>"""
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope})
 
 			xmlTemplater.render()
 			expect(xmlTemplater.content).not.to.contain('</w:t></w:t>')
@@ -1086,7 +1099,7 @@ TAG
 				end:']'
 			content= """<w:t>Hello [name]</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,delimiters})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,delimiters})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar')
 
@@ -1096,7 +1109,7 @@ TAG
 				end:']]'
 			content= """<w:t>Hello [[name]]</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,delimiters})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,delimiters})
 			xmlTemplater.render()
 			expect(xmlTemplater.usedTags.def).to.be.eql({'name':true})
 			expect(xmlTemplater.getFullText()).to.be.eql('Hello Edgar')
@@ -1107,7 +1120,7 @@ TAG
 				end:']]'
 			content= """<w:t>Hello [[[name]]</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,delimiters})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,delimiters})
 			xmlTemplater.render()
 			expect(xmlTemplater.usedTags.def).to.be.eql({'name':true})
 			expect(xmlTemplater.getFullText()).to.be.eql('Hello Edgar')
@@ -1118,7 +1131,7 @@ TAG
 				end:']]'
 			content= """<w:t>Hello [[[#names]][[[.]],[[[/names]]</w:t>"""
 			scope= {"names":["Edgar","Mary","John"]}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,delimiters})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,delimiters})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar,Mary,John,')
 
@@ -1128,44 +1141,44 @@ TAG
 				end:'@'
 			content= """<w:t>Hello @name@</w:t>"""
 			scope= {"name":"Edgar"}
-			xmlTemplater= new DocXTemplater(content,{tags:scope,delimiters})
+			xmlTemplater= new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:scope,delimiters})
 			xmlTemplater.render()
 			expect(xmlTemplater.getFullText()).to.be.equal('Hello Edgar')
 
 		it 'should work with loops', ()->
 			content="{innertag</w:t><w:t>}"
-			xmlt=new DocXTemplater(content,{tags:{innertag:5}}).render()
+			xmlt=new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{innertag:5}}).render()
 			expect(xmlt.content).to.be.equal('5</w:t><w:t xml:space="preserve">')
 
 		it 'should work with complex loops (1)', ()->
 			content= """<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>"""
-			xmlt=new DocXTemplater(content,{tags:{looptag:true}}).render()
+			xmlt=new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{looptag:true}}).render()
 			expect(xmlt.content).not.to.contain('</w:t></w:t>')
 
 		it 'should work with complex loops (2)', ()->
 			content= """<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>"""
-			xmlt=new DocXTemplater(content,{tags:{person:[{name:"Henry"}]}}).render()
+			xmlt=new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{person:[{name:"Henry"}]}}).render()
 			expect(xmlt.content).not.to.contain('</w:t>Henry</w:t>')
 
 		it 'should work with start and end (1)', ()->
 			content= """a</w:t><w:t>{name}"""
-			xmlt=new DocXTemplater(content,{tags:{name:"Henry"}}).render()
+			xmlt=new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{name:"Henry"}}).render()
 			expect(xmlt.content).to.contain('a</w:t><w:t')
 
 		it 'should work with start and end (2)', ()->
 			content= """{name}</w:t><w:t>a"""
-			xmlt=new DocXTemplater(content,{tags:{name:"Henry"}}).render()
+			xmlt=new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{name:"Henry"}}).render()
 			expect(xmlt.content).to.contain('Henry</w:t><w:t')
 
 	describe 'getting parents context',()->
 		it 'should work with simple loops',()->
 			content= """{#loop}{name}{/loop}"""
-			xmlt=new DocXTemplater(content,{tags:{loop:[1],name:"Henry"}}).render()
+			xmlt=new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{loop:[1],name:"Henry"}}).render()
 			expect(xmlt.content).to.be.equal("Henry")
 
 		it 'should work with double loops',()->
 			content= """{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}"""
-			xmlt=new DocXTemplater(content,{tags:{loop_first:[1],loop_second:[{name_inner:"John"}],name_outer:"Henry"}}).render()
+			xmlt=new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{loop_first:[1],loop_second:[{name_inner:"John"}],name_outer:"Henry"}}).render()
 			expect(xmlt.content).to.be.equal("John Henry")
 
 	describe 'speed test', ()->
@@ -1173,7 +1186,7 @@ TAG
 			content= """<w:t>tag {age}</w:t>"""
 			time = new Date()
 			for i in [1..100]
-				new DocXTemplater(content,{tags:{age:12}}).render()
+				new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{age:12}}).render()
 			duration = new Date() - time
 			expect(duration).to.be.below(100)
 		it 'should be fast for simple tags with huge content', ()->
@@ -1182,14 +1195,13 @@ TAG
 			content = prepost + content + prepost
 			time = new Date()
 			for i in [1..50]
-				new DocXTemplater(content,{tags:{age:12}}).render()
+				new XmlTemplater(content,{fileTypeConfig:FileTypeConfig.docx,tags:{age:12}}).render()
 			duration = new Date() - time
 			expect(duration).to.be.below(50)
 
 	describe 'pptx generation', ()->
 		it 'should work with simple pptx', ()->
 			p=pptX['simpleExample.pptx'].setData({'name':'Edgar'}).render()
-
 			expect(p.getFullText()).to.be.equal('Hello Edgar')
 	if window?
 		window.mocha.run()
@@ -1199,11 +1211,13 @@ allStarted=false
 
 loadDocx=(name,content)->
 	docX[name]=new DocxGen()
+	docX[name].setOptions({fileType:'docx'})
 	docX[name].load(content)
 	docX[name].loadedContent=content
 
 loadPptx=(name,content)->
-	pptX[name]=new PptxGen()
+	pptX[name]=new DocxGen()
+	pptX[name].setOptions({fileType:'pptx'})
 	pptX[name].load(content)
 	pptX[name].loadedContent=content
 
