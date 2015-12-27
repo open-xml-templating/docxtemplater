@@ -32,8 +32,5 @@ tags
 /build
 /browser
 examples/index.html
-/es6
-/coffee/*.js
-*.es6
 *.es5
 .babel.json

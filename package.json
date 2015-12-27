@@ -26,15 +26,10 @@
     "jszip": "^2.5.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.3.17",
     "babel-preset-es2015": "^6.3.13",
     "angular-expressions": "^0.3.0",
     "chai": "^3.3.0",
-    "gulp": "^3.9.0",
-    "gulp-browserify": "^0.5.0",
-    "gulp-coffee": "~2.3.1",
-    "gulp-concat": "~2.6.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-uglify": "~1.4.1",
     "mocha": "^2.3.3",
     "mustache": "^2.1.3"
   },
@@ -44,12 +39,11 @@
   },
   "scripts": {
     "preversion": "npm run compile && npm test",
-    "compile": "rm js -r; gulp allCoffee && node examples/compile_site.js",
+    "compile": "npm run convertto:es5",
     "browserify:test": "browserify -r ./test/spec/docxgenTest.spec.js -s DocxgenTest > browser/docxgenTest.spec.js",
     "browserify:lib": "browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js",
     "uglify:lib": "uglifyjs build/docxgen.js > build/docxgen.min.js",
     "browserify": "npm run browserify:test && npm run browserify:lib",
-    "convertto:es6": "mkdir -p es6; for i in coffee/*.coffee; do echo \"$i\"; decaffeinate \"$i\"; mv \"${i%.coffee}.js\" \"${i%.coffee}.es6\"; done; for i in coffee/*.es6; do mv \"$i\" \"es6${i#coffee}\"; done ",
     "convertto:es5": "rm js -rf ; mkdir -p test/spec; mkdir -p js; babel es6 --out-dir js; mv js/docxgenTest.js test/spec/docxgenTest.spec.js",
     "test:watch": "mocha test/spec/docxgenTest.spec.js -w",
     "test": "mocha test/spec/docxgenTest.spec.js"
