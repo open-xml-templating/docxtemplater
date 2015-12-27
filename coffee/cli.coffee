@@ -2,7 +2,6 @@
 var fs=require('fs')`
 DocUtils=require('./docUtils')
 DocxGen=require('./docxgen')
-PptxGen=require('./pptxgen')
 fileExts = ["pptx", "docx"]
 
 showHelp=()->
@@ -27,7 +26,7 @@ for key of jsonInput
   if (key.substr(0,7)=='config.') then DocUtils.config[key.substr(7)]=jsonInput[key]
 
 inputFileName=DocUtils.config["inputFile"]
-genClass = if inputFileName.indexOf(".pptx") > 0 then PptxGen else DocxGen
+fileType = if inputFileName.indexOf(".pptx") > 0 then 'pptx' else 'docx'
 jsonFileName=process.argv[2]
 outputFile=DocUtils.config["outputFile"]
 debug= DocUtils.config["debug"]
@@ -42,7 +41,8 @@ else
     console.info(debug)
   if (debugBool) then console.info("loading docx:"+inputFileName)
   content=fs.readFileSync(currentPath+inputFileName,"binary")
-  doc = new genClass(content)
+  doc = new DocxGen(content)
+  doc.setOptions({fileType:fileType})
   doc.setData(jsonInput)
   doc.render()
   zip=doc.getZip()

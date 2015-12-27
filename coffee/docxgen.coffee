@@ -8,7 +8,6 @@ DocxGen=class DocxGen
 	constructor:(content,options) ->
 		@moduleManager=new DocxGen.ModuleManager()
 		@moduleManager.gen=this
-		@templateClass=@getTemplateClass()
 		@setOptions({})
 		if content? then @load(content,options)
 	attachModule:(module)->
@@ -17,11 +16,9 @@ DocxGen=class DocxGen
 	setOptions:(@options={})->
 		for key,defaultValue of DocUtils.defaults
 			this[key]=if @options[key]? then @options[key] else defaultValue
+		if @fileType=='docx' || @fileType=='pptx'
+			@fileTypeConfig = DocxGen.FileTypeConfig[@fileType]
 		this
-	getTemplateClass:->DocxGen.DocXTemplater
-	getTemplatedFiles:->
-		slideTemplates=@zip.file(/word\/(header|footer)\d+\.xml/).map (file) -> file.name
-		slideTemplates.concat ["word/document.xml"]
 	load: (content,options)->
 		@moduleManager.sendEvent('loading')
 		if content.file?
@@ -29,7 +26,7 @@ DocxGen=class DocxGen
 		else
 			@zip = new DocxGen.JSZip content,options
 		@moduleManager.sendEvent('loaded')
-		@templatedFiles = @getTemplatedFiles()
+		@templatedFiles = @fileTypeConfig.getTemplatedFiles(@zip)
 		this
 	renderFile:(fileName)->
 		@moduleManager.sendEvent('rendering-file',fileName)
@@ -63,16 +60,17 @@ DocxGen=class DocxGen
 			moduleManager:@moduleManager
 		for key,_ of DocUtils.defaults
 			obj[key]=this[key]
-		new @templateClass(usedData,obj)
-	getFullText:(path="word/document.xml") ->
+		obj.fileTypeConfig = @fileTypeConfig
+		new DocxGen.XmlTemplater(usedData,obj)
+	getFullText:(path=@fileTypeConfig.textPath) ->
 		@createTemplateClass(path).getFullText()
 
 DocxGen.DocUtils=require('./docUtils')
-DocxGen.DocXTemplater=require('./docxTemplater')
 DocxGen.JSZip=require('jszip')
 DocxGen.Errors=require('./errors')
 DocxGen.ModuleManager=require('./moduleManager')
 DocxGen.XmlTemplater=require('./xmlTemplater')
+DocxGen.FileTypeConfig=require('./fileTypeConfig')
 DocxGen.XmlMatcher=require('./xmlMatcher')
 DocxGen.XmlUtil=require('./xmlUtil')
 DocxGen.SubContent=require('./subContent')

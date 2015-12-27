@@ -16,22 +16,20 @@ getFullText = (content, tagsXmlArray)->
 #This is an abstract class, DocXTemplater is an example of inherited class
 module.exports=class XmlTemplater #abstract class !!
 	constructor: (content="",options={}) ->
-		@tagsXmlArray=[] #tagsXmlArray represents the array of tags that contains text. For example, in docx, @tagsXmlArray=['w:t','m:t']
-		@tagXml=''
-		@tagRawXml='' #tagRawXml represents the name of the tag that needs to be replaced when embedding raw XML using `{@rawXml}`.
-		@currentClass=XmlTemplater #This is used because tags are recursive, so the class needs to be able to instanciate an object of the same class. I created a variable so you don't have to Override all functions relative to recursivity
 		@fromJson(options)
 		@templaterState= new TemplaterState @moduleManager,@delimiters
+		@load(content)
 	load: (@content) ->
 		if typeof @content!="string"
 			err = new Errors.XTInternalError("Content must be a string")
 			err.properties.id = "xmltemplater_content_must_be_string"
 			throw err
-		xmlMatcher=new XmlMatcher(@content).parse(@tagsXmlArray)
+		xmlMatcher=new XmlMatcher(@content).parse(@fileTypeConfig.tagsXmlArray)
 		@templaterState.matches = xmlMatcher.matches
 		@templaterState.charactersAdded= xmlMatcher.charactersAdded
 	fromJson:(options={})->
 		@tags= if options.tags? then options.tags else {}
+		@fileTypeConfig= options.fileTypeConfig
 		@scopePath=if options.scopePath? then options.scopePath else []
 		@scopeList= if options.scopeList? then options.scopeList else [@tags]
 		@usedTags=if options.usedTags? then options.usedTags else {def:{},undef:{}}
@@ -41,6 +39,7 @@ module.exports=class XmlTemplater #abstract class !!
 		@scopeManager=new ScopeManager({tags:@tags,scopePath:@scopePath,usedTags:@usedTags,scopeList:@scopeList,parser:@parser,moduleManager:@moduleManager,delimiters:@delimiters})
 	toJson: () ->
 		obj =
+			fileTypeConfig:@fileTypeConfig
 			tags:DocUtils.clone @scopeManager.tags
 			scopePath:DocUtils.clone @scopeManager.scopePath
 			scopeList: DocUtils.clone @scopeManager.scopeList
@@ -49,8 +48,7 @@ module.exports=class XmlTemplater #abstract class !!
 		for key,defaultValue of DocUtils.defaults
 			obj[key]=this[key]
 		obj
-	calcIntellegentlyDashElement:()->return false #to be implemented by classes that inherit xmlTemplater, eg DocxTemplater
-	getFullText:() -> getFullText(@content, @tagsXmlArray)
+	getFullText:() -> getFullText(@content, @fileTypeConfig.tagsXmlArray)
 	updateModuleManager:()->
 		@moduleManager.xmlTemplater=this
 		@moduleManager.templaterState=@templaterState
@@ -117,14 +115,14 @@ module.exports=class XmlTemplater #abstract class !!
 		subContent = new SubContent(@content)
 		subContent.getInnerTag(@templaterState)
 		try
-			outerXml = subContent.getOuterXml(@tagRawXml)
+			outerXml = subContent.getOuterXml(@fileTypeConfig.tagRawXml)
 		catch error
 			if error instanceof Errors.XTTemplateError
 				error.properties.id = "raw_tag_outerxml_invalid"
 				error.properties.xtag = @templaterState.textInsideTag
 				error.properties.explanation = "The raw tag #{error.properties.xtag} is not valid in this context."
 			throw error
-		fullText = getFullText(outerXml.text, @tagsXmlArray)
+		fullText = getFullText(outerXml.text, @fileTypeConfig.tagsXmlArray)
 		if @templaterState.fullTextTag != fullText
 			err = new Errors.XTTemplateError("Raw xml tag should be the only text in paragraph")
 			err.properties =
@@ -219,7 +217,7 @@ module.exports=class XmlTemplater #abstract class !!
 			noEndTag:@templaterState.matches[@templaterState.tagStart.numXmlTag].last?
 
 		if @templaterState.tagEnd.numXmlTag==@templaterState.tagStart.numXmlTag #<w>{aaaaa}</w>
-			@currentCompiledTag = new CompiledXmlTag ([@templaterState.getLeftValue(),{type:'tag',tag:@templaterState.textInsideTag},@templaterState.getRightValue()])
+			@currentCompiledTag = new CompiledXmlTag([@templaterState.getLeftValue(),{type:'tag',tag:@templaterState.textInsideTag},@templaterState.getRightValue()])
 			options.insideValue=@templaterState.getLeftValue()+newValue+@templaterState.getRightValue()
 			return @replaceXmlTag(content,options)
 
@@ -258,8 +256,8 @@ module.exports=class XmlTemplater #abstract class !!
 		#You DashLoop= take the outer scope only if you are in a table
 		if @templaterState.loopType()=='dash'
 			return @dashLoop(@templaterState.loopOpen.element)
-			dashElement=@calcIntellegentlyDashElement()
 		if @intelligentTagging==true
+			dashElement=@fileTypeConfig.calcIntellegentlyDashElement(@content, @templaterState)
 			if dashElement!=false then return @dashLoop(dashElement,true)
 		outerLoop=new SubContent(@content).getOuterLoop(@templaterState)
 		innerTemplate=new SubContent(@content).getInnerLoop(@templaterState).text
@@ -271,8 +269,8 @@ module.exports=class XmlTemplater #abstract class !!
 				options.tags=argOptions.tags
 				options.scopeList = options.scopeList.concat(argOptions.tags)
 				options.scopePath= options.scopePath.concat(@templaterState.loopOpen.tag)
-		(new @currentClass innerTagsContent,options)
-			.render()
+		subXml = new XmlTemplater innerTagsContent,options
+		subXml.render()
 	forLoop: (outerTags,subTemplate)->
 		###
 			<w:t>{#forTag} blabla</w:t>

@@ -15,6 +15,7 @@ DocUtils.defaults =
 				if tag=='.' then return scope else return scope[tag]
 		}
 	intelligentTagging:true
+	fileType:'docx'
 	delimiters:
 		start:'{'
 		end:'}'
