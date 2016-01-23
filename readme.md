@@ -1,31 +1,29 @@
-# docxtemplater
+docxtemplater
+=============
 
 [![Join the chat at https://gitter.im/open-xml-templating/docxtemplater](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/open-xml-templating/docxtemplater?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater)
-[![Download count](http://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater)
-[![Current tag](http://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater)
-[![Issues closed](http://issuestats.com/github/open-xml-templating/docxtemplater/badge/issue?style=flat)](http://issuestats.com/github/open-xml-templating/docxtemplater)
+[![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater) [![Download count](http://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Current tag](http://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Issues closed](http://issuestats.com/github/open-xml-templating/docxtemplater/badge/issue?style=flat)](http://issuestats.com/github/open-xml-templating/docxtemplater)
 
 ![docxtemplater logo](https://raw.githubusercontent.com/open-xml-templating/docxtemplater/master/logo_small.png)
 
-**docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template.
-It can replace {placeholders} with data and also supports loops and conditions.
-The templates can be edited by non-programmers, eg for example your clients.
+**docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, eg for example your clients.
 
 *Note*: The CLI will soon be moved to another repository : keep posted on https://github.com/open-xml-templating/docxtemplater-cli
 
-## Features
+Features
+--------
 
 [Demo Site](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
 
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace a {placeholder} by a value</a>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Use loops in tables to generate columns</a>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
-- <a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace a {placeholder} by a value</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Use loops in tables to generate columns</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
 
-## Quickstart in Node
+Quickstart in Node
+------------------
 
 Installation: `npm install docxtemplater`
 
@@ -58,7 +56,8 @@ fs.writeFileSync(__dirname+"/output.docx",buf);
 
 You can download [input.docx](https://github.com/open-xml-templating/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
 
-## Quickstart in the browser
+Quickstart in the browser
+-------------------------
 
 ### Installation
 
@@ -68,8 +67,7 @@ You can directly download built versions from github : https://github.com/open-x
 
 #### Bower
 
-Thanks to pykiss, it's now possible to install docxtemplater with bower:
-This in an unofficial method to install docxtemplater in the browser
+Thanks to pykiss, it's now possible to install docxtemplater with bower: This in an unofficial method to install docxtemplater in the browser
 
 ```bash
 bower install --save docxtemplater-pykiss
@@ -79,7 +77,7 @@ bower install --save docxtemplater-pykiss
 
 ```bash
 git clone git@github.com:open-xml-templating/docxtemplater.git && cd docxtemplater
-# git checkout v1.0.4 # Optional
+# git checkout v2.0.0 # Optional
 npm install -g gulp jasmine-node uglify-js browserify
 npm install
 gulp allCoffee
@@ -88,7 +86,7 @@ browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
 uglifyjs build/docxgen.js > build/docxgen.min.js # Optional
 ```
 
-The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/open-xml-templating/docxtemplater/issues/118))
+The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/open-xml-templating/docxtemplater/issues/118)\)
 
 ### Html demo
 
@@ -126,29 +124,33 @@ Create the following html
 </html>
 ```
 
-## Documentation
+Documentation
+-------------
 
 The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
 
 See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
 
-## Similar libraries
+Similar libraries
+-----------------
 
 They are a few similar libraries that work with docx, here’s a list of those I know a bit about:
 
- * docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically
- * docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
- * xlsx-templater : its working quite well, does the same as here but for xlsx
+-	docx4j :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically
+-	docx.js: Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
+-	xlsx-templater : its working quite well, does the same as here but for xlsx
 
-# Modules
+Modules
+=======
 
 Functionality can be added with modules. They is yet no doc for the modules because it is not completely mature yet, but you can open an issue if you have any question about it.
 
 Here is the list of existing modules:
 
- * Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module
- * Image module using the syntax: `{%image}`, https://github.com/open-xml-templating/docxtemplater-image-module
+-	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module
+-	Image module using the syntax: `{%image}`, https://github.com/open-xml-templating/docxtemplater-image-module
 
-# Professional Support
+Professional Support
+====================
 
 I can give your company support for installing, extending, answering support questions, or maintainning your app that runs docxtemplater. You can find my email address on my [profile](https://github.com/edi9999)
