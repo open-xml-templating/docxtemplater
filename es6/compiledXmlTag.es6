@@ -1,11 +1,13 @@
-var CompiledXmlTag=class CompiledXmlTag {
-	constructor(compiled=[]) { this.set(compiled); }
-	set(compiled=[]){
+"use strict";
+
+var CompiledXmlTag = class CompiledXmlTag {
+	constructor(compiled = []) { this.set(compiled); }
+	set(compiled = []) {
 		if (this.null) { return this; }
-		this.compiled=[];
+		this.compiled = [];
 		for (var i = 0, text; i < compiled.length; i++) {
 			text = compiled[i];
-			if (text!=='') {
+			if (text !== "") {
 				this.compiled.push(text);
 			}
 		}
@@ -13,24 +15,24 @@ var CompiledXmlTag=class CompiledXmlTag {
 	}
 	prependText(text) {
 		if (this.null) { return this; }
-		if (text!=='') {
+		if (text !== "") {
 			this.compiled.unshift(text);
 		}
 		return this;
 	}
 	appendText(text) {
 		if (this.null) { return this; }
-		if (text!=='') {
+		if (text !== "") {
 			this.compiled.push(text);
 		}
 		return this;
 	}
 };
 
-CompiledXmlTag.null = function() {
+CompiledXmlTag.null = function () {
 	var obj = new CompiledXmlTag();
 	obj.null = true;
 	return obj;
 };
 
-module.exports=CompiledXmlTag;
+module.exports = CompiledXmlTag;

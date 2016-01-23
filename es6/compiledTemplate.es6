@@ -1,9 +1,10 @@
+"use strict";
+
 var Errors = require("./errors");
 
-var CompiledTemplate=class CompiledTemplate {
+var CompiledTemplate = class CompiledTemplate {
 	constructor() {
 		this.compiled = [];
-		this;
 	}
 	prependText(text) {
 		this.compiled.unshift(text);
@@ -19,23 +20,23 @@ var CompiledTemplate=class CompiledTemplate {
 		return this;
 	}
 	appendRaw(tag) {
-		this.compiled.push({type:'raw',tag});
+		this.compiled.push({type: "raw", tag});
 		return this;
 	}
 	appendText(text) {
-		if (text!=='') {
+		if (text !== "") {
 			this.compiled.push(text);
 		}
 		return this;
 	}
-	appendSubTemplate(subTemplate,tag, inverted) {
+	appendSubTemplate(subTemplate, tag, inverted) {
 		if (!subTemplate) {
 			var err = new Errors.XTInternalError("Subtemplate empty");
 			err.properties.id = "subtemplate_appended_empty";
 			throw err;
 		}
-		return this.compiled.push({type:'loop',tag, inverted, template:subTemplate});
+		return this.compiled.push({type: "loop", tag, inverted, template: subTemplate});
 	}
 };
 
-module.exports=CompiledTemplate;
+module.exports = CompiledTemplate;

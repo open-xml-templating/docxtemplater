@@ -1,17 +1,18 @@
-//This class responsibility is to parse the XML.
-var DocUtils=require('./docUtils');
+"use strict";
+// This class responsibility is to parse the XML.
+var DocUtils = require("./docUtils");
 
-module.exports=class XmlMatcher {
-	constructor(content){ this.content = content; }
+module.exports = class XmlMatcher {
+	constructor(content) { this.content = content; }
 
-	parse(tagsXmlArray){
+	parse(tagsXmlArray) {
 		this.tagsXmlArray = tagsXmlArray;
-		this.tagsXmlArrayJoined=this.tagsXmlArray.join('|');
-		this.matches=DocUtils.pregMatchAll(`(<(?:${this.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${this.tagsXmlArrayJoined})>`,this.content);
-		this.charactersAdded= ((() => {
+		this.tagsXmlArrayJoined = this.tagsXmlArray.join("|");
+		this.matches = DocUtils.pregMatchAll(`(<(?:${this.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${this.tagsXmlArrayJoined})>`, this.content);
+		this.charactersAdded = ((() => {
 			var result = [];
 			var end = this.matches.length;
-			for (var i = 0; 0 < end ? i < end : i > end; 0 < end ? i++ : i--) {
+			for (var i = 0; end > 0 ? i < end : i > end; end > 0 ? i++ : i--) {
 				result.push(0);
 			}
 			return result;
@@ -20,7 +21,7 @@ module.exports=class XmlMatcher {
 		return this;
 	}
 
-	handleRecursiveCase(){
+	handleRecursiveCase() {
 		/*
 		Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
 		For example with this string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
@@ -30,38 +31,41 @@ module.exports=class XmlMatcher {
 		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
 		*/
 
-		var replacerUnshift = (...pn)=> {
+		var replacerUnshift = (...pn) => {
 			pn.shift();
-			var match=pn[0]+pn[1];
-			pn.unshift(match); //add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-			var string = pn.pop();
+			var match = pn[0] + pn[1];
+			// add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+			pn.unshift(match);
+			pn.pop();
 			var offset = pn.pop();
-			pn.offset= offset;
-			pn.first= true;
-			this.matches.unshift(pn); //add at the beginning
+			pn.offset = offset;
+			pn.first = true;
+			// add at the beginning
+			this.matches.unshift(pn);
 			return this.charactersAdded.unshift(0);
 		};
 
-		if (this.content.indexOf('<')===-1 &&  this.content.indexOf('>')===-1) {
-			this.content.replace(/^()([^<>]*)$/,replacerUnshift);
+		if (this.content.indexOf("<") === -1 && this.content.indexOf(">") === -1) {
+			this.content.replace(/^()([^<>]*)$/, replacerUnshift);
 		}
 
-		var regex=`^()([^<]+)<\/(?:${this.tagsXmlArrayJoined})>`;
+		var regex = `^()([^<]+)<\/(?:${this.tagsXmlArrayJoined})>`;
 		var r = new RegExp(regex);
-		this.content.replace(r,replacerUnshift);
+		this.content.replace(r, replacerUnshift);
 
-		var replacerPush = (...pn)=> {
-			var string = pn.pop();
+		var replacerPush = (...pn) => {
+			pn.pop();
 			var offset = pn.pop();
-			pn.offset= offset;
-			pn.last= true;
-			this.matches.push(pn); //add at the end
+			pn.offset = offset;
+			pn.last = true;
+			// add at the end
+			this.matches.push(pn);
 			return this.charactersAdded.push(0);
 		};
 
-		regex= `(<(?:${this.tagsXmlArrayJoined})[^>]*>)([^>]+)$`;
+		regex = `(<(?:${this.tagsXmlArrayJoined})[^>]*>)([^>]+)$`;
 		r = new RegExp(regex);
-		this.content.replace(r,replacerPush);
+		this.content.replace(r, replacerPush);
 		return this;
 	}
 };

@@ -1,1 +1,3 @@
-module.exports=require('./docxgen');
+"use strict";
+
+module.exports = require("./docxgen");
