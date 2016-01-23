@@ -142,6 +142,7 @@ module.exports = class XmlTemplater {
 		this.handleModuleManager("xmlRendered");
 		var preContent = this.content.substr(this.lastStart);
 		this.compiled.appendText(preContent);
+		this.templaterState.finalize();
 		return this;
 	}
 	replaceSimpleTag() {

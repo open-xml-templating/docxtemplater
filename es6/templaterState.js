@@ -40,15 +40,29 @@ module.exports = class TemplaterState {
 		this.trailSteps = [];
 		this.offset = [];
 	}
+	finalize() {
+		if (this.inTag === true) {
+			var err = new Errors.XTTemplateError("Unclosed tag");
+			var xtag = this.textInsideTag;
+			err.properties = {
+				xtag: xtag.split(" ")[0],
+				id: "unclosed_tag",
+				context: this.context,
+				explanation: `The tag beginning with '${xtag.substr(10)}' is unclosed`,
+			};
+			throw err;
+		}
+	}
 	startTag() {
 		if (this.inTag === true) {
 			var err = new Errors.XTTemplateError("Unclosed tag");
 			var xtag = this.textInsideTag;
-			err.properties = {xtag: xtag,
+			err.properties = {
+				xtag: xtag.split(" ")[0],
 				id: "unclosed_tag",
 				context: this.context,
 				explanation: `The tag beginning with '${xtag.substr(10)}' is unclosed`,
-				};
+			};
 			throw err;
 		}
 		this.currentStep = this.trailSteps[0];

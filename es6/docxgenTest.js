@@ -39,8 +39,8 @@ var expectToThrow = function (obj, method, type, expectedError) {
 	catch (error) {
 		e = error;
 	}
+	expect(e, "No error has been thrown").not.to.be.equal(null);
 	var toShowOnFail = e.stack;
-	expect(e, toShowOnFail).not.to.be.equal(null);
 	expect(e, toShowOnFail).to.be.an("object");
 	expect(e, toShowOnFail).to.be.instanceOf(Error);
 	expect(e, toShowOnFail).to.be.instanceOf(type);
@@ -884,6 +884,22 @@ TAG2
 	});
 
 	describe("errors", function () {
+		it("should be thrown when unclosedtag", function () {
+			var content = "<w:t>{unclosedtag my text</w:t>";
+			var scope = {};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			var expectedError = {
+				name: "TemplateError",
+				message: "Unclosed tag",
+				properties: {
+					context: "{unclosedtag my text",
+					id: "unclosed_tag",
+					xtag: "unclosedtag",
+				},
+			};
+			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		});
+
 		it("should fail when rawtag not in paragraph", function () {
 			var content = "<w:t>{@myrawtag}</w:t>";
 			var scope = {myrawtag: "<w:p><w:t>foobar</w:t></w:p>"};
@@ -891,14 +907,14 @@ TAG2
 			var expectedError = {
 				name: "TemplateError",
 				message: "Can't find endTag",
-				properties:
-					{id: "raw_tag_outerxml_invalid",
+				properties: {
+					id: "raw_tag_outerxml_invalid",
 					text: "<w:t>{@myrawtag}</w:t>",
 					xmlTag: "w:p",
 					previousEnd: 16,
 					start: 5,
 					xtag: "@myrawtag",
-					},
+				},
 			};
 			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 
@@ -929,7 +945,7 @@ TAG2
 				properties: {
 					id: "unclosed_tag",
 					context: "{user {",
-					xtag: "user ",
+					xtag: "user",
 				},
 			};
 			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
