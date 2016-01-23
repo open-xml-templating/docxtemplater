@@ -33,7 +33,7 @@ module.exports = class TemplaterState {
 		this.inForLoop = false; // tag with sharp: {#forLoop}______{/forLoop}
 		this.loopIsInverted = false; // tag with caret: {^invertedForLoop}_____{/invertedForLoop}
 		this.inTag = false; // all tags {___}
-		this.inDashLoop = false;	// tag with dash: {-w:tr dashLoop} {/dashLoop}
+		this.inDashLoop = false; // tag with dash: {-w:tr dashLoop} {/dashLoop}
 		this.rawXmlTag = false;
 		this.textInsideTag = "";
 		this.trail = "";
@@ -41,9 +41,22 @@ module.exports = class TemplaterState {
 		this.offset = [];
 	}
 	finalize() {
+		var err;
+		var xtag;
+		if (this.inForLoop === true || this.inDashLoop === true) {
+			err = new Errors.XTTemplateError("Unclosed loop");
+			xtag = this.loopOpen.raw;
+			err.properties = {
+				xtag: xtag,
+				id: "unclosed_loop",
+				context: this.context,
+				explanation: `The loop beginning with '${xtag.substr(10)}' is unclosed`,
+			};
+			throw err;
+		}
 		if (this.inTag === true) {
-			var err = new Errors.XTTemplateError("Unclosed tag");
-			var xtag = this.textInsideTag;
+			err = new Errors.XTTemplateError("Unclosed tag");
+			xtag = this.textInsideTag;
 			err.properties = {
 				xtag: xtag.split(" ")[0],
 				id: "unclosed_tag",

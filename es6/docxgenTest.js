@@ -900,6 +900,22 @@ TAG2
 			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
+		it("should be thrown when unclosedloop", function () {
+			var content = "<w:t>{#loop} {foobar}</w:t>";
+			var scope = {};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			var expectedError = {
+				name: "TemplateError",
+				message: "Unclosed loop",
+				properties: {
+					context: "{#loop} {foobar}",
+					id: "unclosed_loop",
+					xtag: "#loop",
+				},
+			};
+			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		});
+
 		it("should fail when rawtag not in paragraph", function () {
 			var content = "<w:t>{@myrawtag}</w:t>";
 			var scope = {myrawtag: "<w:p><w:t>foobar</w:t></w:p>"};
