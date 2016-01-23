@@ -1429,7 +1429,8 @@ var endLoadFile = function (change = 0) {
 var loadFile = function (name, callback) {
 	countFiles += 1;
 	if ((fs.readFileSync != null)) {
-		callback(name, fs.readFileSync(__dirname + "/../../examples/" + name, "binary"));
+		var path = require("path");
+		callback(name, fs.readFileSync(path.join(__dirname, "/../../examples/", name), "binary"));
 		return endLoadFile(-1);
 	}
 	return JSZipUtils.getBinaryContent("../examples/" + name, function (err, data) {

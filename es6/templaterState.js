@@ -133,19 +133,20 @@ module.exports = class TemplaterState {
 			if (this.textInsideTag[0] === "@") {
 				this.rawXmlTag = true;
 				this.tag = this.textInsideTag.substr(1);
+				return;
 			}
 			if (this.textInsideTag[0] === "#" || this.textInsideTag[0] === "^") {
 				// begin for loop
 				this.inForLoop = true;
 				this.loopOpen = {start: this.tagStart, end: this.tagEnd, tag: this.textInsideTag.substr(1), raw: this.textInsideTag};
+				this.loopIsInverted = this.textInsideTag[0] === "^";
+				return;
 			}
-			if (this.textInsideTag[0] === "^") {
-				this.loopIsInverted = true;
-			}
-			if (this.textInsideTag[0] === "-" && this.loopType() === "simple") {
+			if (this.textInsideTag[0] === "-") {
 				this.inDashLoop = true;
 				var dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 				this.loopOpen = {start: this.tagStart, end: this.tagEnd, tag: (this.textInsideTag.replace(dashInnerRegex, "$2")), element: (this.textInsideTag.replace(dashInnerRegex, "$1")), raw: this.textInsideTag};
+				return;
 			}
 		}
 		if (this.textInsideTag[0] === "/") {
