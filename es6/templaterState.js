@@ -50,7 +50,7 @@ module.exports = class TemplaterState {
 				xtag: xtag,
 				id: "unclosed_loop",
 				context: this.context,
-				explanation: `The loop beginning with '${xtag.substr(10)}' is unclosed`,
+				explanation: `The loop beginning with '${xtag.substr(0, 10)}' is unclosed`,
 			};
 			throw err;
 		}
@@ -61,7 +61,7 @@ module.exports = class TemplaterState {
 				xtag: xtag.split(" ")[0],
 				id: "unclosed_tag",
 				context: this.context,
-				explanation: `The tag beginning with '${xtag.substr(10)}' is unclosed`,
+				explanation: `The tag beginning with '${xtag.substr(0, 10)}' is unclosed`,
 			};
 			throw err;
 		}
@@ -74,7 +74,7 @@ module.exports = class TemplaterState {
 				xtag: xtag.split(" ")[0],
 				id: "unclosed_tag",
 				context: this.context,
-				explanation: `The tag beginning with '${xtag.substr(10)}' is unclosed`,
+				explanation: `The tag beginning with '${xtag.substr(0, 10)}' is unclosed`,
 			};
 			throw err;
 		}
