@@ -13,7 +13,7 @@ module.exports = class TemplaterState {
 		return (() => {
 			var result = [];
 			var end = this.matches.length;
-			for (var k = numXmlTag; numXmlTag < end ? k < end : k > end; numXmlTag < end ? k++ : k--) {
+			for (var k = numXmlTag; k < end; k++) {
 				result.push(this.charactersAdded[k] += newTextLength - oldTextLength);
 			}
 			return result;
@@ -112,7 +112,45 @@ module.exports = class TemplaterState {
 			.substr(0, this.tagStart.numCharacter + this.offset[this.tagStart.numXmlTag]);
 	}
 	getRightValue() {
-		return this.innerContent("tagEnd").substr(this.tagEnd.numCharacter + 1 + this.offset[this.tagEnd.numXmlTag]);
+		return this.innerContent("tagEnd")
+			.substr(this.tagEnd.numCharacter + 1 + this.offset[this.tagEnd.numXmlTag]);
+	}
+	getMatchLocation(num) {
+		var match = this.matches[num];
+		if (match.first) {
+			return "first";
+		}
+		if (match.last) {
+			return "last";
+		}
+		return "normal";
+	}
+	handleSimpleEndTag() {
+		var baseLoop = this.getCurrentLoop();
+		if (this.textInsideTag[0] === "@") {
+			this.rawXmlTag = true;
+			this.tag = this.textInsideTag.substr(1);
+			return;
+		}
+		if (this.textInsideTag[0] === "#" || this.textInsideTag[0] === "^") {
+			// begin for loop
+			this.inForLoop = true;
+			baseLoop.tag = this.textInsideTag.substr(1);
+			this.loopOpen = baseLoop;
+			this.loopIsInverted = this.textInsideTag[0] === "^";
+			return;
+		}
+		if (this.textInsideTag[0] === "-") {
+			this.inDashLoop = true;
+			var dashInnerRegex = /^-([^\s]+)\s(.+)$/;
+			baseLoop.tag = (this.textInsideTag.replace(dashInnerRegex, "$2"));
+			baseLoop.element = (this.textInsideTag.replace(dashInnerRegex, "$1"));
+			this.loopOpen = baseLoop;
+			return;
+		}
+	}
+	getCurrentLoop() {
+		return {start: this.tagStart, end: this.tagEnd, raw: this.textInsideTag};
 	}
 	endTag() {
 		if (this.inTag === false) {
@@ -130,27 +168,10 @@ module.exports = class TemplaterState {
 		this.textInsideTag = DocUtils.wordToUtf8(this.textInsideTag);
 		this.fullTextTag = this.delimiters.start + this.textInsideTag + this.delimiters.end;
 		if (this.loopType() === "simple") {
-			if (this.textInsideTag[0] === "@") {
-				this.rawXmlTag = true;
-				this.tag = this.textInsideTag.substr(1);
-				return;
-			}
-			if (this.textInsideTag[0] === "#" || this.textInsideTag[0] === "^") {
-				// begin for loop
-				this.inForLoop = true;
-				this.loopOpen = {start: this.tagStart, end: this.tagEnd, tag: this.textInsideTag.substr(1), raw: this.textInsideTag};
-				this.loopIsInverted = this.textInsideTag[0] === "^";
-				return;
-			}
-			if (this.textInsideTag[0] === "-") {
-				this.inDashLoop = true;
-				var dashInnerRegex = /^-([^\s]+)\s(.+)$/;
-				this.loopOpen = {start: this.tagStart, end: this.tagEnd, tag: (this.textInsideTag.replace(dashInnerRegex, "$2")), element: (this.textInsideTag.replace(dashInnerRegex, "$1")), raw: this.textInsideTag};
-				return;
-			}
+			return this.handleSimpleEndTag();
 		}
 		if (this.textInsideTag[0] === "/") {
-			this.loopClose = {start: this.tagStart, end: this.tagEnd, raw: this.textInsideTag};
+			this.loopClose = this.getCurrentLoop();
 		}
 	}
 };

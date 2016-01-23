@@ -12,7 +12,7 @@ module.exports = class XmlMatcher {
 		this.charactersAdded = ((() => {
 			var result = [];
 			var end = this.matches.length;
-			for (var i = 0; end > 0 ? i < end : i > end; end > 0 ? i++ : i--) {
+			for (var i = 0; i < end; i++) {
 				result.push(0);
 			}
 			return result;

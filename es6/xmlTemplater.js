@@ -89,15 +89,26 @@ module.exports = class XmlTemplater {
 	render() {
 		return this.compile();
 	}
-	compile() {
-		this.sameTags = this.delimiters.start === this.delimiters.end;
-		this.compiled = new CompiledTemplate();
-		this.lastStart = 0;
-		this.templaterState.initialize();
-		this.handleModuleManager("xmlRendering");
-		var iterable = this.templaterState.matches;
-		for (var numXmlTag = 0, match; numXmlTag < iterable.length; numXmlTag++) {
-			match = iterable[numXmlTag];
+	getTrail(character) {
+		this.templaterState.trail += character;
+		var length = !this.templaterState.inTag ? this.delimiters.start.length : this.delimiters.end.length;
+		return this.templaterState.trail.substr(-length, length);
+	}
+	handleCharacter(character) {
+		if (this.templaterState.trail === this.delimiters.start && (this.templaterState.inTag === false || this.sameTags === false)) {
+			this.templaterState.startTag();
+		}
+		else if (this.templaterState.trail === this.delimiters.end && (this.templaterState.inTag === true || this.sameTags === false)) {
+			this.updateModuleManager();
+			this.templaterState.endTag();
+			this.loopClose();
+		}
+		else if (this.templaterState.inTag === true) { this.templaterState.textInsideTag += character; }
+	}
+	forEachCharacter(functor) {
+		var matches = this.templaterState.matches;
+		for (var numXmlTag = 0, match; numXmlTag < matches.length; numXmlTag++) {
+			match = matches[numXmlTag];
 			// text inside the <w:t>
 			var innerText = match[2];
 			this.templaterState.offset[numXmlTag] = 0;
@@ -106,42 +117,43 @@ module.exports = class XmlTemplater {
 			}
 			for (var numCharacter = 0, character; numCharacter < innerText.length; numCharacter++) {
 				character = innerText[numCharacter];
-				this.templaterState.trail += character;
-				var length = !this.templaterState.inTag ? this.delimiters.start.length : this.delimiters.end.length;
-				this.templaterState.trail = this.templaterState.trail.substr(-length, length);
+				this.templaterState.trail = this.getTrail(character);
 				this.templaterState.currentStep = {numXmlTag: numXmlTag, numCharacter: numCharacter};
 				this.templaterState.trailSteps.push({numXmlTag: numXmlTag, numCharacter: numCharacter});
 				this.templaterState.trailSteps = this.templaterState.trailSteps.splice(-this.delimiters.start.length, this.delimiters.start.length);
 				this.templaterState.context += character;
-				if ((this.sameTags === true && this.templaterState.inTag === false && this.templaterState.trail === this.delimiters.start) || (this.sameTags === false && this.templaterState.trail === this.delimiters.start)) {
-					this.templaterState.startTag();
-				}
-				else if ((this.sameTags === true && this.templaterState.inTag === true && this.templaterState.trail === this.delimiters.end) || (this.sameTags === false && this.templaterState.trail === this.delimiters.end)) {
-					this.updateModuleManager();
-					this.templaterState.endTag();
-					var loopType = this.templaterState.loopType();
-					if (loopType === "simple") {
-						this.replaceSimpleTag();
-					}
-					if (loopType === "xml") {
-						this.replaceSimpleTagRawXml();
-					}
-					if (["dash", "for"].indexOf(loopType) !== -1 && this.templaterState.isLoopClosingTag()) {
-						this.replaceLoopTag();
-						this.templaterState.finishLoop();
-					}
-					if (["simple", "dash", "for", "xml"].indexOf(loopType) === -1) {
-						this.handleModuleManager("replaceTag", loopType);
-					}
-				}
-				else if (this.templaterState.inTag === true) { this.templaterState.textInsideTag += character; }
+				functor(character, numXmlTag, numCharacter);
 			}
 		}
+	}
+	compile() {
+		this.sameTags = this.delimiters.start === this.delimiters.end;
+		this.compiled = new CompiledTemplate();
+		this.lastStart = 0;
+		this.templaterState.initialize();
+		this.handleModuleManager("xmlRendering");
+		this.forEachCharacter(this.handleCharacter.bind(this));
 		this.handleModuleManager("xmlRendered");
 		var preContent = this.content.substr(this.lastStart);
 		this.compiled.appendText(preContent);
 		this.templaterState.finalize();
 		return this;
+	}
+	loopClose() {
+		var loopType = this.templaterState.loopType();
+		if (loopType === "simple") {
+			this.replaceSimpleTag();
+		}
+		if (loopType === "xml") {
+			this.replaceSimpleTagRawXml();
+		}
+		if (["dash", "for"].indexOf(loopType) !== -1 && this.templaterState.isLoopClosingTag()) {
+			this.replaceLoopTag();
+			this.templaterState.finishLoop();
+		}
+		if (["simple", "dash", "for", "xml"].indexOf(loopType) === -1) {
+			this.handleModuleManager("replaceTag", loopType);
+		}
 	}
 	replaceSimpleTag() {
 		var newValue = this.scopeManager.getValueFromScope(this.templaterState.textInsideTag);
@@ -282,10 +294,11 @@ module.exports = class XmlTemplater {
 		return content;
 	}
 	replaceTagByValue(newValue, content) {
+		var location = this.templaterState.getMatchLocation(this.templaterState.tagStart.numXmlTag);
 		var options = {
 			xmlTagNumber: this.templaterState.tagStart.numXmlTag,
-			noStartTag: (this.templaterState.matches[this.templaterState.tagStart.numXmlTag].first != null),
-			noEndTag: (this.templaterState.matches[this.templaterState.tagStart.numXmlTag].last != null),
+			noStartTag: (location === "first"),
+			noEndTag: (location === "last"),
 		};
 		// <w>{aaaaa}</w>
 		if (this.templaterState.tagEnd.numXmlTag === this.templaterState.tagStart.numXmlTag) {
@@ -297,13 +310,14 @@ module.exports = class XmlTemplater {
 		else if (this.templaterState.tagEnd.numXmlTag > this.templaterState.tagStart.numXmlTag) {
 			// 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
-			options.insideValue = newValue;
-			this.currentCompiledTag = new CompiledXmlTag([{type: "tag", tag: this.templaterState.textInsideTag}]);
-
 			// normal case
-			if (!(this.templaterState.matches[this.templaterState.tagStart.numXmlTag].first != null) && !(this.templaterState.matches[this.templaterState.tagStart.numXmlTag].last != null)) {
+			if (location === "normal") {
 				this.currentCompiledTag = new CompiledXmlTag([this.templaterState.getLeftValue(), {type: "tag", tag: this.templaterState.textInsideTag}]);
 				options.insideValue = this.templaterState.getLeftValue() + newValue;
+			}
+			else {
+				options.insideValue = newValue;
+				this.currentCompiledTag = new CompiledXmlTag([{type: "tag", tag: this.templaterState.textInsideTag}]);
 			}
 
 			content = this.replaceXmlTag(content, options);
@@ -317,7 +331,7 @@ module.exports = class XmlTemplater {
 
 			var start = this.templaterState.tagStart.numXmlTag + 1;
 			var end = this.templaterState.tagEnd.numXmlTag;
-			for (var k = start; start < end ? k < end : k > end; start < end ? k++ : k--) {
+			for (var k = start; k < end; k++) {
 				options.xmlTagNumber = k;
 				this.currentCompiledTag = new CompiledXmlTag([]);
 				content = this.replaceXmlTag(content, options);
@@ -328,7 +342,7 @@ module.exports = class XmlTemplater {
 				insideValue: this.templaterState.getRightValue(),
 				spacePreserve: true,
 				xmlTagNumber: this.templaterState.tagEnd.numXmlTag,
-				noEndTag: (this.templaterState.matches[this.templaterState.tagEnd.numXmlTag].last != null),
+				noEndTag: (this.templaterState.getMatchLocation(this.templaterState.tagEnd.numXmlTag) === "last"),
 			};
 
 			this.currentCompiledTag = CompiledXmlTag.null();
