@@ -292,14 +292,16 @@ module.exports = class XmlTemplater {
 			this.currentCompiledTag = new CompiledXmlTag([this.templaterState.getLeftValue(), {type: "tag", tag: this.templaterState.textInsideTag}, this.templaterState.getRightValue()]);
 			options.insideValue = this.templaterState.getLeftValue() + newValue + this.templaterState.getRightValue();
 			return this.replaceXmlTag(content, options);
-		// <w>{aaa</w> ... <w> aaa} </w>
 		}
+		// <w>{aaa</w> ... <w> aaa} </w>
 		else if (this.templaterState.tagEnd.numXmlTag > this.templaterState.tagStart.numXmlTag) {
 			// 1. for the first (@templaterState.tagStart.numXmlTag): replace **{tag by **tagValue
 
 			options.insideValue = newValue;
 			this.currentCompiledTag = new CompiledXmlTag([{type: "tag", tag: this.templaterState.textInsideTag}]);
-			if (!(this.templaterState.matches[this.templaterState.tagStart.numXmlTag].first != null) && !(this.templaterState.matches[this.templaterState.tagStart.numXmlTag].last != null)) { // normal case
+
+			// normal case
+			if (!(this.templaterState.matches[this.templaterState.tagStart.numXmlTag].first != null) && !(this.templaterState.matches[this.templaterState.tagStart.numXmlTag].last != null)) {
 				this.currentCompiledTag = new CompiledXmlTag([this.templaterState.getLeftValue(), {type: "tag", tag: this.templaterState.textInsideTag}]);
 				options.insideValue = this.templaterState.getLeftValue() + newValue;
 			}

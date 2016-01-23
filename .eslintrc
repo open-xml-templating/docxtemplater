@@ -1,5 +1,9 @@
 {
   "parser": "babel-eslint",
+  "globals":{
+    "saveAs": true,
+    "JSZipUtils": true
+  },
   "env": {
     "node": true,
     "browser": true,

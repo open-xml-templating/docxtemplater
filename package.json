@@ -46,6 +46,7 @@
     "browserify": "npm run browserify:test && npm run browserify:lib",
     "convertto:es5": "rm js -rf ; mkdir -p test/spec; mkdir -p js; babel es6 --out-dir js; mv js/docxgenTest.js test/spec/docxgenTest.spec.js",
     "test:watch": "mocha test/spec/docxgenTest.spec.js -w",
+    "lint": "bash -c 'eslint . --ignore-path <(cat .gitignore .eslintignore)'",
     "test": "mocha test/spec/docxgenTest.spec.js"
   }
 }
