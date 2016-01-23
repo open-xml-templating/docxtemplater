@@ -126,11 +126,9 @@ module.exports = class XmlTemplater {
 					if (loopType === "xml") {
 						this.replaceSimpleTagRawXml();
 					}
-					if (loopType === "dash" || loopType === "for") {
-						if (this.templaterState.isLoopClosingTag()) {
-							this.replaceLoopTag();
-							this.templaterState.finishLoop();
-						}
+					if (["dash", "for"].indexOf(loopType) !== -1 && this.templaterState.isLoopClosingTag()) {
+						this.replaceLoopTag();
+						this.templaterState.finishLoop();
 					}
 					if (["simple", "dash", "for", "xml"].indexOf(loopType) === -1) {
 						this.handleModuleManager("replaceTag", loopType);
