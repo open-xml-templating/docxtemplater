@@ -18,29 +18,37 @@ module.exports = class ScopeManager {
 		var value = this.getValue(tag);
 		return this.loopOverValue(value, callback, inverted);
 	}
+	functorIfInverted(inverted, functor, value) {
+		if (inverted) {
+			functor(value);
+		}
+	}
+	functorIfNotInverted(inverted, functor, value) {
+		if (!inverted) {
+			functor(value);
+		}
+	}
+	isValueFalsy(value, type) {
+		return (!(typeof value !== "undefined" && value != null)) || (!value) || (type === "[object Array]" && value.length === 0);
+	}
 	loopOverValue(value, functor, inverted = false) {
 		var type = Object.prototype.toString.call(value);
-		if (inverted) {
-			if (!(typeof value !== "undefined" && value != null)) { return functor(this.scopeList[this.num]); }
-			if (!value) { return functor(this.scopeList[this.num]); }
-			if (type === "[object Array]" && value.length === 0) {
-				return functor(this.scopeList[this.num]);
-			}
-			return;
+		var currentValue = this.scopeList[this.num];
+		if (this.isValueFalsy(value, type)) {
+			return this.functorIfInverted(inverted, functor, currentValue);
 		}
-
-		if (!(typeof value !== "undefined" && value != null)) { return; }
 		if (type === "[object Array]") {
 			for (var i = 0, scope; i < value.length; i++) {
 				scope = value[i];
-				functor(scope);
+				this.functorIfNotInverted(inverted, functor, scope);
 			}
+			return;
 		}
 		if (type === "[object Object]") {
-			functor(value);
+			return this.functorIfNotInverted(inverted, functor, value);
 		}
 		if (value === true) {
-			return functor(this.scopeList[this.num]);
+			return this.functorIfNotInverted(inverted, functor, currentValue);
 		}
 	}
 	getValue(tag, num = this.scopeList.length - 1) {
