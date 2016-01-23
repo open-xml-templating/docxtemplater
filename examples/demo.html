@@ -7,7 +7,6 @@
 
 	<!-- Mandatory js for the library to work -->
 	<script type="text/javascript" src="../browser/main.min.js"></script>
-	<script src="../build/angular-expressions.js"></script>
 
 	<script src="../vendor/FileSaver.min.js"></script>
     <script src="../vendor/jszip-utils.js"></script>
@@ -65,7 +64,7 @@ DocxGen is based on word templates.
 		<h3>Code Used:</h3>
 		<textarea raw='tagExample.docx'>
             loadFile("tagExample.docx",function(err,content){
-                doc=new DocxGen(content)
+                var doc=new DocxGen(content)
                 doc.setData( {"first_name":"Hipp",
                     "last_name":"Edgar",
                     "phone":"0652455478",
@@ -73,7 +72,7 @@ DocxGen is based on word templates.
                     }
                 ) //set the templateVariables
                 doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-                out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+                var out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
                 saveAs(out,"output.docx")
             })
 	</textarea>
@@ -112,9 +111,8 @@ loadFile=function(url,callback){
 	<td colspan="3">
 		<h3>Code Used:</h3>
 		<textarea raw='tagFormating.docx'>
-
             loadFile("tagFormating.docx",function(err,content){
-	doc=new DocxGen(content)
+	var doc=new DocxGen(content)
 	doc.setData({
 		"first_name":"Hipp",
 		"last_name":"Edgar",
@@ -122,7 +120,7 @@ loadFile=function(url,callback){
 		"description":"New Website"
 		}); //set the templateVariables
 	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+	var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
 	saveAs(output,"output.docx")
 });
 		</textarea>
@@ -150,14 +148,13 @@ loadFile=function(url,callback){
 	<td colspan="3">
 		<h3>Code Used:</h3>
 		<textarea raw='angularExample.docx'>
-expressions= require('angular-expressions')
-angularParser= function(tag){
-	expr=expressions.compile(tag);
+var angularParser= function(tag){
+	var expr=expressions.compile(tag);
 	return {get:expr};
 }
 
 	loadFile("angularExample.docx",function(err,content){
-	doc=new DocxGen(content)
+	var doc=new DocxGen(content)
 	doc.setOptions({parser:angularParser})
 	doc.setData({
 		person:{
@@ -167,7 +164,7 @@ angularParser= function(tag){
 			age:59
 		}}); //set the templateVariables
 	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+	var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
 	saveAs(output,"output.docx")
 });
 		</textarea>
@@ -192,7 +189,7 @@ angularParser= function(tag){
 				<h3>Code Used:</h3>
 				<textarea raw="tagLooping.docx">
 	loadFile("tagLooping.docx",function(err,content){
-	doc=new DocxGen(content)
+	var doc=new DocxGen(content)
 doc.setData({
 	"products": [{
  	 	 "title":"Duk",
@@ -204,7 +201,7 @@ doc.setData({
  	 	 "reference":"T00"
 	}]}); //set the templateVariables
 doc.render() //apply them
-output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
 saveAs(output,"output.docx")
 });
 				</textarea>
@@ -230,7 +227,7 @@ saveAs(output,"output.docx")
 				<h3>Code Used:</h3>
 				<textarea raw="tagIntelligentLoopTable.docx">
 	loadFile("tagIntelligentLoopTable.docx",function(err,content){
-	doc=new DocxGen(content)
+	var doc=new DocxGen(content)
 	doc.setData({
 		"clients":[{
 			"first_name":"John",
@@ -242,7 +239,7 @@ saveAs(output,"output.docx")
 			"phone":"+445476454"
 		}]}); //set the templateVariables
 	doc.render() //apply them
-	output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+	var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
 	saveAs(output,"output.docx")
 });
 				</textarea>
@@ -267,12 +264,12 @@ saveAs(output,"output.docx")
 				<h3>Code Used:</h3>
 				<textarea raw="tagDashLoopList.docx">
 	loadFile("tagDashLoopList.docx",function(err,content){
-	doc=new DocxGen(content)
+	var doc=new DocxGen(content)
 	doc.setData(
 	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]}
 	)
 	doc.render()
-	output=doc.getZip().generate({type:"blob"})
+	var output=doc.getZip().generate({type:"blob"})
 	saveAs(output,"output.docx")
 });
 				</textarea>
@@ -297,10 +294,10 @@ saveAs(output,"output.docx")
 				<h3>Code Used:</h3>
 				<textarea raw="xmlInsertionExample.docx">
 					loadFile("xmlInsertionExample.docx",function(err,content){
-					doc=new DocxGen(content)
+					var doc=new DocxGen(content)
 					doc.setData({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
 					doc.render();
-					output=doc.getZip().generate({type:"blob"})
+					var output=doc.getZip().generate({type:"blob"})
 					saveAs(output,"output.docx")
 					});
 				</textarea>

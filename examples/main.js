@@ -1,6 +1,9 @@
 "use strict";
 
 var DocxGen = require("../js/docxgen.js");
+window.DocxGen = DocxGen;
+var expressions = require("angular-expressions");
+window.expressions = expressions;
 
 var textAreaAdjust = function (o) {
 	o.style.height = "1px";
