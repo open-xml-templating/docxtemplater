@@ -5,6 +5,15 @@
 -	**Breaking** : To choose between docx or pptx, you now have to pass docx.setOptions({fileType:'docx'}) where the fileTypes are one of 'pptx', 'docx' (default is 'docx')
 -	Using es6 instead of coffeescript to code (code is still compiled to es5, to be usable with node v0.{10,12} or in the browser)
 -	Add finalize step in compile function to throw an error if a tag is unclosed
+-	Module API has been updated, notably the tagXml property doesn't exist anymore, you should use the properties in `fileTypeConfig`
+-	You should check if your modules have updated for the new module API, for instance, you should use version 1.0 of the docxtemplater image module
+
+For example :
+
+```javascript
+var xmlTemplater = this.manager.getInstance("xmlTemplater");
+var tagXml = xmlTemplater.fileTypeConfig.tagsXmlArray[0];
+```
 
 ### 1.2.1
 
