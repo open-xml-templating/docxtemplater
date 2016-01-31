@@ -35,37 +35,43 @@ window.onload = function () {
 
 	var executeButtonList = document.getElementsByClassName("execute");
 
-	for (i = 0; i < executeButtonList.length; i++) {
-		executeButtonList[i].onclick = function () {
-			var childs = (this.parentNode.childNodes);
+	var executeFn = function () {
+		var childs = (this.parentNode.childNodes);
 
-			for (var j = 0; j < childs.length; j++) {
-				if (childs[j].tagName === "TEXTAREA") {
-					/* eslint-disable no-eval */
-					eval(childs[j].value);
-				}
+		for (var j = 0; j < childs.length; j++) {
+			if (childs[j].tagName === "TEXTAREA") {
+				/* eslint-disable no-eval */
+				eval(childs[j].value);
 			}
-		};
+		}
+	};
+
+	for (i = 0; i < executeButtonList.length; i++) {
+		executeButtonList[i].onclick = executeFn;
 	}
 
 	var viewRawButtonList = document.getElementsByClassName("raw");
 
-	for (i = 0; i < viewRawButtonList.length; i++) {
-		viewRawButtonList[i].onclick = function () {
-			var childs = (this.parentNode.childNodes);
+	var saveAsRaw = function (err, content) {
+		if (err) {
+			throw err;
+		}
+		var output = new DocxGen(content).getZip().generate({type: "blob"});
+		saveAs(output, "raw.docx");
+	};
 
-			for (var j = 0; j < childs.length; j++) {
-				if (childs[j].tagName === "TEXTAREA") {
-					var raw = (childs[j].getAttribute("raw"));
-					loadFile(raw, function (err, content) {
-						if (err) {
-							throw err;
-						}
-						var output = new DocxGen(content).getZip().generate({type: "blob"});
-						saveAs(output, "raw.docx");
-					});
-				}
+	var viewRawFn = function () {
+		var childs = (this.parentNode.childNodes);
+
+		for (var j = 0; j < childs.length; j++) {
+			if (childs[j].tagName === "TEXTAREA") {
+				var raw = (childs[j].getAttribute("raw"));
+				loadFile(raw, saveAsRaw);
 			}
-		};
+		}
+	};
+
+	for (i = 0; i < viewRawButtonList.length; i++) {
+		viewRawButtonList[i].onclick = viewRawFn;
 	}
 };
