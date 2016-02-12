@@ -149,6 +149,7 @@ Here is the list of existing modules:
 
 -	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module
 -	Image module using the syntax: `{%image}`, https://github.com/open-xml-templating/docxtemplater-image-module
+-	Hyperlink module using the syntax: `{^link}`, https://github.com/sujith3g/docxtemplater-link-module
 
 Professional Support
 ====================
