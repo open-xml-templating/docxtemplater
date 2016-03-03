@@ -100,7 +100,7 @@ var startTest = function () {
 		it("should be defined", function () {
 			return expect(DocxGen).not.to.be.equal(undefined);
 		});
-		return it("should construct", function () {
+		it("should construct", function () {
 			var a = new DocxGen();
 			return expect(a).not.to.be.equal(undefined);
 		});
@@ -157,7 +157,7 @@ var startTest = function () {
 			return expect(matcher.matches[0].offset).to.be.equal(3);
 		});
 
-		return it("should not match with no <w:t> ender", function () {
+		it("should not match with no <w:t> ender", function () {
 			var matcher = new XmlMatcher("<w:t>Text1</w:t>TAG");
 			matcher.parse(["w:t"]);
 			return expect(matcher.matches.length).to.be.equal(1);
@@ -170,13 +170,13 @@ var startTest = function () {
 				expect(getLength(docX["imageExample.docx"].loadedContent)).to.be.equal(729580);
 				return expect(getLength(data["image.png"])).to.be.equal(18062);
 			});
-			return it("should have the right number of files (the docx unzipped)", function () {
+			it("should have the right number of files (the docx unzipped)", function () {
 				docX["imageExample.docx"] = new DocxGen(docX["imageExample.docx"].loadedContent);
 				return expect(DocUtils.sizeOfObject(docX["imageExample.docx"].zip.files)).to.be.equal(16);
 			});
 		});
 		describe("basic loading", function () {
-			return it("should load file imageExample.docx", function () {
+			it("should load file imageExample.docx", function () {
 				return expect(typeof docX["imageExample.docx"]).to.be.equal("object");
 			});
 		});
@@ -186,14 +186,14 @@ var startTest = function () {
 				expect(fullText.length).not.to.be.equal(0);
 				return expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 			});
-			return it("should load the right content for the document", function () {
+			it("should load the right content for the document", function () {
 				// default value document.xml
 				var fullText = (docX["imageExample.docx"].getFullText());
 				return expect(fullText).to.be.equal("");
 			});
 		});
-		return describe("output and input", function () {
-			return it("should be the same", function () {
+		describe("output and input", function () {
+			it("should be the same", function () {
 				var doc = new DocxGen(docX["tagExample.docx"].loadedContent);
 				var output = doc.getZip().generate({type: "base64"});
 				expect(output.length).to.be.equal(90732);
@@ -203,7 +203,7 @@ var startTest = function () {
 	});
 
 	describe("DocxGenTemplating", function () {
-		return describe("text templating", function () {
+		describe("text templating", function () {
 			it("should change values with template vars", function () {
 				var tags = {
 					first_name: "Hipp",
@@ -217,14 +217,14 @@ var startTest = function () {
 				expect(docX["tagExample.docx"].getFullText("word/header1.xml")).to.be.equal("Edgar Hipp0652455478New Website");
 				return expect(docX["tagExample.docx"].getFullText("word/footer1.xml")).to.be.equal("EdgarHipp0652455478");
 			});
-			return it("should export the good file", function () {
+			it("should export the good file", function () {
 				return shouldBeSame("tagExample.docx", "tagExampleExpected.docx");
 			});
 		});
 	});
 
 	describe("DocxGenTemplatingForLoop", function () {
-		return describe("textLoop templating", function () {
+		describe("textLoop templating", function () {
 			it("should replace all the tags", function () {
 				var tags = {
 					nom: "Hipp",
@@ -267,7 +267,7 @@ var startTest = function () {
 				return expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
 			});
 
-			return it("should provide inverted loops", function () {
+			it("should provide inverted loops", function () {
 				// shows if the key is []
 				var content = "<w:t>{^products}No products found{/products}</w:t>";
 				[{products: []},
@@ -305,7 +305,7 @@ var startTest = function () {
 			var scope = xmlUtil.getListXmlElements(c);
 			return expect(scope).to.be.eql([{tag: "</w:t>", offset: 3}, {tag: "</w:r>", offset: 9}, {tag: "</w:p>", offset: 15}, {tag: "</w:tc>", offset: 21}, {tag: "<w:tc>", offset: 28}, {tag: "<w:p>", offset: 83}, {tag: "<w:r>", offset: 268}, {tag: "<w:t>", offset: 374}]);
 		});
-		return it("should compute the scope between a w:t in an array and the other outside", function () {
+		it("should compute the scope between a w:t in an array and the other outside", function () {
 			var c = "defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ";
 			var scope = xmlUtil.getListXmlElements(c);
 			return expect(scope).to.be.eql([{tag: "</w:t>", offset: 8}, {tag: "</w:r>", offset: 14}, {tag: "</w:p>", offset: 20}, {tag: "</w:tc>", offset: 26}, {tag: "</w:tr>", offset: 33}, {tag: "</w:tbl>", offset: 40}, {tag: "<w:p>", offset: 188}, {tag: "<w:r>", offset: 257}, {tag: "<w:t>", offset: 306}]);
@@ -329,7 +329,7 @@ var startTest = function () {
 			var text = docX["tagDashLoopTable.docx"].getFullText();
 			return expect(text).to.be.equal(expectedText);
 		});
-		return it("dash loop ok on simple list -> w:p", function () {
+		it("dash loop ok on simple list -> w:p", function () {
 			var tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
 			docX["tagDashLoopList.docx"].setData(tags);
 			docX["tagDashLoopList.docx"].render();
@@ -340,7 +340,7 @@ var startTest = function () {
 	});
 
 	describe("Intelligent Loop Tagging", function () {
-		return it("should work with tables", function () {
+		it("should work with tables", function () {
 			var tags = {clients: [{first_name: "John", last_name: "Doe", phone: "+33647874513"}, {first_name: "Jane", last_name: "Doe", phone: "+33454540124"}, {first_name: "Phil", last_name: "Kiel", phone: "+44578451245"}, {first_name: "Dave", last_name: "Sto", phone: "+44548787984"}]};
 			docX["tagIntelligentLoopTable.docx"].setData(tags);
 			docX["tagIntelligentLoopTable.docx"].render();
@@ -352,7 +352,7 @@ var startTest = function () {
 	});
 
 	describe("intelligent tagging multiple tables", function () {
-		return it("should work with multiple rows", function () {
+		it("should work with multiple rows", function () {
 			var content = `<w:tbl>
 	<w:tr>
 		<w:tc>
@@ -386,7 +386,7 @@ var startTest = function () {
 			var tempVars = d.getTags();
 			return expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true, description: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {last_name: true, first_name: true}}}]);
 		});
-		return it("should work with loop document", function () {
+		it("should work with loop document", function () {
 			docX["tagLoopExample.docx"] = new DocxGen(docX["tagLoopExample.docx"].loadedContent, {}, {intelligentTagging: false});
 			var tempVars = docX["tagLoopExample.docx"].getTags();
 			return expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {nom: true, prenom: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {nom: true, prenom: true, telephone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {offre: {nom: true, prix: true, titre: true}, nom: true, prenom: true}}}]);
@@ -568,7 +568,7 @@ var startTest = function () {
 				{type: "tag", tag: "name"}]);
 		});
 
-		return it("should work with intelligent tagging", function () {
+		it("should work with intelligent tagging", function () {
 			var baseContent = `<w:t>Hello {name}</w:t>
 TAG
 <w:tr>
@@ -735,7 +735,7 @@ TAG2
 			return expect(xmlTemplater.getFullText()).to.be.equal("Hello {name}");
 		});
 
-		return it("should work with equations", function () {
+		it("should work with equations", function () {
 			var content = `<w:p>
 	<m:oMathPara>
 		<m:oMath>
@@ -784,7 +784,7 @@ TAG2
 	});
 
 	describe("Change the nullGetter", function () {
-		return it("should work with null", function () {
+		it("should work with null", function () {
 			var content = "<w:t>Hello {name}</w:t>";
 			var scope = {};
 			var parser = function () { return "null"; };
@@ -830,7 +830,7 @@ TAG2
 			return expect(docX["angularExample.docx"].getFullText()).to.be.equal("Hipp Edgar 2014");
 		});
 
-		return it("should work with loops", function () {
+		it("should work with loops", function () {
 			var content = "<w:t>Hello {#person.adult}you{/person.adult}</w:t>";
 			var scope = {person: {name: "Edgar", adult: true}};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, parser: angularParser});
@@ -865,7 +865,7 @@ TAG2
 			expect(fullText.charCodeAt(7)).to.be.equal(1040);
 			return expect(fullText.indexOf("Edgar")).to.be.equal(9);
 		});
-		return it("should insert russian characters", function () {
+		it("should insert russian characters", function () {
 			var russianText = [1055, 1091, 1087, 1082, 1080, 1085, 1072];
 			var russian = ((() => {
 				var result = [];
@@ -1028,8 +1028,8 @@ TAG2
 			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
-		return describe("internal errors", function () {
-			return it("should fail", function () {
+		describe("internal errors", function () {
+			it("should fail", function () {
 				var expectedError = {
 					name: "InternalError",
 					message: "Content must be a string",
@@ -1098,7 +1098,7 @@ TAG2
 			var fullText = docX["tableComplexExample.docx"].getFullText();
 			return expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
 		});
-		return it("should work with two tables and intelligentTagging", function () {
+		it("should work with two tables and intelligentTagging", function () {
 			var tags = {
 				table1: [1],
 				key: "value",
@@ -1216,7 +1216,7 @@ TAG`;
 			return expect(doc.getFullText()).to.be.equal("HelloJohnDoe 1550MotoFein 1987WaterTest 2010BreadYu");
 		});
 
-		return it("should work with closing tag in the form of <w:t>}{/body}</w:t>", function () {
+		it("should work with closing tag in the form of <w:t>}{/body}</w:t>", function () {
 			var scope = {body: [{paragraph: "hello"}]};
 			var content = `<w:t>{#body}</w:t>
 <w:t>{paragraph</w:t>
@@ -1338,7 +1338,7 @@ TAG`;
 			return expect(xmlt.content).to.contain("a</w:t><w:t");
 		});
 
-		return it("should work with start and end (2)", function () {
+		it("should work with start and end (2)", function () {
 			var content = "{name}</w:t><w:t>a";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {name: "Henry"}}).render();
 			return expect(xmlt.content).to.contain("Henry</w:t><w:t");
@@ -1352,7 +1352,7 @@ TAG`;
 			return expect(xmlt.content).to.be.equal("Henry");
 		});
 
-		return it("should work with double loops", function () {
+		it("should work with double loops", function () {
 			var content = "{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {loop_first: [1], loop_second: [{name_inner: "John"}], name_outer: "Henry"}}).render();
 			return expect(xmlt.content).to.be.equal("John Henry");
@@ -1369,7 +1369,7 @@ TAG`;
 			var duration = new Date() - time;
 			return expect(duration).to.be.below(100);
 		});
-		return it("should be fast for simple tags with huge content", function () {
+		it("should be fast for simple tags with huge content", function () {
 			var content = "<w:t>tag {age}</w:t>";
 			var prepost = ((() => {
 				var result = [];
@@ -1389,7 +1389,7 @@ TAG`;
 	});
 
 	describe("pptx generation", function () {
-		return it("should work with simple pptx", function () {
+		it("should work with simple pptx", function () {
 			var p = pptX["simpleExample.pptx"].setData({name: "Edgar"}).render();
 			return expect(p.getFullText()).to.be.equal("Hello Edgar");
 		});
