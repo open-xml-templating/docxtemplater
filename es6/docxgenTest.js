@@ -2,6 +2,7 @@
 
 var docX = {};
 var expect = require("chai").expect;
+var _ = require("lodash");
 
 var expressions = require("angular-expressions");
 var angularParser = function (tag) {
@@ -1382,6 +1383,18 @@ TAG`;
 			var time = new Date();
 			for (var i = 1; i <= 50; i++) {
 				new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {age: 12}}).render();
+			}
+			var duration = new Date() - time;
+			return expect(duration).to.be.below(50);
+		});
+		it("should be fast for loop tags", function () {
+			var content = "<w:t>{#users}{name}{/users}</w:t>";
+			var users = _.times(1000, function () {
+				return {name: "foo"};
+			});
+			var time = new Date();
+			for (var i = 1; i <= 1; i++) {
+				new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {users: users}}).render();
 			}
 			var duration = new Date() - time;
 			return expect(duration).to.be.below(50);
