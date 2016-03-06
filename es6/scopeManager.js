@@ -14,7 +14,8 @@ module.exports = class ScopeManager {
 		this.delimiters = options.delimiters;
 		this.moduleManager.scopeManager = this;
 	}
-	loopOver(tag, callback, inverted = false) {
+	loopOver(tag, callback, inverted) {
+		inverted = inverted || false;
 		var value = this.getValue(tag);
 		return this.loopOverValue(value, callback, inverted);
 	}
@@ -31,7 +32,7 @@ module.exports = class ScopeManager {
 	isValueFalsy(value, type) {
 		return (!(typeof value !== "undefined" && value != null)) || (!value) || (type === "[object Array]" && value.length === 0);
 	}
-	loopOverValue(value, functor, inverted = false) {
+	loopOverValue(value, functor, inverted) {
 		var type = Object.prototype.toString.call(value);
 		var currentValue = this.scopeList[this.num];
 		if (this.isValueFalsy(value, type)) {
@@ -51,8 +52,8 @@ module.exports = class ScopeManager {
 			return this.functorIfNotInverted(inverted, functor, currentValue);
 		}
 	}
-	getValue(tag, num = this.scopeList.length - 1) {
-		this.num = num;
+	getValue(tag, num) {
+		this.num = num == null ? (this.scopeList.length - 1) : num;
 		var err;
 		var parser;
 		var result;

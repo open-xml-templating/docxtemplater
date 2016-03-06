@@ -25,9 +25,9 @@ module.exports = class TemplaterState {
 	}
 	calcEndTag(tag) { return this.calcPosition(tag.end) + 1; }
 	calcPosition(bracket) {
-		return this.matches[bracket.numXmlTag].offset + this.matches[bracket.numXmlTag][1].length + this.charactersAdded[bracket.numXmlTag] + bracket.numCharacter;
+		return this.matches[bracket.numXmlTag].offset + this.matches[bracket.numXmlTag].array[1].length + this.charactersAdded[bracket.numXmlTag] + bracket.numCharacter;
 	}
-	innerContent(type) { return this.matches[this[type].numXmlTag][2]; }
+	innerContent(type) { return this.matches[this[type].numXmlTag].array[2]; }
 	initialize() {
 		this.context = "";
 		this.inForLoop = false; // tag with sharp: {#forLoop}______{/forLoop}

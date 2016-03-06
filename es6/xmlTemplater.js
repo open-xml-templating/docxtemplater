@@ -4,20 +4,20 @@ var DocUtils = require("./docUtils");
 var ScopeManager = require("./scopeManager");
 var SubContent = require("./subContent");
 var TemplaterState = require("./templaterState");
-var XmlMatcher = require("./xmlMatcher");
+var xmlMatcher = require("./xmlMatcher");
 var ModuleManager = require("./moduleManager");
 var CompiledTemplate = require("./compiledTemplate");
 var CompiledXmlTag = require("./compiledXmlTag");
 var Errors = require("./errors");
 
 var getFullText = function (content, tagsXmlArray) {
-	var matcher = new XmlMatcher(content).parse(tagsXmlArray);
+	var matcher = xmlMatcher(content, tagsXmlArray);
 	// get only the text
 	var output = ((() => {
 		var result = [];
 		for (var i = 0, match; i < matcher.matches.length; i++) {
 			match = matcher.matches[i];
-			result.push(match[2]);
+			result.push(match.array[2]);
 		}
 		return result;
 	})());
@@ -27,10 +27,10 @@ var getFullText = function (content, tagsXmlArray) {
 
 // This is an abstract class, DocXTemplater is an example of inherited class
 module.exports = class XmlTemplater {
-	constructor(content = "", options = {}) {
-		this.fromJson(options);
+	constructor(content, options) {
+		this.fromJson(options || {});
 		this.templaterState = new TemplaterState(this.moduleManager, this.delimiters);
-		this.load(content);
+		this.load(content || "");
 	}
 	load(content) {
 		this.content = content;
@@ -39,11 +39,12 @@ module.exports = class XmlTemplater {
 			err.properties.id = "xmltemplater_content_must_be_string";
 			throw err;
 		}
-		var xmlMatcher = new XmlMatcher(this.content).parse(this.fileTypeConfig.tagsXmlArray);
-		this.templaterState.matches = xmlMatcher.matches;
-		this.templaterState.charactersAdded = xmlMatcher.charactersAdded;
+		var result = xmlMatcher(this.content, this.fileTypeConfig.tagsXmlArray);
+		this.templaterState.matches = result.matches;
+		this.templaterState.charactersAdded = result.charactersAdded;
+		// console.log(this.templaterState.charactersAdded);
 	}
-	fromJson(options = {}) {
+	fromJson(options) {
 		var self = this;
 		this.tags = (options.tags != null) ? options.tags : ({});
 		this.fileTypeConfig = options.fileTypeConfig;
@@ -110,7 +111,7 @@ module.exports = class XmlTemplater {
 		for (var numXmlTag = 0, match; numXmlTag < matches.length; numXmlTag++) {
 			match = matches[numXmlTag];
 			// text inside the <w:t>
-			var innerText = match[2];
+			var innerText = match.array[2];
 			this.templaterState.offset[numXmlTag] = 0;
 			if (this.templaterState.trail.length === 0 && !this.templaterState.inTag && innerText.indexOf(this.delimiters.start[0]) === -1 && innerText.indexOf(this.delimiters.end[0]) === -1) {
 				continue;
@@ -214,7 +215,8 @@ module.exports = class XmlTemplater {
 	deleteOuterTags(outerXmlText) {
 		return this.deleteTag(this.deleteTag(outerXmlText, this.templaterState.loopOpen), this.templaterState.loopClose);
 	}
-	dashLoop(elementDashLoop, sharp = false) {
+	dashLoop(elementDashLoop, sharp) {
+		sharp = sharp || false;
 		var outerXml;
 		var subContent = new SubContent(this.content);
 		subContent.getInnerLoop(this.templaterState);
@@ -246,7 +248,7 @@ module.exports = class XmlTemplater {
 			before = `<${options.fullTag} xml:space=\"preserve\">`;
 		}
 		else {
-			before = this.templaterState.matches[options.xmlTagNumber][1];
+			before = this.templaterState.matches[options.xmlTagNumber].array[1];
 		}
 		if (!options.noEndTag) {
 			after = `</${options.tag}>`;
@@ -262,33 +264,33 @@ module.exports = class XmlTemplater {
 		return string.substr(0, from) + replaced;
 	}
 	replaceXmlTag(content, options) {
-		this.templaterState.offset[options.xmlTagNumber] += options.insideValue.length - this.templaterState.matches[options.xmlTagNumber][2].length;
-		options.fullTag = this.templaterState.matches[options.xmlTagNumber][1].replace(/^<([^>]+)>$/, "$1");
+		this.templaterState.offset[options.xmlTagNumber] += options.insideValue.length - this.templaterState.matches[options.xmlTagNumber].array[2].length;
+		options.fullTag = this.templaterState.matches[options.xmlTagNumber].array[1].replace(/^<([^>]+)>$/, "$1");
 		options.tag = options.fullTag.replace(/([^ ]*).*/, "$1");
 		options.spacePreserve = (options.spacePreserve != null) ? options.spacePreserve : true;
-		options.spacePreserve = options.spacePreserve && this.templaterState.matches[options.xmlTagNumber][1].indexOf('xml:space="preserve"') === -1;
+		options.spacePreserve = options.spacePreserve && this.templaterState.matches[options.xmlTagNumber].array[1].indexOf('xml:space="preserve"') === -1;
 		options.noStartTag = (options.noStartTag != null) ? options.noStartTag : false;
 		options.noEndTag = (options.noEndTag != null) ? options.noEndTag : false;
 		var replacer = this.xmlToBeReplaced(options);
 		// so that the templaterState.matches are still correct
-		this.templaterState.matches[options.xmlTagNumber][2] = options.insideValue;
+		this.templaterState.matches[options.xmlTagNumber].array[2] = options.insideValue;
 		// where the open tag starts: <w:t>
 		var startTag = this.templaterState.calcXmlTagPosition(options.xmlTagNumber);
 		// calculate the replacer according to the params
-		this.templaterState.moveCharacters(options.xmlTagNumber + 1, replacer.length, this.templaterState.matches[options.xmlTagNumber][0].length);
-		if (content.indexOf(this.templaterState.matches[options.xmlTagNumber][0]) === -1) {
+		this.templaterState.moveCharacters(options.xmlTagNumber + 1, replacer.length, this.templaterState.matches[options.xmlTagNumber].array[0].length);
+		if (content.indexOf(this.templaterState.matches[options.xmlTagNumber].array[0]) === -1) {
 			var err = new Errors.XTInternalError("Match not found in content");
 			err.properties.id = "xmltemplater_replaced_cant_be_same_as_substring";
-			err.properties.expectedMatch = this.templaterState.matches[options.xmlTagNumber][0];
+			err.properties.expectedMatch = this.templaterState.matches[options.xmlTagNumber].array[0];
 			err.properties.content = content;
 			throw err;
 		}
-		content = this.replaceFirstFrom(content, this.templaterState.matches[options.xmlTagNumber][0], replacer, startTag);
-		this.templaterState.matches[options.xmlTagNumber][0] = replacer;
+		content = this.replaceFirstFrom(content, this.templaterState.matches[options.xmlTagNumber].array[0], replacer, startTag);
+		this.templaterState.matches[options.xmlTagNumber].array[0] = replacer;
 		var preContent = content.substr(this.lastStart, startTag - this.lastStart);
 		if (this.templaterState.loopType() === "simple") {
 			this.compiled.appendText(preContent);
-			this.lastStart = startTag + this.templaterState.matches[options.xmlTagNumber][0].length;
+			this.lastStart = startTag + this.templaterState.matches[options.xmlTagNumber].array[0].length;
 			this.compiled.appendTag(this.currentCompiledTag);
 		}
 		return content;

@@ -12,8 +12,8 @@ var PptXFileTypeConfig = {
 		return slideTemplates.concat(["ppt/presentation.xml"]);
 	},
 	calcIntellegentlyDashElement(content, templaterState) {
-		var {start, end} = new SubContent(content).getOuterLoop(templaterState);
-		var scopeContent = xmlUtil.getListXmlElements(content, start, end - start);
+		var outer = new SubContent(content).getOuterLoop(templaterState);
+		var scopeContent = xmlUtil.getListXmlElements(content.substr(outer.start, outer.end - outer.start));
 		for (var i = 0, t; i < scopeContent.length; i++) {
 			t = scopeContent[i];
 			if (t.tag === "<a:tc>") {
@@ -33,8 +33,8 @@ var DocXFileTypeConfig = {
 	tagsXmlArray: ["w:t", "m:t"],
 	tagRawXml: "w:p",
 	calcIntellegentlyDashElement(content, templaterState) {
-		var {start, end} = new SubContent(content).getOuterLoop(templaterState);
-		var scopeContent = xmlUtil.getListXmlElements(content, start, end - start);
+		var outer = new SubContent(content).getOuterLoop(templaterState);
+		var scopeContent = xmlUtil.getListXmlElements(content.substr(outer.start, outer.end - outer.start));
 		for (var i = 0, t; i < scopeContent.length; i++) {
 			t = scopeContent[i];
 			if (t.tag === "<w:tc>") {

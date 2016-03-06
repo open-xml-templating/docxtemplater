@@ -3,8 +3,8 @@
 var Errors = require("./errors");
 
 module.exports = class SubContent {
-	constructor(fullText = "") {
-		this.fullText = fullText;
+	constructor(fullText) {
+		this.fullText = fullText || "";
 		this.text = "";
 		this.start = 0;
 		this.end = 0;

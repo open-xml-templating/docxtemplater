@@ -1,8 +1,9 @@
 "use strict";
 
 var CompiledXmlTag = class CompiledXmlTag {
-	constructor(compiled = []) { this.set(compiled); }
-	set(compiled = []) {
+	constructor(compiled) { this.set(compiled || []); }
+	set(compiled) {
+		compiled = compiled || [];
 		if (this.null) { return this; }
 		this.compiled = [];
 		for (var i = 0, text; i < compiled.length; i++) {

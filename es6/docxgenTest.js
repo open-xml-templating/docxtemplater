@@ -56,12 +56,12 @@ var expectToThrow = function (obj, method, type, expectedError) {
 	return expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
 };
 
-var Errors = require("../../js/errors.js");
-var XmlMatcher = require("../../js/xmlMatcher.js");
-var DocxGen = require("../../js/index.js");
-var DocUtils = require("../../js/docUtils.js");
-var XmlTemplater = require("../../js/xmlTemplater.js");
-var FileTypeConfig = require("../../js/fileTypeConfig.js");
+var Errors = require("./errors.js");
+var xmlMatcher = require("./xmlMatcher.js");
+var DocxGen = require("./index.js");
+var DocUtils = require("./docUtils.js");
+var XmlTemplater = require("./xmlTemplater.js");
+var FileTypeConfig = require("./fileTypeConfig.js");
 
 docX = {};
 var pptX = {};
@@ -107,60 +107,54 @@ var startTest = function () {
 		});
 	});
 
-	describe("XmlMatcher", function () {
+	describe("xmlMatcher", function () {
 		it("should work with simple tag", function () {
-			var matcher = new XmlMatcher("<w:t>Text</w:t>");
-			matcher.parse(["w:t"]);
-			expect(matcher.matches[0][0]).to.be.equal("<w:t>Text</w:t>");
-			expect(matcher.matches[0][1]).to.be.equal("<w:t>");
-			expect(matcher.matches[0][2]).to.be.equal("Text");
+			var matcher = xmlMatcher("<w:t>Text</w:t>", ["w:t"]);
+			expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text</w:t>");
+			expect(matcher.matches[0].array[1]).to.be.equal("<w:t>");
+			expect(matcher.matches[0].array[2]).to.be.equal("Text");
 			return expect(matcher.matches[0].offset).to.be.equal(0);
 		});
 
 		it("should work with multiple tags", function () {
-			var matcher = new XmlMatcher("<w:t>Text</w:t> TAG <w:t>Text2</w:t>");
-			matcher.parse(["w:t"]);
-			expect(matcher.matches[1][0]).to.be.equal("<w:t>Text2</w:t>");
-			expect(matcher.matches[1][1]).to.be.equal("<w:t>");
-			expect(matcher.matches[1][2]).to.be.equal("Text2");
+			var matcher = xmlMatcher("<w:t>Text</w:t> TAG <w:t>Text2</w:t>", ["w:t"]);
+			expect(matcher.matches[1].array[0]).to.be.equal("<w:t>Text2</w:t>");
+			expect(matcher.matches[1].array[1]).to.be.equal("<w:t>");
+			expect(matcher.matches[1].array[2]).to.be.equal("Text2");
 			return expect(matcher.matches[1].offset).to.be.equal(20);
 		});
 
 		it("should work with no tag, with w:t", function () {
-			var matcher = new XmlMatcher("Text1</w:t><w:t>Text2");
-			matcher.parse(["w:t"]);
-			expect(matcher.matches[0][0]).to.be.equal("Text1");
-			expect(matcher.matches[0][1]).to.be.equal("");
-			expect(matcher.matches[0][2]).to.be.equal("Text1");
+			var matcher = xmlMatcher("Text1</w:t><w:t>Text2", ["w:t"]);
+			expect(matcher.matches[0].array[0]).to.be.equal("Text1");
+			expect(matcher.matches[0].array[1]).to.be.equal("");
+			expect(matcher.matches[0].array[2]).to.be.equal("Text1");
 			expect(matcher.matches[0].offset).to.be.equal(0);
 
-			expect(matcher.matches[1][0]).to.be.equal("<w:t>Text2");
-			expect(matcher.matches[1][1]).to.be.equal("<w:t>");
-			expect(matcher.matches[1][2]).to.be.equal("Text2");
+			expect(matcher.matches[1].array[0]).to.be.equal("<w:t>Text2");
+			expect(matcher.matches[1].array[1]).to.be.equal("<w:t>");
+			expect(matcher.matches[1].array[2]).to.be.equal("Text2");
 			return expect(matcher.matches[1].offset).to.be.equal(11);
 		});
 
 		it("should work with no tag, no w:t", function () {
-			var matcher = new XmlMatcher("Text1");
-			matcher.parse(["w:t"]);
-			expect(matcher.matches[0][0]).to.be.equal("Text1");
-			expect(matcher.matches[0][1]).to.be.equal("");
-			expect(matcher.matches[0][2]).to.be.equal("Text1");
+			var matcher = xmlMatcher("Text1", ["w:t"]);
+			expect(matcher.matches[0].array[0]).to.be.equal("Text1");
+			expect(matcher.matches[0].array[1]).to.be.equal("");
+			expect(matcher.matches[0].array[2]).to.be.equal("Text1");
 			return expect(matcher.matches[0].offset).to.be.equal(0);
 		});
 
 		it("should not match with no </w:t> starter", function () {
-			var matcher = new XmlMatcher("TAG<w:t>Text1</w:t>");
-			matcher.parse(["w:t"]);
-			expect(matcher.matches[0][0]).to.be.equal("<w:t>Text1</w:t>");
-			expect(matcher.matches[0][1]).to.be.equal("<w:t>");
-			expect(matcher.matches[0][2]).to.be.equal("Text1");
+			var matcher = xmlMatcher("TAG<w:t>Text1</w:t>", ["w:t"]);
+			expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text1</w:t>");
+			expect(matcher.matches[0].array[1]).to.be.equal("<w:t>");
+			expect(matcher.matches[0].array[2]).to.be.equal("Text1");
 			return expect(matcher.matches[0].offset).to.be.equal(3);
 		});
 
 		it("should not match with no <w:t> ender", function () {
-			var matcher = new XmlMatcher("<w:t>Text1</w:t>TAG");
-			matcher.parse(["w:t"]);
+			var matcher = xmlMatcher("<w:t>Text1</w:t>TAG", ["w:t"]);
 			return expect(matcher.matches.length).to.be.equal(1);
 		});
 	});
@@ -1389,7 +1383,7 @@ TAG`;
 		});
 		it("should be fast for loop tags", function () {
 			var content = "<w:t>{#users}{name}{/users}</w:t>";
-			var users = _.times(1000, function () {
+			var users = _.times(300, function () {
 				return {name: "foo"};
 			});
 			var time = new Date();
@@ -1433,7 +1427,8 @@ var loadImage = function (name, content) {
 	data[name] = content;
 };
 
-var endLoadFile = function (change = 0) {
+var endLoadFile = function (change) {
+	change = change || 0;
 	countFiles += change;
 	if (countFiles === 0 && allStarted === true) {
 		return startTest();
@@ -1444,7 +1439,7 @@ var loadFile = function (name, callback) {
 	countFiles += 1;
 	if ((fs.readFileSync != null)) {
 		var path = require("path");
-		callback(name, fs.readFileSync(path.join(__dirname, "/../../examples/", name), "binary"));
+		callback(name, fs.readFileSync(path.join(__dirname, "/../examples/", name), "binary"));
 		return endLoadFile(-1);
 	}
 	return JSZipUtils.getBinaryContent("../examples/" + name, function (err, data) {

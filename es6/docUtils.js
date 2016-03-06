@@ -39,13 +39,26 @@ DocUtils.charMap = {
 	">": "&gt;",
 };
 
+DocUtils.escapeRegExp = function (str) {
+	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+};
+
+DocUtils.charMapRegexes = Object.keys(DocUtils.charMap).map(function (endChar) {
+	var startChar = DocUtils.charMap[endChar];
+	return {
+		rstart: new RegExp(DocUtils.escapeRegExp(startChar), "g"),
+		rend: new RegExp(DocUtils.escapeRegExp(endChar), "g"),
+		start: startChar,
+		end: endChar,
+	};
+});
+
 DocUtils.wordToUtf8 = function (string) {
 	if (typeof string !== "string") {
 		string = string.toString();
 	}
-	Object.keys(DocUtils.charMap).forEach(function (endChar) {
-		var startChar = DocUtils.charMap[endChar];
-		string = string.replace(new RegExp(DocUtils.escapeRegExp(startChar), "g"), endChar);
+	DocUtils.charMapRegexes.forEach(function (object) {
+		string = string.replace(object.rstart, object.end);
 	});
 	return string;
 };
@@ -54,9 +67,8 @@ DocUtils.utf8ToWord = function (string) {
 	if (typeof string !== "string") {
 		string = string.toString();
 	}
-	Object.keys(DocUtils.charMap).forEach(function (startChar) {
-		var endChar = DocUtils.charMap[startChar];
-		string = string.replace(new RegExp(DocUtils.escapeRegExp(startChar), "g"), endChar);
+	DocUtils.charMapRegexes.forEach(function (object) {
+		string = string.replace(object.rend, object.start);
 	});
 	return string;
 };
@@ -77,8 +89,9 @@ DocUtils.clone = function (obj) {
 	return newInstance;
 };
 
+var spaceRegexp = new RegExp(String.fromCharCode(160), "g");
 DocUtils.convertSpaces = function (s) {
-	return s.replace(new RegExp(String.fromCharCode(160), "g"), " ");
+	return s.replace(spaceRegexp, " ");
 };
 
 DocUtils.pregMatchAll = function (regex, content) {
@@ -87,13 +100,11 @@ DocUtils.pregMatchAll = function (regex, content) {
 	content=lolalolilala
 	returns: [{0: 'la',offset: 2},{0: 'la',offset: 8},{0: 'la',offset: 10}]
 	*/
-	if (typeof regex !== "object") {
-		regex = (new RegExp(regex, "g"));
-	}
 	var matchArray = [];
-	var replacer = function (...pn) {
-		pn.pop();
-		var offset = pn.pop();
+	var replacer = function () {
+		var pn = {array: Array.prototype.slice.call(arguments)};
+		pn.array.pop();
+		var offset = pn.array.pop();
 		// add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 		pn.offset = offset;
 		return matchArray.push(pn);
@@ -134,9 +145,5 @@ DocUtils.tags = DocUtils.defaults.delimiters;
 DocUtils.defaultParser = DocUtils.defaults.parser;
 DocUtils.convert_spaces = DocUtils.convertSpaces;
 DocUtils.preg_match_all = DocUtils.pregMatchAll;
-
-DocUtils.escapeRegExp = function (str) {
-	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-};
 
 module.exports = DocUtils;

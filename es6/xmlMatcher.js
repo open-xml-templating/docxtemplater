@@ -1,71 +1,80 @@
 "use strict";
-// This class responsibility is to parse the XML.
+// res class responsibility is to parse the XML.
 var DocUtils = require("./docUtils");
+var _ = require("lodash");
 
-module.exports = class XmlMatcher {
-	constructor(content) { this.content = content; }
+var handleRecursiveCase = function (res) {
+	/*
+		 Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
+		 For example with res string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
+		 - we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift) (in res case 'I am')
+		 - we need to match the string that is at the right of a <w:t> (that's the role of replacerPush) (in res case 'sleeping')
+		 the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that res part of code works
+		 It should even work if they is no XML at all, for example if the code is just "I am sleeping", in res case however, they should only be one match
+		 */
 
-	parse(tagsXmlArray) {
-		this.tagsXmlArray = tagsXmlArray;
-		this.tagsXmlArrayJoined = this.tagsXmlArray.join("|");
-		this.matches = DocUtils.pregMatchAll(`(<(?:${this.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${this.tagsXmlArrayJoined})>`, this.content);
-		this.charactersAdded = ((() => {
-			var result = [];
-			var end = this.matches.length;
-			for (var i = 0; i < end; i++) {
-				result.push(0);
-			}
-			return result;
-		})());
-		this.handleRecursiveCase();
-		return this;
+	var replacerUnshift = function () {
+		var pn = {array: Array.prototype.slice.call(arguments)};
+		pn.array.shift();
+		var match = pn.array[0] + pn.array[1];
+		// add match so that pn[0] = whole match, pn[1]= first parenthesis,...
+		pn.array.unshift(match);
+		pn.array.pop();
+		var offset = pn.array.pop();
+		pn.offset = offset;
+		pn.first = true;
+		// add at the beginning
+		res.matches.unshift(pn);
+		return res.charactersAdded.unshift(0);
+	};
+
+	if (res.content.indexOf("<") === -1 && res.content.indexOf(">") === -1) {
+		res.content.replace(/^()([^<>]*)$/, replacerUnshift);
 	}
 
-	handleRecursiveCase() {
-		/*
-		Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
-		For example with this string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
-			- we need to match also the string that is inside an implicit <w:t> (that's the role of replacerUnshift) (in this case 'I am')
-			- we need to match the string that is at the right of a <w:t> (that's the role of replacerPush) (in this case 'sleeping')
-		the test: describe "scope calculation" it "should compute the scope between 2 <w:t>" makes sure that this part of code works
-		It should even work if they is no XML at all, for example if the code is just "I am sleeping", in this case however, they should only be one match
-		*/
+	var r = new RegExp(`^()([^<]+)<\/(?:${res.tagsXmlArrayJoined})>`);
+	res.content.replace(r, replacerUnshift);
 
-		var replacerUnshift = (...pn) => {
-			pn.shift();
-			var match = pn[0] + pn[1];
-			// add match so that pn[0] = whole match, pn[1]= first parenthesis,...
-			pn.unshift(match);
-			pn.pop();
-			var offset = pn.pop();
-			pn.offset = offset;
-			pn.first = true;
-			// add at the beginning
-			this.matches.unshift(pn);
-			return this.charactersAdded.unshift(0);
-		};
+	var replacerPush = function () {
+		var pn = {array: Array.prototype.slice.call(arguments)};
+		pn.array.pop();
+		var offset = pn.array.pop();
+		pn.offset = offset;
+		pn.last = true;
+		// add at the end
+		res.matches.push(pn);
+		return res.charactersAdded.push(0);
+	};
 
-		if (this.content.indexOf("<") === -1 && this.content.indexOf(">") === -1) {
-			this.content.replace(/^()([^<>]*)$/, replacerUnshift);
+	r = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^>]+)$`);
+	res.content.replace(r, replacerPush);
+	return res;
+};
+
+var xmlMatcher = function (content, tagsXmlArray) {
+	var res = {};
+	res.content = content;
+	res.tagsXmlArray = tagsXmlArray;
+	res.tagsXmlArrayJoined = res.tagsXmlArray.join("|");
+	var regexp = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>`, "g");
+	res.matches = DocUtils.pregMatchAll(regexp, res.content);
+	res.charactersAdded = ((() => {
+		var result = [];
+		var end = res.matches.length;
+		for (var i = 0; i < end; i++) {
+			result.push(0);
 		}
+		return result;
+	})());
+	return handleRecursiveCase(res);
+};
 
-		var regex = `^()([^<]+)<\/(?:${this.tagsXmlArrayJoined})>`;
-		var r = new RegExp(regex);
-		this.content.replace(r, replacerUnshift);
+var memoizer = function (content, tagsXmlArray) {
+	return content + tagsXmlArray.join("|");
+};
 
-		var replacerPush = (...pn) => {
-			pn.pop();
-			var offset = pn.pop();
-			pn.offset = offset;
-			pn.last = true;
-			// add at the end
-			this.matches.push(pn);
-			return this.charactersAdded.push(0);
-		};
+var memoized = _.memoize(xmlMatcher, memoizer);
 
-		regex = `(<(?:${this.tagsXmlArrayJoined})[^>]*>)([^>]+)$`;
-		r = new RegExp(regex);
-		this.content.replace(r, replacerPush);
-		return this;
-	}
+module.exports = function (content, tagsXmlArray) {
+	return _.cloneDeep(memoized(content, tagsXmlArray));
 };

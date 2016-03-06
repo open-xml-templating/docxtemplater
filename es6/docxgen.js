@@ -14,9 +14,9 @@ var DocxGen = class DocxGen {
 		this.moduleManager.attachModule(module);
 		return this;
 	}
-	setOptions(options = {}) {
+	setOptions(options) {
 		var self = this;
-		this.options = options;
+		this.options = options || {};
 		Object.keys(DocUtils.defaults).forEach(function (key) {
 			var defaultValue = DocUtils.defaults[key];
 			self[key] = (self.options[key] != null) ? self.options[key] : defaultValue;
@@ -94,8 +94,8 @@ var DocxGen = class DocxGen {
 		obj.fileTypeConfig = this.fileTypeConfig;
 		return new DocxGen.XmlTemplater(usedData, obj);
 	}
-	getFullText(path = this.fileTypeConfig.textPath) {
-		return this.createTemplateClass(path).getFullText();
+	getFullText(path) {
+		return this.createTemplateClass(path || this.fileTypeConfig.textPath).getFullText();
 	}
 };
 
