@@ -606,6 +606,19 @@ TAG2
 		});
 	});
 
+	describe("Render from compiled", function () {
+		it("should work with complicated loop", function () {
+			var content = "<w:t> {#users} {name} </w:t>TAG..TAG<w:t>{/users}</w:t>TAG2<w:t>{name}";
+			var scope = {};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			xmlTemplater.compile();
+			var result = xmlTemplater.renderFromCompiled({users: [{name: "Jack"}], name: "dummy"});
+			expect(result).to.be.equal("<w:t>  Jack </w:t>TAG..TAG<w:t></w:t>TAG2<w:t xml:space=\"preserve\">dummy");
+			result = xmlTemplater.renderFromCompiled({users: [{}, {name: "John"}], name: "default"});
+			expect(result).to.be.equal("<w:t>  default </w:t>TAG..TAG<w:t> John </w:t>TAG..TAG<w:t></w:t>TAG2<w:t xml:space=\"preserve\">default");
+		});
+	});
+
 	describe("xmlTemplater", function () {
 		it("should work with simpleContent", function () {
 			var content = "<w:t>Hello {name}</w:t>";

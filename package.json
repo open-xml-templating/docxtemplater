@@ -43,18 +43,17 @@
   "scripts": {
     "preversion": "npm test",
     "compile": "npm run convertto:es5 && node examples/compile_site.js",
-    "browserify:test": "browserify -r ./test/spec/docxgenTest.spec.js -s DocxgenTest > browser/docxgenTest.spec.js",
+    "browserify:test": "browserify -r ./js/docxgenTest.js -s DocxgenTest > browser/docxgenTest.js",
     "browserify:lib": "browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js",
     "browserify:demo": "browserify -r ./examples/main.js -s Docxdemo > browser/main.min.js",
     "uglify:lib": "uglifyjs build/docxgen.js > build/docxgen.min.js",
     "browserify": "npm run browserify:test && npm run browserify:lib && npm run browserify:demo",
-    "convertto:es5": "rm js -rf ; mkdir -p test/spec; mkdir -p js; npm run babel; npm run cp:test",
-    "cp:test": "cat js/docxgenTest.js > test/spec/docxgenTest.spec.js",
+    "convertto:es5": "rm js -rf ; mkdir -p test/spec; mkdir -p js; npm run babel",
     "convertto:es5:watch": "npm run babel -- --watch",
     "test:watch": "node watch_file_and_run_test.js & npm run convertto:es5:watch",
     "lint": "eslint .",
     "babel": "babel es6 --out-dir js",
-    "mocha": "mocha test/spec/docxgenTest.spec.js",
+    "mocha": "mocha js/docxgenTest.js",
     "test": "npm run compile && npm run mocha"
   }
 }

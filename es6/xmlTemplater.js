@@ -8,6 +8,7 @@ var xmlMatcher = require("./xmlMatcher");
 var ModuleManager = require("./moduleManager");
 var CompiledTemplate = require("./compiledTemplate");
 var CompiledXmlTag = require("./compiledXmlTag");
+var renderCompiled = require("./renderCompiled");
 var Errors = require("./errors");
 
 var getFullText = function (content, tagsXmlArray) {
@@ -42,7 +43,6 @@ module.exports = class XmlTemplater {
 		var result = xmlMatcher(this.content, this.fileTypeConfig.tagsXmlArray);
 		this.templaterState.matches = result.matches;
 		this.templaterState.charactersAdded = result.charactersAdded;
-		// console.log(this.templaterState.charactersAdded);
 	}
 	fromJson(options) {
 		var self = this;
@@ -89,6 +89,10 @@ module.exports = class XmlTemplater {
 	returns the new content of the tagged content*/
 	render() {
 		return this.compile();
+	}
+	renderFromCompiled(tags) {
+		var scopeManager = new ScopeManager({tags: tags, scopePath: [], usedTags: {def: {}, undef: {}}, scopeList: [tags], parser: this.parser, moduleManager: this.moduleManager, delimiters: this.delimiters});
+		return renderCompiled(this.compiled.compiled, tags, scopeManager);
 	}
 	getTrail(character) {
 		this.templaterState.trail += character;
@@ -374,7 +378,7 @@ module.exports = class XmlTemplater {
 			}
 		}
 		var subXml = new XmlTemplater(innerTagsContent, options);
-		return subXml.render();
+		return subXml;
 	}
 	forLoop(outerTags, subTemplate) {
 		/*
@@ -396,13 +400,13 @@ module.exports = class XmlTemplater {
 		var tag = this.templaterState.loopOpen.tag;
 		var newContent = "";
 		var loopFn = (subTags) => {
-			var subfile = this.calcSubXmlTemplater(subTemplate, {tags: subTags});
+			var subfile = this.calcSubXmlTemplater(subTemplate, {tags: subTags}).render();
 			newContent += subfile.content;
 			return newContent;
 		};
 
 		this.scopeManager.loopOver(tag, loopFn, this.templaterState.loopIsInverted);
-		var subfile = this.calcSubXmlTemplater(subTemplate, {tags: {}});
+		var subfile = this.calcSubXmlTemplater(subTemplate, {tags: {}}).render();
 		this.compiled.appendSubTemplate(subfile.compiled.compiled, tag, this.templaterState.loopIsInverted);
 		this.lastStart += newContent.length - outerTags.text.length;
 		return this.replaceXml(outerTags, newContent);

@@ -80,11 +80,9 @@ DocUtils.clone = function (obj) {
 
 	var newInstance = new obj.constructor();
 
-	for (var key in obj) {
-		if ({}.hasOwnProperty.call(obj, key)) {
-			newInstance[key] = DocUtils.clone(obj[key]);
-		}
-	}
+	Object.keys(obj).forEach(function (key) {
+		newInstance[key] = DocUtils.clone(obj[key]);
+	});
 
 	return newInstance;
 };
