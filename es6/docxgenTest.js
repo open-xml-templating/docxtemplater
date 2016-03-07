@@ -53,7 +53,7 @@ var expectToThrow = function (obj, method, type, expectedError) {
 	expect(e.properties.id, toShowOnFail).to.be.a("string");
 	delete e.properties.explanation;
 	delete e.stack;
-	return expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
+	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
 };
 
 var Errors = require("./errors.js");
@@ -99,11 +99,11 @@ var getLength = function (d) {
 var startTest = function () {
 	describe("DocxGenBasis", function () {
 		it("should be defined", function () {
-			return expect(DocxGen).not.to.be.equal(undefined);
+			expect(DocxGen).not.to.be.equal(undefined);
 		});
 		it("should construct", function () {
 			var a = new DocxGen();
-			return expect(a).not.to.be.equal(undefined);
+			expect(a).not.to.be.equal(undefined);
 		});
 	});
 
@@ -113,7 +113,7 @@ var startTest = function () {
 			expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text</w:t>");
 			expect(matcher.matches[0].array[1]).to.be.equal("<w:t>");
 			expect(matcher.matches[0].array[2]).to.be.equal("Text");
-			return expect(matcher.matches[0].offset).to.be.equal(0);
+			expect(matcher.matches[0].offset).to.be.equal(0);
 		});
 
 		it("should work with multiple tags", function () {
@@ -121,7 +121,7 @@ var startTest = function () {
 			expect(matcher.matches[1].array[0]).to.be.equal("<w:t>Text2</w:t>");
 			expect(matcher.matches[1].array[1]).to.be.equal("<w:t>");
 			expect(matcher.matches[1].array[2]).to.be.equal("Text2");
-			return expect(matcher.matches[1].offset).to.be.equal(20);
+			expect(matcher.matches[1].offset).to.be.equal(20);
 		});
 
 		it("should work with no tag, with w:t", function () {
@@ -134,7 +134,7 @@ var startTest = function () {
 			expect(matcher.matches[1].array[0]).to.be.equal("<w:t>Text2");
 			expect(matcher.matches[1].array[1]).to.be.equal("<w:t>");
 			expect(matcher.matches[1].array[2]).to.be.equal("Text2");
-			return expect(matcher.matches[1].offset).to.be.equal(11);
+			expect(matcher.matches[1].offset).to.be.equal(11);
 		});
 
 		it("should work with no tag, no w:t", function () {
@@ -142,7 +142,7 @@ var startTest = function () {
 			expect(matcher.matches[0].array[0]).to.be.equal("Text1");
 			expect(matcher.matches[0].array[1]).to.be.equal("");
 			expect(matcher.matches[0].array[2]).to.be.equal("Text1");
-			return expect(matcher.matches[0].offset).to.be.equal(0);
+			expect(matcher.matches[0].offset).to.be.equal(0);
 		});
 
 		it("should not match with no </w:t> starter", function () {
@@ -150,12 +150,12 @@ var startTest = function () {
 			expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text1</w:t>");
 			expect(matcher.matches[0].array[1]).to.be.equal("<w:t>");
 			expect(matcher.matches[0].array[2]).to.be.equal("Text1");
-			return expect(matcher.matches[0].offset).to.be.equal(3);
+			expect(matcher.matches[0].offset).to.be.equal(3);
 		});
 
 		it("should not match with no <w:t> ender", function () {
 			var matcher = xmlMatcher("<w:t>Text1</w:t>TAG", ["w:t"]);
-			return expect(matcher.matches.length).to.be.equal(1);
+			expect(matcher.matches.length).to.be.equal(1);
 		});
 	});
 
@@ -163,28 +163,28 @@ var startTest = function () {
 		describe("ajax done correctly", function () {
 			it("doc and img Data should have the expected length", function () {
 				expect(getLength(docX["imageExample.docx"].loadedContent)).to.be.equal(729580);
-				return expect(getLength(data["image.png"])).to.be.equal(18062);
+				expect(getLength(data["image.png"])).to.be.equal(18062);
 			});
 			it("should have the right number of files (the docx unzipped)", function () {
 				docX["imageExample.docx"] = new DocxGen(docX["imageExample.docx"].loadedContent);
-				return expect(DocUtils.sizeOfObject(docX["imageExample.docx"].zip.files)).to.be.equal(16);
+				expect(DocUtils.sizeOfObject(docX["imageExample.docx"].zip.files)).to.be.equal(16);
 			});
 		});
 		describe("basic loading", function () {
 			it("should load file imageExample.docx", function () {
-				return expect(typeof docX["imageExample.docx"]).to.be.equal("object");
+				expect(typeof docX["imageExample.docx"]).to.be.equal("object");
 			});
 		});
 		describe("content_loading", function () {
 			it("should load the right content for the footer", function () {
 				var fullText = (docX["imageExample.docx"].getFullText("word/footer1.xml"));
 				expect(fullText.length).not.to.be.equal(0);
-				return expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
+				expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 			});
 			it("should load the right content for the document", function () {
 				// default value document.xml
 				var fullText = (docX["imageExample.docx"].getFullText());
-				return expect(fullText).to.be.equal("");
+				expect(fullText).to.be.equal("");
 			});
 		});
 		describe("output and input", function () {
@@ -192,7 +192,7 @@ var startTest = function () {
 				var doc = new DocxGen(docX["tagExample.docx"].loadedContent);
 				var output = doc.getZip().generate({type: "base64"});
 				expect(output.length).to.be.equal(90732);
-				return expect(output.substr(0, 50)).to.be.equal("UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn");
+				expect(output.substr(0, 50)).to.be.equal("UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn");
 			});
 		});
 	});
@@ -210,7 +210,7 @@ var startTest = function () {
 				docX["tagExample.docx"].render();
 				expect(docX["tagExample.docx"].getFullText()).to.be.equal("Edgar Hipp");
 				expect(docX["tagExample.docx"].getFullText("word/header1.xml")).to.be.equal("Edgar Hipp0652455478New Website");
-				return expect(docX["tagExample.docx"].getFullText("word/footer1.xml")).to.be.equal("EdgarHipp0652455478");
+				expect(docX["tagExample.docx"].getFullText("word/footer1.xml")).to.be.equal("EdgarHipp0652455478");
 			});
 			it("should export the good file", function () {
 				return shouldBeSame("tagExample.docx", "tagExampleExpected.docx");
@@ -230,7 +230,7 @@ var startTest = function () {
 				};
 				docX["tagLoopExample.docx"].setData(tags);
 				docX["tagLoopExample.docx"].render();
-				return expect(docX["tagLoopExample.docx"].getFullText()).to.be.equal("Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar");
+				expect(docX["tagLoopExample.docx"].getFullText()).to.be.equal("Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar");
 			});
 			it("should work with loops inside loops", function () {
 				var tags = {products: [{title: "Microsoft", name: "DOS", reference: "Win7", avantages: [{title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]}]}, {title: "Linux", name: "Ubuntu", reference: "Ubuntu10", avantages: [{title: "It's very powerful", proof: [{reason: "the terminal is your friend"}, {reason: "Hello world"}, {reason: "it's free"}]}]}, {title: "Apple", name: "Mac", reference: "OSX", avantages: [{title: "It's very easy", proof: [{reason: "you can do a lot just with the mouse"}, {reason: "It's nicely designed"}]}]}]};
@@ -239,7 +239,7 @@ var startTest = function () {
 				var text = docX["tagProduitLoop.docx"].getFullText();
 				var expectedText = "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
 				expect(text.length).to.be.equal(expectedText.length);
-				return expect(text).to.be.equal(expectedText);
+				expect(text).to.be.equal(expectedText);
 			});
 			it("should not have sideeffects with inverted with array length 3", function () {
 				var content = `<w:t>{^todos}No {/todos}Todos</w:t>
@@ -249,7 +249,7 @@ var startTest = function () {
 				var scope = {todos: ["A", "B", "C"]};
 				var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 				xmlTemplater.render();
-				return expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+				expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
 			});
 			it("should not have sideeffects with inverted with empty array", function () {
 				var content = `<w:t>{^todos}No {/todos}Todos</w:t>
@@ -259,7 +259,7 @@ var startTest = function () {
 				var scope = {todos: []};
 				var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 				xmlTemplater.render();
-				return expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+				expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
 			});
 
 			it("should provide inverted loops", function () {
@@ -271,7 +271,7 @@ var startTest = function () {
 				].forEach(function (tags) {
 					var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: tags});
 					doc.render();
-					return expect(doc.getFullText()).to.be.equal("No products found");
+					expect(doc.getFullText()).to.be.equal("No products found");
 				}
 				);
 
@@ -282,7 +282,7 @@ var startTest = function () {
 				].forEach(function (tags) {
 					var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: tags});
 					doc.render();
-					return expect(doc.getFullText()).to.be.equal("");
+					expect(doc.getFullText()).to.be.equal("");
 				}
 				);
 			});
@@ -293,17 +293,17 @@ var startTest = function () {
 		it("should compute the scope between 2 <w:t>", function () {
 			var c = "undefined</w:t></w:r></w:p><w:p w:rsidP=\"008A4B3C\" w:rsidR=\"007929C1\" w:rsidRDefault=\"007929C1\" w:rsidRPr=\"008A4B3C\"><w:pPr><w:pStyle w:val=\"Sous-titre\"/></w:pPr><w:r w:rsidRPr=\"008A4B3C\"><w:t xml:space=\"preserve\">Audit réalisé le ";
 			var scope = xmlUtil.getListXmlElements(c);
-			return expect(scope).to.be.eql([{tag: "</w:t>", offset: 9}, {tag: "</w:r>", offset: 15}, {tag: "</w:p>", offset: 21}, {tag: "<w:p>", offset: 27}, {tag: "<w:r>", offset: 162}, {tag: "<w:t>", offset: 188}]);
+			expect(scope).to.be.eql([{tag: "</w:t>", offset: 9}, {tag: "</w:r>", offset: 15}, {tag: "</w:p>", offset: 21}, {tag: "<w:p>", offset: 27}, {tag: "<w:r>", offset: 162}, {tag: "<w:t>", offset: 188}]);
 		});
 		it("should compute the scope between 2 <w:t> in an Array", function () {
 			var c = "urs</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:type=\"dxa\" w:w=\"4140\"/></w:tcPr><w:p w:rsidP=\"00CE524B\" w:rsidR=\"00CE524B\" w:rsidRDefault=\"00CE524B\"><w:pPr><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\"/><w:color w:val=\"auto\"/></w:rPr><w:t>Sur exté";
 			var scope = xmlUtil.getListXmlElements(c);
-			return expect(scope).to.be.eql([{tag: "</w:t>", offset: 3}, {tag: "</w:r>", offset: 9}, {tag: "</w:p>", offset: 15}, {tag: "</w:tc>", offset: 21}, {tag: "<w:tc>", offset: 28}, {tag: "<w:p>", offset: 83}, {tag: "<w:r>", offset: 268}, {tag: "<w:t>", offset: 374}]);
+			expect(scope).to.be.eql([{tag: "</w:t>", offset: 3}, {tag: "</w:r>", offset: 9}, {tag: "</w:p>", offset: 15}, {tag: "</w:tc>", offset: 21}, {tag: "<w:tc>", offset: 28}, {tag: "<w:p>", offset: 83}, {tag: "<w:r>", offset: 268}, {tag: "<w:t>", offset: 374}]);
 		});
 		it("should compute the scope between a w:t in an array and the other outside", function () {
 			var c = "defined </w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00BE3585\" w:rsidRDefault=\"00BE3585\"/><w:p w:rsidP=\"00CA7135\" w:rsidR=\"00137C91\" w:rsidRDefault=\"00137C91\"><w:r w:rsidRPr=\"00B12C70\"><w:rPr><w:bCs/></w:rPr><w:t>Coût ressources ";
 			var scope = xmlUtil.getListXmlElements(c);
-			return expect(scope).to.be.eql([{tag: "</w:t>", offset: 8}, {tag: "</w:r>", offset: 14}, {tag: "</w:p>", offset: 20}, {tag: "</w:tc>", offset: 26}, {tag: "</w:tr>", offset: 33}, {tag: "</w:tbl>", offset: 40}, {tag: "<w:p>", offset: 188}, {tag: "<w:r>", offset: 257}, {tag: "<w:t>", offset: 306}]);
+			expect(scope).to.be.eql([{tag: "</w:t>", offset: 8}, {tag: "</w:r>", offset: 14}, {tag: "</w:p>", offset: 20}, {tag: "</w:tc>", offset: 26}, {tag: "</w:tr>", offset: 33}, {tag: "</w:tbl>", offset: 40}, {tag: "<w:p>", offset: 188}, {tag: "<w:r>", offset: 257}, {tag: "<w:t>", offset: 306}]);
 		});
 	});
 
@@ -314,7 +314,7 @@ var startTest = function () {
 			docX["tagDashLoop.docx"].render();
 			var expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
 			var text = docX["tagDashLoop.docx"].getFullText();
-			return expect(text).to.be.equal(expectedText);
+			expect(text).to.be.equal(expectedText);
 		});
 		it("dash loop ok on simple table -> w:table", function () {
 			var tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
@@ -322,7 +322,7 @@ var startTest = function () {
 			docX["tagDashLoopTable.docx"].render();
 			var expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
 			var text = docX["tagDashLoopTable.docx"].getFullText();
-			return expect(text).to.be.equal(expectedText);
+			expect(text).to.be.equal(expectedText);
 		});
 		it("dash loop ok on simple list -> w:p", function () {
 			var tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
@@ -330,7 +330,7 @@ var startTest = function () {
 			docX["tagDashLoopList.docx"].render();
 			var expectedText = "linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ";
 			var text = docX["tagDashLoopList.docx"].getFullText();
-			return expect(text).to.be.equal(expectedText);
+			expect(text).to.be.equal(expectedText);
 		});
 	});
 
@@ -379,12 +379,12 @@ var startTest = function () {
 		it("should work with simple document", function () {
 			var d = new DocxGen(docX["tagExample.docx"].loadedContent, {}, {intelligentTagging: false});
 			var tempVars = d.getTags();
-			return expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true, description: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {last_name: true, first_name: true}}}]);
+			expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true, description: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {last_name: true, first_name: true}}}]);
 		});
 		it("should work with loop document", function () {
 			docX["tagLoopExample.docx"] = new DocxGen(docX["tagLoopExample.docx"].loadedContent, {}, {intelligentTagging: false});
 			var tempVars = docX["tagLoopExample.docx"].getTags();
-			return expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {nom: true, prenom: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {nom: true, prenom: true, telephone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {offre: {nom: true, prix: true, titre: true}, nom: true, prenom: true}}}]);
+			expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {nom: true, prenom: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {nom: true, prenom: true, telephone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {offre: {nom: true, prix: true, titre: true}, nom: true, prenom: true}}}]);
 		});
 	});
 
@@ -395,7 +395,7 @@ var startTest = function () {
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
 			var expected = ['<w:t xml:space="preserve">', "Hello ", {type: "tag", tag: "."}, "</w:t>"];
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
 		});
 		it("should work with text with special characters", function () {
 			var content = "<w:t>Hello {&gt;name}</w:t>";
@@ -403,7 +403,7 @@ var startTest = function () {
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
 			var expected = ['<w:t xml:space="preserve">', "Hello ", {type: "tag", tag: ">name"}, "</w:t>"];
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
 		});
 		it("should work with simple text", function () {
 			var content = "<w:t>Hello {name}</w:t>";
@@ -411,7 +411,7 @@ var startTest = function () {
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
 			var expected = ['<w:t xml:space="preserve">', "Hello ", {type: "tag", tag: "name"}, "</w:t>"];
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
 		});
 		it("should work with two tags", function () {
 			var content = `<w:t>Hello {name}</w:t>
@@ -419,7 +419,7 @@ var startTest = function () {
 			var scope = {name: "Edgar", name2: "John"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'<w:t xml:space="preserve">',
 				"Hello ",
 				{type: "tag", tag: "name"},
@@ -436,7 +436,7 @@ var startTest = function () {
 			var scope = {name: "Edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"Hello </w:t>TAGS...TAGS",
 				'<w:t xml:space="preserve">',
 				" ",
@@ -449,7 +449,7 @@ var startTest = function () {
 			var scope = {name: "Edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"Hello </w:t>TAGS...TAGS",
 				'<w:t xml:space="preserve">',
 				" ",
@@ -471,7 +471,7 @@ var startTest = function () {
 			var scope = {};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				{type: "tag", tag: "name"},
 				"</w:t>TAGS...TAGS",
 				"<w:t>",
@@ -491,7 +491,7 @@ var startTest = function () {
 			var scope = {users: [{name: "Edgar"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"<w:t> ",
 				{type: "loop", inverted: false, tag: "users", template: [
 					" ",
@@ -507,7 +507,7 @@ var startTest = function () {
 			var scope = {users: [{name: "Edgar"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"<w:t> ",
 				{type: "loop", inverted: true, tag: "users", template: [
 					" ",
@@ -523,7 +523,7 @@ var startTest = function () {
 			var scope = {raw: ""};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"<w:t>Hi Hi </w:t>",
 				{type: "raw", tag: "raw"},
 				"<w:t>Ho</w:t>",
@@ -540,7 +540,7 @@ var startTest = function () {
 				{type: "raw", tag: "raw"},
 				"<w:t>Ho</w:t>",
 			]);
-			return expect(xmlTemplater.content).to.be.deep.equal(
+			expect(xmlTemplater.content).to.be.deep.equal(
 				"<w:t>Hi Hi </w:t><w:t>Ho</w:t>"
 			);
 		});
@@ -550,7 +550,7 @@ var startTest = function () {
 			var scope = {users: [{user: "Edgar"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				"<w:t> ",
 				{type: "loop", inverted: false, tag: "users", template: [
 					" ",
@@ -585,7 +585,7 @@ TAG2
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, intelligentTagging: true});
 			xmlTemplater.render();
 
-			return expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
+			expect(xmlTemplater.compiled.compiled).to.be.deep.equal([
 				'<w:t xml:space="preserve">',
 				"Hello ",
 				{type: "tag", tag: "name"},
@@ -612,14 +612,14 @@ TAG2
 			var scope = {name: "Edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
 		it("should work with {.} for this", function () {
 			var content = "<w:t>Hello {.}</w:t>";
 			var scope = "Edgar";
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
 
 		it("should work with {.} for this inside loop", function () {
@@ -627,7 +627,7 @@ TAG2
 			var scope = {names: ["Edgar", "John"]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,John,");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,John,");
 		});
 
 		it("should work with non w:t content", function () {
@@ -635,14 +635,14 @@ TAG2
 			var scope = {name: "edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.content).to.be.equal("Hello edgar");
+			expect(xmlTemplater.content).to.be.equal("Hello edgar");
 		});
 		it("should work with tag in two elements", function () {
 			var content = "<w:t>Hello {</w:t><w:t>name}</w:t>";
 			var scope = {name: "Edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
 
 		it("should work with splitted tag in three elements", function () {
@@ -650,7 +650,7 @@ TAG2
 			var scope = {name: "Edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
 
 		it("should work with simple loop with object value", function () {
@@ -658,7 +658,7 @@ TAG2
 			var scope = {person: {name: "Edgar"}};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
 
 		it("should work with simple Loop", function () {
@@ -666,7 +666,7 @@ TAG2
 			var scope = {names: [{name: "Edgar"}, {name: "Mary"}, {name: "John"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
 		});
 		it("should work with simple Loop with boolean value", function () {
 			var content = "<w:t>Hello {#showName}{name},{/showName}</w:t>";
@@ -677,49 +677,49 @@ TAG2
 			scope = {showName: false, name: "Edgar"};
 			xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello ");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello ");
 		});
 		it("should work with dash Loop", function () {
 			var content = "<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>";
 			var scope = {names: [{name: "Edgar"}, {name: "Mary"}, {name: "John"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Hello Mary,Hello John,");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Hello Mary,Hello John,");
 		});
 		it("should work with loop and innerContent", function () {
 			var content = "</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t>";
 			var scope = {title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware");
+			expect(xmlTemplater.getFullText()).to.be.equal("Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware");
 		});
 		it("should work with loop and innerContent (with last)", function () {
 			var content = "Start </w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:pStyle w:val=\"Titre1\"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRPr=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00923B77\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>oof</w:t></w:r><w:r><w:t xml:space=\"preserve\">} </w:t></w:r><w:r w:rsidR=\"00713414\"><w:t>It works because</w:t></w:r><w:r><w:t xml:space=\"preserve\"> {</w:t></w:r><w:r w:rsidR=\"006F26AC\"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00923B77\" w:rsidRDefault=\"00713414\" w:rsidP=\"00923B77\"><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR=\"00923B77\"><w:t>}</w:t></w:r></w:p><w:p w:rsidR=\"00FD04E9\" w:rsidRDefault=\"00923B77\"><w:r><w:t> End";
 			var scope = {title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Start Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware End");
+			expect(xmlTemplater.getFullText()).to.be.equal("Start Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware End");
 		});
 		it("should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ", function () {
 			var content = "Hello {#names}{name},{/names}";
 			var scope = {names: [{name: "Edgar"}, {name: "Mary"}, {name: "John"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.content).to.be.equal("Hello Edgar,Mary,John,");
+			expect(xmlTemplater.content).to.be.equal("Hello Edgar,Mary,John,");
 		});
 		it("should work with delimiter in value", function () {
 			var content = "<w:t>Hello {name}</w:t>";
 			var scope = {name: "{edgar}"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello {edgar}");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello {edgar}");
 		});
 		it("should work with delimiter in value )with loop)", function () {
 			var content = "Hello {#names}{name},{/names}";
 			var scope = {names: [{name: "{John}"}, {name: "M}}{ary"}, {name: "Di{{{gory"}]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello {John},M}}{ary,Di{{{gory,");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello {John},M}}{ary,Di{{{gory,");
 		});
 		it("should work when replacing with exact same value", function () {
 			var content = "<w:p><w:t xml:space=\"preserve\">Hello {name}</w:t></w:p>";
@@ -727,7 +727,7 @@ TAG2
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			xmlTemplater.render();
 			xmlTemplater.getFullText();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello {name}");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello {name}");
 		});
 
 		it("should work with equations", function () {
@@ -774,7 +774,7 @@ TAG2
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			expect(xmlTemplater.getFullText()).to.be.equal("y{bar}*cos⁡( {foo}+{baz})Hello {name}");
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("yMyBar*cos⁡( MyFoo+MyBaz)Hello John");
+			expect(xmlTemplater.getFullText()).to.be.equal("yMyBar*cos⁡( MyFoo+MyBaz)Hello John");
 		});
 	});
 
@@ -785,7 +785,7 @@ TAG2
 			var parser = function () { return "null"; };
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, nullGetter: parser});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
 		});
 	});
 	describe("Changing the parser", function () {
@@ -797,7 +797,7 @@ TAG2
 			};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, parser: parser});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
 		});
 		it("should work when setting from the DocXGen interface", function () {
 			var d = new DocxGen(docX["tagExample.docx"].loadedContent);
@@ -814,7 +814,7 @@ TAG2
 			d.render();
 			expect(d.getFullText()).to.be.equal("EDGAR HIPP");
 			expect(d.getFullText("word/header1.xml")).to.be.equal("EDGAR HIPP0652455478NEW WEBSITE");
-			return expect(d.getFullText("word/footer1.xml")).to.be.equal("EDGARHIPP0652455478");
+			expect(d.getFullText("word/footer1.xml")).to.be.equal("EDGARHIPP0652455478");
 		});
 
 		it("should work with angular parser", function () {
@@ -822,7 +822,7 @@ TAG2
 			docX["angularExample.docx"].setData(tags);
 			docX["angularExample.docx"].parser = angularParser;
 			docX["angularExample.docx"].render();
-			return expect(docX["angularExample.docx"].getFullText()).to.be.equal("Hipp Edgar 2014");
+			expect(docX["angularExample.docx"].getFullText()).to.be.equal("Hipp Edgar 2014");
 		});
 
 		it("should work with loops", function () {
@@ -830,7 +830,7 @@ TAG2
 			var scope = {person: {name: "Edgar", adult: true}};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, parser: angularParser});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 		});
 	});
 
@@ -844,7 +844,7 @@ TAG2
 			expect(fullText.charCodeAt(4)).to.be.equal(1044);
 			expect(fullText.charCodeAt(5)).to.be.equal(1045);
 			expect(fullText.charCodeAt(6)).to.be.equal(1039);
-			return expect(fullText.charCodeAt(7)).to.be.equal(1040);
+			expect(fullText.charCodeAt(7)).to.be.equal(1040);
 		});
 		it("should still read full text after applying tags", function () {
 			docX["cyrillic.docx"].setData({name: "Edgar"});
@@ -858,7 +858,7 @@ TAG2
 			expect(fullText.charCodeAt(5)).to.be.equal(1045);
 			expect(fullText.charCodeAt(6)).to.be.equal(1039);
 			expect(fullText.charCodeAt(7)).to.be.equal(1040);
-			return expect(fullText.indexOf("Edgar")).to.be.equal(9);
+			expect(fullText.indexOf("Edgar")).to.be.equal(9);
 		});
 		it("should insert russian characters", function () {
 			var russianText = [1055, 1091, 1087, 1082, 1080, 1085, 1072];
@@ -875,7 +875,7 @@ TAG2
 			d.setData({last_name: russian});
 			d.render();
 			var outputText = d.getFullText();
-			return expect(outputText.substr(0, 7)).to.be.equal(russian);
+			expect(outputText.substr(0, 7)).to.be.equal(russian);
 		});
 	});
 
@@ -893,7 +893,7 @@ TAG2
 					xtag: "unclosedtag",
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
 		it("should be thrown when unclosedloop", function () {
@@ -909,7 +909,7 @@ TAG2
 					xtag: "#loop",
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
 		it("should fail when rawtag not in paragraph", function () {
@@ -945,7 +945,7 @@ TAG2
 					xtag: "@myrawtag",
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
 		it("should fail when tag already opened", function () {
@@ -960,7 +960,7 @@ TAG2
 					xtag: "user",
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
 		it("should fail when tag already closed", function () {
@@ -974,7 +974,7 @@ TAG2
 					context: "foobar}",
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
 		it("should fail when customparser fails to compile", function () {
@@ -988,7 +988,7 @@ TAG2
 					tag: "name++",
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTScopeParserError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTScopeParserError, expectedError);
 		});
 
 		it("should fail when customparser fails to execute", function () {
@@ -1003,7 +1003,7 @@ TAG2
 					scope: {name: 3},
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTScopeParserError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTScopeParserError, expectedError);
 		});
 
 		it("should fail when rawtag is not only text in paragraph", function () {
@@ -1020,7 +1020,7 @@ TAG2
 					fullTag: "{@myrawtag}",
 				},
 			};
-			return expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
 		});
 
 		describe("internal errors", function () {
@@ -1032,7 +1032,7 @@ TAG2
 						{id: "xmltemplater_content_must_be_string"},
 				};
 				var test = {fn() { return new XmlTemplater(1, {fileTypeConfig: FileTypeConfig.docx}); }};
-				return expectToThrow(test, "fn", Errors.XTInternalError, expectedError);
+				expectToThrow(test, "fn", Errors.XTInternalError, expectedError);
 			});
 		});
 	});
@@ -1063,7 +1063,7 @@ TAG2
 			});
 			docX["tableComplex2Example.docx"].render();
 			var fullText = docX["tableComplex2Example.docx"].getFullText();
-			return expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data");
+			expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data");
 		});
 		it("should work with more complex table", function () {
 			// set the templateVariables
@@ -1091,7 +1091,7 @@ TAG2
 			docX["tableComplexExample.docx"].render();
 			// apply them
 			var fullText = docX["tableComplexExample.docx"].getFullText();
-			return expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
+			expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
 		});
 		it("should work with two tables and intelligentTagging", function () {
 			var tags = {
@@ -1138,7 +1138,7 @@ TAG`;
 			var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			doc.render();
 			expect(doc.content.length).to.be.equal(content.length + scope.complexXml.length - (inner.length));
-			return expect(doc.content).to.contain(scope.complexXml);
+			expect(doc.content).to.contain(scope.complexXml);
 		});
 
 		it("should work even when tags are after the xml", function () {
@@ -1208,7 +1208,7 @@ TAG`;
 			var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 			doc.render();
 			expect(doc.content).to.contain(scope.complexXml);
-			return expect(doc.getFullText()).to.be.equal("HelloJohnDoe 1550MotoFein 1987WaterTest 2010BreadYu");
+			expect(doc.getFullText()).to.be.equal("HelloJohnDoe 1550MotoFein 1987WaterTest 2010BreadYu");
 		});
 
 		it("should work with closing tag in the form of <w:t>}{/body}</w:t>", function () {
@@ -1219,7 +1219,7 @@ TAG`;
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
 
 			xmlTemplater.render();
-			return expect(xmlTemplater.content).not.to.contain("</w:t></w:t>");
+			expect(xmlTemplater.content).not.to.contain("</w:t></w:t>");
 		});
 	});
 
@@ -1233,18 +1233,18 @@ TAG`;
 		});
 
 		it("should get the text inside the tags correctly", function () {
-			return expect(sub.text).to.be.equal("text");
+			expect(sub.text).to.be.equal("text");
 		});
 
 		it("should get the text expanded to the outer xml", function () {
 			sub.getOuterXml("w:t");
-			return expect(sub.text).to.be.equal("<w:t>text</w:t>");
+			expect(sub.text).to.be.equal("<w:t>text</w:t>");
 		});
 		it("should replace the inner text", function () {
 			sub.getOuterXml("w:t");
 			sub.replace("<w:table>Sample Table</w:table>");
 			expect(sub.fullText).to.be.equal("start<w:table>Sample Table</w:table>end");
-			return expect(sub.text).to.be.equal("<w:table>Sample Table</w:table>");
+			expect(sub.text).to.be.equal("<w:table>Sample Table</w:table>");
 		});
 
 		it("should work with custom tags", function () {
@@ -1256,7 +1256,7 @@ TAG`;
 			var scope = {name: "Edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, delimiters});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
 
 		it("should work with custom tags as strings", function () {
@@ -1269,7 +1269,7 @@ TAG`;
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, delimiters});
 			xmlTemplater.render();
 			expect(xmlTemplater.usedTags.def).to.be.eql({name: true});
-			return expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 		});
 
 		it("should work with custom tags as strings with different length", function () {
@@ -1282,7 +1282,7 @@ TAG`;
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, delimiters});
 			xmlTemplater.render();
 			expect(xmlTemplater.usedTags.def).to.be.eql({name: true});
-			return expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 		});
 
 		it("should work with custom tags and loops", function () {
@@ -1294,7 +1294,7 @@ TAG`;
 			var scope = {names: ["Edgar", "Mary", "John"]};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, delimiters});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
 		});
 
 		it("should work with custom tags, same for start and end", function () {
@@ -1306,37 +1306,37 @@ TAG`;
 			var scope = {name: "Edgar"};
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, delimiters});
 			xmlTemplater.render();
-			return expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
 
 		it("should work with loops", function () {
 			var content = "{innertag</w:t><w:t>}";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {innertag: 5}}).render();
-			return expect(xmlt.content).to.be.equal('5</w:t><w:t xml:space="preserve">');
+			expect(xmlt.content).to.be.equal('5</w:t><w:t xml:space="preserve">');
 		});
 
 		it("should work with complex loops (1)", function () {
 			var content = "<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {looptag: true}}).render();
-			return expect(xmlt.content).not.to.contain("</w:t></w:t>");
+			expect(xmlt.content).not.to.contain("</w:t></w:t>");
 		});
 
 		it("should work with complex loops (2)", function () {
 			var content = "<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {person: [{name: "Henry"}]}}).render();
-			return expect(xmlt.content).not.to.contain("</w:t>Henry</w:t>");
+			expect(xmlt.content).not.to.contain("</w:t>Henry</w:t>");
 		});
 
 		it("should work with start and end (1)", function () {
 			var content = "a</w:t><w:t>{name}";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {name: "Henry"}}).render();
-			return expect(xmlt.content).to.contain("a</w:t><w:t");
+			expect(xmlt.content).to.contain("a</w:t><w:t");
 		});
 
 		it("should work with start and end (2)", function () {
 			var content = "{name}</w:t><w:t>a";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {name: "Henry"}}).render();
-			return expect(xmlt.content).to.contain("Henry</w:t><w:t");
+			expect(xmlt.content).to.contain("Henry</w:t><w:t");
 		});
 	});
 
@@ -1344,13 +1344,13 @@ TAG`;
 		it("should work with simple loops", function () {
 			var content = "{#loop}{name}{/loop}";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {loop: [1], name: "Henry"}}).render();
-			return expect(xmlt.content).to.be.equal("Henry");
+			expect(xmlt.content).to.be.equal("Henry");
 		});
 
 		it("should work with double loops", function () {
 			var content = "{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {loop_first: [1], loop_second: [{name_inner: "John"}], name_outer: "Henry"}}).render();
-			return expect(xmlt.content).to.be.equal("John Henry");
+			expect(xmlt.content).to.be.equal("John Henry");
 		});
 	});
 
@@ -1362,7 +1362,7 @@ TAG`;
 				new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {age: 12}}).render();
 			}
 			var duration = new Date() - time;
-			return expect(duration).to.be.below(100);
+			expect(duration).to.be.below(100);
 		});
 		it("should be fast for simple tags with huge content", function () {
 			var content = "<w:t>tag {age}</w:t>";
@@ -1379,11 +1379,11 @@ TAG`;
 				new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {age: 12}}).render();
 			}
 			var duration = new Date() - time;
-			return expect(duration).to.be.below(50);
+			expect(duration).to.be.below(50);
 		});
-		it("should be fast for loop tags", function () {
+		it.skip("should be fast for loop tags", function () {
 			var content = "<w:t>{#users}{name}{/users}</w:t>";
-			var users = _.times(300, function () {
+			var users = _.times(1000, function () {
 				return {name: "foo"};
 			});
 			var time = new Date();
@@ -1391,14 +1391,14 @@ TAG`;
 				new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {users: users}}).render();
 			}
 			var duration = new Date() - time;
-			return expect(duration).to.be.below(50);
+			expect(duration).to.be.below(50);
 		});
 	});
 
 	describe("pptx generation", function () {
 		it("should work with simple pptx", function () {
 			var p = pptX["simpleExample.pptx"].setData({name: "Edgar"}).render();
-			return expect(p.getFullText()).to.be.equal("Hello Edgar");
+			expect(p.getFullText()).to.be.equal("Hello Edgar");
 		});
 	});
 	if ((typeof window !== "undefined" && window != null)) {
