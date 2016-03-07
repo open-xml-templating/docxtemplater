@@ -56,12 +56,12 @@ var expectToThrow = function (obj, method, type, expectedError) {
 	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
 };
 
-var Errors = require("./errors.js");
-var xmlMatcher = require("./xmlMatcher.js");
-var DocxGen = require("./index.js");
-var DocUtils = require("./docUtils.js");
-var XmlTemplater = require("./xmlTemplater.js");
-var FileTypeConfig = require("./fileTypeConfig.js");
+var Errors = require("../errors.js");
+var xmlMatcher = require("../xmlMatcher.js");
+var DocxGen = require("../index.js");
+var DocUtils = require("../docUtils.js");
+var XmlTemplater = require("../xmlTemplater.js");
+var FileTypeConfig = require("../fileTypeConfig.js");
 
 docX = {};
 var pptX = {};
@@ -1394,7 +1394,7 @@ TAG`;
 			var duration = new Date() - time;
 			expect(duration).to.be.below(50);
 		});
-		it.skip("should be fast for loop tags", function () {
+		it("should be fast for loop tags", function () {
 			var content = "<w:t>{#users}{name}{/users}</w:t>";
 			var users = _.times(1000, function () {
 				return {name: "foo"};
@@ -1452,7 +1452,7 @@ var loadFile = function (name, callback) {
 	countFiles += 1;
 	if ((fs.readFileSync != null)) {
 		var path = require("path");
-		callback(name, fs.readFileSync(path.join(__dirname, "/../examples/", name), "binary"));
+		callback(name, fs.readFileSync(path.join(__dirname, "/../../examples/", name), "binary"));
 		return endLoadFile(-1);
 	}
 	return JSZipUtils.getBinaryContent("../examples/" + name, function (err, data) {

@@ -9,7 +9,7 @@ var throttleTime = 1000;
 
 var execTests = function () {
 	/* eslint-disable no-console */
-	exec("npm run cp:test && npm run mocha -- --colors", function (error, stdout, stderr) {
+	exec("npm run mocha -- --colors", function (error, stdout, stderr) {
 		if (stdout) {
 			console.log("stdout: " + stdout);
 		}
