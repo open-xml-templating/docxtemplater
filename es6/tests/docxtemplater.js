@@ -43,23 +43,21 @@ var SubContent = DocxGen.SubContent;
 var xmlUtil = DocxGen.XmlUtil;
 var fs = require("fs");
 
-var fileNames = ["graph.docx",
-"imageExample.docx",
-"tagExample.docx",
-"tagExampleExpected.docx",
-"tagLoopExample.docx",
-"tagExampleExpected.docx",
-"tagLoopExampleImageExpected.docx",
-"tagProduitLoop.docx",
-"tagDashLoop.docx",
-"tagDashLoopList.docx",
-"tagDashLoopTable.docx",
-"tagIntelligentLoopTableExpected.docx",
-"cyrillic.docx",
-"tableComplex2Example.docx",
-"tableComplexExample.docx",
-"angularExample.docx",
-"tagIntelligentLoopTable.docx",
+var fileNames = [
+	"angularExample.docx",
+	"cyrillic.docx",
+	"imageExample.docx",
+	"tableComplex2Example.docx",
+	"tableComplexExample.docx",
+	"tagDashLoop.docx",
+	"tagDashLoopList.docx",
+	"tagDashLoopTable.docx",
+	"tagExample.docx",
+	"tagExampleExpected.docx",
+	"tagIntelligentLoopTable.docx",
+	"tagIntelligentLoopTableExpected.docx",
+	"tagLoopExample.docx",
+	"tagProduitLoop.docx",
 ];
 
 var getLength = function (d) {
@@ -139,8 +137,8 @@ var startTest = function () {
 				expect(getLength(data["image.png"])).to.be.equal(18062);
 			});
 			it("should have the right number of files (the docx unzipped)", function () {
-				docX["imageExample.docx"] = new DocxGen(docX["imageExample.docx"].loadedContent);
-				expect(DocUtils.sizeOfObject(docX["imageExample.docx"].zip.files)).to.be.equal(16);
+				var doc = new DocxGen(docX["imageExample.docx"].loadedContent);
+				expect(DocUtils.sizeOfObject(doc.zip.files)).to.be.equal(16);
 			});
 		});
 		describe("basic loading", function () {
@@ -1001,7 +999,12 @@ var loadFile = function (name, callback) {
 	countFiles += 1;
 	if ((fs.readFileSync != null)) {
 		var path = require("path");
-		callback(name, fs.readFileSync(path.join(__dirname, "/../../examples/", name), "binary"));
+		fs.readFile(path.join(__dirname, "/../../examples/", name), "binary", function (err, buffer) {
+			if (err) {
+				console.error(err);
+			}
+			callback(name, buffer);
+		})
 		return endLoadFile(-1);
 	}
 	return JSZipUtils.getBinaryContent("../examples/" + name, function (err, data) {
@@ -1013,10 +1016,9 @@ var loadFile = function (name, callback) {
 	});
 };
 
-for (var i = 0, name; i < fileNames.length; i++) {
-	name = fileNames[i];
-	loadFile(name, loadDocx);
-}
+fileNames.map(function (fileName) {
+	loadFile(fileName, loadDocx);
+})
 
 loadFile("simpleExample.pptx", loadPptx);
 
