@@ -6,10 +6,10 @@ var exec = require("child_process").exec;
 
 var lastRun = 0;
 var throttleTime = 1000;
+/* eslint-disable no-console */
 
 var execTests = function () {
-	/* eslint-disable no-console */
-	exec("npm run mocha -- --colors", function (error, stdout, stderr) {
+	exec("robo mocha", function (error, stdout, stderr) {
 		if (stdout) {
 			console.log("stdout: " + stdout);
 		}
@@ -22,7 +22,7 @@ var execTests = function () {
 	});
 };
 
-fs.watch(path.join(__dirname, "js"), function () {
+var onFileChange = function () {
 	var now = new Date().getTime();
 	if (now < lastRun + throttleTime) {
 		return;
@@ -30,5 +30,7 @@ fs.watch(path.join(__dirname, "js"), function () {
 	lastRun = now;
 
 	setTimeout(execTests, 10);
-});
+};
 
+fs.watch(path.join(__dirname, "js"), onFileChange);
+fs.watch(path.join(__dirname, "js", "tests"), onFileChange);

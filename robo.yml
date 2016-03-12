@@ -1,0 +1,61 @@
+preversion:
+  summary: Run before a version
+  command: robo test
+compile:
+  summary: Compile the code to es5
+  command: robo convertto:es5 && node examples/compile_site.js
+browserify:test:
+  summary: Convert the files of the test
+  command: |
+    {{.npath}}/browserify -r ./js/tests/docxtemplater.js -s DocxgenTest > browser/docxgenTest.js
+browserify:lib:
+  summary: Convert the files of the library
+  command: |
+    {{.npath}}/browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
+browserify:demo:
+  summary: Convert the files of the demo
+  command: |
+    {{.npath}}/browserify -r ./examples/main.js -s Docxdemo > browser/main.min.js
+uglify:lib:
+  summary: uglifyjs build/docxgen.js > build/docxgen.min.js
+  command: uglifyjs build/docxgen.js > build/docxgen.min.js
+browserify:
+  summary: Convert all necessary files for the browser
+  command: robo browserify:test && robo browserify:lib && robo browserify:demo
+convertto:es5:
+  summary: Convert all files to es5
+  command: rm js -rf ; mkdir -p js; robo babel
+test:watch:
+  summary: Watch files and run tests
+  command: |
+    node watch_file_and_run_test.js &
+    robo babel:watch
+lint:
+  summary: Lint the project
+  command: |
+    {{.npath}}/eslint .
+babel:
+  summary: Convert all scripts to es5 with watch
+  command: |
+    {{.npath}}/babel es6 --out-dir js
+babel:watch:
+  summary: Convert all scripts to es5
+  command: |
+    {{.npath}}/babel es6 --out-dir js --watch
+mocha:
+  summary: Run mocha tests
+  command: |
+    {{.npath}}/mocha js/tests/docxtemplater.js --colors
+test:es6:
+  summary: Run tests with es6
+  command: |
+    {{.npath}}/mocha es6/tests/docxtemplater.js --colors
+test:
+  summary: Test
+  command: robo compile && robo mocha
+test:es5:
+  summary: Test with an es5 runner
+  command: robo test
+
+variables:
+  npath: ./node_modules/.bin
