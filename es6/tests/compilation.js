@@ -219,6 +219,107 @@ TAG2
 			"</w:t>",
 		]);
 	});
+
+	it.skip("should work with strangely formatted tags", function () {
+		var content = "<w:t>{name} {</w:t> <w:t>age</w:t> <w:t>}</w:t>";
+		var scope = {name: 12, age: 14};
+		var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+		xmlTemplater.render();
+		var expected = [
+			'<w:t xml:space="preserve">',
+			{
+				type: "tag",
+				tag: "name",
+			},
+			" ",
+			{
+				type: "tag",
+				tag: "age",
+			},
+			"</w:t><w:t>age</w:t><w:t></w:t>",
+		];
+		expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
+	});
+
+	it.skip("should work with dash", function () {
+		var content = `
+		<w:body>
+		<w:p w:rsidR="007A1494" w:rsidRPr="00994758" w:rsidRDefault="007A1494" w:rsidP="007A1494">
+		<w:r>
+		<w:t>{-</w:t>
+			</w:r>
+			<w:r>
+			<w:rPr>
+			</w:rPr>
+			<w:t>w:</w:t>
+			</w:r>
+			<w:r w:rsidR="00C406D1">
+			<w:rPr>
+			</w:rPr>
+			<w:t>p</w:t>
+			</w:r>
+			<w:r>
+			<w:rPr>
+			</w:rPr>
+			<w:t xml:space="preserve"> os}</w:t>
+			</w:r>
+			<w:r w:rsidR="00B311FB">
+			<w:rPr>
+			</w:rPr>
+			<w:t>{type} {</w:t>
+				</w:r>
+				<w:r w:rsidR="00B311FB">
+				<w:rPr>
+				</w:rPr>
+				<w:t>price</w:t>
+				</w:r>
+				<w:r w:rsidR="00B311FB">
+				<w:rPr>
+				</w:rPr>
+				<w:t>} {</w:t>
+				</w:r>
+				<w:r w:rsidR="00B311FB">
+				<w:rPr>
+				</w:rPr>
+				<w:t>reference</w:t>
+				</w:r>
+				<w:r w:rsidR="00B311FB">
+				<w:rPr>
+				</w:rPr>
+				<w:t>} {/os</w:t>
+				</w:r>
+				<w:r>
+				<w:rPr>
+				</w:rPr>
+				<w:t>}</w:t>
+				</w:r>
+				</w:p>
+				</w:body>
+				`;
+		// var content = " <w:p> <w:t>Bar {-w:p loop} {inner} </w:t> <w:t>{/loop}</w:t></w:p>";
+		// var scope = {loop: "foo"};
+		var scope = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
+		var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+		xmlTemplater.render();
+		var expected = [
+			" ",
+			{
+				type: "loop",
+				inverted: false,
+				tag: "loop",
+				template: [
+					"<w:p> ",
+					'<w:t xml:space="preserve">',
+					" ",
+					{type: "tag", tag: "inner"},
+					" ",
+					"</w:t>",
+					' <w:t xml:space="preserve"></w:t></w:p>',
+				],
+			},
+		];
+		expect(xmlTemplater.compiled.compiled).to.be.deep.equal(expected);
+	});
 });
 
 describe("Render from compiled", function () {
