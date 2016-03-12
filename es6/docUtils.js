@@ -24,6 +24,7 @@ DocUtils.defaults = {
 			},
 		};
 	},
+	experimentalCompiledLoops: false,
 	intelligentTagging: true,
 	fileType: "docx",
 	delimiters: {
@@ -73,18 +74,8 @@ DocUtils.utf8ToWord = function (string) {
 	return string;
 };
 
-DocUtils.clone = function (obj) {
-	if (!(typeof obj !== "undefined" && obj != null) || typeof obj !== "object") {
-		return obj;
-	}
-
-	var newInstance = new obj.constructor();
-
-	Object.keys(obj).forEach(function (key) {
-		newInstance[key] = DocUtils.clone(obj[key]);
-	});
-
-	return newInstance;
+DocUtils.cloneDeep = function (obj) {
+	return JSON.parse(JSON.stringify(obj));
 };
 
 var spaceRegexp = new RegExp(String.fromCharCode(160), "g");

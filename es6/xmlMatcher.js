@@ -1,7 +1,7 @@
 "use strict";
 // res class responsibility is to parse the XML.
 var DocUtils = require("./docUtils");
-var _ = require("lodash");
+var memoize = require("memoizejs");
 
 var handleRecursiveCase = function (res) {
 	/*
@@ -69,12 +69,8 @@ var xmlMatcher = function (content, tagsXmlArray) {
 	return handleRecursiveCase(res);
 };
 
-var memoizer = function (content, tagsXmlArray) {
-	return content + tagsXmlArray.join("|");
-};
-
-var memoized = _.memoize(xmlMatcher, memoizer);
+var memoized = memoize(xmlMatcher);
 
 module.exports = function (content, tagsXmlArray) {
-	return _.cloneDeep(memoized(content, tagsXmlArray));
+	return DocUtils.cloneDeep(memoized(content, tagsXmlArray));
 };

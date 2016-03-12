@@ -23,16 +23,18 @@
     "url": "https://github.com/open-xml-templating/docxtemplater"
   },
   "dependencies": {
-    "jszip": "^2.5.0"
+    "jszip": "^2.5.0",
+    "memoizejs": "^0.1.1"
   },
   "devDependencies": {
     "angular-expressions": "^0.3.0",
-    "babel-cli": "^6.5.1",
+    "babel-cli": "^6.6.5",
     "babel-eslint": "^5.0.0",
     "babel-preset-es2015": "^6.5.0",
+    "bluebird": "^3.3.4",
+    "browserify": "^13.0.0",
     "chai": "^3.3.0",
     "eslint": "^2.2.0",
-    "lodash": "^4.6.1",
     "mocha": "^2.3.3",
     "mustache": "^2.1.3"
   },
@@ -54,6 +56,8 @@
     "lint": "eslint .",
     "babel": "babel es6 --out-dir js",
     "mocha": "mocha js/tests/docxtemplater.js",
-    "test": "npm run compile && npm run mocha"
+    "test:es6": "mocha es6/tests/docxtemplater.js",
+    "test": "npm run compile && npm run mocha",
+    "test:es5": "npm test"
   }
 }

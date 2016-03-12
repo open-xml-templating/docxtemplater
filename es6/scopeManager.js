@@ -1,7 +1,7 @@
 "use strict";
 // This class responsibility is to manage the scope
 var Errors = require("./errors");
-var _ = require("lodash");
+var DocUtils = require("./docUtils");
 
 module.exports = class ScopeManager {
 	constructor(options) {
@@ -129,7 +129,17 @@ module.exports = class ScopeManager {
 		}
 	}
 	createSubScopeManager(scope, tag) {
-		var options = _.cloneDeep(this);
+		var options = DocUtils.cloneDeep({
+			scopePath: this.scopePath,
+			usedTags: this.usedTags,
+			scopeList: this.scopeList,
+		});
+
+		options.parser = this.parser;
+		options.moduleManager = this.moduleManager;
+		options.nullGetter = this.nullGetter;
+		options.delimiters = this.delimiters;
+
 		options.tags = scope;
 		if (tag != null) {
 			options.scopeList = this.scopeList.concat(scope);
