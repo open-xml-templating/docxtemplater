@@ -82,11 +82,11 @@ npm install -g gulp jasmine-node uglify-js browserify
 npm install
 gulp allCoffee
 mkdir build -p
-browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
-uglifyjs build/docxgen.js > build/docxgen.min.js # Optional
+browserify -r ./js/docxtemplater.js -s Docxtemplater > build/docxtemplater.js
+uglifyjs build/docxtemplater.js > build/docxtemplater.min.js # Optional
 ```
 
-The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/open-xml-templating/docxtemplater/issues/118)\)
+The -s Docxtemplater will export docxtemplater to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see https://github.com/open-xml-templating/docxtemplater/issues/118)\)
 
 ### Html demo
 
@@ -94,7 +94,7 @@ Create the following html
 
 ```html
 <html>
-    <script src="build/docxgen.js"></script>
+    <script src="build/docxtemplater.js"></script>
     <script src="vendor/FileSaver.min.js"></script>
     <script src="vendor/jszip-utils.js"></script>
     <!--
@@ -109,7 +109,7 @@ Create the following html
     }
     loadFile("examples/tagExample.docx",function(err,content){
         if (err) { throw e};
-        doc=new Docxgen(content);
+        doc=new Docxtemplater(content);
         doc.setData( {"first_name":"Hipp",
             "last_name":"Edgar",
             "phone":"0652455478",

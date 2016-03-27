@@ -31,7 +31,7 @@ var shouldBeSame = function (zip1, zip2) {
 };
 
 var xmlMatcher = require("../xmlMatcher.js");
-var DocxGen = require("../index.js");
+var Docxtemplater = require("../index.js");
 var DocUtils = require("../docUtils.js");
 var XmlTemplater = require("../xmlTemplater.js");
 var FileTypeConfig = require("../fileTypeConfig.js");
@@ -39,8 +39,8 @@ var FileTypeConfig = require("../fileTypeConfig.js");
 docX = {};
 var pptX = {};
 var data = {};
-var SubContent = DocxGen.SubContent;
-var xmlUtil = DocxGen.XmlUtil;
+var SubContent = Docxtemplater.SubContent;
+var xmlUtil = Docxtemplater.XmlUtil;
 var fs = require("fs");
 
 var fileNames = [
@@ -68,12 +68,12 @@ var getLength = function (d) {
 };
 
 var startTest = function () {
-	describe("DocxGenBasis", function () {
+	describe("DocxtemplaterBasis", function () {
 		it("should be defined", function () {
-			expect(DocxGen).not.to.be.equal(undefined);
+			expect(Docxtemplater).not.to.be.equal(undefined);
 		});
 		it("should construct", function () {
-			var a = new DocxGen();
+			var a = new Docxtemplater();
 			expect(a).not.to.be.equal(undefined);
 		});
 	});
@@ -130,14 +130,14 @@ var startTest = function () {
 		});
 	});
 
-	describe("DocxGenLoading", function () {
+	describe("DocxtemplaterLoading", function () {
 		describe("ajax done correctly", function () {
 			it("doc and img Data should have the expected length", function () {
 				expect(getLength(docX["imageExample.docx"].loadedContent)).to.be.equal(729580);
 				expect(getLength(data["image.png"])).to.be.equal(18062);
 			});
 			it("should have the right number of files (the docx unzipped)", function () {
-				var doc = new DocxGen(docX["imageExample.docx"].loadedContent);
+				var doc = new Docxtemplater(docX["imageExample.docx"].loadedContent);
 				expect(DocUtils.sizeOfObject(doc.zip.files)).to.be.equal(16);
 			});
 		});
@@ -160,7 +160,7 @@ var startTest = function () {
 		});
 		describe("output and input", function () {
 			it("should be the same", function () {
-				var doc = new DocxGen(docX["tagExample.docx"].loadedContent);
+				var doc = new Docxtemplater(docX["tagExample.docx"].loadedContent);
 				var output = doc.getZip().generate({type: "base64"});
 				expect(output.length).to.be.equal(90732);
 				expect(output.substr(0, 50)).to.be.equal("UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn");
@@ -168,7 +168,7 @@ var startTest = function () {
 		});
 	});
 
-	describe("DocxGenTemplating", function () {
+	describe("DocxtemplaterTemplating", function () {
 		describe("text templating", function () {
 			it("should change values with template vars", function () {
 				var tags = {
@@ -189,7 +189,7 @@ var startTest = function () {
 		});
 	});
 
-	describe("DocxGenTemplatingForLoop", function () {
+	describe("DocxtemplaterTemplatingForLoop", function () {
 		describe("textLoop templating", function () {
 			it("should replace all the tags", function () {
 				var tags = {
@@ -348,12 +348,12 @@ var startTest = function () {
 
 	describe("getTags", function () {
 		it("should work with simple document", function () {
-			var d = new DocxGen(docX["tagExample.docx"].loadedContent, {}, {intelligentTagging: false});
+			var d = new Docxtemplater(docX["tagExample.docx"].loadedContent, {}, {intelligentTagging: false});
 			var tempVars = d.getTags();
 			expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true, description: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {last_name: true, first_name: true, phone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {last_name: true, first_name: true}}}]);
 		});
 		it("should work with loop document", function () {
-			docX["tagLoopExample.docx"] = new DocxGen(docX["tagLoopExample.docx"].loadedContent, {}, {intelligentTagging: false});
+			docX["tagLoopExample.docx"] = new Docxtemplater(docX["tagLoopExample.docx"].loadedContent, {}, {intelligentTagging: false});
 			var tempVars = docX["tagLoopExample.docx"].getTags();
 			expect(tempVars).to.be.eql([{fileName: "word/header1.xml", vars: {def: { }, undef: {nom: true, prenom: true}}}, {fileName: "word/footer1.xml", vars: {def: { }, undef: {nom: true, prenom: true, telephone: true}}}, {fileName: "word/document.xml", vars: {def: { }, undef: {offre: {nom: true, prix: true, titre: true}, nom: true, prenom: true}}}]);
 		});
@@ -555,7 +555,7 @@ var startTest = function () {
 			expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
 		});
 		it("should work when setting from the DocXGen interface", function () {
-			var d = new DocxGen(docX["tagExample.docx"].loadedContent);
+			var d = new Docxtemplater(docX["tagExample.docx"].loadedContent);
 			var tags = {
 				first_name: "Hipp",
 				last_name: "Edgar",
@@ -626,7 +626,7 @@ var startTest = function () {
 				return result;
 			})());
 			russian = russian.join("");
-			var d = new DocxGen(docX["tagExample.docx"].loadedContent);
+			var d = new Docxtemplater(docX["tagExample.docx"].loadedContent);
 			d.setData({last_name: russian});
 			d.render();
 			var outputText = d.getFullText();
@@ -970,14 +970,14 @@ var countFiles = 0;
 var allStarted = false;
 
 var loadDocx = function (name, content) {
-	docX[name] = new DocxGen();
+	docX[name] = new Docxtemplater();
 	docX[name].setOptions({fileType: "docx"});
 	docX[name].load(content);
 	docX[name].loadedContent = content;
 };
 
 var loadPptx = function (name, content) {
-	pptX[name] = new DocxGen();
+	pptX[name] = new Docxtemplater();
 	pptX[name].setOptions({fileType: "pptx"});
 	pptX[name].load(content);
 	pptX[name].loadedContent = content;

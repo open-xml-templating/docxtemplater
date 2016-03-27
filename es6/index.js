@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require("./docxgen");
+module.exports = require("./docxtemplater");

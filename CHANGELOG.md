@@ -99,10 +99,10 @@ Upgrade guide :
 ### From 0.7.x to 1
 
 -	docxtemplater doesn’t depend on fs anymore, for transparency and security reasons.
--	`loadFromFile` has been removed. You now just have to pass the content to DocxGen’s constructor.
+-	`loadFromFile` has been removed. You now just have to pass the content to Docxtemplater’s constructor.
 -	`setTags` has been renamed to `setData`
 -	`applyTags` has been renamed to `render`
--	the constructor has changed: eg `new DocxGen(content,options)` will now call `JSzip.load(content,options)`.
+-	the constructor has changed: eg `new Docxtemplater(content,options)` will now call `JSzip.load(content,options)`.
 -	To pass options (such as the parser), you will have to call `setOptions`
 -	The `output` function has been removed. You should now call `getZip().generate(options)` where the options are documented here: https://stuk.github.io/jszip/documentation/api_jszip/generate.html
 -	the qrcode module has been removed, and will be developped in an other package that will be attached to docxtemplater

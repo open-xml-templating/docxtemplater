@@ -40,7 +40,7 @@
 
 <h1>Templates</h1>
 
-DocxGen is based on word templates.
+Docxtemplater is based on word templates.
 <section>
 <h2 id='variables'><em>Variables</em>: Use {tagName} to replace variables</h2>
 <table class="demo">
@@ -60,7 +60,7 @@ DocxGen is based on word templates.
 		<h3>Code Used:</h3>
 		<textarea raw='tagExample.docx'>
             loadFile("tagExample.docx",function(err,content){
-                var doc=new DocxGen(content)
+                var doc=new Docxtemplater(content)
                 doc.setData( {"first_name":"Hipp",
                     "last_name":"Edgar",
                     "phone":"0652455478",
@@ -90,7 +90,7 @@ loadFile=function(url,callback){
 </pre>
 
 <section>
-<h2 id='formating'><em>Formating</em>: DocxGen doesn't ever change your formatting!</h2>
+<h2 id='formating'><em>Formating</em>: Docxtemplater doesn't ever change your formatting!</h2>
 <table class="demo">
 <tr>
 	<td>
@@ -108,7 +108,7 @@ loadFile=function(url,callback){
 		<h3>Code Used:</h3>
 		<textarea raw='tagFormating.docx'>
             loadFile("tagFormating.docx",function(err,content){
-	var doc=new DocxGen(content)
+	var doc=new Docxtemplater(content)
 	doc.setData({
 		"first_name":"Hipp",
 		"last_name":"Edgar",
@@ -150,7 +150,7 @@ var angularParser= function(tag){
 }
 
 	loadFile("angularExample.docx",function(err,content){
-	var doc=new DocxGen(content)
+	var doc=new Docxtemplater(content)
 	doc.setOptions({parser:angularParser})
 	doc.setData({
 		person:{
@@ -185,7 +185,7 @@ var angularParser= function(tag){
 				<h3>Code Used:</h3>
 				<textarea raw="tagLooping.docx">
 	loadFile("tagLooping.docx",function(err,content){
-	var doc=new DocxGen(content)
+	var doc=new Docxtemplater(content)
 doc.setData({
 	"products": [{
  	 	 "title":"Duk",
@@ -223,7 +223,7 @@ saveAs(output,"output.docx")
 				<h3>Code Used:</h3>
 				<textarea raw="tagIntelligentLoopTable.docx">
 	loadFile("tagIntelligentLoopTable.docx",function(err,content){
-	var doc=new DocxGen(content)
+	var doc=new Docxtemplater(content)
 	doc.setData({
 		"clients":[{
 			"first_name":"John",
@@ -246,7 +246,7 @@ saveAs(output,"output.docx")
 
 <section>
 	<h2 id='lists'><em>lists</em>: dash (-) loops works for any element</h2>
-	<p>This could work for lists, paragraphs, or any element that could be repeated. The syntax is {-element name} {/name}. When encountering such an element, docxgen will search for the first parent element that equals element, and loop over this.</p>
+	<p>This could work for lists, paragraphs, or any element that could be repeated. The syntax is {-element name} {/name}. When encountering such an element, docxtemplater will search for the first parent element that equals element, and loop over this.</p>
 	<table class="demo">
 		<tr>
 			<td><img src="images/listTagging.PNG"></td>
@@ -260,7 +260,7 @@ saveAs(output,"output.docx")
 				<h3>Code Used:</h3>
 				<textarea raw="tagDashLoopList.docx">
 	loadFile("tagDashLoopList.docx",function(err,content){
-	var doc=new DocxGen(content)
+	var doc=new Docxtemplater(content)
 	doc.setData(
 	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]}
 	)
@@ -290,7 +290,7 @@ saveAs(output,"output.docx")
 				<h3>Code Used:</h3>
 				<textarea raw="xmlInsertionExample.docx">
 					loadFile("xmlInsertionExample.docx",function(err,content){
-					var doc=new DocxGen(content)
+					var doc=new Docxtemplater(content)
 					doc.setData({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
 					doc.render();
 					var output=doc.getZip().generate({type:"blob"})

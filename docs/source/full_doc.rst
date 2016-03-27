@@ -6,21 +6,21 @@
 Full Documentation per method
 =============================
 
-Creating a new Docxgen Object
+Creating a new Docxtemplater Object
 -----------------------------
 
 .. code-block:: javascript
 
-    new DocxGen()
+    new Docxtemplater()
 
-        This function returns a new DocxGen Object
+        This function returns a new Docxtemplater Object
 
-    new DocxGen(content,options)
+    new Docxtemplater(content,options)
 
         if content is defined, it will call `.load(content,options)`
 
 
-Docxgen methods
+Docxtemplater methods
 ---------------
 
 .. code-block:: javascript

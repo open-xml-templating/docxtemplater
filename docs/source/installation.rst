@@ -36,9 +36,9 @@ I recommend you to use browserify.
     npm install
     gulp allCoffee
     mkdir build -p
-    browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
-    uglifyjs build/docxgen.js > build/docxgen.min.js
+    browserify -r ./js/docxtemplater.js -s Docxtemplater > build/docxtemplater.js
+    uglifyjs build/docxtemplater.js > build/docxtemplater.min.js
 
-The -s Docxgen will export docxgen to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/edi9999/docxtemplater/issues/118))
+The -s Docxtemplater will export docxtemplater to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see https://github.com/edi9999/docxtemplater/issues/118))
 
 Your version of docxtemplater will be in /build (minified and non minified options) and already include all dependencies

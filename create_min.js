@@ -17,7 +17,7 @@ var options = {
 	},
 };
 
-var b = browserify([path.join(__dirname, "/js/docxgen.js")], options);
+var b = browserify([path.join(__dirname, "/js/docxtemplater.js")], options);
 
 var result = b.bundle();
 

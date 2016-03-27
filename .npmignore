@@ -17,9 +17,6 @@ DocXgen.csv
 DocXgen.xlsm
 CUSImageTemplate.docx
 CUS.json
-docxgenNode/output.docx
-docxgenNode/tagExample.docx
-docxgenNode/input.json
 .idea
 test/spec/output.docx
 /output.docx

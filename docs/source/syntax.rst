@@ -83,7 +83,7 @@ The loop behaves in the following way:
 Dash syntax
 -----------
 
-It is quite difficult to know on which element you are going to loop. By default, when using the for loop, docxgen will find that by himself:
+It is quite difficult to know on which element you are going to loop. By default, when using the for loop, docxtemplater will find that by himself:
 
 If between the two tags {#tag}______{/tag}
 

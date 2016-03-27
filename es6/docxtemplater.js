@@ -2,10 +2,10 @@
 
 var DocUtils = require("./docUtils");
 
-var DocxGen = class DocxGen {
+var Docxtemplater = class Docxtemplater {
 	constructor(content, options) {
 		this.compiled = {};
-		this.moduleManager = new DocxGen.ModuleManager();
+		this.moduleManager = new Docxtemplater.ModuleManager();
 		this.moduleManager.gen = this;
 		this.setOptions({});
 		if ((typeof content !== "undefined" && content != null)) { this.load(content, options); }
@@ -22,7 +22,7 @@ var DocxGen = class DocxGen {
 			self[key] = (self.options[key] != null) ? self.options[key] : defaultValue;
 		});
 		if (this.fileType === "docx" || this.fileType === "pptx") {
-			this.fileTypeConfig = DocxGen.FileTypeConfig[this.fileType];
+			this.fileTypeConfig = Docxtemplater.FileTypeConfig[this.fileType];
 		}
 		return this;
 	}
@@ -32,7 +32,7 @@ var DocxGen = class DocxGen {
 			this.zip = content;
 		}
 		else {
-			this.zip = new DocxGen.JSZip(content, options);
+			this.zip = new Docxtemplater.JSZip(content, options);
 		}
 		this.moduleManager.sendEvent("loaded");
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
@@ -92,20 +92,20 @@ var DocxGen = class DocxGen {
 			obj[key] = self[key];
 		});
 		obj.fileTypeConfig = this.fileTypeConfig;
-		return new DocxGen.XmlTemplater(usedData, obj);
+		return new Docxtemplater.XmlTemplater(usedData, obj);
 	}
 	getFullText(path) {
 		return this.createTemplateClass(path || this.fileTypeConfig.textPath).getFullText();
 	}
 };
 
-DocxGen.DocUtils = require("./docUtils");
-DocxGen.JSZip = require("jszip");
-DocxGen.Errors = require("./errors");
-DocxGen.ModuleManager = require("./moduleManager");
-DocxGen.XmlTemplater = require("./xmlTemplater");
-DocxGen.FileTypeConfig = require("./fileTypeConfig");
-DocxGen.XmlMatcher = require("./xmlMatcher");
-DocxGen.XmlUtil = require("./xmlUtil");
-DocxGen.SubContent = require("./subContent");
-module.exports = DocxGen;
+Docxtemplater.DocUtils = require("./docUtils");
+Docxtemplater.JSZip = require("jszip");
+Docxtemplater.Errors = require("./errors");
+Docxtemplater.ModuleManager = require("./moduleManager");
+Docxtemplater.XmlTemplater = require("./xmlTemplater");
+Docxtemplater.FileTypeConfig = require("./fileTypeConfig");
+Docxtemplater.XmlMatcher = require("./xmlMatcher");
+Docxtemplater.XmlUtil = require("./xmlUtil");
+Docxtemplater.SubContent = require("./subContent");
+module.exports = Docxtemplater;

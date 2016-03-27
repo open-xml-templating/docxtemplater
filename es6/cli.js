@@ -7,7 +7,7 @@
 
 var fs = require("fs");
 var DocUtils = require("./docUtils");
-var DocxGen = require("./docxgen");
+var Docxtemplater = require("./docxtemplater");
 var fileExts = ["pptx", "docx"];
 
 var showHelp = function () {
@@ -52,7 +52,7 @@ else {
 	}
 	if (debugBool) { console.info("loading docx:" + inputFileName); }
 	var content = fs.readFileSync(currentPath + inputFileName, "binary");
-	var doc = new DocxGen(content);
+	var doc = new Docxtemplater(content);
 	doc.setOptions({fileType: fileType});
 	doc.setData(jsonInput);
 	doc.render();

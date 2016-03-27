@@ -1,7 +1,7 @@
 "use strict";
 
-var DocxGen = require("../js/docxgen.js");
-window.DocxGen = DocxGen;
+var Docxtemplater = require("../js/docxtemplater.js");
+window.Docxtemplater = Docxtemplater;
 var expressions = require("angular-expressions");
 window.expressions = expressions;
 
@@ -56,7 +56,7 @@ window.onload = function () {
 		if (err) {
 			throw err;
 		}
-		var output = new DocxGen(content).getZip().generate({type: "blob"});
+		var output = new Docxtemplater(content).getZip().generate({type: "blob"});
 		saveAs(output, "raw.docx");
 	};
 

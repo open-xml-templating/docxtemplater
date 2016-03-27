@@ -7,18 +7,18 @@ compile:
 browserify:test:
   summary: Convert the files of the test
   command: |
-    {{.npath}}/browserify -r ./js/tests/docxtemplater.js -s DocxgenTest > browser/docxgenTest.js
+    {{.npath}}/browserify -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/docxtemplaterTest.js
 browserify:lib:
   summary: Convert the files of the library
   command: |
-    {{.npath}}/browserify -r ./js/docxgen.js -s Docxgen > build/docxgen.js
+    {{.npath}}/browserify -r ./js/docxtemplater.js -s Docxtemplater > build/docxtemplater.js
 browserify:demo:
   summary: Convert the files of the demo
   command: |
     {{.npath}}/browserify -r ./examples/main.js -s Docxdemo > browser/main.min.js
 uglify:lib:
-  summary: uglifyjs build/docxgen.js > build/docxgen.min.js
-  command: uglifyjs build/docxgen.js > build/docxgen.min.js
+  summary: uglifyjs build/docxtemplater.js > build/docxtemplater.min.js
+  command: uglifyjs build/docxtemplater.js > build/docxtemplater.min.js
 browserify:
   summary: Convert all necessary files for the browser
   command: robo browserify:test && robo browserify:lib && robo browserify:demo

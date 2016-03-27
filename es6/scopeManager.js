@@ -109,7 +109,7 @@ module.exports = class ScopeManager {
 		}
 		return value;
 	}
-	// set the tag as used, so that DocxGen can return the list of all tags
+	// set the tag as used, so that Docxtemplater can return the list of all tags
 	useTag(tag, val) {
 		var u;
 		if (val) {

@@ -6,13 +6,13 @@
 Configuration
 =============
 
-The options that you can set when creating a new DocxGen
+The options that you can set when creating a new Docxtemplater
 
 It documents the options parameter when you do:
 
 .. code-block:: javascript
 
-    var doc=new DocxGen(content);
+    var doc=new Docxtemplater(content);
     doc.setOptions(options)
 
 Custom Parser
@@ -54,7 +54,7 @@ To use the angular-parser, do the following:
             get: tag == '.' ? function(s){ return s;} : expressions.compile(tag)
         };
     }
-    new DocxGen(data).setOptions({parser:angularParser})
+    new Docxtemplater(data).setOptions({parser:angularParser})
 
 .. note::
 
@@ -70,7 +70,7 @@ You can set up your custom delimiters with this syntax:
 
 .. code-block:: javascript
 
-    new DocxGen(data)
+    new Docxtemplater(data)
         .setOptions({delimiters:{start:'[[',end:']]'}})
 
 .. warning::
