@@ -29,7 +29,7 @@
   "devDependencies": {
     "angular-expressions": "^0.3.0",
     "babel-cli": "^6.6.5",
-    "babel-eslint": "^5.0.0",
+    "babel-eslint": "^6.0.0",
     "babel-preset-es2015": "^6.5.0",
     "bluebird": "^3.3.4",
     "browserify": "^13.0.0",

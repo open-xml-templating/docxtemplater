@@ -1001,10 +1001,12 @@ var loadFile = function (name, callback) {
 		var path = require("path");
 		fs.readFile(path.join(__dirname, "/../../examples/", name), "binary", function (err, buffer) {
 			if (err) {
+				/* eslint-disable no-console */
 				console.error(err);
+				/* eslint-enable no-console */
 			}
 			callback(name, buffer);
-		})
+		});
 		return endLoadFile(-1);
 	}
 	return JSZipUtils.getBinaryContent("../examples/" + name, function (err, data) {
@@ -1018,7 +1020,7 @@ var loadFile = function (name, callback) {
 
 fileNames.map(function (fileName) {
 	loadFile(fileName, loadDocx);
-})
+});
 
 loadFile("simpleExample.pptx", loadPptx);
 
