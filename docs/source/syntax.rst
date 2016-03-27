@@ -8,7 +8,7 @@ Syntax
 
 The syntax is highly inspired by Mustache_. The template is created in Microsoft Word or any equivalent that saves to docx.
 
-.. _Mustache: http://mustache.github.io/
+.. _Mustache: https://mustache.github.io/
 
 Synopsis
 --------

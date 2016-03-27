@@ -8,9 +8,9 @@ Docxtemplater's documentation
 
 .. image:: https://api.travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master
 
-.. image:: http://img.shields.io/npm/dm/docxtemplater.svg
+.. image:: https://img.shields.io/npm/dm/docxtemplater.svg
 
-.. image:: http://img.shields.io/npm/v/docxtemplater.svg
+.. image:: https://img.shields.io/npm/v/docxtemplater.svg
 
 Contents:
 

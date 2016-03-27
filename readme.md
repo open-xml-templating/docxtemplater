@@ -3,7 +3,7 @@ docxtemplater
 
 [![Join the chat at https://gitter.im/open-xml-templating/docxtemplater](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/open-xml-templating/docxtemplater?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater) [![Download count](http://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Current tag](http://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Issues closed](http://issuestats.com/github/open-xml-templating/docxtemplater/badge/issue?style=flat)](http://issuestats.com/github/open-xml-templating/docxtemplater)
+[![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater) [![Download count](https://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Current tag](https://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Issues closed](https://issuestats.com/github/open-xml-templating/docxtemplater/badge/issue?style=flat)](https://issuestats.com/github/open-xml-templating/docxtemplater)
 
 ![docxtemplater logo](https://raw.githubusercontent.com/open-xml-templating/docxtemplater/master/logo_small.png)
 
@@ -127,7 +127,7 @@ Create the following html
 Documentation
 -------------
 
-The full documentation of v1 can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
+The full documentation of v1 can be found on [read the docs](https://docxtemplater.readthedocs.org/en/latest/).
 
 See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
 

@@ -14,7 +14,7 @@ var showHelp = function () {
 	console.info("Usage: docxtemplater <configFilePath>");
 	console.info("--- ConfigFile Format: json");
 	console.info("--- Supports filetypes: " + fileExts.join(","));
-	return console.info("--- see http://docxtemplater.readthedocs.org/en/latest/cli.html");
+	return console.info("--- see https://docxtemplater.readthedocs.org/en/latest/cli.html");
 };
 
 if (process.argv[2] === "--help" || process.argv[2] === "-h" || process.argv[2] === null || process.argv[2] === undefined) {

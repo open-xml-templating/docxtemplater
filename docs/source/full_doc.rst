@@ -27,7 +27,7 @@ Docxgen methods
 
     load(content,options)
 
-        This will call new JSzip().load(content,options) under the hood. See http://stuk.github.io/jszip/documentation/api_jszip/load.html
+        This will call new JSzip().load(content,options) under the hood. See https://stuk.github.io/jszip/documentation/api_jszip/load.html
         You can also pass a JSzip object as the first argument.
 
     setData(Tags)
@@ -42,7 +42,7 @@ Docxgen methods
 
     getZip()
 
-        This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see http://stuk.github.io/jszip/documentation/api_jszip/generate.html)
+        This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see https://stuk.github.io/jszip/documentation/api_jszip/generate.html)
 
     getFullText:([path])
 

@@ -104,7 +104,7 @@ Upgrade guide :
 -	`applyTags` has been renamed to `render`
 -	the constructor has changed: eg `new DocxGen(content,options)` will now call `JSzip.load(content,options)`.
 -	To pass options (such as the parser), you will have to call `setOptions`
--	The `output` function has been removed. You should now call `getZip().generate(options)` where the options are documented here: http://stuk.github.io/jszip/documentation/api_jszip/generate.html
+-	The `output` function has been removed. You should now call `getZip().generate(options)` where the options are documented here: https://stuk.github.io/jszip/documentation/api_jszip/generate.html
 -	the qrcode module has been removed, and will be developped in an other package that will be attached to docxtemplater
 
 ### From 0.6.0 to 0.7.0
@@ -113,4 +113,4 @@ Upgrade guide :
 
 If you set qrCode:true, you are affected. The Command Line is not affected as of v0.7.0 (but was on 0.6.3 and less). However the command line as of v0.7.0 is not more able to load images over the filesystem.
 
-You should set qrCode to a function now, according to http://docxtemplater.readthedocs.org/en/latest/configuration.html#image-replacing.
+You should set qrCode to a function now, according to https://docxtemplater.readthedocs.org/en/latest/configuration.html#image-replacing.
