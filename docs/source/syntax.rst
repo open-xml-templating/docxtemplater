@@ -75,9 +75,42 @@ The loop behaves in the following way:
  * If the value is an array, it will loop over all the elements of that array.
  * If the value is a boolean, it will loop once if the value is true, keeping the same scope, and not loop at all if the value is false
 
-.. note:: 
 
-    Because the loops work also with boolean values, you can also use them for conditions.
+Conditionals
+------------
+
+Because the loops work with boolean values, you can also use them for conditions. This 
+allows optional fields in your data. For example, this template: 
+
+.. code-block:: javascript
+
+    {#people}
+    First name: {first_name}
+    Last name: {last_name}
+    {#haskitty}Cat’s name: {kitty}{/haskitty}{/people}
+
+and this data: 
+
+.. code-block:: javascript
+    {
+        people: 
+            [
+              {"first_name":"Jane","last_name":"Doe","kitty":null,"haskitty": false},
+              {"first_name":"John","last_name":"Roe","kitty":"Chairman Meow","haskitty": true}
+            ]
+    }
+
+yield the following: 
+
+.. code-block:: javascript
+
+    First name: Jane
+    Last name: Doe
+    
+    First name: John
+    Last name: Roe
+    Cat’s name: Chairman Meow
+
 
 
 Dash syntax
