@@ -75,18 +75,21 @@ bower install --save docxtemplater-pykiss
 
 #### Build it yourself
 
+I recommend you to use the npm scripts I wrote (which can be found in the package.json).
+
 ```bash
-git clone git@github.com:open-xml-templating/docxtemplater.git && cd docxtemplater
+git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
 # git checkout v2.0.0 # Optional
-npm install -g gulp jasmine-node uglify-js browserify
 npm install
-gulp allCoffee
-mkdir build -p
-browserify -r ./js/docxtemplater.js -s Docxtemplater > build/docxtemplater.js
-uglifyjs build/docxtemplater.js > build/docxtemplater.min.js # Optional
+npm run compile
+# Optionally :
+# npm run browserify
+# npm run uglify:lib
 ```
 
-The -s Docxtemplater will export docxtemplater to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see https://github.com/open-xml-templating/docxtemplater/issues/118)\)
+The Docxgen will be exported to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/edi9999/docxtemplater/issues/118)\)
+
+Your version of docxtemplater will be in /build (minified and non minified options) and already include all dependencies
 
 ### Html demo
 
@@ -127,9 +130,10 @@ Create the following html
 Documentation
 -------------
 
-The full documentation of v1 can be found on [read the docs](https://docxtemplater.readthedocs.org/en/latest/).
+The full documentation of the latest version can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
+==============================================================================================================================
 
-See [upgrade.md](upgrade.md) for information about how to migrate from 0.7
+See [upgrade.md](upgrade.md) for information about how to migrate from older versions.
 
 Similar libraries
 -----------------
