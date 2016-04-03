@@ -1,5 +1,9 @@
 ### master
 
+### 2.1.0
+
+-	**Speed Improvements** : docxtemplater had a regression causing it to be slow for loops. The regression would cause the code to run in O(n²) instead of O(n) where n is the length of the loops (with {#users}{name}{/users}. The bug is now fixed, and docxtemplater gained a lot of speed for users of lengthy loops.
+
 ### 2.0.0
 
 -	**Breaking** : To choose between docx or pptx, you now have to pass docx.setOptions({fileType:'docx'}) where the fileTypes are one of 'pptx', 'docx' (default is 'docx')
