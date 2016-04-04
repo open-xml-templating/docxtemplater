@@ -964,6 +964,12 @@ TAG`;
 	if ((typeof window !== "undefined" && window != null)) {
 		return window.mocha.run();
 	}
+
+	describe("Serialization", function () {
+		it("should be serialiazable", function () {
+			JSON.stringify(docX["tagExample.docx"]);
+		});
+	});
 };
 
 var countFiles = 0;
