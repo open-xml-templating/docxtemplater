@@ -6,7 +6,7 @@ var Docxtemplater = class Docxtemplater {
 	constructor(content, options) {
 		this.compiled = {};
 		this.moduleManager = new Docxtemplater.ModuleManager();
-		this.moduleManager.gen = this;
+		this.moduleManager.setInstance("gen", this);
 		this.setOptions({});
 		if ((typeof content !== "undefined" && content != null)) { this.load(content, options); }
 	}

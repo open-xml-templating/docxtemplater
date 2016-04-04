@@ -73,9 +73,9 @@ module.exports = class XmlTemplater {
 	}
 	getFullText() { return getFullText(this.content, this.fileTypeConfig.tagsXmlArray); }
 	updateModuleManager() {
-		this.moduleManager.xmlTemplater = this;
-		this.moduleManager.templaterState = this.templaterState;
-		this.moduleManager.scopeManager = this.scopeManager;
+		this.moduleManager.setInstance("xmlTemplater", this);
+		this.moduleManager.setInstance("templaterState", this.templaterState);
+		this.moduleManager.setInstance("scopeManager", this.scopeManager);
 	}
 	handleModuleManager(type, data) {
 		this.updateModuleManager();

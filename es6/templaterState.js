@@ -6,8 +6,8 @@ var Errors = require("./errors");
 module.exports = class TemplaterState {
 	constructor(moduleManager, delimiters) {
 		this.moduleManager = moduleManager;
+		this.moduleManager.setInstance("templaterState", this);
 		this.delimiters = delimiters;
-		this.moduleManager.templaterState = this;
 	}
 	moveCharacters(numXmlTag, newTextLength, oldTextLength) {
 		return (() => {

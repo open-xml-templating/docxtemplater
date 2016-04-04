@@ -11,9 +11,9 @@ module.exports = class ScopeManager {
 		this.scopeList = options.scopeList;
 		this.parser = options.parser;
 		this.moduleManager = options.moduleManager;
+		this.moduleManager.setInstance("scopeManager", this);
 		this.nullGetter = options.nullGetter;
 		this.delimiters = options.delimiters;
-		this.moduleManager.scopeManager = this;
 	}
 	loopOver(tag, callback, inverted) {
 		inverted = inverted || false;

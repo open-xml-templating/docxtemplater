@@ -1,7 +1,16 @@
 "use strict";
 
 module.exports = class ModuleManager {
-	constructor() { this.modules = []; }
+	constructor() {
+		var instances = {};
+		this.getInstance = function (obj) {
+			return instances[obj];
+		};
+		this.setInstance = function (key, value) {
+			instances[key] = value;
+		};
+		this.modules = [];
+	}
 	attachModule(module) {
 		this.modules.push(module);
 		module.manager = this;
@@ -39,5 +48,4 @@ module.exports = class ModuleManager {
 		}
 		return result;
 	}
-	getInstance(obj) { return this[obj]; }
 };
