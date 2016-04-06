@@ -29,7 +29,7 @@ describe("speed test", function () {
 			new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {age: 12}}).render();
 		}
 		var duration = new Date() - time;
-		expect(duration).to.be.below(80);
+		expect(duration).to.be.below(100);
 	});
 	it("should be fast for loop tags", function () {
 		var content = "<w:t>{#users}{name}{/users}</w:t>";
@@ -40,6 +40,6 @@ describe("speed test", function () {
 		var time = new Date();
 		new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {users: users}}).render();
 		var duration = new Date() - time;
-		expect(duration).to.be.below(15);
+		expect(duration).to.be.below(30);
 	});
 });
