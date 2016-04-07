@@ -1,8 +1,20 @@
 "use strict";
 
 var Errors = require("./errors");
+var memoize = require("memoizejs");
 
 var DocUtils = {};
+
+var parser = function (tag) {
+	return {
+		["get"](scope) {
+			if (tag === ".") {
+				return scope;
+			}
+			return scope[tag];
+		},
+	};
+};
 
 DocUtils.defaults = {
 	nullGetter(tag, props) {
@@ -14,16 +26,7 @@ DocUtils.defaults = {
 		}
 		return "";
 	},
-	parser(tag) {
-		return {
-			["get"](scope) {
-				if (tag === ".") {
-					return scope;
-				}
-				return scope[tag];
-			},
-		};
-	},
+	parser: memoize(parser),
 	experimentalCompiledLoops: false,
 	intelligentTagging: true,
 	fileType: "docx",
@@ -58,9 +61,11 @@ DocUtils.wordToUtf8 = function (string) {
 	if (typeof string !== "string") {
 		string = string.toString();
 	}
-	DocUtils.charMapRegexes.forEach(function (object) {
-		string = string.replace(object.rstart, object.end);
-	});
+	var r;
+	for (var i = 0, l = DocUtils.charMapRegexes.length; i < l; i++) {
+		r = DocUtils.charMapRegexes[i];
+		string = string.replace(r.rstart, r.end);
+	}
 	return string;
 };
 
@@ -68,9 +73,11 @@ DocUtils.utf8ToWord = function (string) {
 	if (typeof string !== "string") {
 		string = string.toString();
 	}
-	DocUtils.charMapRegexes.forEach(function (object) {
-		string = string.replace(object.rend, object.start);
-	});
+	var r;
+	for (var i = 0, l = DocUtils.charMapRegexes.length; i < l; i++) {
+		r = DocUtils.charMapRegexes[i];
+		string = string.replace(r.rend, r.start);
+	}
 	return string;
 };
 
