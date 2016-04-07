@@ -16,3 +16,6 @@ tags
 examples/index.html
 *.es5
 .babel.json
+prof
+profile_output_total.json
+p.json
