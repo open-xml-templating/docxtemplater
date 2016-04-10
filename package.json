@@ -43,12 +43,14 @@
     "node": ">=0.10"
   },
   "scripts": {
+    "prepublish": "rm -rf build && mkdir build && npm run compile && npm run browserify && npm run uglify",
     "preversion": "npm test",
     "compile": "npm run convertto:es5 && node examples/compile_site.js",
     "browserify:test": "browserify -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/docxtemplaterTest.js",
     "browserify:lib": "browserify -r ./js/docxtemplater.js -s Docxtemplater > build/docxtemplater.js",
     "browserify:demo": "browserify -r ./examples/main.js -s Docxdemo > browser/main.min.js",
     "uglify:lib": "uglifyjs build/docxtemplater.js > build/docxtemplater.min.js",
+    "uglify": "npm run uglify:lib",
     "browserify": "npm run browserify:test && npm run browserify:lib && npm run browserify:demo",
     "convertto:es5": "rm js -rf ; mkdir -p js; npm run babel",
     "convertto:es5:watch": "npm run babel -- --watch",
