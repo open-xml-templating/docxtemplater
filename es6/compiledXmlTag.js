@@ -4,7 +4,7 @@ var CompiledXmlTag = class CompiledXmlTag {
 	constructor(compiled) { this.set(compiled || []); }
 	set(compiled) {
 		compiled = compiled || [];
-		if (this.null) { return this; }
+		if (this.empty) { return this; }
 		this.compiled = [];
 		for (var i = 0, text; i < compiled.length; i++) {
 			text = compiled[i];
@@ -15,14 +15,14 @@ var CompiledXmlTag = class CompiledXmlTag {
 		return this;
 	}
 	prependText(text) {
-		if (this.null) { return this; }
+		if (this.empty) { return this; }
 		if (text !== "") {
 			this.compiled.unshift(text);
 		}
 		return this;
 	}
 	appendText(text) {
-		if (this.null) { return this; }
+		if (this.empty) { return this; }
 		if (text !== "") {
 			this.compiled.push(text);
 		}
@@ -30,9 +30,9 @@ var CompiledXmlTag = class CompiledXmlTag {
 	}
 };
 
-CompiledXmlTag.null = function () {
+CompiledXmlTag.empty = function () {
 	var obj = new CompiledXmlTag();
-	obj.null = true;
+	obj.empty = true;
 	return obj;
 };
 

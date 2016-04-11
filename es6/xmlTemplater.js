@@ -349,7 +349,7 @@ module.exports = class XmlTemplater {
 				noEndTag: (this.templaterState.getMatchLocation(this.templaterState.tagEnd.numXmlTag) === "last"),
 			};
 
-			this.currentCompiledTag = CompiledXmlTag.null();
+			this.currentCompiledTag = CompiledXmlTag.empty();
 			return this.replaceXmlTag(content, options);
 		}
 	}
