@@ -531,6 +531,34 @@ var startTest = function () {
 			xmlTemplater.render();
 			expect(xmlTemplater.getFullText()).to.be.equal("yMyBar*cos⁡( MyFoo+MyBaz)Hello John");
 		});
+		it("should work with boolean loop before simpleContent inside loop", function () {
+			var content = "<w:t>{#items}{#notFirst}, {/notFirst}{value}{/items}</w:t>";
+			var scope = {items: [{notFirst: false, value: 1}, {notFirst: true, value: 2}]};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			xmlTemplater.render();
+			expect(xmlTemplater.getFullText()).to.be.equal("1, 2");
+		});
+		it("should work with inverted boolean loop before simpleContent inside loop", function () {
+			var content = "<w:t>{#items}{^first}, {/first}{value}{/items}</w:t>";
+			var scope = {items: [{first: true, value: 1}, {first: false, value: 2}]};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			xmlTemplater.render();
+			expect(xmlTemplater.getFullText()).to.be.equal("1, 2");
+		});
+		it("should work with boolean loop after simpleContent inside loop", function () {
+			var content = "<w:t>{#items}{value}{#notLast}, {/notLast}{/items}</w:t>";
+			var scope = {items: [{notLast: true, value: 1}, {notLast: false, value: 2}]};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			xmlTemplater.render();
+			expect(xmlTemplater.getFullText()).to.be.equal("1, 2");
+		});
+		it("should work with inverted boolean loop after simpleContent inside loop", function () {
+			var content = "<w:t>{#items}{value}{^last}, {/last}{/items}</w:t>";
+			var scope = {items: [{last: false, value: 1}, {last: true, value: 2}]};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			xmlTemplater.render();
+			expect(xmlTemplater.getFullText()).to.be.equal("1, 2");
+		});
 	});
 
 	describe("Change the nullGetter", function () {
