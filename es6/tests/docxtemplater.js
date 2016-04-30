@@ -234,28 +234,27 @@ function startTest() {
 			});
 
 			it("should provide inverted loops", function () {
-				// shows if the key is []
 				var content = "<w:t>{^products}No products found{/products}</w:t>";
-				[{products: []},
-				{products: false},
-				{},
+				[
+					{products: []},
+					{products: false},
+					{},
 				].forEach(function (tags) {
 					var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: tags});
 					doc.render();
 					expect(doc.getFullText()).to.be.equal("No products found");
-				}
-				);
+				});
 
-				return [{products: [{name: "Bread"}]},
-				{products: true},
-				{products: "Bread"},
-				{products: {name: "Bread"}},
+				return [
+					{products: [{name: "Bread"}]},
+					{products: true},
+					{products: "Bread"},
+					{products: {name: "Bread"}},
 				].forEach(function (tags) {
 					var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: tags});
 					doc.render();
 					expect(doc.getFullText()).to.be.equal("");
-				}
-				);
+				});
 			});
 		});
 	});
@@ -650,12 +649,12 @@ function startTest() {
 					t1data3: "t1-2row-data3",
 					t1data4: "t1-2row-data4",
 				},
-					{
-						t1data1: "t1-3row-data1",
-						t1data2: "t1-3row-data2",
-						t1data3: "t1-3row-data3",
-						t1data4: "t1-3row-data4",
-					}],
+				{
+					t1data1: "t1-3row-data1",
+					t1data2: "t1-3row-data2",
+					t1data3: "t1-3row-data3",
+					t1data4: "t1-3row-data4",
+				}],
 				t1total1: "t1total1-data",
 				t1total2: "t1total2-data",
 				t1total3: "t1total3-data",
@@ -673,12 +672,12 @@ function startTest() {
 					t2data3: "t2-1row-data3",
 					t2data4: "t2-1row-data4",
 				},
-					{
-						t2data1: "t2-2row-data1",
-						t2data2: "t2-2row-data2",
-						t2data3: "t2-2row-data3",
-						t2data4: "t2-2row-data4",
-					}],
+				{
+					t2data1: "t2-2row-data1",
+					t2data2: "t2-2row-data2",
+					t2data3: "t2-2row-data3",
+					t2data4: "t2-2row-data4",
+				}],
 				t1total1: "t1total1-data",
 				t1total2: "t1total2-data",
 				t1total3: "t1total3-data",

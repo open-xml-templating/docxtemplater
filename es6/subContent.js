@@ -29,10 +29,11 @@ module.exports = class SubContent {
 		return this;
 	}
 	getErrorProps(xmlTag) {
-		return {xmlTag: xmlTag,
-		text: this.fullText,
-		start: this.start,
-		previousEnd: this.end,
+		return {
+			xmlTag,
+			text: this.fullText,
+			start: this.start,
+			previousEnd: this.end,
 		};
 	}
 	getOuterXml(xmlTag) {
