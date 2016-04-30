@@ -11,7 +11,7 @@ var CompiledXmlTag = require("./compiledXmlTag");
 var renderCompiled = require("./renderCompiled");
 var Errors = require("./errors");
 
-var getFullText = function (content, tagsXmlArray) {
+function getFullText(content, tagsXmlArray) {
 	var matcher = xmlMatcher(content, tagsXmlArray);
 	// get only the text
 	var output = ((() => {
@@ -24,7 +24,7 @@ var getFullText = function (content, tagsXmlArray) {
 	})());
 	// join it
 	return DocUtils.wordToUtf8(DocUtils.convertSpaces(output.join("")));
-};
+}
 
 // This is an abstract class, DocXTemplater is an example of inherited class
 module.exports = class XmlTemplater {

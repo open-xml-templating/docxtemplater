@@ -4,16 +4,16 @@ var docX = {};
 var expect = require("chai").expect;
 
 var expressions = require("angular-expressions");
-var angularParser = function (tag) {
+function angularParser(tag) {
 	var expr = expressions.compile(tag);
 	return {
 		get(scope) {
 			return expr(scope);
 		},
 	};
-};
+}
 
-var shouldBeSame = function (zip1, zip2) {
+function shouldBeSame(zip1, zip2) {
 	if (typeof zip1 === "string") { zip1 = docX[zip1].getZip(); }
 	if (typeof zip2 === "string") { zip2 = docX[zip2].getZip(); }
 
@@ -28,7 +28,7 @@ var shouldBeSame = function (zip1, zip2) {
 		});
 		return result;
 	})();
-};
+}
 
 var xmlMatcher = require("../xmlMatcher.js");
 var Docxtemplater = require("../index.js");
@@ -60,14 +60,14 @@ var fileNames = [
 	"tagProduitLoop.docx",
 ];
 
-var getLength = function (d) {
+function getLength(d) {
 	if ((d.length != null)) {
 		return d.length;
 	}
 	return d.byteLength;
-};
+}
 
-var startTest = function () {
+function startTest() {
 	describe("DocxtemplaterBasis", function () {
 		it("should be defined", function () {
 			expect(Docxtemplater).not.to.be.equal(undefined);
@@ -537,7 +537,7 @@ var startTest = function () {
 		it("should work with null", function () {
 			var content = "<w:t>Hello {name}</w:t>";
 			var scope = {};
-			var parser = function () { return "null"; };
+			function parser() { return "null"; }
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, nullGetter: parser});
 			xmlTemplater.render();
 			expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
@@ -547,9 +547,9 @@ var startTest = function () {
 		it("should work with uppercassing", function () {
 			var content = "<w:t>Hello {name}</w:t>";
 			var scope = {name: "Edgar"};
-			var parser = function (tag) {
+			function parser(tag) {
 				return {["get"](scope) { return scope[tag].toUpperCase(); }};
-			};
+			}
 			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope, parser: parser});
 			xmlTemplater.render();
 			expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
@@ -970,38 +970,38 @@ TAG`;
 			JSON.stringify(docX["tagExample.docx"]);
 		});
 	});
-};
+}
 
 var countFiles = 0;
 var allStarted = false;
 
-var loadDocx = function (name, content) {
+function loadDocx(name, content) {
 	docX[name] = new Docxtemplater();
 	docX[name].setOptions({fileType: "docx"});
 	docX[name].load(content);
 	docX[name].loadedContent = content;
-};
+}
 
-var loadPptx = function (name, content) {
+function loadPptx(name, content) {
 	pptX[name] = new Docxtemplater();
 	pptX[name].setOptions({fileType: "pptx"});
 	pptX[name].load(content);
 	pptX[name].loadedContent = content;
-};
+}
 
-var loadImage = function (name, content) {
+function loadImage(name, content) {
 	data[name] = content;
-};
+}
 
-var endLoadFile = function (change) {
+function endLoadFile(change) {
 	change = change || 0;
 	countFiles += change;
 	if (countFiles === 0 && allStarted === true) {
 		return startTest();
 	}
-};
+}
 
-var loadFile = function (name, callback) {
+function loadFile(name, callback) {
 	countFiles += 1;
 	if ((fs.readFileSync != null)) {
 		var path = require("path");
@@ -1016,7 +1016,7 @@ var loadFile = function (name, callback) {
 		callback(name, data);
 		return endLoadFile(-1);
 	});
-};
+}
 
 fileNames.map(function (fileName) {
 	loadFile(fileName, loadDocx);

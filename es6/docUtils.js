@@ -5,7 +5,7 @@ var memoize = require("memoizejs");
 
 var DocUtils = {};
 
-var parser = function (tag) {
+function parser(tag) {
 	return {
 		["get"](scope) {
 			if (tag === ".") {
@@ -14,7 +14,7 @@ var parser = function (tag) {
 			return scope[tag];
 		},
 	};
-};
+}
 
 DocUtils.defaults = {
 	nullGetter(tag, props) {
@@ -97,14 +97,14 @@ DocUtils.pregMatchAll = function (regex, content) {
 	returns: [{0: 'la',offset: 2},{0: 'la',offset: 8},{0: 'la',offset: 10}]
 	*/
 	var matchArray = [];
-	var replacer = function () {
+	function replacer() {
 		var pn = {array: Array.prototype.slice.call(arguments)};
 		pn.array.pop();
 		var offset = pn.array.pop();
 		// add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 		pn.offset = offset;
 		return matchArray.push(pn);
-	};
+	}
 	content.replace(regex, replacer);
 	return matchArray;
 };

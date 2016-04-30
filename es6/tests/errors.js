@@ -4,17 +4,17 @@ var XmlTemplater = require("../xmlTemplater.js");
 var expect = require("chai").expect;
 var FileTypeConfig = require("../fileTypeConfig.js");
 var expressions = require("angular-expressions");
-var angularParser = function (tag) {
+function angularParser(tag) {
 	var expr = expressions.compile(tag);
 	return {
 		get(scope) {
 			return expr(scope);
 		},
 	};
-};
+}
 var Errors = require("../errors.js");
 
-var expectToThrow = function (obj, method, type, expectedError) {
+function expectToThrow(obj, method, type, expectedError) {
 	var e = null;
 	try {
 		obj[method]();
@@ -36,7 +36,7 @@ var expectToThrow = function (obj, method, type, expectedError) {
 	delete e.properties.explanation;
 	delete e.stack;
 	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
-};
+}
 
 describe("errors", function () {
 	it("should be thrown when unclosedtag", function () {

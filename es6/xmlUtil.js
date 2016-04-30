@@ -3,11 +3,11 @@
 var DocUtils = require("./docUtils");
 var XmlUtil = {};
 
-var addTag = function (array, tag) {
+function addTag(array, tag) {
 	return array.concat([{tag: "<" + tag.array[1] + ">", offset: tag.offset}]);
-};
+}
 
-var lastTagIsOpenTag = function (array, tag) {
+function lastTagIsOpenTag(array, tag) {
 	if (array.length === 0) {
 		return false;
 	}
@@ -16,7 +16,7 @@ var lastTagIsOpenTag = function (array, tag) {
 	var innerCurrentTag = tag.array[1].substr(1);
 	// tag was just opened
 	return innerLastTag === innerCurrentTag;
-};
+}
 
 XmlUtil.getListXmlElements = function (text) {
 	/*

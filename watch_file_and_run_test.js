@@ -8,7 +8,7 @@ var lastRun = 0;
 var throttleTime = 1000;
 /* eslint-disable no-console */
 
-var execTests = function () {
+function execTests() {
 	exec("robo mocha", function (error, stdout, stderr) {
 		if (stdout) {
 			console.log("stdout: " + stdout);
@@ -20,9 +20,9 @@ var execTests = function () {
 			console.log("exec error: " + error);
 		}
 	});
-};
+}
 
-var onFileChange = function () {
+function onFileChange() {
 	var now = new Date().getTime();
 	if (now < lastRun + throttleTime) {
 		return;
@@ -30,7 +30,7 @@ var onFileChange = function () {
 	lastRun = now;
 
 	setTimeout(execTests, 10);
-};
+}
 
 fs.watch(path.join(__dirname, "js"), onFileChange);
 fs.watch(path.join(__dirname, "js", "tests"), onFileChange);

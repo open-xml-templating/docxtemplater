@@ -3,7 +3,7 @@
 var DocUtils = require("./docUtils");
 var memoize = require("memoizejs");
 
-var handleRecursiveCase = function (res) {
+function handleRecursiveCase(res) {
 	/*
 		 Because xmlTemplater is recursive (meaning it can call it self), we need to handle special cases where the XML is not valid:
 		 For example with res string "I am</w:t></w:r></w:p><w:p><w:r><w:t>sleeping",
@@ -13,7 +13,7 @@ var handleRecursiveCase = function (res) {
 		 It should even work if they is no XML at all, for example if the code is just "I am sleeping", in res case however, they should only be one match
 		 */
 
-	var replacerUnshift = function () {
+	function replacerUnshift() {
 		var pn = {array: Array.prototype.slice.call(arguments)};
 		pn.array.shift();
 		var match = pn.array[0] + pn.array[1];
@@ -26,7 +26,7 @@ var handleRecursiveCase = function (res) {
 		// add at the beginning
 		res.matches.unshift(pn);
 		return res.charactersAdded.unshift(0);
-	};
+	}
 
 	if (res.content.indexOf("<") === -1 && res.content.indexOf(">") === -1) {
 		res.content.replace(/^()([^<>]*)$/, replacerUnshift);
@@ -35,7 +35,7 @@ var handleRecursiveCase = function (res) {
 	var r = new RegExp(`^()([^<]+)<\/(?:${res.tagsXmlArrayJoined})>`);
 	res.content.replace(r, replacerUnshift);
 
-	var replacerPush = function () {
+	function replacerPush() {
 		var pn = {array: Array.prototype.slice.call(arguments)};
 		pn.array.pop();
 		var offset = pn.array.pop();
@@ -44,14 +44,14 @@ var handleRecursiveCase = function (res) {
 		// add at the end
 		res.matches.push(pn);
 		return res.charactersAdded.push(0);
-	};
+	}
 
 	r = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^>]+)$`);
 	res.content.replace(r, replacerPush);
 	return res;
-};
+}
 
-var xmlMatcher = function (content, tagsXmlArray) {
+function xmlMatcher(content, tagsXmlArray) {
 	var res = {};
 	res.content = content;
 	res.tagsXmlArray = tagsXmlArray;
@@ -67,7 +67,7 @@ var xmlMatcher = function (content, tagsXmlArray) {
 		return result;
 	})());
 	return handleRecursiveCase(res);
-};
+}
 
 var memoized = memoize(xmlMatcher);
 

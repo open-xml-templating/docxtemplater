@@ -1,16 +1,16 @@
 "use strict";
 
-var renderCompiled = function (compiled, tags, scopeManager) {
+function renderCompiled(compiled, tags, scopeManager) {
 	return compiled.map(function (part) {
+		var r = "";
+		function callback(subTags) {
+			var s = scopeManager.createSubScopeManager(subTags, part.tag);
+			r += renderCompiled(part.template, subTags, s);
+		}
 		if (typeof part === "string") {
 			return part;
 		}
 		if (part.type === "loop") {
-			var r = "";
-			var callback = function (subTags) {
-				var s = scopeManager.createSubScopeManager(subTags, part.tag);
-				r += renderCompiled(part.template, subTags, s);
-			};
 			scopeManager.loopOver(part.tag, callback, part.inverted);
 			return r;
 		}
@@ -19,6 +19,6 @@ var renderCompiled = function (compiled, tags, scopeManager) {
 		}
 		throw new Error("Unimplemented tag type");
 	}).join("");
-};
+}
 
 module.exports = renderCompiled;

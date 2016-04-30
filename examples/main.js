@@ -5,16 +5,16 @@ window.Docxtemplater = Docxtemplater;
 var expressions = require("angular-expressions");
 window.expressions = expressions;
 
-var textAreaAdjust = function (o) {
+function textAreaAdjust(o) {
 	o.style.height = "1px";
 	o.style.height = (25 + o.scrollHeight) + "px";
-};
+}
 
-var loadFile = function (url, callback) {
+function loadFile(url, callback) {
 	JSZipUtils.getBinaryContent(url, function (err, data) {
 		callback(err, data);
 	});
-};
+}
 
 window.onload = function () {
 	var i;
@@ -35,7 +35,7 @@ window.onload = function () {
 
 	var executeButtonList = document.getElementsByClassName("execute");
 
-	var executeFn = function () {
+	function executeFn() {
 		var childs = (this.parentNode.childNodes);
 
 		for (var j = 0; j < childs.length; j++) {
@@ -44,7 +44,7 @@ window.onload = function () {
 				eval(childs[j].value);
 			}
 		}
-	};
+	}
 
 	for (i = 0; i < executeButtonList.length; i++) {
 		executeButtonList[i].onclick = executeFn;
@@ -52,15 +52,15 @@ window.onload = function () {
 
 	var viewRawButtonList = document.getElementsByClassName("raw");
 
-	var saveAsRaw = function (err, content) {
+	function saveAsRaw(err, content) {
 		if (err) {
 			throw err;
 		}
 		var output = new Docxtemplater(content).getZip().generate({type: "blob"});
 		saveAs(output, "raw.docx");
-	};
+	}
 
-	var viewRawFn = function () {
+	function viewRawFn() {
 		var childs = (this.parentNode.childNodes);
 
 		for (var j = 0; j < childs.length; j++) {
@@ -69,7 +69,7 @@ window.onload = function () {
 				loadFile(raw, saveAsRaw);
 			}
 		}
-	};
+	}
 
 	for (i = 0; i < viewRawButtonList.length; i++) {
 		viewRawButtonList[i].onclick = viewRawFn;

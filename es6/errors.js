@@ -1,32 +1,32 @@
 "use strict";
 
-var XTError = function (message) {
+function XTError(message) {
 	this.name = "GenericError";
 	this.message = message;
 	this.stack = (new Error()).stack;
-};
+}
 XTError.prototype = new Error();
 
-var XTTemplateError = function (message) {
+function XTTemplateError(message) {
 	this.name = "TemplateError";
 	this.message = message;
 	this.stack = (new Error()).stack;
-};
+}
 XTTemplateError.prototype = new XTError();
 
-var XTScopeParserError = function (message) {
+function XTScopeParserError(message) {
 	this.name = "ScopeParserError";
 	this.message = message;
 	this.stack = (new Error()).stack;
-};
+}
 XTScopeParserError.prototype = new XTError();
 
-var XTInternalError = function (message) {
+function XTInternalError(message) {
 	this.name = "InternalError";
 	this.properties = {explanation: "InternalError"};
 	this.message = message;
 	this.stack = (new Error()).stack;
-};
+}
 XTInternalError.prototype = new XTError();
 
 module.exports = {
