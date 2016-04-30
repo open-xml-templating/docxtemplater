@@ -1,5 +1,10 @@
 ### master
 
+### 2.1.1
+
+-	Bug fix : Some times, docxtemplater could eat lots of memory due to the new "compilation" feature that was only experimental. As this feature is not yet used, it was completely removed from the codebase.
+-	Performance : The code has been made a little bit faster.
+
 ### 2.1.0
 
 -	**Speed Improvements** : docxtemplater had a regression causing it to be slow for loops. The regression would cause the code to run in O(n²) instead of O(n) where n is the length of the loops (with {#users}{name}{/users}. The bug is now fixed, and docxtemplater gained a lot of speed for users of lengthy loops.

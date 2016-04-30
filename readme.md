@@ -133,7 +133,7 @@ Documentation
 The full documentation of the latest version can be found on [read the docs](http://docxtemplater.readthedocs.org/en/latest/).
 ==============================================================================================================================
 
-See [upgrade.md](upgrade.md) for information about how to migrate from older versions.
+See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older versions.
 
 Similar libraries
 -----------------
