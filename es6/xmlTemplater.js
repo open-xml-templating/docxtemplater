@@ -6,9 +6,7 @@ var SubContent = require("./subContent");
 var TemplaterState = require("./templaterState");
 var xmlMatcher = require("./xmlMatcher");
 var ModuleManager = require("./moduleManager");
-var CompiledTemplate = require("./compiledTemplate");
 var CompiledXmlTag = require("./compiledXmlTag");
-var renderCompiled = require("./renderCompiled");
 var Errors = require("./errors");
 
 function getFullText(content, tagsXmlArray) {
@@ -88,10 +86,6 @@ module.exports = class XmlTemplater {
 	render() {
 		return this.compile();
 	}
-	renderFromCompiled(tags) {
-		var scopeManager = new ScopeManager({tags: tags, scopePath: [], usedTags: {def: {}, undef: {}}, scopeList: [tags], parser: this.parser, moduleManager: this.moduleManager, delimiters: this.delimiters});
-		return renderCompiled(this.compiled.compiled, tags, scopeManager);
-	}
 	getTrail(character) {
 		this.templaterState.trail += character;
 		var length = !this.templaterState.inTag ? this.delimiters.start.length : this.delimiters.end.length;
@@ -131,14 +125,10 @@ module.exports = class XmlTemplater {
 	}
 	compile() {
 		this.sameTags = this.delimiters.start === this.delimiters.end;
-		this.compiled = new CompiledTemplate();
-		this.lastStart = 0;
 		this.templaterState.initialize();
 		this.handleModuleManager("xmlRendering");
 		this.forEachCharacter(this.handleCharacter.bind(this));
 		this.handleModuleManager("xmlRendered");
-		var preContent = this.content.substr(this.lastStart);
-		this.compiled.appendText(preContent);
 		this.templaterState.finalize();
 		return this;
 	}
@@ -196,11 +186,6 @@ module.exports = class XmlTemplater {
 			};
 			throw err;
 		}
-		var startTag = outerXml.start;
-		var preContent = this.content.substr(this.lastStart, startTag - this.lastStart);
-		this.compiled.appendText(preContent);
-		this.lastStart = startTag;
-		this.compiled.appendRaw(this.templaterState.tag);
 		return this.replaceXml(outerXml, newText);
 	}
 	replaceXml(subContent, newText) {
@@ -289,12 +274,6 @@ module.exports = class XmlTemplater {
 		}
 		content = this.replaceFirstFrom(content, this.templaterState.matches[options.xmlTagNumber].array[0], replacer, startTag);
 		this.templaterState.matches[options.xmlTagNumber].array[0] = replacer;
-		var preContent = content.substr(this.lastStart, startTag - this.lastStart);
-		if (this.templaterState.loopType() === "simple") {
-			this.compiled.appendText(preContent);
-			this.lastStart = startTag + this.templaterState.matches[options.xmlTagNumber].array[0].length;
-			this.compiled.appendTag(this.currentCompiledTag);
-		}
 		return content;
 	}
 	replaceTagByValue(newValue, content) {
@@ -386,11 +365,6 @@ module.exports = class XmlTemplater {
 			We replace outerTagsContent by n*subTemplate, n is equal to the length of the array in scope forTag
 			<w:t>subContent subContent subContent</w:t>
 		*/
-		var startTag = outerTags.start;
-		var preContent = this.content.substr(this.lastStart, startTag - this.lastStart);
-		this.compiled.appendText(preContent);
-		this.lastStart = outerTags.end;
-
 		var tag = this.templaterState.loopOpen.tag;
 		var newContent = "";
 		var subfile = null;
@@ -406,8 +380,6 @@ module.exports = class XmlTemplater {
 
 		this.scopeManager.loopOver(tag, loopFn, this.templaterState.loopIsInverted);
 		subfile = this.calcSubXmlTemplater(subTemplate, {tags: {}}).render();
-		this.compiled.appendSubTemplate(subfile.compiled.compiled, tag, this.templaterState.loopIsInverted);
-		this.lastStart += newContent.length - outerTags.text.length;
 		return this.replaceXml(outerTags, newContent);
 	}
 };

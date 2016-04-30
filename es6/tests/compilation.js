@@ -4,7 +4,7 @@ var XmlTemplater = require("../xmlTemplater.js");
 var expect = require("chai").expect;
 var FileTypeConfig = require("../fileTypeConfig.js");
 
-describe("compilation", function () {
+describe.skip("compilation", function () {
 	it("should work with dot", function () {
 		var content = "<w:t>Hello {.}</w:t>";
 		var scope = "Edgar";
@@ -322,7 +322,7 @@ TAG2
 	});
 });
 
-describe("Render from compiled", function () {
+describe.skip("Render from compiled", function () {
 	it("should work with complicated loop", function () {
 		var content = "<w:t> {#users} {name} </w:t>TAG..TAG<w:t>{/users}</w:t>TAG2<w:t>{name}";
 		var scope = {};
