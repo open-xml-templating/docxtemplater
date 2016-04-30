@@ -5,15 +5,12 @@ var DocUtils = require("./docUtils");
 
 module.exports = class ScopeManager {
 	constructor(options) {
-		this.tags = options.tags;
 		this.scopePath = options.scopePath;
 		this.usedTags = options.usedTags;
 		this.scopeList = options.scopeList;
 		this.parser = options.parser;
 		this.moduleManager = options.moduleManager;
 		this.moduleManager.setInstance("scopeManager", this);
-		this.nullGetter = options.nullGetter;
-		this.delimiters = options.delimiters;
 	}
 	loopOver(tag, callback, inverted) {
 		inverted = inverted || false;
@@ -22,11 +19,6 @@ module.exports = class ScopeManager {
 	}
 	functorIfInverted(inverted, functor, value) {
 		if (inverted) {
-			functor(value);
-		}
-	}
-	functorIfNotInverted(inverted, functor, value) {
-		if (!inverted) {
 			functor(value);
 		}
 	}
@@ -42,15 +34,15 @@ module.exports = class ScopeManager {
 		if (type === "[object Array]") {
 			for (var i = 0, scope; i < value.length; i++) {
 				scope = value[i];
-				this.functorIfNotInverted(inverted, functor, scope);
+				this.functorIfInverted(!inverted, functor, scope);
 			}
 			return;
 		}
 		if (type === "[object Object]") {
-			return this.functorIfNotInverted(inverted, functor, value);
+			return this.functorIfInverted(!inverted, functor, value);
 		}
 		if (value === true) {
-			return this.functorIfNotInverted(inverted, functor, currentValue);
+			return this.functorIfInverted(!inverted, functor, currentValue);
 		}
 	}
 	getValue(tag, num) {
@@ -137,10 +129,7 @@ module.exports = class ScopeManager {
 
 		options.parser = this.parser;
 		options.moduleManager = this.moduleManager;
-		options.nullGetter = this.nullGetter;
-		options.delimiters = this.delimiters;
 
-		options.tags = scope;
 		if (tag != null) {
 			options.scopeList = this.scopeList.concat(scope);
 			options.scopePath = this.scopePath.concat(tag);

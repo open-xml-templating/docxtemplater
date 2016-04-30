@@ -56,7 +56,7 @@ module.exports = class XmlTemplater {
 			self[key] = (options[key] != null) ? options[key] : defaultValue;
 		});
 		this.moduleManager = (options.moduleManager != null) ? options.moduleManager : new ModuleManager();
-		this.scopeManager = new ScopeManager({tags: this.tags, scopePath: this.scopePath, usedTags: this.usedTags, scopeList: this.scopeList, parser: this.parser, moduleManager: this.moduleManager, delimiters: this.delimiters});
+		this.scopeManager = new ScopeManager({scopePath: this.scopePath, usedTags: this.usedTags, scopeList: this.scopeList, parser: this.parser, moduleManager: this.moduleManager});
 	}
 	toJson() {
 		var self = this;
