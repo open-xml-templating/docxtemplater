@@ -358,8 +358,6 @@ function startTest() {
 		});
 	});
 
-	require("./compilation");
-
 	describe("xmlTemplater", function () {
 		it("should work with simpleContent", function () {
 			var content = "<w:t>Hello {name}</w:t>";
@@ -632,8 +630,6 @@ function startTest() {
 			expect(outputText.substr(0, 7)).to.be.equal(russian);
 		});
 	});
-
-	require("./errors");
 
 	describe("Complex table example", function () {
 		it("should work with simple table", function () {
@@ -922,6 +918,7 @@ TAG`;
 		it("should work with complex loops (2)", function () {
 			var content = "<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {person: [{name: "Henry"}]}}).render();
+			expect(xmlt.content).to.contain("Henry</w:t>");
 			expect(xmlt.content).not.to.contain("</w:t>Henry</w:t>");
 		});
 
@@ -940,18 +937,20 @@ TAG`;
 
 	describe("getting parents context", function () {
 		it("should work with simple loops", function () {
-			var content = "{#loop}{name}{/loop}";
+			var content = "<w:t>{#loop}{name}{/loop}</w:t>";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {loop: [1], name: "Henry"}}).render();
-			expect(xmlt.content).to.be.equal("Henry");
+			expect(xmlt.content).to.be.equal("<w:t>Henry</w:t>");
 		});
 
 		it("should work with double loops", function () {
-			var content = "{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}";
+			var content = "<w:t>{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}</w:t>";
 			var xmlt = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {loop_first: [1], loop_second: [{name_inner: "John"}], name_outer: "Henry"}}).render();
-			expect(xmlt.content).to.be.equal("John Henry");
+			expect(xmlt.content).to.be.equal("<w:t>John Henry</w:t>");
 		});
 	});
 
+	require("./compilation");
+	require("./errors");
 	require("./speed");
 
 	describe("pptx generation", function () {
