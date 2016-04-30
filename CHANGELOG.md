@@ -122,4 +122,4 @@ Upgrade guide :
 
 If you set qrCode:true, you are affected. The Command Line is not affected as of v0.7.0 (but was on 0.6.3 and less). However the command line as of v0.7.0 is not more able to load images over the filesystem.
 
-You should set qrCode to a function now, according to https://docxtemplater.readthedocs.org/en/latest/configuration.html#image-replacing.
+You should set qrCode to a function now, according to https://docxtemplater.readthedocs.io/en/latest/configuration.html#image-replacing.
