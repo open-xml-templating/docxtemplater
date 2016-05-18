@@ -7,7 +7,7 @@ var Docxtemplater = class Docxtemplater {
 		this.compiled = {};
 		this.moduleManager = new Docxtemplater.ModuleManager();
 		this.moduleManager.setInstance("gen", this);
-		this.setOptions({});
+		this.setOptions(options);
 		if ((typeof content !== "undefined" && content != null)) { this.load(content, options); }
 	}
 	attachModule(module) {
