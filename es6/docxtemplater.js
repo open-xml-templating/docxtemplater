@@ -23,6 +23,9 @@ var Docxtemplater = class Docxtemplater {
 		});
 		if (this.fileType === "docx" || this.fileType === "pptx") {
 			this.fileTypeConfig = Docxtemplater.FileTypeConfig[this.fileType];
+			if (this.zip != null) {
+				this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
+			}
 		}
 		return this;
 	}
