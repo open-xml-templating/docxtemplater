@@ -20,3 +20,4 @@ profile_output_total.json
 p.json
 browser/*
 !browser/.gitkeep
+coverage
