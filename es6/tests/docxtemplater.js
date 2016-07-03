@@ -17,17 +17,13 @@ function shouldBeSame(zip1, zip2) {
 	if (typeof zip1 === "string") { zip1 = docX[zip1].getZip(); }
 	if (typeof zip2 === "string") { zip2 = docX[zip2].getZip(); }
 
-	return (() => {
-		var result = [];
-		Object.keys(zip1.files).map(function (filePath) {
-			expect(zip1.files[filePath].options.date).not.to.be.equal(zip2.files[filePath].options.date, "Date differs");
-			expect(zip1.files[filePath].name).to.be.equal(zip2.files[filePath].name, "Name differs");
-			expect(zip1.files[filePath].options.dir).to.be.equal(zip2.files[filePath].options.dir, "IsDir differs");
-			expect(zip1.files[filePath].asText().length).to.be.equal(zip2.files[filePath].asText().length, "Content differs");
-			result.push(expect(zip1.files[filePath].asText()).to.be.equal(zip2.files[filePath].asText(), "Content differs"));
-		});
-		return result;
-	})();
+	Object.keys(zip1.files).map(function (filePath) {
+		expect(zip1.files[filePath].options.date).not.to.be.equal(zip2.files[filePath].options.date, "Date differs");
+		expect(zip1.files[filePath].name).to.be.equal(zip2.files[filePath].name, "Name differs");
+		expect(zip1.files[filePath].options.dir).to.be.equal(zip2.files[filePath].options.dir, "IsDir differs");
+		expect(zip1.files[filePath].asText().length).to.be.equal(zip2.files[filePath].asText().length, "Content differs");
+		expect(zip1.files[filePath].asText()).to.be.equal(zip2.files[filePath].asText(), "Content differs");
+	});
 }
 
 var xmlMatcher = require("../xmlMatcher.js");
@@ -366,6 +362,15 @@ function startTest() {
 			xmlTemplater.render();
 			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 		});
+
+		it("should work with doublecontent in w:t", function () {
+			var content = "<w:t>Hello {name}, you're {age} years old</w:t>";
+			var scope = {name: "Edgar", age: "foo"};
+			var xmlTemplater = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: scope});
+			xmlTemplater.render();
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar, you're foo years old");
+		});
+
 		it("should work with {.} for this", function () {
 			var content = "<w:t>Hello {.}</w:t>";
 			var scope = "Edgar";
@@ -614,14 +619,9 @@ function startTest() {
 		});
 		it("should insert russian characters", function () {
 			var russianText = [1055, 1091, 1087, 1082, 1080, 1085, 1072];
-			var russian = ((() => {
-				var result = [];
-				for (var i = 0, char; i < russianText.length; i++) {
-					char = russianText[i];
-					result.push(String.fromCharCode(char));
-				}
-				return result;
-			})());
+			var russian = russianText.map(function (char) {
+				return String.fromCharCode(char);
+			});
 			russian = russian.join("");
 			var d = new Docxtemplater(docX["tagExample.docx"].loadedContent);
 			d.setData({last_name: russian});
@@ -949,7 +949,6 @@ TAG`;
 		});
 	});
 
-	require("./compilation");
 	require("./errors");
 	require("./speed");
 
@@ -959,7 +958,7 @@ TAG`;
 			expect(p.getFullText()).to.be.equal("Hello Edgar");
 		});
 	});
-	if ((typeof window !== "undefined" && window != null)) {
+	if (typeof window !== "undefined" && window != null) {
 		return window.mocha.run();
 	}
 
@@ -1030,7 +1029,7 @@ for (var j = 0, file; j < pngFiles.length; j++) {
 }
 
 allStarted = true;
-if ((typeof window !== "undefined" && window != null)) {
+if (typeof window !== "undefined" && window != null) {
 	setTimeout(endLoadFile, 200);
 }
 else {

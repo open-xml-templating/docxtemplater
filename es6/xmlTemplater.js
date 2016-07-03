@@ -11,25 +11,17 @@ var Errors = require("./errors");
 
 function getFullText(content, tagsXmlArray) {
 	var matcher = xmlMatcher(content, tagsXmlArray);
-	// get only the text
-	var output = ((() => {
-		var result = [];
-		for (var i = 0, match; i < matcher.matches.length; i++) {
-			match = matcher.matches[i];
-			result.push(match.array[2]);
-		}
-		return result;
-	})());
-	// join it
+	var output = matcher.matches.map(function (match) {
+		return match.array[2];
+	});
 	return DocUtils.wordToUtf8(DocUtils.convertSpaces(output.join("")));
 }
 
-// This is an abstract class, DocXTemplater is an example of inherited class
 module.exports = class XmlTemplater {
 	constructor(content, options) {
-		this.fromJson(options || {});
+		this.fromJson(options);
 		this.templaterState = new TemplaterState(this.moduleManager, this.delimiters);
-		this.load(content || "");
+		this.load(content);
 	}
 	load(content) {
 		this.content = content;
@@ -43,30 +35,26 @@ module.exports = class XmlTemplater {
 		this.templaterState.charactersAdded = result.charactersAdded;
 	}
 	fromJson(options) {
-		var self = this;
 		this.tags = (options.tags != null) ? options.tags : ({});
 		this.fileTypeConfig = options.fileTypeConfig;
 		this.scopePath = (options.scopePath != null) ? options.scopePath : [];
 		this.scopeList = (options.scopeList != null) ? options.scopeList : [this.tags];
 		this.usedTags = (options.usedTags != null) ? options.usedTags : ({def: {}, undef: {}});
-		Object.keys(DocUtils.defaults).map(function (key) {
+		Object.keys(DocUtils.defaults).map((key) => {
 			var defaultValue = DocUtils.defaults[key];
-			self[key] = (options[key] != null) ? options[key] : defaultValue;
+			this[key] = (options[key] != null) ? options[key] : defaultValue;
 		});
 		this.moduleManager = (options.moduleManager != null) ? options.moduleManager : new ModuleManager();
 		this.scopeManager = new ScopeManager({scopePath: this.scopePath, usedTags: this.usedTags, scopeList: this.scopeList, parser: this.parser, moduleManager: this.moduleManager});
 	}
 	toJson() {
-		var self = this;
 		var obj = {
 			fileTypeConfig: this.fileTypeConfig,
 			usedTags: this.scopeManager.usedTags,
 			experimentalCompiledLoops: this.experimentalCompiledLoops,
 			moduleManager: this.moduleManager,
 		};
-		Object.keys(DocUtils.defaults).map(function (key) {
-			obj[key] = self[key];
-		});
+		Object.keys(DocUtils.defaults).map((key) => { obj[key] = this[key]; });
 		return obj;
 	}
 	getFullText() { return getFullText(this.content, this.fileTypeConfig.tagsXmlArray); }
@@ -115,8 +103,8 @@ module.exports = class XmlTemplater {
 			for (var numCharacter = 0, character; numCharacter < innerText.length; numCharacter++) {
 				character = innerText[numCharacter];
 				this.templaterState.trail = this.getTrail(character);
-				this.templaterState.currentStep = {numXmlTag: numXmlTag, numCharacter: numCharacter};
-				this.templaterState.trailSteps.push({numXmlTag: numXmlTag, numCharacter: numCharacter});
+				this.templaterState.currentStep = {numXmlTag, numCharacter};
+				this.templaterState.trailSteps.push({numXmlTag, numCharacter});
 				this.templaterState.trailSteps = this.templaterState.trailSteps.splice(-this.delimiters.start.length, this.delimiters.start.length);
 				this.templaterState.context += character;
 				functor(character, numXmlTag, numCharacter);
@@ -150,7 +138,7 @@ module.exports = class XmlTemplater {
 	}
 	replaceSimpleTag() {
 		var newValue = this.scopeManager.getValueFromScope(this.templaterState.textInsideTag);
-		if (!(typeof newValue !== "undefined" && newValue != null)) {
+		if (newValue == null) {
 			newValue = this.nullGetter(this.templaterState.textInsideTag, {tag: "simple"});
 		}
 		this.content = this.replaceTagByValue(DocUtils.utf8ToWord(newValue), this.content);
@@ -158,7 +146,7 @@ module.exports = class XmlTemplater {
 	replaceSimpleTagRawXml() {
 		var outerXml;
 		var newText = this.scopeManager.getValueFromScope(this.templaterState.tag);
-		if (!(typeof newText !== "undefined" && newText != null)) {
+		if (newText == null) {
 			newText = this.nullGetter(this.templaterState.tag, {tag: "raw"});
 		}
 		var subContent = new SubContent(this.content);

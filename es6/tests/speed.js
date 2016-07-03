@@ -16,16 +16,15 @@ describe("speed test", function () {
 	});
 	it("should be fast for simple tags with huge content", function () {
 		var content = "<w:t>tag {age}</w:t>";
-		var prepost = ((() => {
-			var result = [];
-			for (var i = 1; i <= 10000; i++) {
-				result.push("bla");
-			}
-			return result;
-		})()).join("");
+		var i;
+		var result = [];
+		for (i = 1; i <= 10000; i++) {
+			result.push("bla");
+		}
+		var prepost = result.join("");
 		content = prepost + content + prepost;
 		var time = new Date();
-		for (var i = 1; i <= 50; i++) {
+		for (i = 1; i <= 50; i++) {
 			new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags: {age: 12}}).render();
 		}
 		var duration = new Date() - time;

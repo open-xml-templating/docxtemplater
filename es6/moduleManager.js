@@ -17,15 +17,9 @@ module.exports = class ModuleManager {
 		return this;
 	}
 	sendEvent(eventName, data) {
-		return (() => {
-			var result = [];
-			var iterable = this.modules;
-			for (var i = 0, m; i < iterable.length; i++) {
-				m = iterable[i];
-				result.push(m.handleEvent(eventName, data));
-			}
-			return result;
-		})();
+		return this.modules.map(function (m) {
+			return m.handleEvent(eventName, data);
+		});
 	}
 	get(value) {
 		var result = null;

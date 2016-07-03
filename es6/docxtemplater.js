@@ -8,18 +8,17 @@ var Docxtemplater = class Docxtemplater {
 		this.moduleManager = new Docxtemplater.ModuleManager();
 		this.moduleManager.setInstance("gen", this);
 		this.setOptions({});
-		if ((typeof content !== "undefined" && content != null)) { this.load(content, options); }
+		if (content != null) { this.load(content, options); }
 	}
 	attachModule(module) {
 		this.moduleManager.attachModule(module);
 		return this;
 	}
 	setOptions(options) {
-		var self = this;
 		this.options = options || {};
-		Object.keys(DocUtils.defaults).forEach(function (key) {
+		Object.keys(DocUtils.defaults).forEach((key) => {
 			var defaultValue = DocUtils.defaults[key];
-			self[key] = (self.options[key] != null) ? self.options[key] : defaultValue;
+			this[key] = (this.options[key] != null) ? this.options[key] : defaultValue;
 		});
 		if (this.fileType === "docx" || this.fileType === "pptx") {
 			this.fileTypeConfig = Docxtemplater.FileTypeConfig[this.fileType];
@@ -85,14 +84,13 @@ var Docxtemplater = class Docxtemplater {
 		return this.zip;
 	}
 	createTemplateClass(path) {
-		var self = this;
 		var usedData = this.zip.files[path].asText();
 		var obj = {
 			tags: this.tags,
 			moduleManager: this.moduleManager,
 		};
-		Object.keys(DocUtils.defaults).forEach(function (key) {
-			obj[key] = self[key];
+		Object.keys(DocUtils.defaults).forEach((key) => {
+			obj[key] = this[key];
 		});
 		obj.fileTypeConfig = this.fileTypeConfig;
 		return new Docxtemplater.XmlTemplater(usedData, obj);

@@ -23,7 +23,7 @@ module.exports = class ScopeManager {
 		}
 	}
 	isValueFalsy(value, type) {
-		return (!(typeof value !== "undefined" && value != null)) || (!value) || (type === "[object Array]" && value.length === 0);
+		return (value == null || !value || (type === "[object Array]" && value.length === 0));
 	}
 	loopOverValue(value, functor, inverted) {
 		var type = Object.prototype.toString.call(value);
@@ -76,14 +76,14 @@ module.exports = class ScopeManager {
 			};
 			throw err;
 		}
-		if (!(typeof result !== "undefined" && result != null) && this.num > 0) { return this.getValue(tag, this.num - 1); }
+		if (result == null && this.num > 0) { return this.getValue(tag, this.num - 1); }
 		return result;
 	}
 	getValueFromScope(tag) {
 		// search in the scopes (in reverse order) and keep the first defined value
 		var result = this.getValue(tag);
 		var value;
-		if ((typeof result !== "undefined" && result != null)) {
+		if (result != null) {
 			if (typeof result === "string") {
 				this.useTag(tag, true);
 				value = result;
