@@ -25,7 +25,8 @@ function handleRecursiveCase(res) {
 		pn.first = true;
 		// add at the beginning
 		res.matches.unshift(pn);
-		return res.charactersAdded.unshift(0);
+		res.charactersAdded.unshift(0);
+		return res.charactersAddedCumulative.unshift(0);
 	}
 
 	if (res.content.indexOf("<") === -1 && res.content.indexOf(">") === -1) {
@@ -43,7 +44,8 @@ function handleRecursiveCase(res) {
 		pn.last = true;
 		// add at the end
 		res.matches.push(pn);
-		return res.charactersAdded.push(0);
+		res.charactersAdded.push(0);
+		return res.charactersAddedCumulative.push(0);
 	}
 
 	r = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^>]+)$`);
@@ -58,14 +60,8 @@ function xmlMatcher(content, tagsXmlArray) {
 	res.tagsXmlArrayJoined = res.tagsXmlArray.join("|");
 	var regexp = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>`, "g");
 	res.matches = DocUtils.pregMatchAll(regexp, res.content);
-	res.charactersAdded = ((() => {
-		var result = [];
-		var end = res.matches.length;
-		for (var i = 0; i < end; i++) {
-			result.push(0);
-		}
-		return result;
-	})());
+	res.charactersAddedCumulative = res.matches.map(() => 0);
+	res.charactersAdded = res.matches.map(() => 0);
 	return handleRecursiveCase(res);
 }
 

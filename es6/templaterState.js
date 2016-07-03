@@ -2,6 +2,7 @@
 // This class responsibility is to store an xmlTemplater's state
 var DocUtils = require("./docUtils");
 var Errors = require("./errors");
+var dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 
 module.exports = class TemplaterState {
 	constructor(moduleManager, delimiters) {
@@ -10,22 +11,18 @@ module.exports = class TemplaterState {
 		this.delimiters = delimiters;
 	}
 	moveCharacters(numXmlTag, newTextLength, oldTextLength) {
-		return (() => {
-			var result = [];
-			var end = this.matches.length;
-			for (var k = numXmlTag; k < end; k++) {
-				result.push(this.charactersAdded[k] += newTextLength - oldTextLength);
-			}
-			return result;
-		})();
+		var end = this.matches.length;
+		for (var k = numXmlTag; k < end; k++) {
+			this.charactersAddedCumulative[k] += newTextLength - oldTextLength;
+		}
 	}
 	calcStartTag(tag) { return this.calcPosition(tag.start); }
 	calcXmlTagPosition(xmlTagNumber) {
-		return this.matches[xmlTagNumber].offset + this.charactersAdded[xmlTagNumber];
+		return this.matches[xmlTagNumber].offset + this.charactersAddedCumulative[xmlTagNumber];
 	}
 	calcEndTag(tag) { return this.calcPosition(tag.end) + 1; }
 	calcPosition(bracket) {
-		return this.matches[bracket.numXmlTag].offset + this.matches[bracket.numXmlTag].array[1].length + this.charactersAdded[bracket.numXmlTag] + bracket.numCharacter;
+		return this.calcXmlTagPosition(bracket.numXmlTag) + this.matches[bracket.numXmlTag].array[1].length + bracket.numCharacter + this.charactersAdded[bracket.numXmlTag];
 	}
 	innerContent(type) { return this.matches[this[type].numXmlTag].array[2]; }
 	initialize() {
@@ -109,11 +106,11 @@ module.exports = class TemplaterState {
 	}
 	getLeftValue() {
 		return this.innerContent("tagStart")
-			.substr(0, this.tagStart.numCharacter + this.offset[this.tagStart.numXmlTag]);
+		.substr(0, this.tagStart.numCharacter + this.offset[this.tagStart.numXmlTag]);
 	}
 	getRightValue() {
 		return this.innerContent("tagEnd")
-			.substr(this.tagEnd.numCharacter + 1 + this.offset[this.tagEnd.numXmlTag]);
+		.substr(this.tagEnd.numCharacter + 1 + this.offset[this.tagEnd.numXmlTag]);
 	}
 	getMatchLocation(num) {
 		var match = this.matches[num];
@@ -142,7 +139,6 @@ module.exports = class TemplaterState {
 		}
 		if (this.textInsideTag[0] === "-") {
 			this.inDashLoop = true;
-			var dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 			baseLoop.tag = (this.textInsideTag.replace(dashInnerRegex, "$2"));
 			baseLoop.element = (this.textInsideTag.replace(dashInnerRegex, "$1"));
 			this.loopOpen = baseLoop;

@@ -32,6 +32,7 @@ module.exports = class XmlTemplater {
 		}
 		var result = xmlMatcher(this.content, this.fileTypeConfig.tagsXmlArray);
 		this.templaterState.matches = result.matches;
+		this.templaterState.charactersAddedCumulative = result.charactersAddedCumulative;
 		this.templaterState.charactersAdded = result.charactersAdded;
 	}
 	fromJson(options) {
@@ -217,7 +218,7 @@ module.exports = class XmlTemplater {
 		var before = "";
 		var after = "";
 		if (options.noStartTag) {
-			return options.insideValue;
+			return [options.insideValue];
 		}
 		if (options.spacePreserve && options.tag === "w:t") {
 			before = `<${options.fullTag} xml:space=\"preserve\">`;
@@ -230,13 +231,21 @@ module.exports = class XmlTemplater {
 		}
 		this.currentCompiledTag.prependText(before);
 		this.currentCompiledTag.appendText(after);
-		return before + options.insideValue + after;
+		return [before, options.insideValue, after];
 	}
-	// replace first occurence of search (can be regex) after *from* offset
 	replaceFirstFrom(string, search, replace, from) {
-		var substr = string.substr(from);
-		var replaced = substr.replace(search, replace);
-		return string.substr(0, from) + replaced;
+		var rightPart = string.substr(from + search.length);
+		var leftPart = string.substr(0, from);
+		var middlePart = string.substr(from, search.length);
+		if (middlePart !== search) {
+			var err = new Errors.XTInternalError("Match not found in content");
+			err.properties.id = "xmltemplater_match_not_found_in_content";
+			err.properties.search = search;
+			err.properties.middlePart = middlePart;
+			err.properties.content = string;
+			throw err;
+		}
+		return leftPart + replace + rightPart;
 	}
 	replaceXmlTag(content, options) {
 		this.templaterState.offset[options.xmlTagNumber] += options.insideValue.length - this.templaterState.matches[options.xmlTagNumber].array[2].length;
@@ -247,19 +256,17 @@ module.exports = class XmlTemplater {
 		options.noStartTag = (options.noStartTag != null) ? options.noStartTag : false;
 		options.noEndTag = (options.noEndTag != null) ? options.noEndTag : false;
 		var replacer = this.xmlToBeReplaced(options);
-		// so that the templaterState.matches are still correct
+		if (replacer.length > 1) {
+			this.templaterState.matches[options.xmlTagNumber].array[1] = replacer[0];
+		}
+		this.templaterState.charactersAdded[options.xmlTagNumber] = options.insideValue.length - this.templaterState.matches[options.xmlTagNumber].array[2].length;
 		this.templaterState.matches[options.xmlTagNumber].array[2] = options.insideValue;
+
+		replacer = replacer.join("");
+		// so that the templaterState.matches are still correct
 		// where the open tag starts: <w:t>
 		var startTag = this.templaterState.calcXmlTagPosition(options.xmlTagNumber);
-		// calculate the replacer according to the params
 		this.templaterState.moveCharacters(options.xmlTagNumber + 1, replacer.length, this.templaterState.matches[options.xmlTagNumber].array[0].length);
-		if (content.indexOf(this.templaterState.matches[options.xmlTagNumber].array[0]) === -1) {
-			var err = new Errors.XTInternalError("Match not found in content");
-			err.properties.id = "xmltemplater_replaced_cant_be_same_as_substring";
-			err.properties.expectedMatch = this.templaterState.matches[options.xmlTagNumber].array[0];
-			err.properties.content = content;
-			throw err;
-		}
 		content = this.replaceFirstFrom(content, this.templaterState.matches[options.xmlTagNumber].array[0], replacer, startTag);
 		this.templaterState.matches[options.xmlTagNumber].array[0] = replacer;
 		return content;
