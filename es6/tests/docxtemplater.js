@@ -252,6 +252,14 @@ function startTest() {
 					expect(doc.getFullText()).to.be.equal("");
 				});
 			});
+
+			it("should be able to close loops with {/}", function () {
+				var content = "<w:t>{#products}Product {name}{/}</w:t>";
+				const tags = {products: [{name: "Bread"}]};
+				var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags});
+				doc.render();
+				expect(doc.getFullText()).to.be.equal("Product Bread");
+			});
 		});
 	});
 

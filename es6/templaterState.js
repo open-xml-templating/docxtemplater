@@ -91,7 +91,7 @@ module.exports = class TemplaterState {
 		return "simple";
 	}
 	isLoopClosingTag() {
-		return this.textInsideTag[0] === "/" && ("/" + this.loopOpen.tag === this.textInsideTag);
+		return this.textInsideTag[0] === "/" && ("/" + this.loopOpen.tag === this.textInsideTag) || this.textInsideTag === "/";
 	}
 	finishLoop() {
 		this.context = "";
