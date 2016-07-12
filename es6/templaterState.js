@@ -170,4 +170,13 @@ module.exports = class TemplaterState {
 			this.loopClose = this.getCurrentLoop();
 		}
 	}
+	getNumberOfOpenedLoopsInContext() {
+		var loopsNumber = this.context.split(this.delimiters.start+'#').length-1;
+			loopsNumber +=this.context.split(this.delimiters.start+'^').length-1;
+			loopsNumber +=this.context.split(this.delimiters.start+'-').length-1;
+		return loopsNumber;
+	}
+	getNumberOfClosedLoopsInContext() {
+		return this.context.split(this.delimiters.start+'/').length-1;
+	}
 };
