@@ -252,6 +252,39 @@ function startTest() {
 					expect(doc.getFullText()).to.be.equal("");
 				});
 			});
+			
+			it("should be able to close loops with {/}", function () {
+				var content = "<w:t>{#products}Product {name}{/}</w:t>";
+				const tags = {products: [{name: "Bread"}]};
+				var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags});
+				doc.render();
+				expect(doc.getFullText()).to.be.equal("Product Bread");
+			});
+			
+			it("should be able to close inner loops with {/}", function(){
+				var content = "<w:t>{#products}{#sizes}Size: {size}{/}{/}</w:t>";
+				const tags = {products: [{name: "Bread", sizes: [{"size": 1}]}]};
+				var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags});
+				doc.render();
+				expect(doc.getFullText()).to.be.equal("Size: 1");
+			});
+			
+			it("should be able to close inner inverted loops with {/}", function(){
+				var content = "<w:t>{#products}{^sizes}No sizes{/}{/}</w:t>";
+				const tags = {products: [{name: "Bread", sizes: []}]};
+				var doc = new XmlTemplater(content, {fileTypeConfig: FileTypeConfig.docx, tags});
+				doc.render();
+				expect(doc.getFullText()).to.be.equal("No sizes");
+			});
+			
+			it("should be able to close inner dash loops with {/}", function(){
+				var tags = {products: [{name: "Bread", "types": [{"color": "white", "shape": "round", "density":"low"}]}]};
+				docX["tagDashLoopSlashClose.docx"].setData(tags);
+				docX["tagDashLoopSlashClose.docx"].render();
+				var expectedText = "whiteroundlow";
+				var text = docX["tagDashLoopSlashClose.docx"].getFullText();
+				expect(text).to.be.equal(expectedText);
+			});
 		});
 	});
 
