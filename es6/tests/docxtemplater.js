@@ -54,6 +54,8 @@ var fileNames = [
 	"tagIntelligentLoopTableExpected.docx",
 	"tagLoopExample.docx",
 	"tagProduitLoop.docx",
+	"simpleExample.pptx",
+	"image.png",
 ];
 
 function getLength(d) {
@@ -1023,18 +1025,18 @@ function loadFile(name, callback) {
 	});
 }
 
-fileNames.map(function (fileName) {
-	loadFile(fileName, loadDocx);
+fileNames.forEach(function (fileName) {
+	if (fileName.indexOf(".docx") !== -1) {
+		return loadFile(fileName, loadDocx);
+	}
+	if (fileName.indexOf(".pptx") !== -1) {
+		return loadFile(fileName, loadPptx);
+	}
+	if (fileName.indexOf(".png") !== -1) {
+		return loadFile(fileName, loadImage);
+	}
+	throw new Error(`Filename ${fileName} neither docx nor pptx`);
 });
-
-loadFile("simpleExample.pptx", loadPptx);
-
-var pngFiles = ["image.png"];
-
-for (var j = 0, file; j < pngFiles.length; j++) {
-	file = pngFiles[j];
-	loadFile(file, loadImage);
-}
 
 allStarted = true;
 if (typeof window !== "undefined" && window != null) {
