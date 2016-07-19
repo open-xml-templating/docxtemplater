@@ -85,6 +85,9 @@ var Docxtemplater = class Docxtemplater {
 	}
 	createTemplateClass(path) {
 		var usedData = this.zip.files[path].asText();
+		return this.createTemplateClassFromContent(usedData);
+	}
+	createTemplateClassFromContent(content) {
 		var obj = {
 			tags: this.tags,
 			moduleManager: this.moduleManager,
@@ -93,7 +96,7 @@ var Docxtemplater = class Docxtemplater {
 			obj[key] = this[key];
 		});
 		obj.fileTypeConfig = this.fileTypeConfig;
-		return new Docxtemplater.XmlTemplater(usedData, obj);
+		return new Docxtemplater.XmlTemplater(content, obj);
 	}
 	getFullText(path) {
 		return this.createTemplateClass(path || this.fileTypeConfig.textPath).getFullText();
