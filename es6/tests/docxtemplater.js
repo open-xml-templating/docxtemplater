@@ -55,6 +55,7 @@ var fileNames = [
 	"tagLoopExample.docx",
 	"tagProduitLoop.docx",
 	"simpleExample.pptx",
+	"rawXmlExample.pptx",
 	"image.png",
 ];
 
@@ -967,7 +968,12 @@ TAG`;
 			var p = pptX["simpleExample.pptx"].setData({name: "Edgar"}).render();
 			expect(p.getFullText()).to.be.equal("Hello Edgar");
 		});
+		it("should work with simple pptx", function () {
+			var p = pptX["rawXmlExample.pptx"].setData({raw: "<p:sp><a:t>Hello World</a:t></p:sp>"}).render();
+			expect(p.getFullText()).to.be.equal("Hello World");
+		});
 	});
+
 	if (typeof window !== "undefined" && window != null) {
 		return window.mocha.run();
 	}

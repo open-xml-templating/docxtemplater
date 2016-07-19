@@ -6,7 +6,7 @@ var SubContent = require("./subContent");
 var PptXFileTypeConfig = {
 	textPath: "ppt/slides/slide1.xml",
 	tagsXmlArray: ["a:t", "m:t"],
-	tagRawXml: "p: sp",
+	tagRawXml: "p:sp",
 	getTemplatedFiles(zip) {
 		var slideTemplates = zip.file(/ppt\/(slides|slideMasters)\/(slide|slideMaster)\d+\.xml/).map(function (file) { return file.name; });
 		return slideTemplates.concat(["ppt/presentation.xml"]);
