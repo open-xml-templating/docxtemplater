@@ -35,8 +35,10 @@
     "browserify": "^13.0.0",
     "chai": "^3.3.0",
     "eslint": "^2.7.0",
+    "mkdirp": "^0.5.1",
     "mocha": "^2.3.3",
     "mustache": "^2.1.3",
+    "rimraf": "^2.5.3",
     "uglifyjs": "^2.4.10"
   },
   "license": "MIT",
@@ -44,7 +46,7 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "prepublish": "rm -rf build && mkdir build && npm run compile && npm run browserify && npm run uglify",
+    "prepublish": "rimraf build && mkdirp build && npm run compile && npm run browserify && npm run uglify",
     "preversion": "npm test",
     "compile": "npm run convertto:es5 && node examples/compile_site.js",
     "browserify:test": "browserify --insert-global-vars __filename,__dirname -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/docxtemplaterTest.js",
@@ -53,7 +55,7 @@
     "uglify:lib": "uglifyjs build/docxtemplater.js > build/docxtemplater.min.js",
     "uglify": "npm run uglify:lib",
     "browserify": "npm run browserify:test && npm run browserify:lib && npm run browserify:demo",
-    "convertto:es5": "rm js -rf ; mkdir -p js; npm run babel",
+    "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel",
     "convertto:es5:watch": "npm run babel -- --watch",
     "test:watch": "node watch_file_and_run_test.js & npm run convertto:es5:watch",
     "lint": "eslint .",
