@@ -3,7 +3,7 @@
 var xmlUtil = require("./xmlUtil");
 var SubContent = require("./subContent");
 
-function PptXFileTypeConfig() {
+function pptXFileTypeConfig() {
 	return {
 		textPath: "ppt/slides/slide1.xml",
 		tagsXmlArray: ["a:t", "m:t"],
@@ -24,10 +24,10 @@ function PptXFileTypeConfig() {
 			return false;
 		},
 	};
-};
+}
 
-function DocXFileTypeConfig() {
-	return  {
+function docXFileTypeConfig() {
+	return {
 		getTemplatedFiles(zip) {
 			var slideTemplates = zip.file(/word\/(header|footer)\d+\.xml/).map(function (file) { return file.name; });
 			return slideTemplates.concat(["word/document.xml"]);
@@ -46,8 +46,8 @@ function DocXFileTypeConfig() {
 			}
 			return false;
 		},
-	}
-};
+	};
+}
 
 function mergeWithDefaults(fileType, options) {
 	var defaults = defaultFor(fileType);
@@ -58,18 +58,18 @@ function mergeWithDefaults(fileType, options) {
 	return defaults;
 }
 
-function defaultFor(filetype){
-	if(filetype == 'docx') {
-		return DocXFileTypeConfig();
-	} else if(filetype == 'pptx') {
-		return PptXFileTypeConfig();
-	} else{
-		throw new TypeError('file type must be either docx or pptx');
+function defaultFor(filetype) {
+	if (filetype === "docx") {
+		return docXFileTypeConfig();
 	}
+	else if (filetype === "pptx") {
+		return pptXFileTypeConfig();
+	}
+	throw new TypeError("file type must be either docx or pptx");
 }
 
 module.exports = {
-	docx: defaultFor('docx'),
-	pptx: defaultFor('pptx'),
+	docx: defaultFor("docx"),
+	pptx: defaultFor("pptx"),
 	mergeWithDefaults: mergeWithDefaults,
 };
