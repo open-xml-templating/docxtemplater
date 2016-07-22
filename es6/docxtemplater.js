@@ -21,7 +21,7 @@ var Docxtemplater = class Docxtemplater {
 			this[key] = (this.options[key] != null) ? this.options[key] : defaultValue;
 		});
 		if (this.fileType === "docx" || this.fileType === "pptx") {
-			this.fileTypeConfig = Docxtemplater.FileTypeConfig[this.fileType];
+			this.fileTypeConfig = Docxtemplater.FileTypeConfig.mergeWithDefaults(this.fileType, options.fileTypeConfig);
 			if (this.zip != null) {
 				this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
 			}
