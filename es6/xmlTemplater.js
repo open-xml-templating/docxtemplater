@@ -6,7 +6,6 @@ var SubContent = require("./subContent");
 var TemplaterState = require("./templaterState");
 var xmlMatcher = require("./xmlMatcher");
 var ModuleManager = require("./moduleManager");
-var CompiledXmlTag = require("./compiledXmlTag");
 var Errors = require("./errors");
 
 function getFullText(content, tagsXmlArray) {
@@ -52,7 +51,6 @@ module.exports = class XmlTemplater {
 		var obj = {
 			fileTypeConfig: this.fileTypeConfig,
 			usedTags: this.scopeManager.usedTags,
-			experimentalCompiledLoops: this.experimentalCompiledLoops,
 			moduleManager: this.moduleManager,
 		};
 		Object.keys(DocUtils.defaults).map((key) => { obj[key] = this[key]; });
@@ -67,13 +65,6 @@ module.exports = class XmlTemplater {
 	handleModuleManager(type, data) {
 		this.updateModuleManager();
 		return this.moduleManager.handle(type, data);
-	}
-	/*
-	content is the whole content to be tagged
-	scope is the current scope
-	returns the new content of the tagged content*/
-	render() {
-		return this.compile();
 	}
 	getTrail(character) {
 		this.templaterState.trail += character;
@@ -112,7 +103,7 @@ module.exports = class XmlTemplater {
 			}
 		}
 	}
-	compile() {
+	render() {
 		this.sameTags = this.delimiters.start === this.delimiters.end;
 		this.templaterState.initialize();
 		this.handleModuleManager("xmlRendering");
@@ -229,8 +220,6 @@ module.exports = class XmlTemplater {
 		if (!options.noEndTag) {
 			after = `</${options.tag}>`;
 		}
-		this.currentCompiledTag.prependText(before);
-		this.currentCompiledTag.appendText(after);
 		return [before, options.insideValue, after];
 	}
 	replaceFirstFrom(string, search, replace, from) {
@@ -280,7 +269,6 @@ module.exports = class XmlTemplater {
 		};
 		// <w>{aaaaa}</w>
 		if (this.templaterState.tagEnd.numXmlTag === this.templaterState.tagStart.numXmlTag) {
-			this.currentCompiledTag = new CompiledXmlTag([this.templaterState.getLeftValue(), {type: "tag", tag: this.templaterState.textInsideTag}, this.templaterState.getRightValue()]);
 			options.insideValue = this.templaterState.getLeftValue() + newValue + this.templaterState.getRightValue();
 			return this.replaceXmlTag(content, options);
 		}
@@ -290,12 +278,10 @@ module.exports = class XmlTemplater {
 
 			// normal case
 			if (location === "normal") {
-				this.currentCompiledTag = new CompiledXmlTag([this.templaterState.getLeftValue(), {type: "tag", tag: this.templaterState.textInsideTag}]);
 				options.insideValue = this.templaterState.getLeftValue() + newValue;
 			}
 			else {
 				options.insideValue = newValue;
-				this.currentCompiledTag = new CompiledXmlTag([{type: "tag", tag: this.templaterState.textInsideTag}]);
 			}
 
 			content = this.replaceXmlTag(content, options);
@@ -311,7 +297,6 @@ module.exports = class XmlTemplater {
 			var end = this.templaterState.tagEnd.numXmlTag;
 			for (var k = start; k < end; k++) {
 				options.xmlTagNumber = k;
-				this.currentCompiledTag = new CompiledXmlTag([]);
 				content = this.replaceXmlTag(content, options);
 			}
 
@@ -323,7 +308,6 @@ module.exports = class XmlTemplater {
 				noEndTag: (this.templaterState.getMatchLocation(this.templaterState.tagEnd.numXmlTag) === "last"),
 			};
 
-			this.currentCompiledTag = CompiledXmlTag.empty();
 			return this.replaceXmlTag(content, options);
 		}
 	}
@@ -364,12 +348,7 @@ module.exports = class XmlTemplater {
 		var newContent = "";
 		var subfile = null;
 		var loopFn = (subTags) => {
-			if (!this.experimentalCompiledLoops || !subfile) {
-				newContent += this.calcSubXmlTemplater(subTemplate, {tags: subTags}).render().content;
-			}
-			else {
-				newContent += subfile.renderFromCompiled(subTags);
-			}
+			newContent += this.calcSubXmlTemplater(subTemplate, {tags: subTags}).render().content;
 			return newContent;
 		};
 

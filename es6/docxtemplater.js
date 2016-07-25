@@ -4,7 +4,6 @@ var DocUtils = require("./docUtils");
 
 var Docxtemplater = class Docxtemplater {
 	constructor(content, options) {
-		this.compiled = {};
 		this.moduleManager = new Docxtemplater.ModuleManager();
 		this.moduleManager.setInstance("gen", this);
 		this.setOptions({});
@@ -44,7 +43,6 @@ var Docxtemplater = class Docxtemplater {
 		this.moduleManager.sendEvent("rendering-file", fileName);
 		var currentFile = this.createTemplateClass(fileName);
 		this.zip.file(fileName, currentFile.render().content);
-		this.compiled[fileName] = currentFile.compiled;
 		return this.moduleManager.sendEvent("rendered-file", fileName);
 	}
 	render() {

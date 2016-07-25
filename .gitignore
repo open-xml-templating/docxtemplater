@@ -21,3 +21,4 @@ p.json
 browser/*
 !browser/.gitkeep
 coverage
+/*.docx
