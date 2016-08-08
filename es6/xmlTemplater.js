@@ -346,14 +346,13 @@ module.exports = class XmlTemplater {
 		*/
 		var tag = this.templaterState.loopOpen.tag;
 		var newContent = "";
-		var subfile = null;
 		var loopFn = (subTags) => {
 			newContent += this.calcSubXmlTemplater(subTemplate, {tags: subTags}).render().content;
 			return newContent;
 		};
 
 		this.scopeManager.loopOver(tag, loopFn, this.templaterState.loopIsInverted);
-		subfile = this.calcSubXmlTemplater(subTemplate, {tags: {}}).render();
+		this.calcSubXmlTemplater(subTemplate, {tags: {}}).render();
 		return this.replaceXml(outerTags, newContent);
 	}
 };
