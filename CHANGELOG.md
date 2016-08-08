@@ -1,5 +1,15 @@
 ### master
 
+-	Fixed a memory leak when using large document (10Mb document.xml)
+
+### 2.1.3
+
+-	{@rawXml} has been fixed for pptx
+
+### 2.1.2
+
+-	Add possibility to close loopTag with {/} #192
+
 ### 2.1.1
 
 -	Bug fix : Some times, docxtemplater could eat lots of memory due to the new "compilation" feature that was only experimental. As this feature is not yet used, it was completely removed from the codebase.
