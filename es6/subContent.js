@@ -2,6 +2,14 @@
 // This class responsibility is to deal with parts of the document
 var Errors = require("./errors");
 
+function substr(baseText, start, length) {
+	let text = "";
+	for (var i = start; i < start + length; i++) {
+		text += baseText[i];
+	}
+	return text;
+}
+
 module.exports = class SubContent {
 	constructor(fullText) {
 		this.fullText = fullText || "";
@@ -25,7 +33,8 @@ module.exports = class SubContent {
 		return this.refreshText();
 	}
 	refreshText() {
-		this.text = this.fullText.substr(this.start, this.end - this.start);
+		// substr leaks memory on v8 for very long strings, that's why we use a custom function for this
+		this.text = substr(this.fullText, this.start, this.end - this.start);
 		return this;
 	}
 	getErrorProps(xmlTag) {
