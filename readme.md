@@ -65,13 +65,15 @@ Quickstart in the browser
 
 You can directly download built versions from github : https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
 
+If you download the JS from there, you should use `new Docxgen()` instead of `new Docxtemplater()`, because I do not want to bring in a breaking change on a minor version change in the docxtemplater-build repository.
+
 #### Bower
 
-Thanks to pykiss, it's now possible to install docxtemplater with bower: This in an unofficial method to install docxtemplater in the browser
-
 ```bash
-bower install --save docxtemplater-pykiss
+bower install --save docxtemplater
 ```
+
+If you download the JS from there, you should use `new Docxgen()` instead of `new Docxtemplater()`, because I do not want to bring in a breaking change on a minor version change in the docxtemplater-build repository.
 
 #### Build it yourself
 
@@ -87,7 +89,7 @@ npm run compile
 # npm run uglify:lib
 ```
 
-The Docxgen will be exported to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/edi9999/docxtemplater/issues/118)\)
+Docxtemplater will be exported to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see https://github.com/edi9999/docxtemplater/issues/118)\)
 
 Your version of docxtemplater will be in /build (minified and non minified options) and already include all dependencies
 

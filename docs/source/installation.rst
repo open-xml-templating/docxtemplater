@@ -38,6 +38,6 @@ I recommend you to use the npm scripts I wrote (which can be found in the packag
     # npm run browserify
     # npm run uglify:lib
 
-The Docxgen will be exported to window.Docxgen for easy usage (on some systems, it might export it in window.docxgen (see https://github.com/edi9999/docxtemplater/issues/118))
+Docxtemplater will be exported to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see https://github.com/edi9999/docxtemplater/issues/118))
 
 Your version of docxtemplater will be in /build (minified and non minified options) and already include all dependencies

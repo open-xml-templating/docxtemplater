@@ -567,7 +567,7 @@ function startTest() {
 			xmlTemplater.render();
 			expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
 		});
-		it("should work when setting from the DocXGen interface", function () {
+		it("should work when setting from the Docxtemplater interface", function () {
 			var d = new Docxtemplater(docX["tagExample.docx"].loadedContent);
 			var tags = {
 				first_name: "Hipp",
