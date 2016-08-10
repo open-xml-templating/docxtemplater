@@ -8,10 +8,12 @@ var _ = require("lodash");
 describe("FileTypeConfig", function () {
 	it("has only immutable properties", function () {
 		function modify(prop) {
-			FileTypeConfig[prop].yoMama = "so fat";
+			return function () {
+				FileTypeConfig[prop].yoMama = "so fat";
+			};
 		}
 		_.keys(FileTypeConfig).forEach(function (key) {
-			expect(modify.bind(modify, key)).to.throw(Error);
+			expect(modify(key)).to.throw(Error);
 		});
 	});
 

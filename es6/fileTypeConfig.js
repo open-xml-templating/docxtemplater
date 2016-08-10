@@ -5,7 +5,7 @@ var SubContent = require("./subContent");
 
 function deepFreeze(obj) {
 	Object.freeze(obj);
-	Object.getOwnPropertyNames(obj).forEach(function (prop) {
+	Object.keys(obj).forEach(function (prop) {
 		if (obj.hasOwnProperty(prop) && obj[prop] !== null
 			&& (typeof obj[prop] === "object" || typeof obj[prop] === "function")
 			&& !Object.isFrozen(obj[prop])) {
