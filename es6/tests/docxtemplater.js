@@ -2,6 +2,7 @@
 
 var docX = {};
 var expect = require("chai").expect;
+var _ = require("lodash");
 
 var expressions = require("angular-expressions");
 function angularParser(tag) {
@@ -752,9 +753,7 @@ TAG`;
 			const doc = new Docxtemplater(docX["oneRawXMLTag.docx"].loadedContent);
 			doc.setOptions({
 				fileType: "docx",
-				fileTypeConfig: {
-					tagRawXml: "w:r",
-				},
+				fileTypeConfig: _.merge(_.cloneDeep(FileTypeConfig.docx), {tagRawXml: "w:r"}),
 			});
 			doc.setData(scope);
 			doc.render();
@@ -766,9 +765,7 @@ TAG`;
 			const doc = new Docxtemplater(docX["oneRawXMLTag.docx"].loadedContent);
 			doc.setOptions({
 				fileType: "docx",
-				fileTypeConfig: {
-					tagRawXml: "w:r",
-				},
+				fileTypeConfig: _.merge(_.cloneDeep(FileTypeConfig.docx), {tagRawXml: "w:r"}),
 			});
 			doc.setData(scope);
 			doc.render();
@@ -991,6 +988,7 @@ TAG`;
 
 	require("./errors");
 	require("./speed");
+	require("./fileTypeConfig");
 
 	describe("pptx generation", function () {
 		it("should work with simple pptx", function () {
