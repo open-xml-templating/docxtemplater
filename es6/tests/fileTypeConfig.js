@@ -5,7 +5,7 @@ var FileTypeConfig = require("../fileTypeConfig.js");
 var expect = require("chai").expect;
 var _ = require("lodash");
 
-describe.only("FileTypeConfig", function () {
+describe("FileTypeConfig", function () {
 	it("has only immutable properties", function () {
 		function modify(prop) {
 			FileTypeConfig[prop].yoMama = "so fat";
