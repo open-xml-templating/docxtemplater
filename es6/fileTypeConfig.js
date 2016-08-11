@@ -3,17 +3,6 @@
 var xmlUtil = require("./xmlUtil");
 var SubContent = require("./subContent");
 
-function deepFreeze(obj) {
-	Object.freeze(obj);
-	Object.keys(obj).forEach(function (prop) {
-		if (obj.hasOwnProperty(prop) && obj[prop] !== null
-			&& (typeof obj[prop] === "object" || typeof obj[prop] === "function")
-			&& !Object.isFrozen(obj[prop])) {
-			deepFreeze(obj[prop]);
-		}
-	});
-}
-
 var PptXFileTypeConfig = {
 	textPath: "ppt/slides/slide1.xml",
 	tagsXmlArray: ["a:t", "m:t"],
@@ -35,8 +24,6 @@ var PptXFileTypeConfig = {
 	},
 };
 
-deepFreeze(PptXFileTypeConfig);
-
 var DocXFileTypeConfig = {
 	getTemplatedFiles(zip) {
 		var slideTemplates = zip.file(/word\/(header|footer)\d+\.xml/).map(function (file) { return file.name; });
@@ -57,8 +44,6 @@ var DocXFileTypeConfig = {
 		return false;
 	},
 };
-
-deepFreeze(DocXFileTypeConfig);
 
 module.exports = {
 	docx: DocXFileTypeConfig,

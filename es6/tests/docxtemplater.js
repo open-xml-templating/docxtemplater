@@ -752,8 +752,7 @@ TAG`;
 			var scope = {xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>'};
 			const doc = new Docxtemplater(docX["oneRawXMLTag.docx"].loadedContent);
 			doc.setOptions({
-				fileType: "docx",
-				fileTypeConfig: _.merge(_.cloneDeep(FileTypeConfig.docx), {tagRawXml: "w:r"}),
+				fileTypeConfig: _.merge({}, FileTypeConfig.docx, {tagRawXml: "w:r"}),
 			});
 			doc.setData(scope);
 			doc.render();
@@ -764,8 +763,7 @@ TAG`;
 			var scope = {xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>'};
 			const doc = new Docxtemplater(docX["oneRawXMLTag.docx"].loadedContent);
 			doc.setOptions({
-				fileType: "docx",
-				fileTypeConfig: _.merge(_.cloneDeep(FileTypeConfig.docx), {tagRawXml: "w:r"}),
+				fileTypeConfig: _.merge({}, FileTypeConfig.docx, {tagRawXml: "w:r"}),
 			});
 			doc.setData(scope);
 			doc.render();
@@ -988,7 +986,6 @@ TAG`;
 
 	require("./errors");
 	require("./speed");
-	require("./fileTypeConfig");
 
 	describe("pptx generation", function () {
 		it("should work with simple pptx", function () {
