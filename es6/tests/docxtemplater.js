@@ -2,6 +2,7 @@
 
 var docX = {};
 var expect = require("chai").expect;
+var _ = require("lodash");
 
 var expressions = require("angular-expressions");
 function angularParser(tag) {
@@ -43,6 +44,7 @@ var fileNames = [
 	"angularExample.docx",
 	"cyrillic.docx",
 	"imageExample.docx",
+	"oneRawXMLTag.docx",
 	"tableComplex2Example.docx",
 	"tableComplexExample.docx",
 	"tagDashLoop.docx",
@@ -744,6 +746,28 @@ TAG`;
 			doc.render();
 			expect(doc.content.length).to.be.equal(content.length + scope.complexXml.length - (inner.length));
 			expect(doc.content).to.contain(scope.complexXml);
+		});
+
+		it("should work with simple example and given options", function () {
+			var scope = {xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>'};
+			const doc = new Docxtemplater(docX["oneRawXMLTag.docx"].loadedContent);
+			doc.setOptions({
+				fileTypeConfig: _.merge({}, FileTypeConfig.docx, {tagRawXml: "w:r"}),
+			});
+			doc.setData(scope);
+			doc.render();
+			expect(doc.getFullText()).to.be.equal("asdfMy customXMLqwery");
+		});
+
+		it("should work with simple example and given options via docxtemplater", function () {
+			var scope = {xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>'};
+			const doc = new Docxtemplater(docX["oneRawXMLTag.docx"].loadedContent);
+			doc.setOptions({
+				fileTypeConfig: _.merge({}, FileTypeConfig.docx, {tagRawXml: "w:r"}),
+			});
+			doc.setData(scope);
+			doc.render();
+			expect(doc.getFullText()).to.be.equal("asdfMy customXMLqwery");
 		});
 
 		it("should work even when tags are after the xml", function () {
