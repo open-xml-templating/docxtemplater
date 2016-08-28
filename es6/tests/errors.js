@@ -34,7 +34,10 @@ function expectToThrow(obj, method, type, expectedError) {
 	expect(e.properties, toShowOnFail).to.have.property("id");
 	expect(e.properties.id, toShowOnFail).to.be.a("string");
 	delete e.properties.explanation;
-	delete e.stack;
+	if (e.stack) {
+		expect(e.stack).to.contain("Error: " + expectedError.message)
+		delete e.stack;
+	}
 	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
 }
 

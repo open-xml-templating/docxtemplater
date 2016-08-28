@@ -1,5 +1,11 @@
 ### master
 
+### 2.1.5
+
+-	Fix stacktrace not showing up (#245)
+
+### 2.1.4
+
 -	Fixed a memory leak when using large document (10Mb document.xml) (#237)
 -	Add fileTypeConfig options in setOptions to define your own fileType config (#235)
 
