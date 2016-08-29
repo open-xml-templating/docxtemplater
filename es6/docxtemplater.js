@@ -99,6 +99,17 @@ var Docxtemplater = class Docxtemplater {
 	getFullText(path) {
 		return this.createTemplateClass(path || this.fileTypeConfig.textPath).getFullText();
 	}
+	getTemplatedFilesFullText() {
+		var templatedFilesText = {};
+		var iterable = this.templatedFiles;
+		for (var i = 0, fileName; i < iterable.length; i++) {
+			fileName = iterable[i];
+			if ((this.zip.files[fileName] != null)) {
+				templatedFilesText[fileName] = this.getFullText(fileName);
+			}
+		}
+		return templatedFilesText;
+	}
 };
 
 Docxtemplater.DocUtils = require("./docUtils");

@@ -158,6 +158,15 @@ function startTest() {
 				var fullText = (docX["imageExample.docx"].getFullText());
 				expect(fullText).to.be.equal("");
 			});
+			it("should load the right content for all the templated files", function () {
+				// default value document.xml
+				var fullTexts = (docX["tagExample.docx"].getTemplatedFilesFullText());
+				expect(fullTexts).to.be.eql({
+					"word/document.xml": "{last_name} {first_name}",
+					"word/footer1.xml": "{last_name}{first_name}{phone}",
+					"word/header1.xml": "{last_name} {first_name}{phone}{description}",
+				});
+			});
 		});
 		describe("output and input", function () {
 			it("should be the same", function () {
