@@ -159,7 +159,6 @@ function startTest() {
 				expect(fullText).to.be.equal("");
 			});
 			it("should load the right template files for the document", function () {
-				// default value document.xml
 				var templatedFiles = (docX["tagExample.docx"].getTemplatedFiles());
 				expect(templatedFiles).to.be.eql(["word/header1.xml", "word/footer1.xml", "word/document.xml"]);
 			});
