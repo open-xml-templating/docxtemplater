@@ -158,14 +158,10 @@ function startTest() {
 				var fullText = (docX["imageExample.docx"].getFullText());
 				expect(fullText).to.be.equal("");
 			});
-			it("should load the right content for all the templated files", function () {
+			it("should load the right template files for the document", function () {
 				// default value document.xml
-				var fullTexts = (docX["tagExample.docx"].getTemplatedFilesFullText());
-				expect(fullTexts).to.be.eql({
-					"word/document.xml": "{last_name} {first_name}",
-					"word/footer1.xml": "{last_name}{first_name}{phone}",
-					"word/header1.xml": "{last_name} {first_name}{phone}{description}",
-				});
+				var templatedFiles = (docX["tagExample.docx"].getTemplatedFiles());
+				expect(templatedFiles).to.be.eql(["word/header1.xml", "word/footer1.xml", "word/document.xml"]);
 			});
 		});
 		describe("output and input", function () {
