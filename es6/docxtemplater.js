@@ -99,6 +99,9 @@ var Docxtemplater = class Docxtemplater {
 	getFullText(path) {
 		return this.createTemplateClass(path || this.fileTypeConfig.textPath).getFullText();
 	}
+	getTemplatedFiles() {
+		return this.templatedFiles;
+	}
 };
 
 Docxtemplater.DocUtils = require("./docUtils");
