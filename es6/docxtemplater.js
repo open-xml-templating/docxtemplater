@@ -46,6 +46,9 @@ var Docxtemplater = class Docxtemplater {
 		return this.moduleManager.sendEvent("rendered-file", fileName);
 	}
 	render() {
+		this.moduleManager.sendEvent('preprocess');
+	        // Do any changes on template if needed before the docxtemplater start its job
+	        this.moduleManager.sendEvent('preprocessed');
 		this.moduleManager.sendEvent("rendering");
 		// Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
 		var iterable = this.templatedFiles;
