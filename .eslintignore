@@ -21,3 +21,5 @@ build/
 vendor/
 js/
 test/
+coverage/
+prof/
