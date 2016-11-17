@@ -4,7 +4,9 @@ sudo: false
 
 script:
   - npm test
+  - nvm install stable
   - npm run lint
+  - nvm use $TRAVIS_NODE_VERSION
   - npm run prepublish
 
 node_js:
