@@ -122,7 +122,10 @@ Create the following html
             }
         ) //set the templateVariables
         doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-        out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+        out=doc.getZip().generate({
+            type:"blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }) //Output the document using Data-URI
         saveAs(out,"output.docx")
     })
     </script>
