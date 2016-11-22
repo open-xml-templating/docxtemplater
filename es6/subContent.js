@@ -33,8 +33,8 @@ module.exports = class SubContent {
 		return this.refreshText();
 	}
 	refreshText() {
-		// substr leaks memory on v8 for very long strings, that's why we use a custom function for this
-		this.text = substr(this.fullText, this.start, this.end - this.start);
+		// the custom substr leaks memory for very long strings, switch back to the native substr. Tested on Node v5.3.0
+		this.text = this.fullText.substr(this.start, this.end - this.start);
 		return this;
 	}
 	getErrorProps(xmlTag) {
