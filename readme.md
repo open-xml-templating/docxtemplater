@@ -5,37 +5,51 @@ docxtemplater
 
 [![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater) [![Download count](https://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Current tag](https://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Issues closed](https://issuestats.com/github/open-xml-templating/docxtemplater/badge/issue?style=flat)](https://issuestats.com/github/open-xml-templating/docxtemplater)
 
-![docxtemplater logo](https://raw.githubusercontent.com/open-xml-templating/docxtemplater/master/logo_small.png)
+![docxtemplater logo](https://raw.githubusercontent.com/open-xml-templating/docxtemplater/master/logo-small.png)
 
 **docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, eg for example your clients.
 
 *Note*: The CLI will soon be moved to another repository : keep posted on https://github.com/open-xml-templating/docxtemplater-cli
 
+Additional pro modules
+----------------------
+
+You can find pro-modules at http://modules.docxtemplater.com/
+
 Features
 --------
 
-[Demo Site](http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html)
+[Demo Site](http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html)
 
--	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables">Replace a {placeholder} by a value</a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables">Use loops in tables to generate columns</a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#variables">Replace a {placeholder} by a value</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#tables">Use loops in tables to generate columns</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
+-	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
 
 Quickstart in Node
 ------------------
 
-Installation: `npm install docxtemplater`
+Installation:
+
+```
+npm install docxtemplater
+npm install jszip@2
+```
+
+**jszip version 2 is important !**, it won't work with version 3
 
 ```javascript
 var fs = require('fs');
 var Docxtemplater = require('docxtemplater');
+var JSZip = require('jszip');
 
 //Load the docx file as a binary
 var content = fs
     .readFileSync(__dirname + "/input.docx", "binary");
 
-var doc = new Docxtemplater(content);
+var zip = new JSZip(content);
+var doc=new Docxtemplater().loadZip(zip)
 
 //set the templateVariables
 doc.setData({
@@ -54,7 +68,7 @@ var buf = doc.getZip()
 fs.writeFileSync(__dirname+"/output.docx",buf);
 ```
 
-You can download [input.docx](https://github.com/open-xml-templating/docxtemplater/raw/master/examples/tagExample.docx) and put it in the same folder than your script.
+You can download [input.docx](https://github.com/open-xml-templating/docxtemplater/raw/master/examples/tag-example.docx) and put it in the same folder than your script.
 
 Quickstart in the browser
 -------------------------
@@ -65,15 +79,11 @@ Quickstart in the browser
 
 You can directly download built versions from github : https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
 
-If you download the JS from there, you should use `new Docxgen()` instead of `new Docxtemplater()`, because I do not want to bring in a breaking change on a minor version change in the docxtemplater-build repository.
-
 #### Bower
 
 ```bash
 bower install --save docxtemplater
 ```
-
-If you download the JS from there, you should use `new Docxgen()` instead of `new Docxtemplater()`, because I do not want to bring in a breaking change on a minor version change in the docxtemplater-build repository.
 
 #### Build it yourself
 
@@ -81,7 +91,7 @@ I recommend you to use the npm scripts I wrote (which can be found in the packag
 
 ```bash
 git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
-# git checkout v2.0.0 # Optional
+# git checkout v3.0.0 # Optional
 npm install
 npm run compile
 # Optionally :
@@ -100,7 +110,7 @@ Create the following html
 ```html
 <html>
     <script src="build/docxtemplater.js"></script>
-    <script src="vendor/FileSaver.min.js"></script>
+    <script src="vendor/file-saver.min.js"></script>
     <script src="vendor/jszip-utils.js"></script>
     <!--
     Mandatory in IE 6, 7, 8 and 9.
@@ -112,9 +122,10 @@ Create the following html
     var loadFile=function(url,callback){
         JSZipUtils.getBinaryContent(url,callback);
     }
-    loadFile("examples/tagExample.docx",function(err,content){
+    loadFile("examples/tag-example.docx",function(err,content){
         if (err) { throw e};
-        doc=new Docxtemplater(content);
+		var zip = new JSZip(content);
+		var doc=new Docxtemplater().loadZip(zip)
         doc.setData( {"first_name":"Hipp",
             "last_name":"Edgar",
             "phone":"0652455478",
@@ -156,9 +167,11 @@ Functionality can be added with modules. They is yet no doc for the modules beca
 
 Here is the list of existing modules:
 
--	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module
--	Image module using the syntax: `{%image}`, https://github.com/open-xml-templating/docxtemplater-image-module
--	Hyperlink module using the syntax: `{^link}`, https://github.com/sujith3g/docxtemplater-link-module
+-	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module (v2 module)
+-	Image module using the syntax: `{%image}`, https://github.com/open-xml-templating/docxtemplater-image-module (v3 module)
+-	Hyperlink module using the syntax: `{^link}`, https://github.com/sujith3g/docxtemplater-link-module (v2 module)
+
+You can find pro-modules at http://modules.docxtemplater.com/
 
 Professional Support
 ====================

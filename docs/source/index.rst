@@ -28,7 +28,6 @@ Contents:
    cli
    full_doc
    faq
-   copyright
 
 
 Demos_
@@ -44,23 +43,17 @@ Including:
 - `Loops and tables`_
 - `Lists`_
 - `Replacing images`_
-- `Naming the output`_
-- `Using QrCodes`_
-- `Replacing many images with QrCode`_
 - `Raw Xml Insertion`_
 
-.. _Demos: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html
-.. _Replace Variables: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#variables
-.. _Formating: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#formating
-.. _Angular Parsing: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#parsing
-.. _Loops: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#loops
-.. _Loops and tables: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#tables
-.. _Lists: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#lists
-.. _Replacing images: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#images
-.. _Naming the output: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#naming
-.. _Using QrCodes: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#qrcode
-.. _Replacing many images with QrCode: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#qrcodeloop
-.. _Raw Xml Insertion: http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html#rawxml
+.. _Demos: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html
+.. _Replace Variables: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#variables
+.. _Formating: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#formating
+.. _Angular Parsing: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#parsing
+.. _Loops: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#loops
+.. _Loops and tables: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#tables
+.. _Lists: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#lists
+.. _Replacing images: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#images
+.. _Raw Xml Insertion: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#rawxml
 
 Indices and tables
 ==================

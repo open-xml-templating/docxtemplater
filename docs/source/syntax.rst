@@ -19,7 +19,7 @@ A typical docxtemplater template:
 
     Hello {name} !
 
-Given the following hash:
+Given the following data:
 
 .. code-block:: javascript
 
@@ -49,7 +49,7 @@ The following template:
         {name}, {price} €
     {/products}
 
-Given the following hash:
+Given the following data:
 
 .. code-block:: javascript
 
@@ -168,7 +168,7 @@ Template:
       No repos :(
     {/repo}
 
-Hash:
+Data:
 
 .. code-block:: javascript
 

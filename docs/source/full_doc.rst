@@ -15,20 +15,15 @@ Creating a new Docxtemplater Object
 
         This function returns a new Docxtemplater Object
 
-    new Docxtemplater(content,options)
-
-        if content is defined, it will call `.load(content,options)`
-
 
 Docxtemplater methods
 ---------------
 
 .. code-block:: javascript
 
-    load(content,options)
+    loadZip(zip)
 
-        This will call new JSzip().load(content,options) under the hood. See https://stuk.github.io/jszip/documentation/api_jszip/load.html
-        You can also pass a JSzip object as the first argument.
+        You have to pass a zip instance to that method, coming from jszip.
 
     setData(Tags)
 
@@ -43,59 +38,3 @@ Docxtemplater methods
     getZip()
 
         This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see https://stuk.github.io/jszip/documentation/api_jszip/generate.html)
-
-    getFullText:([path])
-
-        path
-            Type:"String"
-            Default:"word/document.xml"
-            This argument determines from which document you want to get the text. The main document is called word/document.xml, but they are other documents: "word/header1.xml", "word/footer1.xml"
-
-        @returns
-            Type:"String"
-            The string containing all the text from the document
-
-        This method gets only the text of a given document (not the formatting)
-
-    getTags()
-
-        This function returns the template variables contained in the opened document. For example if the content of the document.xml is the following:
-
-            {name}
-            {first_name}
-            {phone}
-
-        The function will return:
-            [{
-                filename:"document.xml",
-                vars:
-                {
-                    name:true,
-                    first_name:true,
-                    phone:true
-                }
-            }]
-
-        If the content contains tagLoops:
-
-            {title}
-            {#customer}
-            {name}
-            {phone}
-            {/customer}
-
-
-        The function will return:
-
-            [{
-                filename:"document.xml",
-                vars:
-                {
-                    title:true,
-                    customer:
-                    {
-                        name:true,
-                        phone:true
-                    }
-                }
-            }]

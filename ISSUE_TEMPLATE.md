@@ -39,7 +39,8 @@ var Docxtemplater = require('docxtemplater');
 var content = fs
     .readFileSync(__dirname + "/template.zip", "binary");
 
-var doc = new Docxtemplater(content);
+var zip = new JSZip(content);
+var doc=new Docxtemplater().loadZip(zip)
 
 //set the templateVariables
 doc.setData({

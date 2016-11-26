@@ -12,7 +12,8 @@ It documents the options parameter when you do:
 
 .. code-block:: javascript
 
-    var doc=new Docxtemplater(content);
+    var doc=new Docxtemplater();
+    doc.loadZip(zip);
     doc.setOptions(options)
 
 Custom Parser
@@ -35,7 +36,8 @@ docxtemplater comes shipped with this parser:
         'get': function(scope) {
           if (tag === '.') {
             return scope;
-          } else {
+          } 
+          else {
             return scope[tag];
           }
         }
@@ -54,7 +56,7 @@ To use the angular-parser, do the following:
             get: tag == '.' ? function(s){ return s;} : expressions.compile(tag)
         };
     }
-    new Docxtemplater(data).setOptions({parser:angularParser})
+    new Docxtemplater().loadZip(zip).setOptions({parser:angularParser})
 
 .. note::
 
@@ -70,13 +72,9 @@ You can set up your custom delimiters with this syntax:
 
 .. code-block:: javascript
 
-    new Docxtemplater(data)
+    new Docxtemplater()
+        .loadZip(zip)
         .setOptions({delimiters:{start:'[[',end:']]'}})
-
-.. warning::
-
-    In previous versions, you could write `DocUtils.Tags={start:'[[',end:']]'};`, but this is no more possible
-
 
 nullGetter
 ----------
@@ -87,15 +85,15 @@ By default the nullGetter is the following function
 
 .. code-block:: javascript
 
-    nullGetter: function(tag, props) {
-        if (props.tag === "simple") {
-            return "undefined";
-        }
-        if (props.tag === "raw") {
-            return "";
-        }
-        return "";
-    }
+	nullGetter(part) {
+		if (!part.module) {
+			return "undefined";
+		}
+		if (part.module === "rawxml") {
+			return "";
+		}
+		return "";
+	},
 
 This means that the default value for simple tags is to show "undefined".
 The default for rawTags ({@rawTag}) is to drop the paragraph completely (you could enter any xml here).
@@ -117,4 +115,4 @@ Image Replacing
 
 .. note::
 
-    The imageReplacing feature has been removed from the main docxtemplater package. This feature has been implemented in an external module that can be found here : https://github.com/edi9999/docxtemplater-image-module.
+    The imageReplacing feature has been removed from the main docxtemplater package. This feature has been implemented in an external module that can be found here : https://github.com/open-xml-templating/docxtemplater-image-module.

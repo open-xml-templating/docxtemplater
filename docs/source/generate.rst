@@ -11,14 +11,18 @@ Here's a sample code to generate a document:
 
 .. code-block:: javascript
 
-    fs=require('fs')
-    Docxtemplater = require('docxtemplater');
+    var fs=require('fs')
+    var JSZip = require('jszip');
+    var Docxtemplater = require('docxtemplater');
 
     //Load the docx file as a binary
-    content = fs
+    var content = fs
         .readFileSync(__dirname+"/input.docx","binary")
 
-    doc=new Docxtemplater(content);
+    var zip = new JSZip(content);
+
+    var doc=new Docxtemplater();
+    doc.loadZip(zip);
 
     //set the templateVariables
     doc.setData({

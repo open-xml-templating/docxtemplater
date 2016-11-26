@@ -1,5 +1,29 @@
 ### master
 
+### 3.0
+
+-	The rendering of the templates has now multiple steps : Lexing, Parsing, and Rendering. This makes the code much more robust, they might be bugs at the beginning, but in the long run, the code is much easier to understand/debug/change.
+-	The module system was completely changed, no compatibility is kept between version 2 and version 3, please make sure to update your modules if needed.
+-	You can't have the same startTag and endTag (for example `$foo$`), because this would make the code more complex and the errorHandling quite impossible.
+-	All extended features (loop, rawxml, invertedloops), are written as v3 modules. We dogfood our own module system, and will hopefully improve it that way.
+
+-	The constructor arguments have been removed, and you are responsible to load the JSZip.
+
+	Instead of :
+
+	```
+	var doc = new Docxtemplater(content);
+	```
+
+	You now should do :
+
+	```
+	var zip = new JSZip(content);
+	var doc=new Docxtemplater().loadZip(zip)
+	```
+
+The **JSZip version that you use should be 2.x**, the 3.x is now exclusively async, which Docxtemplater doesn't handle yet.
+
 ### 2.1.5
 
 -	Fix stacktrace not showing up (#245)
