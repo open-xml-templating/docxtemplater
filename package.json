@@ -47,9 +47,8 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "prepublish": "rimraf build && mkdirp build && npm run compile && npm run browserify && npm run uglify",
     "profile": "./profile.bash",
-    "preversion": "npm test && npm run check-casing && npm run lint",
+    "preversion": "npm test && npm run check-casing && npm run lint && rimraf build && mkdirp build && npm run compile && npm run browserify && npm run uglify",
     "check-casing": "./check-casing.bash",
     "compile": "npm run convertto:es5 && node examples/compile-site.js",
     "browserify:test": "browserify --insert-global-vars __filename,__dirname -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/docxtemplater-test.js",
@@ -67,7 +66,7 @@
     "babel": "babel es6 --out-dir js",
     "mocha": "mocha js/tests/docxtemplater.js",
     "test:es6": "mocha es6/tests/docxtemplater.js",
-    "test": "npm run compile && npm run mocha",
+    "test": "npm run convertto:es5 && npm run mocha",
     "test:es5": "npm test"
   }
 }

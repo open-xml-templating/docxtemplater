@@ -7,8 +7,8 @@ script:
   - npm run check-casing
   - nvm install stable
   - npm run lint
+  - npm run preversion
   - nvm use $TRAVIS_NODE_VERSION
-  - npm run prepublish
 
 node_js:
   - "0.12"
