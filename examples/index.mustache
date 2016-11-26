@@ -7,6 +7,7 @@
 <meta name="keywords" content="docx templating, generate docx from the browser and nodejs">
 <meta name="description" content="docxtemplater makes it very easy to generate docx without writing lots of code">
 <meta name="author" content="Edgar Hipp">
+<link rel="icon" href="/favicon.ico">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link href="style.css" rel="stylesheet">
 </head>
@@ -30,9 +31,11 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li><a href="https://docxtemplater.readthedocs.io/en/latest/">DOCS</a></li>
+              <li><a href="http://javascript-ninja.fr/docxtemplater/v1/examples/demo.html">DEMO</a></li>
               <li><a href="#install">INSTALL</a></li>
+              <li><a href="https://docxtemplater.readthedocs.io/en/latest/">DOCS</a></li>
               <li><a href="#support">SUPPORT</a></li>
+              <li><a href="https://modules.docxtemplater.com">PRO MODULES</a></li>
             </ul>
           </div>
 
@@ -156,18 +159,21 @@
           <p>The best way to get docxtemplater is via npm</p>
 
 <pre><code>npm install docxtemplater --save</code></pre>
+<p><b>jszip version 2 is important !**, it won't work with version 3</b></p>
+<pre><code>npm install jszip@2 --save</code></pre>
 
 <p>Then create "input.docx" file containing "Hello {firstname} {lastname} !"</p>
 <p>And create the following index.js file:</p>
 
-          <pre><code>var fs=require('fs');
-Docxtemplater = require('docxtemplater');
+<pre><code>var fs = require('fs');
+var Docxtemplater = require('docxtemplater');
+var JSZip = require('jszip');
 
-content = fs
+var content = fs
     .readFileSync(__dirname+"/input.docx","binary");
 
 var zip = new JSZip(content);
-var doc=new Docxtemplater().loadZip(zip)
+var doc = new Docxtemplater().loadZip(zip);
 
 doc.setData({
     "firstname":"John",
@@ -199,6 +205,7 @@ fs.writeFileSync(__dirname+"/output.docx",buf);
     <p class="text-center">docxtemplater has comprehensive documentation available at <a href="https://docxtemplater.readthedocs.io/en/latest/">https://docxtemplater.readthedocs.io/en/latest/</a></p>
     <p class="text-center">If you have some general questions / bugs to report, please use <a href="https://github.com/open-xml-templating/docxtemplater/issues/">the github issue tracker.</a></p>
     <p class="text-center">I also provide professional support for companies with an SLA (My email address can be found on this site: https://github.com/edi9999)</p>
+    <p class="text-center">You can also find ready-made pro modules at : <a href="https://modules.docxtemplater.com">https://modules.docxtemplater.com</a></p>
    </div>
   </div>
  </div>
