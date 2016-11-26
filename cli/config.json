@@ -1,5 +1,5 @@
 {
-	"config.inputFile":"cli/tagExample.docx",
+	"config.inputFile":"cli/tag-example.docx",
 	"config.outputFile":"cli/output.docx",
 	"first_name":"Edgar",
 	"last_name":"Gri",

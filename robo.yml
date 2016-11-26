@@ -3,11 +3,11 @@ preversion:
   command: robo test
 compile:
   summary: Compile the code to es5
-  command: robo convertto:es5 && node examples/compile_site.js
+  command: robo convertto:es5 && node examples/compile-site.js
 browserify:test:
   summary: Convert the files of the test
   command: |
-    {{.npath}}/browserify -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/docxtemplaterTest.js
+    {{.npath}}/browserify -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/docxtemplater-test.js
 browserify:lib:
   summary: Convert the files of the library
   command: |
@@ -28,7 +28,7 @@ convertto:es5:
 test:watch:
   summary: Watch files and run tests
   command: |
-    node watch_file_and_run_test.js &
+    node watch-file-and-run-test.js &
     robo babel:watch
 lint:
   summary: Lint the project

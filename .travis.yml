@@ -4,6 +4,7 @@ sudo: false
 
 script:
   - npm test
+  - npm run check-casing
   - nvm install stable
   - npm run lint
   - nvm use $TRAVIS_NODE_VERSION
@@ -22,3 +23,4 @@ node_js:
   - "5.2"
   - "5"
   - "6"
+  - "7"
