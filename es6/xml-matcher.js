@@ -1,7 +1,7 @@
 "use strict";
 // res class responsibility is to parse the XML.
-var DocUtils = require("./docUtils");
-var memoize = require("memoizejs");
+const DocUtils = require("./doc-utils");
+const memoize = require("./memoize");
 
 function handleRecursiveCase(res) {
 	/*
@@ -14,13 +14,13 @@ function handleRecursiveCase(res) {
 		 */
 
 	function replacerUnshift() {
-		var pn = {array: Array.prototype.slice.call(arguments)};
+		const pn = {array: Array.prototype.slice.call(arguments)};
 		pn.array.shift();
-		var match = pn.array[0] + pn.array[1];
+		const match = pn.array[0] + pn.array[1];
 		// add match so that pn[0] = whole match, pn[1]= first parenthesis,...
 		pn.array.unshift(match);
 		pn.array.pop();
-		var offset = pn.array.pop();
+		const offset = pn.array.pop();
 		pn.offset = offset;
 		pn.first = true;
 		// add at the beginning
@@ -33,13 +33,13 @@ function handleRecursiveCase(res) {
 		res.content.replace(/^()([^<>]*)$/, replacerUnshift);
 	}
 
-	var r = new RegExp(`^()([^<]+)<\/(?:${res.tagsXmlArrayJoined})>`);
+	let r = new RegExp(`^()([^<]+)<\/(?:${res.tagsXmlArrayJoined})>`);
 	res.content.replace(r, replacerUnshift);
 
 	function replacerPush() {
-		var pn = {array: Array.prototype.slice.call(arguments)};
+		const pn = {array: Array.prototype.slice.call(arguments)};
 		pn.array.pop();
-		var offset = pn.array.pop();
+		const offset = pn.array.pop();
 		pn.offset = offset;
 		pn.last = true;
 		// add at the end
@@ -54,18 +54,18 @@ function handleRecursiveCase(res) {
 }
 
 function xmlMatcher(content, tagsXmlArray) {
-	var res = {};
+	const res = {};
 	res.content = content;
 	res.tagsXmlArray = tagsXmlArray;
 	res.tagsXmlArrayJoined = res.tagsXmlArray.join("|");
-	var regexp = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>`, "g");
+	const regexp = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>`, "g");
 	res.matches = DocUtils.pregMatchAll(regexp, res.content);
 	res.charactersAddedCumulative = res.matches.map(() => 0);
 	res.charactersAdded = res.matches.map(() => 0);
 	return handleRecursiveCase(res);
 }
 
-var memoized = memoize(xmlMatcher);
+const memoized = memoize(xmlMatcher);
 
 module.exports = function (content, tagsXmlArray) {
 	return DocUtils.cloneDeep(memoized(content, tagsXmlArray));
