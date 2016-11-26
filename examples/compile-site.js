@@ -1,11 +1,11 @@
 "use strict";
 
-var Mustache = require("mustache");
-var fs = require("fs");
+const Mustache = require("mustache");
+const fs = require("fs");
 
-var path = require("path");
+const path = require("path");
 
-var view = {
+const view = {
 	version: require(path.resolve(__dirname, "../package.json")).version,
 	mainlogo: fs.readFileSync(path.resolve(__dirname, "docxtemplater.svg")).toString(),
 	features: {
@@ -19,8 +19,8 @@ var view = {
 	},
 };
 
-var baseHtml = fs.readFileSync(path.resolve(__dirname, "index.mustache")).toString();
+const baseHtml = fs.readFileSync(path.resolve(__dirname, "index.mustache")).toString();
 
-var output = Mustache.render(baseHtml, view);
+const output = Mustache.render(baseHtml, view);
 
 fs.writeFileSync(path.resolve(__dirname, "index.html"), output);

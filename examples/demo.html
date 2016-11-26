@@ -8,7 +8,7 @@
 	<!-- Mandatory js for the library to work -->
 	<script type="text/javascript" src="../browser/main.min.js"></script>
 
-	<script src="../vendor/FileSaver.min.js"></script>
+	<script src="../vendor/file-saver.min.js"></script>
 	<script src="../vendor/jszip-utils.js"></script>
 
 	<!--
@@ -22,7 +22,7 @@
 
 
 
-<h1>docxtemplater v1</h1>
+<h1>docxtemplater v3</h1>
 
 <p><b>docxtemplater</b> is a small library to generate docx documents given a docx template. It can replace tags by their values and replace images with other images. It is very user oriented as users can without a lot of programming knowledge create their first template and automatically change variables in it.</p>
 
@@ -46,21 +46,22 @@ Docxtemplater is based on word templates.
 <table class="demo">
 <tr>
 	<td>
-		<img src="images/textTagging.PNG" alt="">
+		<img src="images/text-tagging.png" alt="">
 	</td>
 	<td>
 	<div>=> <br>Results in:</div>
 	</td>
 	<td>
-		<img src="images/textTaggingResult.PNG" alt="">
+		<img src="images/text-tagging-result.png" alt="">
 	</td>
 </tr>
 <tr>
 	<td colspan="3">
 		<h3>Code Used:</h3>
-		<textarea raw='tagExample.docx'>
-            loadFile("tagExample.docx",function(err,content){
-                var doc=new Docxtemplater(content)
+		<textarea raw='tag-example.docx'>
+            loadFile("tag-example.docx",function(err,content){
+                var zip = new JSZip(content);
+                var doc=new Docxtemplater().loadZip(zip)
                 doc.setData( {"first_name":"Hipp",
                     "last_name":"Edgar",
                     "phone":"0652455478",
@@ -94,30 +95,31 @@ loadFile=function(url,callback){
 <table class="demo">
 <tr>
 	<td>
-		<img src="images/formatTagging.png" alt="">
+		<img src="images/format-tagging.png" alt="">
 	</td>
 	<td>
 	<div>=> <br>Results in:</div>
 	</td>
 	<td>
-		<img src="images/formatTaggingResult.png" alt="">
+		<img src="images/format-tagging-result.png" alt="">
 	</td>
 </tr>
 <tr>
 	<td colspan="3">
 		<h3>Code Used:</h3>
-		<textarea raw='tagFormating.docx'>
-            loadFile("tagFormating.docx",function(err,content){
-	var doc=new Docxtemplater(content)
-	doc.setData({
-		"first_name":"Hipp",
-		"last_name":"Edgar",
-		"phone":"0652455478",
-		"description":"New Website"
-		}); //set the templateVariables
-	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
-	saveAs(output,"output.docx")
+		<textarea raw='tag-formating.docx'>
+			loadFile("tag-formating.docx",function(err,content){
+			var zip = new JSZip(content);
+			var doc=new Docxtemplater().loadZip(zip)
+			doc.setData({
+			"first_name":"Hipp",
+			"last_name":"Edgar",
+			"phone":"0652455478",
+			"description":"New Website"
+			}); //set the templateVariables
+			doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+			var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+			saveAs(output,"output.docx")
 });
 		</textarea>
 	</td>
@@ -127,42 +129,44 @@ loadFile=function(url,callback){
 
 <section>
 <h2 id='parsing'><em>Parsing</em> we enable you to use Angular Like Syntax</h2>
-<p>To enable this in the browser, you need to include vendor/angular-parser-browser.js</p>
+<p>To enable this in the browser, you need to include the angular-expressions npm module</p>
 <table class="demo">
 <tr>
 	<td>
-		<img src="images/angularTagging.PNG" alt="">
+		<img src="images/angular-tagging.png" alt="">
 	</td>
 	<td>
 	<div>=> <br>Results in:</div>
 	</td>
 	<td>
-		<img src="images/angularTaggingResult.PNG" alt="">
+		<img src="images/angular-tagging-result.png" alt="">
 	</td>
 </tr>
 <tr>
 	<td colspan="3">
 		<h3>Code Used:</h3>
-		<textarea raw='angularExample.docx'>
-var angularParser= function(tag){
-	var expr=expressions.compile(tag);
-	return {get:expr};
-}
+		<textarea raw='angular-example.docx'>
+			var angularParser= function(tag){
+				var expr=expressions.compile(tag);
+				return {get:expr};
+			}
 
-	loadFile("angularExample.docx",function(err,content){
-	var doc=new Docxtemplater(content)
-	doc.setOptions({parser:angularParser})
-	doc.setData({
-		person:{
-			first_name:"Hipp",
-			last_name:"Edgar",
-			birth_year:1955,
-			age:59
-		}}); //set the templateVariables
-	doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-	var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
-	saveAs(output,"output.docx")
-});
+			loadFile("angular-example.docx",function(err,content){
+			var zip = new JSZip(content);
+			var doc=new Docxtemplater().loadZip(zip)
+			doc.setOptions({parser:angularParser})
+			doc.setData({
+				person: {
+					first_name:"Hipp",
+					last_name:"Edgar",
+					birth_year:1955,
+					age:59
+				}
+			}); //set the templateVariables
+			doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+			var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+			saveAs(output,"output.docx")
+			});
 		</textarea>
 	</td>
 </tr>
@@ -174,28 +178,30 @@ var angularParser= function(tag){
 <p>tagName has to be an array of objects, every element of the array will be used to output what is between the opening loop tag and the closing loop tag.</p>
 	<table class="demo">
 		<tr>
-			<td><img src="images/loopTagging.png" alt=""></td>
+			<td><img src="images/loop-tagging.png" alt=""></td>
 			<td>
 				<div>=> <br>Results in:</div>
 			</td>
-			<td><img src="images/loopTaggingResult.PNG" alt=""></td>
+			<td><img src="images/loop-tagging-result.png" alt=""></td>
 		</tr>
 		<tr>
 			<td colspan="3">
 				<h3>Code Used:</h3>
-				<textarea raw="tagLooping.docx">
-	loadFile("tagLooping.docx",function(err,content){
-	var doc=new Docxtemplater(content)
-doc.setData({
-	"products": [{
- 	 	 "title":"Duk",
- 	 	 "name":"DukSoftware",
- 	 	 "reference":"DS0"
-		},{
- 	 	 "title":"Tingerloo",
- 	 	 "name":"Tingerlee",
- 	 	 "reference":"T00"
-	}]}); //set the templateVariables
+				<textarea raw="tag-looping.docx">
+	loadFile("tag-looping.docx",function(err,content){
+		var zip = new JSZip(content);
+		var doc=new Docxtemplater().loadZip(zip)
+		doc.setData({
+			"products": [{
+				 "title":"Duk",
+				 "name":"DukSoftware",
+				 "reference":"DS0"
+			 },{
+				"title":"Tingerloo",
+				"name":"Tingerlee",
+				"reference":"T00"
+			}]
+		}); //set the templateVariables
 doc.render() //apply them
 var output=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
 saveAs(output,"output.docx")
@@ -212,18 +218,19 @@ saveAs(output,"output.docx")
 	<p>This also works with Bullet Lists</p>
 	<table class="demo">
 		<tr>
-			<td><img src="images/tableTagging.PNG"></td>
+			<td><img src="images/table-tagging.png"></td>
 			<td>
 				<div>=> <br>Results in:</div>
 			</td>
-			<td><img src="images/tableTaggingResult.PNG"></td>
+			<td><img src="images/table-tagging-result.png"></td>
 		</tr>
 		<tr>
 			<td colspan="3">
 				<h3>Code Used:</h3>
-				<textarea raw="tagIntelligentLoopTable.docx">
-	loadFile("tagIntelligentLoopTable.docx",function(err,content){
-	var doc=new Docxtemplater(content)
+				<textarea raw="tag-intelligent-loop-table.docx">
+	loadFile("tag-intelligent-loop-table.docx",function(err,content){
+	var zip = new JSZip(content);
+	var doc=new Docxtemplater().loadZip(zip)
 	doc.setData({
 		"clients":[{
 			"first_name":"John",
@@ -249,18 +256,19 @@ saveAs(output,"output.docx")
 	<p>This could work for lists, paragraphs, or any element that could be repeated. The syntax is {-element name} {/name}. When encountering such an element, docxtemplater will search for the first parent element that equals element, and loop over this.</p>
 	<table class="demo">
 		<tr>
-			<td><img src="images/listTagging.PNG"></td>
+			<td><img src="images/list-tagging.png"></td>
 			<td>
 				<div>=> <br>Results in:</div>
 			</td>
-			<td><img src="images/listTaggingResult.PNG"></td>
+			<td><img src="images/list-tagging-result.png"></td>
 		</tr>
 		<tr>
 			<td colspan="3">
 				<h3>Code Used:</h3>
-				<textarea raw="tagDashLoopList.docx">
-	loadFile("tagDashLoopList.docx",function(err,content){
-	var doc=new Docxtemplater(content)
+				<textarea raw="tag-dash-loop-list.docx">
+	loadFile("tag-dash-loop-list.docx",function(err,content){
+	var zip = new JSZip(content);
+	var doc=new Docxtemplater().loadZip(zip)
 	doc.setData(
 	{"os":[{"type":"linux","price":"0","reference":"Ubuntu10"},{"type":"windows","price":"500","reference":"Win7"},{"type":"apple","price":"1200","reference":"MACOSX"}]}
 	)
@@ -279,18 +287,19 @@ saveAs(output,"output.docx")
 	<p>You can embed your own XML using the {@rawXml} syntax. DocXTemplater will replace the containing w:p tag to the xml you enter in the json. This can be particularly useful to embed: tables, user input that could be bold, italics, change the size, color, or whatever. However, you can't create some graphs, smartarts because they use multiple files and not just the one you're in.</p>
 	<table class="demo">
 		<tr>
-			<td><img src="images/xmlTagging.PNG"></td>
+			<td><img src="images/xml-tagging.png"></td>
 			<td>
 				<div>=> <br>Results in:</div>
 			</td>
-			<td><img src="images/xmlTaggingResult.PNG"></td>
+			<td><img src="images/xml-tagging-result.png"></td>
 		</tr>
 		<tr>
 			<td colspan="3">
 				<h3>Code Used:</h3>
-				<textarea raw="xmlInsertionExample.docx">
-					loadFile("xmlInsertionExample.docx",function(err,content){
-					var doc=new Docxtemplater(content)
+				<textarea raw="xml-insertion-example.docx">
+					loadFile("xml-insertion-example.docx",function(err,content){
+					var zip = new JSZip(content);
+					var doc=new Docxtemplater().loadZip(zip)
 					doc.setData({complexXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'});
 					doc.render();
 					var output=doc.getZip().generate({type:"blob"})

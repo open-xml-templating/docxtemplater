@@ -1,8 +1,10 @@
 "use strict";
 
+/* eslint-disable no-var */
 var Docxtemplater = require("../js/docxtemplater.js");
 window.Docxtemplater = Docxtemplater;
 var expressions = require("angular-expressions");
+var JSZip = require("jszip");
 window.expressions = expressions;
 
 function textAreaAdjust(o) {
@@ -56,7 +58,8 @@ window.onload = function () {
 		if (err) {
 			throw err;
 		}
-		var output = new Docxtemplater(content).getZip().generate({type: "blob"});
+		var zip = new JSZip(content);
+		var output = new Docxtemplater().loadZip(zip).getZip().generate({type: "blob"});
 		saveAs(output, "raw.docx");
 	}
 

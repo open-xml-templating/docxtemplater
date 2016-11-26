@@ -1,11 +1,11 @@
 "use strict";
 
-var fs = require("fs");
-var path = require("path");
-var exec = require("child_process").exec;
+const fs = require("fs");
+const path = require("path");
+const exec = require("child_process").exec;
 
-var lastRun = 0;
-var throttleTime = 1000;
+let lastRun = 0;
+const throttleTime = 1000;
 /* eslint-disable no-console */
 
 function execTests() {
@@ -23,7 +23,7 @@ function execTests() {
 }
 
 function onFileChange() {
-	var now = new Date().getTime();
+	const now = new Date().getTime();
 	if (now < lastRun + throttleTime) {
 		return;
 	}
