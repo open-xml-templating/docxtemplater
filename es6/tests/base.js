@@ -5,6 +5,7 @@ const Docxtemplater = require("../docxtemplater.js");
 const xmlMatcher = require("../xml-matcher.js");
 const DocUtils = require("../doc-utils.js");
 const _ = require("lodash");
+const InspectModule = require("./inspect-module.js");
 
 const expressions = require("angular-expressions");
 function angularParser(tag) {
@@ -88,39 +89,43 @@ function getLength(obj) {
 describe("DocxtemplaterLoading", function () {
 	describe("ajax done correctly", function () {
 		it("doc and img Data should have the expected length", function () {
-			expect(getLength(testUtils.docX["image-example.docx"].loadedContent)).to.be.equal(729580);
+			const doc = testUtils.createDoc("image-example.docx");
+			expect(getLength(doc.loadedContent)).to.be.equal(729580);
 			expect(getLength(testUtils.imageData["image.png"])).to.be.equal(18062);
 		});
 		it("should have the right number of files (the docx unzipped)", function () {
-			const zip = new JSZip(testUtils.docX["image-example.docx"].loadedContent);
-			const doc = new Docxtemplater().loadZip(zip);
+			const doc = testUtils.createDoc("image-example.docx");
 			expect(DocUtils.sizeOfObject(doc.zip.files)).to.be.equal(16);
 		});
 	});
 	describe("basic loading", function () {
 		it("should load file image-example.docx", function () {
-			expect(typeof testUtils.docX["image-example.docx"]).to.be.equal("object");
+			const doc = testUtils.createDoc("image-example.docx");
+			expect(typeof doc).to.be.equal("object");
 		});
 	});
 	describe("content_loading", function () {
 		it("should load the right content for the footer", function () {
-			const fullText = (testUtils.docX["image-example.docx"].getFullText("word/footer1.xml"));
+			const doc = testUtils.createDoc("image-example.docx");
+			const fullText = (doc.getFullText("word/footer1.xml"));
 			expect(fullText.length).not.to.be.equal(0);
 			expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 		});
 		it("should load the right content for the document", function () {
+			const doc = testUtils.createDoc("image-example.docx");
 			// default value document.xml
-			const fullText = (testUtils.docX["image-example.docx"].getFullText());
+			const fullText = (doc.getFullText());
 			expect(fullText).to.be.equal("");
 		});
 		it("should load the right template files for the document", function () {
-			const templatedFiles = (testUtils.docX["tag-example.docx"].getTemplatedFiles());
+			const doc = testUtils.createDoc("tag-example.docx");
+			const templatedFiles = (doc.getTemplatedFiles());
 			expect(templatedFiles).to.be.eql(["word/header1.xml", "word/footer1.xml", "word/document.xml"]);
 		});
 	});
 	describe("output and input", function () {
 		it("should be the same", function () {
-			const zip = new JSZip(testUtils.docX["tag-example.docx"].loadedContent);
+			const zip = new JSZip(testUtils.createDoc("tag-example.docx").loadedContent);
 			const doc = new Docxtemplater().loadZip(zip);
 			const output = doc.getZip().generate({type: "base64"});
 			expect(output.length).to.be.equal(90732);
@@ -138,14 +143,43 @@ describe("DocxtemplaterTemplating", function () {
 				phone: "0652455478",
 				description: "New Website",
 			};
-			testUtils.docX["tag-example.docx"].setData(tags);
-			testUtils.docX["tag-example.docx"].render();
-			expect(testUtils.docX["tag-example.docx"].getFullText()).to.be.equal("Edgar Hipp");
-			expect(testUtils.docX["tag-example.docx"].getFullText("word/header1.xml")).to.be.equal("Edgar Hipp0652455478New Website");
-			expect(testUtils.docX["tag-example.docx"].getFullText("word/footer1.xml")).to.be.equal("EdgarHipp0652455478");
-			const doc = testUtils.docX["tag-example.docx"];
+			const doc = testUtils.createDoc("tag-example.docx");
+			doc.setData(tags);
+			doc.render();
+			expect(doc.getFullText()).to.be.equal("Edgar Hipp");
+			expect(doc.getFullText("word/header1.xml")).to.be.equal("Edgar Hipp0652455478New Website");
+			expect(doc.getFullText("word/footer1.xml")).to.be.equal("EdgarHipp0652455478");
 			testUtils.shouldBeSame({doc, expectedName: "tag-example-expected.docx"});
 		});
+	});
+});
+
+describe("inspect module", function () {
+	function getTags(postParsed) {
+		return postParsed.filter(function (part) {
+			return part.type === "placeholder";
+		}).reduce(function (tags, part) {
+			tags[part.value] = {};
+			if (part.subparsed) {
+				tags[part.value] = getTags(part.subparsed);
+			}
+			return tags;
+		}, {});
+	}
+	const doc = testUtils.createDoc("tag-loop-example.docx");
+	const inspectModule = new InspectModule();
+	doc.attachModule(inspectModule);
+	doc.render();
+	const postParsed = inspectModule.fullInspected["word/document.xml"].postparsed;
+	const tags = getTags(postParsed);
+	expect(tags).to.be.deep.equal({
+		offre: {
+			nom: {},
+			prix: {},
+			titre: {},
+		},
+		nom: {},
+		prenom: {},
 	});
 });
 
@@ -159,15 +193,17 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 				description: "New Website",
 				offre: [{titre: "titre1", prix: "1250"}, {titre: "titre2", prix: "2000"}, {titre: "titre3", prix: "1400", nom: "Offre"}],
 			};
-			testUtils.docX["tag-loop-example.docx"].setData(tags);
-			testUtils.docX["tag-loop-example.docx"].render();
-			expect(testUtils.docX["tag-loop-example.docx"].getFullText()).to.be.equal("Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar");
+			const doc = testUtils.createDoc("tag-loop-example.docx");
+			doc.setData(tags);
+			doc.render();
+			expect(doc.getFullText()).to.be.equal("Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar");
 		});
 		it("should work with loops inside loops", function () {
 			const tags = {products: [{title: "Microsoft", name: "DOS", reference: "Win7", avantages: [{title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]}]}, {title: "Linux", name: "Ubuntu", reference: "Ubuntu10", avantages: [{title: "It's very powerful", proof: [{reason: "the terminal is your friend"}, {reason: "Hello world"}, {reason: "it's free"}]}]}, {title: "Apple", name: "Mac", reference: "OSX", avantages: [{title: "It's very easy", proof: [{reason: "you can do a lot just with the mouse"}, {reason: "It's nicely designed"}]}]}]};
-			testUtils.docX["tag-produit-loop.docx"].setData(tags);
-			testUtils.docX["tag-produit-loop.docx"].render();
-			const text = testUtils.docX["tag-produit-loop.docx"].getFullText();
+			const doc = testUtils.createDoc("tag-produit-loop.docx");
+			doc.setData(tags);
+			doc.render();
+			const text = doc.getFullText();
 			const expectedText = "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
 			expect(text.length).to.be.equal(expectedText.length);
 			expect(text).to.be.equal(expectedText);
@@ -244,26 +280,29 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 describe("Dash Loop Testing", function () {
 	it("dash loop ok on simple table -> w:tr", function () {
 		const tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
-		testUtils.docX["tag-dash-loop.docx"].setData(tags);
-		testUtils.docX["tag-dash-loop.docx"].render();
+		const doc = testUtils.createDoc("tag-dash-loop.docx");
+		doc.setData(tags);
+		doc.render();
 		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
-		const text = testUtils.docX["tag-dash-loop.docx"].getFullText();
+		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
 	it("dash loop ok on simple table -> w:table", function () {
 		const tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
-		testUtils.docX["tag-dash-loop-table.docx"].setData(tags);
-		testUtils.docX["tag-dash-loop-table.docx"].render();
+		const doc = testUtils.createDoc("tag-dash-loop-table.docx");
+		doc.setData(tags);
+		doc.render();
 		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
-		const text = testUtils.docX["tag-dash-loop-table.docx"].getFullText();
+		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
 	it("dash loop ok on simple list -> w:p", function () {
 		const tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
-		testUtils.docX["tag-dash-loop-list.docx"].setData(tags);
-		testUtils.docX["tag-dash-loop-list.docx"].render();
+		const doc = testUtils.createDoc("tag-dash-loop-list.docx");
+		doc.setData(tags);
+		doc.render();
 		const expectedText = "linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ";
-		const text = testUtils.docX["tag-dash-loop-list.docx"].getFullText();
+		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
 });
@@ -271,12 +310,12 @@ describe("Dash Loop Testing", function () {
 describe("Intelligent Loop Tagging", function () {
 	it("should work with tables", function () {
 		const tags = {clients: [{first_name: "John", last_name: "Doe", phone: "+33647874513"}, {first_name: "Jane", last_name: "Doe", phone: "+33454540124"}, {first_name: "Phil", last_name: "Kiel", phone: "+44578451245"}, {first_name: "Dave", last_name: "Sto", phone: "+44548787984"}]};
-		testUtils.docX["tag-intelligent-loop-table.docx"].setData(tags);
-		testUtils.docX["tag-intelligent-loop-table.docx"].render();
+		const doc = testUtils.createDoc("tag-intelligent-loop-table.docx");
+		doc.setData(tags);
+		doc.render();
 		const expectedText = "JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984";
-		const text = testUtils.docX["tag-intelligent-loop-table-expected.docx"].getFullText();
+		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
-		const doc = testUtils.docX["tag-intelligent-loop-table-expected.docx"];
 		testUtils.shouldBeSame({doc, expectedName: "tag-intelligent-loop-table-expected.docx"});
 	});
 
@@ -531,7 +570,8 @@ describe("Changing the parser", function () {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
 	});
 	it("should work when setting from the Docxtemplater interface", function () {
-		const zip = new JSZip(testUtils.docX["tag-example.docx"].loadedContent);
+		const doc = testUtils.createDoc("tag-example.docx");
+		const zip = new JSZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
 		const tags = {
 			first_name: "Hipp",
@@ -551,10 +591,11 @@ describe("Changing the parser", function () {
 
 	it("should work with angular parser", function () {
 		const tags = {person: {first_name: "Hipp", last_name: "Edgar", birth_year: 1955, age: 59}};
-		testUtils.docX["angular-example.docx"].setData(tags);
-		testUtils.docX["angular-example.docx"].parser = angularParser;
-		testUtils.docX["angular-example.docx"].render();
-		expect(testUtils.docX["angular-example.docx"].getFullText()).to.be.equal("Hipp Edgar 2014");
+		const doc = testUtils.createDoc("angular-example.docx");
+		doc.setData(tags);
+		doc.parser = angularParser;
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("Hipp Edgar 2014");
 	});
 
 	it("should work with loops", function () {
@@ -584,7 +625,8 @@ describe("Special characters", function () {
 	});
 
 	it("should read full text correctly", function () {
-		const fullText = testUtils.docX["cyrillic.docx"].getFullText();
+		const doc = testUtils.createDoc("cyrillic.docx");
+		const fullText = doc.getFullText();
 		expect(fullText.charCodeAt(0)).to.be.equal(1024);
 		expect(fullText.charCodeAt(1)).to.be.equal(1050);
 		expect(fullText.charCodeAt(2)).to.be.equal(1048);
@@ -595,9 +637,10 @@ describe("Special characters", function () {
 		expect(fullText.charCodeAt(7)).to.be.equal(1040);
 	});
 	it("should still read full text after applying tags", function () {
-		testUtils.docX["cyrillic.docx"].setData({name: "Edgar"});
-		testUtils.docX["cyrillic.docx"].render();
-		const fullText = testUtils.docX["cyrillic.docx"].getFullText();
+		const doc = testUtils.createDoc("cyrillic.docx");
+		doc.setData({name: "Edgar"});
+		doc.render();
+		const fullText = doc.getFullText();
 		expect(fullText.charCodeAt(0)).to.be.equal(1024);
 		expect(fullText.charCodeAt(1)).to.be.equal(1050);
 		expect(fullText.charCodeAt(2)).to.be.equal(1048);
@@ -613,7 +656,8 @@ describe("Special characters", function () {
 		const russian = russianText.map(function (char) {
 			return String.fromCharCode(char);
 		}).join("");
-		const zip = new JSZip(testUtils.docX["tag-example.docx"].loadedContent);
+		const doc = testUtils.createDoc("tag-example.docx");
+		const zip = new JSZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
 		d.setData({last_name: russian});
 		d.render();
@@ -624,7 +668,8 @@ describe("Special characters", function () {
 
 describe("Complex table example", function () {
 	it("should work with simple table", function () {
-		testUtils.docX["table-complex2-example.docx"].setData({
+		const doc = testUtils.createDoc("table-complex2-example.docx");
+		doc.setData({
 			table1: [{
 				t1data1: "t1-1row-data1",
 				t1data2: "t1-1row-data2",
@@ -646,13 +691,14 @@ describe("Complex table example", function () {
 			t1total2: "t1total2-data",
 			t1total3: "t1total3-data",
 		});
-		testUtils.docX["table-complex2-example.docx"].render();
-		const fullText = testUtils.docX["table-complex2-example.docx"].getFullText();
+		doc.render();
+		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data");
 	});
 	it("should work with more complex table", function () {
 		// set the templateData
-		testUtils.docX["table-complex-example.docx"].setData({
+		const doc = testUtils.createDoc("table-complex-example.docx");
+		doc.setData({
 			table2: [{
 				t2data1: "t2-1row-data1",
 				t2data2: "t2-1row-data2",
@@ -672,8 +718,8 @@ describe("Complex table example", function () {
 			t2total2: "t2total2-data",
 			t2total3: "t2total3-data",
 		});
-		testUtils.docX["table-complex-example.docx"].render();
-		const fullText = testUtils.docX["table-complex-example.docx"].getFullText();
+		doc.render();
+		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
 	});
 	it("should work with two tables and intelligentTagging", function () {
@@ -804,7 +850,7 @@ describe("Raw Xml Insertion", function () {
 	});
 	it("should work with simple example and given options", function () {
 		const scope = {xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>'};
-		const doc = testUtils.docX["one-raw-xml-tag.docx"];
+		const doc = testUtils.createDoc("one-raw-xml-tag.docx");
 		doc.setOptions({
 			fileTypeConfig: _.merge({}, Docxtemplater.FileTypeConfig.docx, {tagRawXml: "w:r"}),
 		});
@@ -900,13 +946,15 @@ describe("getting parents context", function () {
 
 describe("pptx generation", function () {
 	it("should work with simple pptx", function () {
-		const p = testUtils.pptX["simple-example.pptx"].setData({name: "Edgar"}).render();
+		const doc = testUtils.createPpt("simple-example.pptx");
+		const p = doc.setData({name: "Edgar"}).render();
 		expect(p.getFullText()).to.be.equal("Hello Edgar");
 	});
 });
 
 describe("Serialization", function () {
 	it("should be serialiazable", function () {
-		JSON.stringify(testUtils.docX["tag-example.docx"]);
+		const doc = testUtils.createDoc("tag-example.docx");
+		JSON.stringify(doc);
 	});
 });

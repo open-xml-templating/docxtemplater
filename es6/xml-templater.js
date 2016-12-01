@@ -19,6 +19,7 @@ function getFullText(content, tagsXmlArray) {
 module.exports = class XmlTemplater {
 	constructor(content, options) {
 		this.fromJson(options);
+		this.setModules({inspect: {filePath: this.filePath}});
 		this.load(content);
 	}
 	load(content) {

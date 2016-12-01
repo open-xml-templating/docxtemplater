@@ -83,10 +83,10 @@ function load(name, content, fileType, obj) {
 	return obj[name];
 }
 function loadDocx(name, content) {
-	load(name, content, "docx", docX);
+	return load(name, content, "docx", docX);
 }
 function loadPptx(name, content) {
-	load(name, content, "pptx", pptX);
+	return load(name, content, "pptx", pptX);
 }
 function loadImage(name, content) {
 	imageData[name] = content;
@@ -142,8 +142,18 @@ function makeDocx(name, content) {
 	return load(name, base64, "docx", docX);
 }
 
+function createDoc(name) {
+	return loadDocx(name, docX[name].loadedContent);
+}
+
+function createPpt(name) {
+	return loadPptx(name, pptX[name].loadedContent);
+}
+
 module.exports = {
 	createXmlTemplaterDocx,
+	createDoc,
+	createPpt,
 	loadDocx,
 	loadPptx,
 	loadImage,

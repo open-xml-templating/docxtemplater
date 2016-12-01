@@ -38,7 +38,7 @@ const Docxtemplater = class Docxtemplater {
 	renderFile(fileName) {
 		const currentFile = this.createTemplateClass(fileName);
 		this.zip.file(fileName, currentFile.render().content);
-		this.compiled[fileName] = currentFile.compiled;
+		this.compiled[fileName] = currentFile.postparsed;
 	}
 	compile() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
@@ -61,9 +61,10 @@ const Docxtemplater = class Docxtemplater {
 			}
 		});
 		this.compile();
-		// Loop inside all templatedFiles (basically xml files with content). Sometimes they dont't exist (footer.xml for example)
+		// Loop inside all templatedFiles (ie xml files with content).
+		// Sometimes they don't exist (footer.xml for example)
 		this.templatedFiles.forEach((fileName) => {
-			if ((this.zip.files[fileName] != null)) {
+			if (this.zip.files[fileName] != null) {
 				this.renderFile(fileName);
 			}
 		});

@@ -35,11 +35,13 @@ function startTest() {
 
 	describe("pptx generation", function () {
 		it("should work with simple pptx", function () {
-			const p = testUtils.pptX["simple-example.pptx"].setData({name: "Edgar"}).render();
+			const doc = testUtils.createPpt("simple-example.pptx");
+			const p = doc.setData({name: "Edgar"}).render();
 			expect(p.getFullText()).to.be.equal("Hello Edgar");
 		});
 		it("should work with simple raw pptx", function () {
-			const p = testUtils.pptX["raw-xml-example.pptx"].setData({raw: "<p:sp><a:t>Hello World</a:t></p:sp>"}).render();
+			const doc = testUtils.createPpt("raw-xml-example.pptx");
+			const p = doc.setData({raw: "<p:sp><a:t>Hello World</a:t></p:sp>"}).render();
 			expect(p.getFullText()).to.be.equal("Hello World");
 		});
 	});
