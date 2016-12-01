@@ -22,6 +22,8 @@
 	var doc=new Docxtemplater().loadZip(zip)
 	```
 
+-	getTags() has been removed. It is now not easily possible to get the tags. See https://github.com/open-xml-templating/docxtemplater/issues/258 for a alternate solution
+
 The **JSZip version that you use should be 2.x**, the 3.x is now exclusively async, which Docxtemplater doesn't handle yet.
 
 ### 2.1.5
