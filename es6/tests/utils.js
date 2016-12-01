@@ -41,7 +41,7 @@ function shouldBeSame(options) {
 	}
 
 	try {
-		expectedZip = docX[expectedName].zip;
+		expectedZip = (docX[expectedName]) ? docX[expectedName].zip : pptX[expectedName].zip;
 	}
 	catch (e) {
 		console.log(JSON.stringify({msg: "Expected name does not match", expectedName}));
