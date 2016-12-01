@@ -23,7 +23,7 @@
     "url": "https://github.com/open-xml-templating/docxtemplater"
   },
   "dependencies": {
-    "xmldom": "^0.1.22"
+    "xmldom": "^0.1.27"
   },
   "devDependencies": {
     "angular-expressions": "^0.3.0",
@@ -32,7 +32,7 @@
     "babel-preset-es2015": "^6.18.0",
     "browserify": "^13.1.1",
     "chai": "^3.5.0",
-    "eslint": "^3.11.0",
+    "eslint": "^3.11.1",
     "istanbul": "^0.4.5",
     "jszip": "^2.6.1",
     "lodash": "^4.16.6",
