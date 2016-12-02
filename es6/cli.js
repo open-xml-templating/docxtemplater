@@ -10,8 +10,19 @@ const JSZip = require("jszip");
 const DocUtils = require("./doc-utils");
 const Docxtemplater = require("./docxtemplater");
 const fileExts = ["pptx", "docx"];
-const ImageModule = require("docxtemplater-image-module");
-const sizeOf = require("image-size");
+
+let imageSupport = false;
+let ImageModule = null;
+let sizeOf = null;
+
+try {
+	ImageModule = require("docxtemplater-image-module");
+	sizeOf = require("image-size");
+	imageSupport = true;
+}
+catch (e) {
+	console.log("Image support disabled. Run 'npm docxtemplater-image-module image-size' to enable image support.");
+}
 
 function showHelp() {
 	console.info("Usage: docxtemplater <configFilePath>");
@@ -59,24 +70,28 @@ if (debugBool) {
 	console.info("loading docx:" + inputFileName);
 }
 
-let opts = {};
-opts.centered = false;
-opts.fileType = fileType;
-
-opts.getImage=function(tagValue, tagName) {
-	return fs.readFileSync(tagValue, "binary");
-}
-
-opts.getSize=function(img, tagValue, tagName) {
-	const dimensions = sizeOf(tagValue);
-	return [dimensions.width, dimensions.height];
-}
-
-var imageModule = new ImageModule(opts);
 const content = fs.readFileSync(currentPath + inputFileName, "binary");
 const zip = new JSZip(content);
 const doc = new Docxtemplater();
-doc.attachModule(imageModule);
+
+if (imageSupport) {
+	const opts = {};
+	opts.centered = false;
+	opts.fileType = fileType;
+
+	opts.getImage = function (tagValue) {
+		return fs.readFileSync(tagValue, "binary");
+	};
+
+	opts.getSize = function (img, tagValue) {
+		const dimensions = sizeOf(tagValue);
+		return [dimensions.width, dimensions.height];
+	};
+
+	const imageModule = new ImageModule(opts);
+	doc.attachModule(imageModule);
+}
+
 doc.loadZip(zip);
 doc.setOptions({fileType});
 doc.setData(jsonInput);
