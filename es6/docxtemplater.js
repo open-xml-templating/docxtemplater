@@ -44,9 +44,9 @@ const Docxtemplater = class Docxtemplater {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
 	}
 	render() {
-		this.modules = this.modules.concat(this.fileTypeConfig.baseModules.map(function (moduleFunction) {
+		this.modules = this.fileTypeConfig.baseModules.map(function (moduleFunction) {
 			return moduleFunction();
-		}));
+		}).concat(this.modules);
 		this.options = this.modules.reduce((options, module) => {
 			return module.optionsTransformer ? module.optionsTransformer(options, this) : options;
 		}, this.options);

@@ -1,6 +1,10 @@
 ### master
 
-### 3.0
+### 3.0.1
+
+-	The modules are now ordered in the following order : baseModules, and then attachedModules. Before version 3.0.1, the attachedModules came before baseModules. This fixes : https://github.com/open-xml-templating/docxtemplater-image-module/issues/76
+
+### 3.0.0
 
 -	The rendering of the templates has now multiple steps : Lexing, Parsing, and Rendering. This makes the code much more robust, they might be bugs at the beginning, but in the long run, the code is much easier to understand/debug/change.
 -	The module system was completely changed, no compatibility is kept between version 2 and version 3, please make sure to update your modules if needed.
