@@ -1,8 +1,12 @@
-### master
+### unreleased (master branch)
 
-### 3.0.1
+### 3.0.2
 
--	The modules are now ordered in the following order : baseModules, and then attachedModules. Before version 3.0.1, the attachedModules came before baseModules. This fixes : https://github.com/open-xml-templating/docxtemplater-image-module/issues/76
+-	The modules are now ordered in the following order : baseModules, and then attachedModules. Before version 3.0.2, the attachedModules came before baseModules. This fixes : https://github.com/open-xml-templating/docxtemplater-image-module/issues/76
+
+### 3.0.1 [YANKED]
+
+This release was published by error, and should not be used at all.
 
 ### 3.0.0
 
