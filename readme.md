@@ -99,7 +99,7 @@ npm run compile
 # npm run uglify:lib
 ```
 
-Docxtemplater will be exported to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see https://github.com/edi9999/docxtemplater/issues/118)\)
+Docxtemplater will be exported to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see [issue #118](https://github.com/edi9999/docxtemplater/issues/118)\)
 
 Your version of docxtemplater will be in /build (minified and non minified options) and already include all dependencies
 
