@@ -10,19 +10,7 @@ const JSZip = require("jszip");
 const DocUtils = require("./doc-utils");
 const Docxtemplater = require("./docxtemplater");
 const fileExts = ["pptx", "docx"];
-
-let imageSupport = false;
-let ImageModule = null;
-let sizeOf = null;
-
-try {
-	ImageModule = require("docxtemplater-image-module");
-	sizeOf = require("image-size");
-	imageSupport = true;
-}
-catch (e) {
-	console.log("Image support disabled. Run 'npm docxtemplater-image-module image-size' to enable image support.");
-}
+const path = require("path");
 
 function showHelp() {
 	console.info("Usage: docxtemplater <configFilePath>");
@@ -41,7 +29,7 @@ const jsonInput = JSON.parse(res);
 
 DocUtils.config = {};
 
-const currentPath = process.cwd() + "/";
+const currentPath = process.cwd() + path.sep;
 DocUtils.pathConfig = {node: currentPath};
 
 for (const key in jsonInput) {
@@ -50,6 +38,15 @@ for (const key in jsonInput) {
 	}
 }
 
+let ImageModule = null;
+let sizeOf = null;
+
+if (DocUtils.config.modules && DocUtils.config.modules.indexOf("docxtemplater-image-module") !== -1) {
+	ImageModule = require("docxtemplater-image-module");
+	sizeOf = require("image-size");
+}
+
+const imageDir = path.resolve(process.cwd(), DocUtils.config.imageDir || '') + path.sep;
 const inputFileName = DocUtils.config.inputFile;
 const fileType = inputFileName.indexOf(".pptx") !== -1 ? "pptx" : "docx";
 const jsonFileName = process.argv[2];
@@ -74,13 +71,19 @@ const content = fs.readFileSync(currentPath + inputFileName, "binary");
 const zip = new JSZip(content);
 const doc = new Docxtemplater();
 
-if (imageSupport) {
+if (ImageModule && sizeOf) {
 	const opts = {};
 	opts.centered = false;
 	opts.fileType = fileType;
 
 	opts.getImage = function (tagValue) {
-		return fs.readFileSync(tagValue, "binary");
+		const filePath = path.resolve(imageDir, tagValue);
+		console.log('path' + filePath);
+		if (filePath.indexOf(imageDir) !== 0) {
+			throw new Error("Images must be stored under folder: " + imageDir);
+		}
+
+		return fs.readFileSync(filePath, "binary");
 	};
 
 	opts.getSize = function (img, tagValue) {
