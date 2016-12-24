@@ -46,7 +46,7 @@ if (DocUtils.config.modules && DocUtils.config.modules.indexOf("docxtemplater-im
 	sizeOf = require("image-size");
 }
 
-const imageDir = path.resolve(process.cwd(), DocUtils.config.imageDir || '') + path.sep;
+const imageDir = path.resolve(process.cwd(), DocUtils.config.imageDir || "") + path.sep;
 const inputFileName = DocUtils.config.inputFile;
 const fileType = inputFileName.indexOf(".pptx") !== -1 ? "pptx" : "docx";
 const jsonFileName = process.argv[2];
@@ -78,7 +78,7 @@ if (ImageModule && sizeOf) {
 
 	opts.getImage = function (tagValue) {
 		const filePath = path.resolve(imageDir, tagValue);
-		console.log('path' + filePath);
+
 		if (filePath.indexOf(imageDir) !== 0) {
 			throw new Error("Images must be stored under folder: " + imageDir);
 		}
