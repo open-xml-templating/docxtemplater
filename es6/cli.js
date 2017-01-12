@@ -10,6 +10,7 @@ const JSZip = require("jszip");
 const DocUtils = require("./doc-utils");
 const Docxtemplater = require("./docxtemplater");
 const fileExts = ["pptx", "docx"];
+const path = require("path");
 
 function showHelp() {
 	console.info("Usage: docxtemplater <configFilePath>");
@@ -28,7 +29,7 @@ const jsonInput = JSON.parse(res);
 
 DocUtils.config = {};
 
-const currentPath = process.cwd() + "/";
+const currentPath = process.cwd() + path.sep;
 DocUtils.pathConfig = {node: currentPath};
 
 for (const key in jsonInput) {
@@ -37,6 +38,15 @@ for (const key in jsonInput) {
 	}
 }
 
+let ImageModule = null;
+let sizeOf = null;
+
+if (DocUtils.config.modules && DocUtils.config.modules.indexOf("docxtemplater-image-module") !== -1) {
+	ImageModule = require("docxtemplater-image-module");
+	sizeOf = require("image-size");
+}
+
+const imageDir = path.resolve(process.cwd(), DocUtils.config.imageDir || "") + path.sep;
 const inputFileName = DocUtils.config.inputFile;
 const fileType = inputFileName.indexOf(".pptx") !== -1 ? "pptx" : "docx";
 const jsonFileName = process.argv[2];
@@ -56,9 +66,36 @@ if (debugBool) {
 if (debugBool) {
 	console.info("loading docx:" + inputFileName);
 }
+
 const content = fs.readFileSync(currentPath + inputFileName, "binary");
 const zip = new JSZip(content);
-const doc = new Docxtemplater().loadZip(zip);
+const doc = new Docxtemplater();
+
+if (ImageModule && sizeOf) {
+	const opts = {};
+	opts.centered = false;
+	opts.fileType = fileType;
+
+	opts.getImage = function (tagValue) {
+		const filePath = path.resolve(imageDir, tagValue);
+
+		if (filePath.indexOf(imageDir) !== 0) {
+			throw new Error("Images must be stored under folder: " + imageDir);
+		}
+
+		return fs.readFileSync(filePath, "binary");
+	};
+
+	opts.getSize = function (img, tagValue) {
+		const dimensions = sizeOf(tagValue);
+		return [dimensions.width, dimensions.height];
+	};
+
+	const imageModule = new ImageModule(opts);
+	doc.attachModule(imageModule);
+}
+
+doc.loadZip(zip);
 doc.setOptions({fileType});
 doc.setData(jsonInput);
 doc.render();
