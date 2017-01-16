@@ -92,6 +92,7 @@ allows optional fields in your data. For example, this template:
 and this data: 
 
 .. code-block:: javascript
+
     {
         people: 
             [
