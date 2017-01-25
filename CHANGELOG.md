@@ -1,5 +1,13 @@
 ### unreleased (master branch)
 
+### 3.0.3
+
+-	Update documentation
+-	Completely remove intelligentTagging (which is on for everyone)
+-	Performance improvements for arrays: prefer push over concat
+-	Add automatic module wrapping
+-	Add mecanism to change which files to template with modules
+
 ### 3.0.2
 
 -	The modules are now ordered in the following order : baseModules, and then attachedModules. Before version 3.0.2, the attachedModules came before baseModules. This fixes : https://github.com/open-xml-templating/docxtemplater-image-module/issues/76
