@@ -358,7 +358,7 @@ describe("intelligent tagging multiple tables", function () {
 		</w:tbl>
 		`.replace(/\t|\n/g, "");
 		const scope = {clauses: ["Foo", "Bar", "Baz"]};
-		const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope, intelligentTagging: true});
+		const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
 		doc.render();
 		expect(doc.content).to.be.equal('<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Foo</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Bar</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Baz</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr></w:tbl>');
 	});
@@ -722,7 +722,7 @@ describe("Complex table example", function () {
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
 	});
-	it("should work with two tables and intelligentTagging", function () {
+	it("should work when looping inside tables", function () {
 		const tags = {
 			table1: [1],
 			key: "value",
@@ -738,7 +738,7 @@ describe("Complex table example", function () {
 		</w:tr>
 		<w:t>{key}</w:t>
 		`;
-		const doc = testUtils.createXmlTemplaterDocx(template, {tags, intelligentTagging: true});
+		const doc = testUtils.createXmlTemplaterDocx(template, {tags});
 		doc.render();
 		const fullText = doc.getFullText();
 

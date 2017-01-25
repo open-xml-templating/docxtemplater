@@ -29,7 +29,6 @@ DocUtils.defaults = {
 		return "";
 	},
 	parser: memoize(parser),
-	intelligentTagging: true,
 	fileType: "docx",
 	delimiters: {
 		start: "{",
