@@ -30,6 +30,7 @@ function shouldBeSame(options) {
 	const expectedName = options.expectedName;
 	let expectedZip;
 	const writeFile = path.resolve(examplesDirectory, "..", expectedName);
+	const fileType = expectedName.indexOf(".docx") !== -1 ? "docx" : "pptx";
 
 	if (fs.writeFileSync) {
 		fs.writeFileSync(
@@ -39,7 +40,7 @@ function shouldBeSame(options) {
 	}
 
 	try {
-		expectedZip = (docX[expectedName]) ? docX[expectedName].zip : pptX[expectedName].zip;
+		expectedZip = (fileType === "docx" ? docX : pptX)[expectedName].zip;
 	}
 	catch (e) {
 		console.log(JSON.stringify({msg: "Expected name does not match", expectedName}));
