@@ -30,12 +30,15 @@ module.exports = class XmlTemplater {
 		}
 		this.content = content;
 	}
+	setTags(tags) {
+		this.tags = (tags != null) ? tags : {};
+		this.scopeManager = ScopeManager.createBaseScopeManager({tags: this.tags, parser: this.parser});
+		return this;
+	}
 	fromJson(options) {
-		this.tags = (options.tags != null) ? options.tags : {};
 		this.filePath = options.filePath;
 		this.modules = options.modules;
 		this.fileTypeConfig = options.fileTypeConfig;
-		this.scopeManager = ScopeManager.createBaseScopeManager({tags: this.tags, parser: this.parser});
 		Object.keys(DocUtils.defaults).map(function (key) {
 			this[key] = options[key] != null ? options[key] : DocUtils.defaults[key];
 		}, this);

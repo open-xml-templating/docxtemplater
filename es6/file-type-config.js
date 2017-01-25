@@ -2,8 +2,9 @@
 
 const loopModule = require("./modules/loop");
 const spacePreserveModule = require("./modules/space-preserve");
-const RawXmlModule = require("./modules/rawxml");
+const rawXmlModule = require("./modules/rawxml");
 const expandPairTrait = require("./modules/expand-pair-trait");
+const render = require("./modules/render");
 
 const PptXFileTypeConfig = {
 	getTemplatedFiles(zip) {
@@ -15,7 +16,7 @@ const PptXFileTypeConfig = {
 	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r"],
 	tagRawXml: "p:sp",
 	tagTextXml: "a:t",
-	baseModules: [expandPairTrait, RawXmlModule, loopModule],
+	baseModules: [render, expandPairTrait, rawXmlModule, loopModule],
 };
 
 const DocXFileTypeConfig = {
@@ -28,7 +29,7 @@ const DocXFileTypeConfig = {
 	tagsXmlLexedArray: ["w:tc", "w:tr", "w:table", "w:p", "w:r"],
 	tagRawXml: "w:p",
 	tagTextXml: "w:t",
-	baseModules: [spacePreserveModule, expandPairTrait, RawXmlModule, loopModule],
+	baseModules: [render, spacePreserveModule, expandPairTrait, rawXmlModule, loopModule],
 };
 
 module.exports = {

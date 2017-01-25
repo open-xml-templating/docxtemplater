@@ -7,6 +7,7 @@ module.exports = function (module) {
 		render: emptyFun,
 		getTraits: emptyFun,
 		optionsTransformer: identity,
+		getRenderedMap: identity,
 		postparse: identity,
 	};
 	if (Object.keys(defaults).every(function (key) {

@@ -24,7 +24,6 @@ function expectToThrow(fn, type, expectedError) {
 	}
 	expect(e, "No error has been thrown").not.to.be.equal(null);
 	const toShowOnFail = e.stack;
-	console.log(JSON.stringify({e}));
 	expect(e, toShowOnFail).to.be.instanceOf(Error);
 	expect(e, toShowOnFail).to.be.instanceOf(type);
 	expect(e, toShowOnFail).to.be.an("object");
@@ -234,7 +233,7 @@ describe("errors", function () {
 				properties:
 					{id: "xmltemplater_content_must_be_string"},
 			};
-			const test = () => testUtils.createXmlTemplaterDocx(1);
+			function test() { testUtils.createXmlTemplaterDocx(1); }
 			expectToThrow(test, Errors.XTInternalError, expectedError);
 		});
 	});

@@ -36,12 +36,10 @@ const Docxtemplater = class Docxtemplater {
 		this.zip = zip;
 		return this;
 	}
-	renderFile(fileName) {
+	compileFile(fileName) {
 		const currentFile = this.createTemplateClass(fileName);
-		currentFile.parse()
-		this.compiled[fileName] = currentFile.postparsed;
-		currentFile.render();
-		this.zip.file(fileName, currentFile.content);
+		currentFile.parse();
+		this.compiled[fileName] = currentFile;
 	}
 	compile() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
@@ -59,16 +57,34 @@ const Docxtemplater = class Docxtemplater {
 			return xmlDocuments;
 		}, {});
 		this.modules.forEach((module) => {
-			module.set({zip: this.zip, xmlDocuments: this.xmlDocuments});
+			module.set({zip: this.zip, xmlDocuments: this.xmlDocuments, data: this.data});
 		});
 		this.compile();
+
+		this.modules.forEach((module) => {
+			module.set({compiled: this.compiled});
+		});
 		// Loop inside all templatedFiles (ie xml files with content).
 		// Sometimes they don't exist (footer.xml for example)
 		this.templatedFiles.forEach((fileName) => {
 			if (this.zip.files[fileName] != null) {
-				this.renderFile(fileName);
+				this.compileFile(fileName);
 			}
 		});
+
+		this.mapper = this.modules.reduce(function (value, module) {
+			return module.getRenderedMap(value);
+		}, {});
+
+		Object.keys(this.mapper).forEach((to) => {
+			const mapped = this.mapper[to];
+			const from = mapped.from;
+			const currentFile = this.compiled[from];
+			currentFile.setTags(mapped.data);
+			currentFile.render();
+			this.zip.file(to, currentFile.content);
+		});
+
 		Object.keys(this.xmlDocuments).forEach((fileName) => {
 			this.zip.remove(fileName);
 			const content = DocUtils.encodeUtf8(DocUtils.xml2str(this.xmlDocuments[fileName]));
@@ -76,8 +92,8 @@ const Docxtemplater = class Docxtemplater {
 		});
 		return this;
 	}
-	setData(tags) {
-		this.tags = tags;
+	setData(data) {
+		this.data = data;
 		return this;
 	}
 	getZip() {
@@ -89,7 +105,6 @@ const Docxtemplater = class Docxtemplater {
 	}
 	createTemplateClassFromContent(content, filePath) {
 		const xmltOptions = {
-			tags: this.tags,
 			filePath,
 		};
 		Object.keys(DocUtils.defaults).forEach((key) => {
