@@ -5,7 +5,7 @@ const Docxtemplater = require("../docxtemplater.js");
 const xmlMatcher = require("../xml-matcher.js");
 const DocUtils = require("../doc-utils.js");
 const _ = require("lodash");
-const InspectModule = require("./inspect-module.js");
+const inspectModule = require("./inspect-module.js");
 
 const expressions = require("angular-expressions");
 function angularParser(tag) {
@@ -167,10 +167,10 @@ describe("inspect module", function () {
 		}, {});
 	}
 	const doc = testUtils.createDoc("tag-loop-example.docx");
-	const inspectModule = new InspectModule();
-	doc.attachModule(inspectModule);
+	const iModule = inspectModule();
+	doc.attachModule(iModule);
 	doc.render();
-	const postParsed = inspectModule.fullInspected["word/document.xml"].postparsed;
+	const postParsed = iModule.fullInspected["word/document.xml"].postparsed;
 	const tags = getTags(postParsed);
 	expect(tags).to.be.deep.equal({
 		offre: {

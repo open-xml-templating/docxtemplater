@@ -4,7 +4,7 @@ const expect = testUtils.expect;
 const fixtures = require("./fixtures");
 const FileTypeConfig = require("../file-type-config");
 const docxconfig = FileTypeConfig.docx;
-const InspectModule = require("./inspect-module.js");
+const inspectModule = require("./inspect-module.js");
 const tagsDocxConfig = {
 	text: docxconfig.tagsXmlTextArray,
 	other: docxconfig.tagsXmlLexedArray,
@@ -16,17 +16,17 @@ describe("Algorithm", function () {
 		it(fixture.it, function () {
 			const doc = testUtils.makeDocx(key, fixture.content);
 			doc.setOptions({delimiters: fixture.delimiters});
-			const inspectModule = new InspectModule();
-			doc.attachModule(inspectModule);
+			const iModule = inspectModule();
+			doc.attachModule(iModule);
 			doc.setData(fixture.scope);
 			doc.render();
-			expect(inspectModule.inspect.lexed).to.be.deep.equal(fixture.lexed, "Lexed incorrect");
-			expect(inspectModule.inspect.parsed).to.be.deep.equal(fixture.parsed, "Parsed incorrect");
+			expect(iModule.inspect.lexed).to.be.deep.equal(fixture.lexed, "Lexed incorrect");
+			expect(iModule.inspect.parsed).to.be.deep.equal(fixture.parsed, "Parsed incorrect");
 			if (fixture.postparsed) {
-				expect(inspectModule.inspect.postparsed).to.be.deep.equal(fixture.postparsed, "Postparsed incorrect");
+				expect(iModule.inspect.postparsed).to.be.deep.equal(fixture.postparsed, "Postparsed incorrect");
 			}
-			if (inspectModule.inspect.content) {
-				expect(inspectModule.inspect.content).to.be.deep.equal(fixture.result, "Content incorrect");
+			if (iModule.inspect.content) {
+				expect(iModule.inspect.content).to.be.deep.equal(fixture.result, "Content incorrect");
 			}
 		});
 	});

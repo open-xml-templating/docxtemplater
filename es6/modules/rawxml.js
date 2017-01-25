@@ -2,6 +2,7 @@ const DocUtils = require("../doc-utils");
 const Errors = require("../errors");
 
 const moduleName = "rawxml";
+const wrapper = require("../module-wrapper");
 
 function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	const err = new Errors.XTTemplateError("Raw tag should be the only text in paragraph");
@@ -28,8 +29,9 @@ function getInner({part, left, right, postparsed, index}) {
 	return part;
 }
 
-class rawXmlModule {
+class RawXmlModule {
 	constructor() {
+		this.name = "RawXmlModule";
 	}
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
@@ -55,8 +57,7 @@ class rawXmlModule {
 		}
 		return {value};
 	}
-
 }
 
-module.exports = rawXmlModule;
+module.exports = () => wrapper(new RawXmlModule());
 

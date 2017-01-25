@@ -1,6 +1,7 @@
 const _ = require("lodash");
+const wrapper = require("../module-wrapper");
 
-class inspectModule {
+class InspectModule {
 	constructor() {
 		this.inspect = {};
 		this.fullInspected = {};
@@ -17,4 +18,4 @@ class inspectModule {
 	}
 }
 
-module.exports = inspectModule;
+module.exports = () => wrapper(new InspectModule());

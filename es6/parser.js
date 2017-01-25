@@ -4,12 +4,12 @@ const parser = {
 	postparse(parsed, modules) {
 		function getTraits(traitName, parsed) {
 			return modules.map(function (module) {
-				return module.getTraits ? module.getTraits(traitName, parsed) : null;
+				return module.getTraits(traitName, parsed);
 			});
 		}
 		function postparse(parsed) {
 			return modules.reduce(function (parsed, module) {
-				return module.postparse ? module.postparse(parsed, {postparse, getTraits}) : parsed;
+				return module.postparse(parsed, {postparse, getTraits});
 			}, parsed);
 		}
 		return postparse(parsed);
@@ -20,9 +20,6 @@ const parser = {
 			let moduleParsed;
 			for (let i = 0, l = modules.length; i < l; i++) {
 				const module = modules[i];
-				if (!module.parse) {
-					continue;
-				}
 				moduleParsed = module.parse(placeHolderContent);
 				if (moduleParsed) {
 					parsed.push(moduleParsed);

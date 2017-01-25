@@ -7,9 +7,6 @@ function moduleRender(part, options) {
 	let moduleRendered;
 	for (let i = 0, l = options.modules.length; i < l; i++) {
 		const module = options.modules[i];
-		if (!module.render) {
-			continue;
-		}
 		moduleRendered = module.render(part, options);
 		if (moduleRendered) {
 			return moduleRendered;

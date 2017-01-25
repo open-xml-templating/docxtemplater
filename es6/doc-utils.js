@@ -188,3 +188,4 @@ DocUtils.getLeft = function (parsed, element, index) {
 module.exports = DocUtils;
 
 DocUtils.traits = require("./traits");
+DocUtils.moduleWrapper = require("./module-wrapper");

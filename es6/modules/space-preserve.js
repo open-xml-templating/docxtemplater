@@ -1,4 +1,6 @@
+const wrapper = require("../module-wrapper");
 const spacePreserve = {
+	name: "SpacePreserveModule",
 	postparse(parsed) {
 		let chunk = [];
 		let inChunk = false;
@@ -24,4 +26,4 @@ const spacePreserve = {
 		}, []).concat(chunk);
 	},
 };
-module.exports = spacePreserve;
+module.exports = () => wrapper(spacePreserve);

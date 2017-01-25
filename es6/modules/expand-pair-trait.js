@@ -1,6 +1,7 @@
 const traitName = "expandPair";
 const mergeSort = require("../mergesort");
 const DocUtils = require("../doc-utils");
+const wrapper = require("../module-wrapper");
 const {getExpandToDefault} = require("../traits");
 const Errors = require("../errors");
 
@@ -68,6 +69,7 @@ function getPairs(traits) {
 }
 
 const expandPairTrait = {
+	name: "ExpandPairTrait",
 	postparse(parsed, {getTraits, postparse}) {
 		let traits = getTraits(traitName, parsed);
 		traits = traits.map(function (trait) {
@@ -118,4 +120,4 @@ const expandPairTrait = {
 	},
 };
 
-module.exports = expandPairTrait;
+module.exports = () => wrapper(expandPairTrait);

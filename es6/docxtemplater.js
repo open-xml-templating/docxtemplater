@@ -1,6 +1,7 @@
 "use strict";
 
 const DocUtils = require("./doc-utils");
+const wrapper = DocUtils.moduleWrapper;
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {
@@ -12,7 +13,7 @@ const Docxtemplater = class Docxtemplater {
 		this.setOptions({});
 	}
 	attachModule(module) {
-		this.modules.push(module);
+		this.modules.push(wrapper(module));
 		return this;
 	}
 	setOptions(options) {
@@ -48,7 +49,7 @@ const Docxtemplater = class Docxtemplater {
 			return moduleFunction();
 		}).concat(this.modules);
 		this.options = this.modules.reduce((options, module) => {
-			return module.optionsTransformer ? module.optionsTransformer(options, this) : options;
+			return module.optionsTransformer(options, this);
 		}, this.options);
 		this.xmlDocuments = this.options.xmlFileNames.reduce((xmlDocuments, fileName) => {
 			const content = this.zip.files[fileName].asText();
@@ -56,9 +57,7 @@ const Docxtemplater = class Docxtemplater {
 			return xmlDocuments;
 		}, {});
 		this.modules.forEach((module) => {
-			if (module.set) {
-				module.set({zip: this.zip, xmlDocuments: this.xmlDocuments});
-			}
+			module.set({zip: this.zip, xmlDocuments: this.xmlDocuments});
 		});
 		this.compile();
 		// Loop inside all templatedFiles (ie xml files with content).

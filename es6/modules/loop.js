@@ -1,9 +1,11 @@
 const DocUtils = require("../doc-utils");
 const dashInnerRegex = /^-([^\s]+)\s(.+)$/;
+const wrapper = require("../module-wrapper");
 
 const moduleName = "loop";
 
 const loopModule = {
+	name: "LoopModule",
 	parse(placeHolderContent) {
 		const module = moduleName;
 		const type = "placeholder";
@@ -55,4 +57,4 @@ const loopModule = {
 	},
 };
 
-module.exports = loopModule;
+module.exports = () => wrapper(loopModule);

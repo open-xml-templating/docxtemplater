@@ -46,9 +46,7 @@ module.exports = class XmlTemplater {
 	}
 	setModules(obj) {
 		this.modules.forEach((module) => {
-			if (module.set) {
-				module.set(obj);
-			}
+			module.set(obj);
 		});
 	}
 	/*

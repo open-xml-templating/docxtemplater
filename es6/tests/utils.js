@@ -18,9 +18,7 @@ function createXmlTemplaterDocx(content, options) {
 	options.fileTypeConfig = FileTypeConfig.docx;
 	options.modules = options.fileTypeConfig.baseModules.map(function (moduleFunction) {
 		const module = moduleFunction();
-		if (module.optionsTransformer) {
-			module.optionsTransformer({}, {fileTypeConfig: options.fileTypeConfig});
-		}
+		module.optionsTransformer({}, {fileTypeConfig: options.fileTypeConfig});
 		return module;
 	});
 
