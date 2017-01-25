@@ -10,34 +10,56 @@ Installation
 Node
 ----
 
-To install docxtemplater, we recommend you to use npm.
+npm is the easiest way to install docxtemplater
 
-.. code-block:: javascript
+.. code-block:: bash
 
     npm install docxtemplater
+    npm install jszip@2
 
+**jszip version 2 is important !** It won't work with jszip version 3
 
-If you want to use the command line interface, you should use the global flag, eg:
+If you want to use the `command line interface`_, you should use the global flag:
 
-.. code-block:: javascript
+.. code-block:: bash
 
-    npm install docxtemplater -g
+    npm install docxtemplater --global
 
+.. _`command line interface`: cli.html
 
 Browser
 -------
 
-I recommend you to use the npm scripts I wrote (which can be found in the package.json).
+You can find ``.js`` and ``.min.js`` files for docxtemplater on this repository : 
 
-.. code-block:: javascript
+https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
 
-    git clone git@github.com:edi9999/docxtemplater.git && cd docxtemplater
+You will also need JSZip version 2.x, which you can download here : https://github.com/Stuk/jszip/tree/v2.x/dist
+
+Build it yourself
+-----------------
+
+If you want to build docxtemplater for the browser yourself, here is how you should do : 
+
+.. code-block:: bash
+
+    git clone https://github.com/open-xml-templating/docxtemplater.git
+    cd docxtemplater
     npm install
+    npm test
     npm run compile
-    # Optionally : 
-    # npm run browserify
-    # npm run uglify:lib
+    ./node_modules/.bin/browserify -r "./js/docxtemplater.js" -s docxtemplater > "browser/docxtemplater.js"
+    ./node_modules/.bin/uglifyjs "browser/docxtemplater.js" > "browser/docxtemplater.min.js" --verbose --ascii-only
 
-Docxtemplater will be exported to window.Docxtemplater for easy usage (on some systems, it might export it in window.docxtemplater (see https://github.com/edi9999/docxtemplater/issues/118))
+Docxtemplater will be exported to window.docxtemplater for easy usage.
 
-Your version of docxtemplater will be in /build (minified and non minified options) and already include all dependencies
+The generated files of docxtemplater will be in /browser (minified and non minified).
+
+Bower
+-----
+
+You can use bower to install docxtemplater 
+
+.. code-block:: bash
+
+    bower install --save docxtemplater

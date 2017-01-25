@@ -47,6 +47,7 @@
     "node": ">=0.10"
   },
   "scripts": {
+    "generate:doc": "cd docs; rm build/ -rf ; make html",
     "profile": "./profile.bash",
     "preversion": "npm test && npm run check-casing && npm run lint && rimraf build && mkdirp build && npm run compile && npm run browserify && npm run uglify",
     "check-casing": "./check-casing.bash",

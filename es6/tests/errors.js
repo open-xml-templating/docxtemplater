@@ -24,6 +24,7 @@ function expectToThrow(obj, method, type, expectedError) {
 	}
 	expect(e, "No error has been thrown").not.to.be.equal(null);
 	const toShowOnFail = e.stack;
+	console.log(JSON.stringify({e}));
 	expect(e, toShowOnFail).to.be.instanceOf(Error);
 	expect(e, toShowOnFail).to.be.instanceOf(type);
 	expect(e, toShowOnFail).to.be.an("object");

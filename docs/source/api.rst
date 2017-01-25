@@ -1,13 +1,13 @@
-..  _full_doc
+..  _api:
 
 .. index::
-   single: Full_doc
+   single: API
 
-Full Documentation per method
-=============================
+API
+===
 
-Creating a new Docxtemplater Object
------------------------------
+Constructor
+-----------
 
 .. code-block:: javascript
 
@@ -16,14 +16,14 @@ Creating a new Docxtemplater Object
         This function returns a new Docxtemplater Object
 
 
-Docxtemplater methods
----------------
+Methods
+-------
 
 .. code-block:: javascript
 
     loadZip(zip)
 
-        You have to pass a zip instance to that method, coming from jszip.
+        You have to pass a zip instance to that method, coming from jszip version 2
 
     setData(Tags)
 

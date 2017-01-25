@@ -37,16 +37,15 @@ I don't work primarly with microsoft word and don't want to recreate all samples
 Pull Requests
 -------------
 
-To generate the JS files, I use gulp. For this you will need to install gulp globally:
+To generate the JS files, I use npm scripts :
 
 ```
-npm install -g gulp
-npm install -g jasmine-node
+git clone https://github.com/open-xml-templating/docxtemplater.git
+cd docxtemplater
+npm run preversion
 ```
 
-You than just execute `gulp` in the command line.
-
-Be sure the tests still pass (requires jasmine-node to be installed globally):
+Be sure the tests still pass :
 
 ```
 npm test

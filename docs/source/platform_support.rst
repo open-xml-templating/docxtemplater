@@ -16,10 +16,10 @@ docxtemplater works with
 - Android 4.2+ **tested**
 - iPads and iPhones v8.1 **tested**
 
-You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxtemplater/v3/test/SpecRunner.html
+You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxtemplater/v3/test/mocha.html
 
 Dependencies
-============
+------------
 
 1. [jszip.js](http://stuk.github.io/jszip/) to zip and unzip the docx files
 2. [xmldom](https://github.com/jindw/xmldom) to parse the files as xml

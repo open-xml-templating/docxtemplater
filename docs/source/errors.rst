@@ -3,19 +3,38 @@
 .. index::
    single: Errors
 
-Possible Errors
-===============
+Error handling
+==============
 
-This section is about the possible errors that Docxtemplater will throw
+This section is about how to handle Docxtemplater errors.
 
-Schema of the error
-------------------
+To be able to see these errors, you need to catch them properly.
+
+.. code-block:: javascript
+
+    try {
+        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+        doc.render()
+    }
+    catch (error) {
+        var e = {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+            properties: error.properties,
+        }
+        console.log(JSON.stringify(e));
+        // Handle error
+    }
+
+Error Schema 
+------------
 
 All errors thrown by docxtemplater have the following schema:
 
-.. code-block:: json
+.. code-block:: text
+
     {
-        ... : docxtemplater errors are Javascript errors, so they inherit from the properties.
         name: One of [GenericError, TemplateError, ScopeParserError, InternalError],
         message: The message of that error,
         properties : {
@@ -28,14 +47,20 @@ All errors thrown by docxtemplater have the following schema:
 Error example
 -------------
 
-If your content is `{user {name}`, docxtemplater will throw the following error :
+If the content of your template is `{user {name}`, docxtemplater will throw the following error :
 
-try
-    doc.render()
-catch e
-    e.name=="TemplateError"
-    e.message=="Unclosed tag"
-    e.properties.explanation=="The tag beginning with '{user ' is unclosed"
-    e.properties.id=="unclosed_tag"
-    e.properties.context=="{user {"
-    e.properties.xtag=="user "
+.. code-block:: javascript
+
+    try {
+        doc.render()
+    }
+    catch (e) {
+        // All these expressions are true
+        e.name === "TemplateError" 
+        e.message === "Unclosed tag"
+        e.properties.explanation === "The tag beginning with '{user ' is unclosed"
+        e.properties.id === "unclosed_tag"
+        e.properties.context === "{user {"
+        e.properties.xtag === "user "
+    }
+
