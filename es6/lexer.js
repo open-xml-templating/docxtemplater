@@ -1,4 +1,5 @@
 const Errors = require("./errors");
+const DocUtils = require("./doc-utils");
 
 function inRange(range, match) {
 	return range[0] <= match.offset && match.offset < range[1];
@@ -40,11 +41,16 @@ function getTag(tag) {
 function tagMatcher(content, textMatchArray, othersMatchArray) {
 	let cursor = 0;
 	const contentLength = content.length;
-	const allMatches = textMatchArray.map(function (tag) {
-		return {tag, text: true};
-	}).concat(othersMatchArray.map(function (tag) {
-		return {tag, text: false};
-	})).reduce(function (allMatches, t) {
+	const allMatches = DocUtils.concatArrays(
+		[
+			textMatchArray.map(function (tag) {
+				return {tag, text: true};
+			}),
+			othersMatchArray.map(function (tag) {
+				return {tag, text: false};
+			}),
+		]
+	).reduce(function (allMatches, t) {
 		allMatches[t.tag] = t.text;
 		return allMatches;
 	}, {});
@@ -138,7 +144,7 @@ function Reader(innerContentParts) {
 			return offset - part.length;
 		});
 
-		const delimiterMatches = getAllIndexes(this.full, delimiters.start, "start").concat(getAllIndexes(this.full, delimiters.end, "end")).sort(offsetSort);
+		const delimiterMatches = DocUtils.concatArrays([getAllIndexes(this.full, delimiters.start, "start"), getAllIndexes(this.full, delimiters.end, "end")]).sort(offsetSort);
 		assertDelimiterOrdered(delimiterMatches, this.full);
 		const delimiterLength = {start: delimiters.start.length, end: delimiters.end.length};
 		let cutNext = 0;

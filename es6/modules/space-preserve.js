@@ -4,7 +4,7 @@ const spacePreserve = {
 	postparse(parsed) {
 		let chunk = [];
 		let inChunk = false;
-		return parsed.reduce(function (parsed, part) {
+		const result = parsed.reduce(function (parsed, part) {
 			if (part.type === "tag" && part.position === "start" && part.text && part.value === "<w:t>") {
 				inChunk = true;
 			}
@@ -23,7 +23,9 @@ const spacePreserve = {
 				chunk = [];
 			}
 			return parsed;
-		}, []).concat(chunk);
+		}, []);
+		Array.prototype.push.apply(result, chunk);
+		return result;
 	},
 };
 module.exports = () => wrapper(spacePreserve);

@@ -126,7 +126,10 @@ DocUtils.cloneDeep = function (obj) {
 };
 
 DocUtils.concatArrays = function (arrays) {
-	return Array.prototype.concat.apply([], arrays);
+	return arrays.reduce(function (result, array) {
+		Array.prototype.push.apply(result, array);
+		return result;
+	}, []);
 };
 
 const spaceRegexp = new RegExp(String.fromCharCode(160), "g");

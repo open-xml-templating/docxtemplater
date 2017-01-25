@@ -24,7 +24,8 @@ function lastTagIsOpenTag(array, tag) {
 }
 
 function addTag(array, tag) {
-	return array.concat({tag});
+	array.push({tag});
+	return array;
 }
 
 function getListXmlElements(parts) {
@@ -92,7 +93,7 @@ function expandOne(part, postparsed, options) {
 	}
 	return DocUtils.concatArrays([
 		postparsed.slice(0, left),
-		inner,
+		[inner],
 		postparsed.slice(right + 1),
 	]);
 }
