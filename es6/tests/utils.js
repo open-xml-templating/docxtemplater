@@ -60,9 +60,11 @@ function shouldBeSame(options) {
 			expect(zip.files[filePath].options.dir).to.be.equal(expectedZip.files[filePath].options.dir, `IsDir differs ${suffix}`);
 			const text1 = zip.files[filePath].asText().replace(/\n|\t/g, "");
 			const text2 = expectedZip.files[filePath].asText().replace(/\n|\t/g, "");
-			const pText1 = xmlPrettify(text1, options);
-			const pText2 = xmlPrettify(text2, options);
-			expect(pText1).to.be.equal(pText2, `Content differs ${suffix} lengths: "${text1.length}", "${text2.length}"`);
+			if (text1 !== text2 && filePath.indexOf(".png") === -1) {
+				const pText1 = xmlPrettify(text1, options);
+				const pText2 = xmlPrettify(text2, options);
+				expect(pText1).to.be.equal(pText2, `Content differs ${suffix} lengths: "${text1.length}", "${text2.length}"`);
+			}
 			expect(text1.length).to.be.equal(text2.length, `Content differs ${suffix}`);
 		});
 	}
