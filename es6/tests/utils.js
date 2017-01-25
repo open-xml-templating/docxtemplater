@@ -26,8 +26,6 @@ function createXmlTemplaterDocx(content, options) {
 		.parse()
 		.setTags(options.tags)
 	;
-
-
 }
 
 function shouldBeSame(options) {
