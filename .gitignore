@@ -22,4 +22,5 @@ browser/*
 !browser/.gitkeep
 coverage
 /*.docx
+/*.pptx
 trackedfiles

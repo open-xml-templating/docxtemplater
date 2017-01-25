@@ -22,6 +22,8 @@ const fileNames = [
 	"tag-loop-example.docx",
 	"tag-produit-loop.docx",
 	"simple-example.pptx",
+	"loop-example.pptx",
+	"expected-loop-example.pptx",
 	"raw-xml-example.pptx",
 	"one-raw-xml-tag.docx",
 	"image.png",
@@ -38,6 +40,12 @@ function startTest() {
 			const doc = testUtils.createPpt("simple-example.pptx");
 			const p = doc.setData({name: "Edgar"}).render();
 			expect(p.getFullText()).to.be.equal("Hello Edgar");
+		});
+		it("should work with loop pptx", function () {
+			const doc = testUtils.createPpt("loop-example.pptx");
+			const p = doc.setData({users: [{name: "Doe"}, {name: "John"}]}).render();
+			testUtils.shouldBeSame({doc, expectedName: "expected-loop-example.pptx"});
+			expect(p.getFullText()).to.be.equal(" Doe  John ");
 		});
 		it("should work with simple raw pptx", function () {
 			const doc = testUtils.createPpt("raw-xml-example.pptx");
