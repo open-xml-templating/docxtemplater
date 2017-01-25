@@ -49,12 +49,8 @@ function getPairs(traits) {
 	if (traits.length === 0) {
 		return [];
 	}
-	const firstTrait = traits[0];
-	if (traits.length === 1) {
-		const part = firstTrait.part;
-		throwUnmatchedLoopException({part, location: firstTrait.part.location});
-	}
 	let countOpen = 1;
+	const firstTrait = traits[0];
 	for (let i = 1; i < traits.length; i++) {
 		const currentTrait = traits[i];
 		countOpen += getOpenCountChange(currentTrait.part);
@@ -66,6 +62,8 @@ function getPairs(traits) {
 			return [[firstTrait, currentTrait]].concat(outer);
 		}
 	}
+	const part = firstTrait.part;
+	throwUnmatchedLoopException({part, location: part.location});
 }
 
 const expandPairTrait = {
@@ -113,7 +111,6 @@ const expandPairTrait = {
 				basePart.subparsed = postparse(innerParts);
 				newParsed.push(basePart);
 				currentPairIndex++;
-				return newParsed;
 			}
 			return newParsed;
 		}, []);

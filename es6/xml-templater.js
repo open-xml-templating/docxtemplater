@@ -37,8 +37,7 @@ module.exports = class XmlTemplater {
 		this.fileTypeConfig = options.fileTypeConfig;
 		this.scopeManager = ScopeManager.createBaseScopeManager({tags: this.tags, parser: this.parser});
 		Object.keys(DocUtils.defaults).map(function (key) {
-			const defaultValue = DocUtils.defaults[key];
-			this[key] = options[key] != null ? options[key] : defaultValue;
+			this[key] = options[key] != null ? options[key] : DocUtils.defaults[key];
 		}, this);
 	}
 	getFullText() {
