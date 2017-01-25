@@ -11,7 +11,7 @@ describe("speed test", function () {
 			testUtils.createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
 		}
 		const duration = new Date() - time;
-		expect(duration).to.be.below(40);
+		expect(duration).to.be.below(80);
 	});
 	it("should be fast for simple tags with huge content", function () {
 		let content = "<w:t>tag {age}</w:t>";
