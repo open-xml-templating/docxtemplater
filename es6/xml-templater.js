@@ -48,12 +48,7 @@ module.exports = class XmlTemplater {
 			module.set(obj);
 		});
 	}
-	/*
-	content is the whole content to be tagged
-	scope is the current scope
-	returns the new content of the tagged content
-	*/
-	render() {
+	parse() {
 		this.xmllexed = Lexer.xmlparse(this.content, {text: this.fileTypeConfig.tagsXmlTextArray, other: this.fileTypeConfig.tagsXmlLexedArray});
 		this.setModules({inspect: {xmllexed: this.xmllexed}});
 		this.lexed = Lexer.parse(this.xmllexed, this.delimiters);
@@ -61,6 +56,14 @@ module.exports = class XmlTemplater {
 		this.parsed = Parser.parse(this.lexed, this.modules);
 		this.setModules({inspect: {parsed: this.parsed}});
 		this.postparsed = Parser.postparse(this.parsed, this.modules);
+		return this;
+	}
+	/*
+	content is the whole content to be tagged
+	scope is the current scope
+	returns the new content of the tagged content
+	*/
+	render() {
 		this.setModules({inspect: {postparsed: this.postparsed}});
 		this.content = render({
 			compiled: this.postparsed,

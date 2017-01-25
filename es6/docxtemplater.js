@@ -38,8 +38,10 @@ const Docxtemplater = class Docxtemplater {
 	}
 	renderFile(fileName) {
 		const currentFile = this.createTemplateClass(fileName);
-		this.zip.file(fileName, currentFile.render().content);
+		currentFile.parse()
 		this.compiled[fileName] = currentFile.postparsed;
+		currentFile.render();
+		this.zip.file(fileName, currentFile.content);
 	}
 	compile() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);

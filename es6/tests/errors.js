@@ -14,10 +14,10 @@ function angularParser(tag) {
 }
 const Errors = require("../errors.js");
 
-function expectToThrow(obj, method, type, expectedError) {
+function expectToThrow(fn, type, expectedError) {
 	let e = null;
 	try {
-		obj[method]();
+		fn();
 	}
 	catch (error) {
 		e = error;
@@ -58,7 +58,6 @@ describe("errors", function () {
 	it("should be thrown when unclosedtag", function () {
 		const content = "<w:t>{unclosedtag my text</w:t>";
 		const tags = {};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags});
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unclosed tag",
@@ -68,13 +67,13 @@ describe("errors", function () {
 				xtag: "unclosedtag",
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should not be possible to close {#users} with {/foo}", function () {
 		const content = "<w:t>{#users}User {name}{/foo}</w:t>";
 		const tags = {users: [{name: "John"}]};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags});
 		const expectedError = {
 			name: "TemplateError",
 			message: "Closing tag does not match opening tag",
@@ -84,13 +83,13 @@ describe("errors", function () {
 				closingtag: "foo",
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should be thrown when unopenedloop", function () {
 		const content = "<w:t>{/loop} {foobar}</w:t>";
 		const scope = {};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unopened loop",
@@ -99,13 +98,13 @@ describe("errors", function () {
 				xtag: "loop",
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags: scope});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should be thrown when unclosedloop", function () {
 		const content = "<w:t>{#loop} {foobar}</w:t>";
 		const scope = {};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unclosed loop",
@@ -114,13 +113,13 @@ describe("errors", function () {
 				xtag: "loop",
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags: scope});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should fail when rawtag not in paragraph", function () {
 		["<w:t>{@myrawtag}</w:t>", "<w:table><w:t>{@myrawtag}</w:t></w:table>"].forEach(function (content) {
 			const scope = {myrawtag: "<w:p><w:t>foobar</w:t></w:p>"};
-			const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
 			const expectedError = {
 				name: "TemplateError",
 				message: "Raw tag not in paragraph",
@@ -132,13 +131,13 @@ describe("errors", function () {
 					},
 				},
 			};
-			expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+			const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags: scope});
+			expectToThrow(create, Errors.XTTemplateError, expectedError);
 		});
 	});
 
 	it("should fail when tag already opened", function () {
 		const content = "<w:t>{user {name}</w:t>";
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content);
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unclosed tag",
@@ -148,12 +147,12 @@ describe("errors", function () {
 				xtag: "user",
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should fail when tag already closed", function () {
 		const content = "<w:t>foobar}age</w:t>";
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content);
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unopened tag",
@@ -163,7 +162,8 @@ describe("errors", function () {
 				xtag: "foobar",
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should fail when customparser fails to compile", function () {
@@ -180,7 +180,8 @@ describe("errors", function () {
 				},
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTScopeParserError, expectedError);
+		const create = xmlTemplater.render.bind(xmlTemplater);
+		expectToThrow(create, Errors.XTScopeParserError, expectedError);
 	});
 
 	it("should fail when customparser fails to execute", function () {
@@ -205,13 +206,13 @@ describe("errors", function () {
 				},
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTScopeParserError, expectedError);
+		const create = xmlTemplater.render.bind(xmlTemplater);
+		expectToThrow(create, Errors.XTScopeParserError, expectedError);
 	});
 
 	it("should fail when rawtag is not only text in paragraph", function () {
 		const content = "<w:p><w:t>{@myrawtag}</w:t><w:t>foobar</w:t></w:p>";
 		const scope = {myrawtag: "<w:p><w:t>foobar</w:t></w:p>"};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
 		const expectedError = {
 			name: "TemplateError",
 			message: "Raw tag should be the only text in paragraph",
@@ -221,7 +222,8 @@ describe("errors", function () {
 				paragraphPartsLength: 6,
 			},
 		};
-		expectToThrow(xmlTemplater, "render", Errors.XTTemplateError, expectedError);
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags: scope});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	describe("internal errors", function () {
@@ -232,8 +234,8 @@ describe("errors", function () {
 				properties:
 					{id: "xmltemplater_content_must_be_string"},
 			};
-			const test = {fn() { return testUtils.createXmlTemplaterDocx(1); }};
-			expectToThrow(test, "fn", Errors.XTInternalError, expectedError);
+			const test = () => testUtils.createXmlTemplaterDocx(1);
+			expectToThrow(test, Errors.XTInternalError, expectedError);
 		});
 	});
 });

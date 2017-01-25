@@ -22,7 +22,7 @@ function createXmlTemplaterDocx(content, options) {
 		return module;
 	});
 
-	return new XmlTemplater(content, options);
+	return new XmlTemplater(content, options).parse();
 }
 
 function shouldBeSame(options) {
