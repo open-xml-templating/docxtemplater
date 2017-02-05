@@ -96,7 +96,6 @@ if (ImageModule && sizeOf) {
 }
 
 doc.loadZip(zip);
-doc.setOptions({fileType});
 doc.setData(jsonInput);
 doc.render();
 const output = doc.getZip().generate({type: "nodebuffer", compression: "DEFLATE"});

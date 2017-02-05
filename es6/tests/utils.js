@@ -80,7 +80,6 @@ const imageData = {};
 function load(name, content, fileType, obj) {
 	const zip = new JSZip(content);
 	obj[name] = new Docxtemplater();
-	obj[name].setOptions({fileType});
 	obj[name].loadZip(zip);
 	obj[name].loadedName = name;
 	obj[name].loadedContent = content;

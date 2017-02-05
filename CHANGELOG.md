@@ -1,5 +1,7 @@
 ### unreleased (master branch)
 
+-	Autodetection of filetype : if you use pptx, you don't have to write doc.setOptions({fileType: "pptx"}) anymore.
+
 ### 3.0.3
 
 -	Update documentation
