@@ -126,5 +126,9 @@ The following code should load the binary content on all browsers:
       var zip = new JSZip(data);
     });
 
+Pptx support
+------------
 
-Current issue : 15.md
+Docxtemplater now handles pptx automatically (since version 3.0.4).
+
+It does so by detecting whether they is a file called "/word/document.xml", if there is one, the file is "docx", if not, it is pptx.

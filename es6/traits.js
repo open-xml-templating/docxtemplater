@@ -66,6 +66,9 @@ function getExpandToDefault(parts) {
 		if(xmlElement.tag.indexOf("<w:tc") === 0) {
 			return "w:tr";
 		}
+		if(xmlElement.tag.indexOf("<a:tc") === 0) {
+			return "a:tr";
+		}
 	}
 	return false;
 }

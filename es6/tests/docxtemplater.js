@@ -21,11 +21,13 @@ const fileNames = [
 	"tag-intelligent-loop-table-expected.docx",
 	"tag-loop-example.docx",
 	"tag-produit-loop.docx",
+	"one-raw-xml-tag.docx",
+	"table-example.pptx",
+	"table-example-expected.pptx",
 	"simple-example.pptx",
 	"loop-example.pptx",
 	"expected-loop-example.pptx",
 	"raw-xml-example.pptx",
-	"one-raw-xml-tag.docx",
 	"image.png",
 ];
 
@@ -40,6 +42,11 @@ function startTest() {
 			const doc = testUtils.createPpt("simple-example.pptx");
 			const p = doc.setData({name: "Edgar"}).render();
 			expect(p.getFullText()).to.be.equal("Hello Edgar");
+		});
+		it("should work with table pptx", function () {
+			const doc = testUtils.createPpt("table-example.pptx");
+			doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render();
+			testUtils.shouldBeSame({doc, expectedName: "table-example-expected.pptx"});
 		});
 		it("should work with loop pptx", function () {
 			const doc = testUtils.createPpt("loop-example.pptx");
