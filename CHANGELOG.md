@@ -1,5 +1,7 @@
 ### unreleased (master branch)
 
+### 3.0.4
+
 -	Autodetection of filetype : if you use pptx, you don't have to write doc.setOptions({fileType: "pptx"}) anymore.
 
 -	Intelligent tagging for pptx (Fixes issue #284)
