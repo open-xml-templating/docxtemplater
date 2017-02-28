@@ -39,23 +39,23 @@ function startTest() {
 
 	describe("pptx generation", function () {
 		it("should work with simple pptx", function () {
-			const doc = testUtils.createPpt("simple-example.pptx");
+			const doc = testUtils.createDoc("simple-example.pptx");
 			const p = doc.setData({name: "Edgar"}).render();
 			expect(p.getFullText()).to.be.equal("Hello Edgar");
 		});
 		it("should work with table pptx", function () {
-			const doc = testUtils.createPpt("table-example.pptx");
+			const doc = testUtils.createDoc("table-example.pptx");
 			doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render();
 			testUtils.shouldBeSame({doc, expectedName: "table-example-expected.pptx"});
 		});
 		it("should work with loop pptx", function () {
-			const doc = testUtils.createPpt("loop-example.pptx");
+			const doc = testUtils.createDoc("loop-example.pptx");
 			const p = doc.setData({users: [{name: "Doe"}, {name: "John"}]}).render();
 			testUtils.shouldBeSame({doc, expectedName: "expected-loop-example.pptx"});
 			expect(p.getFullText()).to.be.equal(" Doe  John ");
 		});
 		it("should work with simple raw pptx", function () {
-			const doc = testUtils.createPpt("raw-xml-example.pptx");
+			const doc = testUtils.createDoc("raw-xml-example.pptx");
 			const p = doc.setData({raw: "<p:sp><a:t>Hello World</a:t></p:sp>"}).render();
 			expect(p.getFullText()).to.be.equal("Hello World");
 		});
@@ -67,16 +67,17 @@ function startTest() {
 }
 
 fileNames.forEach(function (fileName) {
-	if (fileName.indexOf(".docx") !== -1) {
-		return testUtils.loadFile(fileName, testUtils.loadDocx);
-	}
-	if (fileName.indexOf(".pptx") !== -1) {
-		return testUtils.loadFile(fileName, testUtils.loadPptx);
+	let callback;
+	if (fileName.indexOf(".docx") !== -1 || fileName.indexOf(".pptx") !== -1) {
+		callback = testUtils.loadDocument;
 	}
 	if (fileName.indexOf(".png") !== -1) {
-		return testUtils.loadFile(fileName, testUtils.loadImage);
+		callback = testUtils.loadImage;
 	}
-	throw new Error(`Filename ${fileName} neither docx nor pptx`);
+	if (!callback) {
+		throw new Error(`Filename ${fileName} neither docx nor pptx nor png`);
+	}
+	testUtils.loadFile(fileName, callback);
 });
 
 testUtils.start();

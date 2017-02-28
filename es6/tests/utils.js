@@ -33,7 +33,6 @@ function shouldBeSame(options) {
 	const expectedName = options.expectedName;
 	let expectedZip;
 	const writeFile = path.resolve(examplesDirectory, "..", expectedName);
-	const fileType = expectedName.indexOf(".docx") !== -1 ? "docx" : "pptx";
 
 	if (fs.writeFileSync) {
 		fs.writeFileSync(
@@ -43,7 +42,7 @@ function shouldBeSame(options) {
 	}
 
 	try {
-		expectedZip = (fileType === "docx" ? docX : pptX)[expectedName].zip;
+		expectedZip = docX[expectedName].zip;
 	}
 	catch (e) {
 		console.log(JSON.stringify({msg: "Expected name does not match", expectedName}));
@@ -74,7 +73,6 @@ function shouldBeSame(options) {
 }
 
 const docX = {};
-const pptX = {};
 const imageData = {};
 
 function load(name, content, fileType, obj) {
@@ -85,11 +83,8 @@ function load(name, content, fileType, obj) {
 	obj[name].loadedContent = content;
 	return obj[name];
 }
-function loadDocx(name, content) {
+function loadDocument(name, content) {
 	return load(name, content, "docx", docX);
-}
-function loadPptx(name, content) {
-	return load(name, content, "pptx", pptX);
 }
 function loadImage(name, content) {
 	imageData[name] = content;
@@ -146,23 +141,15 @@ function makeDocx(name, content) {
 }
 
 function createDoc(name) {
-	return loadDocx(name, docX[name].loadedContent);
-}
-
-function createPpt(name) {
-	return loadPptx(name, pptX[name].loadedContent);
+	return loadDocument(name, docX[name].loadedContent);
 }
 
 module.exports = {
 	createXmlTemplaterDocx,
 	createDoc,
-	createPpt,
-	loadDocx,
-	loadPptx,
+	loadDocument,
 	loadImage,
 	shouldBeSame,
-	docX,
-	pptX,
 	imageData,
 	loadFile,
 	start,

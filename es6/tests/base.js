@@ -946,7 +946,7 @@ describe("getting parents context", function () {
 
 describe("pptx generation", function () {
 	it("should work with simple pptx", function () {
-		const doc = testUtils.createPpt("simple-example.pptx");
+		const doc = testUtils.createDoc("simple-example.pptx");
 		const p = doc.setData({name: "Edgar"}).render();
 		expect(p.getFullText()).to.be.equal("Hello Edgar");
 	});

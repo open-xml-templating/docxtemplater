@@ -117,22 +117,99 @@ describe("errors", function () {
 	});
 
 	it("should fail when rawtag not in paragraph", function () {
-		["<w:t>{@myrawtag}</w:t>", "<w:table><w:t>{@myrawtag}</w:t></w:table>"].forEach(function (content) {
-			const scope = {myrawtag: "<w:p><w:t>foobar</w:t></w:p>"};
-			const expectedError = {
-				name: "TemplateError",
-				message: "Raw tag not in paragraph",
-				properties: {
-					id: "raw_tag_outerxml_invalid",
-					xtag: "myrawtag",
-					rootError: {
-						message: "No tag 'w:p' was found at the right",
+		const content = "<w:t>{@myrawtag}</w:t>";
+		const scope = {myrawtag: "<w:p><w:t>foobar</w:t></w:p>"};
+		const expectedError = {
+			name: "TemplateError",
+			message: "Raw tag not in paragraph",
+			properties: {
+				expandTo: "w:p",
+				id: "raw_tag_outerxml_invalid",
+				index: 1,
+				postparsed: [
+					{
+						position: "start",
+						text: true,
+						type: "tag",
+						value: "<w:t>",
 					},
+					{
+						module: "rawxml",
+						type: "placeholder",
+						value: "myrawtag",
+					},
+					{
+						position: "end",
+						text: true,
+						type: "tag",
+						value: "</w:t>",
+					},
+				],
+				xtag: "myrawtag",
+				rootError: {
+					message: "No tag 'w:p' was found at the right",
 				},
-			};
-			const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags: scope});
-			expectToThrow(create, Errors.XTTemplateError, expectedError);
-		});
+			},
+		};
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags: scope});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
+	it("should fail when rawtag not in paragraph (in table)", function () {
+		const content = "<w:table><w:t>{@myrawtag}</w:t></w:p></w:table>";
+		const scope = {myrawtag: "<w:p><w:t>foobar</w:t></w:p>"};
+		const expectedError = {
+			name: "TemplateError",
+			message: "Raw tag not in paragraph",
+			properties: {
+				id: "raw_tag_outerxml_invalid",
+				xtag: "myrawtag",
+				postparsed: [
+					{
+						type: "tag",
+						position: "start",
+						text: false,
+						value: "<w:table>",
+					},
+					{
+						type: "tag",
+						position: "start",
+						text: true,
+						value: "<w:t>",
+					},
+					{
+						type: "placeholder",
+						value: "myrawtag",
+						module: "rawxml",
+					},
+					{
+						type: "tag",
+						position: "end",
+						text: true,
+						value: "</w:t>",
+					},
+					{
+						type: "tag",
+						position: "end",
+						text: false,
+						value: "</w:p>",
+					},
+					{
+						type: "tag",
+						position: "end",
+						text: false,
+						value: "</w:table>",
+					},
+				],
+				rootError: {
+					message: "No tag 'w:p' was found at the left",
+				},
+				expandTo: "w:p",
+				index: 2,
+			},
+		};
+		const create = testUtils.createXmlTemplaterDocx.bind(null, content, {tags: scope});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should fail when tag already opened", function () {
