@@ -22,6 +22,9 @@ const Docxtemplater = class Docxtemplater {
 			const defaultValue = DocUtils.defaults[key];
 			this[key] = (this.options[key] != null) ? this.options[key] : defaultValue;
 		});
+		if (this.zip) {
+			this.updateFileTypeConfig();
+		}
 		return this;
 	}
 	loadZip(zip) {
@@ -29,6 +32,7 @@ const Docxtemplater = class Docxtemplater {
 			throw new Error("Docxtemplater doesn't handle JSZip version >=3, see changelog");
 		}
 		this.zip = zip;
+		this.updateFileTypeConfig();
 		return this;
 	}
 	compileFile(fileName) {
@@ -38,16 +42,14 @@ const Docxtemplater = class Docxtemplater {
 	}
 	compile() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
+		return this;
 	}
 	updateFileTypeConfig() {
 		this.fileType = this.zip.files["word/document.xml"] ? "docx" : "pptx";
-		if (this.fileType === "docx" || this.fileType === "pptx") {
-			this.fileTypeConfig = Docxtemplater.FileTypeConfig[this.fileType];
-		}
-		this.fileTypeConfig = this.options.fileTypeConfig || this.fileTypeConfig;
+		this.fileTypeConfig = this.options.fileTypeConfig || Docxtemplater.FileTypeConfig[this.fileType];
+		return this;
 	}
 	render() {
-		this.updateFileTypeConfig();
 		this.options.xmlFileNames = [];
 		this.modules = this.fileTypeConfig.baseModules.map(function (moduleFunction) {
 			return moduleFunction();
@@ -119,11 +121,9 @@ const Docxtemplater = class Docxtemplater {
 		return new Docxtemplater.XmlTemplater(content, xmltOptions);
 	}
 	getFullText(path) {
-		this.updateFileTypeConfig();
 		return this.createTemplateClass(path || this.fileTypeConfig.textPath).getFullText();
 	}
 	getTemplatedFiles() {
-		this.updateFileTypeConfig();
 		this.compile();
 		return this.templatedFiles;
 	}
