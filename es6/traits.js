@@ -9,6 +9,9 @@ function throwRawTagNotInParagraph(options) {
 		explanation: `The tag "${tag}"`,
 		rootError: options.rootError,
 		xtag: tag,
+		postparsed: options.postparsed,
+		expandTo: options.expandTo,
+		index: options.index,
 	};
 	throw err;
 }
@@ -85,7 +88,10 @@ function expandOne(part, postparsed, options) {
 		left = DocUtils.getLeft(postparsed, expandTo, index);
 	}
 	catch (rootError) {
-		throwRawTagNotInParagraph({part, rootError});
+		if (rootError instanceof Errors.XTTemplateError) {
+			throwRawTagNotInParagraph({part, rootError, postparsed, expandTo, index});
+		}
+		throw rootError;
 	}
 	const leftParts = postparsed.slice(left, index);
 	const rightParts = postparsed.slice(index + 1, right + 1);
