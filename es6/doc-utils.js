@@ -29,7 +29,6 @@ DocUtils.defaults = {
 		return "";
 	},
 	parser: memoize(parser),
-	fileType: "docx",
 	delimiters: {
 		start: "{",
 		end: "}",
@@ -177,9 +176,8 @@ DocUtils.getRight = function (parsed, element, index) {
 };
 
 DocUtils.getLeft = function (parsed, element, index) {
-	const parts = parsed.slice(0, index);
-	for (let i = parts.length - 1; i >= 0; i--) {
-		const part = parts[i];
+	for (let i = index; i >= 0; i--) {
+		const part = parsed[i];
 		if (part.value.indexOf("<" + element) === 0 && [">", " "].indexOf(part.value[element.length + 1]) !== -1) {
 			return i;
 		}
