@@ -70,4 +70,4 @@ User contributed modules :
 Professional Support
 --------------------
 
-I can give your company support for installing, extending, answering support questions, or maintainning your app that runs docxtemplater. You can find my email address on my [profile](https://github.com/edi9999)
+I can give your company support for installing, extending, answering support questions, or maintaining your app that runs docxtemplater. The support plan is paid per month and can be booked from https://plasso.com/s/ycwo8O3hDH
