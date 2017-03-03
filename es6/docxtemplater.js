@@ -1,6 +1,8 @@
 "use strict";
 
 const DocUtils = require("./doc-utils");
+DocUtils.traits = require("./traits");
+DocUtils.moduleWrapper = require("./module-wrapper");
 const wrapper = DocUtils.moduleWrapper;
 
 const Docxtemplater = class Docxtemplater {

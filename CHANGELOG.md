@@ -1,5 +1,10 @@
 ### unreleased (master branch)
 
+### 3.0.5
+
+-	Remove cycle between traits and docutils
+-	Make sure fileTypeConfig is uptodate
+
 ### 3.0.4
 
 -	Autodetection of filetype : if you use pptx, you don't have to write doc.setOptions({fileType: "pptx"}) anymore.
