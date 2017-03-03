@@ -1,5 +1,8 @@
 {
   "parser": "babel-eslint",
+  "plugins": [
+    "dependencies"
+  ],
   "globals":{
     "saveAs": true,
     "JSZipUtils": true,
@@ -30,6 +33,10 @@
     "constructor-super": 2,
     "curly": [2, "all"],
     "default-case": 0,
+    "dependencies/case-sensitive": 2,
+    "dependencies/no-cycles": 2,
+    "dependencies/no-unresolved": 2,
+    "dependencies/require-json-ext": 2,
     "dot-location": [2, "property"],
     "dot-notation": 2,
     "eol-last": 2,

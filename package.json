@@ -33,6 +33,7 @@
     "browserify": "^14.0.0",
     "chai": "^3.5.0",
     "eslint": "^3.14.1",
+    "eslint-plugin-dependencies": "^2.2.0",
     "istanbul": "^0.4.5",
     "jszip": "^2.6.1",
     "lodash": "^4.17.4",
