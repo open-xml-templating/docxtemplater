@@ -1,5 +1,9 @@
 ### unreleased (master branch)
 
+### 3.0.6
+
+-	When using getRenderedMap in the modules, we now pass the filepath of the file that will be generated instead of the path of the template.
+
 ### 3.0.5
 
 -	Remove cycle between traits and docutils

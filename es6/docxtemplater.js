@@ -89,7 +89,7 @@ const Docxtemplater = class Docxtemplater {
 			const from = mapped.from;
 			const currentFile = this.compiled[from];
 			currentFile.setTags(mapped.data);
-			currentFile.render();
+			currentFile.render(to);
 			this.zip.file(to, currentFile.content);
 		});
 

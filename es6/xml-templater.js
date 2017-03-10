@@ -66,7 +66,8 @@ module.exports = class XmlTemplater {
 	scope is the current scope
 	returns the new content of the tagged content
 	*/
-	render() {
+	render(to) {
+		this.filePath = to;
 		this.setModules({inspect: {postparsed: this.postparsed}});
 		this.content = render({
 			compiled: this.postparsed,
