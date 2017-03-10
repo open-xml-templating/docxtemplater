@@ -33,6 +33,8 @@ const fileNames = [
 
 function startTest() {
 	require("./base");
+	require("./xml-templater");
+	require("./xml-matcher");
 	require("./errors");
 	require("./speed");
 	require("./lexer-parser-render");
