@@ -95,7 +95,7 @@ const Docxtemplater = class Docxtemplater {
 
 		Object.keys(this.xmlDocuments).forEach((fileName) => {
 			this.zip.remove(fileName);
-			const content = DocUtils.encodeUtf8(DocUtils.xml2str(this.xmlDocuments[fileName]));
+			const content = DocUtils.xml2str(this.xmlDocuments[fileName]);
 			return this.zip.file(fileName, content, {});
 		});
 		return this;
