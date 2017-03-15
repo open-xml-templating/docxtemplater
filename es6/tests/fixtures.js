@@ -419,7 +419,16 @@ const fixtures = {
 		],
 		postparsed: [
 			{type: "content", value: "BEFORE", position: "outsidetag"},
-			{type: "placeholder", value: "rawxml", module: "rawxml"},
+			{type: "placeholder", value: "rawxml", module: "rawxml", expanded: [
+				[
+					{type: "tag", value: "<w:p>", text: false, position: "start"},
+					{type: "tag", value: "<w:t>", text: true, position: "start"},
+				],
+				[
+					{type: "tag", value: "</w:t>", text: true, position: "end"},
+					{type: "tag", value: "</w:p>", text: false, position: "end"},
+				],
+			]},
 			{type: "content", value: "AFTER", position: "outsidetag"},
 		],
 	},

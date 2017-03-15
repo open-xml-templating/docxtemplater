@@ -1,5 +1,9 @@
 ### unreleased (master branch)
 
+### 3.0.8
+
+Add expanded property when using expandTo
+
 ### 3.0.7
 
 Bugfix : Do not decode utf8 in xmlDocuments

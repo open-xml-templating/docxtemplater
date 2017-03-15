@@ -95,11 +95,8 @@ function expandOne(part, postparsed, options) {
 	}
 	const leftParts = postparsed.slice(left, index);
 	const rightParts = postparsed.slice(index + 1, right + 1);
-	let inner = options.getInner({index, part, leftParts, rightParts, left, right, postparsed});
-	const type = Object.prototype.toString.call(inner);
-	if (type === "[object Array]") {
-		inner = DocUtils.concatArrays(inner);
-	}
+	const inner = options.getInner({index, part, leftParts, rightParts, left, right, postparsed});
+	inner.expanded = [leftParts, rightParts];
 	return DocUtils.concatArrays([
 		postparsed.slice(0, left),
 		[inner],
