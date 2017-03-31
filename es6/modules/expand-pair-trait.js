@@ -41,7 +41,6 @@ function getOpenCountChange(part) {
 			return -1;
 		default:
 			throw new Error(`Location should be one of 'start' or 'end' (given : ${part.location})`);
-
 	}
 }
 
