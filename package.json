@@ -64,7 +64,6 @@
     "browserify": "npm run browserify:test && npm run browserify:lib && npm run browserify:demo",
     "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel",
     "convertto:es5:watch": "npm run babel -- --watch",
-    "test:watch": "node watch-file-and-run-test.js & npm run convertto:es5:watch",
     "test:coverage": "istanbul cover _mocha --  es6/tests/docxtemplater.js",
     "lint": "./check-casing.bash && eslint .",
     "babel": "babel es6 --out-dir js",
