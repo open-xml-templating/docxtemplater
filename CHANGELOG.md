@@ -1,5 +1,9 @@
 ### unreleased (master branch)
 
+### 3.0.9
+
+Reduce size of the package (718.9 MB to 1.0 MB), and add prepublish script to ensure the size will never exceed 1.5MB
+
 ### 3.0.8
 
 Add expanded property when using expandTo
