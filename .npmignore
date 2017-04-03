@@ -2,6 +2,7 @@
 *.es5
 *.log
 *.old
+*.tgz
 *.png
 *.sublime-project
 *.sublime-workspace
