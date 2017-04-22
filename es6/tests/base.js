@@ -8,7 +8,7 @@ const inspectModule = require("./inspect-module.js");
 
 const expressions = require("angular-expressions");
 function angularParser(tag) {
-	const expr = expressions.compile(tag);
+	const expr = expressions.compile(tag.replace(/’/g, "'"));
 	return {
 		get(scope) {
 			return expr(scope);

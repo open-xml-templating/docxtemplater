@@ -142,7 +142,7 @@ loadFile=function(url,callback){
 		<h3>Code Used:</h3>
 		<textarea raw='angular-example.docx'>
 			var angularParser= function(tag){
-				var expr=expressions.compile(tag);
+				var expr=expressions.compile(tag.replace(/’/g, "'"));
 				return {get:expr};
 			}
 

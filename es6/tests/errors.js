@@ -5,7 +5,7 @@ const expect = testUtils.expect;
 const _ = require("lodash");
 const expressions = require("angular-expressions");
 function angularParser(tag) {
-	const expr = expressions.compile(tag);
+	const expr = expressions.compile(tag.replace(/’/g, "'"));
 	return {
 		get(scope) {
 			return expr(scope);
