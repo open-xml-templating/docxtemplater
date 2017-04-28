@@ -42,8 +42,8 @@ const loopModule = {
 			return null;
 		}
 		const totalValue = [];
-		function loopOver(scope) {
-			const scopeManager = options.scopeManager.createSubScopeManager(scope, part.value);
+		function loopOver(scope, metadata) {
+			const scopeManager = options.scopeManager.createSubScopeManager(scope, part.value, metadata);
 			totalValue.push(options.render(
 				DocUtils.mergeObjects({}, options, {
 					compiled: part.subparsed,
