@@ -6,15 +6,16 @@ const ScopeManager = class ScopeManager {
 	constructor(options) {
 		this.scopePath = options.scopePath;
 		this.scopeList = options.scopeList;
+		this.loopMetaData = options.loopMetaData;
 		this.parser = options.parser;
 	}
 	loopOver(tag, callback, inverted) {
 		inverted = inverted || false;
 		return this.loopOverValue(this.getValue(tag), callback, inverted);
 	}
-	functorIfInverted(inverted, functor, value) {
+	functorIfInverted(inverted, functor, value, loopMetaData) {
 		if (inverted) {
-			functor(value);
+			functor(value, loopMetaData);
 		}
 	}
 	isValueFalsy(value, type) {
@@ -27,9 +28,12 @@ const ScopeManager = class ScopeManager {
 			return this.functorIfInverted(inverted, functor, currentValue);
 		}
 		if (type === "[object Array]") {
-			for (let i = 0, scope; i < value.length; i++) {
-				scope = value[i];
-				this.functorIfInverted(!inverted, functor, scope);
+			for (let i = 0; i < value.length; i++) {
+				const loopMetaData = {
+					length: value.length,
+					index: i,
+				};
+				this.functorIfInverted(!inverted, functor, value[i], loopMetaData);
 			}
 			return;
 		}
@@ -61,7 +65,7 @@ const ScopeManager = class ScopeManager {
 			throw err;
 		}
 		try {
-			result = parser.get(scope, {num: this.num, scopeList: this.scopeList});
+			result = parser.get(scope, {loopMetaData: this.loopMetaData, num: this.num, scopeList: this.scopeList});
 		}
 		catch (error) {
 			err = new Errors.XTScopeParserError("Scope parser execution failed");
@@ -77,24 +81,18 @@ const ScopeManager = class ScopeManager {
 		if (result == null && this.num > 0) { return this.getValue(tag, this.num - 1); }
 		return result;
 	}
-	createSubScopeManager(scope, tag) {
-		const options = {
-			scopePath: this.scopePath.slice(0),
-			scopeList: this.scopeList.slice(0),
-		};
-
-		options.parser = this.parser;
-		options.scopeList = this.scopeList.concat(scope);
-		options.scopePath = this.scopePath.concat(tag);
-		return new ScopeManager(options);
+	createSubScopeManager(scope, tag, loopMetaData) {
+		return new ScopeManager({
+			scopePath: this.scopePath.slice(0).concat(tag),
+			scopeList: this.scopeList.slice(0).concat(scope),
+			parser: this.parser,
+			loopMetaData,
+		});
 	}
 };
 
 ScopeManager.createBaseScopeManager = function ({parser, tags}) {
-	const options = {parser, tags};
-	options.scopePath = [];
-	options.scopeList = [tags];
-	return new ScopeManager(options);
+	return new ScopeManager({parser, tags, scopePath: [], scopeList: [tags]});
 };
 
 module.exports = ScopeManager;
