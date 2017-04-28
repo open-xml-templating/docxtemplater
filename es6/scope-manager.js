@@ -29,6 +29,12 @@ const ScopeManager = class ScopeManager {
 		if (type === "[object Array]") {
 			for (let i = 0, scope; i < value.length; i++) {
 				scope = value[i];
+				
+				if (Object.prototype.toString.call(scope) === "[object Object]") {
+					scope.$index = i;
+					scope.$last = (value.length - 1 === i);
+				}
+
 				this.functorIfInverted(!inverted, functor, scope);
 			}
 			return;
