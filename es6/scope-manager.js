@@ -29,12 +29,7 @@ const ScopeManager = class ScopeManager {
 		if (type === "[object Array]") {
 			for (let i = 0, scope; i < value.length; i++) {
 				scope = value[i];
-				
-				if (Object.prototype.toString.call(scope) === "[object Object]") {
-					scope.$index = i;
-					scope.$last = (value.length - 1 === i);
-				}
-
+				this.extendScope(scope, i, value.length);
 				this.functorIfInverted(!inverted, functor, scope);
 			}
 			return;
@@ -44,6 +39,12 @@ const ScopeManager = class ScopeManager {
 		}
 		if (value === true) {
 			return this.functorIfInverted(!inverted, functor, currentValue);
+		}
+	}
+	extendScope(scope, index, arrayLength) {
+		if (Object.prototype.toString.call(scope) === "[object Object]") {
+			scope.$index = index;
+			scope.$last = (arrayLength - 1 === index);
 		}
 	}
 	getValue(tag, num) {
