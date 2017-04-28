@@ -57,7 +57,7 @@ Here's a code sample for how to use the angularParser :
 
 .. note::
 
-    The require() works in the browser if you include vendor/angular-parser-browser.js
+    The require() will not work in a browser, you have to use a module bundler like [webpack](http://webpack.github.io/) or [browserify](http://browserify.org/). Alternatively, you can download an outdated version at https://raw.githubusercontent.com/open-xml-templating/docxtemplater/6c8c76210d555fd0f6b3dbc927522a3805f17469/vendor/angular-parse-browser.js
 
 See for a complete reference of all possibilities of angularjs parsing:
 http://teropa.info/blog/2014/03/23/angularjs-expressions-cheatsheet.html
