@@ -1,5 +1,7 @@
 "use strict";
 const Errors = require("./errors");
+const DocUtils = require("./doc-utils");
+
 
 // This class responsibility is to manage the scope
 const ScopeManager = class ScopeManager {
@@ -12,9 +14,9 @@ const ScopeManager = class ScopeManager {
 		inverted = inverted || false;
 		return this.loopOverValue(this.getValue(tag), callback, inverted);
 	}
-	functorIfInverted(inverted, functor, value) {
+	functorIfInverted(inverted, functor, value, metadata) {
 		if (inverted) {
-			functor(value);
+			functor(value, metadata);
 		}
 	}
 	isValueFalsy(value, type) {
@@ -28,8 +30,13 @@ const ScopeManager = class ScopeManager {
 		}
 		if (type === "[object Array]") {
 			for (let i = 0, scope; i < value.length; i++) {
+				let loop = { 
+					last: (value.length - 1 === i), 
+					index: i 
+				};
 				scope = value[i];
-				this.functorIfInverted(!inverted, functor, scope);
+
+				this.functorIfInverted(!inverted, functor, scope, { loop });
 			}
 			return;
 		}
@@ -77,11 +84,13 @@ const ScopeManager = class ScopeManager {
 		if (result == null && this.num > 0) { return this.getValue(tag, this.num - 1); }
 		return result;
 	}
-	createSubScopeManager(scope, tag) {
+	createSubScopeManager(scope, tag, metadata) {
 		const options = {
 			scopePath: this.scopePath.slice(0),
 			scopeList: this.scopeList.slice(0),
 		};
+
+		scope = DocUtils.mergeObjects(metadata || {}, scope);
 
 		options.parser = this.parser;
 		options.scopeList = this.scopeList.concat(scope);
