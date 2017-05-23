@@ -1,10 +1,10 @@
 const wrapper = require("../module-wrapper");
 const spacePreserve = {
 	name: "SpacePreserveModule",
-	postparse(parsed) {
+	postparse(postparsed) {
 		let chunk = [];
 		let inChunk = false;
-		const result = parsed.reduce(function (parsed, part) {
+		const result = postparsed.reduce(function (postparsed, part) {
 			if (part.type === "tag" && part.position === "start" && part.text && part.value === "<w:t>") {
 				inChunk = true;
 			}
@@ -15,14 +15,14 @@ const spacePreserve = {
 				chunk.push(part);
 			}
 			else {
-				parsed.push(part);
+				postparsed.push(part);
 			}
 			if (part.type === "tag" && part.position === "end" && part.text && part.value === "</w:t>") {
-				Array.prototype.push.apply(parsed, chunk);
+				Array.prototype.push.apply(postparsed, chunk);
 				inChunk = false;
 				chunk = [];
 			}
-			return parsed;
+			return postparsed;
 		}, []);
 		Array.prototype.push.apply(result, chunk);
 		return result;

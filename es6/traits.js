@@ -1,14 +1,16 @@
-const DocUtils = require("./doc-utils");
-const Errors = require("./errors");
+const {getRight, getLeft, concatArrays} = require("./doc-utils");
+const {XTTemplateError} = require("./errors");
 
 function throwRawTagNotInParagraph(options) {
-	const err = new Errors.XTTemplateError("Raw tag not in paragraph");
+	const err = new XTTemplateError("Raw tag not in paragraph");
 	const tag = options.part.value;
+	const offset = options.part.offset;
 	err.properties = {
 		id: "raw_tag_outerxml_invalid",
 		explanation: `The tag "${tag}"`,
 		rootError: options.rootError,
 		xtag: tag,
+		offset,
 		postparsed: options.postparsed,
 		expandTo: options.expandTo,
 		index: options.index,
@@ -84,11 +86,11 @@ function expandOne(part, postparsed, options) {
 	}
 	let right, left;
 	try {
-		right = DocUtils.getRight(postparsed, expandTo, index);
-		left = DocUtils.getLeft(postparsed, expandTo, index);
+		right = getRight(postparsed, expandTo, index);
+		left = getLeft(postparsed, expandTo, index);
 	}
 	catch (rootError) {
-		if (rootError instanceof Errors.XTTemplateError) {
+		if (rootError instanceof XTTemplateError) {
 			throwRawTagNotInParagraph({part, rootError, postparsed, expandTo, index});
 		}
 		throw rootError;
@@ -100,7 +102,7 @@ function expandOne(part, postparsed, options) {
 		inner.expanded = [leftParts, rightParts];
 		inner = [inner];
 	}
-	return DocUtils.concatArrays([
+	return concatArrays([
 		postparsed.slice(0, left),
 		inner,
 		postparsed.slice(right + 1),
@@ -108,6 +110,11 @@ function expandOne(part, postparsed, options) {
 }
 
 function expandToOne(postparsed, options) {
+	let errors = [];
+	if (postparsed.errors) {
+		errors = postparsed.errors;
+		postparsed = postparsed.postparsed;
+	}
 	const expandToElements = postparsed.reduce(function (elements, part) {
 		if (part.type === "placeholder" && part.module === options.moduleName) {
 			elements.push(part);
@@ -116,9 +123,19 @@ function expandToOne(postparsed, options) {
 	}, []);
 
 	expandToElements.forEach(function (part) {
-		postparsed = expandOne(part, postparsed, options);
+		try {
+			postparsed = expandOne(part, postparsed, options);
+		}
+		catch (error) {
+			if (error instanceof XTTemplateError) {
+				errors.push(error);
+			}
+			else {
+				throw error;
+			}
+		}
 	});
-	return postparsed;
+	return {postparsed, errors};
 }
 
 module.exports = {

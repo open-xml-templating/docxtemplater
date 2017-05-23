@@ -10,6 +10,19 @@ const tagsDocxConfig = {
 	other: docxconfig.tagsXmlLexedArray,
 };
 
+function cleanRecursive(arr) {
+	arr.forEach(function (p) {
+		delete p.lIndex;
+		delete p.offset;
+		if (p.subparsed) {
+			cleanRecursive(p.subparsed);
+		}
+		if (p.expanded) {
+			p.expanded.forEach(cleanRecursive);
+		}
+	});
+}
+
 describe("Algorithm", function () {
 	Object.keys(fixtures).forEach(function (key) {
 		const fixture = fixtures[key];
@@ -20,6 +33,9 @@ describe("Algorithm", function () {
 			doc.attachModule(iModule);
 			doc.setData(fixture.scope);
 			doc.render();
+			cleanRecursive(iModule.inspect.lexed);
+			cleanRecursive(iModule.inspect.parsed);
+			cleanRecursive(iModule.inspect.postparsed);
 			expect(iModule.inspect.lexed).to.be.deep.equal(fixture.lexed, "Lexed incorrect");
 			expect(iModule.inspect.parsed).to.be.deep.equal(fixture.parsed, "Parsed incorrect");
 			if (fixture.postparsed) {
@@ -31,7 +47,8 @@ describe("Algorithm", function () {
 		});
 	});
 	it("should xmlparse strange tags", function () {
-		const result = Lexer.xmlparse(fixtures.strangetags.content, tagsDocxConfig);
-		expect(result).to.be.deep.equal(fixtures.strangetags.xmllexed);
+		const xmllexed = Lexer.xmlparse(fixtures.strangetags.content, tagsDocxConfig);
+		cleanRecursive(xmllexed);
+		expect(xmllexed).to.be.deep.equal(fixtures.strangetags.xmllexed);
 	});
 });

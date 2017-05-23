@@ -1,62 +1,73 @@
-const DocUtils = require("./doc-utils");
+const {wordToUtf8, concatArrays} = require("./doc-utils");
+
+function moduleParse(modules, placeHolderContent, parsed, startOffset) {
+	let moduleParsed;
+	for (let i = 0, l = modules.length; i < l; i++) {
+		const module = modules[i];
+		moduleParsed = module.parse(placeHolderContent);
+		if (moduleParsed) {
+			moduleParsed.offset = startOffset;
+			parsed.push(moduleParsed);
+			return parsed;
+		}
+	}
+	parsed.push({type: "placeholder", value: placeHolderContent, offset: startOffset});
+	return parsed;
+}
 
 const parser = {
-	postparse(parsed, modules) {
-		function getTraits(traitName, parsed) {
+	postparse(postparsed, modules) {
+		function getTraits(traitName, postparsed) {
 			return modules.map(function (module) {
-				return module.getTraits(traitName, parsed);
+				return module.getTraits(traitName, postparsed);
 			});
 		}
-		function postparse(parsed) {
-			return modules.reduce(function (parsed, module) {
-				return module.postparse(parsed, {postparse, getTraits});
-			}, parsed);
+		let errors = [];
+		function postparse(postparsed) {
+			return modules.reduce(function (postparsed, module) {
+				const r = module.postparse(postparsed, {postparse, getTraits});
+				if (r.errors) {
+					errors = concatArrays([errors, r.errors]);
+					return r.postparsed;
+				}
+				return r;
+			}, postparsed);
 		}
-		return postparse(parsed);
+		return {postparsed: postparse(postparsed), errors};
 	},
 
 	parse(lexed, modules) {
-		function moduleParse(placeHolderContent, parsed) {
-			let moduleParsed;
-			for (let i = 0, l = modules.length; i < l; i++) {
-				const module = modules[i];
-				moduleParsed = module.parse(placeHolderContent);
-				if (moduleParsed) {
-					parsed.push(moduleParsed);
-					return moduleParsed;
-				}
-			}
-			return null;
-		}
-
 		let inPlaceHolder = false;
-		let placeHolderContent;
+		let placeHolderContent = "";
+		let startOffset;
 		let tailParts = [];
-		return lexed.reduce(function (parsed, token) {
+		return lexed.filter(function (token) {
+			return !token.error;
+		}).reduce(function lexedToParsed(parsed, token) {
 			if (token.type === "delimiter") {
 				inPlaceHolder = token.position === "start";
 				if (token.position === "end") {
-					placeHolderContent = DocUtils.wordToUtf8(placeHolderContent);
-					if (!moduleParse(placeHolderContent, parsed)) {
-						parsed.push({type: "placeholder", value: placeHolderContent});
-					}
+					placeHolderContent = wordToUtf8(placeHolderContent);
+					parsed = moduleParse(modules, placeHolderContent, parsed, startOffset);
+					startOffset = null;
 					Array.prototype.push.apply(parsed, tailParts);
 					tailParts = [];
-					return parsed;
+				}
+				else {
+					startOffset = token.offset;
 				}
 				placeHolderContent = "";
 				return parsed;
 			}
-			if (inPlaceHolder) {
-				if (token.type === "content" && token.position === "insidetag") {
-					placeHolderContent += token.value;
-				}
-				else {
-					tailParts.push(token);
-				}
+			if (!inPlaceHolder) {
+				parsed.push(token);
 				return parsed;
 			}
-			parsed.push(token);
+			if (token.type !== "content" || token.position !== "insidetag") {
+				tailParts.push(token);
+				return parsed;
+			}
+			placeHolderContent += token.value;
 			return parsed;
 		}, []);
 	},

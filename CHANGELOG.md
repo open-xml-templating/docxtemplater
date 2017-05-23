@@ -1,5 +1,23 @@
 ### unreleased (master branch)
 
+### 3.1.0
+
+Add support for multi errors :
+
+docxtemplater doesn't fail on the first error, but instead, will throw multiple errors at the time. See https://docxtemplater.readthedocs.io/en/latest/errors.html for a detailled explanation.
+
+### 3.0.12
+
+Add js/tests to npm package (for modules)
+
+### 3.0.11
+
+Reduce size of the package
+
+### 3.0.10
+
+Reduce size of the package
+
 ### 3.0.9
 
 Reduce size of the package (718.9 MB to 1.0 MB), and add prepublish script to ensure the size will never exceed 1.5MB

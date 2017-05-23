@@ -87,7 +87,13 @@ if (ImageModule && sizeOf) {
 	};
 
 	opts.getSize = function (img, tagValue) {
-		const dimensions = sizeOf(tagValue);
+		const filePath = path.resolve(imageDir, tagValue);
+
+		if (filePath.indexOf(imageDir) !== 0) {
+			throw new Error("Images must be stored under folder: " + imageDir);
+		}
+
+		const dimensions = sizeOf(filePath);
 		return [dimensions.width, dimensions.height];
 	};
 

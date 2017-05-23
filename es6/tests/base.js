@@ -102,31 +102,33 @@ describe("DocxtemplaterTemplating", function () {
 });
 
 describe("inspect module", function () {
-	function getTags(postParsed) {
-		return postParsed.filter(function (part) {
-			return part.type === "placeholder";
-		}).reduce(function (tags, part) {
-			tags[part.value] = {};
-			if (part.subparsed) {
-				tags[part.value] = getTags(part.subparsed);
-			}
-			return tags;
-		}, {});
-	}
-	const doc = testUtils.createDoc("tag-loop-example.docx");
-	const iModule = inspectModule();
-	doc.attachModule(iModule);
-	doc.render();
-	const postParsed = iModule.fullInspected["word/document.xml"].postparsed;
-	const tags = getTags(postParsed);
-	expect(tags).to.be.deep.equal({
-		offre: {
+	it("should work", function () {
+		function getTags(postParsed) {
+			return postParsed.filter(function (part) {
+				return part.type === "placeholder";
+			}).reduce(function (tags, part) {
+				tags[part.value] = {};
+				if (part.subparsed) {
+					tags[part.value] = getTags(part.subparsed);
+				}
+				return tags;
+			}, {});
+		}
+		const doc = testUtils.createDoc("tag-loop-example.docx");
+		const iModule = inspectModule();
+		doc.attachModule(iModule);
+		doc.render();
+		const postParsed = iModule.fullInspected["word/document.xml"].postparsed;
+		const tags = getTags(postParsed);
+		expect(tags).to.be.deep.equal({
+			offre: {
+				nom: {},
+				prix: {},
+				titre: {},
+			},
 			nom: {},
-			prix: {},
-			titre: {},
-		},
-		nom: {},
-		prenom: {},
+			prenom: {},
+		});
 	});
 });
 

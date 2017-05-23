@@ -2,11 +2,13 @@ const FileTypeConfig = require("../file-type-config.js");
 const XmlTemplater = require("../xml-templater");
 const path = require("path");
 const Docxtemplater = require("../docxtemplater.js");
+const DocUtils = Docxtemplater.DocUtils;
 const chai = require("chai");
 const expect = chai.expect;
 const JSZip = require("jszip");
 const xmlPrettify = require("./xml-prettify");
 const fs = require("fs");
+const _ = require("lodash");
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;
@@ -16,16 +18,19 @@ let examplesDirectory;
 function createXmlTemplaterDocx(content, options) {
 	options = options || {};
 	options.fileTypeConfig = FileTypeConfig.docx;
+	Object.keys(DocUtils.defaults).forEach((key) => {
+		const defaultValue = DocUtils.defaults[key];
+		options[key] = (options[key] != null) ? options[key] : defaultValue;
+	});
 	options.modules = options.fileTypeConfig.baseModules.map(function (moduleFunction) {
 		const module = moduleFunction();
-		module.optionsTransformer({}, {fileTypeConfig: options.fileTypeConfig});
+		module.optionsTransformer({}, options);
 		return module;
 	});
 
 	return new XmlTemplater(content, options)
-		.parse()
 		.setTags(options.tags)
-	;
+		.parse();
 }
 
 function shouldBeSame(options) {
@@ -72,6 +77,102 @@ function shouldBeSame(options) {
 		throw e;
 	}
 	return result;
+}
+
+function checkLength(e, expectedError, propertyPath) {
+	const propertyPathLength = propertyPath + "Length";
+	const property = _.get(e, propertyPath);
+	const expectedPropertyLength = _.get(expectedError, propertyPathLength);
+	if (property && expectedPropertyLength) {
+		expect(expectedPropertyLength).to.be.a("number", JSON.stringify(expectedError.properties));
+		expect(expectedPropertyLength).to.equal(property.length);
+		_.unset(e, propertyPath);
+		_.unset(expectedError, propertyPathLength);
+	}
+}
+
+function cleanError(e, expectedError) {
+	delete e.properties.explanation;
+	if (expectedError.properties.offset != null) {
+		expect(e.properties.offset).to.be.deep.equal(expectedError.properties.offset);
+	}
+	delete e.properties.offset;
+	delete expectedError.properties.offset;
+	e = _.omit(e, ["line", "sourceURL", "stack"]);
+	if (e.properties.postparsed) {
+		e.properties.postparsed.forEach(function (p) {
+			delete p.lIndex;
+			delete p.offset;
+		});
+	}
+	if (e.properties.rootError) {
+		expect(e.properties.rootError, JSON.stringify(e.properties)).to.be.instanceOf(Error);
+		expect(expectedError.properties.rootError, JSON.stringify(expectedError.properties)).to.be.instanceOf(Object);
+		if (expectedError) {
+			expect(e.properties.rootError.message).to.equal(expectedError.properties.rootError.message);
+		}
+		delete e.properties.rootError;
+		delete expectedError.properties.rootError;
+	}
+	checkLength(e, expectedError, "properties.paragraphParts");
+	checkLength(e, expectedError, "properties.postparsed");
+	if (e.stack && expectedError) {
+		expect(e.stack).to.contain("Error: " + expectedError.message);
+	}
+	delete e.stack;
+	return e;
+}
+
+function wrapMultiError(error) {
+	const type = Object.prototype.toString.call(error);
+	let errors;
+	if (type === "[object Array]") {
+		errors = error;
+	}
+	else {
+		errors = [error];
+	}
+
+	return {
+		name: "TemplateError",
+		message: "Multi error",
+		properties: {
+			id: "multi_error",
+			errors,
+		},
+	};
+}
+
+function expectToThrow(fn, type, expectedError) {
+	let e = null;
+	try {
+		fn();
+	}
+	catch (error) {
+		e = error;
+	}
+	expect(e, "No error has been thrown").not.to.be.equal(null);
+	const toShowOnFail = e.stack;
+	expect(e, toShowOnFail).to.be.instanceOf(Error);
+	expect(e, toShowOnFail).to.be.instanceOf(type);
+	expect(e, toShowOnFail).to.be.an("object");
+	expect(e, toShowOnFail).to.have.property("properties");
+	expect(e.properties, toShowOnFail).to.be.an("object");
+	expect(e.properties, toShowOnFail).to.have.property("explanation");
+	expect(e.properties.explanation, toShowOnFail).to.be.a("string");
+	expect(e.properties, toShowOnFail).to.have.property("id");
+	expect(e.properties.id, toShowOnFail).to.be.a("string");
+	expect(e.properties.explanation, toShowOnFail).to.be.a("string");
+	e = cleanError(e, expectedError);
+	if (e.properties.errors) {
+		const msg = "expected : \n" + JSON.stringify(expectedError.properties.errors) + "\nactual : \n" + JSON.stringify(e.properties.errors);
+		expect(expectedError.properties.errors).to.be.an("array", msg);
+		expect(e.properties.errors.length).to.equal(expectedError.properties.errors.length, msg);
+		e.properties.errors = e.properties.errors.map(function (e, i) {
+			return cleanError(e, expectedError.properties.errors[i]);
+		});
+	}
+	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
 }
 
 const docX = {};
@@ -147,6 +248,7 @@ function createDoc(name) {
 }
 
 module.exports = {
+	cleanError,
 	createXmlTemplaterDocx,
 	createDoc,
 	loadDocument,
@@ -159,6 +261,8 @@ module.exports = {
 	expect,
 	setStartFunction,
 	setExamplesDirectory,
+	expectToThrow,
 	removeSpaces,
+	wrapMultiError,
 	makeDocx,
 };

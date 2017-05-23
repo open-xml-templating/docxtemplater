@@ -1,9 +1,9 @@
 "use strict";
 
-const DocUtils = require("./doc-utils");
+const {wordToUtf8, convertSpaces, defaults} = require("./doc-utils");
 const ScopeManager = require("./scope-manager");
 const xmlMatcher = require("./xml-matcher");
-const Errors = require("./errors");
+const {throwMultiError, throwContentMustBeString} = require("./errors");
 const Lexer = require("./lexer");
 const Parser = require("./parser.js");
 const render = require("./render.js");
@@ -13,7 +13,7 @@ function getFullText(content, tagsXmlArray) {
 	const result = matcher.matches.map(function (match) {
 		return match.array[2];
 	});
-	return DocUtils.wordToUtf8(DocUtils.convertSpaces(result.join("")));
+	return wordToUtf8(convertSpaces(result.join("")));
 }
 
 module.exports = class XmlTemplater {
@@ -24,9 +24,7 @@ module.exports = class XmlTemplater {
 	}
 	load(content) {
 		if (typeof content !== "string") {
-			const err = new Errors.XTInternalError("Content must be a string");
-			err.properties.id = "xmltemplater_content_must_be_string";
-			throw err;
+			throwContentMustBeString(typeof content);
 		}
 		this.content = content;
 	}
@@ -39,8 +37,8 @@ module.exports = class XmlTemplater {
 		this.filePath = options.filePath;
 		this.modules = options.modules;
 		this.fileTypeConfig = options.fileTypeConfig;
-		Object.keys(DocUtils.defaults).map(function (key) {
-			this[key] = options[key] != null ? options[key] : DocUtils.defaults[key];
+		Object.keys(defaults).map(function (key) {
+			this[key] = options[key] != null ? options[key] : defaults[key];
 		}, this);
 	}
 	getFullText() {
@@ -52,13 +50,24 @@ module.exports = class XmlTemplater {
 		});
 	}
 	parse() {
+		let allErrors = [];
 		this.xmllexed = Lexer.xmlparse(this.content, {text: this.fileTypeConfig.tagsXmlTextArray, other: this.fileTypeConfig.tagsXmlLexedArray});
 		this.setModules({inspect: {xmllexed: this.xmllexed}});
-		this.lexed = Lexer.parse(this.xmllexed, this.delimiters);
+		const {lexed, errors: lexerErrors} = Lexer.parse(this.xmllexed, this.delimiters);
+		allErrors = allErrors.concat(lexerErrors);
+		this.lexed = lexed;
 		this.setModules({inspect: {lexed: this.lexed}});
 		this.parsed = Parser.parse(this.lexed, this.modules);
 		this.setModules({inspect: {parsed: this.parsed}});
-		this.postparsed = Parser.postparse(this.parsed, this.modules);
+		const {postparsed, errors: postparsedErrors} = Parser.postparse(this.parsed, this.modules);
+		this.postparsed = postparsed;
+		allErrors = allErrors.concat(postparsedErrors);
+		if (allErrors.length) {
+			this.modules.forEach(function (module) {
+				allErrors = module.errorsTransformer(allErrors);
+			});
+			throwMultiError(allErrors);
+		}
 		return this;
 	}
 	/*
@@ -69,14 +78,15 @@ module.exports = class XmlTemplater {
 	render(to) {
 		this.filePath = to;
 		this.setModules({inspect: {postparsed: this.postparsed}});
-		this.content = render({
+		const options = {
 			compiled: this.postparsed,
 			tags: this.tags,
 			modules: this.modules,
 			parser: this.parser,
 			nullGetter: this.nullGetter,
 			filePath: this.filePath,
-		});
+		};
+		this.content = render(options);
 		this.setModules({inspect: {content: this.content}});
 		return this;
 	}

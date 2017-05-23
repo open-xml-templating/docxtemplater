@@ -16,7 +16,7 @@ const PptXFileTypeConfig = {
 	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r"],
 	tagRawXml: "p:sp",
 	tagTextXml: "a:t",
-	baseModules: [render, expandPairTrait, rawXmlModule, loopModule],
+	baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
 };
 
 const DocXFileTypeConfig = {
@@ -29,7 +29,7 @@ const DocXFileTypeConfig = {
 	tagsXmlLexedArray: ["w:tc", "w:tr", "w:table", "w:p", "w:r"],
 	tagRawXml: "w:p",
 	tagTextXml: "w:t",
-	baseModules: [render, spacePreserveModule, expandPairTrait, rawXmlModule, loopModule],
+	baseModules: [loopModule, spacePreserveModule, expandPairTrait, rawXmlModule, render],
 };
 
 module.exports = {

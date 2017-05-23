@@ -1,4 +1,5 @@
 const wrapper = require("../module-wrapper");
+const {getScopeCompilationError} = require("../errors");
 
 class Render {
 	constructor() {
@@ -17,6 +18,25 @@ class Render {
 			mapper[from] = {from, data: this.data};
 			return mapper;
 		}, mapper);
+	}
+	optionsTransformer(options, docxtemplater) {
+		this.parser = docxtemplater.parser;
+		return options;
+	}
+	postparse(postparsed) {
+		const errors = [];
+		postparsed.map((p) => {
+			if (p.type === "placeholder") {
+				const tag = p.value;
+				try {
+					this.parser(tag);
+				}
+				catch (rootError) {
+					errors.push(getScopeCompilationError({tag, rootError}));
+				}
+			}
+		});
+		return {postparsed, errors};
 	}
 }
 

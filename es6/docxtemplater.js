@@ -1,6 +1,7 @@
 "use strict";
 
 const DocUtils = require("./doc-utils");
+const {XTInternalError, throwFileTypeNotIdentified} = require("./errors");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
 const wrapper = DocUtils.moduleWrapper;
@@ -8,11 +9,16 @@ const wrapper = DocUtils.moduleWrapper;
 const Docxtemplater = class Docxtemplater {
 	constructor() {
 		if (arguments.length > 0) {
-			throw new Error("The constructor with parameters have been removed in docxtemplater 3.0, please check the upgrade guide.");
+			throw new Error("The constructor with parameters has been removed in docxtemplater 3.0, please check the upgrade guide.");
 		}
 		this.compiled = {};
 		this.modules = [];
 		this.setOptions({});
+	}
+	setModules(obj) {
+		this.modules.forEach((module) => {
+			module.set(obj);
+		});
 	}
 	attachModule(module) {
 		this.modules.push(wrapper(module));
@@ -31,7 +37,7 @@ const Docxtemplater = class Docxtemplater {
 	}
 	loadZip(zip) {
 		if (zip.loadAsync) {
-			throw new Error("Docxtemplater doesn't handle JSZip version >=3, see changelog");
+			throw new XTInternalError("Docxtemplater doesn't handle JSZip version >=3, see changelog");
 		}
 		this.zip = zip;
 		this.updateFileTypeConfig();
@@ -43,15 +49,6 @@ const Docxtemplater = class Docxtemplater {
 		this.compiled[fileName] = currentFile;
 	}
 	compile() {
-		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
-		return this;
-	}
-	updateFileTypeConfig() {
-		this.fileType = this.zip.files["word/document.xml"] ? "docx" : "pptx";
-		this.fileTypeConfig = this.options.fileTypeConfig || Docxtemplater.FileTypeConfig[this.fileType];
-		return this;
-	}
-	render() {
 		this.options.xmlFileNames = [];
 		this.modules = this.fileTypeConfig.baseModules.map(function (moduleFunction) {
 			return moduleFunction();
@@ -64,14 +61,9 @@ const Docxtemplater = class Docxtemplater {
 			xmlDocuments[fileName] = DocUtils.str2xml(content);
 			return xmlDocuments;
 		}, {});
-		this.modules.forEach((module) => {
-			module.set({zip: this.zip, xmlDocuments: this.xmlDocuments, data: this.data});
-		});
-		this.compile();
-
-		this.modules.forEach((module) => {
-			module.set({compiled: this.compiled});
-		});
+		this.setModules({zip: this.zip, xmlDocuments: this.xmlDocuments, data: this.data});
+		this.getTemplatedFiles();
+		this.setModules({compiled: this.compiled});
 		// Loop inside all templatedFiles (ie xml files with content).
 		// Sometimes they don't exist (footer.xml for example)
 		this.templatedFiles.forEach((fileName) => {
@@ -79,6 +71,33 @@ const Docxtemplater = class Docxtemplater {
 				this.compileFile(fileName);
 			}
 		});
+		return this;
+	}
+	updateFileTypeConfig() {
+		const fileTypeIdentifiers = {
+			docx: "word/document.xml",
+			pptx: "ppt/presentation.xml",
+		};
+
+		const fileType = Object.keys(fileTypeIdentifiers).reduce((fileType, key) => {
+			if (fileType) {
+				return fileType;
+			}
+			if (this.zip.files[fileTypeIdentifiers[key]]) {
+				return key;
+			}
+			return fileType;
+		}, null);
+
+		if (!fileType) {
+			throwFileTypeNotIdentified();
+		}
+		this.fileType = fileType;
+		this.fileTypeConfig = this.options.fileTypeConfig || Docxtemplater.FileTypeConfig[this.fileType];
+		return this;
+	}
+	render() {
+		this.compile();
 
 		this.mapper = this.modules.reduce(function (value, module) {
 			return module.getRenderedMap(value);
@@ -92,13 +111,15 @@ const Docxtemplater = class Docxtemplater {
 			currentFile.render(to);
 			this.zip.file(to, currentFile.content);
 		});
-
+		this.syncZip();
+		return this;
+	}
+	syncZip() {
 		Object.keys(this.xmlDocuments).forEach((fileName) => {
 			this.zip.remove(fileName);
 			const content = DocUtils.xml2str(this.xmlDocuments[fileName]);
 			return this.zip.file(fileName, content, {});
 		});
-		return this;
 	}
 	setData(data) {
 		this.data = data;
@@ -126,7 +147,7 @@ const Docxtemplater = class Docxtemplater {
 		return this.createTemplateClass(path || this.fileTypeConfig.textPath).getFullText();
 	}
 	getTemplatedFiles() {
-		this.compile();
+		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
 		return this.templatedFiles;
 	}
 };

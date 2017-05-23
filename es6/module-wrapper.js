@@ -7,6 +7,7 @@ module.exports = function (module) {
 		render: emptyFun,
 		getTraits: emptyFun,
 		optionsTransformer: identity,
+		errorsTransformer: identity,
 		getRenderedMap: identity,
 		postparse: identity,
 	};

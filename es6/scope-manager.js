@@ -1,5 +1,5 @@
 "use strict";
-const Errors = require("./errors");
+const {XTScopeParserError} = require("./errors");
 
 // This class responsibility is to manage the scope
 const ScopeManager = class ScopeManager {
@@ -44,27 +44,14 @@ const ScopeManager = class ScopeManager {
 		// search in the scopes (in reverse order) and keep the first defined value
 		this.num = num == null ? (this.scopeList.length - 1) : num;
 		let err;
-		let parser;
 		let result;
 		const scope = this.scopeList[this.num];
-		try {
-			parser = this.parser(tag);
-		}
-		catch (error) {
-			err = new Errors.XTScopeParserError("Scope parser compilation failed");
-			err.properties = {
-				id: "scopeparser_compilation_failed",
-				tag,
-				explanation: `The scope parser for the tag ${tag} failed to compile`,
-				rootError: error,
-			};
-			throw err;
-		}
+		const parser = this.parser(tag, {scopePath: this.scopePath});
 		try {
 			result = parser.get(scope, {num: this.num, scopeList: this.scopeList});
 		}
 		catch (error) {
-			err = new Errors.XTScopeParserError("Scope parser execution failed");
+			err = new XTScopeParserError("Scope parser execution failed");
 			err.properties = {
 				id: "scopeparser_execution_failed",
 				explanation: `The scope parser for the tag ${tag} failed to execute`,

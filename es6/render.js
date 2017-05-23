@@ -2,6 +2,7 @@
 
 const ScopeManager = require("./scope-manager");
 const DocUtils = require("./doc-utils");
+const {throwUnimplementedTagType} = require("./errors");
 
 function moduleRender(part, options) {
 	let moduleRendered;
@@ -36,7 +37,7 @@ function render(options) {
 		if (part.type === "content" || part.type === "tag") {
 			return part.value;
 		}
-		throw new Error(`Unimplemented tag type "${part.type}"`);
+		throwUnimplementedTagType(part);
 	}).join("");
 }
 

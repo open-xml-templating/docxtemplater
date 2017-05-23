@@ -1,9 +1,8 @@
 "use strict";
 
-const memoize = require("./memoize");
 const DOMParser = require("xmldom").DOMParser;
 const XMLSerializer = require("xmldom").XMLSerializer;
-const Errors = require("./errors");
+const {throwXmlTagNotFound, throwDecodeUTF8Error} = require("./errors");
 
 const DocUtils = {};
 
@@ -28,7 +27,7 @@ DocUtils.defaults = {
 		}
 		return "";
 	},
-	parser: memoize(parser),
+	parser,
 	delimiters: {
 		start: "{",
 		end: "}",
@@ -60,10 +59,7 @@ DocUtils.decodeUtf8 = function (s) {
 		return decodeURIComponent(escape(DocUtils.convertSpaces(s)));
 	}
 	catch (e) {
-		const err = new Error("End");
-		err.properties.data = s;
-		err.properties.explanation = "Could not decode string to UTF8";
-		throw err;
+		throwDecodeUTF8Error(s);
 	}
 };
 
@@ -152,18 +148,6 @@ returns: [{array: {0: 'la'},offset: 2},{array: {0: 'la'},offset: 8},{array: {0: 
 DocUtils.sizeOfObject = function (obj) {
 	return Object.keys(obj).length;
 };
-
-function throwXmlTagNotFound(options) {
-	const err = new Errors.XTTemplateError(`No tag '${options.element}' was found at the ${options.position}`);
-	err.properties = {
-		id: `no_xml_tag_found_at_${options.position}`,
-		explanation: `No tag '${options.element}' was found at the ${options.position}`,
-		parsed: options.parsed,
-		index: options.index,
-		element: options.element,
-	};
-	throw err;
-}
 
 DocUtils.getRight = function (parsed, element, index) {
 	for (let i = index, l = parsed.length; i < l; i++) {
