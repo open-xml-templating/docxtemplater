@@ -6,6 +6,12 @@
 Generate a document
 ===================
 
+.. note::
+
+    Before starting, please make sure to use jszip version 2.x (see `Installation`_), which is not the latest version of jszip, but the only compatible version.
+
+.. _`Installation`: installation.html
+
 Node
 ----
 
