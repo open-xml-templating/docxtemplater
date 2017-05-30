@@ -36,9 +36,7 @@ const ScopeManager = class ScopeManager {
 		if (type === "[object Object]") {
 			return this.functorIfInverted(!inverted, functor, value);
 		}
-		if (value === true) {
-			return this.functorIfInverted(!inverted, functor, currentValue);
-		}
+		return this.functorIfInverted(!inverted, functor, currentValue);
 	}
 	getValue(tag, num) {
 		// search in the scopes (in reverse order) and keep the first defined value

@@ -157,6 +157,22 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			expect(text.length).to.be.equal(expectedText.length);
 			expect(text).to.be.equal(expectedText);
 		});
+		it("should work with object value", function () {
+			const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
+			const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
+			const scope = {todo: {todo: "abc"}};
+			const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			xmlTemplater.render();
+			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+		});
+		it("should work with string value", function () {
+			const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
+			const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
+			const scope = {todo: "abc"};
+			const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			xmlTemplater.render();
+			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+		});
 		it("should not have sideeffects with inverted with array length 3", function () {
 			const content = "<w:t>{^todos}No {/todos}Todos</w:t><w:t>{#todos}{.}{/todos}</w:t>";
 			const expectedContent = '<w:t>Todos</w:t><w:t xml:space="preserve">ABC</w:t>';
