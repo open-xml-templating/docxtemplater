@@ -1,5 +1,9 @@
 ### unreleased (master branch)
 
+### 3.1.2
+
+Handle unclosed tag <a:t /> and <w:t />
+
 ### 3.1.1
 
 Bugfix loop over string value (fixes https://github.com/open-xml-templating/docxtemplater/issues/309\)

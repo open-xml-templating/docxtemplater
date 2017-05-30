@@ -26,15 +26,20 @@ function offsetSort(a, b) {
 }
 
 function getTag(tag) {
+	let position = "start";
 	let start = 1;
+	if (tag[tag.length - 2] === "/") {
+		position = "selfclosing";
+	}
 	if (tag[1] === "/") {
 		start = 2;
+		position = "end";
 	}
 	const index = tag.indexOf(" ");
 	const end = index === -1 ? tag.length - 1 : index;
 	return {
 		tag: tag.slice(start, end),
-		position: start === 1 ? "start" : "end",
+		position,
 	};
 }
 

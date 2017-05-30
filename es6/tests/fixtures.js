@@ -432,6 +432,55 @@ const fixtures = {
 			{type: "content", value: "AFTER", position: "outsidetag"},
 		],
 	},
+	selfclosing: {
+		it: "should handle selfclose tag",
+		content: "<w:t />",
+		scope: {
+			user: "Foo",
+		},
+		result: "<w:t />",
+		lexed: [
+			{type: "tag", value: "<w:t />", text: true, position: "selfclosing"},
+		],
+		parsed: [
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+		],
+		postparsed: [
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+		],
+	},
+	selfclosing_with_placeholderr: {
+		it: "should handle {user} with tag with selfclosing",
+		content: "<w:t /><w:t>Hi {user}</w:t>",
+		scope: {
+			user: "Foo",
+		},
+		result: '<w:t /><w:t xml:space="preserve">Hi Foo</w:t>',
+		lexed: [
+			{type: "tag", value: "<w:t />", text: true, position: "selfclosing"},
+			{type: "tag", position: "start", value: "<w:t>", text: true},
+			{type: "content", value: "Hi ", position: "insidetag"},
+			{type: "delimiter", position: "start"},
+			{type: "content", value: "user", position: "insidetag"},
+			{type: "delimiter", position: "end"},
+			{type: "tag", value: "</w:t>", text: true, position: "end"},
+		],
+		parsed: [
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+			{type: "tag", position: "start", value: "<w:t>", text: true},
+			{type: "content", value: "Hi ", position: "insidetag"},
+			{type: "placeholder", value: "user"},
+			{type: "tag", value: "</w:t>", text: true, position: "end"},
+		],
+		postparsed: [
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+			{type: "tag", position: "start", value: '<w:t xml:space="preserve">', text: true},
+			{type: "content", value: "Hi ", position: "insidetag"},
+			{type: "placeholder", value: "user"},
+			{type: "tag", value: "</w:t>", text: true, position: "end"},
+		],
+	},
+
 };
 
 fixtures.rawxmlemptycontent = _.clone(fixtures.rawxml);
