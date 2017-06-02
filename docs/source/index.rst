@@ -16,6 +16,7 @@ Docxtemplater
    cli
    api
    faq
+   testing
 
 
 `Online Demos`_
