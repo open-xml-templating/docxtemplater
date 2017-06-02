@@ -40,4 +40,25 @@ describe("speed test", function () {
 		const duration = new Date() - time;
 		expect(duration).to.be.below(60);
 	});
+	if (!process.env.FAST) {
+		it("should not exceed call stack size for big document with rawxml", function () {
+			this.timeout(3000);
+			const result = [];
+			const normalContent = "<w:p><w:r><w:t>foo</w:t></w:r></w:p>";
+			const rawContent = "<w:p><w:r><w:t>{@raw}</w:t></w:r></w:p>";
+
+			for (let i = 1; i <= 30000; i++) {
+				if (i % 100 === 1) {
+					result.push(rawContent);
+				}
+				result.push(normalContent);
+			}
+			const content = result.join("");
+			const users = [];
+			const time = new Date();
+			testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
+			const duration = new Date() - time;
+			expect(duration).to.be.below(2500);
+		});
+	}
 });

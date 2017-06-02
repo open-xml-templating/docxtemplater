@@ -119,11 +119,16 @@ DocUtils.cloneDeep = function (obj) {
 	return JSON.parse(JSON.stringify(obj));
 };
 
+// This function is written with for loops for performance
 DocUtils.concatArrays = function (arrays) {
-	return arrays.reduce(function (result, array) {
-		Array.prototype.push.apply(result, array);
-		return result;
-	}, []);
+	const result = [];
+	for (let i = 0; i < arrays.length; i++) {
+		const array = arrays[i];
+		for (let j = 0, len = array.length; j < len; j++) {
+			result.push(array[j]);
+		}
+	}
+	return result;
 };
 
 const spaceRegexp = new RegExp(String.fromCharCode(160), "g");
