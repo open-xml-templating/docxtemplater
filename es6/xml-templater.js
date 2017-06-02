@@ -66,6 +66,9 @@ module.exports = class XmlTemplater {
 			this.modules.forEach(function (module) {
 				allErrors = module.errorsTransformer(allErrors);
 			});
+			allErrors.forEach((error) => {
+				error.properties.file = this.filePath;
+			});
 			throwMultiError(allErrors);
 		}
 		return this;
