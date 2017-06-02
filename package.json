@@ -62,7 +62,7 @@
     "uglify:lib": "uglifyjs build/docxtemplater.js > build/docxtemplater.min.js",
     "uglify": "npm run uglify:lib && npm run uglify:demo",
     "browserify": "npm run browserify:test && npm run browserify:lib && npm run browserify:demo",
-    "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel",
+    "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel && cp es6/tests/*.xml js/tests ",
     "convertto:es5:watch": "npm run babel -- --watch",
     "test:coverage": "istanbul cover _mocha --  es6/tests/index.js",
     "lint": "./check-casing.bash && eslint .",
