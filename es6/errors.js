@@ -100,6 +100,23 @@ function throwContentMustBeString(type) {
 	throw err;
 }
 
+function throwRawTagNotInParagraph(options) {
+	const err = new XTTemplateError("Raw tag not in paragraph");
+	const tag = options.part.value;
+	const offset = options.part.offset;
+	err.properties = {
+		id: "raw_tag_outerxml_invalid",
+		explanation: `The tag "${tag}" is not inside a paragraph`,
+		rootError: options.rootError,
+		xtag: tag,
+		offset,
+		postparsed: options.postparsed,
+		expandTo: options.expandTo,
+		index: options.index,
+	};
+	throw err;
+}
+
 function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	const err = new XTTemplateError("Raw tag should be the only text in paragraph");
 	const tag = options.part.value;
@@ -195,6 +212,7 @@ module.exports = {
 	throwContentMustBeString,
 	getUnmatchedLoopException,
 	throwRawTagShouldBeOnlyTextInParagraph,
+	throwRawTagNotInParagraph,
 	getClosingTagNotMatchOpeningTag,
 	throwUnimplementedTagType,
 	getScopeCompilationError,

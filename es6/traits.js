@@ -1,22 +1,5 @@
 const {getRight, getLeft, concatArrays} = require("./doc-utils");
-const {XTTemplateError} = require("./errors");
-
-function throwRawTagNotInParagraph(options) {
-	const err = new XTTemplateError("Raw tag not in paragraph");
-	const tag = options.part.value;
-	const offset = options.part.offset;
-	err.properties = {
-		id: "raw_tag_outerxml_invalid",
-		explanation: `The tag "${tag}"`,
-		rootError: options.rootError,
-		xtag: tag,
-		offset,
-		postparsed: options.postparsed,
-		expandTo: options.expandTo,
-		index: options.index,
-	};
-	throw err;
-}
+const {XTTemplateError, throwRawTagNotInParagraph} = require("./errors");
 
 function lastTagIsOpenTag(array, tag) {
 	if (array.length === 0) {
