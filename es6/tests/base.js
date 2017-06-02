@@ -375,7 +375,7 @@ describe("Raw Xml Insertion", function () {
 	it("should work with simple example", function () {
 		const inner = "<w:p><w:r><w:t>{@complexXml}</w:t></w:r></w:p>";
 		const content = `<w:document>${inner}</w:document>`;
-		const scope = {complexXml: fs.readFileSync(path.resolve(__dirname, "raw-complex-docx.xml"))};
+		const scope = {complexXml: fs.readFileSync(path.resolve(__dirname, "raw-complex-docx.xml"), "utf8")};
 		const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
 		doc.render();
 		expect(doc.content.length).to.be.equal(content.length + scope.complexXml.length - (inner.length));

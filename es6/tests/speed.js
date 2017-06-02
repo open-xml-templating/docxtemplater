@@ -40,9 +40,10 @@ describe("speed test", function () {
 		const duration = new Date() - time;
 		expect(duration).to.be.below(60);
 	});
+	/* eslint-disable no-process-env */
 	if (!process.env.FAST) {
 		it("should not exceed call stack size for big document with rawxml", function () {
-			this.timeout(3000);
+			this.timeout(20000);
 			const result = [];
 			const normalContent = "<w:p><w:r><w:t>foo</w:t></w:r></w:p>";
 			const rawContent = "<w:p><w:r><w:t>{@raw}</w:t></w:r></w:p>";
@@ -58,7 +59,7 @@ describe("speed test", function () {
 			const time = new Date();
 			testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
 			const duration = new Date() - time;
-			expect(duration).to.be.below(2500);
+			expect(duration).to.be.below(20000);
 		});
 	}
 });

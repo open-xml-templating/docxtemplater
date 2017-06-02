@@ -21,7 +21,7 @@ describe("pptx generation", function () {
 		shouldBeSame({doc, expectedName: "expected-loop-example.pptx"});
 	});
 
-	const raw = fs.readFileSync(path.resolve(__dirname, "raw-pptx.xml"));
+	const raw = fs.readFileSync(path.resolve(__dirname, "raw-pptx.xml"), "utf8");
 
 	it("should work with simple raw pptx", function () {
 		const doc = createDoc("raw-xml-example.pptx");
