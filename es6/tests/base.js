@@ -1,5 +1,7 @@
 const testUtils = require("./utils");
 const expect = testUtils.expect;
+const fs = require("fs");
+const path = require("path");
 const JSZip = require("jszip");
 const Docxtemplater = require("../docxtemplater.js");
 const DocUtils = require("../doc-utils.js");
@@ -15,16 +17,6 @@ function angularParser(tag) {
 		},
 	};
 }
-
-describe("DocxtemplaterBasis", function () {
-	it("should be defined", function () {
-		expect(Docxtemplater).not.to.be.equal(undefined);
-	});
-	it("should construct", function () {
-		const doc = new Docxtemplater();
-		expect(doc).not.to.be.equal(undefined);
-	});
-});
 
 function getLength(obj) {
 	if (obj instanceof ArrayBuffer) {
@@ -60,7 +52,6 @@ describe("DocxtemplaterLoading", function () {
 		});
 		it("should load the right content for the document", function () {
 			const doc = testUtils.createDoc("image-example.docx");
-			// default value document.xml
 			const fullText = (doc.getFullText());
 			expect(fullText).to.be.equal("");
 		});
@@ -77,26 +68,6 @@ describe("DocxtemplaterLoading", function () {
 			const output = doc.getZip().generate({type: "base64"});
 			expect(output.length).to.be.equal(90732);
 			expect(output.substr(0, 50)).to.be.equal("UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn");
-		});
-	});
-});
-
-describe("DocxtemplaterTemplating", function () {
-	describe("text templating", function () {
-		it("should change values with template data", function () {
-			const tags = {
-				first_name: "Hipp",
-				last_name: "Edgar",
-				phone: "0652455478",
-				description: "New Website",
-			};
-			const doc = testUtils.createDoc("tag-example.docx");
-			doc.setData(tags);
-			doc.render();
-			expect(doc.getFullText()).to.be.equal("Edgar Hipp");
-			expect(doc.getFullText("word/header1.xml")).to.be.equal("Edgar Hipp0652455478New Website");
-			expect(doc.getFullText("word/footer1.xml")).to.be.equal("EdgarHipp0652455478");
-			testUtils.shouldBeSame({doc, expectedName: "tag-example-expected.docx"});
 		});
 	});
 });
@@ -242,63 +213,6 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 	});
 });
 
-describe("Dash Loop Testing", function () {
-	it("dash loop ok on simple table -> w:tr", function () {
-		const tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
-		const doc = testUtils.createDoc("tag-dash-loop.docx");
-		doc.setData(tags);
-		doc.render();
-		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
-	});
-	it("dash loop ok on simple table -> w:table", function () {
-		const tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
-		const doc = testUtils.createDoc("tag-dash-loop-table.docx");
-		doc.setData(tags);
-		doc.render();
-		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
-	});
-	it("dash loop ok on simple list -> w:p", function () {
-		const tags = {os: [{type: "linux", price: "0", reference: "Ubuntu10"}, {type: "DOS", price: "500", reference: "Win7"}, {type: "apple", price: "1200", reference: "MACOSX"}]};
-		const doc = testUtils.createDoc("tag-dash-loop-list.docx");
-		doc.setData(tags);
-		doc.render();
-		const expectedText = "linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
-	});
-});
-
-describe("Intelligent Loop Tagging", function () {
-	it("should work with tables", function () {
-		const tags = {clients: [{first_name: "John", last_name: "Doe", phone: "+33647874513"}, {first_name: "Jane", last_name: "Doe", phone: "+33454540124"}, {first_name: "Phil", last_name: "Kiel", phone: "+44578451245"}, {first_name: "Dave", last_name: "Sto", phone: "+44548787984"}]};
-		const doc = testUtils.createDoc("tag-intelligent-loop-table.docx");
-		doc.setData(tags);
-		doc.render();
-		const expectedText = "JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
-		testUtils.shouldBeSame({doc, expectedName: "tag-intelligent-loop-table-expected.docx"});
-	});
-
-	it("should not do anything special when loop outside of table", function () {
-		["<w:t>{#tables}</w:t><w:table><w:tr><w:tc><w:t>{user}</w:t></w:tc></w:tr></w:table><w:t>{/tables}</w:t>"].forEach(function (content) {
-			const scope = {
-				tables: [
-					{user: "John"},
-					{user: "Jane"},
-				],
-			};
-			const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
-			doc.render();
-			expect(doc.content).to.be.equal('<w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">John</w:t></w:tc></w:tr></w:table><w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">Jane</w:t></w:tc></w:tr></w:table><w:t></w:t>');
-		});
-	});
-});
-
 describe("Changing the parser", function () {
 	it("should work with uppercassing", function () {
 		const content = "<w:t>Hello {name}</w:t>";
@@ -408,61 +322,20 @@ describe("Special characters", function () {
 });
 
 describe("Complex table example", function () {
-	it("should work with simple table", function () {
-		const doc = testUtils.createDoc("table-complex2-example.docx");
-		doc.setData({
-			table1: [{
-				t1data1: "t1-1row-data1",
-				t1data2: "t1-1row-data2",
-				t1data3: "t1-1row-data3",
-				t1data4: "t1-1row-data4",
-			}, {
-				t1data1: "t1-2row-data1",
-				t1data2: "t1-2row-data2",
-				t1data3: "t1-2row-data3",
-				t1data4: "t1-2row-data4",
-			},
-			{
-				t1data1: "t1-3row-data1",
-				t1data2: "t1-3row-data2",
-				t1data3: "t1-3row-data3",
-				t1data4: "t1-3row-data4",
-			}],
-			t1total1: "t1total1-data",
-			t1total2: "t1total2-data",
-			t1total3: "t1total3-data",
+	it("should not do anything special when loop outside of table", function () {
+		["<w:t>{#tables}</w:t><w:table><w:tr><w:tc><w:t>{user}</w:t></w:tc></w:tr></w:table><w:t>{/tables}</w:t>"].forEach(function (content) {
+			const scope = {
+				tables: [
+					{user: "John"},
+					{user: "Jane"},
+				],
+			};
+			const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			doc.render();
+			expect(doc.content).to.be.equal('<w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">John</w:t></w:tc></w:tr></w:table><w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">Jane</w:t></w:tc></w:tr></w:table><w:t></w:t>');
 		});
-		doc.render();
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data");
 	});
-	it("should work with more complex table", function () {
-		// set the templateData
-		const doc = testUtils.createDoc("table-complex-example.docx");
-		doc.setData({
-			table2: [{
-				t2data1: "t2-1row-data1",
-				t2data2: "t2-1row-data2",
-				t2data3: "t2-1row-data3",
-				t2data4: "t2-1row-data4",
-			},
-			{
-				t2data1: "t2-2row-data1",
-				t2data2: "t2-2row-data2",
-				t2data3: "t2-2row-data3",
-				t2data4: "t2-2row-data4",
-			}],
-			t1total1: "t1total1-data",
-			t1total2: "t1total2-data",
-			t1total3: "t1total3-data",
-			t2total1: "t2total1-data",
-			t2total2: "t2total2-data",
-			t2total3: "t2total3-data",
-		});
-		doc.render();
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
-	});
+
 	it("should work when looping inside tables", function () {
 		const tags = {
 			table1: [1],
@@ -502,7 +375,7 @@ describe("Raw Xml Insertion", function () {
 	it("should work with simple example", function () {
 		const inner = "<w:p><w:r><w:t>{@complexXml}</w:t></w:r></w:p>";
 		const content = `<w:document>${inner}</w:document>`;
-		const scope = {complexXml: "<w:p w:rsidR=\"00612058\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: color w: val=\"FF0000\"/></w:rPr><w:t>My custom XML</w:t></w:r></w:p><w:tbl><w:tblPr><w:tblStyle w: val=\"Grilledutableau\"/><w:tblW w: w=\"0\" w:type=\"auto\"/><w:tblLook w: val=\"04A0\" w: firstRow=\"1\" w: lastRow=\"0\" w: firstColumn=\"1\" w: lastColumn=\"0\" w: noHBand=\"0\" w: noVBand=\"1\"/></w:tblPr><w:tblGrid><w: gridCol w: w=\"2952\"/><w: gridCol w: w=\"2952\"/><w: gridCol w: w=\"2952\"/></w:tblGrid><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"DDD9C3\" w:themeFill=\"background2\" w:themeFillShade=\"E6\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: b/><w: color w: val=\"000000\" w:themeColor=\"text1\"/></w:rPr></w:pPr><w:r><w:rPr><w: b/><w: color w: val=\"000000\" w:themeColor=\"text1\"/></w:rPr><w:t>Test</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"DDD9C3\" w:themeFill=\"background2\" w:themeFillShade=\"E6\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: b/><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: b/><w: color w: val=\"FF0000\"/></w:rPr><w:t>Xml</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"DDD9C3\" w:themeFill=\"background2\" w:themeFillShade=\"E6\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: color w: val=\"FF0000\"/></w:rPr><w:t>Generated</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"C6D9F1\" w:themeFill=\"text2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"000000\" w:themeColor=\"text1\"/><w: u w: val=\"single\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w: color w: val=\"000000\" w:themeColor=\"text1\"/><w: u w: val=\"single\"/></w:rPr><w:t>Underline</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"C6D9F1\" w:themeFill=\"text2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w: color w: val=\"FF0000\"/><w: highlight w: val=\"yellow\"/></w:rPr><w:t>Highlighting</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"C6D9F1\" w:themeFill=\"text2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w:rFonts w: ascii=\"Bauhaus 93\" w: hAnsi=\"Bauhaus 93\"/><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w:rFonts w: ascii=\"Bauhaus 93\" w: hAnsi=\"Bauhaus 93\"/><w: color w: val=\"FF0000\"/></w:rPr><w:t>Font</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"F2DBDB\" w:themeFill=\"accent2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00EA4B08\"><w:pPr><w: jc w: val=\"center\"/><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: color w: val=\"FF0000\"/></w:rPr><w:t>Centering</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"F2DBDB\" w:themeFill=\"accent2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: i/><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w: i/><w: color w: val=\"FF0000\"/></w:rPr><w:t>Italic</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"F2DBDB\" w:themeFill=\"accent2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"E5DFEC\" w:themeFill=\"accent4\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"E5DFEC\" w:themeFill=\"accent4\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"E5DFEC\" w:themeFill=\"accent4\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"FDE9D9\" w:themeFill=\"accent6\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"FDE9D9\" w:themeFill=\"accent6\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"FDE9D9\" w:themeFill=\"accent6\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc></w:tr></w:tbl>"};
+		const scope = {complexXml: fs.readFileSync(path.resolve(__dirname, "raw-complex-docx.xml"))};
 		const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
 		doc.render();
 		expect(doc.content.length).to.be.equal(content.length + scope.complexXml.length - (inner.length));
@@ -601,16 +474,8 @@ describe("Raw Xml Insertion", function () {
 	});
 });
 
-describe("pptx generation", function () {
-	it("should work with simple pptx", function () {
-		const doc = testUtils.createDoc("simple-example.pptx");
-		const p = doc.setData({name: "Edgar"}).render();
-		expect(p.getFullText()).to.be.equal("Hello Edgar");
-	});
-});
-
 describe("Serialization", function () {
-	it("should be serialiazable", function () {
+	it("should be serialiazable (useful for logging)", function () {
 		const doc = testUtils.createDoc("tag-example.docx");
 		JSON.stringify(doc);
 	});

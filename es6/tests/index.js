@@ -2,7 +2,6 @@
 
 const testUtils = require("./utils");
 const path = require("path");
-const expect = testUtils.expect;
 testUtils.setExamplesDirectory(path.resolve(__dirname, "..", "..", "examples"));
 testUtils.setStartFunction(startTest);
 
@@ -28,6 +27,7 @@ const fileNames = [
 	"loop-example.pptx",
 	"expected-loop-example.pptx",
 	"raw-xml-example.pptx",
+	"expected-raw-xml-example.pptx",
 	"image.png",
 ];
 
@@ -38,30 +38,7 @@ function startTest() {
 	require("./errors");
 	require("./speed");
 	require("./lexer-parser-render");
-
-	describe("pptx generation", function () {
-		it("should work with simple pptx", function () {
-			const doc = testUtils.createDoc("simple-example.pptx");
-			const p = doc.setData({name: "Edgar"}).render();
-			expect(p.getFullText()).to.be.equal("Hello Edgar");
-		});
-		it("should work with table pptx", function () {
-			const doc = testUtils.createDoc("table-example.pptx");
-			doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render();
-			testUtils.shouldBeSame({doc, expectedName: "table-example-expected.pptx"});
-		});
-		it("should work with loop pptx", function () {
-			const doc = testUtils.createDoc("loop-example.pptx");
-			const p = doc.setData({users: [{name: "Doe"}, {name: "John"}]}).render();
-			testUtils.shouldBeSame({doc, expectedName: "expected-loop-example.pptx"});
-			expect(p.getFullText()).to.be.equal(" Doe  John ");
-		});
-		it("should work with simple raw pptx", function () {
-			const doc = testUtils.createDoc("raw-xml-example.pptx");
-			const p = doc.setData({raw: "<p:sp><a:t>Hello World</a:t></p:sp>"}).render();
-			expect(p.getFullText()).to.be.equal("Hello World");
-		});
-	});
+	require("./integration");
 
 	if (typeof window !== "undefined" && window) {
 		return window.mocha.run();

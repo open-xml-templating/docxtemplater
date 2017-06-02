@@ -54,7 +54,6 @@ function shouldBeSame(options) {
 		throw e;
 	}
 
-	const result = [];
 	try {
 		Object.keys(zip.files).map(function (filePath) {
 			const suffix = `for "${filePath}"`;
@@ -76,7 +75,6 @@ function shouldBeSame(options) {
 		console.log(JSON.stringify({msg: "Expected name does not match", expectedName}));
 		throw e;
 	}
-	return result;
 }
 
 function checkLength(e, expectedError, propertyPath) {
