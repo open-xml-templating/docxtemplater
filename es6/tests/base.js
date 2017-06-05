@@ -248,7 +248,7 @@ describe("Changing the parser", function () {
 		const tags = {person: {first_name: "Hipp", last_name: "Edgar", birth_year: 1955, age: 59}};
 		const doc = testUtils.createDoc("angular-example.docx");
 		doc.setData(tags);
-		doc.parser = angularParser;
+		doc.setOptions({parser: angularParser});
 		doc.render();
 		expect(doc.getFullText()).to.be.equal("Hipp Edgar 2014");
 	});
@@ -259,6 +259,27 @@ describe("Changing the parser", function () {
 		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope, parser: angularParser});
 		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
+	});
+
+	it("should have the index with loops", function () {
+		function customParser(tag) {
+			return {
+				get(scope, options) {
+					if (tag === ".") {
+						return scope;
+					}
+					if (tag === "i") {
+						return options.loopMetaData.index;
+					}
+					return scope[tag];
+				},
+			};
+		}
+		const content = "<w:t>Hello {#persons}{.}{i}{/persons}</w:t>";
+		const scope = {persons: ["a", "b", "c"]};
+		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope, parser: customParser});
+		xmlTemplater.render();
+		expect(xmlTemplater.getFullText()).to.be.equal("Hello a0b1c2");
 	});
 });
 
