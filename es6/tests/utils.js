@@ -12,6 +12,8 @@ const _ = require("lodash");
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;
+const docX = {};
+const imageData = {};
 
 /* eslint-disable no-console */
 
@@ -173,9 +175,6 @@ function expectToThrow(fn, type, expectedError) {
 	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
 }
 
-const docX = {};
-const imageData = {};
-
 function load(name, content, fileType, obj) {
 	const zip = new JSZip(content);
 	obj[name] = new Docxtemplater();
@@ -207,6 +206,14 @@ function loadFile(name, callback) {
 		return endLoadFile(-1);
 	});
 }
+
+let startFunction;
+function setStartFunction(sf) {
+	allStarted = false;
+	countFiles = 1;
+	startFunction = sf;
+}
+
 function endLoadFile(change) {
 	change = change || 0;
 	countFiles += change;
@@ -220,12 +227,6 @@ function start() {
 	endLoadFile(-1);
 }
 
-let startFunction;
-function setStartFunction(sf) {
-	allStarted = false;
-	countFiles = 1;
-	startFunction = sf;
-}
 function setExamplesDirectory(ed) {
 	examplesDirectory = ed;
 }
