@@ -2,6 +2,7 @@
   "parserOptions" : {
     "ecmaVersion": 7
   },
+  "parser": "babel-eslint",
   "plugins": [
     "dependencies"
   ],
