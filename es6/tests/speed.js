@@ -11,7 +11,7 @@ describe("speed test", function () {
 			testUtils.createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
 		}
 		const duration = new Date() - time;
-		expect(duration).to.be.below(80);
+		expect(duration).to.be.below(120);
 	});
 	it("should be fast for simple tags with huge content", function () {
 		let content = "<w:t>tag {age}</w:t>";
@@ -38,12 +38,12 @@ describe("speed test", function () {
 		const time = new Date();
 		testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
 		const duration = new Date() - time;
-		expect(duration).to.be.below(60);
+		expect(duration).to.be.below(80);
 	});
 	/* eslint-disable no-process-env */
 	if (!process.env.FAST) {
 		it("should not exceed call stack size for big document with rawxml", function () {
-			this.timeout(20000);
+			this.timeout(25000);
 			const result = [];
 			const normalContent = "<w:p><w:r><w:t>foo</w:t></w:r></w:p>";
 			const rawContent = "<w:p><w:r><w:t>{@raw}</w:t></w:r></w:p>";
@@ -59,7 +59,7 @@ describe("speed test", function () {
 			const time = new Date();
 			testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
 			const duration = new Date() - time;
-			expect(duration).to.be.below(20000);
+			expect(duration).to.be.below(25000);
 		});
 	}
 });
