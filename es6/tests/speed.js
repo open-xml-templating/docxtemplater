@@ -38,7 +38,7 @@ describe("speed test", function () {
 		const time = new Date();
 		testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
 		const duration = new Date() - time;
-		expect(duration).to.be.below(80);
+		expect(duration).to.be.below(100);
 	});
 	/* eslint-disable no-process-env */
 	if (!process.env.FAST) {
