@@ -19,7 +19,7 @@ const fileNames = [
 	"tag-intelligent-loop-table.docx",
 	"tag-intelligent-loop-table-expected.docx",
 	"tag-loop-example.docx",
-	"tag-produit-loop.docx",
+	"tag-product-loop.docx",
 	"one-raw-xml-tag.docx",
 	"table-example.pptx",
 	"table-example-expected.pptx",

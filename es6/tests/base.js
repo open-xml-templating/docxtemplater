@@ -120,7 +120,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 		});
 		it("should work with loops inside loops", function () {
 			const tags = {products: [{title: "Microsoft", name: "DOS", reference: "Win7", avantages: [{title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]}]}, {title: "Linux", name: "Ubuntu", reference: "Ubuntu10", avantages: [{title: "It's very powerful", proof: [{reason: "the terminal is your friend"}, {reason: "Hello world"}, {reason: "it's free"}]}]}, {title: "Apple", name: "Mac", reference: "OSX", avantages: [{title: "It's very easy", proof: [{reason: "you can do a lot just with the mouse"}, {reason: "It's nicely designed"}]}]}]};
-			const doc = testUtils.createDoc("tag-produit-loop.docx");
+			const doc = testUtils.createDoc("tag-product-loop.docx");
 			doc.setData(tags);
 			doc.render();
 			const text = doc.getFullText();

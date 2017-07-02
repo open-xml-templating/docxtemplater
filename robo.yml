@@ -3,7 +3,7 @@ preversion:
   command: robo test
 compile:
   summary: Compile the code to es5
-  command: robo convertto:es5 && node examples/compile-site.js
+  command: robo convertto:es5
 browserify:test:
   summary: Convert the files of the test
   command: |
