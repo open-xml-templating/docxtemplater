@@ -242,7 +242,7 @@ with this data:
 
 This will loop over the first parent <w:p> tag
 
-If you want to insert HTML styled input, you can also use the docxtemplater html module : https://modules.docxtemplater.com/modules/html/
+If you want to insert HTML styled input, you can also use the docxtemplater html module : https://docxtemplater.com/modules/html/
 
 Dash syntax
 -----------

@@ -80,9 +80,9 @@ You can also have conditions with operators `>` and `<` using `angular parser co
 Conditional Formatting
 ----------------------
 
-I plan to develop a pro module to do conditional formatting https://modules.docxtemplater.com/modules/styling/. As a workaround, you could also use the `HTML pro module`_
+I plan to develop a pro module to do conditional formatting https://docxtemplater.com/modules/styling/. As a workaround, you could also use the `HTML pro module`_
 
-.. _`HTML pro module`: https://modules.docxtemplater.com/modules/html/
+.. _`HTML pro module`: https://docxtemplater.com/modules/html/
 
 Using data filters
 ------------------

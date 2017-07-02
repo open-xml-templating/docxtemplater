@@ -31,5 +31,4 @@ docxtemplater provides a very simple API that gives you abstraction to deal with
 
 If you need additional features, you can either build your own module, or use one of the free or paid modules that you can find here : 
 
-* https://github.com/open-xml-templating/docxtemplater-image-module
-* https://modules.docxtemplater.com/
+* https://docxtemplater.com/

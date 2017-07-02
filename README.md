@@ -51,16 +51,13 @@ Functionality can be added with modules. There is yet no documentation on how to
 
 Here is the list of existing modules:
 
-Free modules (by docxtemplater core team members):
-
--	Image module using the syntax: `{%image}`, https://github.com/open-xml-templating/docxtemplater-image-module (v3 module)
-
 Pro modules (developped by docxtemplater core team members):
 
--	Html Module to insert formatted text in a docx document https://modules.docxtemplater.com/modules/html/
--	Slides Module to create multiple slides dynamically https://modules.docxtemplater.com/modules/slides/
--	Subtemplater Module to include a document inside an other document https://modules.docxtemplater.com/modules/subtemplate
--	Table module to create beautiful tables https://modules.docxtemplater.com/modules/table
+-	Image module using the syntax: `{%image}`, https://docxtemplater.com/modules/image/
+-	Html Module to insert formatted text in a docx document https://docxtemplater.com/modules/html/
+-	Slides Module to create multiple slides dynamically https://docxtemplater.com/modules/slides/
+-	Subtemplater Module to include a document inside an other document https://docxtemplater.com/modules/subtemplate
+-	Table module to create beautiful tables https://docxtemplater.com/modules/table
 
 User contributed modules :
 

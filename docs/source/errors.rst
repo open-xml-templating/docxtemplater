@@ -99,7 +99,7 @@ The ids are :
 
 `raw_xml_tag_should_be_only_text_in_paragraph` happens when a rawXMLTag {@raw} is not the only text in the paragraph. For example, writing `  {@raw}` (Note the spaces) is not acceptable because the {@raw} tag replaces the full paragraph. We prefer to throw an Error now rather than have "strange behavior" because the spaces "disappeared".
 
-To correct this error, you have to add manually the text that you want in your raw tag. (Or you can use the https://modules.docxtemplater.com/modules/word-run/ which adds a tag that can replace rawXML inside a tag).
+To correct this error, you have to add manually the text that you want in your raw tag. (Or you can use the https://docxtemplater.com/modules/word-run/ which adds a tag that can replace rawXML inside a tag).
 
 Writing 
 
