@@ -1,5 +1,9 @@
 ### unreleased (master branch)
 
+### 3.1.3
+
+Fix `RangeError: Maximum call stack size exceeded` with very big document
+
 ### 3.1.2
 
 Handle unclosed tag <a:t /> and <w:t />
