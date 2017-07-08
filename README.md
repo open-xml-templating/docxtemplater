@@ -35,6 +35,10 @@ The full documentation of the latest version can be found on [read the docs](htt
 
 See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older versions.
 
+A user of docxtemplater named Timofey also created a tool to create documents easily :
+
+You can find the tool at : https://ntsdk.github.io/docxtemplater/docxtemplater-en.html , and a screencast showing how it works at https://www.youtube.com/watch?v=uE9By5zEwss
+
 Similar libraries
 -----------------
 
@@ -61,8 +65,8 @@ Pro modules (developped by docxtemplater core team members):
 
 User contributed modules :
 
--	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module (v2 module)
--	Hyperlink module using the syntax: `{^link}`, https://github.com/sujith3g/docxtemplater-link-module (v2 module)
+-	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module (compatible with v2 only)
+-	Hyperlink module using the syntax: `{^link}`, https://github.com/sujith3g/docxtemplater-link-module (compatible with v2 only)
 
 Professional Support
 --------------------
