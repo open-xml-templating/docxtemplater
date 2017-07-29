@@ -35,24 +35,27 @@ function createXmlTemplaterDocx(content, options) {
 		.parse();
 }
 
-function shouldBeSame(options) {
-	const zip = options.doc.getZip();
-	const expectedName = options.expectedName;
-	let expectedZip;
+function writeFile(expectedName, zip) {
 	const writeFile = path.resolve(examplesDirectory, "..", expectedName);
-
 	if (fs.writeFileSync) {
 		fs.writeFileSync(
 			writeFile,
 			zip.generate({type: "nodebuffer", compression: "DEFLATE"})
 		);
 	}
+}
+
+function shouldBeSame(options) {
+	const zip = options.doc.getZip();
+	const expectedName = options.expectedName;
+	let expectedZip;
 
 	try {
 		expectedZip = docX[expectedName].zip;
 	}
 	catch (e) {
-		console.log(JSON.stringify({msg: "Expected name does not match", expectedName}));
+		writeFile(expectedName, zip);
+		console.log(JSON.stringify({msg: "Expected file does not exists", expectedName}));
 		throw e;
 	}
 
@@ -74,7 +77,8 @@ function shouldBeSame(options) {
 		});
 	}
 	catch (e) {
-		console.log(JSON.stringify({msg: "Expected name does not match", expectedName}));
+		writeFile(expectedName, zip);
+		console.log(JSON.stringify({msg: "Expected file differs from actual file", expectedName}));
 		throw e;
 	}
 }
