@@ -27,17 +27,16 @@ Including:
 
 - `Replace Variables`_
 - `Formating`_
-- `Angular Parsing`_
+- `Conditions`_
 - `Loops`_
 - `Loops and tables`_
 - `Lists`_
 - `Raw Xml Insertion`_
 
-.. _`Online Demos`: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html
-.. _Replace Variables: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#variables
-.. _Formating: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#formating
-.. _Angular Parsing: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#parsing
-.. _Loops: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#loops
-.. _Loops and tables: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#tables
-.. _Lists: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#lists
-.. _Raw Xml Insertion: http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#rawxml
+.. _`Online Demos`: https://docxtemplater.com/demo
+.. _Replace Variables: https://docxtemplater.com/demo#simple
+.. _Conditions: https://docxtemplater.com/demo#conditions
+.. _Loops: https://docxtemplater.com/demo#loops
+.. _Loops and tables: https://docxtemplater.com/demo#loop-table
+.. _Lists: https://docxtemplater.com/demo#loop-list
+.. _Raw Xml Insertion: https://docxtemplater.com/demo#xml-insertion

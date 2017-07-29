@@ -12,13 +12,13 @@ docxtemplater
 Features
 --------
 
-[Demo Site](http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html)
+[Demo Site](https://docxtemplater.com/demo)
 
--	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#variables">Replace a {placeholder} by a value</a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#loops">Use loops: {#users} {name} {/users} </a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#tables">Use loops in tables to generate columns</a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#parsing">Use expressions {product.unit_price*product.count} with angular Parsing</a>
--	<a href="http://javascript-ninja.fr/docxtemplater/v3/examples/demo.html#rawxml">Insert custom XML {@rawXml} (for formatted text for example)</a>
+-	<a href="https://docxtemplater.com/demo#simple">Replace a {placeholder} by a value</a>
+-	<a href="https://docxtemplater.com/demo#loops">Use loops: {#users} {name} {/users} </a>
+-	<a href="https://docxtemplater.com/demo#loop-table">Use loops in tables to generate columns</a>
+-	<a href="https://docxtemplater.com/demo#conditions">Use conditions (if users.length>3) with angular Parsing</a>
+-	<a href="https://docxtemplater.com/demo#xml-insertion">Insert custom XML {@rawXml} (for formatted text for example)</a>
 
 Quickstart
 ----------
