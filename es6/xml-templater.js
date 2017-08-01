@@ -62,16 +62,19 @@ module.exports = class XmlTemplater {
 		const {postparsed, errors: postparsedErrors} = Parser.postparse(this.parsed, this.modules);
 		this.postparsed = postparsed;
 		allErrors = allErrors.concat(postparsedErrors);
-		if (allErrors.length) {
+		this.errorChecker(allErrors);
+		return this;
+	}
+	errorChecker(errors) {
+		if (errors.length) {
 			this.modules.forEach(function (module) {
-				allErrors = module.errorsTransformer(allErrors);
+				errors = module.errorsTransformer(errors);
 			});
-			allErrors.forEach((error) => {
+			errors.forEach((error) => {
 				error.properties.file = this.filePath;
 			});
-			throwMultiError(allErrors);
+			throwMultiError(errors);
 		}
-		return this;
 	}
 	/*
 	content is the whole content to be tagged
@@ -89,7 +92,9 @@ module.exports = class XmlTemplater {
 			nullGetter: this.nullGetter,
 			filePath: this.filePath,
 		};
-		this.content = render(options);
+		const {errors, parts} = render(options);
+		this.errorChecker(errors);
+		this.content = parts.join("");
 		this.setModules({inspect: {content: this.content}});
 		return this;
 	}

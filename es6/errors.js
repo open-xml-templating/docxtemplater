@@ -20,6 +20,13 @@ function XTTemplateError(message) {
 }
 XTTemplateError.prototype = new XTError();
 
+function RenderingError(message) {
+	this.name = "RenderingError";
+	this.message = message;
+	this.stack = (new Error(message)).stack;
+}
+RenderingError.prototype = new XTError();
+
 function XTScopeParserError(message) {
 	this.name = "ScopeParserError";
 	this.message = message;
@@ -206,6 +213,7 @@ module.exports = {
 	XTTemplateError,
 	XTInternalError,
 	XTScopeParserError,
+	RenderingError,
 	throwMultiError,
 	throwXmlTagNotFound,
 	throwDecodeUTF8Error,

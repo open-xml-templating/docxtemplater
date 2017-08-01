@@ -22,9 +22,13 @@ function render(options) {
 	if (!options.scopeManager) {
 		options.scopeManager = ScopeManager.createBaseScopeManager(options);
 	}
-	return options.compiled.map(function (part) {
+	let errors = [];
+	const parts = options.compiled.map(function (part) {
 		const moduleRendered = moduleRender(part, options);
 		if (moduleRendered) {
+			if (moduleRendered.errors) {
+				errors = errors.concat(moduleRendered.errors);
+			}
 			return moduleRendered.value;
 		}
 		if (part.type === "placeholder") {
@@ -38,7 +42,8 @@ function render(options) {
 			return part.value;
 		}
 		throwUnimplementedTagType(part);
-	}).join("");
+	});
+	return {errors, parts};
 }
 
 module.exports = render;

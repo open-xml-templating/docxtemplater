@@ -41,19 +41,22 @@ const loopModule = {
 		if(!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
 		}
-		const totalValue = [];
+		let totalValue = [];
+		let errors = [];
 		function loopOver(scope) {
 			const scopeManager = options.scopeManager.createSubScopeManager(scope, part.value);
-			totalValue.push(options.render(
+			const subRendered = options.render(
 				DocUtils.mergeObjects({}, options, {
 					compiled: part.subparsed,
 					tags: {},
 					scopeManager,
 				})
-			));
+			);
+			totalValue = totalValue.concat(subRendered.parts);
+			errors = errors.concat(subRendered.errors || []);
 		}
 		options.scopeManager.loopOver(part.value, loopOver, part.inverted);
-		return {value: totalValue.join("")};
+		return {value: totalValue.join(""), errors};
 	},
 };
 
