@@ -20,6 +20,11 @@ const Docxtemplater = class Docxtemplater {
 			module.set(obj);
 		});
 	}
+	sendEvent(eventName) {
+		this.modules.forEach((module) => {
+			module.on(eventName);
+		});
+	}
 	attachModule(module) {
 		this.modules.push(wrapper(module));
 		return this;
@@ -111,6 +116,7 @@ const Docxtemplater = class Docxtemplater {
 			currentFile.render(to);
 			this.zip.file(to, currentFile.content);
 		});
+		this.sendEvent("syncing-zip");
 		this.syncZip();
 		return this;
 	}

@@ -10,6 +10,7 @@ module.exports = function (module) {
 		errorsTransformer: identity,
 		getRenderedMap: identity,
 		postparse: identity,
+		on: emptyFun,
 	};
 	if (Object.keys(defaults).every(function (key) {
 		return !module[key];
