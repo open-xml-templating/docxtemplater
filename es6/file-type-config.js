@@ -21,11 +21,12 @@ const PptXFileTypeConfig = {
 
 const DocXFileTypeConfig = {
 	getTemplatedFiles(zip) {
+		const baseTags = ["docProps/core.xml", "docProps/app.xml", "word/document.xml"];
 		const slideTemplates = zip.file(/word\/(header|footer)\d+\.xml/).map(function (file) { return file.name; });
-		return slideTemplates.concat(["word/document.xml"]);
+		return slideTemplates.concat(baseTags);
 	},
 	textPath: "word/document.xml",
-	tagsXmlTextArray: ["w:t", "m:t"],
+	tagsXmlTextArray: ["w:t", "m:t", "vt:lpstr", "dc:title", "dc:creator", "cp:keywords"],
 	tagsXmlLexedArray: ["w:tc", "w:tr", "w:table", "w:p", "w:r"],
 	tagRawXml: "w:p",
 	tagTextXml: "w:t",

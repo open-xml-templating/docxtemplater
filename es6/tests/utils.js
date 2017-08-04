@@ -62,6 +62,7 @@ function shouldBeSame(options) {
 	try {
 		Object.keys(zip.files).map(function (filePath) {
 			const suffix = `for "${filePath}"`;
+			expect(expectedZip.files[filePath]).to.be.an("object", `The file ${filePath} doesn't exist on ${expectedName}`);
 			expect(zip.files[filePath].name).to.be.equal(expectedZip.files[filePath].name, `Name differs ${suffix}`);
 			expect(zip.files[filePath].options.dir).to.be.equal(expectedZip.files[filePath].options.dir, `IsDir differs ${suffix}`);
 			const text1 = zip.files[filePath].asText().replace(/\n|\t/g, "");
@@ -226,7 +227,47 @@ function endLoadFile(change) {
 	}
 }
 
+function endsWith(str, suffix) {
+	return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+function startsWith(str, suffix) {
+	return str.indexOf(suffix) === 0;
+}
+function walk(dir) {
+	let results = [];
+	const list = fs.readdirSync(dir);
+	list.forEach(function (file) {
+		file = dir + "/" + file;
+		const stat = fs.statSync(file);
+		if (stat && stat.isDirectory()) {
+			results = results.concat(walk(file));
+		}
+		else {
+			results.push(file);
+		}
+	});
+	return results;
+}
+
 function start() {
+	const fileNames = walk(examplesDirectory);
+	fileNames.forEach(function (fullFileName) {
+		const fileName = fullFileName.replace(examplesDirectory + "/", "");
+		let callback;
+		if (startsWith(fileName, ".")) {
+			return;
+		}
+		if (endsWith(fileName, ".docx") || endsWith(fileName, ".pptx")) {
+			callback = loadDocument;
+		}
+		if (endsWith(fileName, ".png")) {
+			callback = loadImage;
+		}
+		if (!callback) {
+			return;
+		}
+		loadFile(fileName, callback);
+	});
 	allStarted = true;
 	endLoadFile(-1);
 }
