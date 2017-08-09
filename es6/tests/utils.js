@@ -44,6 +44,20 @@ function writeFile(expectedName, zip) {
 		);
 	}
 }
+function unlinkFile(expectedName) {
+	const writeFile = path.resolve(examplesDirectory, "..", expectedName);
+	if (fs.unlinkSync) {
+		try {
+			fs.unlinkSync(
+				writeFile,
+			);
+		} catch (e) {
+			if (e.code !== "ENOENT") {
+				throw e;
+			}
+		}
+	}
+}
 
 function shouldBeSame(options) {
 	const zip = options.doc.getZip();
@@ -82,6 +96,7 @@ function shouldBeSame(options) {
 		console.log(JSON.stringify({msg: "Expected file differs from actual file", expectedName}));
 		throw e;
 	}
+	unlinkFile(expectedName);
 }
 
 function checkLength(e, expectedError, propertyPath) {
