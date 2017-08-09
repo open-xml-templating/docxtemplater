@@ -77,6 +77,7 @@ DocUtils.charMap = {
 	"'": "&apos;",
 	"<": "&lt;",
 	">": "&gt;",
+	'"': "&quot;",
 };
 
 const regexStripRegexp = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
