@@ -8,7 +8,7 @@ const expect = chai.expect;
 const JSZip = require("jszip");
 const xmlPrettify = require("./xml-prettify");
 const fs = require("fs");
-const _ = require("lodash");
+const {get, unset, omit, uniq} = require("lodash");
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;
@@ -75,7 +75,7 @@ function shouldBeSame(options) {
 	}
 
 	try {
-		Object.keys(zip.files).map(function (filePath) {
+		uniq(Object.keys(zip.files).concat(Object.keys(expectedZip.files))).map(function (filePath) {
 			const suffix = `for "${filePath}"`;
 			expect(expectedZip.files[filePath]).to.be.an("object", `The file ${filePath} doesn't exist on ${expectedName}`);
 			expect(zip.files[filePath].name).to.be.equal(expectedZip.files[filePath].name, `Name differs ${suffix}`);
@@ -102,13 +102,13 @@ function shouldBeSame(options) {
 
 function checkLength(e, expectedError, propertyPath) {
 	const propertyPathLength = propertyPath + "Length";
-	const property = _.get(e, propertyPath);
-	const expectedPropertyLength = _.get(expectedError, propertyPathLength);
+	const property = get(e, propertyPath);
+	const expectedPropertyLength = get(expectedError, propertyPathLength);
 	if (property && expectedPropertyLength) {
 		expect(expectedPropertyLength).to.be.a("number", JSON.stringify(expectedError.properties));
 		expect(expectedPropertyLength).to.equal(property.length);
-		_.unset(e, propertyPath);
-		_.unset(expectedError, propertyPathLength);
+		unset(e, propertyPath);
+		unset(expectedError, propertyPathLength);
 	}
 }
 
@@ -119,7 +119,7 @@ function cleanError(e, expectedError) {
 	}
 	delete e.properties.offset;
 	delete expectedError.properties.offset;
-	e = _.omit(e, ["line", "sourceURL", "stack"]);
+	e = omit(e, ["line", "sourceURL", "stack"]);
 	if (e.properties.postparsed) {
 		e.properties.postparsed.forEach(function (p) {
 			delete p.lIndex;

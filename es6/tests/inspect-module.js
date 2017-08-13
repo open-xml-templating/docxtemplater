@@ -1,4 +1,4 @@
-const _ = require("lodash");
+const {merge} = require("lodash");
 const wrapper = require("../module-wrapper");
 
 class InspectModule {
@@ -12,7 +12,7 @@ class InspectModule {
 			if (obj.inspect.filePath) {
 				this.filePath = obj.inspect.filePath;
 			}
-			this.inspect = _.merge({}, this.inspect, obj.inspect);
+			this.inspect = merge({}, this.inspect, obj.inspect);
 			this.fullInspected[this.filePath] = this.inspect;
 		}
 	}

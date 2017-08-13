@@ -1,4 +1,4 @@
-const _ = require("lodash");
+const {clone} = require("lodash");
 
 const xmlSpacePreserveTag = {type: "tag", position: "start", value: '<w:t xml:space="preserve">', text: true};
 
@@ -483,7 +483,7 @@ const fixtures = {
 
 };
 
-fixtures.rawxmlemptycontent = _.clone(fixtures.rawxml);
+fixtures.rawxmlemptycontent = clone(fixtures.rawxml);
 fixtures.rawxmlemptycontent.it = "should work with rawxml with undefined tags";
 fixtures.rawxmlemptycontent.scope = {};
 fixtures.rawxmlemptycontent.result = "BEFOREAFTER";
