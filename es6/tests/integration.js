@@ -1,5 +1,4 @@
-const testUtils = require("./utils");
-const {createDoc, shouldBeSame, expect} = testUtils;
+const {createDoc, shouldBeSame, expect} = require("./utils");
 const fs = require("fs");
 const path = require("path");
 

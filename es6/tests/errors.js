@@ -9,6 +9,7 @@ function angularParser(tag) {
 		},
 	};
 }
+const {loadFile, loadDocument} = require("./utils");
 const Errors = require("../errors.js");
 const {createXmlTemplaterDocx, wrapMultiError, expectToThrow} = require("./utils");
 
@@ -272,6 +273,19 @@ describe("internal errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, 1);
+		expectToThrow(create, Errors.XTInternalError, expectedError);
+	});
+	it("should fail if using odt format", function () {
+		const expectedError = {
+			name: "InternalError",
+			message: "The filetype \"odt\" is not handled by docxtemplater",
+			properties: {
+				id: "filetype_not_handled",
+			},
+		};
+		function create() {
+			loadFile("test.odt", loadDocument);
+		}
 		expectToThrow(create, Errors.XTInternalError, expectedError);
 	});
 });

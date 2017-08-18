@@ -1,5 +1,4 @@
-const testUtils = require("./utils");
-const expect = testUtils.expect;
+const {expect, createXmlTemplaterDocx, createDoc, imageData} = require("./utils");
 const fs = require("fs");
 const path = require("path");
 const JSZip = require("jszip");
@@ -28,42 +27,42 @@ function getLength(obj) {
 describe("DocxtemplaterLoading", function () {
 	describe("ajax done correctly", function () {
 		it("doc and img Data should have the expected length", function () {
-			const doc = testUtils.createDoc("image-example.docx");
+			const doc = createDoc("image-example.docx");
 			expect(getLength(doc.loadedContent)).to.be.equal(729580);
-			expect(getLength(testUtils.imageData["image.png"])).to.be.equal(18062);
+			expect(getLength(imageData["image.png"])).to.be.equal(18062);
 		});
 		it("should have the right number of files (the docx unzipped)", function () {
-			const doc = testUtils.createDoc("image-example.docx");
+			const doc = createDoc("image-example.docx");
 			expect(DocUtils.sizeOfObject(doc.zip.files)).to.be.equal(16);
 		});
 	});
 	describe("basic loading", function () {
 		it("should load file image-example.docx", function () {
-			const doc = testUtils.createDoc("image-example.docx");
+			const doc = createDoc("image-example.docx");
 			expect(typeof doc).to.be.equal("object");
 		});
 	});
 	describe("content_loading", function () {
 		it("should load the right content for the footer", function () {
-			const doc = testUtils.createDoc("image-example.docx");
+			const doc = createDoc("image-example.docx");
 			const fullText = (doc.getFullText("word/footer1.xml"));
 			expect(fullText.length).not.to.be.equal(0);
 			expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 		});
 		it("should load the right content for the document", function () {
-			const doc = testUtils.createDoc("image-example.docx");
+			const doc = createDoc("image-example.docx");
 			const fullText = (doc.getFullText());
 			expect(fullText).to.be.equal("");
 		});
 		it("should load the right template files for the document", function () {
-			const doc = testUtils.createDoc("tag-example.docx");
+			const doc = createDoc("tag-example.docx");
 			const templatedFiles = (doc.getTemplatedFiles());
 			expect(templatedFiles).to.be.eql(["word/header1.xml", "word/footer1.xml", "docProps/core.xml", "docProps/app.xml", "word/document.xml"]);
 		});
 	});
 	describe("output and input", function () {
 		it("should be the same", function () {
-			const zip = new JSZip(testUtils.createDoc("tag-example.docx").loadedContent);
+			const zip = new JSZip(createDoc("tag-example.docx").loadedContent);
 			const doc = new Docxtemplater().loadZip(zip);
 			const output = doc.getZip().generate({type: "base64"});
 			expect(output.length).to.be.equal(90732);
@@ -85,7 +84,7 @@ describe("inspect module", function () {
 				return tags;
 			}, {});
 		}
-		const doc = testUtils.createDoc("tag-loop-example.docx");
+		const doc = createDoc("tag-loop-example.docx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
 		doc.render();
@@ -113,14 +112,14 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 				description: "New Website",
 				offre: [{titre: "titre1", prix: "1250"}, {titre: "titre2", prix: "2000"}, {titre: "titre3", prix: "1400", nom: "Offre"}],
 			};
-			const doc = testUtils.createDoc("tag-loop-example.docx");
+			const doc = createDoc("tag-loop-example.docx");
 			doc.setData(tags);
 			doc.render();
 			expect(doc.getFullText()).to.be.equal("Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar");
 		});
 		it("should work with loops inside loops", function () {
 			const tags = {products: [{title: "Microsoft", name: "DOS", reference: "Win7", avantages: [{title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]}]}, {title: "Linux", name: "Ubuntu", reference: "Ubuntu10", avantages: [{title: "It's very powerful", proof: [{reason: "the terminal is your friend"}, {reason: "Hello world"}, {reason: "it's free"}]}]}, {title: "Apple", name: "Mac", reference: "OSX", avantages: [{title: "It's very easy", proof: [{reason: "you can do a lot just with the mouse"}, {reason: "It's nicely designed"}]}]}]};
-			const doc = testUtils.createDoc("tag-product-loop.docx");
+			const doc = createDoc("tag-product-loop.docx");
 			doc.setData(tags);
 			doc.render();
 			const text = doc.getFullText();
@@ -132,7 +131,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
 			const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
 			const scope = {todo: {todo: "abc"}};
-			const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 			xmlTemplater.render();
 			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
 		});
@@ -140,7 +139,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
 			const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
 			const scope = {todo: "abc"};
-			const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 			xmlTemplater.render();
 			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
 		});
@@ -148,7 +147,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			const content = "<w:t>{^todos}No {/todos}Todos</w:t><w:t>{#todos}{.}{/todos}</w:t>";
 			const expectedContent = '<w:t>Todos</w:t><w:t xml:space="preserve">ABC</w:t>';
 			const scope = {todos: ["A", "B", "C"]};
-			const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 			xmlTemplater.render();
 			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
 		});
@@ -158,7 +157,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			const expectedContent = `<w:t>No Todos</w:t>
 			<w:t xml:space="preserve"></w:t>`;
 			const scope = {todos: []};
-			const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 			xmlTemplater.render();
 			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
 		});
@@ -170,7 +169,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 				{products: false},
 				{},
 			].forEach(function (tags) {
-				const doc = testUtils.createXmlTemplaterDocx(content, {tags});
+				const doc = createXmlTemplaterDocx(content, {tags});
 				doc.render();
 				expect(doc.getFullText()).to.be.equal("No products found");
 			});
@@ -181,7 +180,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 				{products: "Bread"},
 				{products: {name: "Bread"}},
 			].forEach(function (tags) {
-				const doc = testUtils.createXmlTemplaterDocx(content, {tags});
+				const doc = createXmlTemplaterDocx(content, {tags});
 				doc.render();
 				expect(doc.getFullText()).to.be.equal("");
 			});
@@ -190,7 +189,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 		it("should be possible to close loops with {/}", function () {
 			const content = "<w:t>{#products}Product {name}{/}</w:t>";
 			const tags = {products: [{name: "Bread"}]};
-			const doc = testUtils.createXmlTemplaterDocx(content, {tags});
+			const doc = createXmlTemplaterDocx(content, {tags});
 			doc.render();
 			expect(doc.getFullText()).to.be.equal("Product Bread");
 		});
@@ -198,7 +197,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 		it("should be possible to close double loops with {/}", function () {
 			const content = "<w:t>{#companies}{#products}Product {name}{/}{/}</w:t>";
 			const tags = {companies: [{products: [{name: "Bread"}]}]};
-			const doc = testUtils.createXmlTemplaterDocx(content, {tags});
+			const doc = createXmlTemplaterDocx(content, {tags});
 			doc.render();
 			expect(doc.getFullText()).to.be.equal("Product Bread");
 		});
@@ -206,7 +205,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 		it("should work with complex loops", function () {
 			const content = "<w:t>{title} {#users} {name} friends are : {#friends} {.</w:t>TAG..TAG<w:t>},{/friends} {/users</w:t>TAG2<w:t>}</w:t>";
 			const scope = {title: "###Title###", users: [{name: "John Doe", friends: ["Jane", "Henry"]}, {}], name: "Default", friends: ["None"]};
-			const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			const doc = createXmlTemplaterDocx(content, {tags: scope});
 			doc.render();
 			expect(doc.getFullText()).to.be.equal("###Title###  John Doe friends are :  Jane, Henry,  Default friends are :  None, ");
 		});
@@ -220,12 +219,12 @@ describe("Changing the parser", function () {
 		function parser(tag) {
 			return {["get"](scope) { return scope[tag].toUpperCase(); }};
 		}
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope, parser});
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope, parser});
 		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
 	});
 	it("should work when setting from the Docxtemplater interface", function () {
-		const doc = testUtils.createDoc("tag-example.docx");
+		const doc = createDoc("tag-example.docx");
 		const zip = new JSZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
 		const tags = {
@@ -246,7 +245,7 @@ describe("Changing the parser", function () {
 
 	it("should work with angular parser", function () {
 		const tags = {person: {first_name: "Hipp", last_name: "Edgar", birth_year: 1955, age: 59}};
-		const doc = testUtils.createDoc("angular-example.docx");
+		const doc = createDoc("angular-example.docx");
 		doc.setData(tags);
 		doc.parser = angularParser;
 		doc.render();
@@ -256,7 +255,7 @@ describe("Changing the parser", function () {
 	it("should work with loops", function () {
 		const content = "<w:t>Hello {#person.adult}you{/person.adult}</w:t>";
 		const scope = {person: {name: "Edgar", adult: true}};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope, parser: angularParser});
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope, parser: angularParser});
 		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 	});
@@ -266,7 +265,7 @@ describe("Special characters", function () {
 	it("should parse placeholder containing special characters", function () {
 		const content = "<w:t>Hello {&gt;name}</w:t>";
 		const scope = {">name": "Edgar"};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 		xmlTemplater.render();
 		expect(xmlTemplater.content).to.be.deep.equal('<w:t xml:space="preserve">Hello Edgar</w:t>');
 	});
@@ -274,13 +273,13 @@ describe("Special characters", function () {
 	it("should render placeholder containing special characters", function () {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = {name: "<Edgar>"};
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 		xmlTemplater.render();
 		expect(xmlTemplater.content).to.be.deep.equal('<w:t xml:space="preserve">Hello &lt;Edgar&gt;</w:t>');
 	});
 
 	it("should read full text correctly", function () {
-		const doc = testUtils.createDoc("cyrillic.docx");
+		const doc = createDoc("cyrillic.docx");
 		const fullText = doc.getFullText();
 		expect(fullText.charCodeAt(0)).to.be.equal(1024);
 		expect(fullText.charCodeAt(1)).to.be.equal(1050);
@@ -292,7 +291,7 @@ describe("Special characters", function () {
 		expect(fullText.charCodeAt(7)).to.be.equal(1040);
 	});
 	it("should still read full text after applying tags", function () {
-		const doc = testUtils.createDoc("cyrillic.docx");
+		const doc = createDoc("cyrillic.docx");
 		doc.setData({name: "Edgar"});
 		doc.render();
 		const fullText = doc.getFullText();
@@ -311,7 +310,7 @@ describe("Special characters", function () {
 		const russian = russianText.map(function (char) {
 			return String.fromCharCode(char);
 		}).join("");
-		const doc = testUtils.createDoc("tag-example.docx");
+		const doc = createDoc("tag-example.docx");
 		const zip = new JSZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
 		d.setData({last_name: russian});
@@ -330,7 +329,7 @@ describe("Complex table example", function () {
 					{user: "Jane"},
 				],
 			};
-			const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+			const doc = createXmlTemplaterDocx(content, {tags: scope});
 			doc.render();
 			expect(doc.content).to.be.equal('<w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">John</w:t></w:tc></w:tr></w:table><w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">Jane</w:t></w:tc></w:tr></w:table><w:t></w:t>');
 		});
@@ -352,7 +351,7 @@ describe("Complex table example", function () {
 		</w:tr>
 		<w:t>{key}</w:t>
 		`;
-		const doc = testUtils.createXmlTemplaterDocx(template, {tags});
+		const doc = createXmlTemplaterDocx(template, {tags});
 		doc.render();
 		const fullText = doc.getFullText();
 
@@ -376,7 +375,7 @@ describe("Raw Xml Insertion", function () {
 		const inner = "<w:p><w:r><w:t>{@complexXml}</w:t></w:r></w:p>";
 		const content = `<w:document>${inner}</w:document>`;
 		const scope = {complexXml: fs.readFileSync(path.resolve(__dirname, "raw-complex-docx.xml"), "utf8")};
-		const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+		const doc = createXmlTemplaterDocx(content, {tags: scope});
 		doc.render();
 		expect(doc.content.length).to.be.equal(content.length + scope.complexXml.length - (inner.length));
 		expect(doc.content).to.contain(scope.complexXml);
@@ -446,7 +445,7 @@ describe("Raw Xml Insertion", function () {
 				{year: 2010, name: "Bread", company: "Yu"},
 			],
 		};
-		const doc = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+		const doc = createXmlTemplaterDocx(content, {tags: scope});
 		doc.render();
 		expect(doc.content).to.contain(scope.complexXml);
 		expect(doc.getFullText()).to.be.equal("HelloJohnDoe 1550MotoFein 1987WaterTest 2010BreadYu");
@@ -457,14 +456,14 @@ describe("Raw Xml Insertion", function () {
 		const content = `<w:t>{#body}</w:t>
 		<w:t>{paragraph</w:t>
 			<w:t>}{/body}</w:t>`;
-		const xmlTemplater = testUtils.createXmlTemplaterDocx(content, {tags: scope});
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 
 		xmlTemplater.render();
 		expect(xmlTemplater.content).not.to.contain("</w:t></w:t>");
 	});
 	it("should work with simple example and given options", function () {
 		const scope = {xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>'};
-		const doc = testUtils.createDoc("one-raw-xml-tag.docx");
+		const doc = createDoc("one-raw-xml-tag.docx");
 		doc.setOptions({
 			fileTypeConfig: merge({}, Docxtemplater.FileTypeConfig.docx, {tagRawXml: "w:r"}),
 		});
@@ -476,7 +475,7 @@ describe("Raw Xml Insertion", function () {
 
 describe("Serialization", function () {
 	it("should be serialiazable (useful for logging)", function () {
-		const doc = testUtils.createDoc("tag-example.docx");
+		const doc = createDoc("tag-example.docx");
 		JSON.stringify(doc);
 	});
 });

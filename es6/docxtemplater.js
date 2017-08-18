@@ -1,7 +1,7 @@
 "use strict";
 
 const DocUtils = require("./doc-utils");
-const {XTInternalError, throwFileTypeNotIdentified} = require("./errors");
+const {XTInternalError, throwFileTypeNotIdentified, throwFileTypeNotHandled} = require("./errors");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
 const wrapper = DocUtils.moduleWrapper;
@@ -82,6 +82,7 @@ const Docxtemplater = class Docxtemplater {
 		const fileTypeIdentifiers = {
 			docx: "word/document.xml",
 			pptx: "ppt/presentation.xml",
+			odt: "mimetype",
 		};
 
 		const fileType = Object.keys(fileTypeIdentifiers).reduce((fileType, key) => {
@@ -94,6 +95,9 @@ const Docxtemplater = class Docxtemplater {
 			return fileType;
 		}, null);
 
+		if (fileType === "odt") {
+			throwFileTypeNotHandled(fileType);
+		}
 		if (!fileType) {
 			throwFileTypeNotIdentified();
 		}

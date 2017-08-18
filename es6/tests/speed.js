@@ -1,14 +1,13 @@
 "use strict";
 
-const testUtils = require("./utils");
-const expect = testUtils.expect;
+const {createXmlTemplaterDocx, expect} = require("./utils");
 
 describe("speed test", function () {
 	it("should be fast for simple tags", function () {
 		const content = "<w:t>tag {age}</w:t>";
 		const time = new Date();
 		for (let i = 1; i <= 100; i++) {
-			testUtils.createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
+			createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
 		}
 		const duration = new Date() - time;
 		expect(duration).to.be.below(120);
@@ -24,7 +23,7 @@ describe("speed test", function () {
 		content = prepost + content + prepost;
 		const time = new Date();
 		for (i = 1; i <= 50; i++) {
-			testUtils.createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
+			createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
 		}
 		const duration = new Date() - time;
 		expect(duration).to.be.below(100);
@@ -36,7 +35,7 @@ describe("speed test", function () {
 			users.push({name: "foo"});
 		}
 		const time = new Date();
-		testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
+		createXmlTemplaterDocx(content, {tags: {users}}).render();
 		const duration = new Date() - time;
 		expect(duration).to.be.below(100);
 	});
@@ -57,7 +56,7 @@ describe("speed test", function () {
 			const content = result.join("");
 			const users = [];
 			const time = new Date();
-			testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
+			createXmlTemplaterDocx(content, {tags: {users}}).render();
 			const duration = new Date() - time;
 			expect(duration).to.be.below(25000);
 		});

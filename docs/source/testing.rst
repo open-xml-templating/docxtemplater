@@ -24,9 +24,9 @@ The integration tests are in es6/tests/integration.js
 .. code-block:: javascript
 
 	it("should work with table pptx", function () {
-		const doc = testUtils.createDoc("table-example.pptx");
+		const doc = createDoc("table-example.pptx");
 		doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render();
-		testUtils.shouldBeSame({doc, expectedName: "table-example-expected.pptx"});
+		shouldBeSame({doc, expectedName: "table-example-expected.pptx"});
 	});
 
 All of the test documents are in the folder `examples/`
@@ -35,7 +35,7 @@ All of the test documents are in the folder `examples/`
 * We then set data and render the document.
 * We then verify that the document is the same as "table-example-expected.pptx"
 
-testUtils.shouldBeSame will, for each XML file that is inside the zip document, pretty print it, and then compare them. That way, we have a more beautiful diff and spacing differences do not matter in the output document.
+shouldBeSame will, for each XML file that is inside the zip document, pretty print it, and then compare them. That way, we have a more beautiful diff and spacing differences do not matter in the output document.
 
 Regression tests
 ----------------
@@ -55,7 +55,7 @@ Docxtemplater was not able to render text that was written in russian (because o
         const russian = russianText.map(function (char) {
             return String.fromCharCode(char);
         }).join("");
-        const doc = testUtils.createDoc("tag-example.docx");
+        const doc = createDoc("tag-example.docx");
         const zip = new JSZip(doc.loadedContent);
         const d = new Docxtemplater().loadZip(zip);
         d.setData({last_name: russian});
@@ -129,7 +129,7 @@ For example for this test:
             users.push({name: "foo"});
         }
         const time = new Date();
-        testUtils.createXmlTemplaterDocx(content, {tags: {users}}).render();
+        createXmlTemplaterDocx(content, {tags: {users}}).render();
         const duration = new Date() - time;
         expect(duration).to.be.below(60);
     });

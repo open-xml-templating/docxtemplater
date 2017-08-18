@@ -1,6 +1,5 @@
 const Lexer = require("../lexer.js");
-const testUtils = require("./utils");
-const expect = testUtils.expect;
+const {expect, makeDocx} = require("./utils");
 const fixtures = require("./fixtures");
 const FileTypeConfig = require("../file-type-config");
 const docxconfig = FileTypeConfig.docx;
@@ -27,7 +26,7 @@ describe("Algorithm", function () {
 	Object.keys(fixtures).forEach(function (key) {
 		const fixture = fixtures[key];
 		it(fixture.it, function () {
-			const doc = testUtils.makeDocx(key, fixture.content);
+			const doc = makeDocx(key, fixture.content);
 			doc.setOptions({delimiters: fixture.delimiters});
 			const iModule = inspectModule();
 			doc.attachModule(iModule);

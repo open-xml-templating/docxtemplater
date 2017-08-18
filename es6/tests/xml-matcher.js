@@ -1,6 +1,5 @@
 const xmlMatcher = require("../xml-matcher.js");
-const testUtils = require("./utils");
-const expect = testUtils.expect;
+const {expect} = require("./utils");
 
 describe("xmlMatcher", function () {
 	it("should work with simple tag", function () {

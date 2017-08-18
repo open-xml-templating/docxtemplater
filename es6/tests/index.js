@@ -1,9 +1,9 @@
 "use strict";
 
-const testUtils = require("./utils");
+const {setExamplesDirectory, setStartFunction, start} = require("./utils");
 const path = require("path");
-testUtils.setExamplesDirectory(path.resolve(__dirname, "..", "..", "examples"));
-testUtils.setStartFunction(startTest);
+setExamplesDirectory(path.resolve(__dirname, "..", "..", "examples"));
+setStartFunction(startTest);
 
 function startTest() {
 	require("./base");
@@ -20,4 +20,4 @@ function startTest() {
 	}
 }
 
-testUtils.start();
+start();
