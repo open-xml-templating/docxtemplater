@@ -1,3 +1,7 @@
+### 3.1.6
+
+Show clear error if file is ODT, escape " as `&quot;`
+
 ### 3.1.5
 
 Template values in docProps/core.xml and docProps/app.xml
