@@ -303,7 +303,7 @@ function removeSpaces(text) {
 
 function makeDocx(name, content) {
 	const zip = new JSZip();
-	zip.file("word/document.xml", content);
+	zip.file("word/document.xml", content, {createFolders: true});
 	const base64 = zip.generate({type: "string"});
 	return load(name, base64, "docx", docX);
 }

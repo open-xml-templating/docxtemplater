@@ -118,7 +118,7 @@ const Docxtemplater = class Docxtemplater {
 			const currentFile = this.compiled[from];
 			currentFile.setTags(mapped.data);
 			currentFile.render(to);
-			this.zip.file(to, currentFile.content);
+			this.zip.file(to, currentFile.content, {createFolders: true});
 		});
 		this.sendEvent("syncing-zip");
 		this.syncZip();
@@ -128,7 +128,7 @@ const Docxtemplater = class Docxtemplater {
 		Object.keys(this.xmlDocuments).forEach((fileName) => {
 			this.zip.remove(fileName);
 			const content = DocUtils.xml2str(this.xmlDocuments[fileName]);
-			return this.zip.file(fileName, content, {});
+			return this.zip.file(fileName, content, {createFolders: true});
 		});
 	}
 	setData(data) {
