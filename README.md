@@ -60,8 +60,9 @@ Modules developped by docxtemplater core team members :
 -	Image module using the syntax: `{%image}`, https://docxtemplater.com/modules/image/
 -	Html Module to insert formatted text in a docx document https://docxtemplater.com/modules/html/
 -	Slides Module to create multiple slides dynamically https://docxtemplater.com/modules/slides/
--	Subtemplater Module to include a document inside an other document https://docxtemplater.com/modules/subtemplate
+-	Subtemplate Module to include a document inside an other document https://docxtemplater.com/modules/subtemplate
 -	Word-Run Module to include raw runs (<w:r>) inside the document. This makes it possible to include styled text without having to remove the enclosing paragraph like in the {@rawXml} tag. https://docxtemplater.com/modules/subtemplate
+-	QrCode Module to replace an image, keeping any existing properties https://docxtemplater.com/modules/qrcode
 -	Error Location Module to show the errors in the template with comments inside the template https://docxtemplater.com/modules/error-location
 
 User contributed modules :
