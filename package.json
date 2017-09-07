@@ -65,9 +65,9 @@
     "lint": "./check-casing.bash && eslint .",
     "lint:fix": "./check-casing.bash && eslint . --fix",
     "babel": "babel es6 --out-dir js",
-    "mocha": "mocha js/tests/index.js",
-    "test:es6": "mocha es6/tests/index.js",
-    "test:es6:fast": "FAST=true mocha es6/tests/index.js",
+    "mocha": "mocha --full-trace --check-leaks js/tests/index.js",
+    "test:es6": "mocha --full-trace --check-leaks es6/tests/index.js",
+    "test:es6:fast": "FAST=true mocha --full-trace --check-leaks es6/tests/index.js",
     "test": "npm run convertto:es5 && npm run mocha",
     "test:es5": "npm test",
     "verifypublishsize": "./verifypublishsize.bash"
