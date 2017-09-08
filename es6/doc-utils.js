@@ -1,7 +1,6 @@
 "use strict";
 
-const DOMParser = require("xmldom").DOMParser;
-const XMLSerializer = require("xmldom").XMLSerializer;
+const {DOMParser, XMLSerializer} = require("xmldom");
 const {throwXmlTagNotFound, throwDecodeUTF8Error} = require("./errors");
 
 const DocUtils = {};
