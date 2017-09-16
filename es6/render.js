@@ -1,7 +1,6 @@
 "use strict";
 
-const ScopeManager = require("./scope-manager");
-const DocUtils = require("./doc-utils");
+const {utf8ToWord, concatArrays} = require("./doc-utils");
 const {throwUnimplementedTagType} = require("./errors");
 
 function moduleRender(part, options) {
@@ -17,26 +16,22 @@ function moduleRender(part, options) {
 }
 
 function render(options) {
-	options.render = render;
-	options.modules = options.modules;
-	if (!options.scopeManager) {
-		options.scopeManager = ScopeManager.createBaseScopeManager(options);
-	}
+	const {compiled, scopeManager, nullGetter} = options;
 	let errors = [];
-	const parts = options.compiled.map(function (part) {
+	const parts = compiled.map(function (part) {
 		const moduleRendered = moduleRender(part, options);
 		if (moduleRendered) {
 			if (moduleRendered.errors) {
-				errors = errors.concat(moduleRendered.errors);
+				errors = concatArrays([errors, moduleRendered.errors]);
 			}
 			return moduleRendered.value;
 		}
 		if (part.type === "placeholder") {
-			let value = options.scopeManager.getValue(part.value);
+			let value = scopeManager.getValue(part.value);
 			if (value == null) {
-				value = options.nullGetter(part);
+				value = nullGetter(part);
 			}
-			return DocUtils.utf8ToWord(value);
+			return utf8ToWord(value);
 		}
 		if (part.type === "content" || part.type === "tag") {
 			return part.value;
@@ -46,4 +41,4 @@ function render(options) {
 	return {errors, parts};
 }
 
-module.exports = render;
+module.exports = {render};

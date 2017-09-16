@@ -1,26 +1,41 @@
 language: node_js
 
-sudo: false
+dist: trusty
+sudo: required
+
+addons:
+  chrome: stable
+
+matrix:
+  include:
+    - node_js: "stable"
+      env: COMMAND=preversion
+    - node_js: "0.10"
+      env: COMMAND=test
+    - node_js: "0.12"
+      env: COMMAND=test
+    - node_js: "4"
+      env: COMMAND=test
+    - node_js: "4.0"
+      env: COMMAND=test
+    - node_js: "4.1"
+      env: COMMAND=test
+    - node_js: "5"
+      env: COMMAND=test
+    - node_js: "5.0"
+      env: COMMAND=test
+    - node_js: "5.1"
+      env: COMMAND=test
+    - node_js: "5.2"
+      env: COMMAND=test
+    - node_js: "6"
+      env: COMMAND=test
+    - node_js: "7"
+      env: COMMAND=test
+    - node_js: "8"
+      env: COMMAND=test
+    - node_js: "iojs"
+      env: COMMAND=test
 
 script:
-  - npm test
-  - npm run check-casing
-  - nvm install stable
-  - npm run lint
-  - npm run preversion
-  - nvm use $TRAVIS_NODE_VERSION
-
-node_js:
-  - "0.12"
-  - "0.10"
-  - "iojs"
-  - "4.0"
-  - "4.1"
-  - "4"
-  - "5.0"
-  - "5.1"
-  - "5.2"
-  - "5"
-  - "6"
-  - "7"
-  - "8"
+  - npm run "$COMMAND"

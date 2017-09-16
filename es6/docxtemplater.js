@@ -1,10 +1,10 @@
 "use strict";
 
 const DocUtils = require("./doc-utils");
-const {XTInternalError, throwFileTypeNotIdentified, throwFileTypeNotHandled} = require("./errors");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
-const wrapper = DocUtils.moduleWrapper;
+const {defaults, str2xml, xml2str, moduleWrapper, concatArrays} = DocUtils;
+const {XTInternalError, throwFileTypeNotIdentified, throwFileTypeNotHandled} = require("./errors");
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {
@@ -26,13 +26,13 @@ const Docxtemplater = class Docxtemplater {
 		});
 	}
 	attachModule(module) {
-		this.modules.push(wrapper(module));
+		this.modules.push(moduleWrapper(module));
 		return this;
 	}
 	setOptions(options) {
 		this.options = options;
-		Object.keys(DocUtils.defaults).forEach((key) => {
-			const defaultValue = DocUtils.defaults[key];
+		Object.keys(defaults).forEach((key) => {
+			const defaultValue = defaults[key];
 			this[key] = (this.options[key] != null) ? this.options[key] : defaultValue;
 		});
 		if (this.zip) {
@@ -54,16 +54,20 @@ const Docxtemplater = class Docxtemplater {
 		this.compiled[fileName] = currentFile;
 	}
 	compile() {
+		if (Object.keys(this.compiled).length) {
+			return this;
+		}
+
 		this.options.xmlFileNames = [];
-		this.modules = this.fileTypeConfig.baseModules.map(function (moduleFunction) {
+		this.modules = concatArrays([this.fileTypeConfig.baseModules.map(function (moduleFunction) {
 			return moduleFunction();
-		}).concat(this.modules);
+		}), this.modules]);
 		this.options = this.modules.reduce((options, module) => {
 			return module.optionsTransformer(options, this);
 		}, this.options);
 		this.xmlDocuments = this.options.xmlFileNames.reduce((xmlDocuments, fileName) => {
 			const content = this.zip.files[fileName].asText();
-			xmlDocuments[fileName] = DocUtils.str2xml(content);
+			xmlDocuments[fileName] = str2xml(content);
 			return xmlDocuments;
 		}, {});
 		this.setModules({zip: this.zip, xmlDocuments: this.xmlDocuments, data: this.data});
@@ -107,7 +111,6 @@ const Docxtemplater = class Docxtemplater {
 	}
 	render() {
 		this.compile();
-
 		this.mapper = this.modules.reduce(function (value, module) {
 			return module.getRenderedMap(value);
 		}, {});
@@ -127,7 +130,7 @@ const Docxtemplater = class Docxtemplater {
 	syncZip() {
 		Object.keys(this.xmlDocuments).forEach((fileName) => {
 			this.zip.remove(fileName);
-			const content = DocUtils.xml2str(this.xmlDocuments[fileName]);
+			const content = xml2str(this.xmlDocuments[fileName]);
 			return this.zip.file(fileName, content, {createFolders: true});
 		});
 	}
@@ -146,7 +149,7 @@ const Docxtemplater = class Docxtemplater {
 		const xmltOptions = {
 			filePath,
 		};
-		Object.keys(DocUtils.defaults).forEach((key) => {
+		Object.keys(defaults).forEach((key) => {
 			xmltOptions[key] = this[key];
 		});
 		xmltOptions.fileTypeConfig = this.fileTypeConfig;
@@ -162,7 +165,7 @@ const Docxtemplater = class Docxtemplater {
 	}
 };
 
-Docxtemplater.DocUtils = require("./doc-utils");
+Docxtemplater.DocUtils = DocUtils;
 Docxtemplater.Errors = require("./errors");
 Docxtemplater.XmlTemplater = require("./xml-templater");
 Docxtemplater.FileTypeConfig = require("./file-type-config");

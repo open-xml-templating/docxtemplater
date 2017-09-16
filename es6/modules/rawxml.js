@@ -1,4 +1,4 @@
-const DocUtils = require("../doc-utils");
+const traits = require("../traits");
 const {throwRawTagShouldBeOnlyTextInParagraph} = require("../errors");
 
 const moduleName = "rawxml";
@@ -33,7 +33,7 @@ class RawXmlModule {
 		return {type, value: placeHolderContent.substr(1), module: moduleName};
 	}
 	postparse(postparsed) {
-		return DocUtils.traits.expandToOne(postparsed, {moduleName, getInner, expandTo: this.fileTypeConfig.tagRawXml});
+		return traits.expandToOne(postparsed, {moduleName, getInner, expandTo: this.fileTypeConfig.tagRawXml});
 	}
 	render(part, options) {
 		if (part.module !== moduleName) {

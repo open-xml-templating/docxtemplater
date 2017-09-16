@@ -11,6 +11,7 @@ tags
 *.spec.map
 *.log
 /js
+/es6/tests/filenames.js
 /build
 /browser
 examples/index.html

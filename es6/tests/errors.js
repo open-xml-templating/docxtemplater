@@ -275,7 +275,7 @@ describe("internal errors", function () {
 		const create = createXmlTemplaterDocx.bind(null, 1);
 		expectToThrow(create, Errors.XTInternalError, expectedError);
 	});
-	it("should fail if using odt format", function () {
+	it("should fail if using odt format", function (done) {
 		const expectedError = {
 			name: "InternalError",
 			message: "The filetype \"odt\" is not handled by docxtemplater",
@@ -283,10 +283,13 @@ describe("internal errors", function () {
 				id: "filetype_not_handled",
 			},
 		};
-		function create() {
-			loadFile("test.odt", loadDocument);
-		}
-		expectToThrow(create, Errors.XTInternalError, expectedError);
+		loadFile("test.odt", (e, name, buffer) => {
+			function create() {
+				loadDocument(name, buffer);
+			}
+			expectToThrow(create, Errors.XTInternalError, expectedError);
+			done();
+		});
 	});
 });
 

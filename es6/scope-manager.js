@@ -59,27 +59,22 @@ const ScopeManager = class ScopeManager {
 			};
 			throw err;
 		}
-		if (result == null && this.num > 0) { return this.getValue(tag, this.num - 1); }
+		if (result == null && this.num > 0) {
+			return this.getValue(tag, this.num - 1);
+		}
 		return result;
 	}
 	createSubScopeManager(scope, tag) {
-		const options = {
-			scopePath: this.scopePath.slice(0),
-			scopeList: this.scopeList.slice(0),
-		};
-
-		options.parser = this.parser;
-		options.scopeList = this.scopeList.concat(scope);
-		options.scopePath = this.scopePath.concat(tag);
-		return new ScopeManager(options);
+		return new ScopeManager({
+			parser: this.parser,
+			scopeList: this.scopeList.concat(scope),
+			scopePath: this.scopePath.concat(tag),
+		});
 	}
 };
 
-ScopeManager.createBaseScopeManager = function ({parser, tags}) {
-	const options = {parser, tags};
+module.exports = function (options) {
 	options.scopePath = [];
-	options.scopeList = [tags];
+	options.scopeList = [options.tags];
 	return new ScopeManager(options);
 };
-
-module.exports = ScopeManager;

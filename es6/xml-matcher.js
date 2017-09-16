@@ -1,6 +1,6 @@
 "use strict";
 // res class responsibility is to parse the XML.
-const DocUtils = require("./doc-utils");
+const {pregMatchAll} = require("./doc-utils");
 
 function handleRecursiveCase(res) {
 	/*
@@ -54,7 +54,7 @@ function xmlMatcher(content, tagsXmlArray) {
 	res.tagsXmlArray = tagsXmlArray;
 	res.tagsXmlArrayJoined = res.tagsXmlArray.join("|");
 	const regexp = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>`, "g");
-	res.matches = DocUtils.pregMatchAll(regexp, res.content);
+	res.matches = pregMatchAll(regexp, res.content);
 	return handleRecursiveCase(res);
 }
 

@@ -1,6 +1,6 @@
 const traitName = "expandPair";
 const mergeSort = require("../mergesort");
-const DocUtils = require("../doc-utils");
+const {getLeft, getRight} = require("../doc-utils");
 const wrapper = require("../module-wrapper");
 const {getExpandToDefault} = require("../traits");
 const {getUnmatchedLoopException, getClosingTagNotMatchOpeningTag, throwLocationInvalid} = require("../errors");
@@ -63,8 +63,8 @@ const expandPairTrait = {
 			if (!expandTo) {
 				return [pair[0].offset, pair[1].offset];
 			}
-			const left = DocUtils.getLeft(postparsed, expandTo, pair[0].offset);
-			const right = DocUtils.getRight(postparsed, expandTo, pair[1].offset);
+			const left = getLeft(postparsed, expandTo, pair[0].offset);
+			const right = getRight(postparsed, expandTo, pair[1].offset);
 			return [left, right];
 		});
 

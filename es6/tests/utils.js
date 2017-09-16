@@ -15,6 +15,25 @@ let examplesDirectory;
 const docX = {};
 const imageData = {};
 
+function walk(dir) {
+	let results = [];
+	const list = fs.readdirSync(dir);
+	list.forEach(function (file) {
+		if (file.indexOf(".") === 0) {
+			return;
+		}
+		file = dir + "/" + file;
+		const stat = fs.statSync(file);
+		if (stat && stat.isDirectory()) {
+			results = results.concat(walk(file));
+		}
+		else {
+			results.push(file);
+		}
+	});
+	return results;
+}
+
 /* eslint-disable no-console */
 
 function createXmlTemplaterDocx(content, options) {
@@ -217,19 +236,16 @@ function loadImage(name, content) {
 }
 
 function loadFile(name, callback) {
-	countFiles += 1;
 	if (fs.readFileSync) {
 		const path = require("path");
 		const buffer = fs.readFileSync(path.join(examplesDirectory, name), "binary");
-		callback(name, buffer);
-		return endLoadFile(-1);
+		return callback(null, name, buffer);
 	}
 	return JSZipUtils.getBinaryContent("../examples/" + name, function (err, data) {
 		if (err) {
-			throw err;
+			return callback(err);
 		}
-		callback(name, data);
-		return endLoadFile(-1);
+		return callback(null, name, data);
 	});
 }
 
@@ -254,24 +270,9 @@ function endsWith(str, suffix) {
 function startsWith(str, suffix) {
 	return str.indexOf(suffix) === 0;
 }
-function walk(dir) {
-	let results = [];
-	const list = fs.readdirSync(dir);
-	list.forEach(function (file) {
-		file = dir + "/" + file;
-		const stat = fs.statSync(file);
-		if (stat && stat.isDirectory()) {
-			results = results.concat(walk(file));
-		}
-		else {
-			results.push(file);
-		}
-	});
-	return results;
-}
 
 function start() {
-	const fileNames = walk(examplesDirectory);
+	const fileNames = require("./filenames.js");
 	fileNames.forEach(function (fullFileName) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
 		let callback;
@@ -287,7 +288,15 @@ function start() {
 		if (!callback) {
 			return;
 		}
-		loadFile(fileName, callback);
+		countFiles++;
+		loadFile(fileName, (e, name, buffer) => {
+			if (e) {
+				console.log(e);
+				throw e;
+			}
+			endLoadFile(-1);
+			callback(name, buffer);
+		});
 	});
 	allStarted = true;
 	endLoadFile(-1);
@@ -295,6 +304,12 @@ function start() {
 
 function setExamplesDirectory(ed) {
 	examplesDirectory = ed;
+	if (fs && fs.readFileSync) {
+		const fileNames = walk(examplesDirectory).map(function (f) {
+			return f.replace(examplesDirectory + "/", "");
+		});
+		fs.writeFileSync(path.resolve(__dirname, "filenames.js"), "module.exports=" + JSON.stringify(fileNames));
+	}
 }
 
 function removeSpaces(text) {

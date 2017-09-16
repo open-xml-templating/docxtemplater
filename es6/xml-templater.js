@@ -1,12 +1,12 @@
 "use strict";
 
 const {wordToUtf8, convertSpaces, defaults} = require("./doc-utils");
-const ScopeManager = require("./scope-manager");
+const createScope = require("./scope-manager");
 const xmlMatcher = require("./xml-matcher");
 const {throwMultiError, throwContentMustBeString} = require("./errors");
 const Lexer = require("./lexer");
 const Parser = require("./parser.js");
-const render = require("./render.js");
+const {render} = require("./render.js");
 
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);
@@ -30,7 +30,7 @@ module.exports = class XmlTemplater {
 	}
 	setTags(tags) {
 		this.tags = (tags != null) ? tags : {};
-		this.scopeManager = ScopeManager.createBaseScopeManager({tags: this.tags, parser: this.parser});
+		this.scopeManager = createScope({tags: this.tags, parser: this.parser});
 		return this;
 	}
 	fromJson(options) {
@@ -91,7 +91,9 @@ module.exports = class XmlTemplater {
 			parser: this.parser,
 			nullGetter: this.nullGetter,
 			filePath: this.filePath,
+			render,
 		};
+		options.scopeManager = createScope(options);
 		const {errors, parts} = render(options);
 		this.errorChecker(errors);
 		this.content = parts.join("");

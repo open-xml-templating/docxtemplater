@@ -1,4 +1,4 @@
-const DocUtils = require("../doc-utils");
+const {mergeObjects} = require("../doc-utils");
 const dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 const wrapper = require("../module-wrapper");
 
@@ -46,7 +46,7 @@ const loopModule = {
 		function loopOver(scope) {
 			const scopeManager = options.scopeManager.createSubScopeManager(scope, part.value);
 			const subRendered = options.render(
-				DocUtils.mergeObjects({}, options, {
+				mergeObjects({}, options, {
 					compiled: part.subparsed,
 					tags: {},
 					scopeManager,
