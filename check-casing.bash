@@ -10,7 +10,6 @@ sort -u |
 count="$(grep -v -E '(Makefile)' <trackedfiles.log | grep -v '^docs/' | grep -v '\.md$' | grep '[A-Z_]' | tee /dev/stderr | wc -l)"
 if [ "$count" = "0" ]
 then
-	echo "Casing OK"
 	exit 0
 fi
 echo "$count files have incorrect casing"

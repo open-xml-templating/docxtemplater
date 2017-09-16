@@ -12,8 +12,7 @@ docxtemplater uses JSON (Javascript objects) as data input, so it can also be us
 
 It works in the same way as a templating engine.
 
-They are a lots of solutions like `docx.js`_, docx4j, ...
-that generate docx, but they require you to write specific code to create a title, an image, ...
+Many solutions like `docx.js`_, docx4j, python-docx  generate docx, but they require you to write specific code to create a title, an image, ...
 
 In contrast, docxtemplater is based on the concepts of tags, and each type of tag exposes a feature to the user writing the template.
 
@@ -23,9 +22,9 @@ Why you shouldn't write it from scratch
 ---------------------------------------
 
 Docx is a zipped format that contains some xml.
-If you want to build a simple replace {tag} by value system, it can become complicated, because the {tag} is internally separated into `<w:t>{</w:t><w:t>tag</w:t><w:t>}</w:t>`.
+If you want to build a simple replace {tag} by value system, it could easily be challenging, because the {tag} is internally separated into `<w:t>{</w:t><w:t>tag</w:t><w:t>}</w:t>`.
 
-If you want to have loops to iterate over an array, it will become even more complex. 
+If you want to have loops to iterate over an array, it will become even more complicated.
 
 docxtemplater provides a very simple API that gives you abstraction to deal with loops, conditions, ...
 
