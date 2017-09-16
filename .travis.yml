@@ -10,8 +10,6 @@ matrix:
   include:
     - node_js: "stable"
       env: COMMAND=preversion
-    - node_js: "0.10"
-      env: COMMAND=test
     - node_js: "0.12"
       env: COMMAND=test
     - node_js: "4"
