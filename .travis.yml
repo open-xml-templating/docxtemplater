@@ -16,17 +16,7 @@ matrix:
       env: COMMAND=test
     - node_js: "4"
       env: COMMAND=test
-    - node_js: "4.0"
-      env: COMMAND=test
-    - node_js: "4.1"
-      env: COMMAND=test
     - node_js: "5"
-      env: COMMAND=test
-    - node_js: "5.0"
-      env: COMMAND=test
-    - node_js: "5.1"
-      env: COMMAND=test
-    - node_js: "5.2"
       env: COMMAND=test
     - node_js: "6"
       env: COMMAND=test
