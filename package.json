@@ -55,7 +55,7 @@
   "scripts": {
     "generate:doc": "cd docs; rm build/ -rf ; make html",
     "profile": "./profile.bash",
-    "preversion": "npm run lint && npm test && rimraf build && mkdirp build && npm run compile && npm run browserify && npm run uglify && npm run verifypublishsize && npm run test:chrome",
+    "preversion": "npm run lint && npm test && rimraf build && mkdirp build && npm run browserify && npm run uglify && npm run verifypublishsize && npm run test:chrome",
     "check-casing": "./check-casing.bash",
     "compile": "npm run convertto:es5",
     "browserify:test": "browserify -t [ envify --FAST true ] -r ./js/tests/index.js -s DocxtemplaterTest > browser/docxtemplater-test.js",
