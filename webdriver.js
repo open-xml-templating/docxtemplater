@@ -8,6 +8,7 @@ function exit(message) {
 	/* eslint-enable no-process-exit */
 }
 
+const finalhandler = require("finalhandler");
 const webdriverio = require("webdriverio");
 const {expect} = require("chai");
 const serveStatic = require("serve-static");
@@ -45,7 +46,7 @@ const browser = webdriverio.remote(options);
 
 const serve = serveStatic(__dirname);
 const server = http.createServer(function onRequest(req, res) {
-	serve(req, res);
+	serve(req, res, finalhandler(req, res));
 });
 server.listen(port, function () {
 	browser
@@ -53,14 +54,17 @@ server.listen(port, function () {
 		.url(`http://localhost:${port}/test/mocha.html`)
 		.pause(4000)
 		.getText("#mocha-stats").then(function (text) {
-			expect(text).match(/passes: [0-9]{3}/);
-			expect(text).contain("failures: 0");
+			const passes = parseInt(text.replace(/.*passes: ([0-9]+).*/, "$1"), 10);
+			const failures = parseInt(text.replace(/.*failures: ([0-9]+).*/, "$1"), 10);
+			expect(passes).to.be.above(1);
+			expect(failures).to.be.equal(0);
+			return {failures, passes};
 		})
 		.catch(function (e) {
 			exit(e);
 		})
-		.then(function () {
-			console.log("browser tests succesful");
+		.then(function ({passes}) {
+			console.log(`browser tests successful (${passes} passes)`);
 			server.close();
 		})
 		.end();

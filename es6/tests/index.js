@@ -14,10 +14,6 @@ function startTest() {
 	require("./lexer-parser-render");
 	require("./integration");
 	require("./doc-props");
-
-	if (typeof window !== "undefined" && window) {
-		return window.mocha.run();
-	}
 }
 
 start();

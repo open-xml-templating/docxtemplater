@@ -7,7 +7,7 @@ compile:
 browserify:test:
   summary: Convert the files of the test
   command: |
-    {{.npath}}/browserify -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/docxtemplater-test.js
+    {{.npath}}/browserify -r ./js/tests/docxtemplater.js -s DocxtemplaterTest > browser/test.js
 browserify:lib:
   summary: Convert the files of the library
   command: |

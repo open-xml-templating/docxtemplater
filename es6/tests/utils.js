@@ -260,7 +260,11 @@ function endLoadFile(change) {
 	change = change || 0;
 	countFiles += change;
 	if (countFiles === 0 && allStarted === true) {
-		return startFunction();
+		const result = startFunction();
+		if (typeof window !== "undefined") {
+			return window.mocha.run();
+		}
+		return result;
 	}
 }
 
@@ -284,11 +288,8 @@ function start() {
 		if (endsWith(fileName, ".docx") || endsWith(fileName, ".pptx")) {
 			callback = loadDocument;
 		}
-		if (endsWith(fileName, ".png")) {
-			callback = loadImage;
-		}
 		if (!callback) {
-			return;
+			callback = loadImage;
 		}
 		countFiles++;
 		loadFile(fileName, (e, name, buffer) => {
@@ -306,7 +307,7 @@ function start() {
 
 function setExamplesDirectory(ed) {
 	examplesDirectory = ed;
-	if (fs && fs.readFileSync) {
+	if (fs && fs.writeFileSync) {
 		const fileNames = walk(examplesDirectory).map(function (f) {
 			return f.replace(examplesDirectory + "/", "");
 		});
