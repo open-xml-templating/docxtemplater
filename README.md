@@ -7,8 +7,6 @@ docxtemplater
 
 [![Join the chat at https://gitter.im/open-xml-templating/docxtemplater](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/open-xml-templating/docxtemplater?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-![browserstack](https://bstacksupport.zendesk.com/attachments/token/ps1VYNlMZ9H6rzVa49oMaTYTD/?name=Logo-01.svg)
-
 **docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, eg for example your clients.
 
 Features
@@ -76,3 +74,8 @@ Professional Support
 --------------------
 
 I can give your company support for installing, extending, answering support questions, or maintaining your app that runs docxtemplater. The support plan is paid per month and can be booked from https://plasso.com/s/ycwo8O3hDH
+
+Thanks to
+=========
+
+Automated browser tests supported by : ![browserstack](https://bstacksupport.zendesk.com/attachments/token/ps1VYNlMZ9H6rzVa49oMaTYTD/?name=Logo-01.svg)
