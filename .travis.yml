@@ -27,3 +27,9 @@ matrix:
 
 script:
   - npm run "$COMMAND"
+
+addons:
+  browserstack:
+    username: "edgarhipp2"
+    access_key:
+      secure: "hKN6RhW6QlqEJ0elrkDbRCYP5IpN5MScN525BO2SU7xKjp6vpOm/HsERoelGjeGcBrrIv0mm+ugx3CObLWiijoA4MeQUIYViYnuS0QBKonKcrURUUMtOZcv4o2vAF3ew33Nzb00eS4qLI5dKPHGn5qh5YjqlrjVlQxsEQcYepek="
