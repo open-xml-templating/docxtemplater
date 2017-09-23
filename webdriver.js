@@ -55,13 +55,7 @@ if (process.env.REMOTE_BROWSER === "saucelabs") {
 			"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
 			tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
 			build: process.env.TRAVIS_BUILD_NUMBER,
-
-			// If using Open Sauce (https://saucelabs.com/opensauce/),
-			// capabilities must be tagged as "public" for the jobs's status
-			// to update (failed/passed). If omitted on Open Sauce, the job's
-			// status will only be marked "Finished." This property can be
-			// be omitted for commercial (private) Sauce Labs accounts.
-			// Also see https://support.saucelabs.com/customer/portal/articles/2005331-why-do-my-tests-say-%22finished%22-instead-of-%22passed%22-or-%22failed%22-how-do-i-set-the-status-
+			captureHtml: true,
 			public: true,
 		},
 		tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
