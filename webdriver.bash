@@ -50,5 +50,5 @@ browserName=safari platform="OS X 10.8" version=6 node webdriver.js
 browserName=safari platform="OS X 10.9" version=7 node webdriver.js
 browserName=safari platform="OS X 10.10" version=8 node webdriver.js
 browserName=safari platform="OS X 10.11" version=9 node webdriver.js
-browserName="iphone" version="9.2" platform="OS X 10.11" node webdriver.js
-browserName="iphone" version="7.0" platform="OS X 10.11" node webdriver.js
+browserName="iphone" platform="OS X 10.11" version="9.2" node webdriver.js
+browserName="iphone" platform="OS X 10.11" version="7.0" node webdriver.js
