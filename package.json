@@ -72,6 +72,7 @@
     "lint": "eslint . && ./check-casing.bash",
     "lint:fix": "eslint . --fix && ./check-casing.bash",
     "test:chrome": "BROWSER=CHROME ./webdriver.bash",
+    "test:firefox": "BROWSER=FIREFOX ./webdriver.bash",
     "babel": "babel es6 --out-dir js",
     "mocha": "mocha --full-trace --check-leaks js/tests/index.js",
     "test:es6": "mocha --full-trace --check-leaks es6/tests/index.js",

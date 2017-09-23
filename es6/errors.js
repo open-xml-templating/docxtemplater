@@ -109,13 +109,12 @@ function throwContentMustBeString(type) {
 
 function throwRawTagNotInParagraph(options) {
 	const err = new XTTemplateError("Raw tag not in paragraph");
-	const tag = options.part.value;
-	const offset = options.part.offset;
+	const {part: {value, offset}} = options;
 	err.properties = {
 		id: "raw_tag_outerxml_invalid",
-		explanation: `The tag "${tag}" is not inside a paragraph`,
+		explanation: `The tag "${value}" is not inside a paragraph`,
 		rootError: options.rootError,
-		xtag: tag,
+		xtag: value,
 		offset,
 		postparsed: options.postparsed,
 		expandTo: options.expandTo,
@@ -138,7 +137,7 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 }
 
 function getUnmatchedLoopException(options) {
-	const location = options.location;
+	const {location} = options;
 	const t = location === "start" ? "unclosed" : "unopened";
 	const T = location === "start" ? "Unclosed" : "Unopened";
 
@@ -153,7 +152,7 @@ function getUnmatchedLoopException(options) {
 }
 
 function getClosingTagNotMatchOpeningTag(options) {
-	const tags = options.tags;
+	const {tags} = options;
 
 	const err = new XTTemplateError("Closing tag does not match opening tag");
 	err.properties = {

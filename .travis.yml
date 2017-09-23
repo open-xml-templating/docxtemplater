@@ -9,7 +9,12 @@ addons:
 matrix:
   include:
     - node_js: "stable"
-      env: COMMAND=preversion
+      env: COMMAND=preversion REMOTE_BROWSER=saucelabs BROWSER=FIREFOX
+      addons:
+        sauce_connect:
+          username: "jsninja"
+        jwt:
+          secure: "PQ7xOckCvgNVJTfrchqb/d0+vnlWAcXzsUewlsdmCUCox9RltxSkkTAxx6uWK+IcpFtb81asO6JFAGygRQ/TU6MZBcHaFp6ftjHIAxUNp95laiIB31i9zOJWniG8MDgqPKJTnZNB/ZF0Cvuvjf/O4nh2umbnWSsz3K7uex9bwUc="
     - node_js: "0.12"
       env: COMMAND=test
     - node_js: "4"
@@ -27,9 +32,3 @@ matrix:
 
 script:
   - npm run "$COMMAND"
-
-addons:
-  browserstack:
-    username: "edgarhipp2"
-    access_key:
-      secure: "hKN6RhW6QlqEJ0elrkDbRCYP5IpN5MScN525BO2SU7xKjp6vpOm/HsERoelGjeGcBrrIv0mm+ugx3CObLWiijoA4MeQUIYViYnuS0QBKonKcrURUUMtOZcv4o2vAF3ew33Nzb00eS4qLI5dKPHGn5qh5YjqlrjVlQxsEQcYepek="

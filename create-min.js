@@ -23,7 +23,7 @@ const options = {
 	},
 };
 
-const filename = process.argv[2];
+const [,, filename] = process.argv;
 if (!filename) {
 	throw new Error("You have to specify which file is to be minified");
 }

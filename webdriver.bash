@@ -1,11 +1,9 @@
 #!/bin/bash
 
 set -euo pipefail
-pkill -f selenium-standalone || true
 pid=""
 
 cleanup() {
-	pkill -f selenium-standalone || true
 	if [ "$pid" != "" ]
 	then
 		kill "$pid" || true
@@ -14,9 +12,17 @@ cleanup() {
 trap "cleanup" EXIT INT
 PATH="$PATH:./node_modules/.bin/"
 
-selenium-standalone install --silent
-selenium-standalone start -- -log /tmp/protractor.log &
-sleep 2
-pid="$!"
+REMOTE_BROWSER="${REMOTE_BROWSER:-""}"
+if [ "$REMOTE_BROWSER" = "" ]
+then
+	if netstat -tnlp | grep --color -E 4444 >/dev/null
+	then
+		echo "Using existing selenium"
+	else
+		selenium-standalone install --silent
+		selenium-standalone start -- -log /tmp/protractor.log &
+		pid="$!"
+	fi
+fi
 echo "node webdriver"
 node webdriver.js

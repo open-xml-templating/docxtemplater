@@ -166,6 +166,12 @@
     "padded-blocks": [2, "never"],
     "prefer-arrow-callback": 0,
     "prefer-const": 2,
+    "prefer-destructuring": [2, {
+       "AssignmentExpression": {
+        "array": true,
+        "object": false
+      }
+    }],
     "prefer-reflect": 0,
     "prefer-spread": 0,
     "prefer-template": 0,

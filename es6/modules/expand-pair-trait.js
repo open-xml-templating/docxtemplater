@@ -23,7 +23,7 @@ function getPairs(traits) {
 		return {pairs, errors};
 	}
 	let countOpen = 1;
-	const firstTrait = traits[0];
+	const [firstTrait] = traits;
 	if (firstTrait.part.location === "start") {
 		for (let i = 1; i < traits.length; i++) {
 			const currentTrait = traits[i];
@@ -40,7 +40,7 @@ function getPairs(traits) {
 			}
 		}
 	}
-	const part = firstTrait.part;
+	const {part} = firstTrait;
 	errors.push(getUnmatchedLoopException({part, location: part.location}));
 	const outer = getPairs(traits.slice(1));
 	return {pairs: outer.pairs, errors: errors.concat(outer.errors)};
@@ -56,7 +56,7 @@ const expandPairTrait = {
 		traits = mergeSort(traits);
 		const {pairs, errors} = getPairs(traits);
 		const expandedPairs = pairs.map(function (pair) {
-			let expandTo = pair[0].part.expandTo;
+			let {expandTo} = pair[0].part;
 			if (expandTo === "auto") {
 				expandTo = getExpandToDefault(postparsed.slice(pair[0].offset, pair[1].offset));
 			}
