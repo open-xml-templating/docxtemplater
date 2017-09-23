@@ -47,9 +47,9 @@ let options = {desiredCapabilities};
 if (process.env.REMOTE_BROWSER === "saucelabs") {
 	options = {
 		desiredCapabilities: {
-			browserName: "chrome",
-			version: "27",
-			platform: "XP",
+			browserName: process.env.browserName,
+			version: process.env.version,
+			platform: process.env.platform,
 			tags: ["docxtemplater"],
 			name: "docxtemplater mocha",
 			"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,

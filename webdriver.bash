@@ -25,4 +25,30 @@ then
 	fi
 fi
 echo "node webdriver"
-node webdriver.js
+
+
+if [ "$REMOTE_BROWSER" = "" ]
+then
+	node webdriver.js
+	exit "$?"
+fi
+
+browserName=android platform=Linux version=4.0 node webdriver.js
+browserName=android platform=Linux version=4.4 node webdriver.js
+browserName=android platform=Linux version=5.1 node webdriver.js
+browserName=firefox platform="Windows 10" node webdriver.js
+browserName=chrome platform="Windows 10" node webdriver.js
+browserName="internet explorer" platform=XP version=6 node webdriver.js
+browserName="internet explorer" platform=XP version=7 node webdriver.js
+browserName="internet explorer" platform="Windows 7" version=8 node webdriver.js
+browserName="internet explorer" platform="Windows 7" version=9 node webdriver.js
+browserName="internet explorer" platform="Windows 8" version=10 node webdriver.js
+browserName="internet explorer" platform="Windows 10" version=11 node webdriver.js
+browserName=MicrosoftEdge platform="Windows 10" version=13 node webdriver.js
+browserName=opera platform="Windows 2008" version=12 node webdriver.js
+browserName=safari platform="OS X 10.8" version=6 node webdriver.js
+browserName=safari platform="OS X 10.9" version=7 node webdriver.js
+browserName=safari platform="OS X 10.10" version=8 node webdriver.js
+browserName=safari platform="OS X 10.11" version=9 node webdriver.js
+browserName="iphone" version="9.2" platform="OS X 10.11" node webdriver.js
+browserName="iphone" version="7.0" platform="OS X 10.11" node webdriver.js
