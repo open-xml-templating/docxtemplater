@@ -41,4 +41,3 @@ browserName="microsoftedge" platform="Windows 10" version="15" node webdriver.js
 browserName="opera" platform="Windows 2008" version="12" node webdriver.js
 browserName="safari" platform="Mac 10.12" version="10.0"  node webdriver.js
 browserName="iphone" platform="Mac 10.11" version="10.2" node webdriver.js
-browserName="android" platform="Linux" version="7.1" node webdriver.js
