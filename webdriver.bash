@@ -33,9 +33,6 @@ then
 	exit "$?"
 fi
 
-browserName=android platform=Linux version=4.0 node webdriver.js
-browserName=android platform=Linux version=4.4 node webdriver.js
-browserName=android platform=Linux version=5.1 node webdriver.js
 browserName=firefox platform="Windows 10" node webdriver.js
 browserName=chrome platform="Windows 10" node webdriver.js
 browserName="internet explorer" platform=XP version=6 node webdriver.js
@@ -52,3 +49,6 @@ browserName=safari platform="OS X 10.10" version=8 node webdriver.js
 browserName=safari platform="OS X 10.11" version=9 node webdriver.js
 browserName="iphone" platform="OS X 10.11" version="9.2" node webdriver.js
 browserName="iphone" platform="OS X 10.11" version="7.0" node webdriver.js
+browserName=android platform=Linux version=4.0 node webdriver.js
+browserName=android platform=Linux version=4.4 node webdriver.js
+browserName=android platform=Linux version=5.1 node webdriver.js
