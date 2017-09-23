@@ -33,22 +33,15 @@ then
 	exit "$?"
 fi
 
-browserName=firefox platform="Windows 10" node webdriver.js
-browserName=chrome platform="Windows 10" node webdriver.js
-browserName="internet explorer" platform=XP version=6 node webdriver.js
-browserName="internet explorer" platform=XP version=7 node webdriver.js
-browserName="internet explorer" platform="Windows 7" version=8 node webdriver.js
-browserName="internet explorer" platform="Windows 7" version=9 node webdriver.js
-browserName="internet explorer" platform="Windows 8" version=10 node webdriver.js
-browserName="internet explorer" platform="Windows 10" version=11 node webdriver.js
-browserName=MicrosoftEdge platform="Windows 10" version=13 node webdriver.js
-browserName=opera platform="Windows 2008" version=12 node webdriver.js
-browserName=safari platform="OS X 10.8" version=6 node webdriver.js
-browserName=safari platform="OS X 10.9" version=7 node webdriver.js
-browserName=safari platform="OS X 10.10" version=8 node webdriver.js
-browserName=safari platform="OS X 10.11" version=9 node webdriver.js
-browserName="iphone" platform="OS X 10.11" version="9.2" node webdriver.js
-browserName="iphone" platform="OS X 10.11" version="7.0" node webdriver.js
-browserName=android platform=Linux version=4.0 node webdriver.js
-browserName=android platform=Linux version=4.4 node webdriver.js
-browserName=android platform=Linux version=5.1 node webdriver.js
+set +e
+
+browserName="chrome" platform="Windows 10" version="58.0.3029.81" node webdriver.js
+browserName="firefox" platform="Windows 10" version="55.0." node webdriver.js
+browserName="internet explorer" platform="Windows 10" version="11.103.10586.0." node webdriver.js
+browserName="internet explorer" platform="Windows 2008" version="9.0.8112.16421." node webdriver.js
+browserName="internet explorer" platform=XP version=7  node webdriver.js
+browserName="microsoftedge" platform="Windows 10" version="15.15063." node webdriver.js
+browserName="opera" platform="Windows 2008" version="12.12." node webdriver.js
+browserName="safari" platform="Mac 10.12" version="10.0."  node webdriver.js
+browserName="iphone" platform="Mac 10.11" version="10.2." node webdriver.js
+browserName="android" platform="Linux" version="7.1." node webdriver.js
