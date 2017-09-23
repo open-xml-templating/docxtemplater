@@ -8,6 +8,7 @@ function exit(message) {
 	/* eslint-enable no-process-exit */
 }
 
+let browserName = null;
 const finalhandler = require("finalhandler");
 const webdriverio = require("webdriverio");
 const {expect} = require("chai");
@@ -39,12 +40,14 @@ const browserCapability = {
 };
 
 const desiredCapabilities = browserCapability[process.env.BROWSER];
+browserName = process.env.BROWSER + " (local)";
 if (!desiredCapabilities) {
 	exit("Unknown browser :" + process.env.BROWSER);
 }
 let options = {desiredCapabilities};
 
 if (process.env.REMOTE_BROWSER === "saucelabs") {
+	browserName = process.env.browserName + " " + process.env.version + " " + process.env.platform + " (saucelabs)";
 	options = {
 		desiredCapabilities: {
 			browserName: process.env.browserName,
@@ -68,6 +71,8 @@ if (process.env.REMOTE_BROWSER === "saucelabs") {
 		logLevel: "silent",
 	};
 }
+
+console.log("Running test on " + browserName);
 
 const browser = webdriverio.remote(options);
 const serve = serveStatic(__dirname);

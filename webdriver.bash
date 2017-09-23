@@ -24,8 +24,6 @@ then
 		pid="$!"
 	fi
 fi
-echo "node webdriver"
-
 
 if [ "$REMOTE_BROWSER" = "" ]
 then
