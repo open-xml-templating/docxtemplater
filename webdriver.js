@@ -121,7 +121,7 @@ server.listen(port, function () {
 				return {failures, passes};
 			})
 			.then(function ({passes}) {
-				console.log(`browser tests successful (${passes} passes)`);
+				console.log(`browser tests successful (${passes} passes) on ${browserName}`);
 				if (process.env.REMOTE_BROWSER === "saucelabs") {
 					updateSaucelabsStatus(true, (e) => {
 						if (e) {
