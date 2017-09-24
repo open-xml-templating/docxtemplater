@@ -5,7 +5,7 @@ sudo: false
 matrix:
   include:
     - node_js: "stable"
-      env: COMMAND=preversion REMOTE_BROWSER=saucelabs BROWSER=FIREFOX
+      env: COMMAND=preversion BROWSER=SAUCELABS
       addons:
         sauce_connect:
           username: "jsninja"

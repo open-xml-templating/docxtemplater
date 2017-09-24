@@ -37,6 +37,18 @@ const browserCapability = {
 	FIREFOX: {
 		browserName: "firefox",
 	},
+	SAUCELABS: {
+		browserName: process.env.browserName,
+		version: process.env.version,
+		platform: process.env.platform,
+		tags: ["docxtemplater"],
+		name: "docxtemplater mocha",
+		"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
+		tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+		build: process.env.TRAVIS_BUILD_NUMBER,
+		captureHtml: true,
+		public: true,
+	},
 };
 
 const desiredCapabilities = browserCapability[process.env.BROWSER];
@@ -44,23 +56,11 @@ browserName = process.env.BROWSER + " (local)";
 if (!desiredCapabilities) {
 	exit("Unknown browser :" + process.env.BROWSER);
 }
-let options = {desiredCapabilities};
+let options = {};
 
-if (process.env.REMOTE_BROWSER === "saucelabs") {
-	browserName = process.env.browserName + " " + process.env.version + " " + process.env.platform + " (saucelabs)";
+if (process.env.BROWSER === "SAUCELABS") {
+	browserName = process.env.browserName + " " + process.env.version + " " + process.env.platform + " (SAUCELABS)";
 	options = {
-		desiredCapabilities: {
-			browserName: process.env.browserName,
-			version: process.env.version,
-			platform: process.env.platform,
-			tags: ["docxtemplater"],
-			name: "docxtemplater mocha",
-			"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-			tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
-			build: process.env.TRAVIS_BUILD_NUMBER,
-			captureHtml: true,
-			public: true,
-		},
 		tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
 		"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
 		build: process.env.TRAVIS_BUILD_NUMBER,
@@ -71,6 +71,8 @@ if (process.env.REMOTE_BROWSER === "saucelabs") {
 		logLevel: "silent",
 	};
 }
+
+options.desiredCapabilities = desiredCapabilities;
 
 console.log("Running test on " + browserName);
 
@@ -122,7 +124,7 @@ server.listen(port, function () {
 			})
 			.then(function ({passes}) {
 				console.log(`browser tests successful (${passes} passes) on ${browserName}`);
-				if (process.env.REMOTE_BROWSER === "saucelabs") {
+				if (process.env.BROWSER === "SAUCELABS") {
 					updateSaucelabsStatus(true, (e) => {
 						if (e) {
 							throw e;
@@ -139,7 +141,7 @@ server.listen(port, function () {
 				if (e.message.indexOf("ECONNREFUSED") !== -1) {
 					return test();
 				}
-				if (process.env.REMOTE_BROWSER === "saucelabs") {
+				if (process.env.BROWSER === "SAUCELABS") {
 					updateSaucelabsStatus(false, (err) => {
 						if (err) {
 							throw err;

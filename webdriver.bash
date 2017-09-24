@@ -12,8 +12,7 @@ cleanup() {
 trap "cleanup" EXIT INT
 PATH="$PATH:./node_modules/.bin/"
 
-REMOTE_BROWSER="${REMOTE_BROWSER:-""}"
-if [ "$REMOTE_BROWSER" = "" ]
+if [ "$BROWSER" != "SAUCELABS" ]
 then
 	if netstat -tnlp | grep --color -E 4444 >/dev/null
 	then
@@ -23,10 +22,6 @@ then
 		selenium-standalone start -- -log /tmp/protractor.log &
 		pid="$!"
 	fi
-fi
-
-if [ "$REMOTE_BROWSER" = "" ]
-then
 	node webdriver.js
 	exit "$?"
 fi

@@ -74,8 +74,3 @@ Professional Support
 --------------------
 
 I can give your company support for installing, extending, answering support questions, or maintaining your app that runs docxtemplater. The support plan is paid per month and can be booked from https://plasso.com/s/ycwo8O3hDH
-
-Thanks to
-=========
-
-Automated browser tests supported by : ![browserstack](https://bstacksupport.zendesk.com/attachments/token/ps1VYNlMZ9H6rzVa49oMaTYTD/?name=Logo-01.svg)
