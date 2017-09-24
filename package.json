@@ -58,7 +58,7 @@
   "scripts": {
     "generate:doc": "cd docs; rm build/ -rf ; make html",
     "profile": "./profile.bash",
-    "preversion": "npm run lint && npm test && rimraf build && mkdirp build && npm run browserify && npm run uglify && npm run verifypublishsize && npm run test:chrome",
+    "preversion": "npm run lint && npm test && rimraf build && mkdirp build && npm run browserify && npm run uglify && npm run verifypublishsize && npm run test:browser",
     "check-casing": "./check-casing.bash",
     "compile": "npm run convertto:es5",
     "browserify:test": "browserify -t [ envify --FAST true ] -r ./js/tests/index.js -s DocxtemplaterTest > browser/test.js",
@@ -73,6 +73,7 @@
     "lint:fix": "eslint . --fix && ./check-casing.bash",
     "test:chrome": "BROWSER=CHROME ./webdriver.bash",
     "test:firefox": "BROWSER=FIREFOX ./webdriver.bash",
+    "test:browser": "./webdriver.bash",
     "babel": "babel es6 --out-dir js",
     "mocha": "mocha --full-trace --check-leaks js/tests/index.js",
     "test:es6": "mocha --full-trace --check-leaks es6/tests/index.js",
