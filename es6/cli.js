@@ -49,10 +49,9 @@ if (DocUtils.config.modules && DocUtils.config.modules.indexOf("docxtemplater-im
 const imageDir = path.resolve(process.cwd(), DocUtils.config.imageDir || "") + path.sep;
 const inputFileName = DocUtils.config.inputFile;
 const fileType = inputFileName.indexOf(".pptx") !== -1 ? "pptx" : "docx";
-const jsonFileName = process.argv[2];
-const outputFile = DocUtils.config.outputFile;
-const debug = DocUtils.config.debug;
-let debugBool = DocUtils.config.debugBool;
+const [,, jsonFileName] = process.argv;
+const {config: {outputFile, debug}} = DocUtils;
+let {config: {debugBool}} = DocUtils;
 if (jsonFileName == null || jsonFileName === "--help" || jsonFileName === "-h" || inputFileName == null) {
 	showHelp();
 	throw new Error("Nothing to do");

@@ -152,7 +152,7 @@ function Reader(innerContentParts) {
 		let delimiterIndex = 0;
 
 		this.parsed = ranges.map(function (p, i) {
-			const offset = p.offset;
+			const {offset} = p;
 			const range = [offset, offset + this.innerContentParts[i].value.length];
 			const partContent = this.innerContentParts[i].value;
 			const delimitersInOffset = [];

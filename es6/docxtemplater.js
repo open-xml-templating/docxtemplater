@@ -116,10 +116,9 @@ const Docxtemplater = class Docxtemplater {
 		}, {});
 
 		Object.keys(this.mapper).forEach((to) => {
-			const mapped = this.mapper[to];
-			const from = mapped.from;
+			const {from, data} = this.mapper[to];
 			const currentFile = this.compiled[from];
-			currentFile.setTags(mapped.data);
+			currentFile.setTags(data);
 			currentFile.render(to);
 			this.zip.file(to, currentFile.content, {createFolders: true});
 		});

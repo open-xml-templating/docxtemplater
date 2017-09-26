@@ -3,6 +3,8 @@ docxtemplater
 
 [![Build Status](https://travis-ci.org/open-xml-templating/docxtemplater.svg?branch=master&style=flat)](https://travis-ci.org/open-xml-templating/docxtemplater) [![Download count](https://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Current tag](https://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![CDNJS version](https://img.shields.io/cdnjs/v/docxtemplater.svg)](https://cdnjs.com/libraries/docxtemplater)
 
+[![Browser matrix](https://saucelabs.com/browser-matrix/jsninja.svg)](https://saucelabs.com/u/jsninja)
+
 ![docxtemplater logo](https://raw.githubusercontent.com/open-xml-templating/docxtemplater/master/logo-small.png)
 
 [![Join the chat at https://gitter.im/open-xml-templating/docxtemplater](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/open-xml-templating/docxtemplater?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -74,8 +76,3 @@ Professional Support
 --------------------
 
 I can give your company support for installing, extending, answering support questions, or maintaining your app that runs docxtemplater. The support plan is paid per month and can be booked from https://plasso.com/s/ycwo8O3hDH
-
-Thanks to
-=========
-
-Automated browser tests supported by : ![browserstack](https://bstacksupport.zendesk.com/attachments/token/ps1VYNlMZ9H6rzVa49oMaTYTD/?name=Logo-01.svg)

@@ -2,9 +2,9 @@ const FileTypeConfig = require("../file-type-config.js");
 const XmlTemplater = require("../xml-templater");
 const path = require("path");
 const Docxtemplater = require("../docxtemplater.js");
-const DocUtils = Docxtemplater.DocUtils;
+const {defaults} = Docxtemplater.DocUtils;
 const chai = require("chai");
-const expect = chai.expect;
+const {expect} = chai;
 const JSZip = require("jszip");
 const xmlPrettify = require("./xml-prettify");
 const fs = require("fs");
@@ -39,8 +39,8 @@ function walk(dir) {
 function createXmlTemplaterDocx(content, options) {
 	options = options || {};
 	options.fileTypeConfig = FileTypeConfig.docx;
-	Object.keys(DocUtils.defaults).forEach((key) => {
-		const defaultValue = DocUtils.defaults[key];
+	Object.keys(defaults).forEach((key) => {
+		const defaultValue = defaults[key];
 		options[key] = (options[key] != null) ? options[key] : defaultValue;
 	});
 	options.modules = options.fileTypeConfig.baseModules.map(function (moduleFunction) {
@@ -81,7 +81,7 @@ function unlinkFile(expectedName) {
 
 function shouldBeSame(options) {
 	const zip = options.doc.getZip();
-	const expectedName = options.expectedName;
+	const {expectedName} = options;
 	let expectedZip;
 
 	try {
@@ -262,7 +262,11 @@ function endLoadFile(change) {
 	if (countFiles === 0 && allStarted === true) {
 		const result = startFunction();
 		if (typeof window !== "undefined") {
-			return window.mocha.run();
+			return window.mocha.run(() => {
+				const elemDiv = window.document.getElementById("status");
+				elemDiv.textContent = "FINISHED";
+				document.body.appendChild(elemDiv);
+			});
 		}
 		return result;
 	}
