@@ -102,12 +102,12 @@ function updateSaucelabsStatus(result, done) {
 		done();
 	});
 }
+
+const startTime = +new Date();
 server.listen(port, function () {
-	let retries = 0;
 	function test() {
-		retries++;
-		if (retries >= 50) {
-			exit(`Aborting connection to webdriver after ${retries} attempts`);
+		if (+new Date() - startTime > 10000) {
+			exit("Aborting connection to webdriver after 10 seconds");
 		}
 		return browser
 			.init()

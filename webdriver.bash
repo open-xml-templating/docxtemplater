@@ -14,7 +14,7 @@ PATH="$PATH:./node_modules/.bin/"
 
 if [ "$BROWSER" != "SAUCELABS" ]
 then
-	if netstat -tnlp | grep --color -E 4444 >/dev/null
+	if netstat -tnlp 2>/dev/null | grep --color -E 4444 >/dev/null
 	then
 		echo "Using existing selenium"
 	else
