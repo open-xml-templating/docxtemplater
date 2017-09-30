@@ -9,7 +9,7 @@ docxtemplater
 
 [![Join the chat at https://gitter.im/open-xml-templating/docxtemplater](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/open-xml-templating/docxtemplater?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, eg for example your clients.
+**docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, for example your clients.
 
 Features
 --------
@@ -28,7 +28,7 @@ Quickstart
 -	[Installation in node](https://docxtemplater.readthedocs.io/en/latest/installation.html#node)
 -	[Installation in the browser](https://docxtemplater.readthedocs.io/en/latest/installation.html#browser)
 -	[Generate a document in node](https://docxtemplater.readthedocs.io/en/latest/generate.html#node)
--	[Generate a document in browser](https://docxtemplater.readthedocs.io/en/latest/generate.html#browser)
+-	[Generate a document in the browser](https://docxtemplater.readthedocs.io/en/latest/generate.html#browser)
 
 Documentation
 -------------
@@ -53,9 +53,7 @@ They are a few similar libraries that work with docx, here’s a list of those I
 Modules
 -------
 
-Functionality can be added with modules. There is yet no documentation on how to write modules yourself because the API might change in the future, but you can open an issue if you have any question about it.
-
-Here is the list of existing modules:
+Functionality can be added with modules. Here is the list of existing modules:
 
 Modules developped by docxtemplater core team members :
 
