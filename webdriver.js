@@ -17,9 +17,7 @@ const serveStatic = require("serve-static");
 const port = 8444;
 const http = require("http");
 
-if (!process.env.BROWSER) {
-	exit("BROWSER env variable not set");
-}
+const BROWSER = process.env.BROWSER || "CHROME";
 
 const browserCapability = {
 	CHROME: {
@@ -51,14 +49,14 @@ const browserCapability = {
 	},
 };
 
-const desiredCapabilities = browserCapability[process.env.BROWSER];
-browserName = process.env.BROWSER + " (local)";
+const desiredCapabilities = browserCapability[BROWSER];
+browserName = BROWSER + " (local)";
 if (!desiredCapabilities) {
-	exit("Unknown browser :" + process.env.BROWSER);
+	exit("Unknown browser :" + BROWSER);
 }
 let options = {};
 
-if (process.env.BROWSER === "SAUCELABS") {
+if (BROWSER === "SAUCELABS") {
 	browserName = process.env.browserName + " " + process.env.version + " " + process.env.platform + " (SAUCELABS)";
 	options = {
 		tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
@@ -76,7 +74,7 @@ options.desiredCapabilities = desiredCapabilities;
 
 console.log("Running test on " + browserName);
 
-const browser = webdriverio.remote(options);
+const client = webdriverio.remote(options);
 const serve = serveStatic(__dirname);
 const server = http.createServer(function onRequest(req, res) {
 	serve(req, res, finalhandler(req, res));
@@ -85,7 +83,7 @@ const server = http.createServer(function onRequest(req, res) {
 function updateSaucelabsStatus(result, done) {
 	const options = {
 		headers: {"Content-Type": "text/json"},
-		url: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@saucelabs.com/rest/v1/" + process.env.SAUCE_USERNAME + "/jobs/" + browser.requestHandler.sessionID,
+		url: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@saucelabs.com/rest/v1/" + process.env.SAUCE_USERNAME + "/jobs/" + client.requestHandler.sessionID,
 		method: "PUT",
 		body: JSON.stringify({
 			passed: result,
@@ -109,11 +107,11 @@ server.listen(port, function () {
 		if (+new Date() - startTime > 10000) {
 			exit("Aborting connection to webdriver after 10 seconds");
 		}
-		return browser
+		return client
 			.init()
 			.url(`http://localhost:${port}/test/mocha.html`)
 			.then(function () {
-				return browser.waitForText("#status", 30000);
+				return client.waitForText("#status", 30000);
 			})
 			.getText("#mocha-stats").then(function (text) {
 				const passes = parseInt(text.replace(/.*passes: ([0-9]+).*/, "$1"), 10);
@@ -124,7 +122,7 @@ server.listen(port, function () {
 			})
 			.then(function ({passes}) {
 				console.log(`browser tests successful (${passes} passes) on ${browserName}`);
-				if (process.env.BROWSER === "SAUCELABS") {
+				if (BROWSER === "SAUCELABS") {
 					updateSaucelabsStatus(true, (e) => {
 						if (e) {
 							throw e;
@@ -141,7 +139,7 @@ server.listen(port, function () {
 				if (e.message.indexOf("ECONNREFUSED") !== -1) {
 					return test();
 				}
-				if (process.env.BROWSER === "SAUCELABS") {
+				if (BROWSER === "SAUCELABS") {
 					updateSaucelabsStatus(false, (err) => {
 						if (err) {
 							throw err;

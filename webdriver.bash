@@ -11,6 +11,7 @@ cleanup() {
 }
 trap "cleanup" EXIT INT
 PATH="$PATH:./node_modules/.bin/"
+BROWSER="${BROWSER:-CHROME}"
 
 if [ "$BROWSER" != "SAUCELABS" ]
 then
