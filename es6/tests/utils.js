@@ -14,6 +14,7 @@ let allStarted = false;
 let examplesDirectory;
 const docX = {};
 const imageData = {};
+const emptyNamespace = /xmlns:[a-z0-9]+=""/;
 
 function walk(dir) {
 	let results = [];
@@ -107,6 +108,8 @@ function shouldBeSame(options) {
 				expect(text1).to.be.equal(text2, `Content differs ${suffix}`);
 			}
 			else {
+				expect(text1).to.not.match(emptyNamespace, `The file ${filePath} has empty namespaces`);
+				expect(text2).to.not.match(emptyNamespace, `The file ${filePath} has empty namespaces`);
 				if (text1 === text2) {
 					return;
 				}
