@@ -1,3 +1,11 @@
+### 3.1.8
+
+Add error `loop_position_invalid` when the position of the loop would produce invalid xml (for example, when putting the start of a loop in a table and the end outside the loop
+
+### 3.1.7
+
+Use createFolders JSZip option to avoid docx corruption
+
 ### 3.1.6
 
 Show clear error if file is ODT, escape " as `&quot;`
