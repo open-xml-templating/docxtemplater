@@ -9,7 +9,7 @@ module.exports = {
 		path: path.resolve(__dirname, "build"),
 		filename: `docxtemplater.${min ? "min." : ""}js`,
 		library: "docxtemplater",
-		libraryTarget: "umd",
+		libraryTarget: "window",
 	},
 	resolve: {
 		alias: {xmldom: path.resolve(__dirname, "es6/browser-versions/xmldom.js")},
