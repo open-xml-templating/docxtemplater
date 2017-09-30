@@ -176,6 +176,16 @@ function getScopeCompilationError({tag, rootError}) {
 	return err;
 }
 
+function getLoopPositionProducesInvalidXMLError({tag}) {
+	const err = new XTTemplateError(`The position of the loop tags "${tag}" would produce invalid XML`);
+	err.properties = {
+		tag,
+		id: "loop_position_invalid",
+		explanation: `The tags "${tag}" are misplaced in the document, for example one of them is in a table and the other one outside the table`,
+	};
+	return err;
+}
+
 function throwUnimplementedTagType(part) {
 	const err = new XTTemplateError(`Unimplemented tag type "${part.type}"`);
 	err.properties = {
@@ -236,5 +246,6 @@ module.exports = {
 	throwMalformedXml,
 	throwFileTypeNotIdentified,
 	throwFileTypeNotHandled,
+	getLoopPositionProducesInvalidXMLError,
 	throwLocationInvalid,
 };

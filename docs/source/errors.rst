@@ -156,6 +156,21 @@ and you use the angularParser, you will have this error. The error happens when 
 
 `malformed_xml` happens when a xml file of the document cannot be parsed correctly.
 
+`loop_position_invalid` happens when a loop would produce invalid XML.
+
+For example, if you write : 
+
+.. code-block:: text
+
+    ======================
+    | header1  | header2 |
+    ----------------------
+    | {#users} | content |
+    ======================
+
+    {/users}
+
+this is not allowed since a loop that starts in a table should also end in that table.
 
 Handling multiple errors
 ------------------------

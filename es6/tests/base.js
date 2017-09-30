@@ -343,9 +343,8 @@ describe("Complex table example", function () {
 		<w:tc><w:t>{/table1}</w:t> </w:tc>
 		</w:tr>
 		<w:tr>
-		<w:tc><w:t>{#table1}Ho</w:t></w:tc>
-		<w:tc><w:p><w:t>{/table1}</w:t> </w:p>
-		</w:tc>
+		<w:tc><w:p><w:t>{#table1}Ho</w:t></w:p></w:tc>
+		<w:tc><w:p><w:t>{/table1}</w:t></w:p></w:tc>
 		</w:tr>
 		<w:t>{key}</w:t>
 		`;
@@ -359,9 +358,8 @@ describe("Complex table example", function () {
 		<w:tc><w:t></w:t> </w:tc>
 		</w:tr>
 		<w:tr>
-		<w:tc><w:t>Ho</w:t></w:tc>
-		<w:tc><w:p><w:t></w:t> </w:p>
-		</w:tc>
+		<w:tc><w:p><w:t>Ho</w:t></w:p></w:tc>
+		<w:tc><w:p><w:t></w:t></w:p></w:tc>
 		</w:tr>
 		<w:t xml:space="preserve">value</w:t>
 		`;

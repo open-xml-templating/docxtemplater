@@ -813,4 +813,39 @@ describe("multi errors", function () {
 		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
+
+	it("should show an error when loop tag are badly used (xml open count !== xml close count)", function () {
+		const content = `<w:tbl>
+      <w:tr>
+        <w:tc>
+          <w:p> <w:r> <w:t>{#users}</w:t> </w:r> <w:r> <w:t>test</w:t> </w:r> </w:p>
+        </w:tc>
+        <w:tc>
+          <w:p> <w:r> <w:t>test2</w:t> </w:r> </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p>
+      <w:r> <w:t>{/users}</w:t> </w:r>
+    </w:p>`;
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "TemplateError",
+						message: 'The position of the loop tags "users" would produce invalid XML',
+						properties: {
+							tag: "users",
+							id: "loop_position_invalid",
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
 });

@@ -58,7 +58,11 @@ const expandPairTrait = {
 		const expandedPairs = pairs.map(function (pair) {
 			let {expandTo} = pair[0].part;
 			if (expandTo === "auto") {
-				expandTo = getExpandToDefault(postparsed.slice(pair[0].offset, pair[1].offset));
+				const result = getExpandToDefault(postparsed.slice(pair[0].offset, pair[1].offset), pair);
+				if (result.error) {
+					errors.push(result.error);
+				}
+				expandTo = result.value;
 			}
 			if (!expandTo) {
 				return [pair[0].offset, pair[1].offset];

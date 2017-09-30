@@ -1,5 +1,5 @@
 const {getRight, getLeft, concatArrays} = require("./doc-utils");
-const {XTTemplateError, throwRawTagNotInParagraph} = require("./errors");
+const {XTTemplateError, throwRawTagNotInParagraph, getLoopPositionProducesInvalidXMLError} = require("./errors");
 
 function lastTagIsOpenTag(array, tag) {
 	if (array.length === 0) {
@@ -47,18 +47,34 @@ function getListXmlElements(parts) {
 	return result;
 }
 
-function getExpandToDefault(parts) {
+function getExpandToDefault(parts, pair) {
+	const result = {};
 	const xmlElements = getListXmlElements(parts);
+	const closingTagCount = xmlElements.filter(function (xmlElement) {
+		return xmlElement.tag[1] === "/";
+	}).length;
+	const startingTagCount = xmlElements.filter(function (xmlElement) {
+		return xmlElement.tag[1] !== "/";
+	}).length;
+	if (closingTagCount !== startingTagCount) {
+		return {
+			error: getLoopPositionProducesInvalidXMLError({tag: pair[0].part.value}),
+		};
+	}
+
 	for (let i = 0; i < xmlElements.length; i++) {
 		const xmlElement = xmlElements[i];
 		if(xmlElement.tag.indexOf("<w:tc") === 0) {
-			return "w:tr";
+			result.value = "w:tr";
+			return result;
 		}
 		if(xmlElement.tag.indexOf("<a:tc") === 0) {
-			return "a:tr";
+			result.value = "a:tr";
+			return result;
 		}
 	}
-	return false;
+	result.value = false;
+	return result;
 }
 
 function expandOne(part, postparsed, options) {
