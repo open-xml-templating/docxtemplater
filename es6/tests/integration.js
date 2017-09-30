@@ -128,7 +128,6 @@ describe("Table", function () {
 		expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data");
 	});
 	it("should work with more complex table", function () {
-		// set the templateData
 		const doc = createDoc("table-complex-example.docx");
 		doc.setData({
 			table2: [{
@@ -153,6 +152,16 @@ describe("Table", function () {
 		doc.render();
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("TABLE1COLUMN1COLUMN2COLUMN3COLUMN4TOTALt1total1-datat1total2-datat1total3-dataTABLE2COLUMN1COLUMN2COLUMN3COLUMN4t2-1row-data1t2-1row-data2t2-1row-data3t2-1row-data4t2-2row-data1t2-2row-data2t2-2row-data3t2-2row-data4TOTALt2total1-datat2total2-datat2total3-data");
+	});
+
+	it("should work when looping around tables", function () {
+		const doc = createDoc("table-repeat.docx");
+		doc.setData({
+			table: [1, 2, 3, 4],
+		});
+		doc.render();
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("1234123412341234");
 	});
 });
 
