@@ -20,6 +20,7 @@ function getInner({part, left, right, postparsed, index}) {
 class RawXmlModule {
 	constructor() {
 		this.name = "RawXmlModule";
+		this.prefix = "@";
 	}
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
@@ -27,7 +28,7 @@ class RawXmlModule {
 	}
 	parse(placeHolderContent) {
 		const type = "placeholder";
-		if (placeHolderContent[0] !== "@") {
+		if (placeHolderContent[0] !== this.prefix) {
 			return null;
 		}
 		return {type, value: placeHolderContent.substr(1), module: moduleName};

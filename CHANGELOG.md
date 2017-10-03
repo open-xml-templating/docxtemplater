@@ -1,3 +1,7 @@
+### master
+
+Add support for setting the prefix when attaching a module.
+
 ### 3.1.8
 
 Add error `loop_position_invalid` when the position of the loop would produce invalid xml (for example, when putting the start of a loop in a table and the end outside the loop

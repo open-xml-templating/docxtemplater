@@ -25,7 +25,11 @@ const Docxtemplater = class Docxtemplater {
 			module.on(eventName);
 		});
 	}
-	attachModule(module) {
+	attachModule(module, options = {}) {
+		const {prefix} = options;
+		if (prefix) {
+			module.prefix = prefix;
+		}
 		this.modules.push(moduleWrapper(module));
 		return this;
 	}

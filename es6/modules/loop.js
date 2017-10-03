@@ -6,22 +6,55 @@ const moduleName = "loop";
 
 const loopModule = {
 	name: "LoopModule",
+	prefix: {
+		start: "#",
+		end: "/",
+		dash: "-",
+		inverted: "^",
+	},
 	parse(placeHolderContent) {
 		const module = moduleName;
 		const type = "placeholder";
-		if (placeHolderContent[0] === "#") {
-			return {type, value: placeHolderContent.substr(1), expandTo: "auto", module, location: "start", inverted: false};
+		const prefix = this.prefix;
+		if (placeHolderContent[0] === prefix.start) {
+			return {
+				type,
+				value: placeHolderContent.substr(1),
+				expandTo: "auto",
+				module,
+				location: "start",
+				inverted: false,
+			};
 		}
-		if (placeHolderContent[0] === "^") {
-			return {type, value: placeHolderContent.substr(1), expandTo: "auto", module, location: "start", inverted: true};
+		if (placeHolderContent[0] === prefix.inverted) {
+			return {
+				type,
+				value: placeHolderContent.substr(1),
+				expandTo: "auto",
+				module,
+				location: "start",
+				inverted: true,
+			};
 		}
-		if (placeHolderContent[0] === "/") {
-			return {type, value: placeHolderContent.substr(1), module, location: "end"};
+		if (placeHolderContent[0] === prefix.end) {
+			return {
+				type,
+				value: placeHolderContent.substr(1),
+				module,
+				location: "end",
+			};
 		}
-		if (placeHolderContent[0] === "-") {
+		if (placeHolderContent[0] === prefix.dash) {
 			const value = placeHolderContent.replace(dashInnerRegex, "$2");
 			const expandTo = placeHolderContent.replace(dashInnerRegex, "$1");
-			return {type, value, expandTo, module, location: "start", inverted: false};
+			return {
+				type,
+				value,
+				expandTo,
+				module,
+				location: "start",
+				inverted: false,
+			};
 		}
 		return null;
 	},
@@ -38,13 +71,16 @@ const loopModule = {
 		}, []);
 	},
 	render(part, options) {
-		if(!part.type === "placeholder" || part.module !== moduleName) {
+		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
 		}
 		let totalValue = [];
 		let errors = [];
 		function loopOver(scope) {
-			const scopeManager = options.scopeManager.createSubScopeManager(scope, part.value);
+			const scopeManager = options.scopeManager.createSubScopeManager(
+				scope,
+				part.value
+			);
 			const subRendered = options.render(
 				mergeObjects({}, options, {
 					compiled: part.subparsed,
