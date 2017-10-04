@@ -54,7 +54,8 @@ function getExpandToDefault(parts, pair) {
 		return xmlElement.tag[1] === "/";
 	}).length;
 	const startingTagCount = xmlElements.filter(function (xmlElement) {
-		return xmlElement.tag[1] !== "/";
+		const {tag} = xmlElement;
+		return tag[1] !== "/" && tag[tag.length - 2] !== "/";
 	}).length;
 	if (closingTagCount !== startingTagCount) {
 		return {

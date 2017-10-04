@@ -25,7 +25,7 @@ class Render {
 	}
 	postparse(postparsed) {
 		const errors = [];
-		postparsed.map((p) => {
+		postparsed.forEach((p) => {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {

@@ -1,6 +1,7 @@
-### master
+### 3.1.9
 
-Add support for setting the prefix when attaching a module.
+-	Add support for setting the prefix when attaching a module.
+-	Bugfix when looping over selfclosing tag
 
 ### 3.1.8
 
