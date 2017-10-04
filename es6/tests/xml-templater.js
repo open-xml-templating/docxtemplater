@@ -40,6 +40,17 @@ describe("xmlTemplater", function () {
 		xmlTemplater.render();
 		expect(xmlTemplater.content).to.be.equal('<w:t xml:space="preserve">Hello edgar</w:t>');
 	});
+
+	it("should handle <w:p/> in loop without error", function () {
+		const content = `<w:p><w:r><w:t>{#ab}</w:t></w:r></w:p>
+    <w:p w14:paraId="79563C14" w14:textId="77777777" w:rsidR="00F22CAA" w:rsidRDefault="00F22CAA" w:rsidP="00324963"/>
+    <w:p><w:r><w:t>{.}{/ab}</w:t></w:r></w:p>`;
+		const scope = {ab: [1, 2, 3]};
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
+		xmlTemplater.render();
+		expect(xmlTemplater.getFullText()).to.be.equal("123");
+	});
+
 	it("should work with tag in two elements", function () {
 		const content = "<w:t>Hello {</w:t><w:t>name}</w:t>";
 		const scope = {name: "Edgar"};
