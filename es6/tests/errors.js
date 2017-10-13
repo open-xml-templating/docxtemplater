@@ -1,6 +1,11 @@
 "use strict";
 
 const expressions = require("angular-expressions");
+
+const {loadFile, loadDocument} = require("./utils");
+const Errors = require("../errors.js");
+const {createXmlTemplaterDocx, wrapMultiError, expectToThrow} = require("./utils");
+
 function angularParser(tag) {
 	const expr = expressions.compile(tag.replace(/’/g, "'"));
 	return {
@@ -9,9 +14,6 @@ function angularParser(tag) {
 		},
 	};
 }
-const {loadFile, loadDocument} = require("./utils");
-const Errors = require("../errors.js");
-const {createXmlTemplaterDocx, wrapMultiError, expectToThrow} = require("./utils");
 
 describe("compilation errors", function () {
 	it("should fail when tag unclosed at end of document", function () {
@@ -244,7 +246,6 @@ describe("runtime errors", function () {
 				},
 			};
 		}
-		const xmlTemplater = createXmlTemplaterDocx(content, {parser: errorParser});
 		const expectedError = {
 			name: "ScopeParserError",
 			message: "Scope parser execution failed",
@@ -257,24 +258,12 @@ describe("runtime errors", function () {
 				},
 			},
 		};
-		const create = xmlTemplater.render.bind(xmlTemplater);
+		const create = createXmlTemplaterDocx.bind(null, content, {parser: errorParser});
 		expectToThrow(create, Errors.XTScopeParserError, expectedError);
 	});
 });
 
 describe("internal errors", function () {
-	it("should fail if content is not a string", function () {
-		const expectedError = {
-			name: "InternalError",
-			message: "Content must be a string",
-			properties: {
-				id: "xmltemplater_content_must_be_string",
-				type: "number",
-			},
-		};
-		const create = createXmlTemplaterDocx.bind(null, 1);
-		expectToThrow(create, Errors.XTInternalError, expectedError);
-	});
 	it("should fail if using odt format", function (done) {
 		const expectedError = {
 			name: "InternalError",

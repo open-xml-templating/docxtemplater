@@ -1,7 +1,7 @@
 "use strict";
 
 const {DOMParser, XMLSerializer} = require("xmldom");
-const {throwXmlTagNotFound, throwDecodeUTF8Error} = require("./errors");
+const {throwXmlTagNotFound} = require("./errors");
 
 const DocUtils = {};
 
@@ -49,21 +49,6 @@ DocUtils.mergeObjects = function () {
 DocUtils.xml2str = function (xmlNode) {
 	const a = new XMLSerializer();
 	return a.serializeToString(xmlNode);
-};
-
-DocUtils.decodeUtf8 = function (s) {
-	try {
-		if (s === undefined) { return undefined; }
-		// replace Ascii 160 space by the normal space, Ascii 32
-		return decodeURIComponent(escape(DocUtils.convertSpaces(s)));
-	}
-	catch (e) {
-		throwDecodeUTF8Error(s);
-	}
-};
-
-DocUtils.encodeUtf8 = function (s) {
-	return unescape(encodeURIComponent(s));
 };
 
 DocUtils.str2xml = function (str, errorHandler) {
@@ -115,10 +100,6 @@ DocUtils.utf8ToWord = function (string) {
 	return string;
 };
 
-DocUtils.cloneDeep = function (obj) {
-	return JSON.parse(JSON.stringify(obj));
-};
-
 // This function is written with for loops for performance
 DocUtils.concatArrays = function (arrays) {
 	const result = [];
@@ -148,10 +129,6 @@ returns: [{array: {0: 'la'},offset: 2},{array: {0: 'la'},offset: 8},{array: {0: 
 		matchArray.push({array: match, offset: match.index});
 	}
 	return matchArray;
-};
-
-DocUtils.sizeOfObject = function (obj) {
-	return Object.keys(obj).length;
 };
 
 DocUtils.getRight = function (parsed, element, index) {

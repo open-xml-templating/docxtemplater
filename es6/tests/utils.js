@@ -1,14 +1,16 @@
-const FileTypeConfig = require("../file-type-config.js");
-const XmlTemplater = require("../xml-templater");
 const path = require("path");
-const Docxtemplater = require("../docxtemplater.js");
-const {defaults} = Docxtemplater.DocUtils;
 const chai = require("chai");
 const {expect} = chai;
 const JSZip = require("jszip");
-const xmlPrettify = require("./xml-prettify");
 const fs = require("fs");
 const {get, unset, omit, uniq} = require("lodash");
+
+const FileTypeConfig = require("../file-type-config.js");
+const XmlTemplater = require("../xml-templater");
+
+const Docxtemplater = require("../docxtemplater.js");
+const {defaults} = Docxtemplater.DocUtils;
+const xmlPrettify = require("./xml-prettify");
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;
@@ -37,7 +39,7 @@ function walk(dir) {
 
 /* eslint-disable no-console */
 
-function createXmlTemplaterDocx(content, options) {
+function xmltemplater(content, options) {
 	options = options || {};
 	options.fileTypeConfig = FileTypeConfig.docx;
 	Object.keys(defaults).forEach((key) => {
@@ -53,6 +55,14 @@ function createXmlTemplaterDocx(content, options) {
 	return new XmlTemplater(content, options)
 		.setTags(options.tags)
 		.parse();
+}
+
+function createXmlTemplaterDocx(content, options = {}) {
+	const doc = makeDocx("temporary.docx", content);
+	doc.setOptions(options);
+	doc.setData(options.tags);
+	doc.render();
+	return doc;
 }
 
 function writeFile(expectedName, zip) {
@@ -140,10 +150,15 @@ function checkLength(e, expectedError, propertyPath) {
 }
 
 function cleanError(e, expectedError) {
-	delete e.properties.explanation;
+	if (e.properties.file != null) {
+		expect(e.properties.file).to.be.a("string");
+		expect(e.properties.file).to.equal("word/document.xml");
+	}
 	if (expectedError.properties.offset != null) {
 		expect(e.properties.offset).to.be.deep.equal(expectedError.properties.offset);
 	}
+	delete e.properties.file;
+	delete e.properties.explanation;
 	delete e.properties.offset;
 	delete expectedError.properties.offset;
 	e = omit(e, ["line", "sourceURL", "stack"]);
@@ -337,22 +352,28 @@ function createDoc(name) {
 	return loadDocument(name, docX[name].loadedContent);
 }
 
+function getContent(doc) {
+	return doc.getZip().files["word/document.xml"].asText();
+}
+
 module.exports = {
-	cleanError,
-	createXmlTemplaterDocx,
-	createDoc,
-	loadDocument,
-	loadImage,
-	shouldBeSame,
-	imageData,
-	loadFile,
-	start,
 	chai,
+	cleanError,
+	createDoc,
+	createXmlTemplaterDocx,
+	xmltemplater,
 	expect,
-	setStartFunction,
-	setExamplesDirectory,
 	expectToThrow,
-	removeSpaces,
-	wrapMultiError,
+	getContent,
+	imageData,
+	loadDocument,
+	loadFile,
+	loadImage,
 	makeDocx,
+	removeSpaces,
+	setExamplesDirectory,
+	setStartFunction,
+	shouldBeSame,
+	start,
+	wrapMultiError,
 };

@@ -1,4 +1,4 @@
-const {createXmlTemplaterDocx, expect} = require("./utils");
+const {createXmlTemplaterDocx, expect, getContent} = require("./utils");
 
 describe("xmlTemplater", function () {
 	it("should work with simpleContent", function () {
@@ -38,7 +38,8 @@ describe("xmlTemplater", function () {
 		const scope = {loop: {name: "edgar"}};
 		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 		xmlTemplater.render();
-		expect(xmlTemplater.content).to.be.equal('<w:t xml:space="preserve">Hello edgar</w:t>');
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.equal('<w:t xml:space="preserve">Hello edgar</w:t>');
 	});
 
 	it("should handle <w:p/> in loop without error", function () {
@@ -122,7 +123,7 @@ describe("xmlTemplater", function () {
 		const scope = {loop: {names: [{name: "Edgar"}, {name: "Mary"}, {name: "John"}]}};
 		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 		xmlTemplater.render();
-		expect(xmlTemplater.content).to.be.equal('<w:t xml:space="preserve">Hello Edgar,Mary,John,</w:t>');
+		expect(getContent(xmlTemplater)).to.be.equal('<w:t xml:space="preserve">Hello Edgar,Mary,John,</w:t>');
 	});
 	it("should work with delimiter in value", function () {
 		const content = "<w:t>Hello {name}</w:t>";
@@ -189,7 +190,6 @@ describe("xmlTemplater", function () {
 		`;
 		const scope = {name: "John", foo: "MyFoo", bar: "MyBar", baz: "MyBaz"};
 		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-		expect(xmlTemplater.getFullText()).to.be.equal("y{bar}*cos⁡( {foo}+{baz})Hello {name}");
 		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("yMyBar*cos⁡( MyFoo+MyBaz)Hello John");
 	});
@@ -231,8 +231,8 @@ describe("intelligent tagging multiple tables", function () {
 		`.replace(/\t|\n/g, "");
 		const scope = {clauses: ["Foo", "Bar", "Baz"]};
 		const doc = createXmlTemplaterDocx(content, {tags: scope});
-		doc.render();
-		expect(doc.content).to.be.equal('<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Foo</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Bar</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Baz</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr></w:tbl>');
+		const c = getContent(doc);
+		expect(c).to.be.equal('<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Foo</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Bar</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Baz</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr></w:tbl>');
 	});
 });
 
@@ -288,21 +288,24 @@ describe("Custom delimiters", function () {
 	it("should work with loops", function () {
 		const content = "<w:t>{#loop}{innertag</w:t><w:t>} {/loop}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {tags: {loop: [{innertag: 10}, {innertag: 5}]}}).render();
-		expect(xmlt.content).to.be.equal('<w:t xml:space="preserve">10</w:t><w:t> 5</w:t><w:t> </w:t>');
+		const c = getContent(xmlt);
+		expect(c).to.be.equal('<w:t xml:space="preserve">10</w:t><w:t> 5</w:t><w:t> </w:t>');
 	});
 
 	it("should work with complex loops (1)", function () {
 		const content = "<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {tags: {looptag: true, innertag: "foo"}}).render();
-		expect(xmlt.content).not.to.contain("</w:t></w:t>");
-		expect(xmlt.content).to.be.equal('<w:t xml:space="preserve">foo</w:t><w:t></w:t>');
+		const c = getContent(xmlt);
+		expect(c).not.to.contain("</w:t></w:t>");
+		expect(c).to.be.equal('<w:t xml:space="preserve">foo</w:t><w:t></w:t>');
 	});
 
 	it("should work with complex loops (2)", function () {
 		const content = "<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {tags: {person: [{name: "Henry"}]}}).render();
-		expect(xmlt.content).to.contain("Henry</w:t>");
-		expect(xmlt.content).not.to.contain("</w:t>Henry</w:t>");
+		const c = getContent(xmlt);
+		expect(c).to.contain("Henry</w:t>");
+		expect(c).not.to.contain("</w:t>Henry</w:t>");
 	});
 });
 
@@ -310,12 +313,14 @@ describe("getting parents context", function () {
 	it("should work with simple loops", function () {
 		const content = "<w:t>{#loop}{name}{/loop}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {tags: {loop: [1], name: "Henry"}}).render();
-		expect(xmlt.content).to.be.equal('<w:t xml:space="preserve">Henry</w:t>');
+		const c = getContent(xmlt);
+		expect(c).to.be.equal('<w:t xml:space="preserve">Henry</w:t>');
 	});
 
 	it("should work with double loops", function () {
 		const content = "<w:t>{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {tags: {loop_first: [1], loop_second: [{name_inner: "John"}], name_outer: "Henry"}}).render();
-		expect(xmlt.content).to.be.equal('<w:t xml:space="preserve">John Henry</w:t>');
+		const c = getContent(xmlt);
+		expect(c).to.be.equal('<w:t xml:space="preserve">John Henry</w:t>');
 	});
 });

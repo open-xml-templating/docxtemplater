@@ -1,5 +1,4 @@
 const {merge} = require("lodash");
-const wrapper = require("../module-wrapper");
 
 class InspectModule {
 	constructor() {
@@ -18,4 +17,4 @@ class InspectModule {
 	}
 }
 
-module.exports = () => wrapper(new InspectModule());
+module.exports = () => new InspectModule();

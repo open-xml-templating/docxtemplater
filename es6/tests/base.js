@@ -1,11 +1,11 @@
-const {expect, createXmlTemplaterDocx, createDoc, imageData} = require("./utils");
 const JSZip = require("jszip");
-const Docxtemplater = require("../docxtemplater.js");
-const {sizeOfObject} = require("../doc-utils.js");
 const {merge} = require("lodash");
+const expressions = require("angular-expressions");
+
+const Docxtemplater = require("../docxtemplater.js");
+const {expect, createXmlTemplaterDocx, createDoc, imageData, getContent} = require("./utils");
 const inspectModule = require("./inspect-module.js");
 
-const expressions = require("angular-expressions");
 function angularParser(tag) {
 	const expr = expressions.compile(tag.replace(/’/g, "'"));
 	return {
@@ -31,7 +31,7 @@ describe("DocxtemplaterLoading", function () {
 		});
 		it("should have the right number of files (the docx unzipped)", function () {
 			const doc = createDoc("image-example.docx");
-			expect(sizeOfObject(doc.zip.files)).to.be.equal(16);
+			expect(Object.keys(doc.zip.files).length).to.be.equal(16);
 		});
 	});
 	describe("basic loading", function () {
@@ -131,7 +131,7 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			const scope = {todo: {todo: "abc"}};
 			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 			xmlTemplater.render();
-			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+			expect(getContent(xmlTemplater)).to.be.deep.equal(expectedContent);
 		});
 		it("should work with string value", function () {
 			const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
@@ -139,15 +139,16 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			const scope = {todo: "abc"};
 			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 			xmlTemplater.render();
-			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+			const c = getContent(xmlTemplater);
+			expect(c).to.be.deep.equal(expectedContent);
 		});
 		it("should not have sideeffects with inverted with array length 3", function () {
 			const content = "<w:t>{^todos}No {/todos}Todos</w:t><w:t>{#todos}{.}{/todos}</w:t>";
 			const expectedContent = '<w:t>Todos</w:t><w:t xml:space="preserve">ABC</w:t>';
 			const scope = {todos: ["A", "B", "C"]};
 			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-			xmlTemplater.render();
-			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+			const c = getContent(xmlTemplater);
+			expect(c).to.be.deep.equal(expectedContent);
 		});
 		it("should not have sideeffects with inverted with empty array", function () {
 			const content = `<w:t>{^todos}No {/todos}Todos</w:t>
@@ -156,8 +157,8 @@ describe("DocxtemplaterTemplatingForLoop", function () {
 			<w:t xml:space="preserve"></w:t>`;
 			const scope = {todos: []};
 			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-			xmlTemplater.render();
-			expect(xmlTemplater.content).to.be.deep.equal(expectedContent);
+			const c = getContent(xmlTemplater);
+			expect(c).to.be.deep.equal(expectedContent);
 		});
 
 		it("should provide inverted loops", function () {
@@ -264,16 +265,16 @@ describe("Special characters", function () {
 		const content = "<w:t>Hello {&gt;name}</w:t>";
 		const scope = {">name": "Edgar"};
 		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-		xmlTemplater.render();
-		expect(xmlTemplater.content).to.be.deep.equal('<w:t xml:space="preserve">Hello Edgar</w:t>');
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello Edgar</w:t>');
 	});
 
 	it("should render placeholder containing special characters", function () {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = {name: "<Edgar>"};
 		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-		xmlTemplater.render();
-		expect(xmlTemplater.content).to.be.deep.equal('<w:t xml:space="preserve">Hello &lt;Edgar&gt;</w:t>');
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello &lt;Edgar&gt;</w:t>');
 	});
 
 	it("should read full text correctly", function () {
@@ -329,7 +330,8 @@ describe("Complex table example", function () {
 			};
 			const doc = createXmlTemplaterDocx(content, {tags: scope});
 			doc.render();
-			expect(doc.content).to.be.equal('<w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">John</w:t></w:tc></w:tr></w:table><w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">Jane</w:t></w:tc></w:tr></w:table><w:t></w:t>');
+			const c = getContent(doc);
+			expect(c).to.be.equal('<w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">John</w:t></w:tc></w:tr></w:table><w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">Jane</w:t></w:tc></w:tr></w:table><w:t></w:t>');
 		});
 	});
 
@@ -363,7 +365,8 @@ describe("Complex table example", function () {
 		</w:tr>
 		<w:t xml:space="preserve">value</w:t>
 		`;
-		expect(doc.content).to.be.equal(expected);
+		const c = getContent(doc);
+		expect(c).to.be.equal(expected);
 	});
 });
 describe("Raw Xml Insertion", function () {
@@ -373,8 +376,9 @@ describe("Raw Xml Insertion", function () {
 		const scope = {complexXml: "<w:p w:rsidR=\"00612058\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: color w: val=\"FF0000\"/></w:rPr><w:t>My custom XML</w:t></w:r></w:p><w:tbl><w:tblPr><w:tblStyle w: val=\"Grilledutableau\"/><w:tblW w: w=\"0\" w:type=\"auto\"/><w:tblLook w: val=\"04A0\" w: firstRow=\"1\" w: lastRow=\"0\" w: firstColumn=\"1\" w: lastColumn=\"0\" w: noHBand=\"0\" w: noVBand=\"1\"/></w:tblPr><w:tblGrid><w: gridCol w: w=\"2952\"/><w: gridCol w: w=\"2952\"/><w: gridCol w: w=\"2952\"/></w:tblGrid><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"DDD9C3\" w:themeFill=\"background2\" w:themeFillShade=\"E6\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: b/><w: color w: val=\"000000\" w:themeColor=\"text1\"/></w:rPr></w:pPr><w:r><w:rPr><w: b/><w: color w: val=\"000000\" w:themeColor=\"text1\"/></w:rPr><w:t>Test</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"DDD9C3\" w:themeFill=\"background2\" w:themeFillShade=\"E6\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: b/><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: b/><w: color w: val=\"FF0000\"/></w:rPr><w:t>Xml</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"DDD9C3\" w:themeFill=\"background2\" w:themeFillShade=\"E6\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: color w: val=\"FF0000\"/></w:rPr><w:t>Generated</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"C6D9F1\" w:themeFill=\"text2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"000000\" w:themeColor=\"text1\"/><w: u w: val=\"single\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w: color w: val=\"000000\" w:themeColor=\"text1\"/><w: u w: val=\"single\"/></w:rPr><w:t>Underline</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"C6D9F1\" w:themeFill=\"text2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w: color w: val=\"FF0000\"/><w: highlight w: val=\"yellow\"/></w:rPr><w:t>Highlighting</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"C6D9F1\" w:themeFill=\"text2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w:rFonts w: ascii=\"Bauhaus 93\" w: hAnsi=\"Bauhaus 93\"/><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w:rFonts w: ascii=\"Bauhaus 93\" w: hAnsi=\"Bauhaus 93\"/><w: color w: val=\"FF0000\"/></w:rPr><w:t>Font</w:t></w:r></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"F2DBDB\" w:themeFill=\"accent2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00EA4B08\"><w:pPr><w: jc w: val=\"center\"/><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r><w:rPr><w: color w: val=\"FF0000\"/></w:rPr><w:t>Centering</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"F2DBDB\" w:themeFill=\"accent2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRPr=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: i/><w: color w: val=\"FF0000\"/></w:rPr></w:pPr><w:r w:rsidRPr=\"00EA4B08\"><w:rPr><w: i/><w: color w: val=\"FF0000\"/></w:rPr><w:t>Italic</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"F2DBDB\" w:themeFill=\"accent2\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"E5DFEC\" w:themeFill=\"accent4\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"E5DFEC\" w:themeFill=\"accent4\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"E5DFEC\" w:themeFill=\"accent4\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc></w:tr><w:tr w:rsidR=\"00EA4B08\" w:rsidTr=\"00EA4B08\"><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"FDE9D9\" w:themeFill=\"accent6\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"FDE9D9\" w:themeFill=\"accent6\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w: w=\"2952\" w:type=\"dxa\"/><w: shd w: val=\"clear\" w: color=\"auto\" w: fill=\"FDE9D9\" w:themeFill=\"accent6\" w:themeFillTint=\"33\"/></w:tcPr><w:p w:rsidR=\"00EA4B08\" w:rsidRDefault=\"00EA4B08\" w:rsidP=\"00612058\"><w:pPr><w:rPr><w: color w: val=\"FF0000\"/></w:rPr></w:pPr></w:p></w:tc></w:tr></w:tbl>"};
 		const doc = createXmlTemplaterDocx(content, {tags: scope});
 		doc.render();
-		expect(doc.content.length).to.be.equal(content.length + scope.complexXml.length - (inner.length));
-		expect(doc.content).to.contain(scope.complexXml);
+		const c = getContent(doc);
+		expect(c.length).to.be.equal(content.length + scope.complexXml.length - (inner.length));
+		expect(c).to.contain(scope.complexXml);
 	});
 
 	it("should work even when tags are after the xml", function () {
@@ -443,7 +447,8 @@ describe("Raw Xml Insertion", function () {
 		};
 		const doc = createXmlTemplaterDocx(content, {tags: scope});
 		doc.render();
-		expect(doc.content).to.contain(scope.complexXml);
+		const c = getContent(doc);
+		expect(c).to.contain(scope.complexXml);
 		expect(doc.getFullText()).to.be.equal("HelloJohnDoe 1550MotoFein 1987WaterTest 2010BreadYu");
 	});
 
@@ -455,7 +460,8 @@ describe("Raw Xml Insertion", function () {
 		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
 
 		xmlTemplater.render();
-		expect(xmlTemplater.content).not.to.contain("</w:t></w:t>");
+		const c = getContent(xmlTemplater);
+		expect(c).not.to.contain("</w:t></w:t>");
 	});
 	it("should work with simple example and given options", function () {
 		const scope = {xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>'};
