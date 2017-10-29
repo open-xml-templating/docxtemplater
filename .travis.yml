@@ -11,8 +11,6 @@ matrix:
           username: "jsninja"
         jwt:
           secure: "PQ7xOckCvgNVJTfrchqb/d0+vnlWAcXzsUewlsdmCUCox9RltxSkkTAxx6uWK+IcpFtb81asO6JFAGygRQ/TU6MZBcHaFp6ftjHIAxUNp95laiIB31i9zOJWniG8MDgqPKJTnZNB/ZF0Cvuvjf/O4nh2umbnWSsz3K7uex9bwUc="
-    - node_js: "0.12"
-      env: COMMAND=test
     - node_js: "4"
       env: COMMAND=test
     - node_js: "5"
@@ -22,8 +20,6 @@ matrix:
     - node_js: "7"
       env: COMMAND=test
     - node_js: "8"
-      env: COMMAND=test
-    - node_js: "iojs"
       env: COMMAND=test
 
 script:
