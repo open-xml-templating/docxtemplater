@@ -18,6 +18,14 @@ describe("xmlMatcher", function () {
 		expect(matcher.matches[1].offset).to.be.equal(20);
 	});
 
+	it("should work with selfclosing tag", function () {
+		const matcher = xmlMatcher(' <w:spacing w:before="0" w:after="200"/> ', ["w:spacing"]);
+		expect(matcher.matches.length).to.be.equal(1);
+		expect(matcher.matches[0].array[0]).to.be.equal(
+			'<w:spacing w:before="0" w:after="200"/>'
+		);
+	});
+
 	it("should work with no tag, with w:t", function () {
 		const matcher = xmlMatcher("Text1</w:t><w:t>Text2", ["w:t"]);
 		expect(matcher.matches[0].array[0]).to.be.equal("Text1");

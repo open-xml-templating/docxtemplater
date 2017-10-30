@@ -39,6 +39,9 @@ function handleRecursiveCase(res) {
 		const offset = pn.array.pop();
 		pn.offset = offset;
 		pn.last = true;
+		if (pn.array[0].indexOf("/>") !== -1) {
+			return;
+		}
 		// add at the end
 		res.matches.push(pn);
 	}
@@ -48,16 +51,12 @@ function handleRecursiveCase(res) {
 	return res;
 }
 
-function xmlMatcher(content, tagsXmlArray) {
+module.exports = function xmlMatcher(content, tagsXmlArray) {
 	const res = {};
 	res.content = content;
 	res.tagsXmlArray = tagsXmlArray;
 	res.tagsXmlArrayJoined = res.tagsXmlArray.join("|");
-	const regexp = new RegExp(`(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>`, "g");
+	const regexp = new RegExp(`(?:(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>)|(<(?:${res.tagsXmlArrayJoined})[^>]*/>)`, "g");
 	res.matches = pregMatchAll(regexp, res.content);
 	return handleRecursiveCase(res);
-}
-
-module.exports = function (content, tagsXmlArray) {
-	return xmlMatcher(content, tagsXmlArray);
 };
