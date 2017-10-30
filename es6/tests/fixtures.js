@@ -1,10 +1,14 @@
 const {clone} = require("lodash");
 
-const xmlSpacePreserveTag = {type: "tag", position: "start", value: '<w:t xml:space="preserve">', text: true};
-const startText = {type: "tag", position: "start", value: "<w:t>", text: true};
-const endText = {type: "tag", value: "</w:t>", text: true, position: "end"};
-const startParagraph = {type: "tag", value: "<w:p>", text: false, position: "start"};
-const endParagraph = {type: "tag", value: "</w:p>", text: false, position: "end"};
+const xmlSpacePreserveTag = {type: "tag", position: "start", value: '<w:t xml:space="preserve">', text: true, tag: "w:t"};
+const startText = {type: "tag", position: "start", value: "<w:t>", text: true, tag: "w:t"};
+const endText = {type: "tag", value: "</w:t>", text: true, position: "end", tag: "w:t"};
+const startParagraph = {type: "tag", value: "<w:p>", text: false, position: "start", tag: "w:p"};
+const endParagraph = {type: "tag", value: "</w:p>", text: false, position: "end", tag: "w:p"};
+
+const tableRowStart = {type: "tag", position: "start", text: false, value: "<w:tr>", tag: "w:tr"};
+const tableRowEnd = {type: "tag", value: "</w:tr>", text: false, position: "end", tag: "w:tr"};
+
 const delimiters = {
 	start: {type: "delimiter", position: "start"},
 	end: {type: "delimiter", position: "end"},
@@ -167,7 +171,7 @@ const fixtures = {
 			content("name"),
 			delimiters.end,
 			endText,
-			{type: "tag", value: '<w:t foo="bar">', text: true, position: "start"},
+			{type: "tag", value: '<w:t foo="bar">', text: true, position: "start", tag: "w:t"},
 			content(", how is it ?"),
 			endText,
 		],
@@ -176,7 +180,7 @@ const fixtures = {
 			content("Hello "),
 			{type: "placeholder", value: "name"},
 			endText,
-			{type: "tag", value: '<w:t foo="bar">', text: true, position: "start"},
+			{type: "tag", value: '<w:t foo="bar">', text: true, position: "start", tag: "w:t"},
 			content(", how is it ?"),
 			endText,
 		],
@@ -339,7 +343,7 @@ const fixtures = {
 		},
 		result: '<w:tr><w:p><w:t xml:space="preserve"> Hello John Doe, </w:t><w:t></w:t></w:p><w:p><w:t xml:space="preserve"> Hello Jane Doe, </w:t><w:t></w:t></w:p><w:p><w:t xml:space="preserve"> Hello Wane Doe, </w:t><w:t></w:t></w:p></w:tr>',
 		lexed: [
-			{type: "tag", position: "start", text: false, value: "<w:tr>"},
+			tableRowStart,
 			startParagraph,
 			startText,
 			delimiters.start,
@@ -363,10 +367,10 @@ const fixtures = {
 			delimiters.end,
 			endText,
 			endParagraph,
-			{type: "tag", position: "end", text: false, value: "</w:tr>"},
+			tableRowEnd,
 		],
 		parsed: [
-			{type: "tag", position: "start", text: false, value: "<w:tr>"},
+			tableRowStart,
 			startParagraph,
 			startText,
 			{type: "placeholder", value: "columns", location: "start", module: "loop", inverted: false, expandTo: "w:tr"},
@@ -380,12 +384,12 @@ const fixtures = {
 			{type: "placeholder", value: "columns", location: "end", module: "loop"},
 			endText,
 			endParagraph,
-			{type: "tag", position: "end", text: false, value: "</w:tr>"},
+			tableRowEnd,
 		],
 		postparsed: [
 			{
 				type: "placeholder", value: "columns", module: "loop", inverted: false, subparsed: [
-					{type: "tag", value: "<w:tr>", text: false, position: "start"},
+					tableRowStart,
 					{
 						type: "placeholder", value: "users", module: "loop", inverted: false, subparsed: [
 							startParagraph,
@@ -399,7 +403,7 @@ const fixtures = {
 							endParagraph,
 						],
 					},
-					{type: "tag", value: "</w:tr>", text: false, position: "end"},
+					tableRowEnd,
 				],
 			},
 		],
@@ -454,13 +458,13 @@ const fixtures = {
 		},
 		result: "<w:t />",
 		lexed: [
-			{type: "tag", value: "<w:t />", text: true, position: "selfclosing"},
+			{type: "tag", value: "<w:t />", text: true, position: "selfclosing", tag: "w:t"},
 		],
 		parsed: [
-			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true, tag: "w:t"},
 		],
 		postparsed: [
-			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true, tag: "w:t"},
 		],
 	},
 	selfclosing_with_placeholderr: {
@@ -471,7 +475,7 @@ const fixtures = {
 		},
 		result: '<w:t /><w:t xml:space="preserve">Hi Foo</w:t>',
 		lexed: [
-			{type: "tag", value: "<w:t />", text: true, position: "selfclosing"},
+			{type: "tag", value: "<w:t />", text: true, position: "selfclosing", tag: "w:t"},
 			startText,
 			content("Hi "),
 			delimiters.start,
@@ -480,14 +484,14 @@ const fixtures = {
 			endText,
 		],
 		parsed: [
-			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true, tag: "w:t"},
 			startText,
 			content("Hi "),
 			{type: "placeholder", value: "user"},
 			endText,
 		],
 		postparsed: [
-			{type: "tag", position: "selfclosing", value: "<w:t />", text: true},
+			{type: "tag", position: "selfclosing", value: "<w:t />", text: true, tag: "w:t"},
 			xmlSpacePreserveTag,
 			content("Hi "),
 			{type: "placeholder", value: "user"},

@@ -123,6 +123,7 @@ describe("compilation errors", function () {
 						text: true,
 						type: "tag",
 						value: "<w:t>",
+						tag: "w:t",
 					},
 					{
 						module: "rawxml",
@@ -134,6 +135,7 @@ describe("compilation errors", function () {
 						text: true,
 						type: "tag",
 						value: "</w:t>",
+						tag: "w:t",
 					},
 				],
 				xtag: "myrawtag",
@@ -160,12 +162,14 @@ describe("compilation errors", function () {
 						position: "start",
 						text: false,
 						value: "<w:table>",
+						tag: "w:table",
 					},
 					{
 						type: "tag",
 						position: "start",
 						text: true,
 						value: "<w:t>",
+						tag: "w:t",
 					},
 					{
 						type: "placeholder",
@@ -177,18 +181,21 @@ describe("compilation errors", function () {
 						position: "end",
 						text: true,
 						value: "</w:t>",
+						tag: "w:t",
 					},
 					{
 						type: "tag",
 						position: "end",
 						text: false,
 						value: "</w:p>",
+						tag: "w:p",
 					},
 					{
 						type: "tag",
 						position: "end",
 						text: false,
 						value: "</w:table>",
+						tag: "w:table",
 					},
 				],
 				rootError: {

@@ -74,7 +74,7 @@ function tagMatcher(content, textMatchArray, othersMatchArray) {
 		if (text == null) {
 			continue;
 		}
-		totalMatches.push({type: "tag", position, text, offset, value: tagText});
+		totalMatches.push({type: "tag", position, text, offset, value: tagText, tag});
 	}
 
 	return totalMatches;
