@@ -63,3 +63,59 @@ You can use bower to install docxtemplater
 .. code-block:: bash
 
     bower install --save docxtemplater
+    
+EmberCLI
+--------
+
+Installing with yarn:
+
+.. code-block:: bash
+
+   yarn add docxtemplater
+
+**Use in a Single File**
+
+Import docxtemplater where you need it at the top of your files:
+
+.. code-block:: bash
+
+   import docxtemplater from 'npm:docxtemplater';
+
+Follow docs as normal. 
+
+**Use Globally**
+
+To import into your project call in ``ember-cli-build.js``:
+
+.. code-block:: bash
+
+   module.exports = function(defaults) {
+     ...
+
+     // Docxtemplater
+     app.import('node_modules/docxtemplater/js/docxtemplater.js');
+
+     return app.toTree();
+   };
+   
+Update your ``.eslintrc.js`` to avoid linting errors:
+
+.. code-block:: bash
+
+   module.exports = {
+     globals: {
+       "docxtemplater": true
+     }
+   };
+
+Follow docs as normal to use anywhere in your ember app. 
+
+**Addons**
+
+Follow the same patterns for any addons/plugins you need to use in your app
+
+.. code-block:: bash
+
+   import JSZip from 'npm:jszip';
+   import JSZipUtils from 'npm:jszip-utils';
+   import FileSaver from 'npm:file-saver';
