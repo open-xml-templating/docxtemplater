@@ -116,7 +116,7 @@ server.listen(port, function () {
 			.getText("#mocha-stats").then(function (text) {
 				const passes = parseInt(text.replace(/.*passes: ([0-9]+).*/, "$1"), 10);
 				const failures = parseInt(text.replace(/.*failures: ([0-9]+).*/, "$1"), 10);
-				expect(passes).to.be.above(1);
+				expect(passes).to.be.above(0);
 				expect(failures).to.be.equal(0);
 				return {failures, passes};
 			})
