@@ -21,6 +21,8 @@ matrix:
       env: COMMAND=test
     - node_js: "8"
       env: COMMAND=test
+    - node_js: "9"
+      env: COMMAND=test
 
 script:
   - npm run "$COMMAND"
