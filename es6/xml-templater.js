@@ -61,6 +61,7 @@ module.exports = class XmlTemplater {
 		this.setModules({inspect: {parsed: this.parsed}});
 		const {postparsed, errors: postparsedErrors} = Parser.postparse(this.parsed, this.modules);
 		this.postparsed = postparsed;
+		this.setModules({inspect: {postparsed: this.postparsed}});
 		allErrors = allErrors.concat(postparsedErrors);
 		this.errorChecker(allErrors);
 		return this;
@@ -83,7 +84,6 @@ module.exports = class XmlTemplater {
 	*/
 	render(to) {
 		this.filePath = to;
-		this.setModules({inspect: {postparsed: this.postparsed}});
 		const options = {
 			compiled: this.postparsed,
 			tags: this.tags,

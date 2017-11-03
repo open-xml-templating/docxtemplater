@@ -85,7 +85,7 @@ describe("inspect module", function () {
 		const doc = createDoc("tag-loop-example.docx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
-		doc.render();
+		doc.compile();
 		const postParsed = iModule.fullInspected["word/document.xml"].postparsed;
 		const tags = getTags(postParsed);
 		expect(tags).to.be.deep.equal({
