@@ -1,6 +1,20 @@
+### 3.1.12
+
+Inspect postparsed in compile() method instead of render()
+
+### 3.1.11
+
+-	Add support for self-closing tag in xmlMatcher -
+-	Add tag information in parsed/postparsed
+
+### 3.1.10
+
+-	Review testing code to always use "real" docx
+
 ### 3.1.9
 
 -	Add support for setting the prefix when attaching a module.
+
 -	Bugfix when looping over selfclosing tag
 
 ### 3.1.8
