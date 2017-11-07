@@ -98,6 +98,28 @@ will result in :
     Mac OSX, 200 €
     Ubuntu, 0€
 
+To loop over an array containing primitive data (ex: string):
+
+.. code-block:: javascript
+   
+   {
+      "products": [
+          "Windows",
+          "Mac OSX",
+          "Ubuntu"
+      ]
+   }
+
+.. code-block:: text
+   
+   {#products} {.} {/products}
+
+Will result in :
+
+.. code-block:: text
+
+    Windows Mac OSX Ubuntu
+    
 Sections
 --------
 
