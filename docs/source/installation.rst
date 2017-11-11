@@ -55,6 +55,27 @@ Docxtemplater will be exported to window.docxtemplater for easy usage.
 
 The generated files of docxtemplater will be in /browser (minified and non minified).
 
+Minifying the build
+-------------------
+
+On Browsers that have `window.XMLSerializer` and `window.DOMParser`, you can use that as a replacement for the xmldom dependency.
+
+As an example, if you use webpack, you can do the following in your webpack.config.js : 
+
+.. code-block:: javascript
+
+    module.exports = {
+        // ...
+        // ...
+        resolve: {
+            alias: {
+                xmldom: path.resolve("./node_modules/docxtemplater/es6/browser-versions/xmldom.js"),
+            },
+        },
+        // ...
+        // ...
+    }
+
 Bower
 -----
 
