@@ -26,7 +26,6 @@ Including:
 
 
 - `Replace Variables`_
-- `Formating`_
 - `Conditions`_
 - `Loops`_
 - `Loops and tables`_
