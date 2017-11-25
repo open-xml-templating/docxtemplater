@@ -5,6 +5,6 @@
 	"last_name":"Gri",
 	"phone":"045546846",
 	"description":"Contractor",
-	"config.modules": ["docxtemplater-image-module"],
+	"config.modules": [],
 	"config.imageDir": "assets"
 }

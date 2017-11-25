@@ -38,15 +38,8 @@ for (const key in jsonInput) {
 	}
 }
 
-let ImageModule = null;
 let sizeOf = null;
 
-if (DocUtils.config.modules && DocUtils.config.modules.indexOf("docxtemplater-image-module") !== -1) {
-	ImageModule = require("docxtemplater-image-module");
-	sizeOf = require("image-size");
-}
-
-const imageDir = path.resolve(process.cwd(), DocUtils.config.imageDir || "") + path.sep;
 const inputFileName = DocUtils.config.inputFile;
 const fileType = inputFileName.indexOf(".pptx") !== -1 ? "pptx" : "docx";
 const [,, jsonFileName] = process.argv;
@@ -69,36 +62,6 @@ if (debugBool) {
 const content = fs.readFileSync(currentPath + inputFileName, "binary");
 const zip = new JSZip(content);
 const doc = new Docxtemplater();
-
-if (ImageModule && sizeOf) {
-	const opts = {};
-	opts.centered = false;
-	opts.fileType = fileType;
-
-	opts.getImage = function (tagValue) {
-		const filePath = path.resolve(imageDir, tagValue);
-
-		if (filePath.indexOf(imageDir) !== 0) {
-			throw new Error("Images must be stored under folder: " + imageDir);
-		}
-
-		return fs.readFileSync(filePath, "binary");
-	};
-
-	opts.getSize = function (img, tagValue) {
-		const filePath = path.resolve(imageDir, tagValue);
-
-		if (filePath.indexOf(imageDir) !== 0) {
-			throw new Error("Images must be stored under folder: " + imageDir);
-		}
-
-		const dimensions = sizeOf(filePath);
-		return [dimensions.width, dimensions.height];
-	};
-
-	const imageModule = new ImageModule(opts);
-	doc.attachModule(imageModule);
-}
 
 doc.loadZip(zip);
 doc.setData(jsonInput);
