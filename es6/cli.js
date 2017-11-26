@@ -38,10 +38,7 @@ for (const key in jsonInput) {
 	}
 }
 
-let sizeOf = null;
-
 const inputFileName = DocUtils.config.inputFile;
-const fileType = inputFileName.indexOf(".pptx") !== -1 ? "pptx" : "docx";
 const [,, jsonFileName] = process.argv;
 const {config: {outputFile, debug}} = DocUtils;
 let {config: {debugBool}} = DocUtils;
