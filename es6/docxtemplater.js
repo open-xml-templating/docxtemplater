@@ -3,7 +3,7 @@
 const DocUtils = require("./doc-utils");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
-const {defaults, str2xml, xml2str, moduleWrapper, concatArrays} = DocUtils;
+const {defaults, str2xml, xml2str, moduleWrapper, concatArrays, unique} = DocUtils;
 const {XTInternalError, throwFileTypeNotIdentified, throwFileTypeNotHandled} = require("./errors");
 
 const Docxtemplater = class Docxtemplater {
@@ -69,6 +69,7 @@ const Docxtemplater = class Docxtemplater {
 		this.options = this.modules.reduce((options, module) => {
 			return module.optionsTransformer(options, this);
 		}, this.options);
+		this.options.xmlFileNames = unique(this.options.xmlFileNames);
 		this.xmlDocuments = this.options.xmlFileNames.reduce((xmlDocuments, fileName) => {
 			const content = this.zip.files[fileName].asText();
 			xmlDocuments[fileName] = str2xml(content);
@@ -118,6 +119,9 @@ const Docxtemplater = class Docxtemplater {
 		this.mapper = this.modules.reduce(function (value, module) {
 			return module.getRenderedMap(value);
 		}, {});
+
+		this.fileTypeConfig.tagsXmlLexedArray = unique(this.fileTypeConfig.tagsXmlLexedArray);
+		this.fileTypeConfig.tagsXmlTextArray = unique(this.fileTypeConfig.tagsXmlTextArray);
 
 		Object.keys(this.mapper).forEach((to) => {
 			const {from, data} = this.mapper[to];

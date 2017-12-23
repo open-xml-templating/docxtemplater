@@ -16,6 +16,17 @@ function parser(tag) {
 	};
 }
 
+function unique(arr) {
+	const hash = {}, result = [];
+	for (let i = 0, l = arr.length; i < l; ++i) {
+		if (!hash.hasOwnProperty(arr[i])) { // it works with objects! in FF, at least
+			hash[arr[i]] = true;
+			result.push(arr[i]);
+		}
+	}
+	return result;
+}
+
 function chunkBy(parsed, f) {
 	return parsed.reduce(function (chunks, p) {
 		const currentChunk = last(chunks);
@@ -173,6 +184,7 @@ DocUtils.getLeft = function (parsed, element, index) {
 	throwXmlTagNotFound({position: "left", element, parsed, index});
 };
 
+DocUtils.unique = unique;
 DocUtils.chunkBy = chunkBy;
 DocUtils.last = last;
 module.exports = DocUtils;
