@@ -10,7 +10,7 @@ describe("speed test", function () {
 			createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
 		}
 		const duration = new Date() - time;
-		expect(duration).to.be.below(120);
+		expect(duration).to.be.below(400);
 	});
 	it("should be fast for simple tags with huge content", function () {
 		let content = "<w:t>tag {age}</w:t>";
@@ -26,7 +26,7 @@ describe("speed test", function () {
 			createXmlTemplaterDocx(content, {tags: {age: 12}}).render();
 		}
 		const duration = new Date() - time;
-		expect(duration).to.be.below(200);
+		expect(duration).to.be.below(400);
 	});
 	it("should be fast for loop tags", function () {
 		const content = "<w:t>{#users}{name}{/users}</w:t>";
