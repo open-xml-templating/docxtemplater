@@ -1,7 +1,7 @@
 "use strict";
 
-const {utf8ToWord, concatArrays} = require("./doc-utils");
-const {throwUnimplementedTagType} = require("./errors");
+const { utf8ToWord, concatArrays } = require("./doc-utils");
+const { throwUnimplementedTagType } = require("./errors");
 
 function moduleRender(part, options) {
 	let moduleRendered;
@@ -16,9 +16,9 @@ function moduleRender(part, options) {
 }
 
 function render(options) {
-	const {compiled, scopeManager, nullGetter} = options;
+	const { compiled, scopeManager, nullGetter } = options;
 	let errors = [];
-	const parts = compiled.map(function (part) {
+	const parts = compiled.map(function(part) {
 		const moduleRendered = moduleRender(part, options);
 		if (moduleRendered) {
 			if (moduleRendered.errors) {
@@ -38,7 +38,7 @@ function render(options) {
 		}
 		throwUnimplementedTagType(part);
 	});
-	return {errors, parts};
+	return { errors, parts };
 }
 
-module.exports = {render};
+module.exports = { render };

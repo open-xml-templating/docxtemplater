@@ -1,7 +1,7 @@
 "use strict";
 
-const {DOMParser, XMLSerializer} = require("xmldom");
-const {throwXmlTagNotFound} = require("./errors");
+const { DOMParser, XMLSerializer } = require("xmldom");
+const { throwXmlTagNotFound } = require("./errors");
 
 const DocUtils = {};
 
@@ -17,9 +17,10 @@ function parser(tag) {
 }
 
 function unique(arr) {
-	const hash = {}, result = [];
+	const hash = {},
+		result = [];
 	for (let i = 0, l = arr.length; i < l; ++i) {
-		if (!hash.hasOwnProperty(arr[i])) { // it works with objects! in FF, at least
+		if (!hash.hasOwnProperty(arr[i])) {
 			hash[arr[i]] = true;
 			result.push(arr[i]);
 		}
@@ -28,20 +29,22 @@ function unique(arr) {
 }
 
 function chunkBy(parsed, f) {
-	return parsed.reduce(function (chunks, p) {
-		const currentChunk = last(chunks);
-		if (currentChunk.length === 0) {
-			currentChunk.push(p);
+	return parsed.reduce(
+		function(chunks, p) {
+			const currentChunk = last(chunks);
+			if (currentChunk.length === 0) {
+				currentChunk.push(p);
+				return chunks;
+			}
+			if (f(p)) {
+				chunks.push([p]);
+			} else {
+				currentChunk.push(p);
+			}
 			return chunks;
-		}
-		if (f(p)) {
-			chunks.push([p]);
-		}
-		else {
-			currentChunk.push(p);
-		}
-		return chunks;
-	}, [[]]);
+		},
+		[[]]
+	);
 }
 
 function last(a) {
@@ -66,26 +69,26 @@ DocUtils.defaults = {
 	},
 };
 
-DocUtils.mergeObjects = function () {
+DocUtils.mergeObjects = function() {
 	const resObj = {};
 	let obj, keys;
-	for(let i = 0; i < arguments.length; i += 1) {
+	for (let i = 0; i < arguments.length; i += 1) {
 		obj = arguments[i];
 		keys = Object.keys(obj);
-		for(let j = 0; j < keys.length; j += 1) {
+		for (let j = 0; j < keys.length; j += 1) {
 			resObj[keys[j]] = obj[keys[j]];
 		}
 	}
 	return resObj;
 };
 
-DocUtils.xml2str = function (xmlNode) {
+DocUtils.xml2str = function(xmlNode) {
 	const a = new XMLSerializer();
 	return a.serializeToString(xmlNode);
 };
 
-DocUtils.str2xml = function (str, errorHandler) {
-	const parser = new DOMParser({errorHandler});
+DocUtils.str2xml = function(str, errorHandler) {
+	const parser = new DOMParser({ errorHandler });
 	return parser.parseFromString(str, "text/xml");
 };
 
@@ -98,11 +101,11 @@ DocUtils.charMap = {
 };
 
 const regexStripRegexp = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
-DocUtils.escapeRegExp = function (str) {
+DocUtils.escapeRegExp = function(str) {
 	return str.replace(regexStripRegexp, "\\$&");
 };
 
-DocUtils.charMapRegexes = Object.keys(DocUtils.charMap).map(function (endChar) {
+DocUtils.charMapRegexes = Object.keys(DocUtils.charMap).map(function(endChar) {
 	const startChar = DocUtils.charMap[endChar];
 	return {
 		rstart: new RegExp(DocUtils.escapeRegExp(startChar), "g"),
@@ -112,7 +115,7 @@ DocUtils.charMapRegexes = Object.keys(DocUtils.charMap).map(function (endChar) {
 	};
 });
 
-DocUtils.wordToUtf8 = function (string) {
+DocUtils.wordToUtf8 = function(string) {
 	let r;
 	for (let i = 0, l = DocUtils.charMapRegexes.length; i < l; i++) {
 		r = DocUtils.charMapRegexes[i];
@@ -121,7 +124,7 @@ DocUtils.wordToUtf8 = function (string) {
 	return string;
 };
 
-DocUtils.utf8ToWord = function (string) {
+DocUtils.utf8ToWord = function(string) {
 	if (typeof string !== "string") {
 		string = string.toString();
 	}
@@ -134,7 +137,7 @@ DocUtils.utf8ToWord = function (string) {
 };
 
 // This function is written with for loops for performance
-DocUtils.concatArrays = function (arrays) {
+DocUtils.concatArrays = function(arrays) {
 	const result = [];
 	for (let i = 0; i < arrays.length; i++) {
 		const array = arrays[i];
@@ -146,11 +149,11 @@ DocUtils.concatArrays = function (arrays) {
 };
 
 const spaceRegexp = new RegExp(String.fromCharCode(160), "g");
-DocUtils.convertSpaces = function (s) {
+DocUtils.convertSpaces = function(s) {
 	return s.replace(spaceRegexp, " ");
 };
 
-DocUtils.pregMatchAll = function (regex, content) {
+DocUtils.pregMatchAll = function(regex, content) {
 	/* regex is a string, content is the content. It returns an array of all matches with their offset, for example:
 		 regex=la
 		 content=lolalolilala
@@ -159,33 +162,35 @@ returns: [{array: {0: 'la'},offset: 2},{array: {0: 'la'},offset: 8},{array: {0: 
 	const matchArray = [];
 	let match;
 	while ((match = regex.exec(content)) != null) {
-		matchArray.push({array: match, offset: match.index});
+		matchArray.push({ array: match, offset: match.index });
 	}
 	return matchArray;
 };
 
-DocUtils.getRight = function (parsed, element, index) {
+DocUtils.getRight = function(parsed, element, index) {
 	for (let i = index, l = parsed.length; i < l; i++) {
 		const part = parsed[i];
 		if (part.value === "</" + element + ">") {
 			return i;
 		}
 	}
-	throwXmlTagNotFound({position: "right", element, parsed, index});
+	throwXmlTagNotFound({ position: "right", element, parsed, index });
 };
 
-DocUtils.getLeft = function (parsed, element, index) {
+DocUtils.getLeft = function(parsed, element, index) {
 	for (let i = index; i >= 0; i--) {
 		const part = parsed[i];
-		if (part.value.indexOf("<" + element) === 0 && [">", " "].indexOf(part.value[element.length + 1]) !== -1) {
+		if (
+			part.value.indexOf("<" + element) === 0 &&
+			[">", " "].indexOf(part.value[element.length + 1]) !== -1
+		) {
 			return i;
 		}
 	}
-	throwXmlTagNotFound({position: "left", element, parsed, index});
+	throwXmlTagNotFound({ position: "left", element, parsed, index });
 };
 
 DocUtils.unique = unique;
 DocUtils.chunkBy = chunkBy;
 DocUtils.last = last;
 module.exports = DocUtils;
-

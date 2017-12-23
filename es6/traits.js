@@ -1,5 +1,9 @@
-const {getRight, getLeft, concatArrays} = require("./doc-utils");
-const {XTTemplateError, throwRawTagNotInParagraph, getLoopPositionProducesInvalidXMLError} = require("./errors");
+const { getRight, getLeft, concatArrays } = require("./doc-utils");
+const {
+	XTTemplateError,
+	throwRawTagNotInParagraph,
+	getLoopPositionProducesInvalidXMLError,
+} = require("./errors");
 
 function lastTagIsOpenTag(array, tag) {
 	if (array.length === 0) {
@@ -12,7 +16,7 @@ function lastTagIsOpenTag(array, tag) {
 }
 
 function addTag(array, tag) {
-	array.push({tag});
+	array.push({ tag });
 	return array;
 }
 
@@ -21,11 +25,13 @@ function getListXmlElements(parts) {
 	get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
 	returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
 	*/
-	const tags = parts.filter(function (part) {
-		return part.type === "tag";
-	}).map(function (part) {
-		return part.value;
-	});
+	const tags = parts
+		.filter(function(part) {
+			return part.type === "tag";
+		})
+		.map(function(part) {
+			return part.value;
+		});
 
 	let result = [];
 
@@ -35,12 +41,10 @@ function getListXmlElements(parts) {
 		if (tag[1] === "/") {
 			if (lastTagIsOpenTag(result, tag)) {
 				result.pop();
-			}
-			else {
+			} else {
 				result = addTag(result, tag);
 			}
-		}
-		else if (tag[tag.length - 1] !== "/") {
+		} else if (tag[tag.length - 1] !== "/") {
 			result = addTag(result, tag);
 		}
 	}
@@ -50,7 +54,7 @@ function getListXmlElements(parts) {
 function has(name, xmlElements) {
 	for (let i = 0; i < xmlElements.length; i++) {
 		const xmlElement = xmlElements[i];
-		if(xmlElement.tag.indexOf(`<${name}`) === 0) {
+		if (xmlElement.tag.indexOf(`<${name}`) === 0) {
 			return true;
 		}
 	}
@@ -59,26 +63,28 @@ function has(name, xmlElements) {
 
 function getExpandToDefault(parts, pair, expandTags) {
 	const xmlElements = getListXmlElements(parts);
-	const closingTagCount = xmlElements.filter(function (xmlElement) {
+	const closingTagCount = xmlElements.filter(function(xmlElement) {
 		return xmlElement.tag[1] === "/";
 	}).length;
-	const startingTagCount = xmlElements.filter(function (xmlElement) {
-		const {tag} = xmlElement;
+	const startingTagCount = xmlElements.filter(function(xmlElement) {
+		const { tag } = xmlElement;
 		return tag[1] !== "/" && tag[tag.length - 2] !== "/";
 	}).length;
 	if (closingTagCount !== startingTagCount) {
 		return {
-			error: getLoopPositionProducesInvalidXMLError({tag: pair[0].part.value}),
+			error: getLoopPositionProducesInvalidXMLError({
+				tag: pair[0].part.value,
+			}),
 		};
 	}
 
-	const value = expandTags.reduce(function (value, {contains, expand}) {
+	const value = expandTags.reduce(function(value, { contains, expand }) {
 		if (value) {
 			return value;
 		}
 		return has(contains, xmlElements) ? expand : false;
 	}, false);
-	return {value};
+	return { value };
 }
 
 function expandOne(part, postparsed, options) {
@@ -91,16 +97,29 @@ function expandOne(part, postparsed, options) {
 	try {
 		right = getRight(postparsed, expandTo, index);
 		left = getLeft(postparsed, expandTo, index);
-	}
-	catch (rootError) {
+	} catch (rootError) {
 		if (rootError instanceof XTTemplateError) {
-			throwRawTagNotInParagraph({part, rootError, postparsed, expandTo, index});
+			throwRawTagNotInParagraph({
+				part,
+				rootError,
+				postparsed,
+				expandTo,
+				index,
+			});
 		}
 		throw rootError;
 	}
 	const leftParts = postparsed.slice(left, index);
 	const rightParts = postparsed.slice(index + 1, right + 1);
-	let inner = options.getInner({index, part, leftParts, rightParts, left, right, postparsed});
+	let inner = options.getInner({
+		index,
+		part,
+		leftParts,
+		rightParts,
+		left,
+		right,
+		postparsed,
+	});
 	if (!inner.length) {
 		inner.expanded = [leftParts, rightParts];
 		inner = [inner];
@@ -118,27 +137,25 @@ function expandToOne(postparsed, options) {
 		errors = postparsed.errors;
 		postparsed = postparsed.postparsed;
 	}
-	const expandToElements = postparsed.reduce(function (elements, part) {
+	const expandToElements = postparsed.reduce(function(elements, part) {
 		if (part.type === "placeholder" && part.module === options.moduleName) {
 			elements.push(part);
 		}
 		return elements;
 	}, []);
 
-	expandToElements.forEach(function (part) {
+	expandToElements.forEach(function(part) {
 		try {
 			postparsed = expandOne(part, postparsed, options);
-		}
-		catch (error) {
+		} catch (error) {
 			if (error instanceof XTTemplateError) {
 				errors.push(error);
-			}
-			else {
+			} else {
 				throw error;
 			}
 		}
 	});
-	return {postparsed, errors};
+	return { postparsed, errors };
 }
 
 module.exports = {

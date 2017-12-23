@@ -9,36 +9,36 @@ function last(a) {
 function XTError(message) {
 	this.name = "GenericError";
 	this.message = message;
-	this.stack = (new Error(message)).stack;
+	this.stack = new Error(message).stack;
 }
 XTError.prototype = Error.prototype;
 
 function XTTemplateError(message) {
 	this.name = "TemplateError";
 	this.message = message;
-	this.stack = (new Error(message)).stack;
+	this.stack = new Error(message).stack;
 }
 XTTemplateError.prototype = new XTError();
 
 function RenderingError(message) {
 	this.name = "RenderingError";
 	this.message = message;
-	this.stack = (new Error(message)).stack;
+	this.stack = new Error(message).stack;
 }
 RenderingError.prototype = new XTError();
 
 function XTScopeParserError(message) {
 	this.name = "ScopeParserError";
 	this.message = message;
-	this.stack = (new Error(message)).stack;
+	this.stack = new Error(message).stack;
 }
 XTScopeParserError.prototype = new XTError();
 
 function XTInternalError(message) {
 	this.name = "InternalError";
-	this.properties = {explanation: "InternalError"};
+	this.properties = { explanation: "InternalError" };
 	this.message = message;
-	this.stack = (new Error(message)).stack;
+	this.stack = new Error(message).stack;
 }
 XTInternalError.prototype = new XTError();
 
@@ -60,7 +60,10 @@ function getUnopenedTagException(options) {
 		context: options.xtag,
 		offset: options.offset,
 		lIndex: options.lIndex,
-		explanation: `The tag beginning with "${options.xtag.substr(0, 10)}" is unopened`,
+		explanation: `The tag beginning with "${options.xtag.substr(
+			0,
+			10
+		)}" is unopened`,
 	};
 	return err;
 }
@@ -73,16 +76,23 @@ function getUnclosedTagException(options) {
 		context: options.xtag,
 		offset: options.offset,
 		lIndex: options.lIndex,
-		explanation: `The tag beginning with "${options.xtag.substr(0, 10)}" is unclosed`,
+		explanation: `The tag beginning with "${options.xtag.substr(
+			0,
+			10
+		)}" is unclosed`,
 	};
 	return err;
 }
 
 function throwXmlTagNotFound(options) {
-	const err = new XTTemplateError(`No tag "${options.element}" was found at the ${options.position}`);
+	const err = new XTTemplateError(
+		`No tag "${options.element}" was found at the ${options.position}`
+	);
 	err.properties = {
 		id: `no_xml_tag_found_at_${options.position}`,
-		explanation: `No tag "${options.element}" was found at the ${options.position}`,
+		explanation: `No tag "${options.element}" was found at the ${
+			options.position
+		}`,
 		parsed: options.parsed,
 		index: options.index,
 		element: options.element,
@@ -109,7 +119,7 @@ function throwContentMustBeString(type) {
 
 function throwRawTagNotInParagraph(options) {
 	const err = new XTTemplateError("Raw tag not in paragraph");
-	const {part: {value, offset}} = options;
+	const { part: { value, offset } } = options;
 	err.properties = {
 		id: "raw_tag_outerxml_invalid",
 		explanation: `The tag "${value}" is not inside a paragraph`,
@@ -124,7 +134,9 @@ function throwRawTagNotInParagraph(options) {
 }
 
 function throwRawTagShouldBeOnlyTextInParagraph(options) {
-	const err = new XTTemplateError("Raw tag should be the only text in paragraph");
+	const err = new XTTemplateError(
+		"Raw tag should be the only text in paragraph"
+	);
 	const tag = options.part.value;
 	err.properties = {
 		id: "raw_xml_tag_should_be_only_text_in_paragraph",
@@ -137,7 +149,7 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 }
 
 function getUnmatchedLoopException(options) {
-	const {location} = options;
+	const { location } = options;
 	const t = location === "start" ? "unclosed" : "unopened";
 	const T = location === "start" ? "Unclosed" : "Unopened";
 
@@ -152,12 +164,14 @@ function getUnmatchedLoopException(options) {
 }
 
 function getClosingTagNotMatchOpeningTag(options) {
-	const {tags} = options;
+	const { tags } = options;
 
 	const err = new XTTemplateError("Closing tag does not match opening tag");
 	err.properties = {
 		id: "closing_tag_does_not_match_opening_tag",
-		explanation: `The tag "${tags[0].value}" is closed by the tag "${tags[1].value}"`,
+		explanation: `The tag "${tags[0].value}" is closed by the tag "${
+			tags[1].value
+		}"`,
 		openingtag: tags[0].value,
 		offset: [tags[0].offset, tags[1].offset],
 		closingtag: tags[1].value,
@@ -165,7 +179,7 @@ function getClosingTagNotMatchOpeningTag(options) {
 	return err;
 }
 
-function getScopeCompilationError({tag, rootError}) {
+function getScopeCompilationError({ tag, rootError }) {
 	const err = new XTScopeParserError("Scope parser compilation failed");
 	err.properties = {
 		id: "scopeparser_compilation_failed",
@@ -176,8 +190,10 @@ function getScopeCompilationError({tag, rootError}) {
 	return err;
 }
 
-function getLoopPositionProducesInvalidXMLError({tag}) {
-	const err = new XTTemplateError(`The position of the loop tags "${tag}" would produce invalid XML`);
+function getLoopPositionProducesInvalidXMLError({ tag }) {
+	const err = new XTTemplateError(
+		`The position of the loop tags "${tag}" would produce invalid XML`
+	);
 	err.properties = {
 		tag,
 		id: "loop_position_invalid",
@@ -205,11 +221,15 @@ function throwMalformedXml(part) {
 }
 
 function throwLocationInvalid(part) {
-	throw new XTInternalError(`Location should be one of "start" or "end" (given : ${part.location})`);
+	throw new XTInternalError(
+		`Location should be one of "start" or "end" (given : ${part.location})`
+	);
 }
 
 function throwFileTypeNotHandled(fileType) {
-	const err = new XTInternalError(`The filetype "${fileType}" is not handled by docxtemplater`);
+	const err = new XTInternalError(
+		`The filetype "${fileType}" is not handled by docxtemplater`
+	);
 	err.properties = {
 		id: "filetype_not_handled",
 		explanation: `The file you are trying to generate is of type "${fileType}", but only docx and pptx formats are handled`,
@@ -218,7 +238,9 @@ function throwFileTypeNotHandled(fileType) {
 }
 
 function throwFileTypeNotIdentified() {
-	const err = new XTInternalError("The filetype for this file could not be identified, is this file corrupted ?");
+	const err = new XTInternalError(
+		"The filetype for this file could not be identified, is this file corrupted ?"
+	);
 	err.properties = {
 		id: "filetype_not_identified",
 	};

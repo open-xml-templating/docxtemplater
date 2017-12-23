@@ -16,10 +16,16 @@ function showHelp() {
 	console.info("Usage: docxtemplater <configFilePath>");
 	console.info("--- ConfigFile Format: json");
 	console.info("--- Supports filetypes: " + fileExts.join(","));
-	return console.info("--- see https://docxtemplater.readthedocs.io/en/latest/cli.html");
+	return console.info(
+		"--- see https://docxtemplater.readthedocs.io/en/latest/cli.html"
+	);
 }
 
-if (process.argv[2] === "--help" || process.argv[2] === "-h" || process.argv[2] == null) {
+if (
+	process.argv[2] === "--help" ||
+	process.argv[2] === "-h" ||
+	process.argv[2] == null
+) {
 	showHelp();
 	throw new Error("Nothing to do");
 }
@@ -30,7 +36,7 @@ const jsonInput = JSON.parse(res);
 DocUtils.config = {};
 
 const currentPath = process.cwd() + path.sep;
-DocUtils.pathConfig = {node: currentPath};
+DocUtils.pathConfig = { node: currentPath };
 
 for (const key in jsonInput) {
 	if (key.substr(0, 7) === "config.") {
@@ -39,14 +45,21 @@ for (const key in jsonInput) {
 }
 
 const inputFileName = DocUtils.config.inputFile;
-const [,, jsonFileName] = process.argv;
-const {config: {outputFile, debug}} = DocUtils;
-let {config: {debugBool}} = DocUtils;
-if (jsonFileName == null || jsonFileName === "--help" || jsonFileName === "-h" || inputFileName == null) {
+const [, , jsonFileName] = process.argv;
+const { config: { outputFile, debug } } = DocUtils;
+let { config: { debugBool } } = DocUtils;
+if (
+	jsonFileName == null ||
+	jsonFileName === "--help" ||
+	jsonFileName === "-h" ||
+	inputFileName == null
+) {
 	showHelp();
 	throw new Error("Nothing to do");
 }
-if (debug === "-d" || debug === "--debug") { debugBool = true; }
+if (debug === "-d" || debug === "--debug") {
+	debugBool = true;
+}
 
 if (debugBool) {
 	console.info(process.cwd());
@@ -63,6 +76,8 @@ const doc = new Docxtemplater();
 doc.loadZip(zip);
 doc.setData(jsonInput);
 doc.render();
-const output = doc.getZip().generate({type: "nodebuffer", compression: "DEFLATE"});
+const output = doc
+	.getZip()
+	.generate({ type: "nodebuffer", compression: "DEFLATE" });
 
 fs.writeFileSync(currentPath + outputFile, output);

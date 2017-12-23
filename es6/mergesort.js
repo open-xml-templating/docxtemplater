@@ -4,7 +4,10 @@ function getMinFromArrays(arrays, state) {
 		if (state[i] >= arrays[i].length) {
 			continue;
 		}
-		if (minIndex === -1 || arrays[i][state[i]].offset < arrays[minIndex][state[minIndex]].offset) {
+		if (
+			minIndex === -1 ||
+			arrays[i][state[i]].offset < arrays[minIndex][state[minIndex]].offset
+		) {
 			minIndex = i;
 		}
 	}
@@ -14,21 +17,23 @@ function getMinFromArrays(arrays, state) {
 	return minIndex;
 }
 
-module.exports = function (arrays) {
-	const totalLength = arrays.reduce(function (sum, array) {
+module.exports = function(arrays) {
+	const totalLength = arrays.reduce(function(sum, array) {
 		return sum + array.length;
 	}, 0);
-	arrays = arrays.filter(function (array) {
+	arrays = arrays.filter(function(array) {
 		return array.length > 0;
 	});
 
 	const resultArray = new Array(totalLength);
 
-	const state = arrays.map(function () { return 0; });
+	const state = arrays.map(function() {
+		return 0;
+	});
 
 	let i = 0;
 
-	while(i <= totalLength - 1) {
+	while (i <= totalLength - 1) {
 		const arrayIndex = getMinFromArrays(arrays, state);
 		resultArray[i] = arrays[arrayIndex][state[arrayIndex]];
 		state[arrayIndex]++;

@@ -1,5 +1,5 @@
 "use strict";
-const {XTScopeParserError} = require("./errors");
+const { XTScopeParserError } = require("./errors");
 
 // This class responsibility is to manage the scope
 const ScopeManager = class ScopeManager {
@@ -18,7 +18,11 @@ const ScopeManager = class ScopeManager {
 		}
 	}
 	isValueFalsy(value, type) {
-		return (value == null || !value || (type === "[object Array]" && value.length === 0));
+		return (
+			value == null ||
+			!value ||
+			(type === "[object Array]" && value.length === 0)
+		);
 	}
 	loopOverValue(value, functor, inverted) {
 		const type = Object.prototype.toString.call(value);
@@ -40,15 +44,14 @@ const ScopeManager = class ScopeManager {
 	}
 	getValue(tag, num) {
 		// search in the scopes (in reverse order) and keep the first defined value
-		this.num = num == null ? (this.scopeList.length - 1) : num;
+		this.num = num == null ? this.scopeList.length - 1 : num;
 		let err;
 		let result;
 		const scope = this.scopeList[this.num];
-		const parser = this.parser(tag, {scopePath: this.scopePath});
+		const parser = this.parser(tag, { scopePath: this.scopePath });
 		try {
-			result = parser.get(scope, {num: this.num, scopeList: this.scopeList});
-		}
-		catch (error) {
+			result = parser.get(scope, { num: this.num, scopeList: this.scopeList });
+		} catch (error) {
 			err = new XTScopeParserError("Scope parser execution failed");
 			err.properties = {
 				id: "scopeparser_execution_failed",
@@ -73,7 +76,7 @@ const ScopeManager = class ScopeManager {
 	}
 };
 
-module.exports = function (options) {
+module.exports = function(options) {
 	options.scopePath = [];
 	options.scopeList = [options.tags];
 	return new ScopeManager(options);

@@ -1,6 +1,8 @@
 function emptyFun() {}
-function identity(i) { return i; }
-module.exports = function (module) {
+function identity(i) {
+	return i;
+}
+module.exports = function(module) {
 	const defaults = {
 		set: emptyFun,
 		parse: emptyFun,
@@ -12,12 +14,16 @@ module.exports = function (module) {
 		postparse: identity,
 		on: emptyFun,
 	};
-	if (Object.keys(defaults).every(function (key) {
-		return !module[key];
-	})) {
-		throw new Error("This module cannot be wrapped, because it doesn't define any of the necessary functions");
+	if (
+		Object.keys(defaults).every(function(key) {
+			return !module[key];
+		})
+	) {
+		throw new Error(
+			"This module cannot be wrapped, because it doesn't define any of the necessary functions"
+		);
 	}
-	Object.keys(defaults).forEach(function (key) {
+	Object.keys(defaults).forEach(function(key) {
 		module[key] = module[key] || defaults[key];
 	});
 	return module;

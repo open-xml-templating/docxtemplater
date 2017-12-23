@@ -1,6 +1,6 @@
 "use strict";
 // res class responsibility is to parse the XML.
-const {pregMatchAll} = require("./doc-utils");
+const { pregMatchAll } = require("./doc-utils");
 
 function handleRecursiveCase(res) {
 	/*
@@ -13,7 +13,7 @@ function handleRecursiveCase(res) {
 		 */
 
 	function replacerUnshift() {
-		const pn = {array: Array.prototype.slice.call(arguments)};
+		const pn = { array: Array.prototype.slice.call(arguments) };
 		pn.array.shift();
 		const match = pn.array[0] + pn.array[1];
 		// add match so that pn[0] = whole match, pn[1]= first parenthesis,...
@@ -34,7 +34,7 @@ function handleRecursiveCase(res) {
 	res.content.replace(r, replacerUnshift);
 
 	function replacerPush() {
-		const pn = {array: Array.prototype.slice.call(arguments)};
+		const pn = { array: Array.prototype.slice.call(arguments) };
 		pn.array.pop();
 		const offset = pn.array.pop();
 		pn.offset = offset;
@@ -56,7 +56,12 @@ module.exports = function xmlMatcher(content, tagsXmlArray) {
 	res.content = content;
 	res.tagsXmlArray = tagsXmlArray;
 	res.tagsXmlArrayJoined = res.tagsXmlArray.join("|");
-	const regexp = new RegExp(`(?:(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>)|(<(?:${res.tagsXmlArrayJoined})[^>]*/>)`, "g");
+	const regexp = new RegExp(
+		`(?:(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${
+			res.tagsXmlArrayJoined
+		})>)|(<(?:${res.tagsXmlArrayJoined})[^>]*/>)`,
+		"g"
+	);
 	res.matches = pregMatchAll(regexp, res.content);
 	return handleRecursiveCase(res);
 };
