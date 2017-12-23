@@ -48,6 +48,12 @@ function getPairs(traits) {
 
 const expandPairTrait = {
 	name: "ExpandPairTrait",
+	optionsTransformer(options, docxtemplater) {
+		this.expandTags = docxtemplater.fileTypeConfig.expandTags.concat(
+			docxtemplater.options.paragraphLoop ? [{contains: "w:p", expand: "w:p"}] : []
+		);
+		return options;
+	},
 	postparse(postparsed, {getTraits, postparse}) {
 		let traits = getTraits(traitName, postparsed);
 		traits = traits.map(function (trait) {
@@ -55,10 +61,10 @@ const expandPairTrait = {
 		});
 		traits = mergeSort(traits);
 		const {pairs, errors} = getPairs(traits);
-		const expandedPairs = pairs.map(function (pair) {
+		const expandedPairs = pairs.map((pair) => {
 			let {expandTo} = pair[0].part;
 			if (expandTo === "auto") {
-				const result = getExpandToDefault(postparsed.slice(pair[0].offset, pair[1].offset), pair);
+				const result = getExpandToDefault(postparsed.slice(pair[0].offset, pair[1].offset), pair, this.expandTags);
 				if (result.error) {
 					errors.push(result.error);
 				}
@@ -90,9 +96,9 @@ const expandPairTrait = {
 			}
 			if (expandedPair[1] === i) {
 				const basePart = postparsed[pair[0].offset];
+				basePart.subparsed = postparse(innerParts, {basePart});
 				delete basePart.location;
 				delete basePart.expandTo;
-				basePart.subparsed = postparse(innerParts);
 				newParsed.push(basePart);
 				currentPairIndex++;
 			}

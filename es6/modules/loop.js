@@ -1,8 +1,32 @@
-const {mergeObjects} = require("../doc-utils");
+const {mergeObjects, chunkBy, last} = require("../doc-utils");
 const dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 const wrapper = require("../module-wrapper");
 
 const moduleName = "loop";
+
+function hasNoContent(parts) {
+	return parts.every(function ({type, position}) {
+		return type === "tag" || (type === "content" && position === "outsidetag");
+	});
+}
+
+function isEnclosedByParagraphs(parsed) {
+	if (parsed.length === 0) {
+		return false;
+	}
+	return isParagraphStart(parsed[0]) && isParagraphEnd(last(parsed));
+}
+
+function getOffset(chunk) {
+	return hasNoContent(chunk) ? chunk.length : 0;
+}
+
+function isParagraphStart({type, tag, position}) {
+	return type === "tag" && tag === "w:p" && position === "start";
+}
+function isParagraphEnd({type, tag, position}) {
+	return type === "tag" && tag === "w:p" && position === "end";
+}
 
 const loopModule = {
 	name: "LoopModule",
@@ -69,6 +93,26 @@ const loopModule = {
 			}
 			return tags;
 		}, []);
+	},
+	postparse(parsed, {basePart}) {
+		if (!isEnclosedByParagraphs(parsed)) {
+			return parsed;
+		}
+		if (!basePart || basePart.expandTo !== "auto") {
+			return parsed;
+		}
+		const chunks = chunkBy(parsed, isParagraphStart);
+		if (chunks.length <= 2) {
+			return parsed;
+		}
+		const firstChunk = chunks[0];
+		const lastChunk = last(chunks);
+		const firstOffset = getOffset(firstChunk);
+		const lastOffset = getOffset(lastChunk);
+		if (firstOffset === 0 || lastOffset === 0) {
+			return parsed;
+		}
+		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	},
 	render(part, options) {
 		if (!part.type === "placeholder" || part.module !== moduleName) {

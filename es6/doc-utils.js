@@ -16,6 +16,27 @@ function parser(tag) {
 	};
 }
 
+function chunkBy(parsed, f) {
+	return parsed.reduce(function (chunks, p) {
+		const currentChunk = last(chunks);
+		if (currentChunk.length === 0) {
+			currentChunk.push(p);
+			return chunks;
+		}
+		if (f(p)) {
+			chunks.push([p]);
+		}
+		else {
+			currentChunk.push(p);
+		}
+		return chunks;
+	}, [[]]);
+}
+
+function last(a) {
+	return a[a.length - 1];
+}
+
 DocUtils.defaults = {
 	nullGetter(part) {
 		if (!part.module) {
@@ -26,6 +47,7 @@ DocUtils.defaults = {
 		}
 		return "";
 	},
+	xmlFileNames: [],
 	parser,
 	delimiters: {
 		start: "{",
@@ -151,5 +173,7 @@ DocUtils.getLeft = function (parsed, element, index) {
 	throwXmlTagNotFound({position: "left", element, parsed, index});
 };
 
+DocUtils.chunkBy = chunkBy;
+DocUtils.last = last;
 module.exports = DocUtils;
 

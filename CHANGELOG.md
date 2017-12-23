@@ -1,3 +1,9 @@
+### 3.2.0
+
+Add `paragraphLoop` option, that permits to have better rendering for spaces (Fixes #272)
+
+It is recommended to turn that option on, because the templates are more readable. However since it breaks backwards-compatibility, it is turned off by default.
+
 ### 3.1.12
 
 Inspect postparsed in compile() method instead of render()

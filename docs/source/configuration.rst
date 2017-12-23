@@ -53,6 +53,71 @@ You can set up your custom delimiters with this syntax:
         .loadZip(zip)
         .setOptions({delimiters:{start:'[[',end:']]'}})
 
+
+paragraphLoop
+-------------
+
+The paragraphLoop option has been added in version 3.2.0.
+
+It is recommended to turn that option on, since it makes the rendering a little bit easier to reason about.
+
+However since it breaks backwards-compatibility, it is turned off by default.
+
+.. code-block:: javascript
+
+    new Docxtemplater()
+        .loadZip(zip)
+        .setOptions({paragraphLoop:true})
+
+It allows to loop around paragraphs without having additional spacing.
+
+When you write the following template
+
+.. code-block:: text
+
+    The users list is : 
+    {#users}
+    {name}
+    {/users}
+    End of users list
+
+Most users of the library would expect to have no spaces between the different
+names.
+
+The output without the option is as follows : 
+
+.. code-block:: text
+
+    The users list is : 
+
+    John
+
+    Jane
+
+    Mary
+
+    End of users list
+
+
+With the paragraphLoop option turned on, the output becomes : 
+
+
+.. code-block:: text
+
+    The users list is : 
+    John
+    Jane
+    Mary
+    End of users list
+
+The rule is quite simple : 
+
+If the opening loop ({#users}) and the closing loop ({/users}) are both on
+separate paragraphs, treat the loop as a paragraph loop (eg create one new
+paragraph for each loop) where you remove the first and last paragraphs (the
+ones containing the loop tags).
+
+
 nullGetter
 ----------
 

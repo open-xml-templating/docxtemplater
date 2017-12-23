@@ -213,4 +213,13 @@ describe("DocxtemplaterTemplating", function () {
 			shouldBeSame({doc, expectedName: "tag-example-expected.docx"});
 		});
 	});
+
+	it("should work with loop", function () {
+		const doc = createDoc("users.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({users: ["John", "Jane", "Louis"]}).render();
+		shouldBeSame({doc, expectedName: "users-expected.docx"});
+	});
 });

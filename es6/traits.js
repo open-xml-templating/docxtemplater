@@ -50,14 +50,14 @@ function getListXmlElements(parts) {
 function has(name, xmlElements) {
 	for (let i = 0; i < xmlElements.length; i++) {
 		const xmlElement = xmlElements[i];
-		if(xmlElement.tag.indexOf(name) === 0) {
+		if(xmlElement.tag.indexOf(`<${name}`) === 0) {
 			return true;
 		}
 	}
 	return false;
 }
 
-function getExpandToDefault(parts, pair) {
+function getExpandToDefault(parts, pair, expandTags) {
 	const xmlElements = getListXmlElements(parts);
 	const closingTagCount = xmlElements.filter(function (xmlElement) {
 		return xmlElement.tag[1] === "/";
@@ -72,13 +72,13 @@ function getExpandToDefault(parts, pair) {
 		};
 	}
 
-	if (has("<w:tc", xmlElements)) {
-		return {value: "w:tr"};
-	}
-	if (has("<a:tc", xmlElements)) {
-		return {value: "a:tr"};
-	}
-	return {value: false};
+	const value = expandTags.reduce(function (value, {contains, expand}) {
+		if (value) {
+			return value;
+		}
+		return has(contains, xmlElements) ? expand : false;
+	}, false);
+	return {value};
 }
 
 function expandOne(part, postparsed, options) {

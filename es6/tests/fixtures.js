@@ -1,4 +1,4 @@
-const {clone} = require("lodash");
+const {clone, merge} = require("lodash");
 
 const xmlSpacePreserveTag = {type: "tag", position: "start", value: '<w:t xml:space="preserve">', text: true, tag: "w:t"};
 const startText = {type: "tag", position: "start", value: "<w:t>", text: true, tag: "w:t"};
@@ -274,6 +274,92 @@ const fixtures = {
 			endText,
 		],
 	},
+	paragraphlooptag: {
+		it: "should work with paragraph loops",
+		content: "<w:p><w:t>Hello </w:t></w:p><w:p><w:t>{#users}</w:t></w:p><w:p><w:t>User {.}</w:t></w:p><w:p><w:t>{/users}</w:t></w:p>",
+		scope: {
+			users: [
+				"John Doe",
+				"Jane Doe",
+				"Wane Doe",
+			],
+		},
+		result: '<w:p><w:t>Hello </w:t></w:p><w:p><w:t xml:space="preserve">User John Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Jane Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Wane Doe</w:t></w:p>',
+		lexed: [
+			startParagraph,
+			startText,
+			content("Hello "),
+			endText,
+			endParagraph,
+			startParagraph,
+			startText,
+			delimiters.start,
+			content("#users"),
+			delimiters.end,
+			endText,
+			endParagraph,
+			startParagraph,
+			startText,
+			content("User "),
+			delimiters.start,
+			content("."),
+			delimiters.end,
+			endText,
+			endParagraph,
+
+			startParagraph,
+			startText,
+			delimiters.start,
+			content("/users"),
+			delimiters.end,
+			endText,
+			endParagraph,
+		],
+		parsed: [
+			startParagraph,
+			startText,
+			content("Hello "),
+			endText,
+			endParagraph,
+			startParagraph,
+			startText,
+			{type: "placeholder", value: "users", location: "start", module: "loop", inverted: false, expandTo: "auto"},
+			endText,
+			endParagraph,
+			startParagraph,
+			startText,
+			content("User "),
+			{type: "placeholder", value: "."},
+			endText,
+			endParagraph,
+
+			startParagraph,
+			startText,
+			{type: "placeholder", value: "users", location: "end", module: "loop"},
+			endText,
+			endParagraph,
+		],
+		postparsed: [
+			startParagraph,
+			startText,
+			content("Hello "),
+			endText,
+			endParagraph,
+			{
+				type: "placeholder", value: "users", module: "loop", inverted: false, subparsed: [
+					startParagraph,
+					xmlSpacePreserveTag,
+					content("User "),
+					{type: "placeholder", value: "."},
+					endText,
+					endParagraph,
+				],
+			},
+		],
+		options: {
+			paragraphLoop: true,
+		},
+	},
 	dashlooptag: {
 		it: "should work with dashloops",
 		content: "<w:p><w:t>Hello {-w:p users}{name}, {/users}</w:t></w:p>",
@@ -508,10 +594,13 @@ fixtures.rawxmlemptycontent.result = "BEFOREAFTER";
 
 Object.keys(fixtures).forEach(function (key) {
 	const fixture = fixtures[key];
-	fixture.delimiters = fixture.delimiters || {
-		start: "{",
-		end: "}",
+	const delimiters = {
+		delimiters: fixture.delimiters || {
+			start: "{",
+			end: "}",
+		},
 	};
+	fixture.options = merge({}, fixture.options, delimiters);
 });
 
 module.exports = fixtures;

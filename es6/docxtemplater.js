@@ -37,7 +37,8 @@ const Docxtemplater = class Docxtemplater {
 		this.options = options;
 		Object.keys(defaults).forEach((key) => {
 			const defaultValue = defaults[key];
-			this[key] = (this.options[key] != null) ? this.options[key] : defaultValue;
+			this.options[key] = this.options[key] != null ? this.options[key] : defaultValue;
+			this[key] = this.options[key];
 		});
 		if (this.zip) {
 			this.updateFileTypeConfig();
@@ -62,7 +63,6 @@ const Docxtemplater = class Docxtemplater {
 			return this;
 		}
 
-		this.options.xmlFileNames = [];
 		this.modules = concatArrays([this.fileTypeConfig.baseModules.map(function (moduleFunction) {
 			return moduleFunction();
 		}), this.modules]);

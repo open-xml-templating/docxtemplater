@@ -17,6 +17,9 @@ const PptXFileTypeConfig = {
 	tagRawXml: "p:sp",
 	tagTextXml: "a:t",
 	baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
+	expandTags: [
+		{contains: "a:tc", expand: "a:tr"},
+	],
 };
 
 const DocXFileTypeConfig = {
@@ -28,6 +31,9 @@ const DocXFileTypeConfig = {
 	textPath: "word/document.xml",
 	tagsXmlTextArray: ["w:t", "m:t", "vt:lpstr", "dc:title", "dc:creator", "cp:keywords"],
 	tagsXmlLexedArray: ["w:tc", "w:tr", "w:table", "w:p", "w:r"],
+	expandTags: [
+		{contains: "w:tc", expand: "w:tr"},
+	],
 	tagRawXml: "w:p",
 	tagTextXml: "w:t",
 	baseModules: [loopModule, spacePreserveModule, expandPairTrait, rawXmlModule, render],

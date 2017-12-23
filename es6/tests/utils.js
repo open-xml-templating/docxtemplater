@@ -5,11 +5,7 @@ const JSZip = require("jszip");
 const fs = require("fs");
 const {get, unset, omit, uniq} = require("lodash");
 
-const FileTypeConfig = require("../file-type-config.js");
-const XmlTemplater = require("../xml-templater");
-
 const Docxtemplater = require("../docxtemplater.js");
-const {defaults} = Docxtemplater.DocUtils;
 const xmlPrettify = require("./xml-prettify");
 let countFiles = 1;
 let allStarted = false;
@@ -35,26 +31,6 @@ function walk(dir) {
 		}
 	});
 	return results;
-}
-
-/* eslint-disable no-console */
-
-function xmltemplater(content, options) {
-	options = options || {};
-	options.fileTypeConfig = FileTypeConfig.docx;
-	Object.keys(defaults).forEach((key) => {
-		const defaultValue = defaults[key];
-		options[key] = (options[key] != null) ? options[key] : defaultValue;
-	});
-	options.modules = options.fileTypeConfig.baseModules.map(function (moduleFunction) {
-		const module = moduleFunction();
-		module.optionsTransformer({}, options);
-		return module;
-	});
-
-	return new XmlTemplater(content, options)
-		.setTags(options.tags)
-		.parse();
 }
 
 function createXmlTemplaterDocx(content, options = {}) {
@@ -90,6 +66,7 @@ function unlinkFile(expectedName) {
 	}
 }
 
+/* eslint-disable no-console */
 function shouldBeSame(options) {
 	const zip = options.doc.getZip();
 	const {expectedName} = options;
@@ -136,6 +113,7 @@ function shouldBeSame(options) {
 	}
 	unlinkFile(expectedName);
 }
+/* eslint-enable no-console */
 
 function checkLength(e, expectedError, propertyPath) {
 	const propertyPathLength = propertyPath + "Length";
@@ -297,6 +275,7 @@ function startsWith(str, suffix) {
 	return str.indexOf(suffix) === 0;
 }
 
+/* eslint-disable no-console */
 function start() {
 	/* eslint-disable dependencies/no-unresolved */
 	const fileNames = require("./filenames.js");
@@ -326,6 +305,7 @@ function start() {
 	allStarted = true;
 	endLoadFile(-1);
 }
+/* eslint-disable no-console */
 
 function setExamplesDirectory(ed) {
 	examplesDirectory = ed;
@@ -361,7 +341,6 @@ module.exports = {
 	cleanError,
 	createDoc,
 	createXmlTemplaterDocx,
-	xmltemplater,
 	expect,
 	expectToThrow,
 	getContent,

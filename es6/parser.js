@@ -23,9 +23,9 @@ const parser = {
 			});
 		}
 		let errors = [];
-		function postparse(postparsed) {
+		function postparse(postparsed, options) {
 			return modules.reduce(function (postparsed, module) {
-				const r = module.postparse(postparsed, {postparse, getTraits});
+				const r = module.postparse(postparsed, {...options, postparse, getTraits});
 				if (r.errors) {
 					errors = concatArrays([errors, r.errors]);
 					return r.postparsed;

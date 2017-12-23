@@ -27,7 +27,7 @@ describe("Algorithm", function () {
 		const fixture = fixtures[key];
 		it(fixture.it, function () {
 			const doc = makeDocx(key, fixture.content);
-			doc.setOptions({delimiters: fixture.delimiters});
+			doc.setOptions(fixture.options);
 			const iModule = inspectModule();
 			doc.attachModule(iModule);
 			doc.setData(fixture.scope);
