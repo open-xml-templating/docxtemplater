@@ -46,7 +46,7 @@ Similar libraries
 
 They are a few similar libraries that work with docx, here’s a list of those I know a bit about:
 
--	[docx4j](https://www.docx4java.org/trac/docx4j) :JAVA, this is probably the biggest docx library out there. They is no built in templating engine, but you can generate your docx yourself programmatically
+-	[docx4j](https://www.docx4java.org/trac/docx4j) :JAVA, this is probably the biggest docx library out there. There is no built in templating engine, but you can generate your docx yourself programmatically
 -	[docx.js](https://github.com/stephen-hardy/DOCX.js): Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text
 -	[xlsx-templater](https://github.com/optilude/xlsx-template) : its working quite well, does the same as here but for xlsx
 
