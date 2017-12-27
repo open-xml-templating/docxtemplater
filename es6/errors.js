@@ -93,6 +93,7 @@ function throwXmlTagNotFound(options) {
 		explanation: `No tag "${options.element}" was found at the ${
 			options.position
 		}`,
+		part: options.parsed[options.index],
 		parsed: options.parsed,
 		index: options.index,
 		element: options.element,

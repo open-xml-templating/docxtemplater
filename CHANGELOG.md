@@ -1,3 +1,19 @@
+### 3.2.1
+
+-	Fix bug with tr loop inside `paragraphLoop`
+
+If doing
+
+```
+{#par}
+======================
+| {#row} |  {/row}   |
+======================
+{/par}
+```
+
+An unexpected error 'No "w:tr" found at the left' would be raised.
+
 ### 3.2.0
 
 Add `paragraphLoop` option, that permits to have better rendering for spaces (Fixes #272)

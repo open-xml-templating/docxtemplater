@@ -1,11 +1,13 @@
 const wrapper = require("../module-wrapper");
+const {isTextStart, isTextEnd} = require("../doc-utils");
+
 const spacePreserve = {
 	name: "SpacePreserveModule",
 	postparse(postparsed) {
 		let chunk = [];
 		let inChunk = false;
 		const result = postparsed.reduce(function (postparsed, part) {
-			if (part.type === "tag" && part.position === "start" && part.text && part.value === "<w:t>") {
+			if (isTextStart(part) && part.tag === "w:t") {
 				inChunk = true;
 			}
 			if (inChunk) {
@@ -17,7 +19,7 @@ const spacePreserve = {
 			else {
 				postparsed.push(part);
 			}
-			if (part.type === "tag" && part.position === "end" && part.text && part.value === "</w:t>") {
+			if (isTextEnd(part) && part.tag === "w:t") {
 				Array.prototype.push.apply(postparsed, chunk);
 				inChunk = false;
 				chunk = [];

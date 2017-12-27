@@ -88,6 +88,25 @@ describe("pptx generation", function () {
 });
 
 describe("Table", function () {
+	it("should work with selfclosing tag inside table with paragraphLoop", function () {
+		const tags = {a: [{
+			b: {
+				c: "Foo",
+				d: "Hello ",
+			},
+		}, {
+			b: {
+				c: "Foo",
+				d: "Hello ",
+			},
+		}]};
+		const doc = createDoc("loop-valid.docx");
+		doc.setData(tags);
+		doc.setOptions({paragraphLoop: true});
+		doc.render();
+		shouldBeSame({doc, expectedName: "loop-valid-expected.docx"});
+	});
+
 	it("should work with tables", function () {
 		const tags = {clients: [{first_name: "John", last_name: "Doe", phone: "+33647874513"}, {first_name: "Jane", last_name: "Doe", phone: "+33454540124"}, {first_name: "Phil", last_name: "Kiel", phone: "+44578451245"}, {first_name: "Dave", last_name: "Sto", phone: "+44548787984"}]};
 		const doc = createDoc("tag-intelligent-loop-table.docx");

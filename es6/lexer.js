@@ -3,20 +3,20 @@ const {
 	getUnopenedTagException,
 	throwMalformedXml,
 } = require("./errors");
-const { concatArrays } = require("./doc-utils");
+const { concatArrays, isTextStart, isTextEnd } = require("./doc-utils");
 
 function inRange(range, match) {
 	return range[0] <= match.offset && match.offset < range[1];
 }
 
 function updateInTextTag(part, inTextTag) {
-	if (part.type === "tag" && part.position === "start" && part.text) {
+	if (isTextStart(part)) {
 		if (inTextTag) {
 			throwMalformedXml(part);
 		}
 		return true;
 	}
-	if (part.type === "tag" && part.position === "end" && part.text) {
+	if (isTextEnd(part)) {
 		if (!inTextTag) {
 			throwMalformedXml(part);
 		}

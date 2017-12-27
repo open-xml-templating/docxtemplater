@@ -1,4 +1,4 @@
-const {mergeObjects, chunkBy, last} = require("../doc-utils");
+const {mergeObjects, chunkBy, last, isParagraphStart, isParagraphEnd} = require("../doc-utils");
 const dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 const wrapper = require("../module-wrapper");
 
@@ -19,13 +19,6 @@ function isEnclosedByParagraphs(parsed) {
 
 function getOffset(chunk) {
 	return hasNoContent(chunk) ? chunk.length : 0;
-}
-
-function isParagraphStart({type, tag, position}) {
-	return type === "tag" && tag === "w:p" && position === "start";
-}
-function isParagraphEnd({type, tag, position}) {
-	return type === "tag" && tag === "w:p" && position === "end";
 }
 
 const loopModule = {
@@ -101,7 +94,15 @@ const loopModule = {
 		if (!basePart || basePart.expandTo !== "auto") {
 			return parsed;
 		}
-		const chunks = chunkBy(parsed, isParagraphStart);
+		const chunks = chunkBy(parsed, function (p) {
+			if (isParagraphStart(p)) {
+				return "start";
+			}
+			if (isParagraphEnd(p)) {
+				return "end";
+			}
+			return null;
+		});
 		if (chunks.length <= 2) {
 			return parsed;
 		}
@@ -112,7 +113,8 @@ const loopModule = {
 		if (firstOffset === 0 || lastOffset === 0) {
 			return parsed;
 		}
-		return parsed.slice(firstOffset, parsed.length - lastOffset);
+		const result = parsed.slice(firstOffset, parsed.length - lastOffset);
+		return result;
 	},
 	render(part, options) {
 		if (!part.type === "placeholder" || part.module !== moduleName) {

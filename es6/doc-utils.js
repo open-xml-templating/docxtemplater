@@ -29,22 +29,30 @@ function unique(arr) {
 }
 
 function chunkBy(parsed, f) {
-	return parsed.reduce(
-		function(chunks, p) {
-			const currentChunk = last(chunks);
-			if (currentChunk.length === 0) {
-				currentChunk.push(p);
+	return parsed
+		.reduce(
+			function(chunks, p) {
+				const currentChunk = last(chunks);
+				if (currentChunk.length === 0) {
+					currentChunk.push(p);
+					return chunks;
+				}
+				const res = f(p);
+				if (res === "start") {
+					chunks.push([p]);
+				} else if (res === "end") {
+					currentChunk.push(p);
+					chunks.push([]);
+				} else {
+					currentChunk.push(p);
+				}
 				return chunks;
-			}
-			if (f(p)) {
-				chunks.push([p]);
-			} else {
-				currentChunk.push(p);
-			}
-			return chunks;
-		},
-		[[]]
-	);
+			},
+			[[]]
+		)
+		.filter(function(p) {
+			return p.length > 0;
+		});
 }
 
 function last(a) {
@@ -190,6 +198,23 @@ DocUtils.getLeft = function(parsed, element, index) {
 	throwXmlTagNotFound({ position: "left", element, parsed, index });
 };
 
+function isParagraphStart({ type, tag, position }) {
+	return type === "tag" && tag === "w:p" && position === "start";
+}
+function isParagraphEnd({ type, tag, position }) {
+	return type === "tag" && tag === "w:p" && position === "end";
+}
+function isTextStart(part) {
+	return part.type === "tag" && part.position === "start" && part.text;
+}
+function isTextEnd(part) {
+	return part.type === "tag" && part.position === "end" && part.text;
+}
+
+DocUtils.isParagraphStart = isParagraphStart;
+DocUtils.isParagraphEnd = isParagraphEnd;
+DocUtils.isTextStart = isTextStart;
+DocUtils.isTextEnd = isTextEnd;
 DocUtils.unique = unique;
 DocUtils.chunkBy = chunkBy;
 DocUtils.last = last;

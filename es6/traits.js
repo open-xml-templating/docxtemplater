@@ -25,18 +25,14 @@ function getListXmlElements(parts) {
 	get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
 	returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
 	*/
-	const tags = parts
-		.filter(function(part) {
-			return part.type === "tag";
-		})
-		.map(function(part) {
-			return part.value;
-		});
+	const tags = parts.filter(function(part) {
+		return part.type === "tag";
+	});
 
 	let result = [];
 
 	for (let i = 0, tag; i < tags.length; i++) {
-		tag = tags[i];
+		tag = tags[i].value;
 		// closing tag
 		if (tag[1] === "/") {
 			if (lastTagIsOpenTag(result, tag)) {
@@ -44,7 +40,7 @@ function getListXmlElements(parts) {
 			} else {
 				result = addTag(result, tag);
 			}
-		} else if (tag[tag.length - 1] !== "/") {
+		} else if (tag[tag.length - 2] !== "/") {
 			result = addTag(result, tag);
 		}
 	}
