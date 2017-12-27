@@ -42,7 +42,7 @@ describe("speed test", function () {
 		for (let i = 1; i <= 1000; i++) {
 			users.push({name: "foo"});
 		}
-		const doc = createXmlTemplaterDocx(content, {tags: {users}})
+		const doc = createXmlTemplaterDocx(content, {tags: {users}});
 		const time = new Date();
 		doc.render();
 		const duration = new Date() - time;
@@ -64,7 +64,7 @@ describe("speed test", function () {
 			}
 			const content = result.join("");
 			const users = [];
-			const doc = createXmlTemplaterDocx(content, {tags: {users}})
+			const doc = createXmlTemplaterDocx(content, {tags: {users}});
 			const time = new Date();
 			doc.render();
 			const duration = new Date() - time;
