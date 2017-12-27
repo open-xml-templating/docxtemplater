@@ -3,8 +3,6 @@
 const { DOMParser, XMLSerializer } = require("xmldom");
 const { throwXmlTagNotFound } = require("./errors");
 
-const DocUtils = {};
-
 function parser(tag) {
 	return {
 		["get"](scope) {
@@ -59,7 +57,7 @@ function last(a) {
 	return a[a.length - 1];
 }
 
-DocUtils.defaults = {
+const defaults = {
 	nullGetter(part) {
 		if (!part.module) {
 			return "undefined";
@@ -77,7 +75,7 @@ DocUtils.defaults = {
 	},
 };
 
-DocUtils.mergeObjects = function() {
+function mergeObjects() {
 	const resObj = {};
 	let obj, keys;
 	for (let i = 0; i < arguments.length; i += 1) {
@@ -88,19 +86,19 @@ DocUtils.mergeObjects = function() {
 		}
 	}
 	return resObj;
-};
+}
 
-DocUtils.xml2str = function(xmlNode) {
+function xml2str(xmlNode) {
 	const a = new XMLSerializer();
 	return a.serializeToString(xmlNode);
-};
+}
 
-DocUtils.str2xml = function(str, errorHandler) {
+function str2xml(str, errorHandler) {
 	const parser = new DOMParser({ errorHandler });
 	return parser.parseFromString(str, "text/xml");
-};
+}
 
-DocUtils.charMap = {
+const charMap = {
 	"&": "&amp;",
 	"'": "&apos;",
 	"<": "&lt;",
@@ -109,43 +107,43 @@ DocUtils.charMap = {
 };
 
 const regexStripRegexp = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
-DocUtils.escapeRegExp = function(str) {
+function escapeRegExp(str) {
 	return str.replace(regexStripRegexp, "\\$&");
-};
+}
 
-DocUtils.charMapRegexes = Object.keys(DocUtils.charMap).map(function(endChar) {
-	const startChar = DocUtils.charMap[endChar];
+const charMapRegexes = Object.keys(charMap).map(function(endChar) {
+	const startChar = charMap[endChar];
 	return {
-		rstart: new RegExp(DocUtils.escapeRegExp(startChar), "g"),
-		rend: new RegExp(DocUtils.escapeRegExp(endChar), "g"),
+		rstart: new RegExp(escapeRegExp(startChar), "g"),
+		rend: new RegExp(escapeRegExp(endChar), "g"),
 		start: startChar,
 		end: endChar,
 	};
 });
 
-DocUtils.wordToUtf8 = function(string) {
+function wordToUtf8(string) {
 	let r;
-	for (let i = 0, l = DocUtils.charMapRegexes.length; i < l; i++) {
-		r = DocUtils.charMapRegexes[i];
+	for (let i = 0, l = charMapRegexes.length; i < l; i++) {
+		r = charMapRegexes[i];
 		string = string.replace(r.rstart, r.end);
 	}
 	return string;
-};
+}
 
-DocUtils.utf8ToWord = function(string) {
+function utf8ToWord(string) {
 	if (typeof string !== "string") {
 		string = string.toString();
 	}
 	let r;
-	for (let i = 0, l = DocUtils.charMapRegexes.length; i < l; i++) {
-		r = DocUtils.charMapRegexes[i];
+	for (let i = 0, l = charMapRegexes.length; i < l; i++) {
+		r = charMapRegexes[i];
 		string = string.replace(r.rend, r.start);
 	}
 	return string;
-};
+}
 
 // This function is written with for loops for performance
-DocUtils.concatArrays = function(arrays) {
+function concatArrays(arrays) {
 	const result = [];
 	for (let i = 0; i < arrays.length; i++) {
 		const array = arrays[i];
@@ -154,14 +152,13 @@ DocUtils.concatArrays = function(arrays) {
 		}
 	}
 	return result;
-};
+}
 
 const spaceRegexp = new RegExp(String.fromCharCode(160), "g");
-DocUtils.convertSpaces = function(s) {
+function convertSpaces(s) {
 	return s.replace(spaceRegexp, " ");
-};
-
-DocUtils.pregMatchAll = function(regex, content) {
+}
+function pregMatchAll(regex, content) {
 	/* regex is a string, content is the content. It returns an array of all matches with their offset, for example:
 		 regex=la
 		 content=lolalolilala
@@ -173,9 +170,9 @@ returns: [{array: {0: 'la'},offset: 2},{array: {0: 'la'},offset: 8},{array: {0: 
 		matchArray.push({ array: match, offset: match.index });
 	}
 	return matchArray;
-};
+}
 
-DocUtils.getRight = function(parsed, element, index) {
+function getRight(parsed, element, index) {
 	for (let i = index, l = parsed.length; i < l; i++) {
 		const part = parsed[i];
 		if (part.value === "</" + element + ">") {
@@ -183,9 +180,9 @@ DocUtils.getRight = function(parsed, element, index) {
 		}
 	}
 	throwXmlTagNotFound({ position: "right", element, parsed, index });
-};
+}
 
-DocUtils.getLeft = function(parsed, element, index) {
+function getLeft(parsed, element, index) {
 	for (let i = index; i >= 0; i--) {
 		const part = parsed[i];
 		if (
@@ -196,7 +193,7 @@ DocUtils.getLeft = function(parsed, element, index) {
 		}
 	}
 	throwXmlTagNotFound({ position: "left", element, parsed, index });
-};
+}
 
 function isParagraphStart({ type, tag, position }) {
 	return type === "tag" && tag === "w:p" && position === "start";
@@ -211,11 +208,26 @@ function isTextEnd(part) {
 	return part.type === "tag" && part.position === "end" && part.text;
 }
 
-DocUtils.isParagraphStart = isParagraphStart;
-DocUtils.isParagraphEnd = isParagraphEnd;
-DocUtils.isTextStart = isTextStart;
-DocUtils.isTextEnd = isTextEnd;
-DocUtils.unique = unique;
-DocUtils.chunkBy = chunkBy;
-DocUtils.last = last;
-module.exports = DocUtils;
+module.exports = {
+	isParagraphStart,
+	isParagraphEnd,
+	isTextStart,
+	isTextEnd,
+	unique,
+	chunkBy,
+	last,
+	mergeObjects,
+	xml2str,
+	str2xml,
+	getRight,
+	getLeft,
+	pregMatchAll,
+	convertSpaces,
+	escapeRegExp,
+	charMapRegexes,
+	defaults,
+	wordToUtf8,
+	utf8ToWord,
+	concatArrays,
+	charMap,
+};
