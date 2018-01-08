@@ -1,4 +1,5 @@
 const traits = require("../traits");
+const {isContent} = require("../doc-utils");
 const {throwRawTagShouldBeOnlyTextInParagraph} = require("../errors");
 
 const moduleName = "rawxml";
@@ -10,7 +11,7 @@ function getInner({part, left, right, postparsed, index}) {
 		if (i === index - left - 1) {
 			return;
 		}
-		if (p.type === "placeholder" || (p.type === "content" && p.position === "insidetag")) {
+		if (isContent(p)) {
 			throwRawTagShouldBeOnlyTextInParagraph({paragraphParts, part});
 		}
 	});

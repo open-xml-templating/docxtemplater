@@ -1,12 +1,12 @@
-const {mergeObjects, chunkBy, last, isParagraphStart, isParagraphEnd} = require("../doc-utils");
+const {mergeObjects, chunkBy, last, isParagraphStart, isParagraphEnd, isContent} = require("../doc-utils");
 const dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 const wrapper = require("../module-wrapper");
 
 const moduleName = "loop";
 
-function hasNoContent(parts) {
-	return parts.every(function ({type, position}) {
-		return type === "tag" || (type === "content" && position === "outsidetag");
+function hasContent(parts) {
+	return parts.some(function (part) {
+		return isContent(part);
 	});
 }
 
@@ -18,7 +18,7 @@ function isEnclosedByParagraphs(parsed) {
 }
 
 function getOffset(chunk) {
-	return hasNoContent(chunk) ? chunk.length : 0;
+	return hasContent(chunk) ? 0 : chunk.length;
 }
 
 const loopModule = {

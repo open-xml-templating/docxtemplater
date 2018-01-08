@@ -50,7 +50,7 @@ const expandPairTrait = {
 	name: "ExpandPairTrait",
 	optionsTransformer(options, docxtemplater) {
 		this.expandTags = docxtemplater.fileTypeConfig.expandTags.concat(
-			docxtemplater.options.paragraphLoop ? [{contains: "w:p", expand: "w:p"}] : []
+			docxtemplater.options.paragraphLoop ? [{contains: "w:p", expand: "w:p", onlyTextInTag: true}] : []
 		);
 		return options;
 	},
@@ -64,7 +64,7 @@ const expandPairTrait = {
 		const expandedPairs = pairs.map((pair) => {
 			let {expandTo} = pair[0].part;
 			if (expandTo === "auto") {
-				const result = getExpandToDefault(postparsed.slice(pair[0].offset, pair[1].offset), pair, this.expandTags);
+				const result = getExpandToDefault(postparsed, pair, this.expandTags);
 				if (result.error) {
 					errors.push(result.error);
 				}

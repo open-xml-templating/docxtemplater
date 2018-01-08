@@ -195,11 +195,17 @@ function getLeft(parsed, element, index) {
 	throwXmlTagNotFound({ position: "left", element, parsed, index });
 }
 
-function isParagraphStart({ type, tag, position }) {
-	return type === "tag" && tag === "w:p" && position === "start";
+function isTagStart(tagType, { type, tag, position }) {
+	return type === "tag" && tag === tagType && position === "start";
 }
-function isParagraphEnd({ type, tag, position }) {
-	return type === "tag" && tag === "w:p" && position === "end";
+function isTagEnd(tagType, { type, tag, position }) {
+	return type === "tag" && tag === tagType && position === "end";
+}
+function isParagraphStart(options) {
+	return isTagStart("w:p", options);
+}
+function isParagraphEnd(options) {
+	return isTagEnd("w:p", options);
 }
 function isTextStart(part) {
 	return part.type === "tag" && part.position === "start" && part.text;
@@ -208,9 +214,19 @@ function isTextEnd(part) {
 	return part.type === "tag" && part.position === "end" && part.text;
 }
 
+function isContent(p) {
+	return (
+		p.type === "placeholder" ||
+		(p.type === "content" && p.position === "insidetag")
+	);
+}
+
 module.exports = {
+	isContent,
 	isParagraphStart,
 	isParagraphEnd,
+	isTagStart,
+	isTagEnd,
 	isTextStart,
 	isTextEnd,
 	unique,

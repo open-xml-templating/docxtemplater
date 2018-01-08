@@ -3,8 +3,8 @@ const {createDoc, shouldBeSame, expect} = require("./utils");
 describe("pptx generation", function () {
 	it("should work with simple pptx", function () {
 		const doc = createDoc("simple-example.pptx");
-		const p = doc.setData({name: "Edgar"}).render();
-		expect(p.getFullText()).to.be.equal("Hello Edgar");
+		doc.setData({name: "Edgar"}).render();
+		expect(doc.getFullText()).to.be.equal("Hello Edgar");
 	});
 	it("should work with table pptx", function () {
 		const doc = createDoc("table-example.pptx");
@@ -13,8 +13,8 @@ describe("pptx generation", function () {
 	});
 	it("should work with loop pptx", function () {
 		const doc = createDoc("loop-example.pptx");
-		const p = doc.setData({users: [{name: "Doe"}, {name: "John"}]}).render();
-		expect(p.getFullText()).to.be.equal(" Doe  John ");
+		doc.setData({users: [{name: "Doe"}, {name: "John"}]}).render();
+		expect(doc.getFullText()).to.be.equal(" Doe  John ");
 		shouldBeSame({doc, expectedName: "expected-loop-example.pptx"});
 	});
 
@@ -81,8 +81,8 @@ describe("pptx generation", function () {
   </p:txBody>
 </p:sp>`;
 		const doc = createDoc("raw-xml-example.pptx");
-		const p = doc.setData({raw}).render();
-		expect(p.getFullText()).to.be.equal("Hello World");
+		doc.setData({raw}).render();
+		expect(doc.getFullText()).to.be.equal("Hello World");
 		shouldBeSame({doc, expectedName: "expected-raw-xml-example.pptx"});
 	});
 });
@@ -233,12 +233,24 @@ describe("DocxtemplaterTemplating", function () {
 		});
 	});
 
-	it("should work with loop", function () {
+	it("should work with paragraphloop", function () {
 		const doc = createDoc("users.docx");
 		doc.setOptions({
 			paragraphLoop: true,
 		});
 		doc.setData({users: ["John", "Jane", "Louis"]}).render();
 		shouldBeSame({doc, expectedName: "users-expected.docx"});
+	});
+
+	it("should work with paragraphloop without removing extra text", function () {
+		const doc = createDoc("paragraph-loops.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({
+			condition: [1, 2],
+			placeholder: "placeholder-value",
+		}).render();
+		shouldBeSame({doc, expectedName: "expected-paragraph-loop.docx"});
 	});
 });

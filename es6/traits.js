@@ -1,4 +1,13 @@
-const { getRight, getLeft, concatArrays } = require("./doc-utils");
+const {
+	getRight,
+	getLeft,
+	concatArrays,
+	chunkBy,
+	isTagStart,
+	isTagEnd,
+	isContent,
+	last,
+} = require("./doc-utils");
 const {
 	XTTemplateError,
 	throwRawTagNotInParagraph,
@@ -57,7 +66,8 @@ function has(name, xmlElements) {
 	return false;
 }
 
-function getExpandToDefault(parts, pair, expandTags) {
+function getExpandToDefault(postparsed, pair, expandTags) {
+	const parts = postparsed.slice(pair[0].offset, pair[1].offset);
 	const xmlElements = getListXmlElements(parts);
 	const closingTagCount = xmlElements.filter(function(xmlElement) {
 		return xmlElement.tag[1] === "/";
@@ -73,14 +83,40 @@ function getExpandToDefault(parts, pair, expandTags) {
 			}),
 		};
 	}
+	for (let i = 0, len = expandTags.length; i < len; i++) {
+		const { contains, expand, onlyTextInTag } = expandTags[i];
+		if (has(contains, xmlElements)) {
+			if (onlyTextInTag) {
+				const left = getLeft(postparsed, contains, pair[0].offset);
+				const right = getRight(postparsed, contains, pair[1].offset);
 
-	const value = expandTags.reduce(function(value, { contains, expand }) {
-		if (value) {
-			return value;
+				const chunks = chunkBy(postparsed.slice(left, right), function(p) {
+					if (isTagStart(contains, p)) {
+						return "start";
+					}
+					if (isTagEnd(contains, p)) {
+						return "end";
+					}
+					return null;
+				});
+
+				if (chunks.length <= 2) {
+					continue;
+				}
+
+				const firstChunk = chunks[0];
+				const lastChunk = last(chunks);
+
+				const firstContent = firstChunk.filter(isContent);
+				const lastContent = lastChunk.filter(isContent);
+				if (firstContent.length !== 1 || lastContent.length !== 1) {
+					continue;
+				}
+			}
+			return { value: expand };
 		}
-		return has(contains, xmlElements) ? expand : false;
-	}, false);
-	return { value };
+	}
+	return false;
 }
 
 function expandOne(part, postparsed, options) {
