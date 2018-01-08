@@ -8,7 +8,7 @@ Platform Support
 
 docxtemplater works with
 
-- Node.js versions 0.10, 0.11, 0.12 ,4, 5 and 6, with iojs
+- Node.js versions 0.10, 0.11, 0.12 ,4, 5, 6 ,7, 8, 9 and all future versions
 - Chrome **tested** on version 26
 - Firefox 3+ (**tested** on version 21, but should work with 3+)
 - Safari **tested**
