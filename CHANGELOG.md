@@ -1,3 +1,29 @@
+### 3.2.2
+
+-	Fix rendering issues with `paragraphLoop`
+
+When setting `paragraphLoop`, the intention is to have a special case for loops when you write :
+
+```
+{#users}
+{name}
+{/users}
+```
+
+Eg : both the start of the loop and the end of the loop are in a paragraph, surrounded by no other content. In that particular case, we render the content of the loop (`{name}`) in this use case, in a new paragraph each time, so that they would be no additional whitespace added to the loop.
+
+On version 3.2.1, the paragraphLoop would change the rendering for most of the loops, for example, if you wrote :
+
+```
+My paragraph {#users}
+{name}
+{/users}
+```
+
+the paragraphLoop code was triggered, and if users was [], even the text "My paragraph" would be removed, which was a bug.
+
+This release fixes that bug.
+
 ### 3.2.1
 
 -	Fix bug with tr loop inside `paragraphLoop`
