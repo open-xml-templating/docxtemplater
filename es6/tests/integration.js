@@ -254,3 +254,18 @@ describe("DocxtemplaterTemplating", function () {
 		shouldBeSame({doc, expectedName: "expected-paragraph-loop.docx"});
 	});
 });
+
+describe("Load Office 365 file", function () {
+	it("should handle files with word/document2.xml", function () {
+		const doc = createDoc("office365.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({
+			test: "Value",
+			test2: "Value2",
+		}).render();
+		expect(doc.getFullText()).to.be.equal("Value Value2");
+		shouldBeSame({doc, expectedName: "expected-office365.docx"});
+	});
+});

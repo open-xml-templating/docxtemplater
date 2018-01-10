@@ -15,7 +15,9 @@ const PptXFileTypeConfig = {
 			});
 		return slideTemplates.concat(["ppt/presentation.xml"]);
 	},
-	textPath: "ppt/slides/slide1.xml",
+	textPath() {
+		return "ppt/slides/slide1.xml";
+	},
 	tagsXmlTextArray: ["a:t", "m:t"],
 	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r"],
 	tagRawXml: "p:sp",
@@ -30,6 +32,7 @@ const DocXFileTypeConfig = {
 			"docProps/core.xml",
 			"docProps/app.xml",
 			"word/document.xml",
+			"word/document2.xml",
 		];
 		const slideTemplates = zip
 			.file(/word\/(header|footer)\d+\.xml/)
@@ -38,7 +41,14 @@ const DocXFileTypeConfig = {
 			});
 		return slideTemplates.concat(baseTags);
 	},
-	textPath: "word/document.xml",
+	textPath(zip) {
+		if (zip.files["word/document.xml"]) {
+			return "word/document.xml";
+		}
+		if (zip.files["word/document2.xml"]) {
+			return "word/document2.xml";
+		}
+	},
 	tagsXmlTextArray: [
 		"w:t",
 		"m:t",

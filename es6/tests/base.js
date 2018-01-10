@@ -55,7 +55,7 @@ describe("DocxtemplaterLoading", function () {
 		it("should load the right template files for the document", function () {
 			const doc = createDoc("tag-example.docx");
 			const templatedFiles = (doc.getTemplatedFiles());
-			expect(templatedFiles).to.be.eql(["word/header1.xml", "word/footer1.xml", "docProps/core.xml", "docProps/app.xml", "word/document.xml"]);
+			expect(templatedFiles).to.be.eql(["word/header1.xml", "word/footer1.xml", "docProps/core.xml", "docProps/app.xml", "word/document.xml", "word/document2.xml"]);
 		});
 	});
 	describe("output and input", function () {

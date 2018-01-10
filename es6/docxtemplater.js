@@ -114,24 +114,19 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	updateFileTypeConfig() {
-		const fileTypeIdentifiers = {
-			docx: "word/document.xml",
-			pptx: "ppt/presentation.xml",
-			odt: "mimetype",
-		};
-
-		const fileType = Object.keys(fileTypeIdentifiers).reduce(
-			(fileType, key) => {
-				if (fileType) {
-					return fileType;
-				}
-				if (this.zip.files[fileTypeIdentifiers[key]]) {
-					return key;
-				}
-				return fileType;
-			},
-			null
-		);
+		let fileType;
+		if (this.zip.files.mimetype) {
+			fileType = "odt";
+		}
+		if (
+			this.zip.files["word/document.xml"] ||
+			this.zip.files["word/document2.xml"]
+		) {
+			fileType = "docx";
+		}
+		if (this.zip.files["ppt/presentation.xml"]) {
+			fileType = "pptx";
+		}
 
 		if (fileType === "odt") {
 			throwFileTypeNotHandled(fileType);
@@ -200,7 +195,7 @@ const Docxtemplater = class Docxtemplater {
 	}
 	getFullText(path) {
 		return this.createTemplateClass(
-			path || this.fileTypeConfig.textPath
+			path || this.fileTypeConfig.textPath(this.zip)
 		).getFullText();
 	}
 	getTemplatedFiles() {
