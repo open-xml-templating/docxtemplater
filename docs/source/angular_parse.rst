@@ -67,7 +67,7 @@ http://teropa.info/blog/2014/03/23/angularjs-expressions-cheatsheet.html
 Conditions
 ----------
 
-With angularParser, you can also use conditions : 
+With the angularParser option set, you can also use conditions : 
 
 .. code-block:: text
 
@@ -76,3 +76,23 @@ With angularParser, you can also use conditions :
     {/}
 
 Will render the section only if they are 2 users or more.
+
+It also handles the boolean operators AND ``&&``, OR ``||``, ``+``, ``-``, the ternary operator ``a ? b : c``, operator precendence with parenthesis ``(a && b) || c``, and many other javascript features.
+
+For example, it is possible to write the following template : 
+
+
+.. code-block:: text
+
+    {#generalCondition}
+    {#cond1 || cond2}
+    Paragraph 1
+    {/}
+    {#cond2 && cond3}
+    Paragraph 2
+    {/}
+    {#cond4 ? users : usersWithAdminRights}
+    Paragraph 3
+    {/}
+    They are {users.length} users.
+    {/generalCondition}
