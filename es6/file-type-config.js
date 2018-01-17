@@ -13,12 +13,23 @@ const PptXFileTypeConfig = {
 			.map(function(file) {
 				return file.name;
 			});
-		return slideTemplates.concat(["ppt/presentation.xml"]);
+		return slideTemplates.concat([
+			"ppt/presentation.xml",
+			"docProps/app.xml",
+			"docProps/core.xml",
+		]);
 	},
 	textPath() {
 		return "ppt/slides/slide1.xml";
 	},
-	tagsXmlTextArray: ["a:t", "m:t"],
+	tagsXmlTextArray: [
+		"a:t",
+		"m:t",
+		"vt:lpstr",
+		"dc:title",
+		"dc:creator",
+		"cp:keywords",
+	],
 	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r"],
 	tagRawXml: "p:sp",
 	tagTextXml: "a:t",

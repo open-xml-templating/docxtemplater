@@ -1,6 +1,14 @@
 const {createDoc, shouldBeSame, expect} = require("./utils");
 
 describe("pptx generation", function () {
+	it("should work with title", function () {
+		const doc = createDoc("title-example.pptx");
+		let con = doc.getZip().files["docProps/app.xml"].asText();
+		expect(con).not.to.contain("Edgar");
+		doc.setData({name: "Edgar"}).render();
+		con = doc.getZip().files["docProps/app.xml"].asText();
+		expect(con).to.contain("Edgar");
+	});
 	it("should work with simple pptx", function () {
 		const doc = createDoc("simple-example.pptx");
 		doc.setData({name: "Edgar"}).render();
