@@ -1,3 +1,11 @@
+### 3.2.4
+
+Correctly replace titles of PPTX documents
+
+### 3.2.3
+
+Add support for Office365 generated documents (with `word/document2.xml` file)
+
 ### 3.2.2
 
 -	Fix rendering issues with `paragraphLoop`
