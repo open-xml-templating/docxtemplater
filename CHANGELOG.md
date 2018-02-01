@@ -1,4 +1,4 @@
-### 3.2.6
+### 3.3.0
 
 Throw error if the output contains invalid XML characters
 
