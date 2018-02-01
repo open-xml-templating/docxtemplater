@@ -1,3 +1,7 @@
+### 3.2.5
+
+Take into account paragraphLoop for PPTX documents
+
 ### 3.2.4
 
 Correctly replace titles of PPTX documents
