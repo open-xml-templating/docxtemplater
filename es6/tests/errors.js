@@ -15,7 +15,7 @@ function angularParser(tag) {
 	};
 }
 
-describe("compilation errors", function () {
+describe("Compilation errors", function () {
 	it("should fail when tag unclosed at end of document", function () {
 		const content = "<w:t>{unclosedtag my text</w:t>";
 		const expectedError = {
@@ -243,7 +243,7 @@ describe("compilation errors", function () {
 	});
 });
 
-describe("runtime errors", function () {
+describe("Runtime errors", function () {
 	it("should fail when customparser fails to execute", function () {
 		const content = "<w:t>{name|upper}</w:t>";
 		function errorParser() {
@@ -270,7 +270,7 @@ describe("runtime errors", function () {
 	});
 });
 
-describe("internal errors", function () {
+describe("Internal errors", function () {
 	it("should fail if using odt format", function (done) {
 		const expectedError = {
 			name: "InternalError",
@@ -289,7 +289,7 @@ describe("internal errors", function () {
 	});
 });
 
-describe("multi errors", function () {
+describe("Multi errors", function () {
 	it("should work with multiple errors simple", function () {
 		const content = "<w:t>foo} Hello {user, my age is {bar}</w:t>";
 		const expectedError = {

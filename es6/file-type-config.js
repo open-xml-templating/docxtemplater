@@ -31,10 +31,11 @@ const PptXFileTypeConfig = {
 		"cp:keywords",
 	],
 	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r"],
+	expandTags: [{ contains: "a:tc", expand: "a:tr" }],
+	onParagraphLoop: [{ contains: "a:p", expand: "a:p", onlyTextInTag: true }],
 	tagRawXml: "p:sp",
 	tagTextXml: "a:t",
 	baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
-	expandTags: [{ contains: "a:tc", expand: "a:tr" }],
 };
 
 const DocXFileTypeConfig = {
@@ -79,6 +80,7 @@ const DocXFileTypeConfig = {
 		"w:spacing",
 	],
 	expandTags: [{ contains: "w:tc", expand: "w:tr" }],
+	onParagraphLoop: [{ contains: "w:p", expand: "w:p", onlyTextInTag: true }],
 	tagRawXml: "w:p",
 	tagTextXml: "w:t",
 	baseModules: [

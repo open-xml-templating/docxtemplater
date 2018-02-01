@@ -1,6 +1,6 @@
 const {createXmlTemplaterDocx, expect, getContent} = require("./utils");
 
-describe("xmlTemplater", function () {
+describe("XmlTemplater", function () {
 	it("should work with simpleContent", function () {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = {name: "Edgar"};

@@ -1,6 +1,6 @@
 const {createDoc, shouldBeSame, expect} = require("./utils");
 
-describe("pptx generation", function () {
+describe("Pptx generation", function () {
 	it("should work with title", function () {
 		const doc = createDoc("title-example.pptx");
 		let con = doc.getZip().files["docProps/app.xml"].asText();
@@ -222,7 +222,7 @@ describe("Dash Loop Testing", function () {
 	});
 });
 
-describe("DocxtemplaterTemplating", function () {
+describe("Templating", function () {
 	describe("text templating", function () {
 		it("should change values with template data", function () {
 			const tags = {
@@ -260,6 +260,21 @@ describe("DocxtemplaterTemplating", function () {
 			placeholder: "placeholder-value",
 		}).render();
 		shouldBeSame({doc, expectedName: "expected-paragraph-loop.docx"});
+	});
+
+	it("should work with paragraphloop pptx", function () {
+		const doc = createDoc("paragraph-loop.pptx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({
+			users: [
+				{age: 10, name: "Bar"},
+				{age: 18, name: "Bar"},
+				{age: 22, name: "Bar"},
+			],
+		}).render();
+		shouldBeSame({doc, expectedName: "expected-paragraph-loop.pptx"});
 	});
 });
 

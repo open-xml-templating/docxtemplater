@@ -1,7 +1,7 @@
 const xmlMatcher = require("../xml-matcher.js");
 const {expect} = require("./utils");
 
-describe("xmlMatcher", function () {
+describe("XmlMatcher", function () {
 	it("should work with simple tag", function () {
 		const matcher = xmlMatcher("<w:t>Text</w:t>", ["w:t"]);
 		expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text</w:t>");

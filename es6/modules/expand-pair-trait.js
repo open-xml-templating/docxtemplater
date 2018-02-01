@@ -50,7 +50,7 @@ const expandPairTrait = {
 	name: "ExpandPairTrait",
 	optionsTransformer(options, docxtemplater) {
 		this.expandTags = docxtemplater.fileTypeConfig.expandTags.concat(
-			docxtemplater.options.paragraphLoop ? [{contains: "w:p", expand: "w:p", onlyTextInTag: true}] : []
+			docxtemplater.options.paragraphLoop ? docxtemplater.fileTypeConfig.onParagraphLoop : []
 		);
 		return options;
 	},

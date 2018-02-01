@@ -202,10 +202,10 @@ function isTagEnd(tagType, { type, tag, position }) {
 	return type === "tag" && tag === tagType && position === "end";
 }
 function isParagraphStart(options) {
-	return isTagStart("w:p", options);
+	return isTagStart("w:p", options) || isTagStart("a:p", options);
 }
 function isParagraphEnd(options) {
-	return isTagEnd("w:p", options);
+	return isTagEnd("w:p", options) || isTagEnd("a:p", options);
 }
 function isTextStart(part) {
 	return part.type === "tag" && part.position === "start" && part.text;

@@ -2,7 +2,7 @@
 
 const {expect, createXmlTemplaterDocx} = require("./utils");
 
-describe("speed test", function () {
+describe("Speed test", function () {
 	it("should be fast for simple tags", function () {
 		const content = "<w:t>tag {age}</w:t>";
 		const docs = [];

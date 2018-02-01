@@ -22,7 +22,7 @@ function getLength(obj) {
 	return obj.length;
 }
 
-describe("DocxtemplaterLoading", function () {
+describe("Loading", function () {
 	describe("ajax done correctly", function () {
 		it("doc and img Data should have the expected length", function () {
 			const doc = createDoc("image-example.docx");
@@ -69,7 +69,7 @@ describe("DocxtemplaterLoading", function () {
 	});
 });
 
-describe("inspect module", function () {
+describe("Inspect module", function () {
 	it("should work", function () {
 		function getTags(postParsed) {
 			return postParsed.filter(function (part) {
@@ -100,114 +100,112 @@ describe("inspect module", function () {
 	});
 });
 
-describe("DocxtemplaterTemplatingForLoop", function () {
-	describe("textLoop templating", function () {
-		it("should replace all the tags", function () {
-			const tags = {
-				nom: "Hipp",
-				prenom: "Edgar",
-				telephone: "0652455478",
-				description: "New Website",
-				offre: [{titre: "titre1", prix: "1250"}, {titre: "titre2", prix: "2000"}, {titre: "titre3", prix: "1400", nom: "Offre"}],
-			};
-			const doc = createDoc("tag-loop-example.docx");
-			doc.setData(tags);
-			doc.render();
-			expect(doc.getFullText()).to.be.equal("Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar");
-		});
-		it("should work with loops inside loops", function () {
-			const tags = {products: [{title: "Microsoft", name: "DOS", reference: "Win7", avantages: [{title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]}]}, {title: "Linux", name: "Ubuntu", reference: "Ubuntu10", avantages: [{title: "It's very powerful", proof: [{reason: "the terminal is your friend"}, {reason: "Hello world"}, {reason: "it's free"}]}]}, {title: "Apple", name: "Mac", reference: "OSX", avantages: [{title: "It's very easy", proof: [{reason: "you can do a lot just with the mouse"}, {reason: "It's nicely designed"}]}]}]};
-			const doc = createDoc("tag-product-loop.docx");
-			doc.setData(tags);
-			doc.render();
-			const text = doc.getFullText();
-			const expectedText = "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
-			expect(text.length).to.be.equal(expectedText.length);
-			expect(text).to.be.equal(expectedText);
-		});
-		it("should work with object value", function () {
-			const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
-			const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
-			const scope = {todo: {todo: "abc"}};
-			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-			xmlTemplater.render();
-			expect(getContent(xmlTemplater)).to.be.deep.equal(expectedContent);
-		});
-		it("should work with string value", function () {
-			const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
-			const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
-			const scope = {todo: "abc"};
-			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-			xmlTemplater.render();
-			const c = getContent(xmlTemplater);
-			expect(c).to.be.deep.equal(expectedContent);
-		});
-		it("should not have sideeffects with inverted with array length 3", function () {
-			const content = "<w:t>{^todos}No {/todos}Todos</w:t><w:t>{#todos}{.}{/todos}</w:t>";
-			const expectedContent = '<w:t>Todos</w:t><w:t xml:space="preserve">ABC</w:t>';
-			const scope = {todos: ["A", "B", "C"]};
-			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-			const c = getContent(xmlTemplater);
-			expect(c).to.be.deep.equal(expectedContent);
-		});
-		it("should not have sideeffects with inverted with empty array", function () {
-			const content = `<w:t>{^todos}No {/todos}Todos</w:t>
-			<w:t>{#todos}{.}{/todos}</w:t>`;
-			const expectedContent = `<w:t>No Todos</w:t>
-			<w:t xml:space="preserve"></w:t>`;
-			const scope = {todos: []};
-			const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
-			const c = getContent(xmlTemplater);
-			expect(c).to.be.deep.equal(expectedContent);
-		});
+describe("Docxtemplater loops", function () {
+	it("should replace all the tags", function () {
+		const tags = {
+			nom: "Hipp",
+			prenom: "Edgar",
+			telephone: "0652455478",
+			description: "New Website",
+			offre: [{titre: "titre1", prix: "1250"}, {titre: "titre2", prix: "2000"}, {titre: "titre3", prix: "1400", nom: "Offre"}],
+		};
+		const doc = createDoc("tag-loop-example.docx");
+		doc.setData(tags);
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar");
+	});
+	it("should work with loops inside loops", function () {
+		const tags = {products: [{title: "Microsoft", name: "DOS", reference: "Win7", avantages: [{title: "Everyone uses it", proof: [{reason: "it is quite cheap"}, {reason: "it is quit simple"}, {reason: "it works on a lot of different Hardware"}]}]}, {title: "Linux", name: "Ubuntu", reference: "Ubuntu10", avantages: [{title: "It's very powerful", proof: [{reason: "the terminal is your friend"}, {reason: "Hello world"}, {reason: "it's free"}]}]}, {title: "Apple", name: "Mac", reference: "OSX", avantages: [{title: "It's very easy", proof: [{reason: "you can do a lot just with the mouse"}, {reason: "It's nicely designed"}]}]}]};
+		const doc = createDoc("tag-product-loop.docx");
+		doc.setData(tags);
+		doc.render();
+		const text = doc.getFullText();
+		const expectedText = "MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
+		expect(text.length).to.be.equal(expectedText.length);
+		expect(text).to.be.equal(expectedText);
+	});
+	it("should work with object value", function () {
+		const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
+		const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
+		const scope = {todo: {todo: "abc"}};
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
+		xmlTemplater.render();
+		expect(getContent(xmlTemplater)).to.be.deep.equal(expectedContent);
+	});
+	it("should work with string value", function () {
+		const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
+		const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
+		const scope = {todo: "abc"};
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
+		xmlTemplater.render();
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.deep.equal(expectedContent);
+	});
+	it("should not have sideeffects with inverted with array length 3", function () {
+		const content = "<w:t>{^todos}No {/todos}Todos</w:t><w:t>{#todos}{.}{/todos}</w:t>";
+		const expectedContent = '<w:t>Todos</w:t><w:t xml:space="preserve">ABC</w:t>';
+		const scope = {todos: ["A", "B", "C"]};
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.deep.equal(expectedContent);
+	});
+	it("should not have sideeffects with inverted with empty array", function () {
+		const content = `<w:t>{^todos}No {/todos}Todos</w:t>
+		<w:t>{#todos}{.}{/todos}</w:t>`;
+		const expectedContent = `<w:t>No Todos</w:t>
+		<w:t xml:space="preserve"></w:t>`;
+		const scope = {todos: []};
+		const xmlTemplater = createXmlTemplaterDocx(content, {tags: scope});
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.deep.equal(expectedContent);
+	});
 
-		it("should provide inverted loops", function () {
-			const content = "<w:t>{^products}No products found{/products}</w:t>";
-			[
-				{products: []},
-				{products: false},
-				{},
-			].forEach(function (tags) {
-				const doc = createXmlTemplaterDocx(content, {tags});
-				doc.render();
-				expect(doc.getFullText()).to.be.equal("No products found");
-			});
-
-			[
-				{products: [{name: "Bread"}]},
-				{products: true},
-				{products: "Bread"},
-				{products: {name: "Bread"}},
-			].forEach(function (tags) {
-				const doc = createXmlTemplaterDocx(content, {tags});
-				doc.render();
-				expect(doc.getFullText()).to.be.equal("");
-			});
-		});
-
-		it("should be possible to close loops with {/}", function () {
-			const content = "<w:t>{#products}Product {name}{/}</w:t>";
-			const tags = {products: [{name: "Bread"}]};
+	it("should provide inverted loops", function () {
+		const content = "<w:t>{^products}No products found{/products}</w:t>";
+		[
+			{products: []},
+			{products: false},
+			{},
+		].forEach(function (tags) {
 			const doc = createXmlTemplaterDocx(content, {tags});
 			doc.render();
-			expect(doc.getFullText()).to.be.equal("Product Bread");
+			expect(doc.getFullText()).to.be.equal("No products found");
 		});
 
-		it("should be possible to close double loops with {/}", function () {
-			const content = "<w:t>{#companies}{#products}Product {name}{/}{/}</w:t>";
-			const tags = {companies: [{products: [{name: "Bread"}]}]};
+		[
+			{products: [{name: "Bread"}]},
+			{products: true},
+			{products: "Bread"},
+			{products: {name: "Bread"}},
+		].forEach(function (tags) {
 			const doc = createXmlTemplaterDocx(content, {tags});
 			doc.render();
-			expect(doc.getFullText()).to.be.equal("Product Bread");
+			expect(doc.getFullText()).to.be.equal("");
 		});
+	});
 
-		it("should work with complex loops", function () {
-			const content = "<w:t>{title} {#users} {name} friends are : {#friends} {.</w:t>TAG..TAG<w:t>},{/friends} {/users</w:t>TAG2<w:t>}</w:t>";
-			const scope = {title: "###Title###", users: [{name: "John Doe", friends: ["Jane", "Henry"]}, {}], name: "Default", friends: ["None"]};
-			const doc = createXmlTemplaterDocx(content, {tags: scope});
-			doc.render();
-			expect(doc.getFullText()).to.be.equal("###Title###  John Doe friends are :  Jane, Henry,  Default friends are :  None, ");
-		});
+	it("should be possible to close loops with {/}", function () {
+		const content = "<w:t>{#products}Product {name}{/}</w:t>";
+		const tags = {products: [{name: "Bread"}]};
+		const doc = createXmlTemplaterDocx(content, {tags});
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("Product Bread");
+	});
+
+	it("should be possible to close double loops with {/}", function () {
+		const content = "<w:t>{#companies}{#products}Product {name}{/}{/}</w:t>";
+		const tags = {companies: [{products: [{name: "Bread"}]}]};
+		const doc = createXmlTemplaterDocx(content, {tags});
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("Product Bread");
+	});
+
+	it("should work with complex loops", function () {
+		const content = "<w:t>{title} {#users} {name} friends are : {#friends} {.</w:t>TAG..TAG<w:t>},{/friends} {/users</w:t>TAG2<w:t>}</w:t>";
+		const scope = {title: "###Title###", users: [{name: "John Doe", friends: ["Jane", "Henry"]}, {}], name: "Default", friends: ["None"]};
+		const doc = createXmlTemplaterDocx(content, {tags: scope});
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("###Title###  John Doe friends are :  Jane, Henry,  Default friends are :  None, ");
 	});
 });
 

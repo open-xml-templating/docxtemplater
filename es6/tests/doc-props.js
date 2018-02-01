@@ -1,6 +1,6 @@
 const {createDoc, shouldBeSame, expect} = require("./utils");
 
-describe("docx docprops", function () {
+describe("Docx docprops", function () {
 	it("should change values with template data", function () {
 		const tags = {
 			first_name: "Hipp",
