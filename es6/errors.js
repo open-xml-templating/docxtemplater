@@ -101,8 +101,19 @@ function throwXmlTagNotFound(options) {
 	throw err;
 }
 
+function throwCorruptCharacters({ tag, value }) {
+	const err = new RenderingError("There are some XML corrupt characters");
+	err.properties = {
+		id: "invalid_xml_characters",
+		xtag: tag,
+		value,
+		explanation: "There are some corrupt characters for the field ${name}",
+	};
+	throw err;
+}
+
 function throwDecodeUTF8Error(s) {
-	const err = new XTInternalError("End");
+	const err = new XTInternalError("Could not decode string to UTF8");
 	err.properties = {
 		id: "utf8_decode",
 		data: s,
@@ -257,6 +268,7 @@ module.exports = {
 	throwMultiError,
 	throwXmlTagNotFound,
 	throwDecodeUTF8Error,
+	throwCorruptCharacters,
 	throwContentMustBeString,
 	getUnmatchedLoopException,
 	throwRawTagShouldBeOnlyTextInParagraph,

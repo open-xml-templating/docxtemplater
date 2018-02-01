@@ -1,3 +1,7 @@
+### 3.2.6
+
+Throw error if the output contains invalid XML characters
+
 ### 3.2.5
 
 Take into account paragraphLoop for PPTX documents

@@ -221,6 +221,11 @@ function isContent(p) {
 	);
 }
 
+const corruptCharacters = /[\x00-\x08\x0B\x0C\x0E-\x1F]/;
+function hasCorruptCharacters(string) {
+	return corruptCharacters.test(string);
+}
+
 module.exports = {
 	isContent,
 	isParagraphStart,
@@ -241,6 +246,7 @@ module.exports = {
 	convertSpaces,
 	escapeRegExp,
 	charMapRegexes,
+	hasCorruptCharacters,
 	defaults,
 	wordToUtf8,
 	utf8ToWord,

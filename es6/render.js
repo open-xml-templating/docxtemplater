@@ -1,7 +1,14 @@
 "use strict";
 
-const { utf8ToWord, concatArrays } = require("./doc-utils");
-const { throwUnimplementedTagType } = require("./errors");
+const {
+	utf8ToWord,
+	concatArrays,
+	hasCorruptCharacters,
+} = require("./doc-utils");
+const {
+	throwUnimplementedTagType,
+	throwCorruptCharacters,
+} = require("./errors");
 
 function moduleRender(part, options) {
 	let moduleRendered;
@@ -30,6 +37,9 @@ function render(options) {
 			let value = scopeManager.getValue(part.value);
 			if (value == null) {
 				value = nullGetter(part);
+			}
+			if (hasCorruptCharacters(value)) {
+				throwCorruptCharacters({ tag: part.value, value });
 			}
 			return utf8ToWord(value);
 		}

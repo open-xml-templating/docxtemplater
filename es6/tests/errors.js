@@ -845,3 +845,20 @@ describe("Multi errors", function () {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 });
+
+describe("Rendering error", function () {
+	it("should show an error when using corrupt characters", function () {
+		const content = "<w:t>{user}</w:t>";
+		const expectedError = {
+			name: "RenderingError",
+			message: "There are some XML corrupt characters",
+			properties: {
+				id: "invalid_xml_characters",
+				value: "\u001c",
+				xtag: "user",
+			},
+		};
+		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser, tags: { user: String.fromCharCode(28)}});
+		expectToThrow(create, Errors.RenderingError, expectedError);
+	});
+});
