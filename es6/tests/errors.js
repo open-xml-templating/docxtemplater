@@ -321,6 +321,7 @@ describe("Multi errors", function () {
 				],
 			},
 		};
+
 		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
@@ -709,9 +710,9 @@ describe("Multi errors", function () {
 							rootError: {
 								message: 'No tag "w:p" was found at the right',
 							},
-							postparsedLength: 11,
+							postparsedLength: 12,
 							expandTo: "w:p",
-							index: 8,
+							index: 9,
 						},
 					},
 				],

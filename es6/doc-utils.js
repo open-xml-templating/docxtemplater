@@ -90,7 +90,7 @@ function mergeObjects() {
 
 function xml2str(xmlNode) {
 	const a = new XMLSerializer();
-	return a.serializeToString(xmlNode);
+	return a.serializeToString(xmlNode).replace(/xmlns:[a-z0-9]+="" ?/g, "");
 }
 
 function str2xml(str, errorHandler) {

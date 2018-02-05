@@ -1,4 +1,6 @@
-const {createDoc, shouldBeSame, expect} = require("./utils");
+const {expectToThrow, createDoc, shouldBeSame, expect} = require("./utils");
+const angularParser = require("./angular-parser");
+const Errors = require("../errors.js");
 
 describe("Pptx generation", function () {
 	it("should work with title", function () {
@@ -275,6 +277,72 @@ describe("Templating", function () {
 			],
 		}).render();
 		shouldBeSame({doc, expectedName: "expected-paragraph-loop.pptx"});
+	});
+
+	it("should fail properly when having lexed + postparsed errors", function () {
+		const doc = createDoc("multi-errors.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+			parser: angularParser,
+		});
+		doc.setData({
+			users: [
+				{age: 10, name: "Bar"},
+				{age: 18, name: "Bar"},
+				{age: 22, name: "Bar"},
+			],
+		});
+		const expectedError = {
+			message: "Multi error",
+			name: "TemplateError",
+			properties: {
+				id: "multi_error",
+				errors: [
+					{
+						name: "TemplateError",
+						message: "Unclosed tag",
+						properties: {
+							xtag: "firstName",
+							id: "unclosed_tag",
+							context: "{firstName ",
+							offset: 0,
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Unclosed tag",
+						properties: {
+							xtag: "error",
+							id: "unclosed_tag",
+							context: "{error  ",
+							offset: 22,
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Unopened tag",
+						properties: {
+							xtag: "}",
+							id: "unopened_tag",
+							context: "}",
+							offset: 35,
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Unclosed tag",
+						properties: {
+							xtag: "",
+							id: "unclosed_tag",
+							context: "{",
+							offset: 42,
+						},
+					},
+				],
+			},
+		};
+		const create = doc.render.bind(doc);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 });
 

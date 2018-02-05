@@ -1,3 +1,9 @@
+### 3.3.1
+
+-	Automatically strip empty namespaces in xml files
+
+-	Do not throw postparsed errors for tags that are unclosed/unopened
+
 ### 3.3.0
 
 Throw error if the output contains invalid XML characters

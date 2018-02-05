@@ -1,19 +1,10 @@
 const JSZip = require("jszip");
 const {merge} = require("lodash");
-const expressions = require("angular-expressions");
 
+const angularParser = require("./angular-parser");
 const Docxtemplater = require("../docxtemplater.js");
 const {expect, createXmlTemplaterDocx, createDoc, imageData, getContent} = require("./utils");
 const inspectModule = require("./inspect-module.js");
-
-function angularParser(tag) {
-	const expr = expressions.compile(tag.replace(/’/g, "'"));
-	return {
-		get(scope) {
-			return expr(scope);
-		},
-	};
-}
 
 function getLength(obj) {
 	if (obj instanceof ArrayBuffer) {
@@ -244,7 +235,7 @@ describe("Changing the parser", function () {
 		const tags = {person: {first_name: "Hipp", last_name: "Edgar", birth_year: 1955, age: 59}};
 		const doc = createDoc("angular-example.docx");
 		doc.setData(tags);
-		doc.parser = angularParser;
+		doc.setOptions({parser: angularParser});
 		doc.render();
 		expect(doc.getFullText()).to.be.equal("Hipp Edgar 2014");
 	});

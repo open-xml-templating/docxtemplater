@@ -49,41 +49,39 @@ const parser = {
 		let placeHolderContent = "";
 		let startOffset;
 		let tailParts = [];
-		return lexed
-			.filter(function(token) {
-				return !token.error;
-			})
-			.reduce(function lexedToParsed(parsed, token) {
-				if (token.type === "delimiter") {
-					inPlaceHolder = token.position === "start";
-					if (token.position === "end") {
-						placeHolderContent = wordToUtf8(placeHolderContent);
-						parsed = moduleParse(
-							modules,
-							placeHolderContent,
-							parsed,
-							startOffset
-						);
-						startOffset = null;
-						Array.prototype.push.apply(parsed, tailParts);
-						tailParts = [];
-					} else {
-						startOffset = token.offset;
-					}
-					placeHolderContent = "";
-					return parsed;
+		return lexed.reduce(function lexedToParsed(parsed, token) {
+			if (token.type === "delimiter") {
+				inPlaceHolder = token.position === "start";
+				if (token.position === "end") {
+					placeHolderContent = wordToUtf8(placeHolderContent);
+					parsed = moduleParse(
+						modules,
+						placeHolderContent,
+						parsed,
+						startOffset
+					);
+					startOffset = null;
+					Array.prototype.push.apply(parsed, tailParts);
+					tailParts = [];
 				}
-				if (!inPlaceHolder) {
-					parsed.push(token);
-					return parsed;
+				if (token.position === "start") {
+					tailParts = [];
+					startOffset = token.offset;
 				}
-				if (token.type !== "content" || token.position !== "insidetag") {
-					tailParts.push(token);
-					return parsed;
-				}
-				placeHolderContent += token.value;
+				placeHolderContent = "";
 				return parsed;
-			}, []);
+			}
+			if (!inPlaceHolder) {
+				parsed.push(token);
+				return parsed;
+			}
+			if (token.type !== "content" || token.position !== "insidetag") {
+				tailParts.push(token);
+				return parsed;
+			}
+			placeHolderContent += token.value;
+			return parsed;
+		}, []);
 	},
 };
 
