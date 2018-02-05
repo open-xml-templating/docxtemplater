@@ -126,6 +126,22 @@ The following code should load the binary content on all browsers:
       var zip = new JSZip(data);
     });
 
+Get list of placeholders
+-------------------------
+
+To be able to construct form dynamically or to validate the document
+beforehand, it can be useful to get access to all placeholders defined in a
+given template.  Before rendering a document, docxtemplater parses the Word
+document into a compiled form.  In this compiled form, the document is stored
+in an `AST`_ which contains all the necessary information to get the list of
+the variables and list them in a JSON object.
+
+With a simple inspection module, it is possible to get this compiled form and show the list of tags. An example of how to do this can be found in the test suite : 
+
+https://github.com/open-xml-templating/docxtemplater/blob/master/es6/tests/base.js#L63
+
+.. _`AST`: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+
 Pptx support
 ------------
 
