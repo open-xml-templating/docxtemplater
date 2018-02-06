@@ -103,7 +103,9 @@ See `angular parser`_ for comprehensive documentation
 Performance
 -----------
 
-Docxtemplater is quite fast, for a pretty complex 50 page document, it can generate 250 output of those documents in 44 seconds, which is about 180ms per document
+Docxtemplater is quite fast, for a pretty complex 50 page document, it can generate 250 output of those documents in 44 seconds, which is about 180ms per document.
+
+There is also an interesting blog article https://javascript-ninja.fr/ at https://javascript-ninja.fr/optimizing-speed-in-node-js/ that explains how I optimized loops in docxtemplater.
 
 Support for IE9 and lower 
 -------------------------
@@ -136,11 +138,42 @@ document into a compiled form.  In this compiled form, the document is stored
 in an `AST`_ which contains all the necessary information to get the list of
 the variables and list them in a JSON object.
 
-With a simple inspection module, it is possible to get this compiled form and show the list of tags. An example of how to do this can be found in the test suite : 
+With a simple inspection module, it is possible to get this compiled form and
+show the list of tags. An example of how to do this can be found in the test
+suite : 
 
 https://github.com/open-xml-templating/docxtemplater/blob/master/es6/tests/base.js#L63
 
 .. _`AST`: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+
+Convert to PDF
+--------------
+
+It is not possible to convert docx to PDF with docxtemplater. There are however
+tools to do this conversion.
+
+The first one is to use `libreoffice headless`, which permits you to generate a
+PDF from a docx document :
+
+You just have to run :
+
+.. code-block:: bash
+
+   libreoffice --headless --convert-to pdf --outdir . input.docx
+
+This will convert the input.docx file into input.pdf file.
+
+The rendering is not 100% perfect, since it uses libreoffice and not microsoft
+word.  If you just want to render some preview of a docx, I think this is a
+possible choice.  You can do it from within your application by executing a
+process, it is not the most beautiful solution but it works.
+
+If you want something that does the rendering better, I think you should use
+some specialized software. PDFtron is one of them, I haven't used it myself,
+but I know that some of the users of docxtemplater use it.
+
+Here is the link to it : https://www.pdftron.com/pdfnet/addons.html
+(I'm not affiliated to pdftron in any way).
 
 Pptx support
 ------------
