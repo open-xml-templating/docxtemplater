@@ -16,8 +16,10 @@ npm is the easiest way to install docxtemplater
 
     npm install docxtemplater
     npm install jszip@2
+    npm install jszip-utils
 
 **jszip version 2 is important !** It won't work with jszip version 3
+**jszip-utils is not installed with jszip** and has to be installed seperately
 
 If you want to use the `command line interface`_, you should use the global flag:
 
