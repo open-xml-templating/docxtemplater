@@ -16,8 +16,10 @@ npm is the easiest way to install docxtemplater
 
     npm install docxtemplater
     npm install jszip@2
+    npm install jszip-utils # only for the browser (webpack)
 
 **jszip version 2 is important !** It won't work with jszip version 3
+**jszip-utils is not installed with jszip** and has to be installed separately
 
 If you want to use the `command line interface`_, you should use the global flag:
 
@@ -58,7 +60,7 @@ The generated files of docxtemplater will be in /browser (minified and non minif
 Minifying the build
 -------------------
 
-On Browsers that have `window.XMLSerializer` and `window.DOMParser`, you can use that as a replacement for the xmldom dependency.
+On Browsers that have `window.XMLSerializer` and `window.DOMParser` (all browsers normally have it), you can use that as a replacement for the xmldom dependency.
 
 As an example, if you use webpack, you can do the following in your webpack.config.js : 
 

@@ -62,7 +62,9 @@ Node
     // buf is a nodejs buffer, you can either write it to a file or do anything else with it.
     fs.writeFileSync(path.resolve(__dirname, 'output.docx'), buf);
 
-You can download [input.docx](https://github.com/open-xml-templating/docxtemplater/raw/master/examples/tag-example.docx) and put it in the same folder than your script.
+You can download `input.docx`_ and put it in the same folder than your JS file.
+
+.. _`input.docx`: https://github.com/open-xml-templating/docxtemplater/raw/master/examples/tag-example.docx
 
 Browser
 -------
