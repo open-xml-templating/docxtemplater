@@ -1,3 +1,19 @@
+### 3.4.0
+
+Add change delimiter syntax from inside template :
+
+For example :
+
+```
+* {default_tags}
+{=<% %>}
+* <% erb_style_tags %>
+<%={ }%>
+* { default_tags_again }
+```
+
+-	Add `getTags` to `InspectModule`.
+
 ### 3.3.1
 
 -	Automatically strip empty namespaces in xml files
