@@ -4,7 +4,7 @@ const {merge} = require("lodash");
 const angularParser = require("./angular-parser");
 const Docxtemplater = require("../docxtemplater.js");
 const {expect, createXmlTemplaterDocx, createDoc, imageData, getContent} = require("./utils");
-const inspectModule = require("./inspect-module.js");
+const inspectModule = require("../inspect-module.js");
 
 function getLength(obj) {
 	if (obj instanceof ArrayBuffer) {
@@ -62,24 +62,11 @@ describe("Loading", function () {
 
 describe("Inspect module", function () {
 	it("should work", function () {
-		function getTags(postParsed) {
-			return postParsed.filter(function (part) {
-				return part.type === "placeholder";
-			}).reduce(function (tags, part) {
-				tags[part.value] = {};
-				if (part.subparsed) {
-					tags[part.value] = getTags(part.subparsed);
-				}
-				return tags;
-			}, {});
-		}
 		const doc = createDoc("tag-loop-example.docx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
 		doc.compile();
-		const postParsed = iModule.fullInspected["word/document.xml"].postparsed;
-		const tags = getTags(postParsed);
-		expect(tags).to.be.deep.equal({
+		expect(iModule.getTags()).to.be.deep.equal({
 			offre: {
 				nom: {},
 				prix: {},

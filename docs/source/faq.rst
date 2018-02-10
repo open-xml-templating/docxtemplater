@@ -139,12 +139,44 @@ in an `AST`_ which contains all the necessary information to get the list of
 the variables and list them in a JSON object.
 
 With a simple inspection module, it is possible to get this compiled form and
-show the list of tags. An example of how to do this can be found in the test
+show the list of tags.
 suite : 
 
-https://github.com/open-xml-templating/docxtemplater/blob/master/es6/tests/base.js#L63
-
 .. _`AST`: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+
+.. code-block:: javascript
+
+    var InspectModule = require("docxtemplater/js/inspect-module");
+    var iModule = InspectModule();
+    doc.attachModule(iModule);
+    doc.render(); // doc.compile can also be used to avoid having runtime errors
+    var tags = iModule.getTags();
+    console.log(tags);
+
+With the following template : 
+
+.. code-block:: text
+
+    {company}
+
+    {#users}
+    {name}
+    {age}
+    {/users}
+
+It will log this object :
+
+.. code-block:: json
+
+    {
+        "company": {},
+        "users": {
+            "name": {},
+            "age": {},
+        },
+    }
+
+The code of the inspect-module is very simple, and can be found here : https://github.com/open-xml-templating/docxtemplater/blob/master/es6/inspect-module.js
 
 Convert to PDF
 --------------
@@ -169,11 +201,10 @@ possible choice.  You can do it from within your application by executing a
 process, it is not the most beautiful solution but it works.
 
 If you want something that does the rendering better, I think you should use
-some specialized software. PDFtron is one of them, I haven't used it myself,
-but I know that some of the users of docxtemplater use it.
+some specialized software. `PDFtron`_ is one of them, I haven't used it myself,
+but I know that some of the users of docxtemplater use it. (I'm not affiliated to PDFtron in any way).
 
-Here is the link to it : https://www.pdftron.com/pdfnet/addons.html
-(I'm not affiliated to pdftron in any way).
+.. _`PDFtron`: https://www.pdftron.com/pdfnet/addons.html
 
 Pptx support
 ------------
