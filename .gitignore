@@ -21,3 +21,4 @@ profile_output_total.json
 tags
 /es6/tests/filenames.js
 browser-demo/
+.nyc_output/
