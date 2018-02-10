@@ -1,28 +1,26 @@
 language: node_js
-
 sudo: false
-
 matrix:
   include:
-    - node_js: "stable"
-      env: COMMAND=preversion BROWSER=SAUCELABS
-      addons:
-        sauce_connect:
-          username: "jsninja"
-        jwt:
-          secure: "PQ7xOckCvgNVJTfrchqb/d0+vnlWAcXzsUewlsdmCUCox9RltxSkkTAxx6uWK+IcpFtb81asO6JFAGygRQ/TU6MZBcHaFp6ftjHIAxUNp95laiIB31i9zOJWniG8MDgqPKJTnZNB/ZF0Cvuvjf/O4nh2umbnWSsz3K7uex9bwUc="
-    - node_js: "4"
-      env: COMMAND=test
-    - node_js: "5"
-      env: COMMAND=test
-    - node_js: "6"
-      env: COMMAND=test
-    - node_js: "7"
-      env: COMMAND=test
-    - node_js: "8"
-      env: COMMAND=test
-    - node_js: "9"
-      env: COMMAND=test
-
+  - node_js: stable
+    env: COMMAND=preversion BROWSER=SAUCELABS
+    addons:
+      sauce_connect:
+        username: jsninja
+  - node_js: '4'
+    env: COMMAND=test
+  - node_js: '5'
+    env: COMMAND=test
+  - node_js: '6'
+    env: COMMAND=test
+  - node_js: '7'
+    env: COMMAND=test
+  - node_js: '8'
+    env: COMMAND=test
+  - node_js: '9'
+    env: COMMAND=test
 script:
-  - npm run "$COMMAND"
+- npm run "$COMMAND"
+env:
+  global:
+    secure: g1ARget5BKlFULokT+BUbF0cjUdJqvcLB9V0CNwyjiabSRobyAtnrgthzBr7f5zgQzDOWVfHFNvFSm9T7d4DyFZsCtDj3A0O/de0nCgHzKjMUvskhEAmYD2lwqxr1reM6ZmGNRXiilhWSzYpTK8aEc/67YoOxHT8nLFVxfhi9rs=
