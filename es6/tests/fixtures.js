@@ -584,6 +584,43 @@ const fixtures = {
 			endText,
 		],
 	},
+	delimiters_change: {
+		it: "should be possible to change the delimiters",
+		content: "<w:t>Hi {=[[ ]]}[[user]][[={ }]] and {user2}</w:t>",
+		scope: {
+			user: "John",
+			user2: "Jane",
+		},
+		result: '<w:t xml:space="preserve">Hi John and Jane</w:t>',
+		lexed: [
+			startText,
+			content("Hi "),
+			delimiters.start,
+			content("user"),
+			delimiters.end,
+			content(" and "),
+			delimiters.start,
+			content("user2"),
+			delimiters.end,
+			endText,
+		],
+		parsed: [
+			startText,
+			content("Hi "),
+			{type: "placeholder", value: "user"},
+			content(" and "),
+			{type: "placeholder", value: "user2"},
+			endText,
+		],
+		postparsed: [
+			xmlSpacePreserveTag,
+			content("Hi "),
+			{type: "placeholder", value: "user"},
+			content(" and "),
+			{type: "placeholder", value: "user2"},
+			endText,
+		],
+	},
 
 };
 

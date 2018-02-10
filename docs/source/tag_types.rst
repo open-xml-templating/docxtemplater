@@ -266,6 +266,29 @@ This will loop over the first parent <w:p> tag
 
 If you want to insert HTML styled input, you can also use the docxtemplater html module : https://docxtemplater.com/modules/html/
 
+Set Delimiter
+-------------
+
+Set Delimiter tags start with an equal sign and change the tag delimiters from { and } to custom strings.
+
+Consider the following contrived example:
+
+.. code-block:: text
+
+    * {default_tags}
+    {=<% %>}
+    * <% erb_style_tags %>
+    <%={ }%>
+    * { default_tags_again }
+
+Here we have a list with three items. The first item uses the default tag style, the second uses erb style as defined by the Set Delimiter tag, and the third returns to the default style after yet another Set Delimiter declaration.
+
+Custom delimiters may not contain whitespace or the equals sign.
+
+It is also possible to `change the delimiters from docxtemplater.setOptions`_.
+
+.. _`change the delimiters from docxtemplater.setOptions`: configuration.html#custom-delimiters
+
 Dash syntax
 -----------
 

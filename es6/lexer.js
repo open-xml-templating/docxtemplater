@@ -5,6 +5,10 @@ const {
 } = require("./errors");
 const { concatArrays, isTextStart, isTextEnd } = require("./doc-utils");
 
+const EQUAL = 0;
+const START = -1;
+const END = 1;
+
 function inRange(range, match) {
 	return range[0] <= match.offset && match.offset < range[1];
 }
@@ -23,10 +27,6 @@ function updateInTextTag(part, inTextTag) {
 		return false;
 	}
 	return inTextTag;
-}
-
-function offsetSort(a, b) {
-	return a.offset - b.offset;
 }
 
 function getTag(tag) {
@@ -143,16 +143,74 @@ function getDelimiterErrors(delimiterMatches, fullText, ranges) {
 	return errors;
 }
 
-function getAllIndexes(arr, val, position) {
+function compareOffsets(startOffset, endOffset) {
+	if (startOffset === endOffset) {
+		return 0;
+	}
+	if (startOffset === -1 || endOffset === -1) {
+		return endOffset < startOffset ? START : END;
+	}
+	return startOffset < endOffset ? START : END;
+}
+
+function splitDelimiters(inside) {
+	const newDelimiters = inside.split(" ");
+	if (newDelimiters.length !== 2) {
+		throw new Error("New Delimiters cannot be parsed");
+	}
+	const [start, end] = newDelimiters;
+	if (start.length === 0 || end.length === 0) {
+		throw new Error("New Delimiters cannot be parsed");
+	}
+	return [start, end];
+}
+
+function getAllIndexes(fullText, delimiters) {
 	const indexes = [];
+	let { start, end } = delimiters;
 	let offset = -1;
-	do {
-		offset = arr.indexOf(val, offset + 1);
-		if (offset !== -1) {
-			indexes.push({ offset, position });
+	while (true) {
+		const startOffset = fullText.indexOf(start, offset + 1);
+		const endOffset = fullText.indexOf(end, offset + 1);
+		let position = null;
+		let len;
+		const compareResult = compareOffsets(startOffset, endOffset);
+		if (compareResult === EQUAL) {
+			return indexes;
 		}
-	} while (offset !== -1);
-	return indexes;
+		if (compareResult === END) {
+			offset = endOffset;
+			position = "end";
+			len = end.length;
+		}
+		if (compareResult === START) {
+			offset = startOffset;
+			position = "start";
+			len = start.length;
+		}
+		if (position === "start" && fullText[offset + start.length] === "=") {
+			indexes.push({
+				offset: startOffset,
+				position: "start",
+				length: start.length,
+				changedelimiter: true,
+			});
+			indexes.push({
+				offset: endOffset,
+				position: "end",
+				length: end.length,
+				changedelimiter: true,
+			});
+			const insideTag = fullText.substr(
+				offset + start.length + 1,
+				endOffset - startOffset - start.length - 1
+			);
+			[start, end] = splitDelimiters(insideTag);
+			offset = endOffset;
+			continue;
+		}
+		indexes.push({ offset, position, length: len });
+	}
 }
 
 function Reader(innerContentParts) {
@@ -160,10 +218,7 @@ function Reader(innerContentParts) {
 	this.full = "";
 	this.parseDelimiters = delimiters => {
 		this.full = this.innerContentParts.map(p => p.value).join("");
-		const delimiterMatches = concatArrays([
-			getAllIndexes(this.full, delimiters.start, "start"),
-			getAllIndexes(this.full, delimiters.end, "end"),
-		]).sort(offsetSort);
+		const delimiterMatches = getAllIndexes(this.full, delimiters);
 
 		let offset = 0;
 		const ranges = this.innerContentParts.map(function(part) {
@@ -172,10 +227,6 @@ function Reader(innerContentParts) {
 		});
 
 		const errors = getDelimiterErrors(delimiterMatches, this.full, ranges);
-		const delimiterLength = {
-			start: delimiters.start.length,
-			end: delimiters.end.length,
-		};
 		let cutNext = 0;
 		let delimiterIndex = 0;
 
@@ -197,12 +248,21 @@ function Reader(innerContentParts) {
 				cursor = cutNext;
 				cutNext = 0;
 			}
+			let insideDelimiterChange;
 			delimitersInOffset.forEach(function(delimiterInOffset) {
 				const value = partContent.substr(
 					cursor,
 					delimiterInOffset.offset - offset - cursor
 				);
 				if (value.length > 0) {
+					if (insideDelimiterChange) {
+						if (delimiterInOffset.changedelimiter) {
+							cursor =
+								delimiterInOffset.offset - offset + delimiterInOffset.length;
+							insideDelimiterChange = delimiterInOffset.position === "start";
+						}
+						return;
+					}
 					parts.push({ type: "content", value, offset: cursor + offset });
 					cursor += value.length;
 				}
@@ -214,11 +274,13 @@ function Reader(innerContentParts) {
 				if (delimiterInOffset.error) {
 					delimiterPart.error = delimiterInOffset.error;
 				}
+				if (delimiterInOffset.changedelimiter) {
+					insideDelimiterChange = delimiterInOffset.position === "start";
+					cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
+					return;
+				}
 				parts.push(delimiterPart);
-				cursor =
-					delimiterInOffset.offset -
-					offset +
-					delimiterLength[delimiterInOffset.position];
+				cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
 			});
 			cutNext = cursor - partContent.length;
 			const value = partContent.substr(cursor);
