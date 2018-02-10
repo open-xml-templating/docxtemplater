@@ -6,6 +6,9 @@
 *.png
 *.sublime-project
 *.sublime-workspace
+.~lock*
+.env
+.nyc_output
 .idea
 /*.docx
 /*.pptx
