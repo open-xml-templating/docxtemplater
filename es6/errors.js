@@ -112,16 +112,6 @@ function throwCorruptCharacters({ tag, value }) {
 	throw err;
 }
 
-function throwDecodeUTF8Error(s) {
-	const err = new XTInternalError("Could not decode string to UTF8");
-	err.properties = {
-		id: "utf8_decode",
-		data: s,
-		explanation: "Could not decode string to UTF8",
-	};
-	throw err;
-}
-
 function throwContentMustBeString(type) {
 	const err = new XTInternalError("Content must be a string");
 	err.properties.id = "xmltemplater_content_must_be_string";
@@ -267,7 +257,6 @@ module.exports = {
 	RenderingError,
 	throwMultiError,
 	throwXmlTagNotFound,
-	throwDecodeUTF8Error,
 	throwCorruptCharacters,
 	throwContentMustBeString,
 	getUnmatchedLoopException,
