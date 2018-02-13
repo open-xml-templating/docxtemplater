@@ -49,7 +49,7 @@
     "serve-static": "^1.13.2",
     "uglify-js": "^3.3.10",
     "webdriverio": "^4.10.2",
-    "webpack": "^3.10.0"
+    "webpack": "^3.11.0"
   },
   "license": "MIT",
   "engines": {
