@@ -195,7 +195,7 @@ function getAllIndexes(fullText, delimiters) {
 				length: start.length,
 				changedelimiter: true,
 			});
-			nextEqual = fullText.indexOf("=", offset + start.length + 1);
+			const nextEqual = fullText.indexOf("=", offset + start.length + 1);
 			const endOffset = fullText.indexOf(end, nextEqual + 1);
 
 			indexes.push({
