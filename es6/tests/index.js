@@ -1,6 +1,6 @@
 "use strict";
 
-const {setExamplesDirectory, setStartFunction, start} = require("./utils");
+const { setExamplesDirectory, setStartFunction, start } = require("./utils");
 const path = require("path");
 setExamplesDirectory(path.resolve(__dirname, "..", "..", "examples"));
 setStartFunction(startTest);

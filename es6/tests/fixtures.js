@@ -1,23 +1,65 @@
-const {clone, merge} = require("lodash");
+const { clone, merge } = require("lodash");
 
-const xmlSpacePreserveTag = {type: "tag", position: "start", value: '<w:t xml:space="preserve">', text: true, tag: "w:t"};
-const startText = {type: "tag", position: "start", value: "<w:t>", text: true, tag: "w:t"};
-const endText = {type: "tag", value: "</w:t>", text: true, position: "end", tag: "w:t"};
-const startParagraph = {type: "tag", value: "<w:p>", text: false, position: "start", tag: "w:p"};
-const endParagraph = {type: "tag", value: "</w:p>", text: false, position: "end", tag: "w:p"};
+const xmlSpacePreserveTag = {
+	type: "tag",
+	position: "start",
+	value: '<w:t xml:space="preserve">',
+	text: true,
+	tag: "w:t",
+};
+const startText = {
+	type: "tag",
+	position: "start",
+	value: "<w:t>",
+	text: true,
+	tag: "w:t",
+};
+const endText = {
+	type: "tag",
+	value: "</w:t>",
+	text: true,
+	position: "end",
+	tag: "w:t",
+};
+const startParagraph = {
+	type: "tag",
+	value: "<w:p>",
+	text: false,
+	position: "start",
+	tag: "w:p",
+};
+const endParagraph = {
+	type: "tag",
+	value: "</w:p>",
+	text: false,
+	position: "end",
+	tag: "w:p",
+};
 
-const tableRowStart = {type: "tag", position: "start", text: false, value: "<w:tr>", tag: "w:tr"};
-const tableRowEnd = {type: "tag", value: "</w:tr>", text: false, position: "end", tag: "w:tr"};
+const tableRowStart = {
+	type: "tag",
+	position: "start",
+	text: false,
+	value: "<w:tr>",
+	tag: "w:tr",
+};
+const tableRowEnd = {
+	type: "tag",
+	value: "</w:tr>",
+	text: false,
+	position: "end",
+	tag: "w:tr",
+};
 
 const delimiters = {
-	start: {type: "delimiter", position: "start"},
-	end: {type: "delimiter", position: "end"},
+	start: { type: "delimiter", position: "start" },
+	end: { type: "delimiter", position: "end" },
 };
 function content(value) {
-	return {type: "content", value, position: "insidetag"};
+	return { type: "content", value, position: "insidetag" };
 }
 function externalContent(value) {
-	return {type: "content", value, position: "outsidetag"};
+	return { type: "content", value, position: "outsidetag" };
 }
 
 const fixtures = {
@@ -39,13 +81,13 @@ const fixtures = {
 		parsed: [
 			startText,
 			content("Hi "),
-			{type: "placeholder", value: "user"},
+			{ type: "placeholder", value: "user" },
 			endText,
 		],
 		postparsed: [
 			xmlSpacePreserveTag,
 			content("Hi "),
-			{type: "placeholder", value: "user"},
+			{ type: "placeholder", value: "user" },
 			endText,
 		],
 	},
@@ -65,13 +107,13 @@ const fixtures = {
 		parsed: [
 			startText,
 			content("Hi "),
-			{type: "placeholder", value: "."},
+			{ type: "placeholder", value: "." },
 			endText,
 		],
 		postparsed: [
 			xmlSpacePreserveTag,
 			content("Hi "),
-			{type: "placeholder", value: "."},
+			{ type: "placeholder", value: "." },
 			endText,
 		],
 	},
@@ -82,12 +124,13 @@ const fixtures = {
 			name: "Foo",
 			age: 12,
 		},
-		result: '<w:t xml:space="preserve">Foo 12</w:t>FOO<w:t></w:t>BAR<w:t></w:t>',
+		result:
+			'<w:t xml:space="preserve">Foo 12</w:t>FOO<w:t></w:t>BAR<w:t></w:t>',
 		parsed: [
 			startText,
-			{type: "placeholder", value: "name"},
+			{ type: "placeholder", value: "name" },
 			content(" "),
-			{type: "placeholder", value: "age"},
+			{ type: "placeholder", value: "age" },
 			endText,
 			externalContent("FOO"),
 			startText,
@@ -98,15 +141,15 @@ const fixtures = {
 		],
 		xmllexed: [
 			startText,
-			{type: "content", value: "{name} {"},
+			{ type: "content", value: "{name} {" },
 			endText,
-			{type: "content", value: "FOO"},
+			{ type: "content", value: "FOO" },
 			startText,
-			{type: "content", value: "age"},
+			{ type: "content", value: "age" },
 			endText,
-			{type: "content", value: "BAR"},
+			{ type: "content", value: "BAR" },
 			startText,
-			{type: "content", value: "}"},
+			{ type: "content", value: "}" },
 			endText,
 		],
 		lexed: [
@@ -149,7 +192,7 @@ const fixtures = {
 		parsed: [
 			startText,
 			content("Hello "),
-			{type: "placeholder", value: "name"},
+			{ type: "placeholder", value: "name" },
 			endText,
 		],
 	},
@@ -159,7 +202,8 @@ const fixtures = {
 		scope: {
 			name: "John Doe",
 		},
-		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t foo="bar">, how is it ?</w:t>',
+		result:
+			'<w:t xml:space="preserve">Hello John Doe</w:t><w:t foo="bar">, how is it ?</w:t>',
 		delimiters: {
 			start: "{",
 			end: "}}",
@@ -171,27 +215,41 @@ const fixtures = {
 			content("name"),
 			delimiters.end,
 			endText,
-			{type: "tag", value: '<w:t foo="bar">', text: true, position: "start", tag: "w:t"},
+			{
+				type: "tag",
+				value: '<w:t foo="bar">',
+				text: true,
+				position: "start",
+				tag: "w:t",
+			},
 			content(", how is it ?"),
 			endText,
 		],
 		parsed: [
 			startText,
 			content("Hello "),
-			{type: "placeholder", value: "name"},
+			{ type: "placeholder", value: "name" },
 			endText,
-			{type: "tag", value: '<w:t foo="bar">', text: true, position: "start", tag: "w:t"},
+			{
+				type: "tag",
+				value: '<w:t foo="bar">',
+				text: true,
+				position: "start",
+				tag: "w:t",
+			},
 			content(", how is it ?"),
 			endText,
 		],
 	},
 	otherdelimiterssplittedover2tags: {
 		it: "should work with custom delimiters splitted over > 2 tags",
-		content: "<w:t>Hello {name}</w:t><w:t>}</w:t>TAG<w:t>}</w:t><w:t>}}foobar</w:t>",
+		content:
+			"<w:t>Hello {name}</w:t><w:t>}</w:t>TAG<w:t>}</w:t><w:t>}}foobar</w:t>",
 		scope: {
 			name: "John Doe",
 		},
-		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t></w:t>TAG<w:t></w:t><w:t>foobar</w:t>',
+		result:
+			'<w:t xml:space="preserve">Hello John Doe</w:t><w:t></w:t>TAG<w:t></w:t><w:t>foobar</w:t>',
 		delimiters: {
 			start: "{",
 			end: "}}}}}",
@@ -215,7 +273,7 @@ const fixtures = {
 		parsed: [
 			startText,
 			content("Hello "),
-			{type: "placeholder", value: "name"},
+			{ type: "placeholder", value: "name" },
 			endText,
 			startText,
 			endText,
@@ -231,13 +289,10 @@ const fixtures = {
 		it: "should work with loops",
 		content: "<w:t>Hello {#users}{name}, {/users}</w:t>",
 		scope: {
-			users: [
-				{name: "John Doe"},
-				{name: "Jane Doe"},
-				{name: "Wane Doe"},
-			],
+			users: [{ name: "John Doe" }, { name: "Jane Doe" }, { name: "Wane Doe" }],
 		},
-		result: '<w:t xml:space="preserve">Hello John Doe, Jane Doe, Wane Doe, </w:t>',
+		result:
+			'<w:t xml:space="preserve">Hello John Doe, Jane Doe, Wane Doe, </w:t>',
 		lexed: [
 			startText,
 			content("Hello "),
@@ -256,35 +311,41 @@ const fixtures = {
 		parsed: [
 			startText,
 			content("Hello "),
-			{type: "placeholder", value: "users", location: "start", module: "loop", inverted: false, expandTo: "auto"},
-			{type: "placeholder", value: "name"},
+			{
+				type: "placeholder",
+				value: "users",
+				location: "start",
+				module: "loop",
+				inverted: false,
+				expandTo: "auto",
+			},
+			{ type: "placeholder", value: "name" },
 			content(", "),
-			{type: "placeholder", value: "users", location: "end", module: "loop"},
+			{ type: "placeholder", value: "users", location: "end", module: "loop" },
 			endText,
 		],
 		postparsed: [
 			xmlSpacePreserveTag,
 			content("Hello "),
 			{
-				type: "placeholder", value: "users", module: "loop", inverted: false, subparsed: [
-					{type: "placeholder", value: "name"},
-					content(", "),
-				],
+				type: "placeholder",
+				value: "users",
+				module: "loop",
+				inverted: false,
+				subparsed: [{ type: "placeholder", value: "name" }, content(", ")],
 			},
 			endText,
 		],
 	},
 	paragraphlooptag: {
 		it: "should work with paragraph loops",
-		content: "<w:p><w:t>Hello </w:t></w:p><w:p><w:t>{#users}</w:t></w:p><w:p><w:t>User {.}</w:t></w:p><w:p><w:t>{/users}</w:t></w:p>",
+		content:
+			"<w:p><w:t>Hello </w:t></w:p><w:p><w:t>{#users}</w:t></w:p><w:p><w:t>User {.}</w:t></w:p><w:p><w:t>{/users}</w:t></w:p>",
 		scope: {
-			users: [
-				"John Doe",
-				"Jane Doe",
-				"Wane Doe",
-			],
+			users: ["John Doe", "Jane Doe", "Wane Doe"],
 		},
-		result: '<w:p><w:t>Hello </w:t></w:p><w:p><w:t xml:space="preserve">User John Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Jane Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Wane Doe</w:t></w:p>',
+		result:
+			'<w:p><w:t>Hello </w:t></w:p><w:p><w:t xml:space="preserve">User John Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Jane Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Wane Doe</w:t></w:p>',
 		lexed: [
 			startParagraph,
 			startText,
@@ -306,7 +367,6 @@ const fixtures = {
 			delimiters.end,
 			endText,
 			endParagraph,
-
 			startParagraph,
 			startText,
 			delimiters.start,
@@ -323,19 +383,25 @@ const fixtures = {
 			endParagraph,
 			startParagraph,
 			startText,
-			{type: "placeholder", value: "users", location: "start", module: "loop", inverted: false, expandTo: "auto"},
+			{
+				type: "placeholder",
+				value: "users",
+				location: "start",
+				module: "loop",
+				inverted: false,
+				expandTo: "auto",
+			},
 			endText,
 			endParagraph,
 			startParagraph,
 			startText,
 			content("User "),
-			{type: "placeholder", value: "."},
+			{ type: "placeholder", value: "." },
 			endText,
 			endParagraph,
-
 			startParagraph,
 			startText,
-			{type: "placeholder", value: "users", location: "end", module: "loop"},
+			{ type: "placeholder", value: "users", location: "end", module: "loop" },
 			endText,
 			endParagraph,
 		],
@@ -346,11 +412,15 @@ const fixtures = {
 			endText,
 			endParagraph,
 			{
-				type: "placeholder", value: "users", module: "loop", inverted: false, subparsed: [
+				type: "placeholder",
+				value: "users",
+				module: "loop",
+				inverted: false,
+				subparsed: [
 					startParagraph,
 					xmlSpacePreserveTag,
 					content("User "),
-					{type: "placeholder", value: "."},
+					{ type: "placeholder", value: "." },
 					endText,
 					endParagraph,
 				],
@@ -364,13 +434,10 @@ const fixtures = {
 		it: "should work with dashloops",
 		content: "<w:p><w:t>Hello {-w:p users}{name}, {/users}</w:t></w:p>",
 		scope: {
-			users: [
-				{name: "John Doe"},
-				{name: "Jane Doe"},
-				{name: "Wane Doe"},
-			],
+			users: [{ name: "John Doe" }, { name: "Jane Doe" }, { name: "Wane Doe" }],
 		},
-		result: '<w:p><w:t xml:space="preserve">Hello John Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Jane Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Wane Doe, </w:t></w:p>',
+		result:
+			'<w:p><w:t xml:space="preserve">Hello John Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Jane Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Wane Doe, </w:t></w:p>',
 		lexed: [
 			startParagraph,
 			startText,
@@ -392,20 +459,31 @@ const fixtures = {
 			startParagraph,
 			startText,
 			content("Hello "),
-			{type: "placeholder", value: "users", location: "start", module: "loop", inverted: false, expandTo: "w:p"},
-			{type: "placeholder", value: "name"},
+			{
+				type: "placeholder",
+				value: "users",
+				location: "start",
+				module: "loop",
+				inverted: false,
+				expandTo: "w:p",
+			},
+			{ type: "placeholder", value: "name" },
 			content(", "),
-			{type: "placeholder", value: "users", location: "end", module: "loop"},
+			{ type: "placeholder", value: "users", location: "end", module: "loop" },
 			endText,
 			endParagraph,
 		],
 		postparsed: [
 			{
-				type: "placeholder", value: "users", module: "loop", inverted: false, subparsed: [
+				type: "placeholder",
+				value: "users",
+				module: "loop",
+				inverted: false,
+				subparsed: [
 					startParagraph,
 					xmlSpacePreserveTag,
 					content("Hello "),
-					{type: "placeholder", value: "name"},
+					{ type: "placeholder", value: "name" },
 					content(", "),
 					endText,
 					endParagraph,
@@ -415,19 +493,21 @@ const fixtures = {
 	},
 	dashloopnested: {
 		it: "should work with dashloops nested",
-		content: "<w:tr><w:p><w:t>{-w:tr columns} Hello {-w:p users}{name}, {/users}</w:t><w:t>{/columns}</w:t></w:p></w:tr>",
+		content:
+			"<w:tr><w:p><w:t>{-w:tr columns} Hello {-w:p users}{name}, {/users}</w:t><w:t>{/columns}</w:t></w:p></w:tr>",
 		scope: {
 			columns: [
 				{
 					users: [
-						{name: "John Doe"},
-						{name: "Jane Doe"},
-						{name: "Wane Doe"},
+						{ name: "John Doe" },
+						{ name: "Jane Doe" },
+						{ name: "Wane Doe" },
 					],
 				},
 			],
 		},
-		result: '<w:tr><w:p><w:t xml:space="preserve"> Hello John Doe, </w:t><w:t></w:t></w:p><w:p><w:t xml:space="preserve"> Hello Jane Doe, </w:t><w:t></w:t></w:p><w:p><w:t xml:space="preserve"> Hello Wane Doe, </w:t><w:t></w:t></w:p></w:tr>',
+		result:
+			'<w:tr><w:p><w:t xml:space="preserve"> Hello John Doe, </w:t><w:t></w:t></w:p><w:p><w:t xml:space="preserve"> Hello Jane Doe, </w:t><w:t></w:t></w:p><w:p><w:t xml:space="preserve"> Hello Wane Doe, </w:t><w:t></w:t></w:p></w:tr>',
 		lexed: [
 			tableRowStart,
 			startParagraph,
@@ -459,29 +539,56 @@ const fixtures = {
 			tableRowStart,
 			startParagraph,
 			startText,
-			{type: "placeholder", value: "columns", location: "start", module: "loop", inverted: false, expandTo: "w:tr"},
+			{
+				type: "placeholder",
+				value: "columns",
+				location: "start",
+				module: "loop",
+				inverted: false,
+				expandTo: "w:tr",
+			},
 			content(" Hello "),
-			{type: "placeholder", value: "users", location: "start", module: "loop", inverted: false, expandTo: "w:p"},
-			{type: "placeholder", value: "name"},
+			{
+				type: "placeholder",
+				value: "users",
+				location: "start",
+				module: "loop",
+				inverted: false,
+				expandTo: "w:p",
+			},
+			{ type: "placeholder", value: "name" },
 			content(", "),
-			{type: "placeholder", value: "users", location: "end", module: "loop"},
+			{ type: "placeholder", value: "users", location: "end", module: "loop" },
 			endText,
 			startText,
-			{type: "placeholder", value: "columns", location: "end", module: "loop"},
+			{
+				type: "placeholder",
+				value: "columns",
+				location: "end",
+				module: "loop",
+			},
 			endText,
 			endParagraph,
 			tableRowEnd,
 		],
 		postparsed: [
 			{
-				type: "placeholder", value: "columns", module: "loop", inverted: false, subparsed: [
+				type: "placeholder",
+				value: "columns",
+				module: "loop",
+				inverted: false,
+				subparsed: [
 					tableRowStart,
 					{
-						type: "placeholder", value: "users", module: "loop", inverted: false, subparsed: [
+						type: "placeholder",
+						value: "users",
+						module: "loop",
+						inverted: false,
+						subparsed: [
 							startParagraph,
 							xmlSpacePreserveTag,
 							content(" Hello "),
-							{type: "placeholder", value: "name"},
+							{ type: "placeholder", value: "name" },
 							content(", "),
 							endText,
 							startText,
@@ -498,9 +605,11 @@ const fixtures = {
 		it: "should work with rawxml",
 		content: "BEFORE<w:p><w:t>{@rawxml}</w:t></w:p>AFTER",
 		scope: {
-			rawxml: '<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>',
+			rawxml:
+				'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>',
 		},
-		result: 'BEFORE<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>AFTER',
+		result:
+			'BEFORE<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>AFTER',
 		lexed: [
 			externalContent("BEFORE"),
 			startParagraph,
@@ -516,23 +625,19 @@ const fixtures = {
 			externalContent("BEFORE"),
 			startParagraph,
 			startText,
-			{type: "placeholder", value: "rawxml", module: "rawxml"},
+			{ type: "placeholder", value: "rawxml", module: "rawxml" },
 			endText,
 			endParagraph,
 			externalContent("AFTER"),
 		],
 		postparsed: [
 			externalContent("BEFORE"),
-			{type: "placeholder", value: "rawxml", module: "rawxml", expanded: [
-				[
-					startParagraph,
-					startText,
-				],
-				[
-					endText,
-					endParagraph,
-				],
-			]},
+			{
+				type: "placeholder",
+				value: "rawxml",
+				module: "rawxml",
+				expanded: [[startParagraph, startText], [endText, endParagraph]],
+			},
 			externalContent("AFTER"),
 		],
 	},
@@ -544,13 +649,31 @@ const fixtures = {
 		},
 		result: "<w:t />",
 		lexed: [
-			{type: "tag", value: "<w:t />", text: true, position: "selfclosing", tag: "w:t"},
+			{
+				type: "tag",
+				value: "<w:t />",
+				text: true,
+				position: "selfclosing",
+				tag: "w:t",
+			},
 		],
 		parsed: [
-			{type: "tag", position: "selfclosing", value: "<w:t />", text: true, tag: "w:t"},
+			{
+				type: "tag",
+				position: "selfclosing",
+				value: "<w:t />",
+				text: true,
+				tag: "w:t",
+			},
 		],
 		postparsed: [
-			{type: "tag", position: "selfclosing", value: "<w:t />", text: true, tag: "w:t"},
+			{
+				type: "tag",
+				position: "selfclosing",
+				value: "<w:t />",
+				text: true,
+				tag: "w:t",
+			},
 		],
 	},
 	selfclosing_with_placeholderr: {
@@ -561,7 +684,13 @@ const fixtures = {
 		},
 		result: '<w:t /><w:t xml:space="preserve">Hi Foo</w:t>',
 		lexed: [
-			{type: "tag", value: "<w:t />", text: true, position: "selfclosing", tag: "w:t"},
+			{
+				type: "tag",
+				value: "<w:t />",
+				text: true,
+				position: "selfclosing",
+				tag: "w:t",
+			},
 			startText,
 			content("Hi "),
 			delimiters.start,
@@ -619,15 +748,15 @@ const fixtures = {
 		parsed: [
 			startText,
 			content("Hi "),
-			{type: "placeholder", value: "user"},
+			{ type: "placeholder", value: "user" },
 			content(" and "),
-			{type: "placeholder", value: "user2"},
+			{ type: "placeholder", value: "user2" },
 			endText,
 		],
 		postparsed: [
 			xmlSpacePreserveTag,
 			content("Hi "),
-			{type: "placeholder", value: "user"},
+			{ type: "placeholder", value: "user" },
 			content(" and "),
 			{ type: "placeholder", value: "user2" },
 			endText,
@@ -677,7 +806,7 @@ fixtures.rawxmlemptycontent.it = "should work with rawxml with undefined tags";
 fixtures.rawxmlemptycontent.scope = {};
 fixtures.rawxmlemptycontent.result = "BEFOREAFTER";
 
-Object.keys(fixtures).forEach(function (key) {
+Object.keys(fixtures).forEach(function(key) {
 	const fixture = fixtures[key];
 	const delimiters = {
 		delimiters: fixture.delimiters || {

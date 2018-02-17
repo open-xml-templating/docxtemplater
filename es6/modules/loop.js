@@ -1,11 +1,18 @@
-const {mergeObjects, chunkBy, last, isParagraphStart, isParagraphEnd, isContent} = require("../doc-utils");
+const {
+	mergeObjects,
+	chunkBy,
+	last,
+	isParagraphStart,
+	isParagraphEnd,
+	isContent,
+} = require("../doc-utils");
 const dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 const wrapper = require("../module-wrapper");
 
 const moduleName = "loop";
 
 function hasContent(parts) {
-	return parts.some(function (part) {
+	return parts.some(function(part) {
 		return isContent(part);
 	});
 }
@@ -80,21 +87,21 @@ const loopModule = {
 			return;
 		}
 
-		return parsed.reduce(function (tags, part, offset) {
+		return parsed.reduce(function(tags, part, offset) {
 			if (part.type === "placeholder" && part.module === moduleName) {
-				tags.push({part, offset});
+				tags.push({ part, offset });
 			}
 			return tags;
 		}, []);
 	},
-	postparse(parsed, {basePart}) {
+	postparse(parsed, { basePart }) {
 		if (!isEnclosedByParagraphs(parsed)) {
 			return parsed;
 		}
 		if (!basePart || basePart.expandTo !== "auto") {
 			return parsed;
 		}
-		const chunks = chunkBy(parsed, function (p) {
+		const chunks = chunkBy(parsed, function(p) {
 			if (isParagraphStart(p)) {
 				return "start";
 			}
@@ -138,7 +145,7 @@ const loopModule = {
 			errors = errors.concat(subRendered.errors || []);
 		}
 		options.scopeManager.loopOver(part.value, loopOver, part.inverted);
-		return {value: totalValue.join(""), errors};
+		return { value: totalValue.join(""), errors };
 	},
 };
 

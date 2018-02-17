@@ -1,5 +1,5 @@
 const wrapper = require("../module-wrapper");
-const {getScopeCompilationError} = require("../errors");
+const { getScopeCompilationError } = require("../errors");
 
 class Render {
 	constructor() {
@@ -15,7 +15,7 @@ class Render {
 	}
 	getRenderedMap(mapper) {
 		return Object.keys(this.compiled).reduce((mapper, from) => {
-			mapper[from] = {from, data: this.data};
+			mapper[from] = { from, data: this.data };
 			return mapper;
 		}, mapper);
 	}
@@ -25,18 +25,17 @@ class Render {
 	}
 	postparse(postparsed) {
 		const errors = [];
-		postparsed.forEach((p) => {
+		postparsed.forEach(p => {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {
 					this.parser(tag);
-				}
-				catch (rootError) {
-					errors.push(getScopeCompilationError({tag, rootError}));
+				} catch (rootError) {
+					errors.push(getScopeCompilationError({ tag, rootError }));
 				}
 			}
 		});
-		return {postparsed, errors};
+		return { postparsed, errors };
 	}
 }
 

@@ -1,12 +1,12 @@
 const wrapper = require("../module-wrapper");
-const {isTextStart, isTextEnd} = require("../doc-utils");
+const { isTextStart, isTextEnd } = require("../doc-utils");
 
 const spacePreserve = {
 	name: "SpacePreserveModule",
 	postparse(postparsed) {
 		let chunk = [];
 		let inChunk = false;
-		const result = postparsed.reduce(function (postparsed, part) {
+		const result = postparsed.reduce(function(postparsed, part) {
 			if (isTextStart(part) && part.tag === "w:t") {
 				inChunk = true;
 			}
@@ -15,8 +15,7 @@ const spacePreserve = {
 					chunk[0].value = '<w:t xml:space="preserve">';
 				}
 				chunk.push(part);
-			}
-			else {
+			} else {
 				postparsed.push(part);
 			}
 			if (isTextEnd(part) && part.tag === "w:t") {

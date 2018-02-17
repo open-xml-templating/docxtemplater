@@ -2,9 +2,13 @@
 
 const expressions = require("angular-expressions");
 
-const {loadFile, loadDocument} = require("./utils");
+const { loadFile, loadDocument } = require("./utils");
 const Errors = require("../errors.js");
-const {createXmlTemplaterDocx, wrapMultiError, expectToThrow} = require("./utils");
+const {
+	createXmlTemplaterDocx,
+	wrapMultiError,
+	expectToThrow,
+} = require("./utils");
 
 function angularParser(tag) {
 	const expr = expressions.compile(tag.replace(/’/g, "'"));
@@ -15,8 +19,8 @@ function angularParser(tag) {
 	};
 }
 
-describe("Compilation errors", function () {
-	it("should fail when tag unclosed at end of document", function () {
+describe("Compilation errors", function() {
+	it("should fail when tag unclosed at end of document", function() {
 		const content = "<w:t>{unclosedtag my text</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -29,10 +33,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when tag unclosed", function () {
+	it("should fail when tag unclosed", function() {
 		const content = "<w:t>{user {name}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -45,10 +53,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when tag unopened", function () {
+	it("should fail when tag unopened", function() {
 		const content = "<w:t>foobar}age</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -61,10 +73,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when closing {#users} with {/foo}", function () {
+	it("should fail when closing {#users} with {/foo}", function() {
 		const content = "<w:t>{#users}User {name}{/foo}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -76,10 +92,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when closing an unopened loop", function () {
+	it("should fail when closing an unopened loop", function() {
 		const content = "<w:t>{/loop} {foobar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -90,10 +110,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when a loop is never closed", function () {
+	it("should fail when a loop is never closed", function() {
 		const content = "<w:t>{#loop} {foobar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -104,10 +128,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when rawtag is not in paragraph", function () {
+	it("should fail when rawtag is not in paragraph", function() {
 		const content = "<w:t>{@myrawtag}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -145,10 +173,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when rawtag is in table without paragraph", function () {
+	it("should fail when rawtag is in table without paragraph", function() {
 		const content = "<w:table><w:t>{@myrawtag}</w:t></w:p></w:table>";
 		const expectedError = {
 			name: "TemplateError",
@@ -206,10 +238,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when rawtag is not only text in paragraph", function () {
+	it("should fail when rawtag is not only text in paragraph", function() {
 		const content = "<w:p><w:t> {@myrawtag}</w:t><w:t>foobar</w:t></w:p>";
 		const expectedError = {
 			name: "TemplateError",
@@ -222,10 +258,14 @@ describe("Compilation errors", function () {
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 
-	it("should fail when customparser fails to compile", function () {
+	it("should fail when customparser fails to compile", function() {
 		const content = "<w:t>{name++}</w:t>";
 		const expectedError = {
 			name: "ScopeParserError",
@@ -234,17 +274,24 @@ describe("Compilation errors", function () {
 				id: "scopeparser_compilation_failed",
 				tag: "name++",
 				rootError: {
-					message: "Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+					message:
+						"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
 				},
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
-		expectToThrow(create, Errors.XTTemplateError, wrapMultiError(expectedError));
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
+		expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
 	});
 });
 
-describe("Runtime errors", function () {
-	it("should fail when customparser fails to execute", function () {
+describe("Runtime errors", function() {
+	it("should fail when customparser fails to execute", function() {
 		const content = "<w:t>{name|upper}</w:t>";
 		function errorParser() {
 			return {
@@ -265,16 +312,18 @@ describe("Runtime errors", function () {
 				},
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: errorParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: errorParser,
+		});
 		expectToThrow(create, Errors.XTScopeParserError, expectedError);
 	});
 });
 
-describe("Internal errors", function () {
-	it("should fail if using odt format", function (done) {
+describe("Internal errors", function() {
+	it("should fail if using odt format", function(done) {
 		const expectedError = {
 			name: "InternalError",
-			message: "The filetype \"odt\" is not handled by docxtemplater",
+			message: 'The filetype "odt" is not handled by docxtemplater',
 			properties: {
 				id: "filetype_not_handled",
 			},
@@ -289,8 +338,8 @@ describe("Internal errors", function () {
 	});
 });
 
-describe("Multi errors", function () {
-	it("should work with multiple errors simple", function () {
+describe("Multi errors", function() {
+	it("should work with multiple errors simple", function() {
 		const content = "<w:t>foo} Hello {user, my age is {bar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -326,14 +375,17 @@ describe("Multi errors", function () {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple errors complex", function () {
+	it("should work with multiple errors complex", function() {
 		const content = `<w:t>foo}
 		Hello {user, my age is {bar}
 		Hi bang}, my name is {user2}
 		Hey {user}, my age is {bar}
 		Hola {bang}, my name is {user2}
 		{user, my age is {bar
-		</w:t>`.replace(/\t/g, "").split("\n").join("!");
+		</w:t>`
+			.replace(/\t/g, "")
+			.split("\n")
+			.join("!");
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -393,7 +445,7 @@ describe("Multi errors", function () {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with loops", function () {
+	it("should work with loops", function() {
 		const content = `
 		<w:t>{#users}User name{/foo}
 		{#bang}User name{/baz}
@@ -430,7 +482,7 @@ describe("Multi errors", function () {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with loops unopened", function () {
+	it("should work with loops unopened", function() {
 		const content = `
 		<w:t>{/loop} {#users}User name{/foo}
 		{#bang}User name{/baz}
@@ -493,7 +545,7 @@ describe("Multi errors", function () {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when rawtag is not in paragraph", function () {
+	it("should fail when rawtag is not in paragraph", function() {
 		const content = "<w:t>{@first}</w:t><w:p><w:t>foo{@second}</w:t></w:p>";
 		const expectedError = {
 			name: "TemplateError",
@@ -532,7 +584,7 @@ describe("Multi errors", function () {
 		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
-	it("should fail when customparser fails to compile", function () {
+	it("should fail when customparser fails to compile", function() {
 		const content = "<w:t>{name++} {foo|||bang}</w:t>";
 		const expectedError = {
 			message: "Multi error",
@@ -546,7 +598,8 @@ describe("Multi errors", function () {
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
 							rootError: {
-								message: "Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+								message:
+									"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
 							},
 						},
 					},
@@ -557,7 +610,8 @@ describe("Multi errors", function () {
 							id: "scopeparser_compilation_failed",
 							tag: "foo|||bang",
 							rootError: {
-								message: "Syntax Error: Token 'bang' is an unexpected token at column 7 of the expression [foo|||bang] starting at [bang].",
+								message:
+									"Syntax Error: Token 'bang' is an unexpected token at column 7 of the expression [foo|||bang] starting at [bang].",
 							},
 						},
 					},
@@ -565,11 +619,13 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when customparser fails to compile", function () {
+	it("should fail when customparser fails to compile", function() {
 		const content = "<w:t>{name++} {foo|||bang}</w:t>";
 		const expectedError = {
 			message: "Multi error",
@@ -583,7 +639,8 @@ describe("Multi errors", function () {
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
 							rootError: {
-								message: "Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+								message:
+									"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
 							},
 						},
 					},
@@ -594,7 +651,8 @@ describe("Multi errors", function () {
 							id: "scopeparser_compilation_failed",
 							tag: "foo|||bang",
 							rootError: {
-								message: "Syntax Error: Token 'bang' is an unexpected token at column 7 of the expression [foo|||bang] starting at [bang].",
+								message:
+									"Syntax Error: Token 'bang' is an unexpected token at column 7 of the expression [foo|||bang] starting at [bang].",
 							},
 						},
 					},
@@ -602,11 +660,13 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with lexer and customparser", function () {
+	it("should work with lexer and customparser", function() {
 		const content = "<w:t>foo} Hello {name++}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -630,18 +690,21 @@ describe("Multi errors", function () {
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
 							rootError: {
-								message: "Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+								message:
+									"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
 							},
 						},
 					},
 				],
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with lexer and loop", function () {
+	it("should work with lexer and loop", function() {
 		const content = "<w:t>foo} The users are {#users}{/bar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -670,12 +733,15 @@ describe("Multi errors", function () {
 				],
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple errors", function () {
-		const content = "<w:t>foo</w:t><w:t>} The users are {#users}{/bar} {@bang} </w:t>";
+	it("should work with multiple errors", function() {
+		const content =
+			"<w:t>foo</w:t><w:t>} The users are {#users}{/bar} {@bang} </w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -718,11 +784,13 @@ describe("Multi errors", function () {
 				],
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple unclosed", function () {
+	it("should work with multiple unclosed", function() {
 		const content = `<w:t>foo</w:t>
 		<w:t>{city, {state {zip </w:t>`;
 		const expectedError = {
@@ -764,11 +832,13 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple unopened", function () {
+	it("should work with multiple unopened", function() {
 		const content = `<w:t>foo</w:t>
 		<w:t> city}, state} zip}</w:t>`;
 		const expectedError = {
@@ -807,11 +877,13 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should show an error when loop tag are badly used (xml open count !== xml close count)", function () {
+	it("should show an error when loop tag are badly used (xml open count !== xml close count)", function() {
 		const content = `<w:tbl>
       <w:tr>
         <w:tc>
@@ -832,7 +904,8 @@ describe("Multi errors", function () {
 				errors: [
 					{
 						name: "TemplateError",
-						message: 'The position of the loop tags "users" would produce invalid XML',
+						message:
+							'The position of the loop tags "users" would produce invalid XML',
 						properties: {
 							tag: "users",
 							id: "loop_position_invalid",
@@ -842,13 +915,15 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 });
 
-describe("Rendering error", function () {
-	it("should show an error when using corrupt characters", function () {
+describe("Rendering error", function() {
+	it("should show an error when using corrupt characters", function() {
 		const content = "<w:t>{user}</w:t>";
 		const expectedError = {
 			name: "RenderingError",
@@ -859,7 +934,10 @@ describe("Rendering error", function () {
 				xtag: "user",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {parser: angularParser, tags: { user: String.fromCharCode(28)}});
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			parser: angularParser,
+			tags: { user: String.fromCharCode(28) },
+		});
 		expectToThrow(create, Errors.RenderingError, expectedError);
 	});
 });

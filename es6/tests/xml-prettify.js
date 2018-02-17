@@ -4,8 +4,11 @@ const reg = /(>)\s*(<)(\/*)/g;
 const wsexp = / *(.*) +\n/g;
 const contexp = /(<.+>)(.+\n)/g;
 
-module.exports = function (xml) {
-	xml = xml.replace(reg, "$1\n$2$3").replace(wsexp, "$1\n").replace(contexp, "$1\n$2");
+module.exports = function(xml) {
+	xml = xml
+		.replace(reg, "$1\n$2$3")
+		.replace(wsexp, "$1\n")
+		.replace(contexp, "$1\n$2");
 	let formatted = "";
 	const lines = xml.split("\n");
 	let indent = 0;
@@ -35,7 +38,9 @@ module.exports = function (xml) {
 		const single = Boolean(ln.match(/<.+\/>/)); // is this line a single tag? ex. <br />
 		const closing = Boolean(ln.match(/<\/.+>/)); // is this a closing tag? ex. </a>
 		const opening = Boolean(ln.match(/<[^!].*>/)); // is this even a tag (that's not <!something>)
-		const type = single ? "single" : closing ? "closing" : opening ? "opening" : "other";
+		const type = single
+			? "single"
+			: closing ? "closing" : opening ? "opening" : "other";
 		const fromTo = lastType + "->" + type;
 		lastType = type;
 		let padding = "";
@@ -47,8 +52,7 @@ module.exports = function (xml) {
 		if (fromTo === "opening->closing") {
 			// substr removes line break (\n) from prev loop
 			formatted = formatted.substr(0, formatted.length - 1) + ln + "\n";
-		}
-		else {
+		} else {
 			formatted += padding + ln + "\n";
 		}
 	}

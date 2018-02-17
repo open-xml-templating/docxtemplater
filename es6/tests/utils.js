@@ -1,9 +1,9 @@
 const path = require("path");
 const chai = require("chai");
-const {expect} = chai;
+const { expect } = chai;
 const JSZip = require("jszip");
 const fs = require("fs");
-const {get, unset, omit, uniq} = require("lodash");
+const { get, unset, omit, uniq } = require("lodash");
 
 const Docxtemplater = require("../docxtemplater.js");
 const xmlPrettify = require("./xml-prettify");
@@ -17,7 +17,7 @@ const emptyNamespace = /xmlns:[a-z0-9]+=""/;
 function walk(dir) {
 	let results = [];
 	const list = fs.readdirSync(dir);
-	list.forEach(function (file) {
+	list.forEach(function(file) {
 		if (file.indexOf(".") === 0) {
 			return;
 		}
@@ -25,8 +25,7 @@ function walk(dir) {
 		const stat = fs.statSync(file);
 		if (stat && stat.isDirectory()) {
 			results = results.concat(walk(file));
-		}
-		else {
+		} else {
 			results.push(file);
 		}
 	});
@@ -46,7 +45,7 @@ function writeFile(expectedName, zip) {
 	if (fs.writeFileSync) {
 		fs.writeFileSync(
 			writeFile,
-			zip.generate({type: "nodebuffer", compression: "DEFLATE"})
+			zip.generate({ type: "nodebuffer", compression: "DEFLATE" })
 		);
 	}
 }
@@ -54,11 +53,8 @@ function unlinkFile(expectedName) {
 	const writeFile = path.resolve(examplesDirectory, "..", expectedName);
 	if (fs.unlinkSync) {
 		try {
-			fs.unlinkSync(
-				writeFile,
-			);
-		}
-		catch (e) {
+			fs.unlinkSync(writeFile);
+		} catch (e) {
 			if (e.code !== "ENOENT") {
 				throw e;
 			}
@@ -69,46 +65,80 @@ function unlinkFile(expectedName) {
 /* eslint-disable no-console */
 function shouldBeSame(options) {
 	const zip = options.doc.getZip();
-	const {expectedName} = options;
+	const { expectedName } = options;
 	let expectedZip;
 
 	try {
 		expectedZip = docX[expectedName].zip;
-	}
-	catch (e) {
+	} catch (e) {
 		writeFile(expectedName, zip);
-		console.log(JSON.stringify({msg: "Expected file does not exists", expectedName}));
+		console.log(
+			JSON.stringify({ msg: "Expected file does not exists", expectedName })
+		);
 		throw e;
 	}
 
 	try {
-		uniq(Object.keys(zip.files).concat(Object.keys(expectedZip.files))).map(function (filePath) {
-			const suffix = `for "${filePath}"`;
-			expect(expectedZip.files[filePath]).to.be.an("object", `The file ${filePath} doesn't exist on ${expectedName}`);
-			expect(zip.files[filePath]).to.be.an("object", `The file ${filePath} doesn't exist on generated file`);
-			expect(zip.files[filePath].name).to.be.equal(expectedZip.files[filePath].name, `Name differs ${suffix}`);
-			expect(zip.files[filePath].options.dir).to.be.equal(expectedZip.files[filePath].options.dir, `IsDir differs ${suffix}`);
-			const text1 = zip.files[filePath].asText().replace(/\n|\t/g, "");
-			const text2 = expectedZip.files[filePath].asText().replace(/\n|\t/g, "");
-			if (filePath.indexOf(".png") !== -1) {
-				expect(text1.length).to.be.equal(text2.length, `Content differs ${suffix}`);
-				expect(text1).to.be.equal(text2, `Content differs ${suffix}`);
-			}
-			else {
-				expect(text1).to.not.match(emptyNamespace, `The file ${filePath} has empty namespaces`);
-				expect(text2).to.not.match(emptyNamespace, `The file ${filePath} has empty namespaces`);
-				if (text1 === text2) {
-					return;
+		uniq(Object.keys(zip.files).concat(Object.keys(expectedZip.files))).map(
+			function(filePath) {
+				const suffix = `for "${filePath}"`;
+				expect(expectedZip.files[filePath]).to.be.an(
+					"object",
+					`The file ${filePath} doesn't exist on ${expectedName}`
+				);
+				expect(zip.files[filePath]).to.be.an(
+					"object",
+					`The file ${filePath} doesn't exist on generated file`
+				);
+				expect(zip.files[filePath].name).to.be.equal(
+					expectedZip.files[filePath].name,
+					`Name differs ${suffix}`
+				);
+				expect(zip.files[filePath].options.dir).to.be.equal(
+					expectedZip.files[filePath].options.dir,
+					`IsDir differs ${suffix}`
+				);
+				const text1 = zip.files[filePath].asText().replace(/\n|\t/g, "");
+				const text2 = expectedZip.files[filePath]
+					.asText()
+					.replace(/\n|\t/g, "");
+				if (filePath.indexOf(".png") !== -1) {
+					expect(text1.length).to.be.equal(
+						text2.length,
+						`Content differs ${suffix}`
+					);
+					expect(text1).to.be.equal(text2, `Content differs ${suffix}`);
+				} else {
+					expect(text1).to.not.match(
+						emptyNamespace,
+						`The file ${filePath} has empty namespaces`
+					);
+					expect(text2).to.not.match(
+						emptyNamespace,
+						`The file ${filePath} has empty namespaces`
+					);
+					if (text1 === text2) {
+						return;
+					}
+					const pText1 = xmlPrettify(text1, options);
+					const pText2 = xmlPrettify(text2, options);
+					expect(pText1).to.be.equal(
+						pText2,
+						`Content differs ${suffix} lengths: "${text1.length}", "${
+							text2.length
+						}"`
+					);
 				}
-				const pText1 = xmlPrettify(text1, options);
-				const pText2 = xmlPrettify(text2, options);
-				expect(pText1).to.be.equal(pText2, `Content differs ${suffix} lengths: "${text1.length}", "${text2.length}"`);
 			}
-		});
-	}
-	catch (e) {
+		);
+	} catch (e) {
 		writeFile(expectedName, zip);
-		console.log(JSON.stringify({msg: "Expected file differs from actual file", expectedName}));
+		console.log(
+			JSON.stringify({
+				msg: "Expected file differs from actual file",
+				expectedName,
+			})
+		);
 		throw e;
 	}
 	unlinkFile(expectedName);
@@ -120,7 +150,10 @@ function checkLength(e, expectedError, propertyPath) {
 	const property = get(e, propertyPath);
 	const expectedPropertyLength = get(expectedError, propertyPathLength);
 	if (property && expectedPropertyLength) {
-		expect(expectedPropertyLength).to.be.a("number", JSON.stringify(expectedError.properties));
+		expect(expectedPropertyLength).to.be.a(
+			"number",
+			JSON.stringify(expectedError.properties)
+		);
 		expect(expectedPropertyLength).to.equal(property.length);
 		unset(e, propertyPath);
 		unset(expectedError, propertyPathLength);
@@ -133,7 +166,9 @@ function cleanError(e, expectedError) {
 		expect(e.properties.file).to.equal("word/document.xml");
 	}
 	if (expectedError.properties.offset != null) {
-		expect(e.properties.offset).to.be.deep.equal(expectedError.properties.offset);
+		expect(e.properties.offset).to.be.deep.equal(
+			expectedError.properties.offset
+		);
 	}
 	delete e.properties.file;
 	delete e.properties.explanation;
@@ -141,16 +176,24 @@ function cleanError(e, expectedError) {
 	delete expectedError.properties.offset;
 	e = omit(e, ["line", "sourceURL", "stack"]);
 	if (e.properties.postparsed) {
-		e.properties.postparsed.forEach(function (p) {
+		e.properties.postparsed.forEach(function(p) {
 			delete p.lIndex;
 			delete p.offset;
 		});
 	}
 	if (e.properties.rootError) {
-		expect(e.properties.rootError, JSON.stringify(e.properties)).to.be.instanceOf(Error);
-		expect(expectedError.properties.rootError, JSON.stringify(expectedError.properties)).to.be.instanceOf(Object);
+		expect(
+			e.properties.rootError,
+			JSON.stringify(e.properties)
+		).to.be.instanceOf(Error);
+		expect(
+			expectedError.properties.rootError,
+			JSON.stringify(expectedError.properties)
+		).to.be.instanceOf(Object);
 		if (expectedError) {
-			expect(e.properties.rootError.message).to.equal(expectedError.properties.rootError.message);
+			expect(e.properties.rootError.message).to.equal(
+				expectedError.properties.rootError.message
+			);
 		}
 		delete e.properties.rootError;
 		delete expectedError.properties.rootError;
@@ -169,8 +212,7 @@ function wrapMultiError(error) {
 	let errors;
 	if (type === "[object Array]") {
 		errors = error;
-	}
-	else {
+	} else {
 		errors = [error];
 	}
 
@@ -188,8 +230,7 @@ function expectToThrow(fn, type, expectedError) {
 	let e = null;
 	try {
 		fn();
-	}
-	catch (error) {
+	} catch (error) {
 		e = error;
 	}
 	expect(e, "No error has been thrown").not.to.be.equal(null);
@@ -206,10 +247,17 @@ function expectToThrow(fn, type, expectedError) {
 	expect(e.properties.explanation, toShowOnFail).to.be.a("string");
 	e = cleanError(e, expectedError);
 	if (e.properties.errors) {
-		const msg = "expected : \n" + JSON.stringify(expectedError.properties.errors) + "\nactual : \n" + JSON.stringify(e.properties.errors);
+		const msg =
+			"expected : \n" +
+			JSON.stringify(expectedError.properties.errors) +
+			"\nactual : \n" +
+			JSON.stringify(e.properties.errors);
 		expect(expectedError.properties.errors).to.be.an("array", msg);
-		expect(e.properties.errors.length).to.equal(expectedError.properties.errors.length, msg);
-		e.properties.errors = e.properties.errors.map(function (e, i) {
+		expect(e.properties.errors.length).to.equal(
+			expectedError.properties.errors.length,
+			msg
+		);
+		e.properties.errors = e.properties.errors.map(function(e, i) {
 			return cleanError(e, expectedError.properties.errors[i]);
 		});
 	}
@@ -234,10 +282,16 @@ function loadImage(name, content) {
 function loadFile(name, callback) {
 	if (fs.readFileSync) {
 		const path = require("path");
-		const buffer = fs.readFileSync(path.join(examplesDirectory, name), "binary");
+		const buffer = fs.readFileSync(
+			path.join(examplesDirectory, name),
+			"binary"
+		);
 		return callback(null, name, buffer);
 	}
-	return JSZipUtils.getBinaryContent("../examples/" + name, function (err, data) {
+	return JSZipUtils.getBinaryContent("../examples/" + name, function(
+		err,
+		data
+	) {
 		if (err) {
 			return callback(err);
 		}
@@ -280,7 +334,7 @@ function start() {
 	/* eslint-disable dependencies/no-unresolved */
 	const fileNames = require("./filenames.js");
 	/* eslint-enable dependencies/no-unresolved */
-	fileNames.forEach(function (fullFileName) {
+	fileNames.forEach(function(fullFileName) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
 		let callback;
 		if (startsWith(fileName, ".")) {
@@ -310,10 +364,13 @@ function start() {
 function setExamplesDirectory(ed) {
 	examplesDirectory = ed;
 	if (fs && fs.writeFileSync) {
-		const fileNames = walk(examplesDirectory).map(function (f) {
+		const fileNames = walk(examplesDirectory).map(function(f) {
 			return f.replace(examplesDirectory + "/", "");
 		});
-		fs.writeFileSync(path.resolve(__dirname, "filenames.js"), "module.exports=" + JSON.stringify(fileNames));
+		fs.writeFileSync(
+			path.resolve(__dirname, "filenames.js"),
+			"module.exports=" + JSON.stringify(fileNames)
+		);
 	}
 }
 
@@ -323,8 +380,8 @@ function removeSpaces(text) {
 
 function makeDocx(name, content) {
 	const zip = new JSZip();
-	zip.file("word/document.xml", content, {createFolders: true});
-	const base64 = zip.generate({type: "string"});
+	zip.file("word/document.xml", content, { createFolders: true });
+	const base64 = zip.generate({ type: "string" });
 	return load(name, base64, "docx", docX);
 }
 
