@@ -1,3 +1,23 @@
+### 3.4.1
+
+**Breaking change** : The syntax of change delimiter has been changed from :
+
+```
+{=<% %>}
+```
+
+to:
+
+```
+{=<% %>=}
+```
+
+To change to `<%` and `%>` delimiters.
+
+The reason is that this allows to parse the delimiters without any assumption.
+
+For example `{={{ }}}` was not possible to parse at version 3.4.0, but by adding the ending equal sign : `{={{ }}=}`, the ambiguity is removed.
+
 ### 3.4.0
 
 Add change delimiter syntax from inside template :

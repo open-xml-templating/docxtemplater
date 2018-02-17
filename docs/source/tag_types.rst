@@ -269,16 +269,16 @@ If you want to insert HTML styled input, you can also use the docxtemplater html
 Set Delimiter
 -------------
 
-Set Delimiter tags start with an equal sign and change the tag delimiters from { and } to custom strings.
+Set Delimiter tags start and end with an equal sign and change the tag delimiters from { and } to custom strings.
 
 Consider the following contrived example:
 
 .. code-block:: text
 
     * {default_tags}
-    {=<% %>}
+    {=<% %>=}
     * <% erb_style_tags %>
-    <%={ }%>
+    <%={ }%=>
     * { default_tags_again }
 
 Here we have a list with three items. The first item uses the default tag style, the second uses erb style as defined by the Set Delimiter tag, and the third returns to the default style after yet another Set Delimiter declaration.

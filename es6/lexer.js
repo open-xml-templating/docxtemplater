@@ -195,6 +195,9 @@ function getAllIndexes(fullText, delimiters) {
 				length: start.length,
 				changedelimiter: true,
 			});
+			nextEqual = fullText.indexOf("=", offset + start.length + 1);
+			const endOffset = fullText.indexOf(end, nextEqual + 1);
+
 			indexes.push({
 				offset: endOffset,
 				position: "end",
@@ -203,7 +206,7 @@ function getAllIndexes(fullText, delimiters) {
 			});
 			const insideTag = fullText.substr(
 				offset + start.length + 1,
-				endOffset - startOffset - start.length - 1
+				nextEqual - offset - start.length - 1
 			);
 			[start, end] = splitDelimiters(insideTag);
 			offset = endOffset;
