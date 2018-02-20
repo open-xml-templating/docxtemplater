@@ -67,6 +67,13 @@ const Docxtemplater = class Docxtemplater {
 		}
 		this.zip = zip;
 		this.updateFileTypeConfig();
+
+		this.modules = concatArrays([
+			this.fileTypeConfig.baseModules.map(function(moduleFunction) {
+				return moduleFunction();
+			}),
+			this.modules,
+		]);
 		return this;
 	}
 	compileFile(fileName) {
@@ -78,13 +85,6 @@ const Docxtemplater = class Docxtemplater {
 		if (Object.keys(this.compiled).length) {
 			return this;
 		}
-
-		this.modules = concatArrays([
-			this.fileTypeConfig.baseModules.map(function(moduleFunction) {
-				return moduleFunction();
-			}),
-			this.modules,
-		]);
 		this.options = this.modules.reduce((options, module) => {
 			return module.optionsTransformer(options, this);
 		}, this.options);
