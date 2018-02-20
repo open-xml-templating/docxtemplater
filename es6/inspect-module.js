@@ -37,6 +37,11 @@ class InspectModule {
 		file = file || this.fileTypeConfig.textPath(this.zip);
 		return getTags(this.fullInspected[file].postparsed);
 	}
+	getAllTags() {
+		return Object.keys(this.fullInspected).reduce((result, file) => {
+			return merge(result, this.getTags(file));
+		}, {});
+	}
 }
 
 module.exports = () => new InspectModule();

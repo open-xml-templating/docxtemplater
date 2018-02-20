@@ -91,6 +91,19 @@ describe("Inspect module", function() {
 			prenom: {},
 		});
 	});
+
+	it("should work for pptx", function() {
+		const doc = createDoc("multi-page.pptx");
+		const iModule = inspectModule();
+		doc.attachModule(iModule);
+		doc.compile();
+		expect(iModule.getAllTags()).to.be.deep.equal({
+			tag: {},
+			users: {
+				name: {},
+			},
+		});
+	});
 });
 
 describe("Docxtemplater loops", function() {
