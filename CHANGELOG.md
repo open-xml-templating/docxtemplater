@@ -1,3 +1,9 @@
+### 3.4.2
+
+-	Add getAllTags to inspectModule
+
+-	Add base-modules after `loadZip` instead of on `compile`
+
 ### 3.4.1
 
 **Breaking change** : The syntax of change delimiter has been changed from :
