@@ -150,7 +150,7 @@ suite :
     var iModule = InspectModule();
     doc.attachModule(iModule);
     doc.render(); // doc.compile can also be used to avoid having runtime errors
-    var tags = iModule.getTags();
+    var tags = iModule.getAllTags();
     console.log(tags);
 
 With the following template : 
