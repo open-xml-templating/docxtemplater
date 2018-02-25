@@ -69,6 +69,7 @@ User contributed modules :
 
 -	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module (compatible with v2 only)
 -	Hyperlink module using the syntax: `{^link}`, https://github.com/sujith3g/docxtemplater-link-module (compatible with v2 only)
+- PowerPoint templater module, https://github.com/SAP/utils-pptx-templater
 
 Professional Support
 --------------------
