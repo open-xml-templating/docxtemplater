@@ -31,20 +31,18 @@ If you use the angular-parser, you can also write a filter like this:
         var lineBreak = "<w:br/>";
         return pre + lines.join(lineBreak) + post;
     }
-
-and then have your docx as : {@text|raw}
-
-with
-
-.. code-block:: javascript
-
     data = {text: "testing line 1 \n testing line 2"};
     docx.setData(data)
+
+
+and then have your docx as : {@text|raw}
 
 Insert HTML formatted text
 --------------------------
 
 It is possible to insert HTML formatted text using the `HTML pro module`_
+
+.. _`HTML pro module`: https://docxtemplater.com/modules/html/
 
 
 Generate smaller docx using compression
@@ -80,9 +78,9 @@ You can also have conditions with operators `>` and `<` using `angular parser co
 Conditional Formatting
 ----------------------
 
-I plan to develop a pro module to do conditional formatting https://docxtemplater.com/modules/styling/. As a workaround, you could also use the `HTML pro module`_
+With the `PRO styling module`_ it is possible to have a table cell be styled depending on a given condition (for example).
 
-.. _`HTML pro module`: https://docxtemplater.com/modules/html/
+.. _`PRO styling module`: https://docxtemplater.com/modules/styling/. 
 
 Using data filters
 ------------------
@@ -131,14 +129,14 @@ The following code should load the binary content on all browsers:
 Get list of placeholders
 -------------------------
 
-To be able to construct form dynamically or to validate the document
+To be able to construct a form dynamically or to validate the document
 beforehand, it can be useful to get access to all placeholders defined in a
 given template.  Before rendering a document, docxtemplater parses the Word
 document into a compiled form.  In this compiled form, the document is stored
 in an `AST`_ which contains all the necessary information to get the list of
 the variables and list them in a JSON object.
 
-With a simple inspection module, it is possible to get this compiled form and
+With the simple inspection module, it is possible to get this compiled form and
 show the list of tags.
 suite : 
 
@@ -181,7 +179,7 @@ The code of the inspect-module is very simple, and can be found here : https://g
 Convert to PDF
 --------------
 
-It is not possible to convert docx to PDF with docxtemplater. There are however
+It is not possible to convert docx to PDF with docxtemplater, because docxtemplater is a templating engine and doesn't know how to render a given document. There are many
 tools to do this conversion.
 
 The first one is to use `libreoffice headless`, which permits you to generate a
@@ -209,6 +207,6 @@ but I know that some of the users of docxtemplater use it. (I'm not affiliated t
 Pptx support
 ------------
 
-Docxtemplater now handles pptx automatically (since version 3.0.4).
+Docxtemplater handles pptx files without any special configuration (since version 3.0.4).
 
 It does so by detecting whether there is a file called "/word/document.xml", if there is one, the file is "docx", if not, it is pptx.

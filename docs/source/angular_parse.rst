@@ -27,6 +27,8 @@ You can also use `+`, `-`, `*`, `/`, `>`, `<` operators.
 
 You also get access to filters : 
 
+It is possible to write the template ``{user.name | upper}``, and have the resulting string be uppercased.
+
 .. code-block:: javascript
 
     expressions.filters.upper = function(input) {
@@ -34,8 +36,6 @@ You also get access to filters :
         if(!input) return input;
         return input.toUpperCase(); 
     }
-
-Will make it possible to write the template ``{user.name | upper}``, and have the resulting string be uppercased.
 
 Here's a code sample for how to use the angularParser :
 
@@ -75,7 +75,7 @@ With the angularParser option set, you can also use conditions :
         They are multiple users
     {/}
 
-Will render the section only if they are 2 users or more.
+Will render the section only if there are 2 users or more.
 
 It also handles the boolean operators AND ``&&``, OR ``||``, ``+``, ``-``, the ternary operator ``a ? b : c``, operator precendence with parenthesis ``(a && b) || c``, and many other javascript features.
 

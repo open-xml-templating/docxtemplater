@@ -19,15 +19,8 @@ npm is the easiest way to install docxtemplater
     npm install jszip-utils # only for the browser (webpack)
 
 **jszip version 2 is important !** It won't work with jszip version 3
-**jszip-utils is not installed with jszip** and has to be installed separately
 
-If you want to use the `command line interface`_, you should use the global flag:
-
-.. code-block:: bash
-
-    npm install docxtemplater --global
-
-.. _`command line interface`: cli.html
+**jszip-utils (only for browser) is not installed with jszip** and has to be installed separately
 
 Browser
 -------

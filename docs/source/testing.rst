@@ -10,10 +10,10 @@ This page documents how docxtemplater is tested.
 
 First, there are multiple types of tests done in docxtemplater
 
- * **integration tests**, that are tests where we take a real .docx document, some JSON data, render the document and then verify that it the same as the expected document (this can be seen as snapshot testing)
- * **regression tests**, that are tests where we take real or fake docx to ensure that bugfixes that have been found can't occur in the future
- * **unit tests**, that help understand the internals of docxtemplater, and allows to verify that the internal data structures of the parsed docxtemplate are correct
- * **speed tests**, that help to optimize the speed of docxtemplater
+ * **Integration tests**, that are tests where we take a real .docx document, some JSON data, render the document and then verify that it the same as the expected document (this can be seen as snapshot testing)
+ * **Regression tests**, that are tests where we take real or fake docx to ensure that bugfixes that have been found can't occur in the future
+ * **Unit tests**, that help understand the internals of docxtemplater, and allows to verify that the internal data structures of the parsed template are correct
+ * **Speed tests**, that help to optimize the speed of docxtemplater
 
 Integration
 -----------
@@ -31,7 +31,7 @@ The integration tests are in es6/tests/integration.js
 
 All of the test documents are in the folder `examples/`
 
-* We first create a document from table-example.pptx 
+* We first load a document from table-example.pptx 
 * We then set data and render the document.
 * We then verify that the document is the same as "table-example-expected.pptx"
 

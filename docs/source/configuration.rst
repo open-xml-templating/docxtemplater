@@ -10,7 +10,7 @@ You can configure docxtemplater with an options object by using the ``setOptions
 
 .. code-block:: javascript
 
-    var doc=new Docxtemplater();
+    var doc = new Docxtemplater();
     doc.loadZip(zip);
     doc.setOptions(options)
 
@@ -20,27 +20,45 @@ Custom Parser
 The name of this option is `parser` (function).
 
 With a custom parser you can parse the tags to for example add operators
-like '+', '-', or whatever the way you want to parse expressions. 
+like '+', '-', or even create a Domain Specific Language to specify your tag values.
 
 To enable this, you need to specify a custom parser.
-You need to create a parser function:
 
 docxtemplater comes shipped with this parser:
 
+If the template is : 
+
+.. code-block:: text
+
+    Hello {user}
+
 .. code-block:: javascript
 
-    parser: function(tag) {
-      return {
-        'get': function(scope) {
-          if (tag === '.') {
-            return scope;
-          } 
-          else {
-            return scope[tag];
-          }
-        }
-      };
-    },
+    doc.setData({user: "John"})
+    doc.setOptions({
+        parser: function(tag) {
+          // tag is "user"
+          return {
+            'get': function(scope) {
+              // scope will be {user: "John"}
+              if (tag === '.') {
+                return scope;
+              }
+              else {
+                // Here we return the property "user" of the object {user: "John"}
+                return scope[tag];
+              }
+            }
+          };
+        },
+    });
+
+
+A very useful parser is the angular-expressions parser, which has implemented useful features.
+
+See `angular parser`_ for comprehensive documentation
+
+.. _`angular parser`: angular_parse.html
 
 Custom delimiters
 -----------------
@@ -121,21 +139,20 @@ ones containing the loop tags).
 nullGetter
 ----------
 
-You can customize the value that is shown whenever the parser returns 'null' or undefined.
-The nullGetter option is a function
+You can customize the value that is shown whenever the parser (documented above) returns 'null' or undefined.
 By default the nullGetter is the following function
 
 .. code-block:: javascript
 
-	nullGetter(part) {
-		if (!part.module) {
-			return "undefined";
-		}
-		if (part.module === "rawxml") {
-			return "";
-		}
-		return "";
-	},
+    nullGetter(part) {
+        if (!part.module) {
+            return "undefined";
+        }
+        if (part.module === "rawxml") {
+            return "";
+        }
+        return "";
+    },
 
 This means that the default value for simple tags is to show "undefined".
 The default for rawTags ({@rawTag}) is to drop the paragraph completely (you could enter any xml here).

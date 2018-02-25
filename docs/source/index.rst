@@ -31,6 +31,10 @@ Including:
 - `Loops and tables`_
 - `Lists`_
 - `Raw Xml Insertion`_
+- `HTML`_
+- `Image`_
+- `Slides`_
+- `Subtemplate`_
 
 .. _`Online Demos`: https://docxtemplater.com/demo
 .. _Replace Variables: https://docxtemplater.com/demo#simple
@@ -39,3 +43,7 @@ Including:
 .. _Loops and tables: https://docxtemplater.com/demo#loop-table
 .. _Lists: https://docxtemplater.com/demo#loop-list
 .. _Raw Xml Insertion: https://docxtemplater.com/demo#xml-insertion
+.. _HTML: https://docxtemplater.com/demo#html
+.. _Image: https://docxtemplater.com/demo#image
+.. _Slides: https://docxtemplater.com/demo#slides
+.. _Subtemplate: https://docxtemplater.com/demo#subtemplate

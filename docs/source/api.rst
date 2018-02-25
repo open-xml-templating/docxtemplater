@@ -9,7 +9,7 @@ API
 Constructor
 -----------
 
-.. code-block:: javascript
+.. code-block:: text
 
     new Docxtemplater()
 
@@ -19,7 +19,7 @@ Constructor
 Methods
 -------
 
-.. code-block:: javascript
+.. code-block:: text
 
     loadZip(zip)
 

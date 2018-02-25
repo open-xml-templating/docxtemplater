@@ -21,5 +21,8 @@ You can test if everything works fine on your browser by using the test runner: 
 Dependencies
 ------------
 
-1. [jszip.js](http://stuk.github.io/jszip/) to zip and unzip the docx files
-2. [xmldom](https://github.com/jindw/xmldom) to parse the files as xml
+1. `JSZip`_  to zip and unzip the docx files
+2. `xmldom`_  to parse the files as xml
+
+.. _`JSZip`: https://stuk.github.io/jszip/
+.. _`xmldom`: https://github.com/jindw/xmldom
