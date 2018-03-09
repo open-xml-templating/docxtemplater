@@ -10,24 +10,29 @@ const ScopeManager = class ScopeManager {
 	}
 	loopOver(tag, callback, inverted) {
 		inverted = inverted || false;
-		return this.loopOverValue(this.getValue(tag), callback, inverted);
+		return this.loopOverValue(this.getValue(tag), callback, inverted, tag);
 	}
 	functorIfInverted(inverted, functor, value) {
 		if (inverted) {
 			functor(value);
 		}
 	}
-	isValueFalsy(value, type) {
-		return (
-			value == null ||
-			!value ||
-			(type === "[object Array]" && value.length === 0)
-		);
+	isValueFalsy(value, type, tag, scope) {
+		var parser = this.parser(tag, { scopePath: this.scopePath });
+
+		return parser.isFalsy(value, type, tag, scope);
+		// return (
+		// 	value == null ||
+		// 	!value ||
+		// 	(type === "[object Array]" && value.length === 0)
+		// );
+
+
 	}
-	loopOverValue(value, functor, inverted) {
+	loopOverValue(value, functor, inverted, tag) {
 		const type = Object.prototype.toString.call(value);
 		const currentValue = this.scopeList[this.num];
-		if (this.isValueFalsy(value, type)) {
+		if (this.isValueFalsy(value, type, tag, currentValue)) {
 			return this.functorIfInverted(inverted, functor, currentValue);
 		}
 		if (type === "[object Array]") {
