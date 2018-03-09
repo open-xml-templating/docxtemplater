@@ -76,7 +76,7 @@ describe("Loading", function() {
 });
 
 describe("Inspect module", function() {
-	it("should work", function() {
+	it("should get main tags", function() {
 		const doc = createDoc("tag-loop-example.docx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
@@ -92,7 +92,7 @@ describe("Inspect module", function() {
 		});
 	});
 
-	it("should work for pptx", function() {
+	it("should get all tags", function() {
 		const doc = createDoc("multi-page.pptx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
@@ -101,6 +101,21 @@ describe("Inspect module", function() {
 			tag: {},
 			users: {
 				name: {},
+			},
+		});
+	});
+
+	it("should get all tags and merge them", function() {
+		const doc = createDoc("multi-page-to-merge.pptx");
+		const iModule = inspectModule();
+		doc.attachModule(iModule);
+		doc.compile();
+		expect(iModule.getAllTags()).to.be.deep.equal({
+			tag: {},
+			users: {
+				name: {},
+				age: {},
+				company: {},
 			},
 		});
 	});

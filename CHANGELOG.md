@@ -1,3 +1,7 @@
+### 3.4.3
+
+-	Update getAllTags to work with multiple loops by merging fields.
+
 ### 3.4.2
 
 -	Add getAllTags to inspectModule

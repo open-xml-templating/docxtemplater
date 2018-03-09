@@ -5,9 +5,9 @@ function getTags(postParsed) {
 			return part.type === "placeholder";
 		})
 		.reduce(function(tags, part) {
-			tags[part.value] = {};
+			tags[part.value] = tags[part.value] || {};
 			if (part.subparsed) {
-				tags[part.value] = getTags(part.subparsed);
+				tags[part.value] = merge(tags[part.value], getTags(part.subparsed));
 			}
 			return tags;
 		}, {});
