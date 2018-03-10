@@ -20,7 +20,6 @@ examples/index.html
 browser/
 build/
 vendor/
-js/
 test/
 coverage/
 prof/
