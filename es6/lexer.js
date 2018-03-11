@@ -296,20 +296,25 @@ function Reader(innerContentParts) {
 	};
 }
 
+function getContentParts(xmlparsed) {
+	let inTextTag = false;
+	const innerContentParts = [];
+	xmlparsed.forEach(function(part) {
+		inTextTag = updateInTextTag(part, inTextTag);
+		if (inTextTag && part.type === "content") {
+			innerContentParts.push(part);
+		}
+	});
+	return innerContentParts;
+}
+
 module.exports = {
 	parse(xmlparsed, delimiters) {
 		let inTextTag = false;
-		const innerContentParts = [];
-		xmlparsed.forEach(function(part) {
-			inTextTag = updateInTextTag(part, inTextTag);
-			if (inTextTag && part.type === "content") {
-				innerContentParts.push(part);
-			}
-		});
-		const reader = new Reader(innerContentParts);
+		const reader = new Reader(getContentParts(xmlparsed));
 		reader.parseDelimiters(delimiters);
 
-		const lexed = [];
+		let lexed = [];
 		let index = 0;
 		xmlparsed.forEach(function(part) {
 			inTextTag = updateInTextTag(part, inTextTag);
@@ -331,28 +336,27 @@ module.exports = {
 				lexed.push(part);
 			}
 		});
+		lexed = lexed.map(function(p, i) {
+			p.lIndex = i;
+			return p;
+		});
 		return { errors: reader.errors, lexed };
 	},
 	xmlparse(content, xmltags) {
 		const matches = tagMatcher(content, xmltags.text, xmltags.other);
 		let cursor = 0;
-		const parsed = matches
-			.reduce(function(parsed, match) {
-				const value = content.substr(cursor, match.offset - cursor);
-				if (value.length > 0) {
-					parsed.push({ type: "content", value });
-				}
-				cursor = match.offset + match.value.length;
-				delete match.offset;
-				if (match.value.length > 0) {
-					parsed.push(match);
-				}
-				return parsed;
-			}, [])
-			.map(function(p, i) {
-				p.lIndex = i;
-				return p;
-			});
+		const parsed = matches.reduce(function(parsed, match) {
+			const value = content.substr(cursor, match.offset - cursor);
+			if (value.length > 0) {
+				parsed.push({ type: "content", value });
+			}
+			cursor = match.offset + match.value.length;
+			delete match.offset;
+			if (match.value.length > 0) {
+				parsed.push(match);
+			}
+			return parsed;
+		}, []);
 		const value = content.substr(cursor);
 		if (value.length > 0) {
 			parsed.push({ type: "content", value });

@@ -353,7 +353,7 @@ describe("Custom delimiters", function() {
 		}).render();
 		const c = getContent(xmlt);
 		expect(c).to.be.equal(
-			'<w:t xml:space="preserve">10</w:t><w:t> 5</w:t><w:t> </w:t>'
+			'<w:t xml:space="preserve">10</w:t><w:t xml:space="preserve"> 5</w:t><w:t xml:space="preserve"> </w:t>'
 		);
 	});
 
@@ -364,7 +364,9 @@ describe("Custom delimiters", function() {
 		}).render();
 		const c = getContent(xmlt);
 		expect(c).not.to.contain("</w:t></w:t>");
-		expect(c).to.be.equal('<w:t xml:space="preserve">foo</w:t><w:t></w:t>');
+		expect(c).to.be.equal(
+			'<w:t xml:space="preserve">foo</w:t><w:t xml:space="preserve"></w:t>'
+		);
 	});
 
 	it("should work with complex loops (2)", function() {

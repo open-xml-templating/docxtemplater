@@ -399,6 +399,15 @@ describe("Templating", function() {
 		const create = doc.render.bind(doc);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
+
+	it("should work with spacing at the end", function() {
+		const doc = createDoc("spacing-end.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({ name: "John" }).render();
+		shouldBeSame({ doc, expectedName: "expected-spacing-end.docx" });
+	});
 });
 
 describe("Load Office 365 file", function() {

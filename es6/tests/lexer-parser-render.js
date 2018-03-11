@@ -12,6 +12,7 @@ const tagsDocxConfig = {
 function cleanRecursive(arr) {
 	arr.forEach(function(p) {
 		delete p.lIndex;
+		delete p.endLindex;
 		delete p.offset;
 		if (p.subparsed) {
 			cleanRecursive(p.subparsed);
