@@ -6,7 +6,8 @@ const xmlMatcher = require("./xml-matcher");
 const { throwMultiError, throwContentMustBeString } = require("./errors");
 const Lexer = require("./lexer");
 const Parser = require("./parser.js");
-const { render } = require("./render.js");
+const render = require("./render.js");
+const resolve = require("./resolve.js");
 
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);
@@ -32,6 +33,29 @@ module.exports = class XmlTemplater {
 		this.tags = tags != null ? tags : {};
 		this.scopeManager = createScope({ tags: this.tags, parser: this.parser });
 		return this;
+	}
+	resolveTags(tags) {
+		this.tags = tags != null ? tags : {};
+		this.scopeManager = createScope({ tags: this.tags, parser: this.parser });
+		const options = {
+			compiled: this.postparsed,
+			tags: this.tags,
+			modules: this.modules,
+			parser: this.parser,
+			nullGetter: this.nullGetter,
+			filePath: this.filePath,
+			resolve,
+		};
+		options.scopeManager = createScope(options);
+		return resolve(options).then(({ resolved }) => {
+			return Promise.all(
+				resolved.map(function(r) {
+					return Promise.resolve(r);
+				})
+			).then(resolved => {
+				return (this.resolved = resolved);
+			});
+		});
 	}
 	fromJson(options) {
 		this.filePath = options.filePath;
@@ -96,6 +120,7 @@ module.exports = class XmlTemplater {
 		const options = {
 			compiled: this.postparsed,
 			tags: this.tags,
+			resolved: this.resolved,
 			modules: this.modules,
 			parser: this.parser,
 			nullGetter: this.nullGetter,

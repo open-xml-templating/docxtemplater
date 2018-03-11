@@ -51,4 +51,4 @@ function render(options) {
 	return { errors, parts };
 }
 
-module.exports = { render };
+module.exports = render;

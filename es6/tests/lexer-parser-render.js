@@ -58,6 +58,44 @@ describe("Algorithm", function() {
 			}
 		});
 	});
+
+	Object.keys(fixtures).forEach(function(key) {
+		const fixture = fixtures[key];
+		(fixture.only ? it.only : it)(`Async ${fixture.it}`, function() {
+			const doc = makeDocx(key, fixture.content);
+			doc.setOptions(fixture.options);
+			const iModule = inspectModule();
+			doc.attachModule(iModule);
+			doc.compile();
+			return doc.resolveData(fixture.scope).then(function() {
+				doc.render();
+				cleanRecursive(iModule.inspect.lexed);
+				cleanRecursive(iModule.inspect.parsed);
+				cleanRecursive(iModule.inspect.postparsed);
+				expect(iModule.inspect.lexed).to.be.deep.equal(
+					fixture.lexed,
+					"Lexed incorrect"
+				);
+				expect(iModule.inspect.parsed).to.be.deep.equal(
+					fixture.parsed,
+					"Parsed incorrect"
+				);
+				if (fixture.postparsed) {
+					expect(iModule.inspect.postparsed).to.be.deep.equal(
+						fixture.postparsed,
+						"Postparsed incorrect"
+					);
+				}
+				if (iModule.inspect.content) {
+					expect(iModule.inspect.content).to.be.deep.equal(
+						fixture.result,
+						"Content incorrect"
+					);
+				}
+			});
+		});
+	});
+
 	it("should xmlparse strange tags", function() {
 		const xmllexed = Lexer.xmlparse(
 			fixtures.strangetags.content,

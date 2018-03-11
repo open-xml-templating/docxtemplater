@@ -1,3 +1,9 @@
+### 3.5.0
+
+-	Add resolveData function for async data resolving
+
+-	Fix bugs with spacing : Now space="preserve" is applied in the first and last `<w:t>` of each placeholder
+
 ### 3.4.3
 
 -	Update getAllTags to work with multiple loops by merging fields.

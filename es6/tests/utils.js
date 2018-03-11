@@ -226,13 +226,7 @@ function wrapMultiError(error) {
 	};
 }
 
-function expectToThrow(fn, type, expectedError) {
-	let e = null;
-	try {
-		fn();
-	} catch (error) {
-		e = error;
-	}
+function errorVerifier(e, type, expectedError) {
 	expect(e, "No error has been thrown").not.to.be.equal(null);
 	const toShowOnFail = e.stack;
 	expect(e, toShowOnFail).to.be.instanceOf(Error);
@@ -264,6 +258,32 @@ function expectToThrow(fn, type, expectedError) {
 	expect(JSON.parse(JSON.stringify(e))).to.be.deep.equal(expectedError);
 }
 
+function expectToThrowAsync(fn, type, expectedError) {
+	return Promise.resolve(null)
+		.then(function() {
+			const r = fn();
+			return r.then(function() {
+				return null;
+			});
+		})
+		.catch(function(error) {
+			return error;
+		})
+		.then(function(e) {
+			return errorVerifier(e, type, expectedError);
+		});
+}
+
+function expectToThrow(fn, type, expectedError) {
+	let err = null;
+	try {
+		fn();
+	} catch (e) {
+		err = e;
+	}
+	return errorVerifier(err, type, expectedError);
+}
+
 function load(name, content, fileType, obj) {
 	const zip = new JSZip(content);
 	obj[name] = new Docxtemplater();
@@ -279,6 +299,61 @@ function loadImage(name, content) {
 	imageData[name] = content;
 }
 
+function getBinaryContent(path, callback) {
+	/*
+     * Here is the tricky part : getting the data.
+     * In firefox/chrome/opera/... setting the mimeType to 'text/plain; charset=x-user-defined'
+     * is enough, the result is in the standard xhr.responseText.
+     * cf https://developer.mozilla.org/En/XMLHttpRequest/Using_XMLHttpRequest#Receiving_binary_data_in_older_browsers
+     * In IE <= 9, we must use (the IE only) attribute responseBody
+     * (for binary data, its content is different from responseText).
+     * In IE 10, the 'charset=x-user-defined' trick doesn't work, only the
+     * responseType will work :
+     * http://msdn.microsoft.com/en-us/library/ie/hh673569%28v=vs.85%29.aspx#Binary_Object_upload_and_download
+     *
+     * I'd like to use jQuery to avoid this XHR madness, but it doesn't support
+     * the responseType attribute : http://bugs.jquery.com/ticket/11461
+     */
+	try {
+		const xhr = new window.XMLHttpRequest();
+
+		xhr.open("GET", path, false);
+
+		xhr.overrideMimeType("text/plain; charset=x-user-defined");
+
+		xhr.onreadystatechange = function() {
+			let file, err;
+			if (xhr.readyState === 4) {
+				if (xhr.status === 200 || xhr.status === 0) {
+					file = null;
+					err = null;
+					try {
+						file = xhr.response || xhr.responseText;
+					} catch (e) {
+						err = new Error(e);
+					}
+					return callback(err, file);
+				}
+				return callback(
+					new Error(
+						"Ajax error for " +
+							path +
+							" : " +
+							this.status +
+							" " +
+							this.statusText
+					),
+					null
+				);
+			}
+		};
+
+		xhr.send();
+	} catch (e) {
+		return callback(new Error(e), null);
+	}
+}
+
 function loadFile(name, callback) {
 	if (fs.readFileSync) {
 		const path = require("path");
@@ -288,10 +363,7 @@ function loadFile(name, callback) {
 		);
 		return callback(null, name, buffer);
 	}
-	return JSZipUtils.getBinaryContent("../examples/" + name, function(
-		err,
-		data
-	) {
+	return getBinaryContent("../examples/" + name, function(err, data) {
 		if (err) {
 			return callback(err);
 		}
@@ -299,11 +371,21 @@ function loadFile(name, callback) {
 	});
 }
 
+function unhandledRejectionHandler(reason) {
+	throw reason;
+}
+
 let startFunction;
 function setStartFunction(sf) {
 	allStarted = false;
 	countFiles = 1;
 	startFunction = sf;
+
+	if (typeof window !== "undefined" && window.addEventListener) {
+		window.addEventListener("unhandledrejection", unhandledRejectionHandler);
+	} else {
+		process.on("unhandledRejection", unhandledRejectionHandler);
+	}
 }
 
 function endLoadFile(change) {
@@ -393,6 +475,22 @@ function getContent(doc) {
 	return doc.getZip().files["word/document.xml"].asText();
 }
 
+function resolveSoon(data) {
+	return new Promise(function(resolve) {
+		setTimeout(function() {
+			resolve(data);
+		}, 1);
+	});
+}
+
+function rejectSoon(data) {
+	return new Promise(function(resolve, reject) {
+		setTimeout(function() {
+			reject(data);
+		}, 1);
+	});
+}
+
 module.exports = {
 	chai,
 	cleanError,
@@ -400,6 +498,7 @@ module.exports = {
 	createXmlTemplaterDocx,
 	expect,
 	expectToThrow,
+	expectToThrowAsync,
 	getContent,
 	imageData,
 	loadDocument,
@@ -410,6 +509,8 @@ module.exports = {
 	setExamplesDirectory,
 	setStartFunction,
 	shouldBeSame,
+	resolveSoon,
+	rejectSoon,
 	start,
 	wrapMultiError,
 };

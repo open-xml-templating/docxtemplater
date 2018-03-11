@@ -192,6 +192,18 @@ function getScopeCompilationError({ tag, rootError }) {
 	return err;
 }
 
+function getScopeParserExecutionError({ tag, scope, error }) {
+	const err = new XTScopeParserError("Scope parser execution failed");
+	err.properties = {
+		id: "scopeparser_execution_failed",
+		explanation: `The scope parser for the tag ${tag} failed to execute`,
+		scope,
+		tag,
+		rootError: error,
+	};
+	return err;
+}
+
 function getLoopPositionProducesInvalidXMLError({ tag }) {
 	const err = new XTTemplateError(
 		`The position of the loop tags "${tag}" would produce invalid XML`
@@ -265,6 +277,7 @@ module.exports = {
 	getClosingTagNotMatchOpeningTag,
 	throwUnimplementedTagType,
 	getScopeCompilationError,
+	getScopeParserExecutionError,
 	getUnopenedTagException,
 	getUnclosedTagException,
 	throwMalformedXml,

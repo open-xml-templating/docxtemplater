@@ -1,4 +1,10 @@
-const { expectToThrow, createDoc, shouldBeSame, expect } = require("./utils");
+const {
+	expectToThrow,
+	createDoc,
+	shouldBeSame,
+	expect,
+	resolveSoon,
+} = require("./utils");
 const angularParser = require("./angular-parser");
 const Errors = require("../errors.js");
 
@@ -181,6 +187,7 @@ describe("Table", function() {
 			"TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data"
 		);
 	});
+
 	it("should work with more complex table", function() {
 		const doc = createDoc("table-complex-example.docx");
 		doc.setData({
@@ -424,5 +431,176 @@ describe("Load Office 365 file", function() {
 			.render();
 		expect(doc.getFullText()).to.be.equal("Value Value2");
 		shouldBeSame({ doc, expectedName: "expected-office365.docx" });
+	});
+});
+
+describe("Resolver", function() {
+	it("should work", function() {
+		const doc = createDoc("office365.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.compile();
+		return doc
+			.resolveData({
+				test: resolveSoon("Value"),
+				test2: "Value2",
+			})
+			.then(function() {
+				doc.render();
+				expect(doc.getFullText()).to.be.equal("Value Value2");
+				shouldBeSame({ doc, expectedName: "expected-office365.docx" });
+			});
+	});
+
+	it("should resolve loops", function() {
+		const doc = createDoc("multi-loop.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.compile();
+		return doc
+			.resolveData({
+				companies: resolveSoon([
+					{
+						name: "Acme",
+						users: resolveSoon([
+							{
+								name: "John",
+							},
+							{
+								name: "James",
+							},
+						]),
+					},
+					{
+						name: resolveSoon("Emca"),
+						users: resolveSoon([
+							{
+								name: "Mary",
+							},
+							{
+								name: "Liz",
+							},
+						]),
+					},
+				]),
+				test2: "Value2",
+			})
+			.then(function() {
+				doc.render();
+				shouldBeSame({ doc, expectedName: "multi-loop-expected.docx" });
+			});
+	});
+
+	it("should resolve with simple table", function() {
+		const doc = createDoc("table-complex2-example.docx");
+		doc.compile();
+		return doc
+			.resolveData({
+				table1: [
+					{
+						t1data1: "t1-1row-data1",
+						t1data2: "t1-1row-data2",
+						t1data3: "t1-1row-data3",
+						t1data4: "t1-1row-data4",
+					},
+					{
+						t1data1: "t1-2row-data1",
+						t1data2: "t1-2row-data2",
+						t1data3: "t1-2row-data3",
+						t1data4: "t1-2row-data4",
+					},
+					{
+						t1data1: "t1-3row-data1",
+						t1data2: "t1-3row-data2",
+						t1data3: "t1-3row-data3",
+						t1data4: "t1-3row-data4",
+					},
+				],
+				t1total1: "t1total1-data",
+				t1total2: "t1total2-data",
+				t1total3: "t1total3-data",
+			})
+			.then(function(resolved) {
+				expect(resolved).to.be.deep.equal([
+					{
+						tag: "t1total1",
+						value: "t1total1-data",
+					},
+					{
+						tag: "t1total2",
+						value: "t1total2-data",
+					},
+					{
+						tag: "t1total3",
+						value: "t1total3-data",
+					},
+					{
+						tag: "table1",
+						value: [
+							[
+								{
+									tag: "t1data1",
+									value: "t1-1row-data1",
+								},
+								{
+									tag: "t1data2",
+									value: "t1-1row-data2",
+								},
+								{
+									tag: "t1data3",
+									value: "t1-1row-data3",
+								},
+								{
+									tag: "t1data4",
+									value: "t1-1row-data4",
+								},
+							],
+							[
+								{
+									tag: "t1data1",
+									value: "t1-2row-data1",
+								},
+								{
+									tag: "t1data2",
+									value: "t1-2row-data2",
+								},
+								{
+									tag: "t1data3",
+									value: "t1-2row-data3",
+								},
+								{
+									tag: "t1data4",
+									value: "t1-2row-data4",
+								},
+							],
+							[
+								{
+									tag: "t1data1",
+									value: "t1-3row-data1",
+								},
+								{
+									tag: "t1data2",
+									value: "t1-3row-data2",
+								},
+								{
+									tag: "t1data3",
+									value: "t1-3row-data3",
+								},
+								{
+									tag: "t1data4",
+									value: "t1-3row-data4",
+								},
+							],
+						],
+					},
+				]);
+				doc.render();
+				const fullText = doc.getFullText();
+				expect(fullText).to.be.equal(
+					"TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data"
+				);
+			});
 	});
 });

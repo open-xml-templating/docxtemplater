@@ -21,7 +21,7 @@ const Docxtemplater = class Docxtemplater {
 	constructor() {
 		if (arguments.length > 0) {
 			throw new Error(
-				"The constructor with parameters has been removed in docxtemplater 3.0, please check the upgrade guide."
+				"The constructor with parameters has been removed in docxtemplater 3, please check the upgrade guide."
 			);
 		}
 		this.compiled = {};
@@ -81,6 +81,16 @@ const Docxtemplater = class Docxtemplater {
 		currentFile.parse();
 		this.compiled[fileName] = currentFile;
 	}
+	resolveData(data) {
+		return Promise.all(
+			Object.keys(this.compiled).map(from => {
+				const currentFile = this.compiled[from];
+				return currentFile.resolveTags(data);
+			})
+		).then(resolved => {
+			return concatArrays(resolved);
+		});
+	}
 	compile() {
 		if (Object.keys(this.compiled).length) {
 			return this;
@@ -100,7 +110,6 @@ const Docxtemplater = class Docxtemplater {
 		this.setModules({
 			zip: this.zip,
 			xmlDocuments: this.xmlDocuments,
-			data: this.data,
 		});
 		this.getTemplatedFiles();
 		this.setModules({ compiled: this.compiled });
@@ -142,6 +151,9 @@ const Docxtemplater = class Docxtemplater {
 	}
 	render() {
 		this.compile();
+		this.setModules({
+			data: this.data,
+		});
 		this.mapper = this.modules.reduce(function(value, module) {
 			return module.getRenderedMap(value);
 		}, {});

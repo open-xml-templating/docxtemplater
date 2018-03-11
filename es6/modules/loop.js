@@ -129,10 +129,11 @@ const loopModule = {
 		}
 		let totalValue = [];
 		let errors = [];
-		function loopOver(scope) {
+		function loopOver(scope, i) {
 			const scopeManager = options.scopeManager.createSubScopeManager(
 				scope,
-				part.value
+				part.value,
+				i
 			);
 			const subRendered = options.render(
 				mergeObjects({}, options, {
@@ -146,6 +147,37 @@ const loopModule = {
 		}
 		options.scopeManager.loopOver(part.value, loopOver, part.inverted);
 		return { value: totalValue.join(""), errors };
+	},
+	resolve(part, options) {
+		if (!part.type === "placeholder" || part.module !== moduleName) {
+			return null;
+		}
+		const value = options.scopeManager.getValue(part.value);
+		const promises = [];
+		function loopOver(scope, i) {
+			const scopeManager = options.scopeManager.createSubScopeManager(
+				scope,
+				part.value,
+				i
+			);
+			promises.push(
+				options.resolve(
+					mergeObjects(options, {
+						compiled: part.subparsed,
+						tags: {},
+						scopeManager,
+					})
+				)
+			);
+		}
+		return Promise.resolve(value).then(function(value) {
+			options.scopeManager.loopOverValue(value, loopOver, part.inverted);
+			return Promise.all(promises).then(function(r) {
+				return r.map(function({ resolved }) {
+					return resolved;
+				});
+			});
+		});
 	},
 };
 

@@ -11,6 +11,7 @@ Docxtemplater
    tag_types
    configuration
    angular_parse
+   async
    platform_support
    errors
    cli

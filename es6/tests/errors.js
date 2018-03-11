@@ -2,12 +2,13 @@
 
 const expressions = require("angular-expressions");
 
-const { loadFile, loadDocument } = require("./utils");
+const { loadFile, loadDocument, rejectSoon } = require("./utils");
 const Errors = require("../errors.js");
 const {
 	createXmlTemplaterDocx,
 	wrapMultiError,
 	expectToThrow,
+	expectToThrowAsync,
 } = require("./utils");
 
 function angularParser(tag) {
@@ -938,6 +939,31 @@ describe("Rendering error", function() {
 			parser: angularParser,
 			tags: { user: String.fromCharCode(28) },
 		});
-		expectToThrow(create, Errors.RenderingError, expectedError);
+		return expectToThrow(create, Errors.RenderingError, expectedError);
+	});
+});
+
+describe("Async errors", function() {
+	it("should show error when having async promise", function() {
+		const content = "<w:t>{user}</w:t>";
+		const expectedError = {
+			name: "ScopeParserError",
+			message: "Scope parser execution failed",
+			properties: {
+				id: "scopeparser_execution_failed",
+				tag: "user",
+				scope: {
+					user: {},
+				},
+				rootError: {
+					message: "Foobar",
+				},
+			},
+		};
+		const doc = createXmlTemplaterDocx(content);
+		function create() {
+			return doc.resolveData({ user: rejectSoon(new Error("Foobar")) });
+		}
+		return expectToThrowAsync(create, Errors.XTScopeParserError, expectedError);
 	});
 });

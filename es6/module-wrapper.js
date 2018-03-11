@@ -13,6 +13,7 @@ module.exports = function(module) {
 		getRenderedMap: identity,
 		postparse: identity,
 		on: emptyFun,
+		resolve: emptyFun,
 	};
 	if (
 		Object.keys(defaults).every(function(key) {
