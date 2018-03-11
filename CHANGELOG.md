@@ -1,3 +1,7 @@
+### 3.5.1
+
+-	Use JSZipUtils in tests
+
 ### 3.5.0
 
 -	Add resolveData function for async data resolving
