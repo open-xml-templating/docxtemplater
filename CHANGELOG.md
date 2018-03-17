@@ -1,3 +1,7 @@
+### 3.5.2
+
+-	Fix #226 when using {@rawXml} tag inside table column, the document is no longer corrupted
+
 ### 3.5.1
 
 -	Use JSZipUtils in tests

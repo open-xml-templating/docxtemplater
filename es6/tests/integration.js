@@ -228,6 +228,13 @@ describe("Table", function() {
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("1234123412341234");
 	});
+
+	it("should not corrupt table with empty rawxml", function() {
+		const doc = createDoc("table-raw-xml.docx");
+		doc.setData({});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
+	});
 });
 
 describe("Dash Loop Testing", function() {
