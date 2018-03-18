@@ -27,9 +27,9 @@ then
 	exit "$?"
 fi
 
-set +e
-
-browserName="chrome" platform="Windows 10" version="58" node webdriver.js
-browserName="firefox" platform="Windows 10" version="55" node webdriver.js
-browserName="internet explorer" platform="Windows 10" version="11" node webdriver.js
-browserName="iphone" platform="Mac 10.11" version="10.2" node webdriver.js
+result=0
+browserName="chrome" platform="Windows 10" version="58" node webdriver.js || result=1
+browserName="firefox" platform="Windows 10" version="55" node webdriver.js || result=1
+browserName="internet explorer" platform="Windows 10" version="11" node webdriver.js || result=1
+browserName="iphone" platform="Mac 10.11" version="10.2" node webdriver.js || result=1
+exit "$result"
