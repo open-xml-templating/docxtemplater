@@ -28,6 +28,7 @@ then
 fi
 
 result=0
+browserName="safari" platform="macOs 10.12" version="11.0" node webdriver.js || result=1
 browserName="chrome" platform="Windows 10" version="58" node webdriver.js || result=1
 browserName="firefox" platform="Windows 10" version="55" node webdriver.js || result=1
 browserName="internet explorer" platform="Windows 10" version="11" node webdriver.js || result=1
