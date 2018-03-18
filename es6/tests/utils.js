@@ -255,12 +255,16 @@ function errorVerifier(e, type, expectedError) {
 			return cleanError(e, expectedError.properties.errors[i]);
 		});
 	}
-	expect(JSON.parse(JSON.stringify(e, function (key, value) {
-		if (value instanceof Promise) {
-			return {};
-		}
-		return value;
-	}))).to.be.deep.equal(expectedError);
+	expect(
+		JSON.parse(
+			JSON.stringify(e, function(key, value) {
+				if (value instanceof Promise) {
+					return {};
+				}
+				return value;
+			})
+		)
+	).to.be.deep.equal(expectedError);
 }
 
 function expectToThrowAsync(fn, type, expectedError) {
