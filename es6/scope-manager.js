@@ -1,6 +1,19 @@
 "use strict";
 const { getScopeParserExecutionError } = require("./errors");
 
+function find(list, fn) {
+	const length = list.length >>> 0;
+	let value;
+
+	for (let i = 0; i < length; i++) {
+		value = list[i];
+		if (fn.call(this, value, i, list)) {
+			return value;
+		}
+	}
+	return undefined;
+}
+
 // This class responsibility is to manage the scope
 const ScopeManager = class ScopeManager {
 	constructor(options) {
@@ -50,18 +63,14 @@ const ScopeManager = class ScopeManager {
 		if (this.resolved) {
 			let w = this.resolved;
 			this.scopePath.forEach((p, index) => {
-				w = w.find(function(r) {
-					if (r.tag === p) {
-						return true;
-					}
+				w = find(w, function(r) {
+					return r.tag === p;
 				});
 				w = w.value[this.scopePathItem[index]];
 			});
-			return (w = w.find(function(r) {
-				if (r.tag === tag) {
-					return true;
-				}
-			}).value);
+			return find(w, function(r) {
+				return r.tag === tag;
+			}).value;
 		}
 		// search in the scopes (in reverse order) and keep the first defined value
 		let result;
