@@ -1,3 +1,9 @@
+### 3.6.0
+
+-	Move cli out of main repository : https://github.com/open-xml-templating/docxtemplater-cli
+
+-	Get meta attributes with raw-xml tag.
+
 ### 3.5.2
 
 -	Fix #226 when using {@rawXml} tag inside table column, the document is no longer corrupted
