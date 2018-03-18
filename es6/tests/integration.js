@@ -5,41 +5,8 @@ const {
 	expect,
 	resolveSoon,
 } = require("./utils");
-const angularParser = require("./angular-parser");
-const Errors = require("../errors.js");
 
-describe("Pptx generation", function() {
-	it("should work with title", function() {
-		const doc = createDoc("title-example.pptx");
-		let con = doc.getZip().files["docProps/app.xml"].asText();
-		expect(con).not.to.contain("Edgar");
-		doc.setData({ name: "Edgar" }).render();
-		con = doc.getZip().files["docProps/app.xml"].asText();
-		expect(con).to.contain("Edgar");
-	});
-	it("should work with simple pptx", function() {
-		const doc = createDoc("simple-example.pptx");
-		doc.setData({ name: "Edgar" }).render();
-		expect(doc.getFullText()).to.be.equal("Hello Edgar");
-	});
-	it("should work with table pptx", function() {
-		const doc = createDoc("table-example.pptx");
-		doc
-			.setData({
-				users: [{ msg: "hello", name: "mary" }, { msg: "hello", name: "john" }],
-			})
-			.render();
-		shouldBeSame({ doc, expectedName: "table-example-expected.pptx" });
-	});
-	it("should work with loop pptx", function() {
-		const doc = createDoc("loop-example.pptx");
-		doc.setData({ users: [{ name: "Doe" }, { name: "John" }] }).render();
-		expect(doc.getFullText()).to.be.equal(" Doe  John ");
-		shouldBeSame({ doc, expectedName: "expected-loop-example.pptx" });
-	});
-
-	it("should work with simple raw pptx", function() {
-		const raw = `<p:sp>
+const raw = `<p:sp>
   <p:nvSpPr>
     <p:cNvPr id="37" name="CustomShape 2"/>
     <p:cNvSpPr/>
@@ -100,10 +67,95 @@ describe("Pptx generation", function() {
     </a:p>
   </p:txBody>
 </p:sp>`;
+
+const angularParser = require("./angular-parser");
+const Errors = require("../errors.js");
+
+describe("Pptx generation", function() {
+	it("should work with title", function() {
+		const doc = createDoc("title-example.pptx");
+		let con = doc.getZip().files["docProps/app.xml"].asText();
+		expect(con).not.to.contain("Edgar");
+		doc.setData({ name: "Edgar" }).render();
+		con = doc.getZip().files["docProps/app.xml"].asText();
+		expect(con).to.contain("Edgar");
+	});
+	it("should work with simple pptx", function() {
+		const doc = createDoc("simple-example.pptx");
+		doc.setData({ name: "Edgar" }).render();
+		expect(doc.getFullText()).to.be.equal("Hello Edgar");
+	});
+	it("should work with table pptx", function() {
+		const doc = createDoc("table-example.pptx");
+		doc
+			.setData({
+				users: [{ msg: "hello", name: "mary" }, { msg: "hello", name: "john" }],
+			})
+			.render();
+		shouldBeSame({ doc, expectedName: "table-example-expected.pptx" });
+	});
+	it("should work with loop pptx", function() {
+		const doc = createDoc("loop-example.pptx");
+		doc.setData({ users: [{ name: "Doe" }, { name: "John" }] }).render();
+		expect(doc.getFullText()).to.be.equal(" Doe  John ");
+		shouldBeSame({ doc, expectedName: "expected-loop-example.pptx" });
+	});
+
+	it("should work with simple raw pptx", function() {
 		const doc = createDoc("raw-xml-example.pptx");
+		let scope, meta, tag;
+		let calls = 0;
+		doc.setOptions({
+			parser: t => {
+				tag = t;
+				return {
+					get: (s, m) => {
+						scope = s;
+						meta = m.meta;
+						calls++;
+						return scope[tag];
+					},
+				};
+			},
+		});
 		doc.setData({ raw }).render();
+		expect(calls).to.equal(1);
+		expect(scope.raw).to.be.a("string");
+		expect(meta).to.be.an("object");
+		expect(meta.part).to.be.an("object");
+		expect(meta.part.expanded).to.be.an("array");
 		expect(doc.getFullText()).to.be.equal("Hello World");
 		shouldBeSame({ doc, expectedName: "expected-raw-xml-example.pptx" });
+	});
+
+	it("should work with simple raw pptx async", function() {
+		const doc = createDoc("raw-xml-example.pptx");
+		let scope, meta, tag;
+		let calls = 0;
+		doc.setOptions({
+			parser: t => {
+				tag = t;
+				return {
+					get: (s, m) => {
+						scope = s;
+						meta = m.meta;
+						calls++;
+						return scope[tag];
+					},
+				};
+			},
+		});
+		doc.compile();
+		return doc.resolveData({ raw }).then(function() {
+			doc.render();
+			expect(calls).to.equal(1);
+			expect(scope.raw).to.be.a("string");
+			expect(meta).to.be.an("object");
+			expect(meta.part).to.be.an("object");
+			expect(meta.part.expanded).to.be.an("array");
+			expect(doc.getFullText()).to.be.equal("Hello World");
+			shouldBeSame({ doc, expectedName: "expected-raw-xml-example.pptx" });
+		});
 	});
 });
 

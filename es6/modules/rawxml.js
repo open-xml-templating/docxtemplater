@@ -52,34 +52,32 @@ function getInner({ part, left, right, postparsed, index }) {
 	return part;
 }
 
-class RawXmlModule {
-	constructor() {
-		this.name = "RawXmlModule";
-		this.prefix = "@";
-	}
+const rawXmlModule = {
+	name: "RawXmlModule",
+	prefix: "@",
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		return options;
-	}
+	},
 	parse(placeHolderContent) {
 		const type = "placeholder";
 		if (placeHolderContent[0] !== this.prefix) {
 			return null;
 		}
 		return { type, value: placeHolderContent.substr(1), module: moduleName };
-	}
+	},
 	postparse(postparsed) {
 		return traits.expandToOne(postparsed, {
 			moduleName,
 			getInner,
 			expandTo: this.fileTypeConfig.tagRawXml,
 		});
-	}
+	},
 	render(part, options) {
 		if (part.module !== moduleName) {
 			return null;
 		}
-		let value = options.scopeManager.getValue(part.value);
+		let value = options.scopeManager.getValue(part.value, { part });
 		if (value == null) {
 			value = options.nullGetter(part);
 		}
@@ -87,7 +85,20 @@ class RawXmlModule {
 			return { value: part.emptyValue || "" };
 		}
 		return { value };
-	}
-}
+	},
+	resolve(part, options) {
+		if (!part.type === "placeholder" || part.module !== moduleName) {
+			return null;
+		}
+		return options.scopeManager
+			.getValueAsync(part.value, { part })
+			.then(function(value) {
+				if (value == null) {
+					return options.nullGetter(part);
+				}
+				return value;
+			});
+	},
+};
 
-module.exports = () => wrapper(new RawXmlModule());
+module.exports = () => wrapper(rawXmlModule);

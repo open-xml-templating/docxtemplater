@@ -57,7 +57,7 @@ const ScopeManager = class ScopeManager {
 		}
 		return this.functorIfInverted(!inverted, functor, currentValue, 0);
 	}
-	getValue(tag, num) {
+	getValue(tag, meta, num) {
 		this.num = num == null ? this.scopeList.length - 1 : num;
 		const scope = this.scopeList[this.num];
 		if (this.resolved) {
@@ -76,29 +76,33 @@ const ScopeManager = class ScopeManager {
 		let result;
 		const parser = this.parser(tag, { scopePath: this.scopePath });
 		try {
-			result = parser.get(scope, { num: this.num, scopeList: this.scopeList });
+			result = parser.get(scope, {
+				num: this.num,
+				scopeList: this.scopeList,
+				meta,
+			});
 		} catch (error) {
 			throw getScopeParserExecutionError({ tag, scope, error });
 		}
 		if (result == null && this.num > 0) {
-			return this.getValue(tag, this.num - 1);
+			return this.getValue(tag, meta, this.num - 1);
 		}
 		return result;
 	}
-	getValueAsync(tag, num) {
+	getValueAsync(tag, meta, num) {
 		this.num = num == null ? this.scopeList.length - 1 : num;
 		const scope = this.scopeList[this.num];
 		// search in the scopes (in reverse order) and keep the first defined value
 		const parser = this.parser(tag, { scopePath: this.scopePath });
 		return Promise.resolve(
-			parser.get(scope, { num: this.num, scopeList: this.scopeList })
+			parser.get(scope, { num: this.num, scopeList: this.scopeList, meta })
 		)
 			.catch(function(error) {
 				throw getScopeParserExecutionError({ tag, scope, error });
 			})
 			.then(result => {
 				if (result == null && this.num > 0) {
-					return this.getValueAsync(tag, this.num - 1);
+					return this.getValueAsync(tag, meta, this.num - 1);
 				}
 				return result;
 			});
