@@ -14,7 +14,7 @@ const webdriverio = require("webdriverio");
 const {expect} = require("chai");
 const request = require("request");
 const serveStatic = require("serve-static");
-const port = 8444;
+const port = 9000;
 const http = require("http");
 
 const BROWSER = process.env.BROWSER || "CHROME";
