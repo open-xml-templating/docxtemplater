@@ -34,6 +34,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^4.1.2",
     "envify": "^4.1.0",
+    "es6-promise": "^4.2.4",
     "eslint": "^4.18.2",
     "eslint-plugin-dependencies": "^2.4.0",
     "eslint_d": "^5.2.2",

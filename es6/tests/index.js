@@ -1,5 +1,6 @@
 "use strict";
 
+require("es6-promise").polyfill();
 const { setExamplesDirectory, setStartFunction, start } = require("./utils");
 const path = require("path");
 setExamplesDirectory(path.resolve(__dirname, "..", "..", "examples"));
