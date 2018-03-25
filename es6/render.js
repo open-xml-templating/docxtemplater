@@ -23,7 +23,11 @@ function moduleRender(part, options) {
 }
 
 function render(options) {
-	const { compiled, scopeManager, nullGetter } = options;
+	const baseNullGetter = options.baseNullGetter;
+	const { compiled, scopeManager } = options;
+	const nullGetter = (options.nullGetter = (part, sm) => {
+		return baseNullGetter(part, sm || scopeManager);
+	});
 	let errors = [];
 	const parts = compiled.map(function(part) {
 		const moduleRendered = moduleRender(part, options);

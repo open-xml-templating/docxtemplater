@@ -1,3 +1,7 @@
+### 3.6.1
+
+Add `scopeManager` argument to nullGetter to know what variable is undefined.
+
 ### 3.6.0
 
 -	Move cli out of main repository : https://github.com/open-xml-templating/docxtemplater-cli

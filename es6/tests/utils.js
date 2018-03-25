@@ -32,6 +32,13 @@ function walk(dir) {
 	return results;
 }
 
+function createXmlTemplaterDocxNoRender(content, options = {}) {
+	const doc = makeDocx("temporary.docx", content);
+	doc.setOptions(options);
+	doc.setData(options.tags);
+	return doc;
+}
+
 function createXmlTemplaterDocx(content, options = {}) {
 	const doc = makeDocx("temporary.docx", content);
 	doc.setOptions(options);
@@ -453,6 +460,7 @@ module.exports = {
 	cleanError,
 	createDoc,
 	createXmlTemplaterDocx,
+	createXmlTemplaterDocxNoRender,
 	expect,
 	expectToThrow,
 	expectToThrowAsync,

@@ -144,7 +144,7 @@ By default the nullGetter is the following function
 
 .. code-block:: javascript
 
-    nullGetter(part) {
+    nullGetter(part, scopeManager) {
         if (!part.module) {
             return "undefined";
         }
@@ -156,3 +156,6 @@ By default the nullGetter is the following function
 
 This means that the default value for simple tags is to show "undefined".
 The default for rawTags ({@rawTag}) is to drop the paragraph completely (you could enter any xml here).
+
+
+The scopeManager variable contains some meta information about the tag, for example, if the template is : {#users}{name}{/users} and the tag name is undefined, scopeManager.scopePath === ["users", "name"]

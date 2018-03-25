@@ -14,7 +14,11 @@ function moduleResolve(part, options) {
 
 function resolve(options) {
 	const resolved = [];
-	const { compiled, scopeManager, nullGetter } = options;
+	const baseNullGetter = options.baseNullGetter;
+	const { compiled, scopeManager } = options;
+	const nullGetter = (options.nullGetter = (part, sm) => {
+		return baseNullGetter(part, sm || scopeManager);
+	});
 	options.resolved = resolved;
 	const errors = [];
 	return Promise.all(

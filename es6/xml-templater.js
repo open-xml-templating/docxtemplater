@@ -42,7 +42,7 @@ module.exports = class XmlTemplater {
 			tags: this.tags,
 			modules: this.modules,
 			parser: this.parser,
-			nullGetter: this.nullGetter,
+			baseNullGetter: this.nullGetter,
 			filePath: this.filePath,
 			resolve,
 		};
@@ -123,7 +123,7 @@ module.exports = class XmlTemplater {
 			resolved: this.resolved,
 			modules: this.modules,
 			parser: this.parser,
-			nullGetter: this.nullGetter,
+			baseNullGetter: this.nullGetter,
 			filePath: this.filePath,
 			render,
 		};

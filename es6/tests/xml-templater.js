@@ -1,4 +1,9 @@
-const { createXmlTemplaterDocx, expect, getContent } = require("./utils");
+const {
+	createXmlTemplaterDocx,
+	expect,
+	getContent,
+	createXmlTemplaterDocxNoRender,
+} = require("./utils");
 
 describe("XmlTemplater", function() {
 	it("should work with simpleContent", function() {
@@ -239,17 +244,44 @@ describe("XmlTemplater", function() {
 
 describe("Change the nullGetter", function() {
 	it("should work with null", function() {
-		const content = "<w:t>Hello {name}</w:t>";
-		const scope = {};
-		function nullGetter() {
+		const content = "<w:t>Hello {#names}{#foo}{bar}{/foo}{/names}</w:t>";
+		function nullGetter(part, scopeManager) {
+			expect(scopeManager.scopePath).to.deep.equal(["names", "foo"]);
+			expect(scopeManager.scopePathItem).to.deep.equal([0, 0]);
 			return "null";
 		}
-		const xmlTemplater = createXmlTemplaterDocx(content, {
-			tags: scope,
+		const xmlTemplater = createXmlTemplaterDocxNoRender(content, {
+			tags: {
+				names: [{ foo: [{}] }],
+			},
 			nullGetter,
 		});
 		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
+	});
+
+	it("should work with null in resolve", function() {
+		const content = "<w:t>Hello {#names}{#foo}{bar}{/foo}{/names}</w:t>";
+		let calls = 0;
+		function nullGetter(part, scopeManager) {
+			calls++;
+			expect(scopeManager.scopePath).to.deep.equal(["names", "foo"]);
+			expect(scopeManager.scopePathItem).to.deep.equal([0, 0]);
+			return "null";
+		}
+		const data = {
+			names: [{ foo: [{}] }],
+		};
+		const xmlTemplater = createXmlTemplaterDocxNoRender(content, {
+			nullGetter,
+		});
+		xmlTemplater.compile();
+		return xmlTemplater.resolveData(data).then(function() {
+			expect(calls).to.be.equal(1);
+			xmlTemplater.render();
+			expect(calls).to.be.equal(1);
+			expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
+		});
 	});
 });
 
