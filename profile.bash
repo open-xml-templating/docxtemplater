@@ -4,13 +4,14 @@ set -e
 set -u
 
 profile() {
+	rm p.json
 	find ./js -name '*.js' | while IFS='' read -r filename; do
 		echo "$filename"
 		echo "${filename/js/prof}"
 		mkdir -p "$(dirname "${filename/js/prof}")"
 		profi-stanbul profile --output "${filename/js/prof}" "${filename}"
 	done
-	mocha prof/tests/docxtemplater.js
+	mocha prof/tests/index.js
 }
 
 analyse() {
