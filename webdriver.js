@@ -11,7 +11,7 @@ function exit(message) {
 let browserName = null;
 const finalhandler = require("finalhandler");
 const webdriverio = require("webdriverio");
-const {expect} = require("chai");
+const { expect } = require("chai");
 const request = require("request");
 const serveStatic = require("serve-static");
 const port = 9000;
@@ -57,7 +57,13 @@ if (!desiredCapabilities) {
 let options = {};
 
 if (BROWSER === "SAUCELABS") {
-	browserName = process.env.browserName + " " + process.env.version + " " + process.env.platform + " (SAUCELABS)";
+	browserName =
+		process.env.browserName +
+		" " +
+		process.env.version +
+		" " +
+		process.env.platform +
+		" (SAUCELABS)";
 	options = {
 		tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
 		"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
@@ -82,8 +88,16 @@ const server = http.createServer(function onRequest(req, res) {
 
 function updateSaucelabsStatus(result, done) {
 	const options = {
-		headers: {"Content-Type": "text/json"},
-		url: "http://" + process.env.SAUCE_USERNAME + ":" + process.env.SAUCE_ACCESS_KEY + "@saucelabs.com/rest/v1/" + process.env.SAUCE_USERNAME + "/jobs/" + client.requestHandler.sessionID,
+		headers: { "Content-Type": "text/json" },
+		url:
+			"http://" +
+			process.env.SAUCE_USERNAME +
+			":" +
+			process.env.SAUCE_ACCESS_KEY +
+			"@saucelabs.com/rest/v1/" +
+			process.env.SAUCE_USERNAME +
+			"/jobs/" +
+			client.requestHandler.sessionID,
 		method: "PUT",
 		body: JSON.stringify({
 			passed: result,
@@ -91,8 +105,8 @@ function updateSaucelabsStatus(result, done) {
 		}),
 	};
 
-	request(options, function (err) {
-		if(err) {
+	request(options, function(err) {
+		if (err) {
 			done(err);
 			return false;
 		}
@@ -102,7 +116,7 @@ function updateSaucelabsStatus(result, done) {
 }
 
 const startTime = +new Date();
-server.listen(port, function () {
+server.listen(port, function() {
 	function test() {
 		if (+new Date() - startTime > 10000) {
 			exit("Aborting connection to webdriver after 10 seconds");
@@ -110,48 +124,61 @@ server.listen(port, function () {
 		return client
 			.init()
 			.url(`http://localhost:${port}/test/mocha.html`)
-			.then(function () {
+			.then(function() {
 				return client.waitForText("#status", 30000);
 			})
-			.getText("#mocha-stats").then(function (text) {
+			.getText("#mocha-stats")
+			.then(function(text) {
 				const passes = parseInt(text.replace(/.*passes: ([0-9]+).*/, "$1"), 10);
-				const failures = parseInt(text.replace(/.*failures: ([0-9]+).*/, "$1"), 10);
-				expect(passes).to.be.above(0);
-				expect(failures).to.be.equal(0);
-				return {failures, passes};
+				const failures = parseInt(
+					text.replace(/.*failures: ([0-9]+).*/, "$1"),
+					10
+				);
+				return client
+					.waitForExist("li.failures a", 5000)
+					.then(function() {
+						return client.element("li.failures a").click();
+					})
+					.then(function() {
+						return client.pause(2000);
+					})
+					.then(function() {
+						expect(passes).to.be.above(0);
+						expect(failures).to.be.equal(0);
+						return { failures, passes };
+					});
 			})
-			.then(function ({passes}) {
-				console.log(`browser tests successful (${passes} passes) on ${browserName}`);
+			.then(function({ passes }) {
+				console.log(
+					`browser tests successful (${passes} passes) on ${browserName}`
+				);
 				if (BROWSER === "SAUCELABS") {
-					updateSaucelabsStatus(true, (e) => {
+					updateSaucelabsStatus(true, e => {
 						if (e) {
 							throw e;
 						}
 						server.close();
 					});
-				}
-				else {
+				} else {
 					server.close();
 				}
 			})
 			.end()
-			.catch(function (e) {
+			.catch(function(e) {
 				if (e.message.indexOf("ECONNREFUSED") !== -1) {
 					return test();
 				}
 				if (BROWSER === "SAUCELABS") {
-					updateSaucelabsStatus(false, (err) => {
+					updateSaucelabsStatus(false, err => {
 						if (err) {
 							throw err;
 						}
 						exit(e);
 					});
-				}
-				else {
+				} else {
 					exit(e);
 				}
 			});
 	}
 	test();
 });
-
