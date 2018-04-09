@@ -34,7 +34,7 @@
     "es6-promise": "^4.2.4",
     "eslint": "^4.19.1",
     "eslint-plugin-dependencies": "^2.4.0",
-    "eslint_d": "^5.2.2",
+    "eslint_d": "^5.3.0",
     "finalhandler": "^1.1.1",
     "jszip": "^2.6.1",
     "lodash": "^4.17.5",
@@ -45,10 +45,10 @@
     "rimraf": "^2.6.2",
     "selenium-standalone": "^6.13.0",
     "serve-static": "^1.13.2",
-    "uglify-js": "^3.3.16",
+    "uglify-js": "^3.3.20",
     "webdriverio": "^4.12.0",
-    "webpack": "^4.4.1",
-    "webpack-cli": "^2.0.13"
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
   },
   "license": "MIT",
   "engines": {
