@@ -1,6 +1,16 @@
 /* eslint-disable no-process-env */
 /* eslint-disable no-console */
 
+const {
+	BROWSER = "CHROME",
+	browserName,
+	version,
+	platform,
+	TRAVIS_JOB_NUMBER,
+	TRAVIS_BUILD_NUMBER,
+	SAUCE_USERNAME,
+	SAUCE_ACCESS_KEY,
+} = process.env;
 function exit(message) {
 	console.log(message);
 	/* eslint-disable no-process-exit */
@@ -8,7 +18,7 @@ function exit(message) {
 	/* eslint-enable no-process-exit */
 }
 
-let browserName = null;
+let fullBrowserName = null;
 const finalhandler = require("finalhandler");
 const webdriverio = require("webdriverio");
 const { expect } = require("chai");
@@ -16,8 +26,6 @@ const request = require("request");
 const serveStatic = require("serve-static");
 const port = 9000;
 const http = require("http");
-
-const BROWSER = process.env.BROWSER || "CHROME";
 
 const browserCapability = {
 	CHROME: {
@@ -36,49 +44,43 @@ const browserCapability = {
 		browserName: "firefox",
 	},
 	SAUCELABS: {
-		browserName: process.env.browserName,
-		version: process.env.version,
-		platform: process.env.platform,
+		browserName,
+		version,
+		platform,
 		tags: ["docxtemplater"],
 		name: "docxtemplater mocha",
-		"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-		tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
-		build: process.env.TRAVIS_BUILD_NUMBER,
+		"tunnel-identifier": TRAVIS_JOB_NUMBER,
+		tunnelIdentifier: TRAVIS_JOB_NUMBER,
+		build: TRAVIS_BUILD_NUMBER,
 		captureHtml: true,
 		public: true,
 	},
 };
 
 const desiredCapabilities = browserCapability[BROWSER];
-browserName = BROWSER + " (local)";
+fullBrowserName = BROWSER + " (local)";
 if (!desiredCapabilities) {
 	exit("Unknown browser :" + BROWSER);
 }
 let options = {};
 
 if (BROWSER === "SAUCELABS") {
-	browserName =
-		process.env.browserName +
-		" " +
-		process.env.version +
-		" " +
-		process.env.platform +
-		" (SAUCELABS)";
+	fullBrowserName = `${browserName} ${version} ${platform} (SAUCELABS)`;
 	options = {
-		tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
-		"tunnel-identifier": process.env.TRAVIS_JOB_NUMBER,
-		build: process.env.TRAVIS_BUILD_NUMBER,
+		tunnelIdentifier: TRAVIS_JOB_NUMBER,
+		"tunnel-identifier": TRAVIS_JOB_NUMBER,
+		build: TRAVIS_BUILD_NUMBER,
 		host: "ondemand.saucelabs.com",
 		port: 80,
-		user: process.env.SAUCE_USERNAME,
-		key: process.env.SAUCE_ACCESS_KEY,
+		user: SAUCE_USERNAME,
+		key: SAUCE_ACCESS_KEY,
 		logLevel: "silent",
 	};
 }
 
 options.desiredCapabilities = desiredCapabilities;
 
-console.log("Running test on " + browserName);
+console.log("Running test on " + fullBrowserName);
 
 const client = webdriverio.remote(options);
 const serve = serveStatic(__dirname);
@@ -87,32 +89,27 @@ const server = http.createServer(function onRequest(req, res) {
 });
 
 function updateSaucelabsStatus(result, done) {
-	const options = {
-		headers: { "Content-Type": "text/json" },
-		url:
-			"http://" +
-			process.env.SAUCE_USERNAME +
-			":" +
-			process.env.SAUCE_ACCESS_KEY +
-			"@saucelabs.com/rest/v1/" +
-			process.env.SAUCE_USERNAME +
-			"/jobs/" +
-			client.requestHandler.sessionID,
-		method: "PUT",
-		body: JSON.stringify({
-			passed: result,
-			public: true,
-		}),
-	};
+	request(
+		{
+			headers: { "Content-Type": "text/json" },
+			url: `http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@saucelabs.com/rest/v1/${SAUCE_USERNAME}/jobs/${
+				client.requestHandler.sessionID
+			}`,
+			method: "PUT",
+			body: JSON.stringify({
+				passed: result,
+				public: true,
+			}),
+		},
+		function(err) {
+			if (err) {
+				done(err);
+				return false;
+			}
 
-	request(options, function(err) {
-		if (err) {
-			done(err);
-			return false;
+			done();
 		}
-
-		done();
-	});
+	);
 }
 
 const startTime = +new Date();
@@ -150,7 +147,7 @@ server.listen(port, function() {
 			})
 			.then(function({ passes }) {
 				console.log(
-					`browser tests successful (${passes} passes) on ${browserName}`
+					`browser tests successful (${passes} passes) on ${fullBrowserName}`
 				);
 				if (BROWSER === "SAUCELABS") {
 					updateSaucelabsStatus(true, e => {
