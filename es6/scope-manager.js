@@ -76,11 +76,7 @@ const ScopeManager = class ScopeManager {
 		let result;
 		const parser = this.parser(tag, { scopePath: this.scopePath });
 		try {
-			result = parser.get(scope, {
-				num: this.num,
-				scopeList: this.scopeList,
-				meta,
-			});
+			result = parser.get(scope, this.getContext(meta));
 		} catch (error) {
 			throw getScopeParserExecutionError({ tag, scope, error });
 		}
@@ -89,14 +85,22 @@ const ScopeManager = class ScopeManager {
 		}
 		return result;
 	}
+	getContext(meta) {
+		return {
+			num: this.num,
+			meta,
+			scopeList: this.scopeList,
+			resolved: this.resolved,
+			scopePath: this.scopePath,
+			scopePathItem: this.scopePathItem,
+		};
+	}
 	getValueAsync(tag, meta, num) {
 		this.num = num == null ? this.scopeList.length - 1 : num;
 		const scope = this.scopeList[this.num];
 		// search in the scopes (in reverse order) and keep the first defined value
 		const parser = this.parser(tag, { scopePath: this.scopePath });
-		return Promise.resolve(
-			parser.get(scope, { num: this.num, scopeList: this.scopeList, meta })
-		)
+		return Promise.resolve(parser.get(scope, this.getContext(meta)))
 			.catch(function(error) {
 				throw getScopeParserExecutionError({ tag, scope, error });
 			})

@@ -362,6 +362,29 @@ describe("Changing the parser", function() {
 		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 	});
+
+	it("should be able to access meta to get the index", function() {
+		const content = "<w:t>Hello {#users}{$index} {name} {/users}</w:t>";
+		const scope = {
+			users: [{ name: "Jane" }, { name: "Mary" }],
+		};
+		const xmlTemplater = createXmlTemplaterDocx(content, {
+			tags: scope,
+			parser: function parser(tag) {
+				return {
+					get(scope, meta) {
+						if (tag === "$index") {
+							const indexes = meta.scopePathItem;
+							return indexes[indexes.length - 1];
+						}
+						return scope[tag];
+					},
+				};
+			},
+		});
+		xmlTemplater.render();
+		expect(xmlTemplater.getFullText()).to.be.equal("Hello 0 Jane 1 Mary ");
+	});
 });
 
 describe("Special characters", function() {

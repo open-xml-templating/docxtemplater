@@ -60,6 +60,59 @@ See `angular parser`_ for comprehensive documentation
 
 .. _`angular parser`: angular_parse.html
 
+The parser function is given two arguments, 
+
+For the template 
+
+.. code-block:: text
+
+    Hello {#users}{.}{/}
+
+With the data : 
+
+.. code-block:: javascript
+
+    {users: ['Mary', 'John']}
+
+.. code-block:: javascript
+
+    function parser(scope, context) [
+        console.log(scope); 
+        console.log(context);
+    }
+
+
+For the tag `.` in the first iteration, the arguments will be : 
+
+.. code-block:: javascript
+
+    scope = { "name": "Jane" }
+    context = {
+      "num": 1, // This corresponds to the level of the nesting, the {#users} tag is level 0, the {.} is level 1
+      "scopeList": [
+        {
+          "users": [
+            {
+              "name": "Jane"
+            },
+            {
+              "name": "Mary"
+            }
+          ]
+        },
+        {
+          "name": "Jane"
+        }
+      ],
+      "scopePath": [
+        "users"
+      ],
+      "scopePathItem": [
+        0
+      ]
+      // Together, scopePath and scopePathItem describe where we are in the data, in this case, we are in the tag users[0] (the first user)
+    }
+
 Custom delimiters
 -----------------
 
