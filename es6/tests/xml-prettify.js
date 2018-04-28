@@ -40,7 +40,11 @@ module.exports = function(xml) {
 		const opening = Boolean(ln.match(/<[^!].*>/)); // is this even a tag (that's not <!something>)
 		const type = single
 			? "single"
-			: closing ? "closing" : opening ? "opening" : "other";
+			: closing
+				? "closing"
+				: opening
+					? "opening"
+					: "other";
 		const fromTo = lastType + "->" + type;
 		lastType = type;
 		let padding = "";

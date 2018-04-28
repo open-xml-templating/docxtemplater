@@ -121,7 +121,9 @@ function throwContentMustBeString(type) {
 
 function throwRawTagNotInParagraph(options) {
 	const err = new XTTemplateError("Raw tag not in paragraph");
-	const { part: { value, offset } } = options;
+	const {
+		part: { value, offset },
+	} = options;
 	err.properties = {
 		id: "raw_tag_outerxml_invalid",
 		explanation: `The tag "${value}" is not inside a paragraph`,
