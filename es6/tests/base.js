@@ -372,9 +372,9 @@ describe("Changing the parser", function() {
 			tags: scope,
 			parser: function parser(tag) {
 				return {
-					get(scope, meta) {
+					get(scope, context) {
 						if (tag === "$index") {
-							const indexes = meta.scopePathItem;
+							const indexes = context.scopePathItem;
 							return indexes[indexes.length - 1];
 						}
 						return scope[tag];

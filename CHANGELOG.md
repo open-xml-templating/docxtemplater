@@ -1,3 +1,9 @@
+### 3.6.2
+
+Fix https://github.com/open-xml-templating/docxtemplater/issues/397 : Add more information to `context` in the parser to be able to write `{#users}{$index} - {name}`.
+
+See https://docxtemplater.readthedocs.io/en/latest/configuration.html#custom-parser for full doc.
+
 ### 3.6.1
 
 Add `scopeManager` argument to nullGetter to know what variable is undefined.

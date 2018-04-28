@@ -113,6 +113,22 @@ For the tag `.` in the first iteration, the arguments will be :
       // Together, scopePath and scopePathItem describe where we are in the data, in this case, we are in the tag users[0] (the first user)
     }
 
+For example, it is possible to use the `{$index}` tag inside a loop by using following parser : 
+
+.. code-block:: javascript
+
+    function parser(tag) {
+        return {
+            get(scope, context) {
+                if (tag === "$index") {
+                    const indexes = context.scopePathItem;
+                    return indexes[indexes.length - 1];
+                }
+                return scope[tag];
+            },
+        };
+    }
+
 Custom delimiters
 -----------------
 
