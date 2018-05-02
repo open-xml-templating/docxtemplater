@@ -51,7 +51,7 @@ Here's a code sample for how to use the angularParser :
     var angularParser = function(tag) {
         return {
             get: tag === '.' ? function(s){ return s;} : function(s) {
-                return expressions.compile(tag.replace(/’/g, "'"))(s);
+                return expressions.compile(tag.replace(/(’|“|”)/g, "'"))(s);
             }
         };
     }
