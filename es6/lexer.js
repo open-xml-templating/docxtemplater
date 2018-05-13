@@ -2,6 +2,7 @@ const {
 	getUnclosedTagException,
 	getUnopenedTagException,
 	throwMalformedXml,
+	throwXmlInvalid,
 } = require("./errors");
 const { concatArrays, isTextStart, isTextEnd } = require("./doc-utils");
 
@@ -69,7 +70,11 @@ function tagMatcher(content, textMatchArray, othersMatchArray) {
 			break;
 		}
 		const offset = cursor;
+		const nextOpening = content.indexOf("<", cursor + 1);
 		cursor = content.indexOf(">", cursor);
+		if (cursor === -1 || (nextOpening !== -1 && cursor > nextOpening)) {
+			throwXmlInvalid(content, offset);
+		}
 		const tagText = content.slice(offset, cursor + 1);
 		const { tag, position } = getTag(tagText);
 		const text = allMatches[tag];

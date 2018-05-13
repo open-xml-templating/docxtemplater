@@ -21,6 +21,37 @@ function angularParser(tag) {
 }
 
 describe("Compilation errors", function() {
+	it("should fail when parsing invalid xml (1)", function() {
+		const content = "<w:t";
+		const expectedError = {
+			name: "TemplateError",
+			message: "An XML file has invalid xml",
+			properties: {
+				content,
+				offset: 0,
+				id: "file_has_invalid_xml",
+			},
+		};
+		const create = createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
+	it("should fail when parsing invalid xml (2)", function() {
+		const content =
+			"<w:t>Foobar </w:t><w:t>Foobar </w:t><w:t>Foobar </w:t> <w:t John Jane Mary Doe</w:t>";
+		const expectedError = {
+			name: "TemplateError",
+			message: "An XML file has invalid xml",
+			properties: {
+				content,
+				offset: 55,
+				id: "file_has_invalid_xml",
+			},
+		};
+		const create = createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
 	it("should fail when tag unclosed at end of document", function() {
 		const content = "<w:t>{unclosedtag my text</w:t>";
 		const expectedError = {

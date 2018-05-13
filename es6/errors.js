@@ -263,28 +263,42 @@ function throwFileTypeNotIdentified() {
 	throw err;
 }
 
+function throwXmlInvalid(content, offset) {
+	const err = new XTTemplateError("An XML file has invalid xml");
+	err.properties = {
+		id: "file_has_invalid_xml",
+		content,
+		offset,
+		explanation: "The docx contains invalid XML, it is most likely corrupt",
+	};
+	throw err;
+}
+
 module.exports = {
 	XTError,
 	XTTemplateError,
 	XTInternalError,
 	XTScopeParserError,
 	RenderingError,
-	throwMultiError,
-	throwXmlTagNotFound,
-	throwCorruptCharacters,
-	throwContentMustBeString,
-	getUnmatchedLoopException,
-	throwRawTagShouldBeOnlyTextInParagraph,
-	throwRawTagNotInParagraph,
+
 	getClosingTagNotMatchOpeningTag,
-	throwUnimplementedTagType,
+	getLoopPositionProducesInvalidXMLError,
 	getScopeCompilationError,
 	getScopeParserExecutionError,
-	getUnopenedTagException,
 	getUnclosedTagException,
-	throwMalformedXml,
-	throwFileTypeNotIdentified,
+	getUnmatchedLoopException,
+	getUnopenedTagException,
+
+	throwContentMustBeString,
+	throwCorruptCharacters,
 	throwFileTypeNotHandled,
-	getLoopPositionProducesInvalidXMLError,
+	throwFileTypeNotIdentified,
 	throwLocationInvalid,
+	throwMalformedXml,
+	throwMultiError,
+	throwRawTagNotInParagraph,
+	throwRawTagShouldBeOnlyTextInParagraph,
+	throwUnimplementedTagType,
+	throwXmlTagNotFound,
+	throwXmlInvalid,
 };
