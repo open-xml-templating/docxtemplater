@@ -42,6 +42,9 @@ const browserCapability = {
 	},
 	FIREFOX: {
 		browserName: "firefox",
+		"moz:firefoxOptions": {
+			args: ["-headless"],
+		},
 	},
 	SAUCELABS: {
 		browserName,
