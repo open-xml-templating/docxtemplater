@@ -38,7 +38,7 @@ function render(options) {
 			return moduleRendered.value;
 		}
 		if (part.type === "placeholder") {
-			let value = scopeManager.getValue(part.value);
+			let value = scopeManager.getValue(part.value, { part });
 			if (value == null) {
 				value = nullGetter(part);
 			}

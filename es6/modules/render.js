@@ -29,7 +29,7 @@ class Render {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {
-					this.parser(tag);
+					this.parser(tag, { tag: p });
 				} catch (rootError) {
 					errors.push(getScopeCompilationError({ tag, rootError }));
 				}

@@ -385,6 +385,57 @@ describe("Changing the parser", function() {
 		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello 0 Jane 1 Mary ");
 	});
+
+	it("should be able to access meta to get the type of tag", function() {
+		const content = `<w:p><w:t>Hello {#users}{name}{/users}</w:t></w:p>
+		<w:p><w:t>{@rrr}</w:t></w:p>
+		`;
+		const scope = {
+			users: [{ name: "Jane" }],
+			rrr: "",
+		};
+		const contexts = [];
+		const xmlTemplater = createXmlTemplaterDocx(content, {
+			tags: scope,
+			parser: function parser(tag) {
+				return {
+					get(scope, context) {
+						contexts.push(context);
+						if (tag === "$index") {
+							const indexes = context.scopePathItem;
+							return indexes[indexes.length - 1];
+						}
+						return scope[tag];
+					},
+				};
+			},
+		});
+		expect(xmlTemplater.getFullText()).to.be.equal("Hello Jane");
+		const values = contexts.map(function({
+			meta: {
+				part: { type, value, module },
+			},
+		}) {
+			return { type, value, module };
+		});
+		expect(values).to.be.deep.equal([
+			{
+				type: "placeholder",
+				value: "users",
+				module: "loop",
+			},
+			{
+				type: "placeholder",
+				value: "name",
+				module: undefined,
+			},
+			{
+				type: "placeholder",
+				value: "rrr",
+				module: "rawxml",
+			},
+		]);
+	});
 });
 
 describe("Special characters", function() {

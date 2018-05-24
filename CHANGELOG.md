@@ -1,3 +1,7 @@
+### 3.6.4
+
+Add meta context argument to custom parser with information about the tag for each types of tags
+
 ### 3.6.3
 
 Fix infinite loop when XML is invalid (throw an explicit error instead)

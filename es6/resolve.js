@@ -31,13 +31,15 @@ function resolve(options) {
 					});
 				}
 				if (part.type === "placeholder") {
-					return scopeManager.getValueAsync(part.value).then(function(value) {
-						if (value == null) {
-							value = nullGetter(part);
-						}
-						resolved.push({ tag: part.value, value });
-						return value;
-					});
+					return scopeManager
+						.getValueAsync(part.value, { part })
+						.then(function(value) {
+							if (value == null) {
+								value = nullGetter(part);
+							}
+							resolved.push({ tag: part.value, value });
+							return value;
+						});
 				}
 				return;
 			})

@@ -145,14 +145,16 @@ const loopModule = {
 			totalValue = totalValue.concat(subRendered.parts);
 			errors = errors.concat(subRendered.errors || []);
 		}
-		options.scopeManager.loopOver(part.value, loopOver, part.inverted);
+		options.scopeManager.loopOver(part.value, loopOver, part.inverted, {
+			part,
+		});
 		return { value: totalValue.join(""), errors };
 	},
 	resolve(part, options) {
 		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
 		}
-		const value = options.scopeManager.getValue(part.value);
+		const value = options.scopeManager.getValue(part.value, { part });
 		const promises = [];
 		function loopOver(scope, i) {
 			const scopeManager = options.scopeManager.createSubScopeManager(
