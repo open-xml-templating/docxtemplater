@@ -1,3 +1,7 @@
+### 3.6.5
+
+Allow to set delimiters to `{start: '<', end: '>'}` #403
+
 ### 3.6.4
 
 Add meta context argument to custom parser with information about the tag for each types of tags

@@ -438,6 +438,24 @@ describe("Changing the parser", function() {
 	});
 });
 
+describe("Change the delimiters", function() {
+	it("should work with lt and gt delimiter < and >", function() {
+		const doc = createDoc("delimiter-gt.docx");
+		doc.setOptions({
+			delimiters: {
+				start: "<",
+				end: ">",
+			},
+		});
+		doc.setData({
+			user: "John",
+		});
+		doc.render();
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("Hello John");
+	});
+});
+
 describe("Special characters", function() {
 	it("should parse placeholder containing special characters", function() {
 		const content = "<w:t>Hello {&gt;name}</w:t>";

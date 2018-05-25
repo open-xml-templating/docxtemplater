@@ -8,6 +8,7 @@ const {
 	str2xml,
 	xml2str,
 	moduleWrapper,
+	utf8ToWord,
 	concatArrays,
 	unique,
 } = DocUtils;
@@ -47,6 +48,10 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	setOptions(options) {
+		if (options.delimiters) {
+			options.delimiters.start = utf8ToWord(options.delimiters.start);
+			options.delimiters.end = utf8ToWord(options.delimiters.end);
+		}
 		this.options = options;
 		Object.keys(defaults).forEach(key => {
 			const defaultValue = defaults[key];
