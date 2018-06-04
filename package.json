@@ -40,15 +40,15 @@
     "lodash": "^4.17.10",
     "mkdirp": "^0.5.1",
     "mocha": "^5.2.0",
-    "nyc": "^11.8.0",
-    "prettier": "^1.13.0",
+    "nyc": "^12.0.2",
+    "prettier": "^1.13.4",
     "rimraf": "^2.6.2",
     "selenium-standalone": "^6.15.0",
     "serve-static": "^1.13.2",
-    "uglify-js": "^3.3.27",
+    "uglify-js": "^3.4.0",
     "webdriverio": "^4.12.0",
-    "webpack": "^4.9.2",
-    "webpack-cli": "^2.1.4"
+    "webpack": "^4.10.2",
+    "webpack-cli": "^3.0.1"
   },
   "license": "MIT",
   "engines": {
