@@ -23,7 +23,7 @@ Methods
 
     loadZip(zip)
 
-        You have to pass a zip instance to that method, coming from jszip version 2
+        You have to pass a zip instance to that method, coming from jszip version 3
 
     setData(Tags)
 
@@ -33,8 +33,8 @@ Methods
 
     render()
 
-        This function replaces all template variables by their values
+        This function replaces all template variables by their values and returns a Promise
 
     getZip()
 
-        This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see https://stuk.github.io/jszip/documentation/api_jszip/generate.html)
+        This will return you the zip that represents the docx. You can then call `.generateAsync` on this to generate a buffer, string , ... (see https://github.com/Stuk/jszip/blob/master/documentation/api_jszip/generate_async.md)

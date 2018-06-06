@@ -36,7 +36,7 @@
     "eslint-plugin-dependencies": "^2.4.0",
     "eslint_d": "^5.3.1",
     "finalhandler": "^1.1.1",
-    "jszip": "^2.6.1",
+    "jszip": "^3.1.5",
     "lodash": "^4.17.10",
     "mkdirp": "^0.5.1",
     "mocha": "^5.2.0",
@@ -55,9 +55,10 @@
     "node": ">=0.10"
   },
   "scripts": {
+    "build": "rimraf build && mkdirp build && npm run browserify && npm run uglify",
     "generate:doc": "cd docs; rm build/ -rf ; make html",
     "profile": "./profile.bash",
-    "preversion": "npm run test:es6 && npm run lint && npm run prettier && npm test && rimraf build && mkdirp build && npm run browserify && npm run uglify && npm run verifypublishsize && npm run test:browser",
+    "preversion": "npm run test:es6 && npm run lint && npm run prettier && npm test && npm run build && npm run verifypublishsize && npm run test:browser",
     "check-casing": "./check-casing.bash",
     "compile": "npm run convertto:es5",
     "browserify:test": "FILE=test webpack",

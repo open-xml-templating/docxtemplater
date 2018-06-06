@@ -52,16 +52,16 @@ The size of the docx output can be big, in the case where you generate the zip t
 
 .. code-block:: javascript
 
-    docx.getZip().generate({ type: "nodebuffer"})
+    docx.getZip().generateAsync({ type: "nodebuffer"})
 
 This is because the zip will not be compressed in that case. To force the compression (which could be slow because it is running in JS for files bigger than 10 MB)
 
 .. code-block:: javascript
 
-    var zip = docx.getZip().generate({
+    docx.getZip().generateAsync({
             type: "nodebuffer",
             compression: "DEFLATE"
-    });
+    }).then(function(zip) { ... });
 
 Writing if else
 ---------------
@@ -112,7 +112,7 @@ docxtemplater should work on almost all browsers as of version 1 : IE7 + . Safar
 
 The only 'problem' is to load the binary file into the browser. This is not in docxtemplater's scope, but here is the code that jszip's creator recommends to use to load the zip from the browser:
 
-https://stuk.github.io/jszip/documentation/howto/read_zip.html
+https://github.com/Stuk/jszip/blob/master/documentation/howto/read_zip.md
 
 The following code should load the binary content on all browsers:
 
@@ -123,7 +123,9 @@ The following code should load the binary content on all browsers:
         throw err; // or handle err
       }
 
-      var zip = new JSZip(data);
+      JSZip.loadAsync(data).then(function (zip) {
+        // ...
+      });
     });
 
 Get list of placeholders
@@ -147,9 +149,10 @@ suite :
     var InspectModule = require("docxtemplater/js/inspect-module");
     var iModule = InspectModule();
     doc.attachModule(iModule);
-    doc.render(); // doc.compile can also be used to avoid having runtime errors
-    var tags = iModule.getAllTags();
-    console.log(tags);
+    doc.render().then(function() { // doc.compile can also be used to avoid having runtime errors
+      var tags = iModule.getAllTags();
+      console.log(tags);
+    });
 
 With the following template : 
 

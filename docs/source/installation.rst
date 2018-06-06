@@ -15,10 +15,10 @@ npm is the easiest way to install docxtemplater
 .. code-block:: bash
 
     npm install docxtemplater
-    npm install jszip@2
+    npm install jszip
     npm install jszip-utils # only for the browser (webpack)
 
-**jszip version 2 is important !** It won't work with jszip version 3
+**jszip version 3 is important !** It won't work with jszip version < 3
 
 **jszip-utils (only for browser) is not installed with jszip** and has to be installed separately
 
@@ -29,7 +29,7 @@ You can find ``.js`` and ``.min.js`` files for docxtemplater on this repository 
 
 https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
 
-You will also need JSZip version 2.x, which you can download here : https://github.com/Stuk/jszip/tree/v2.x/dist
+You will also need JSZip version 3.x, which you can download here : https://github.com/Stuk/jszip/tree/master/dist
 
 Build it yourself
 -----------------
