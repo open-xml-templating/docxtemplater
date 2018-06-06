@@ -23,10 +23,14 @@ The integration tests are in es6/tests/integration.js
 
 .. code-block:: javascript
 
-	it("should work with table pptx", function () {
-		const doc = createDoc("table-example.pptx");
-		doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render();
-		shouldBeSame({doc, expectedName: "table-example-expected.pptx"});
+	it("should work with table pptx", function (done) {
+		createDoc("table-example.pptx").then(function (doc) => {
+			doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render().then(function () {
+				shouldBeSame({doc, expectedName: "table-example-expected.pptx"}).then(() => {
+					done();
+				});
+			});
+		});
 	});
 
 All of the test documents are in the folder `examples/`
@@ -50,18 +54,23 @@ Docxtemplater was not able to render text that was written in russian (because o
 
 .. code-block:: javascript
 
-    it("should insert russian characters", function () {
+    it("should insert russian characters", function (done) {
         const russianText = [1055, 1091, 1087, 1082, 1080, 1085, 1072];
         const russian = russianText.map(function (char) {
             return String.fromCharCode(char);
         }).join("");
-        const doc = createDoc("tag-example.docx");
-        const zip = new JSZip(doc.loadedContent);
-        const d = new Docxtemplater().loadZip(zip);
-        d.setData({last_name: russian});
-        d.render();
-        const outputText = d.getFullText();
-        expect(outputText.substr(0, 7)).to.be.equal(russian);
+        createDoc("tag-example.docx").then(function (doc) {
+            JSZip.loadAsync(doc.loadedContent).then(function (zip) {
+                const d = new Docxtemplater().loadZip(zip);
+                d.setData({last_name: russian});
+                d.render().then(function() {
+                    d.getFullText().then(function (outputText) {
+                        expect(outputText.substr(0, 7)).to.be.equal(russian);
+                        done();
+                    });
+                });
+            });
+        });
     });
 
 This test ensures that the output of the document is correct.
@@ -122,16 +131,20 @@ For example for this test:
 
 .. code-block:: javascript
 
-    it("should be fast for loop tags", function () {
+    it("should be fast for loop tags", function (done) {
         const content = "<w:t>{#users}{name}{/users}</w:t>";
         const users = [];
         for (let i = 1; i <= 1000; i++) {
             users.push({name: "foo"});
         }
         const time = new Date();
-        createXmlTemplaterDocx(content, {tags: {users}}).render();
-        const duration = new Date() - time;
-        expect(duration).to.be.below(60);
+        createXmlTemplaterDocx(content, {tags: {users}}).then(function (doc) {
+            doc.render().then(function () {
+                const duration = new Date() - time;
+                expect(duration).to.be.below(60);
+                done();
+            });
+        });
     });
 
 Here we verify that rendering a loop of 1000 items takes less than 60ms.

@@ -65,9 +65,9 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	loadZip(zip) {
-		if (zip.loadAsync) {
+		if (!zip.loadAsync) {
 			throw new XTInternalError(
-				"Docxtemplater doesn't handle JSZip version >=3, see changelog"
+				"Docxtemplater doesn't handle JSZip version <3, see changelog"
 			);
 		}
 		this.zip = zip;
@@ -81,10 +81,19 @@ const Docxtemplater = class Docxtemplater {
 		]);
 		return this;
 	}
-	compileFile(fileName) {
-		const currentFile = this.createTemplateClass(fileName);
-		currentFile.parse();
-		this.compiled[fileName] = currentFile;
+	compileFile(index) {
+		const fileName = this.templatedFiles[index];
+		if (fileName && this.zip.files[fileName]) {
+			return this.createTemplateClass(fileName).then(currentFile => {
+				currentFile.parse();
+				this.compiled[fileName] = currentFile;
+				return this.compileFile(index + 1);
+			});
+		}
+		if (index < this.templatedFiles.length) {
+			return this.compileFile(index + 1);
+		}
+		return Promise.resolve();
 	}
 	resolveData(data) {
 		return Promise.all(
@@ -98,7 +107,7 @@ const Docxtemplater = class Docxtemplater {
 	}
 	compile() {
 		if (Object.keys(this.compiled).length) {
-			return this;
+			return Promise.resolve(this);
 		}
 		this.options = this.modules.reduce((options, module) => {
 			return module.optionsTransformer(options, this);
@@ -106,9 +115,10 @@ const Docxtemplater = class Docxtemplater {
 		this.options.xmlFileNames = unique(this.options.xmlFileNames);
 		this.xmlDocuments = this.options.xmlFileNames.reduce(
 			(xmlDocuments, fileName) => {
-				const content = this.zip.files[fileName].asText();
-				xmlDocuments[fileName] = str2xml(content);
-				return xmlDocuments;
+				return this.zip.files[fileName].async("string").then(content => {
+					xmlDocuments[fileName] = str2xml(content);
+					return xmlDocuments;
+				});
 			},
 			{}
 		);
@@ -120,12 +130,9 @@ const Docxtemplater = class Docxtemplater {
 		this.setModules({ compiled: this.compiled });
 		// Loop inside all templatedFiles (ie xml files with content).
 		// Sometimes they don't exist (footer.xml for example)
-		this.templatedFiles.forEach(fileName => {
-			if (this.zip.files[fileName] != null) {
-				this.compileFile(fileName);
-			}
+		return this.compileFile(0).then(() => {
+			return this;
 		});
-		return this;
 	}
 	updateFileTypeConfig() {
 		let fileType;
@@ -155,31 +162,32 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	render() {
-		this.compile();
-		this.setModules({
-			data: this.data,
-		});
-		this.mapper = this.modules.reduce(function(value, module) {
-			return module.getRenderedMap(value);
-		}, {});
+		return this.compile().then(() => {
+			this.setModules({
+				data: this.data,
+			});
+			this.mapper = this.modules.reduce(function(value, module) {
+				return module.getRenderedMap(value);
+			}, {});
 
-		this.fileTypeConfig.tagsXmlLexedArray = unique(
-			this.fileTypeConfig.tagsXmlLexedArray
-		);
-		this.fileTypeConfig.tagsXmlTextArray = unique(
-			this.fileTypeConfig.tagsXmlTextArray
-		);
+			this.fileTypeConfig.tagsXmlLexedArray = unique(
+				this.fileTypeConfig.tagsXmlLexedArray
+			);
+			this.fileTypeConfig.tagsXmlTextArray = unique(
+				this.fileTypeConfig.tagsXmlTextArray
+			);
 
-		Object.keys(this.mapper).forEach(to => {
-			const { from, data } = this.mapper[to];
-			const currentFile = this.compiled[from];
-			currentFile.setTags(data);
-			currentFile.render(to);
-			this.zip.file(to, currentFile.content, { createFolders: true });
+			Object.keys(this.mapper).forEach(to => {
+				const { from, data } = this.mapper[to];
+				const currentFile = this.compiled[from];
+				currentFile.setTags(data);
+				currentFile.render(to);
+				this.zip.file(to, currentFile.content, { createFolders: true });
+			});
+			this.sendEvent("syncing-zip");
+			this.syncZip();
+			return this;
 		});
-		this.sendEvent("syncing-zip");
-		this.syncZip();
-		return this;
 	}
 	syncZip() {
 		Object.keys(this.xmlDocuments).forEach(fileName => {
@@ -196,8 +204,9 @@ const Docxtemplater = class Docxtemplater {
 		return this.zip;
 	}
 	createTemplateClass(path) {
-		const usedData = this.zip.files[path].asText();
-		return this.createTemplateClassFromContent(usedData, path);
+		return this.zip.files[path].async("string").then(usedData => {
+			return this.createTemplateClassFromContent(usedData, path);
+		});
 	}
 	createTemplateClassFromContent(content, filePath) {
 		const xmltOptions = {
@@ -213,7 +222,7 @@ const Docxtemplater = class Docxtemplater {
 	getFullText(path) {
 		return this.createTemplateClass(
 			path || this.fileTypeConfig.textPath(this.zip)
-		).getFullText();
+		).then(templateClass => { return templateClass.getFullText(); });
 	}
 	getTemplatedFiles() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
