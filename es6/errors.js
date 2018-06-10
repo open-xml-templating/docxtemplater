@@ -107,7 +107,7 @@ function throwCorruptCharacters({ tag, value }) {
 		id: "invalid_xml_characters",
 		xtag: tag,
 		value,
-		explanation: "There are some corrupt characters for the field ${name}",
+		explanation: "There are some corrupt characters for the field ${tag}",
 	};
 	throw err;
 }
@@ -145,7 +145,7 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	err.properties = {
 		id: "raw_xml_tag_should_be_only_text_in_paragraph",
 		explanation: `The tag "${tag}" should be the only text in this paragraph`,
-		xtag: options.part.value,
+		xtag: tag,
 		offset: options.part.offset,
 		paragraphParts: options.paragraphParts,
 	};
@@ -249,6 +249,7 @@ function throwFileTypeNotHandled(fileType) {
 	err.properties = {
 		id: "filetype_not_handled",
 		explanation: `The file you are trying to generate is of type "${fileType}", but only docx and pptx formats are handled`,
+		fileType,
 	};
 	throw err;
 }
