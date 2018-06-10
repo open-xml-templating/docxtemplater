@@ -1,8 +1,7 @@
 const Lexer = require("../lexer.js");
 const { expect, makeDocx } = require("./utils");
 const fixtures = require("./fixtures");
-const FileTypeConfig = require("../file-type-config");
-const docxconfig = FileTypeConfig.docx;
+const docxconfig = require("../file-type-config").docx;
 const inspectModule = require("../inspect-module.js");
 const tagsDocxConfig = {
 	text: docxconfig.tagsXmlTextArray,
@@ -36,24 +35,28 @@ describe("Algorithm", function() {
 			cleanRecursive(iModule.inspect.lexed);
 			cleanRecursive(iModule.inspect.parsed);
 			cleanRecursive(iModule.inspect.postparsed);
-			expect(iModule.inspect.lexed).to.be.deep.equal(
-				fixture.lexed,
-				"Lexed incorrect"
-			);
-			expect(iModule.inspect.parsed).to.be.deep.equal(
-				fixture.parsed,
-				"Parsed incorrect"
-			);
-			if (fixture.postparsed) {
-				expect(iModule.inspect.postparsed).to.be.deep.equal(
-					fixture.postparsed,
-					"Postparsed incorrect"
-				);
-			}
-			if (iModule.inspect.content) {
+			if (iModule.inspect.content && fixture.result !== null) {
 				expect(iModule.inspect.content).to.be.deep.equal(
 					fixture.result,
 					"Content incorrect"
+				);
+			}
+			if (fixture.lexed !== null) {
+				expect(iModule.inspect.lexed).to.be.deep.equal(
+					fixture.lexed,
+					"Lexed incorrect"
+				);
+			}
+			if (fixture.parsed !== null) {
+				expect(iModule.inspect.parsed).to.be.deep.equal(
+					fixture.parsed,
+					"Parsed incorrect"
+				);
+			}
+			if (fixture.postparsed !== null) {
+				expect(iModule.inspect.postparsed).to.be.deep.equal(
+					fixture.postparsed,
+					"Postparsed incorrect"
 				);
 			}
 		});
@@ -72,24 +75,28 @@ describe("Algorithm", function() {
 				cleanRecursive(iModule.inspect.lexed);
 				cleanRecursive(iModule.inspect.parsed);
 				cleanRecursive(iModule.inspect.postparsed);
-				expect(iModule.inspect.lexed).to.be.deep.equal(
-					fixture.lexed,
-					"Lexed incorrect"
-				);
-				expect(iModule.inspect.parsed).to.be.deep.equal(
-					fixture.parsed,
-					"Parsed incorrect"
-				);
-				if (fixture.postparsed) {
-					expect(iModule.inspect.postparsed).to.be.deep.equal(
-						fixture.postparsed,
-						"Postparsed incorrect"
-					);
-				}
 				if (iModule.inspect.content) {
 					expect(iModule.inspect.content).to.be.deep.equal(
 						fixture.result,
 						"Content incorrect"
+					);
+				}
+				if (fixture.lexed !== null) {
+					expect(iModule.inspect.lexed).to.be.deep.equal(
+						fixture.lexed,
+						"Lexed incorrect"
+					);
+				}
+				if (fixture.parsed !== null) {
+					expect(iModule.inspect.parsed).to.be.deep.equal(
+						fixture.parsed,
+						"Parsed incorrect"
+					);
+				}
+				if (fixture.postparsed !== null) {
+					expect(iModule.inspect.postparsed).to.be.deep.equal(
+						fixture.postparsed,
+						"Postparsed incorrect"
 					);
 				}
 			});

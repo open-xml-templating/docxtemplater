@@ -358,6 +358,7 @@ describe("Internal errors", function() {
 			message: 'The filetype "odt" is not handled by docxtemplater',
 			properties: {
 				id: "filetype_not_handled",
+				fileType: "odt",
 			},
 		};
 		loadFile("test.odt", (e, name, buffer) => {

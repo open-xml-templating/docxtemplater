@@ -14,6 +14,13 @@ function parser(tag) {
 	};
 }
 
+function endsWith(str, suffix) {
+	return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+function startsWith(str, prefix) {
+	return str.substring(0, prefix.length) === prefix;
+}
+
 function unique(arr) {
 	const hash = {},
 		result = [];
@@ -256,6 +263,8 @@ function hasCorruptCharacters(string) {
 }
 
 module.exports = {
+	endsWith,
+	startsWith,
 	isContent,
 	isParagraphStart,
 	isParagraphEnd,

@@ -13,6 +13,7 @@ function moduleParse(
 		moduleParsed = module.parse(placeHolderContent);
 		if (moduleParsed) {
 			moduleParsed.offset = startOffset;
+			moduleParsed.endLindex = endLindex;
 			parsed.push(moduleParsed);
 			return parsed;
 		}

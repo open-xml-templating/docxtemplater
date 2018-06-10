@@ -7,6 +7,7 @@ const { throwMultiError, throwContentMustBeString } = require("./errors");
 const Lexer = require("./lexer");
 const Parser = require("./parser.js");
 const render = require("./render.js");
+const postrender = require("./postrender.js");
 const resolve = require("./resolve.js");
 
 function getFullText(content, tagsXmlArray) {
@@ -130,7 +131,8 @@ module.exports = class XmlTemplater {
 		options.scopeManager = createScope(options);
 		const { errors, parts } = render(options);
 		this.errorChecker(errors);
-		this.content = parts.join("");
+
+		this.content = postrender(parts, options);
 		this.setModules({ inspect: { content: this.content } });
 		return this;
 	}

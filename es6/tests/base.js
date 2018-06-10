@@ -217,10 +217,10 @@ describe("Docxtemplater loops", function() {
 		expect(c).to.be.deep.equal(expectedContent);
 	});
 	it("should not have sideeffects with inverted with array length 3", function() {
-		const content =
-			"<w:t>{^todos}No {/todos}Todos</w:t><w:t>{#todos}{.}{/todos}</w:t>";
-		const expectedContent =
-			'<w:t>Todos</w:t><w:t xml:space="preserve">ABC</w:t>';
+		const content = `<w:t>{^todos}No {/todos}Todos</w:t>
+<w:t>{#todos}{.}{/todos}</w:t>`;
+		const expectedContent = `<w:t xml:space="preserve">Todos</w:t>
+<w:t xml:space="preserve">ABC</w:t>`;
 		const scope = { todos: ["A", "B", "C"] };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		const c = getContent(xmlTemplater);
@@ -229,8 +229,8 @@ describe("Docxtemplater loops", function() {
 	it("should not have sideeffects with inverted with empty array", function() {
 		const content = `<w:t>{^todos}No {/todos}Todos</w:t>
 		<w:t>{#todos}{.}{/todos}</w:t>`;
-		const expectedContent = `<w:t>No Todos</w:t>
-		<w:t xml:space="preserve"></w:t>`;
+		const expectedContent = `<w:t xml:space="preserve">No Todos</w:t>
+		<w:t/>`;
 		const scope = { todos: [] };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		const c = getContent(xmlTemplater);
@@ -522,7 +522,11 @@ describe("Special characters", function() {
 describe("Complex table example", function() {
 	it("should not do anything special when loop outside of table", function() {
 		[
-			"<w:t>{#tables}</w:t><w:table><w:tr><w:tc><w:t>{user}</w:t></w:tc></w:tr></w:table><w:t>{/tables}</w:t>",
+			`<w:t>{#tables}</w:t>
+<w:table><w:tr><w:tc>
+<w:t>{user}</w:t>
+</w:tc></w:tr></w:table>
+<w:t>{/tables}</w:t>`,
 		].forEach(function(content) {
 			const scope = {
 				tables: [{ user: "John" }, { user: "Jane" }],
@@ -531,7 +535,15 @@ describe("Complex table example", function() {
 			doc.render();
 			const c = getContent(doc);
 			expect(c).to.be.equal(
-				'<w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">John</w:t></w:tc></w:tr></w:table><w:t></w:t><w:table><w:tr><w:tc><w:t xml:space="preserve">Jane</w:t></w:tc></w:tr></w:table><w:t></w:t>'
+				`<w:t/>
+<w:table><w:tr><w:tc>
+<w:t xml:space="preserve">John</w:t>
+</w:tc></w:tr></w:table>
+<w:t/>
+<w:table><w:tr><w:tc>
+<w:t xml:space="preserve">Jane</w:t>
+</w:tc></w:tr></w:table>
+<w:t/>`
 			);
 		});
 	});
@@ -557,12 +569,12 @@ describe("Complex table example", function() {
 
 		expect(fullText).to.be.equal("HiHovalue");
 		const expected = `<w:tr>
-		<w:tc><w:t>Hi</w:t></w:tc>
-		<w:tc><w:t></w:t> </w:tc>
+		<w:tc><w:t xml:space="preserve">Hi</w:t></w:tc>
+		<w:tc><w:t/> </w:tc>
 		</w:tr>
 		<w:tr>
-		<w:tc><w:p><w:t>Ho</w:t></w:p></w:tc>
-		<w:tc><w:p><w:t></w:t></w:p></w:tc>
+		<w:tc><w:p><w:t xml:space="preserve">Ho</w:t></w:p></w:tc>
+		<w:tc><w:p><w:t/></w:p></w:tc>
 		</w:tr>
 		<w:t xml:space="preserve">value</w:t>
 		`;

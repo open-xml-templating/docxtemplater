@@ -9,6 +9,7 @@ module.exports = function(module) {
 		render: emptyFun,
 		getTraits: emptyFun,
 		optionsTransformer: identity,
+		postrender: identity,
 		errorsTransformer: identity,
 		getRenderedMap: identity,
 		postparse: identity,

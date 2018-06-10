@@ -1,3 +1,7 @@
+### 3.6.6
+
+Fix issue with loopmodule eating up whitespace characters
+
 ### 3.6.5
 
 Allow to set delimiters to `{start: '<', end: '>'}` #403

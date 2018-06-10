@@ -312,7 +312,7 @@ describe("intelligent tagging multiple tables", function() {
 		const doc = createXmlTemplaterDocx(content, { tags: scope });
 		const c = getContent(doc);
 		expect(c).to.be.equal(
-			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Foo</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Bar</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Baz</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr></w:tbl>'
+			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Foo</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t/></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Bar</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t/></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Baz</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t/></w:r></w:p></w:tc></w:tr></w:tbl>'
 		);
 	});
 });
@@ -396,9 +396,7 @@ describe("Custom delimiters", function() {
 		}).render();
 		const c = getContent(xmlt);
 		expect(c).not.to.contain("</w:t></w:t>");
-		expect(c).to.be.equal(
-			'<w:t xml:space="preserve">foo</w:t><w:t xml:space="preserve"></w:t>'
-		);
+		expect(c).to.be.equal('<w:t xml:space="preserve">foo</w:t><w:t/>');
 	});
 
 	it("should work with complex loops (2)", function() {

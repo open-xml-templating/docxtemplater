@@ -185,6 +185,7 @@ function cleanError(e, expectedError) {
 	if (e.properties.postparsed) {
 		e.properties.postparsed.forEach(function(p) {
 			delete p.lIndex;
+			delete p.endLindex;
 			delete p.offset;
 		});
 	}
