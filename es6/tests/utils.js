@@ -384,7 +384,7 @@ function start() {
 	fileNames.forEach(function(fullFileName) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
 		let callback;
-		if (startsWith(fileName, ".")) {
+		if (startsWith(fileName, ".") || startsWith(fileName, "~")) {
 			return;
 		}
 		if (endsWith(fileName, ".docx") || endsWith(fileName, ".pptx")) {
