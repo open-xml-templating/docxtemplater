@@ -1,3 +1,11 @@
+### 3.6.8
+
+In firefox, fix : `Argument 1 of DOMParser.constructor does not implement interface Principal`
+
+### 3.6.7
+
+Fix issue of remaining `xmlns=""` in some docx files
+
 ### 3.6.6
 
 Fix issue with loopmodule eating up whitespace characters

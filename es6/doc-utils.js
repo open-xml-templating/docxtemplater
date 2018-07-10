@@ -100,8 +100,8 @@ function xml2str(xmlNode) {
 	return a.serializeToString(xmlNode).replace(/xmlns(:[a-z0-9]+)?="" ?/g, "");
 }
 
-function str2xml(str, errorHandler) {
-	const parser = new DOMParser({ errorHandler });
+function str2xml(str) {
+	const parser = new DOMParser();
 	return parser.parseFromString(str, "text/xml");
 }
 
