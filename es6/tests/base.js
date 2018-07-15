@@ -3,10 +3,12 @@ const { merge } = require("lodash");
 
 const angularParser = require("./angular-parser");
 const Docxtemplater = require("../docxtemplater.js");
+const Errors = require("../errors.js");
 const {
 	expect,
 	createXmlTemplaterDocx,
 	createDoc,
+	expectToThrow,
 	imageData,
 	getContent,
 } = require("./utils");
@@ -72,6 +74,47 @@ describe("Loading", function() {
 				"UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn"
 			);
 		});
+	});
+});
+
+describe("Api versioning", function() {
+	it("should work with valid numbers", function() {
+		const doc = createDoc("image-example.docx");
+		expect(doc.verifyApiVersion("3.6.0")).to.be.equal(true);
+		expect(doc.verifyApiVersion("3.5.0")).to.be.equal(true);
+		expect(doc.verifyApiVersion("3.4.2")).to.be.equal(true);
+		expect(doc.verifyApiVersion("3.4.22")).to.be.equal(true);
+	});
+
+	it("should fail with invalid versions", function() {
+		const doc = createDoc("image-example.docx");
+		expectToThrow(
+			doc.verifyApiVersion.bind(null, "5.6.0"),
+			Errors.XTAPIVersionError,
+			{
+				message: "The major api version do not match",
+				name: "APIVersionError",
+				properties: {
+					id: "api_version_error",
+					currentModuleApiVersion: [3, 6, 0],
+					neededVersion: [5, 6, 0],
+				},
+			}
+		);
+
+		expectToThrow(
+			doc.verifyApiVersion.bind(null, "3.44.0"),
+			Errors.XTAPIVersionError,
+			{
+				message: "The minor api version is not uptodate",
+				name: "APIVersionError",
+				properties: {
+					id: "api_version_error",
+					currentModuleApiVersion: [3, 6, 0],
+					neededVersion: [3, 44, 0],
+				},
+			}
+		);
 	});
 });
 

@@ -16,7 +16,10 @@ const {
 	XTInternalError,
 	throwFileTypeNotIdentified,
 	throwFileTypeNotHandled,
+	throwApiVersionError,
 } = require("./errors");
+
+const currentModuleApiVersion = [3, 6, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {
@@ -28,6 +31,39 @@ const Docxtemplater = class Docxtemplater {
 		this.compiled = {};
 		this.modules = [];
 		this.setOptions({});
+	}
+	getModuleApiVersion() {
+		return currentModuleApiVersion.join(".");
+	}
+	verifyApiVersion(neededVersion) {
+		neededVersion = neededVersion.split(".").map(function(i) {
+			return parseInt(i, 10);
+		});
+		if (neededVersion.length !== 3) {
+			throwApiVersionError("neededVersion is not a valid version", {
+				neededVersion,
+				explanation: "the neededVersion must be an array of length 3",
+			});
+		}
+		if (neededVersion[0] !== currentModuleApiVersion[0]) {
+			throwApiVersionError("The major api version do not match", {
+				neededVersion,
+				currentModuleApiVersion,
+				explanation: `moduleAPIVersionMismatch : needed=${neededVersion.join(
+					"."
+				)}, current=${currentModuleApiVersion.join(".")}`,
+			});
+		}
+		if (neededVersion[1] > currentModuleApiVersion[1]) {
+			throwApiVersionError("The minor api version is not uptodate", {
+				neededVersion,
+				currentModuleApiVersion,
+				explanation: `moduleAPIVersionMismatch : needed=${neededVersion.join(
+					"."
+				)}, current=${currentModuleApiVersion.join(".")}`,
+			});
+		}
+		return true;
 	}
 	setModules(obj) {
 		this.modules.forEach(module => {

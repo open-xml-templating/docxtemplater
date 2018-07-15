@@ -42,6 +42,23 @@ function XTInternalError(message) {
 }
 XTInternalError.prototype = new XTError();
 
+function XTAPIVersionError(message) {
+	this.name = "APIVersionError";
+	this.properties = { explanation: "APIVersionError" };
+	this.message = message;
+	this.stack = new Error(message).stack;
+}
+XTAPIVersionError.prototype = new XTError();
+
+function throwApiVersionError(msg, properties) {
+	const err = new XTAPIVersionError(msg);
+	err.properties = {
+		id: "api_version_error",
+		...properties,
+	};
+	throw err;
+}
+
 function throwMultiError(errors) {
 	const err = new XTTemplateError("Multi error");
 	err.properties = {
@@ -280,6 +297,7 @@ module.exports = {
 	XTTemplateError,
 	XTInternalError,
 	XTScopeParserError,
+	XTAPIVersionError,
 	RenderingError,
 
 	getClosingTagNotMatchOpeningTag,
@@ -290,6 +308,7 @@ module.exports = {
 	getUnmatchedLoopException,
 	getUnopenedTagException,
 
+	throwApiVersionError,
 	throwContentMustBeString,
 	throwCorruptCharacters,
 	throwFileTypeNotHandled,
