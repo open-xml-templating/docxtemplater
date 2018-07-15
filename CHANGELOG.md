@@ -1,3 +1,15 @@
+### 3.7.0
+
+-	Add nullGetter module API
+
+-	Update inspectModule to have :
+
+	-	Unused variables (nullValues)
+	-	filetype
+	-	data from setData()
+	-	templatedFiles
+	-	list of tags
+
 ### 3.6.8
 
 In firefox, fix : `Argument 1 of DOMParser.constructor does not implement interface Principal`
