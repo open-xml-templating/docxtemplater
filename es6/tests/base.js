@@ -133,6 +133,21 @@ describe("Inspect module", function() {
 			nom: {},
 			prenom: {},
 		});
+		const data = { offre: [{}], prenom: "John" };
+		doc.setData(data);
+		doc.render();
+		const { summary, detail } = iModule.fullInspected[
+			"word/document.xml"
+		].nullValues;
+
+		expect(iModule.inspect.tags).to.be.deep.equal(data);
+		expect(detail).to.be.an("array");
+		expect(summary).to.be.deep.equal([
+			["offre", "nom"],
+			["offre", "prix"],
+			["offre", "titre"],
+			["nom"],
+		]);
 	});
 
 	it("should get all tags", function() {
@@ -140,12 +155,21 @@ describe("Inspect module", function() {
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
 		doc.compile();
+		expect(iModule.inspect.fileType).to.be.deep.equal("pptx");
 		expect(iModule.getAllTags()).to.be.deep.equal({
 			tag: {},
 			users: {
 				name: {},
 			},
 		});
+		expect(iModule.inspect.templatedFiles).to.be.deep.equal([
+			"ppt/slides/slide1.xml",
+			"ppt/slides/slide2.xml",
+			"ppt/slideMasters/slideMaster1.xml",
+			"ppt/presentation.xml",
+			"docProps/app.xml",
+			"docProps/core.xml",
+		]);
 	});
 
 	it("should get all tags and merge them", function() {
