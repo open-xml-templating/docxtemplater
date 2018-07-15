@@ -18,7 +18,12 @@ function getFullText(content, tagsXmlArray) {
 
 module.exports = class XmlTemplater {
 	constructor(content, options) {
-		this.fromJson(options);
+		this.filePath = options.filePath;
+		this.modules = options.modules;
+		this.fileTypeConfig = options.fileTypeConfig;
+		Object.keys(defaults).map(function(key) {
+			this[key] = options[key] != null ? options[key] : defaults[key];
+		}, this);
 		this.setModules({ inspect: { filePath: this.filePath } });
 		this.load(content);
 	}
@@ -36,16 +41,9 @@ module.exports = class XmlTemplater {
 	resolveTags(tags) {
 		this.tags = tags != null ? tags : {};
 		this.scopeManager = createScope({ tags: this.tags, parser: this.parser });
-		const options = {
-			compiled: this.postparsed,
-			tags: this.tags,
-			modules: this.modules,
-			parser: this.parser,
-			baseNullGetter: this.nullGetter,
-			filePath: this.filePath,
-			resolve,
-		};
+		const options = this.getOptions();
 		options.scopeManager = createScope(options);
+		options.resolve = resolve;
 		return resolve(options).then(({ resolved }) => {
 			return Promise.all(
 				resolved.map(function(r) {
@@ -55,14 +53,6 @@ module.exports = class XmlTemplater {
 				return (this.resolved = resolved);
 			});
 		});
-	}
-	fromJson(options) {
-		this.filePath = options.filePath;
-		this.modules = options.modules;
-		this.fileTypeConfig = options.fileTypeConfig;
-		Object.keys(defaults).map(function(key) {
-			this[key] = options[key] != null ? options[key] : defaults[key];
-		}, this);
 	}
 	getFullText() {
 		return getFullText(this.content, this.fileTypeConfig.tagsXmlTextArray);
@@ -109,24 +99,34 @@ module.exports = class XmlTemplater {
 			throwMultiError(errors);
 		}
 	}
-	/*
-	content is the whole content to be tagged
-	scope is the current scope
-	returns the new content of the tagged content
-	*/
-	render(to) {
-		this.filePath = to;
-		const options = {
+	baseNullGetter(part, sm) {
+		const value = this.modules.reduce((value, module) => {
+			if (value != null) {
+				return value;
+			}
+			return module.nullGetter(part, sm, this);
+		}, null);
+		if (value != null) {
+			return value;
+		}
+		return this.nullGetter(part, sm);
+	}
+	getOptions() {
+		return {
 			compiled: this.postparsed,
 			tags: this.tags,
-			resolved: this.resolved,
 			modules: this.modules,
 			parser: this.parser,
-			baseNullGetter: this.nullGetter,
+			baseNullGetter: this.baseNullGetter.bind(this),
 			filePath: this.filePath,
-			render,
 		};
+	}
+	render(to) {
+		this.filePath = to;
+		const options = this.getOptions();
+		options.resolved = this.resolved;
 		options.scopeManager = createScope(options);
+		options.render = render;
 		const { errors, parts } = render(options);
 		this.errorChecker(errors);
 

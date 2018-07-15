@@ -16,9 +16,9 @@ function resolve(options) {
 	const resolved = [];
 	const baseNullGetter = options.baseNullGetter;
 	const { compiled, scopeManager } = options;
-	const nullGetter = (options.nullGetter = (part, sm) => {
+	options.nullGetter = (part, sm) => {
 		return baseNullGetter(part, sm || scopeManager);
-	});
+	};
 	options.resolved = resolved;
 	const errors = [];
 	return Promise.all(
@@ -35,7 +35,7 @@ function resolve(options) {
 						.getValueAsync(part.value, { part })
 						.then(function(value) {
 							if (value == null) {
-								value = nullGetter(part);
+								value = options.nullGetter(part);
 							}
 							resolved.push({ tag: part.value, value });
 							return value;

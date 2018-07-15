@@ -25,9 +25,9 @@ function moduleRender(part, options) {
 function render(options) {
 	const baseNullGetter = options.baseNullGetter;
 	const { compiled, scopeManager } = options;
-	const nullGetter = (options.nullGetter = (part, sm) => {
+	options.nullGetter = (part, sm) => {
 		return baseNullGetter(part, sm || scopeManager);
-	});
+	};
 	let errors = [];
 	const parts = compiled.map(function(part) {
 		const moduleRendered = moduleRender(part, options);
@@ -40,7 +40,7 @@ function render(options) {
 		if (part.type === "placeholder") {
 			let value = scopeManager.getValue(part.value, { part });
 			if (value == null) {
-				value = nullGetter(part);
+				value = options.nullGetter(part);
 			}
 			if (hasCorruptCharacters(value)) {
 				throwCorruptCharacters({ tag: part.value, value });
