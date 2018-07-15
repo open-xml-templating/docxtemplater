@@ -150,7 +150,7 @@ function getDelimiterErrors(delimiterMatches, fullText, ranges) {
 
 function compareOffsets(startOffset, endOffset) {
 	if (startOffset === endOffset) {
-		return 0;
+		return EQUAL;
 	}
 	if (startOffset === -1 || endOffset === -1) {
 		return endOffset < startOffset ? START : END;

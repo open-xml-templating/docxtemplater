@@ -39,8 +39,8 @@ const loopModule = {
 	parse(placeHolderContent) {
 		const module = moduleName;
 		const type = "placeholder";
-		const prefix = this.prefix;
-		if (placeHolderContent[0] === prefix.start) {
+		const { start, inverted, dash, end } = this.prefix;
+		if (placeHolderContent[0] === start) {
 			return {
 				type,
 				value: placeHolderContent.substr(1),
@@ -50,7 +50,7 @@ const loopModule = {
 				inverted: false,
 			};
 		}
-		if (placeHolderContent[0] === prefix.inverted) {
+		if (placeHolderContent[0] === inverted) {
 			return {
 				type,
 				value: placeHolderContent.substr(1),
@@ -60,7 +60,7 @@ const loopModule = {
 				inverted: true,
 			};
 		}
-		if (placeHolderContent[0] === prefix.end) {
+		if (placeHolderContent[0] === end) {
 			return {
 				type,
 				value: placeHolderContent.substr(1),
@@ -68,7 +68,7 @@ const loopModule = {
 				location: "end",
 			};
 		}
-		if (placeHolderContent[0] === prefix.dash) {
+		if (placeHolderContent[0] === dash) {
 			const value = placeHolderContent.replace(dashInnerRegex, "$2");
 			const expandTo = placeHolderContent.replace(dashInnerRegex, "$1");
 			return {
@@ -98,7 +98,11 @@ const loopModule = {
 		if (!isEnclosedByParagraphs(parsed)) {
 			return parsed;
 		}
-		if (!basePart || basePart.expandTo !== "auto") {
+		if (
+			!basePart ||
+			basePart.expandTo !== "auto" ||
+			basePart.module !== moduleName
+		) {
 			return parsed;
 		}
 		const chunks = chunkBy(parsed, function(p) {
@@ -120,8 +124,7 @@ const loopModule = {
 		if (firstOffset === 0 || lastOffset === 0) {
 			return parsed;
 		}
-		const result = parsed.slice(firstOffset, parsed.length - lastOffset);
-		return result;
+		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	},
 	render(part, options) {
 		if (!part.type === "placeholder" || part.module !== moduleName) {

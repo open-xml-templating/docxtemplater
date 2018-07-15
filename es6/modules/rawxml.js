@@ -37,7 +37,7 @@ function getNearestRight(parsed, elements, index) {
 function getInner({ part, left, right, postparsed, index }) {
 	const before = getNearestLeft(postparsed, ["w:p", "w:tc"], left - 1);
 	const after = getNearestRight(postparsed, ["w:p", "w:tc"], right + 1);
-	if (before === after && before === "w:tc") {
+	if (after === "w:tc" && before === "w:tc") {
 		part.emptyValue = "<w:p></w:p>";
 	}
 	const paragraphParts = postparsed.slice(left + 1, right);

@@ -161,7 +161,7 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	const tag = options.part.value;
 	err.properties = {
 		id: "raw_xml_tag_should_be_only_text_in_paragraph",
-		explanation: `The tag "${tag}" should be the only text in this paragraph`,
+		explanation: `The raw tag "${tag}" should be the only text in this paragraph. This means that this tag should not be surrounded by any text or spaces.`,
 		xtag: tag,
 		offset: options.part.offset,
 		paragraphParts: options.paragraphParts,

@@ -1,5 +1,3 @@
-"use strict";
-
 const { wordToUtf8, convertSpaces, defaults } = require("./doc-utils");
 const createScope = require("./scope-manager");
 const xmlMatcher = require("./xml-matcher");
