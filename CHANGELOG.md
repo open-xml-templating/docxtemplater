@@ -1,3 +1,7 @@
+### 3.7.1
+
+Revert : Add back lIndex to parsed in addition to endLindex : Fixes issue with async rendering of multiple tags (images, qrcode, ...)
+
 ### 3.7.0
 
 -	Add nullGetter module API

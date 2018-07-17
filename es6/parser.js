@@ -14,6 +14,7 @@ function moduleParse(
 		if (moduleParsed) {
 			moduleParsed.offset = startOffset;
 			moduleParsed.endLindex = endLindex;
+			moduleParsed.lIndex = endLindex;
 			parsed.push(moduleParsed);
 			return parsed;
 		}
@@ -23,6 +24,7 @@ function moduleParse(
 		value: placeHolderContent,
 		offset: startOffset,
 		endLindex,
+		lIndex: endLindex,
 	});
 	return parsed;
 }
