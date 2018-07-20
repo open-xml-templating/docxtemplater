@@ -228,3 +228,15 @@ The default for rawTags ({@rawTag}) is to drop the paragraph completely (you cou
 
 
 The scopeManager variable contains some meta information about the tag, for example, if the template is : {#users}{name}{/users} and the tag name is undefined, scopeManager.scopePath === ["users", "name"]
+
+linebreaks
+----------
+
+You can enable linebreaks, eg if your data contains newlines, those will be shown as linebreaks in the document
+
+.. code-block:: javascript
+
+    doc.setOptions({linebreaks:true});
+    doc.setData({text: "My text,\nmultiline"});
+    doc.render();
+

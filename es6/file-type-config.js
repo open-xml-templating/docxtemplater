@@ -30,7 +30,7 @@ const PptXFileTypeConfig = {
 		"dc:creator",
 		"cp:keywords",
 	],
-	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r"],
+	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r", "a:rPr"],
 	expandTags: [{ contains: "a:tc", expand: "a:tr" }],
 	onParagraphLoop: [{ contains: "a:p", expand: "a:p", onlyTextInTag: true }],
 	tagRawXml: "p:sp",

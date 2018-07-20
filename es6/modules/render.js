@@ -1,9 +1,18 @@
 const wrapper = require("../module-wrapper");
 const { getScopeCompilationError } = require("../errors");
+const { utf8ToWord, hasCorruptCharacters } = require("../doc-utils");
+const { throwCorruptCharacters } = require("../errors");
+
+const ftprefix = {
+	docx: "w",
+	pptx: "a",
+};
 
 class Render {
 	constructor() {
 		this.name = "Render";
+		this.recordRun = false;
+		this.recordedRun = [];
 	}
 	set(obj) {
 		if (obj.compiled) {
@@ -21,6 +30,7 @@ class Render {
 	}
 	optionsTransformer(options, docxtemplater) {
 		this.parser = docxtemplater.parser;
+		this.fileType = docxtemplater.fileType;
 		return options;
 	}
 	postparse(postparsed) {
@@ -36,6 +46,52 @@ class Render {
 			}
 		});
 		return { postparsed, errors };
+	}
+	recordRuns(part) {
+		if (part.tag === `${ftprefix[this.fileType]}:rPr`) {
+			if (part.position === "start") {
+				this.recordRun = true;
+				this.recordedRun = [part.value];
+			}
+			if (part.position === "end") {
+				this.recordedRun.push(part.value);
+				this.recordRun = false;
+			}
+		} else if (this.recordRun) {
+			this.recordedRun.push(part.value);
+		}
+	}
+	render(part, options) {
+		const { scopeManager } = options;
+		if (options.linebreaks) {
+			this.recordRuns(part);
+		}
+		if (part.type === "placeholder" && !part.module) {
+			let value = scopeManager.getValue(part.value, { part });
+			if (value == null) {
+				value = options.nullGetter(part);
+			}
+			if (hasCorruptCharacters(value)) {
+				throwCorruptCharacters({ tag: part.value, value });
+			}
+			if (options.linebreaks) {
+				const p = ftprefix[this.fileType];
+				const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
+				const lines = value.split("\n");
+				return {
+					value: lines
+						.map(function(line) {
+							return utf8ToWord(line);
+						})
+						.join(
+							`</${p}:t></${p}:r>${br}<${p}:r>${this.recordedRun.join(
+								""
+							)}<${p}:t>`
+						),
+				};
+			}
+			return { value: utf8ToWord(value) };
+		}
 	}
 }
 

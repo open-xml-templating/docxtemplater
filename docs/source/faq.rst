@@ -11,31 +11,9 @@ Inserting new lines
 
 .. code-block:: javascript
 
-    pre = '<w:p><w:r><w:t>';
-    post = '</w:t></w:r></w:p>';
-    lineBreak = '<w:br/>';
-    text = pre + 'testing line 1' + lineBreak + 'testing line 2' + post;
-    data = {text : text}
-    docx.setData(data)
+    doc.setOptions({linebreaks: true})
 
-then in your template, just put {@text} instead of the usual {text}
-
-If you use the angular-parser, you can also write a filter like this:
-
-.. code-block:: javascript
-
-    angularexpressions.filters.raw = function (text) {
-        var lines = text.split("\n");
-        var pre = "<w:p><w:r><w:t>";
-        var post = "</w:t></w:r></w:p>";
-        var lineBreak = "<w:br/>";
-        return pre + lines.join(lineBreak) + post;
-    }
-    data = {text: "testing line 1 \n testing line 2"};
-    docx.setData(data)
-
-
-and then have your docx as : {@text|raw}
+then in your data, if a string contains a newline, it will be translated to a linebreak in the document.
 
 Insert HTML formatted text
 --------------------------

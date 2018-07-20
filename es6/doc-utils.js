@@ -76,6 +76,7 @@ const defaults = {
 	},
 	xmlFileNames: [],
 	parser,
+	linebreaks: false,
 	delimiters: {
 		start: "{",
 		end: "}",

@@ -119,6 +119,7 @@ module.exports = class XmlTemplater {
 			parser: this.parser,
 			baseNullGetter: this.baseNullGetter.bind(this),
 			filePath: this.filePath,
+			linebreaks: this.linebreaks,
 		};
 	}
 	render(to) {

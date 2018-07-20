@@ -157,6 +157,16 @@ describe("Pptx generation", function() {
 			shouldBeSame({ doc, expectedName: "expected-raw-xml-example.pptx" });
 		});
 	});
+
+	it("should be possible to have linebreaks if setting the option", function() {
+		const doc = createDoc("tag-multiline.pptx");
+		doc.setData({
+			description: "The description,\nmultiline",
+		});
+		doc.setOptions({ linebreaks: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-multiline.pptx" });
+	});
 });
 
 describe("Table", function() {
@@ -358,6 +368,16 @@ describe("Templating", function() {
 			);
 			shouldBeSame({ doc, expectedName: "tag-example-expected.docx" });
 		});
+	});
+
+	it("should be possible to have linebreaks if setting the option", function() {
+		const doc = createDoc("tag-multiline.docx");
+		doc.setData({
+			description: "The description,\nmultiline",
+		});
+		doc.setOptions({ linebreaks: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-multiline.docx" });
 	});
 
 	it("should work with paragraphloop", function() {

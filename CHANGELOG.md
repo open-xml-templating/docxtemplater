@@ -1,3 +1,7 @@
+### 3.8.0
+
+-	Add linebreaks option for pptx and docx
+
 ### 3.7.1
 
 Revert : Add back lIndex to parsed in addition to endLindex : Fixes issue with async rendering of multiple tags (images, qrcode, ...)

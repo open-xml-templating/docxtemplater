@@ -1,14 +1,7 @@
 "use strict";
 
-const {
-	utf8ToWord,
-	concatArrays,
-	hasCorruptCharacters,
-} = require("./doc-utils");
-const {
-	throwUnimplementedTagType,
-	throwCorruptCharacters,
-} = require("./errors");
+const { concatArrays } = require("./doc-utils");
+const { throwUnimplementedTagType } = require("./errors");
 
 function moduleRender(part, options) {
 	let moduleRendered;
@@ -36,16 +29,6 @@ function render(options) {
 				errors = concatArrays([errors, moduleRendered.errors]);
 			}
 			return moduleRendered.value;
-		}
-		if (part.type === "placeholder") {
-			let value = scopeManager.getValue(part.value, { part });
-			if (value == null) {
-				value = options.nullGetter(part);
-			}
-			if (hasCorruptCharacters(value)) {
-				throwCorruptCharacters({ tag: part.value, value });
-			}
-			return utf8ToWord(value);
 		}
 		if (part.type === "content" || part.type === "tag") {
 			return part.value;
