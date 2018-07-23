@@ -1,3 +1,7 @@
+### 3.8.1
+
+Fix bug wrong styling when using linebreaks.
+
 ### 3.8.0
 
 -	Add linebreaks option for pptx and docx

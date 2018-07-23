@@ -380,6 +380,17 @@ describe("Templating", function() {
 		shouldBeSame({ doc, expectedName: "expected-multiline.docx" });
 	});
 
+	it("should work with linebreaks without changing the style", function() {
+		const doc = createDoc("multi-tags.docx");
+		doc.setData({
+			test: "The tag1,\nmultiline\nfoobaz",
+			test2: "The tag2,\nmultiline\nfoobar",
+		});
+		doc.setOptions({ linebreaks: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-two-multiline.docx" });
+	});
+
 	it("should work with paragraphloop", function() {
 		const doc = createDoc("users.docx");
 		doc.setOptions({

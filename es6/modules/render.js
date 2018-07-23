@@ -48,7 +48,10 @@ class Render {
 		return { postparsed, errors };
 	}
 	recordRuns(part) {
-		if (part.tag === `${ftprefix[this.fileType]}:rPr`) {
+		if (part.tag === `${ftprefix[this.fileType]}:r`) {
+			this.recordRun = false;
+			this.recordedRun = [];
+		} else if (part.tag === `${ftprefix[this.fileType]}:rPr`) {
 			if (part.position === "start") {
 				this.recordRun = true;
 				this.recordedRun = [part.value];
@@ -78,16 +81,13 @@ class Render {
 				const p = ftprefix[this.fileType];
 				const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
 				const lines = value.split("\n");
+				const runprops = this.recordedRun.join("");
 				return {
 					value: lines
 						.map(function(line) {
 							return utf8ToWord(line);
 						})
-						.join(
-							`</${p}:t></${p}:r>${br}<${p}:r>${this.recordedRun.join(
-								""
-							)}<${p}:t>`
-						),
+						.join(`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t>`),
 				};
 			}
 			return { value: utf8ToWord(value) };
