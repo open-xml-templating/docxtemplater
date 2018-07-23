@@ -1,6 +1,5 @@
 /* eslint-disable no-process-env */
 /* eslint-disable no-console */
-
 const {
 	BROWSER = "CHROME",
 	browserName,
@@ -121,9 +120,13 @@ server.listen(port, function() {
 		if (+new Date() - startTime > 10000) {
 			exit("Aborting connection to webdriver after 10 seconds");
 		}
+		const postfix = process.env.filter
+			? `?grep=${process.env.filter}&invert=true`
+			: "";
+		const url = `http://localhost:${port}/test/mocha.html${postfix}`;
 		return client
 			.init()
-			.url(`http://localhost:${port}/test/mocha.html`)
+			.url(url)
 			.then(function() {
 				return client.waitForText("#status", 30000);
 			})

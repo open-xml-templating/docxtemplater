@@ -57,7 +57,7 @@
   "scripts": {
     "generate:doc": "cd docs; rm build/ -rf ; make html",
     "profile": "./profile.bash",
-    "preversion": "npm run test:es6 && npm run lint && npm run prettier && npm test && rimraf build && mkdirp build && npm run browserify && npm run uglify && npm run verifypublishsize && npm run test:browser",
+    "preversion": "npm run test:es6 && npm run lint && npm run prettier && FAST= npm test && rimraf build && mkdirp build && npm run browserify && npm run uglify && npm run verifypublishsize && npm run test:browser",
     "check-casing": "./check-casing.bash",
     "compile": "npm run convertto:es5",
     "browserify:test": "FILE=test webpack",

@@ -64,20 +64,19 @@ class Render {
 			this.recordedRun.push(part.value);
 		}
 	}
-	render(part, options) {
-		const { scopeManager } = options;
-		if (options.linebreaks) {
+	render(part, { scopeManager, linebreaks, nullGetter }) {
+		if (linebreaks) {
 			this.recordRuns(part);
 		}
 		if (part.type === "placeholder" && !part.module) {
 			let value = scopeManager.getValue(part.value, { part });
 			if (value == null) {
-				value = options.nullGetter(part);
+				value = nullGetter(part);
 			}
 			if (hasCorruptCharacters(value)) {
 				throwCorruptCharacters({ tag: part.value, value });
 			}
-			if (options.linebreaks) {
+			if (linebreaks) {
 				const p = ftprefix[this.fileType];
 				const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
 				const lines = value.split("\n");
