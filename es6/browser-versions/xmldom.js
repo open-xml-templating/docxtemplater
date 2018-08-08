@@ -1,1 +1,5 @@
-module.exports = window;
+module.exports = {
+	XMLSerializer: window.XMLSerializer,
+	DOMParser: window.DOMParser,
+	XMLDocument: window.XMLDocument,
+};
