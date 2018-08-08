@@ -1,5 +1,5 @@
 const Lexer = require("../lexer.js");
-const { expect, makeDocx } = require("./utils");
+const { expect, makeDocx, cleanRecursive } = require("./utils");
 const fixtures = require("./fixtures");
 const docxconfig = require("../file-type-config").docx;
 const inspectModule = require("../inspect-module.js");
@@ -7,20 +7,6 @@ const tagsDocxConfig = {
 	text: docxconfig.tagsXmlTextArray,
 	other: docxconfig.tagsXmlLexedArray,
 };
-
-function cleanRecursive(arr) {
-	arr.forEach(function(p) {
-		delete p.lIndex;
-		delete p.endLindex;
-		delete p.offset;
-		if (p.subparsed) {
-			cleanRecursive(p.subparsed);
-		}
-		if (p.expanded) {
-			p.expanded.forEach(cleanRecursive);
-		}
-	});
-}
 
 describe("Algorithm", function() {
 	Object.keys(fixtures).forEach(function(key) {
@@ -79,6 +65,12 @@ describe("Algorithm", function() {
 					expect(iModule.inspect.content).to.be.deep.equal(
 						fixture.result,
 						"Content incorrect"
+					);
+				}
+				if (fixture.resolved) {
+					expect(iModule.inspect.resolved).to.be.deep.equal(
+						fixture.resolved,
+						"Resolved incorrect"
 					);
 				}
 				if (fixture.lexed !== null) {

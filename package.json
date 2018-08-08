@@ -30,6 +30,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-3": "^6.24.1",
     "chai": "^4.1.2",
+    "diff": "^3.5.0",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.4",
     "eslint": "^5.2.0",

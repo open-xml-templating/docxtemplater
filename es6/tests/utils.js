@@ -4,6 +4,7 @@ const { expect } = chai;
 const JSZip = require("jszip");
 const fs = require("fs");
 const { get, unset, omit, uniq } = require("lodash");
+const diff = require("diff");
 
 const Docxtemplater = require("../docxtemplater.js");
 const xmlPrettify = require("./xml-prettify");
@@ -13,6 +14,41 @@ let examplesDirectory;
 const docX = {};
 const imageData = {};
 const emptyNamespace = /xmlns:[a-z0-9]+=""/;
+
+function unifiedDiff(actual, expected) {
+	const indent = "      ";
+	function cleanUp(line) {
+		if (line[0] === "+") {
+			return indent + line;
+		}
+		if (line[0] === "-") {
+			return indent + line;
+		}
+		if (line.match(/@@/)) {
+			return "--";
+		}
+		if (line.match(/\\ No newline/)) {
+			return null;
+		}
+		return indent + line;
+	}
+	function notBlank(line) {
+		return typeof line !== "undefined" && line !== null;
+	}
+	const msg = diff.createPatch("string", actual, expected);
+	const lines = msg.split("\n").splice(5);
+	return (
+		"\n      " +
+		"+ expected" +
+		" " +
+		"- actual" +
+		"\n\n" +
+		lines
+			.map(cleanUp)
+			.filter(notBlank)
+			.join("\n")
+	);
+}
 
 function walk(dir) {
 	let results = [];
@@ -54,6 +90,15 @@ function writeFile(expectedName, zip) {
 			writeFile,
 			zip.generate({ type: "nodebuffer", compression: "DEFLATE" })
 		);
+	}
+	if (typeof window !== "undefined" && window.saveAs) {
+		const out = zip.generate({
+			type: "blob",
+			mimeType:
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			compression: "DEFLATE",
+		});
+		saveAs(out, expectedName); // comment to see the error
 	}
 }
 function unlinkFile(expectedName) {
@@ -109,6 +154,9 @@ function shouldBeSame(options) {
 				const text2 = expectedZip.files[filePath]
 					.asText()
 					.replace(/\n|\t/g, "");
+				if (filePath.endsWith("/")) {
+					return;
+				}
 				if (filePath.indexOf(".png") !== -1) {
 					expect(text1.length).to.be.equal(
 						text2.length,
@@ -129,12 +177,14 @@ function shouldBeSame(options) {
 					}
 					const pText1 = xmlPrettify(text1, options);
 					const pText2 = xmlPrettify(text2, options);
-					expect(pText1).to.be.equal(
-						pText2,
-						`Content differs ${suffix} lengths: "${text1.length}", "${
-							text2.length
-						}"`
-					);
+
+					if (pText1 !== pText2) {
+						const pd = unifiedDiff(pText1, pText2);
+						expect(pText1).to.be.equal(
+							pText2,
+							"Content differs \n" + suffix + "\n" + pd
+						);
+					}
 				}
 			}
 		);
@@ -165,6 +215,23 @@ function checkLength(e, expectedError, propertyPath) {
 		unset(e, propertyPath);
 		unset(expectedError, propertyPathLength);
 	}
+}
+
+function cleanRecursive(arr) {
+	arr.forEach(function(p) {
+		delete p.lIndex;
+		delete p.endLindex;
+		delete p.offset;
+		if (p.subparsed) {
+			cleanRecursive(p.subparsed);
+		}
+		if (p.value && p.value.forEach) {
+			p.value.forEach(cleanRecursive);
+		}
+		if (p.expanded) {
+			p.expanded.forEach(cleanRecursive);
+		}
+	});
 }
 
 function cleanError(e, expectedError) {
@@ -459,6 +526,7 @@ function rejectSoon(data) {
 module.exports = {
 	chai,
 	cleanError,
+	cleanRecursive,
 	createDoc,
 	createXmlTemplaterDocx,
 	createXmlTemplaterDocxNoRender,

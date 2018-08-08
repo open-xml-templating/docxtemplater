@@ -34,7 +34,7 @@ module.exports = function(xml) {
 	};
 
 	for (let i = 0; i < lines.length; i++) {
-		const ln = lines[i];
+		let ln = lines[i];
 		const single = Boolean(ln.match(/<.+\/>/)); // is this line a single tag? ex. <br />
 		const closing = Boolean(ln.match(/<\/.+>/)); // is this a closing tag? ex. </a>
 		const opening = Boolean(ln.match(/<[^!].*>/)); // is this even a tag (that's not <!something>)
@@ -45,7 +45,39 @@ module.exports = function(xml) {
 				: opening
 					? "opening"
 					: "other";
+
 		const fromTo = lastType + "->" + type;
+		if (type === "opening") {
+			const aRegex = /<[A-Za-z0-9:]+ (.*)>/;
+			let rest;
+			if (aRegex.test(ln)) {
+				rest = ln.replace(aRegex, "$1");
+			}
+			const attrRegex = / +([a-zA-Z0-9:]+)="([^"]+)"/g;
+			let match = attrRegex.exec(rest);
+			const attributes = [];
+			while (match != null) {
+				// matched text: match[0]
+				// match start: match.index
+				// capturing group n: match[n]
+				attributes.push({ key: match[1], value: match[2] });
+				match = attrRegex.exec(rest);
+			}
+			attributes.sort(function(a1, a2) {
+				if (a1.key === a2.key) {
+					return 0;
+				}
+				return a1.key > a2.key ? 1 : -1;
+			});
+			const stringifiedAttrs = attributes
+				.map(function(attribute) {
+					return `${attribute.key}="${attribute.value}"`;
+				})
+				.join(" ");
+			if (rest) {
+				ln = ln.replace(rest, stringifiedAttrs);
+			}
+		}
 		lastType = type;
 		let padding = "";
 
@@ -60,6 +92,5 @@ module.exports = function(xml) {
 			formatted += padding + ln + "\n";
 		}
 	}
-
 	return formatted;
 };
