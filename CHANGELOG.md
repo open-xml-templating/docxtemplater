@@ -1,3 +1,7 @@
+### 3.8.2
+
+Fix bug with resolveData algorithm, which raised the error : "Cannot read property value of undefined" in the render call.
+
 ### 3.8.1
 
 Fix bug wrong styling when using linebreaks.

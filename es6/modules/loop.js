@@ -136,7 +136,8 @@ const loopModule = {
 			const scopeManager = options.scopeManager.createSubScopeManager(
 				scope,
 				part.value,
-				i
+				i,
+				part
 			);
 			const subRendered = options.render(
 				mergeObjects({}, options, {
@@ -163,7 +164,8 @@ const loopModule = {
 			const scopeManager = options.scopeManager.createSubScopeManager(
 				scope,
 				part.value,
-				i
+				i,
+				part
 			);
 			promises.push(
 				options.resolve(
@@ -175,14 +177,18 @@ const loopModule = {
 				)
 			);
 		}
-		return Promise.resolve(value).then(function(value) {
-			options.scopeManager.loopOverValue(value, loopOver, part.inverted);
-			return Promise.all(promises).then(function(r) {
-				return r.map(function({ resolved }) {
-					return resolved;
+		return Promise.resolve(value)
+			.then(function(value) {
+				options.scopeManager.loopOverValue(value, loopOver, part.inverted);
+				return Promise.all(promises).then(function(r) {
+					return r.map(function({ resolved }) {
+						return resolved;
+					});
 				});
+			})
+			.then(function(r) {
+				return r;
 			});
-		});
 	},
 };
 

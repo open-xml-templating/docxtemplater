@@ -856,6 +856,111 @@ const fixtures = {
 			endText,
 		],
 	},
+	error_resolve: {
+		it: "should resolve the data correctly",
+		content: "<w:t>{test}{#test}{label}{/test}{test}</w:t>",
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		result: '<w:t xml:space="preserve">trueT1true</w:t>',
+		scope: {
+			label: "T1",
+			test: true,
+		},
+		resolved: [
+			{
+				tag: "test",
+				value: true,
+				lIndex: 3,
+			},
+			{
+				tag: "test",
+				value: true,
+				lIndex: 15,
+			},
+			{
+				tag: "test",
+				value: [
+					[
+						{
+							tag: "label",
+							value: "T1",
+							lIndex: 9,
+						},
+					],
+				],
+				lIndex: 6,
+			},
+		],
+	},
+	error_resolve_2: {
+		it: "should resolve 2 the data correctly",
+		content: "<w:t>{^a}{label}{/a}</w:t>",
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		result: "<w:t/>",
+		scope: {
+			a: true,
+		},
+		resolved: [
+			{
+				tag: "a",
+				value: [],
+				lIndex: 3,
+			},
+		],
+	},
+	error_resolve_3: {
+		it: "should resolve 3 the data correctly",
+		content:
+			"<w:t>{#frames}{#true}{label}{#false}{label}{/false}{/true}{#false}{label}{/false}{/frames}</w:t>",
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		result: '<w:t xml:space="preserve">T1</w:t>',
+		scope: {
+			frames: [
+				{
+					label: "T1",
+					true: true,
+				},
+			],
+		},
+		resolved: [
+			{
+				tag: "frames",
+				value: [
+					[
+						{
+							tag: "false",
+							value: [],
+							lIndex: 24,
+						},
+						{
+							tag: "true",
+							value: [
+								[
+									{
+										tag: "false",
+										value: [],
+										lIndex: 12,
+									},
+									{
+										tag: "label",
+										value: "T1",
+										lIndex: 9,
+									},
+								],
+							],
+							lIndex: 6,
+						},
+					],
+				],
+				lIndex: 3,
+			},
+		],
+	},
 };
 
 fixtures.rawxmlemptycontent = clone(fixtures.rawxml);

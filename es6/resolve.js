@@ -27,7 +27,7 @@ function resolve(options) {
 				const moduleResolved = moduleResolve(part, options);
 				if (moduleResolved) {
 					return moduleResolved.then(function(value) {
-						resolved.push({ tag: part.value, value });
+						resolved.push({ tag: part.value, value, lIndex: part.lIndex });
 					});
 				}
 				if (part.type === "placeholder") {
@@ -37,7 +37,7 @@ function resolve(options) {
 							if (value == null) {
 								value = options.nullGetter(part);
 							}
-							resolved.push({ tag: part.value, value });
+							resolved.push({ tag: part.value, value, lIndex: part.lIndex });
 							return value;
 						});
 				}

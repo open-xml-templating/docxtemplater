@@ -4,7 +4,9 @@ const {
 	shouldBeSame,
 	expect,
 	resolveSoon,
+	cleanRecursive,
 } = require("./utils");
+const { cloneDeep } = require("lodash");
 
 const raw = `<p:sp>
   <p:nvSpPr>
@@ -613,7 +615,9 @@ describe("Resolver", function() {
 				t1total3: "t1total3-data",
 			})
 			.then(function(resolved) {
-				expect(resolved).to.be.deep.equal([
+				const myresolved = cloneDeep(resolved);
+				cleanRecursive(myresolved);
+				expect(myresolved).to.be.deep.equal([
 					{
 						tag: "t1total1",
 						value: "t1total1-data",
@@ -692,5 +696,54 @@ describe("Resolver", function() {
 					"TABLE1COLUMN1COLUMN2COLUMN3COLUMN4t1-1row-data1t1-1row-data2t1-1row-data3t1-1row-data4t1-2row-data1t1-2row-data2t1-2row-data3t1-2row-data4t1-3row-data1t1-3row-data2t1-3row-data3t1-3row-data4TOTALt1total1-datat1total2-datat1total3-data"
 				);
 			});
+	});
+
+	it("should not regress 1 sync", function() {
+		const doc = createDoc("regression-1.docx");
+		doc.compile();
+		doc.setData({ a: [{ d: "Hello world" }] });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-regression-1.docx" });
+	});
+
+	it("should not regress 1 async", function() {
+		const doc = createDoc("regression-1.docx");
+		doc.compile();
+		return doc.resolveData({ a: [{ d: "Hello world" }] }).then(function() {
+			doc.render();
+			shouldBeSame({ doc, expectedName: "expected-regression-1.docx" });
+		});
+	});
+
+	const regress2Data = {
+		amount_wheels_car_1: "4",
+		amount_wheels_motorcycle_1: "2",
+
+		amount_wheels_car_2: "6",
+		amount_wheels_motorcycle_2: "3",
+
+		id: [
+			{
+				car: "1",
+				motorcycle: "",
+			},
+		],
+	};
+
+	it("should not regress 2 sync", function() {
+		const doc = createDoc("regression-2.docx");
+		doc.compile();
+		doc.setData(regress2Data);
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-regression-2.docx" });
+	});
+
+	it("should not regress 2 async", function() {
+		const doc = createDoc("regression-2.docx");
+		doc.compile();
+		return doc.resolveData(regress2Data).then(function() {
+			doc.render();
+			shouldBeSame({ doc, expectedName: "expected-regression-2.docx" });
+		});
 	});
 });

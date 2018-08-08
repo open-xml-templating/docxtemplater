@@ -50,6 +50,7 @@ module.exports = class XmlTemplater {
 					return Promise.resolve(r);
 				})
 			).then(resolved => {
+				this.setModules({ inspect: { resolved } });
 				return (this.resolved = resolved);
 			});
 		});

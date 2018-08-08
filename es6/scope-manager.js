@@ -20,13 +20,14 @@ function getValue(tag, meta, num) {
 	if (this.resolved) {
 		let w = this.resolved;
 		this.scopePath.forEach((p, index) => {
+			const lIndex = this.scopeLindex[index];
 			w = find(w, function(r) {
-				return r.tag === p;
+				return r.lIndex === lIndex;
 			});
 			w = w.value[this.scopePathItem[index]];
 		});
 		return find(w, function(r) {
-			return r.tag === tag;
+			return meta.part.lIndex === r.lIndex;
 		}).value;
 	}
 	// search in the scopes (in reverse order) and keep the first defined value
@@ -38,7 +39,7 @@ function getValue(tag, meta, num) {
 		throw getScopeParserExecutionError({ tag, scope, error });
 	}
 	if (result == null && this.num > 0) {
-		return getValue.call(this, tag, meta, this.num - 1);
+		return getValue.call(this, tag, meta, num - 1);
 	}
 	return result;
 }
@@ -52,8 +53,8 @@ function getValueAsync(tag, meta, num) {
 			throw getScopeParserExecutionError({ tag, scope, error });
 		})
 		.then(result => {
-			if (result == null && this.num > 0) {
-				return getValueAsync.call(this, tag, meta, this.num - 1);
+			if (result == null && num > 0) {
+				return getValueAsync.call(this, tag, meta, num - 1);
 			}
 			return result;
 		});
@@ -65,6 +66,7 @@ const ScopeManager = class ScopeManager {
 		this.scopePath = options.scopePath;
 		this.scopePathItem = options.scopePathItem;
 		this.scopeList = options.scopeList;
+		this.scopeLindex = options.scopeLindex;
 		this.parser = options.parser;
 		this.resolved = options.resolved;
 	}
@@ -85,6 +87,9 @@ const ScopeManager = class ScopeManager {
 		);
 	}
 	loopOverValue(value, functor, inverted) {
+		if (this.resolved) {
+			inverted = false;
+		}
 		const type = Object.prototype.toString.call(value);
 		const currentValue = this.scopeList[this.num];
 		if (this.isValueFalsy(value, type)) {
@@ -120,13 +125,14 @@ const ScopeManager = class ScopeManager {
 			scopePathItem: this.scopePathItem,
 		};
 	}
-	createSubScopeManager(scope, tag, i) {
+	createSubScopeManager(scope, tag, i, part) {
 		return new ScopeManager({
 			resolved: this.resolved,
 			parser: this.parser,
 			scopeList: this.scopeList.concat(scope),
 			scopePath: this.scopePath.concat(tag),
 			scopePathItem: this.scopePathItem.concat(i),
+			scopeLindex: this.scopeLindex.concat(part.lIndex),
 		});
 	}
 };
@@ -134,6 +140,7 @@ const ScopeManager = class ScopeManager {
 module.exports = function(options) {
 	options.scopePath = [];
 	options.scopePathItem = [];
+	options.scopeLindex = [];
 	options.scopeList = [options.tags];
 	return new ScopeManager(options);
 };
