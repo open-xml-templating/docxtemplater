@@ -154,7 +154,7 @@ function shouldBeSame(options) {
 				const text2 = expectedZip.files[filePath]
 					.asText()
 					.replace(/\n|\t/g, "");
-				if (filePath.endsWith("/")) {
+				if (endsWith(filePath, "/")) {
 					return;
 				}
 				if (filePath.indexOf(".png") !== -1) {
