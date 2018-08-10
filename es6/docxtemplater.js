@@ -46,22 +46,28 @@ const Docxtemplater = class Docxtemplater {
 			});
 		}
 		if (neededVersion[0] !== currentModuleApiVersion[0]) {
-			throwApiVersionError("The major api version do not match", {
-				neededVersion,
-				currentModuleApiVersion,
-				explanation: `moduleAPIVersionMismatch : needed=${neededVersion.join(
-					"."
-				)}, current=${currentModuleApiVersion.join(".")}`,
-			});
+			throwApiVersionError(
+				"The major api version do not match, you probably have to update docxtemplater with npm install --save docxtemplater",
+				{
+					neededVersion,
+					currentModuleApiVersion,
+					explanation: `moduleAPIVersionMismatch : needed=${neededVersion.join(
+						"."
+					)}, current=${currentModuleApiVersion.join(".")}`,
+				}
+			);
 		}
 		if (neededVersion[1] > currentModuleApiVersion[1]) {
-			throwApiVersionError("The minor api version is not uptodate", {
-				neededVersion,
-				currentModuleApiVersion,
-				explanation: `moduleAPIVersionMismatch : needed=${neededVersion.join(
-					"."
-				)}, current=${currentModuleApiVersion.join(".")}`,
-			});
+			throwApiVersionError(
+				"The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
+				{
+					neededVersion,
+					currentModuleApiVersion,
+					explanation: `moduleAPIVersionMismatch : needed=${neededVersion.join(
+						"."
+					)}, current=${currentModuleApiVersion.join(".")}`,
+				}
+			);
 		}
 		return true;
 	}

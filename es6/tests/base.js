@@ -92,7 +92,8 @@ describe("Api versioning", function() {
 			doc.verifyApiVersion.bind(null, "5.6.0"),
 			Errors.XTAPIVersionError,
 			{
-				message: "The major api version do not match",
+				message:
+					"The major api version do not match, you probably have to update docxtemplater with npm install --save docxtemplater",
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
@@ -106,7 +107,8 @@ describe("Api versioning", function() {
 			doc.verifyApiVersion.bind(null, "3.44.0"),
 			Errors.XTAPIVersionError,
 			{
-				message: "The minor api version is not uptodate",
+				message:
+					"The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
