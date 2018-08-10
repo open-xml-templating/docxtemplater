@@ -6,7 +6,11 @@ pid=""
 cleanup() {
 	if [ "$pid" != "" ]
 	then
-		kill "$pid" || true
+		while true
+		do
+			kill "$pid" 1>/dev/null 2>&1 || break
+			sleep 1
+		done
 	fi
 }
 trap "cleanup" EXIT INT
