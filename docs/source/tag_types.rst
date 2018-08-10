@@ -278,7 +278,7 @@ Consider the following contrived example:
     * {default_tags}
     {=<% %>=}
     * <% erb_style_tags %>
-    <%={ }%=>
+    <%={ }=%>
     * { default_tags_again }
 
 Here we have a list with three items. The first item uses the default tag style, the second uses erb style as defined by the Set Delimiter tag, and the third returns to the default style after yet another Set Delimiter declaration.
