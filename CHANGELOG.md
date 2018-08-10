@@ -1,3 +1,9 @@
+### 3.8.3
+
+Add templating of more meta data of the document, including :
+
+Author, Title, Topic, marks, Categories, Comments, Company
+
 ### 3.8.2
 
 Fix bug with resolveData algorithm, which raised the error : "Cannot read property value of undefined" in the render call.

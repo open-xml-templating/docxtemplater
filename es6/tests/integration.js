@@ -507,6 +507,47 @@ describe("Templating", function() {
 		doc.setData({ name: "John" }).render();
 		shouldBeSame({ doc, expectedName: "expected-spacing-end.docx" });
 	});
+
+	it("should work with custom properties", function() {
+		const doc = createDoc("properties.docx");
+		let app = doc.getZip().files["docProps/app.xml"].asText();
+		let core = doc.getZip().files["docProps/core.xml"].asText();
+		expect(app).to.contain("{tag1}");
+		expect(core).to.contain("{tag1}");
+		expect(core).to.contain("{tag2}");
+		expect(core).to.contain("{tag3}");
+		expect(app).to.contain("{tag4}");
+		expect(app).to.contain("{tag5}");
+		expect(core).to.contain("{tag6}");
+		expect(core).to.contain("{tag7}");
+		expect(core).to.contain("{tag8}");
+		expect(app).to.contain("{tag9}");
+		doc
+			.setData({
+				tag1: "resolvedvalue1",
+				tag2: "resolvedvalue2",
+				tag3: "resolvedvalue3",
+				tag4: "resolvedvalue4",
+				tag5: "resolvedvalue5",
+				tag6: "resolvedvalue6",
+				tag7: "resolvedvalue7",
+				tag8: "resolvedvalue8",
+				tag9: "resolvedvalue9",
+			})
+			.render();
+		app = doc.getZip().files["docProps/app.xml"].asText();
+		core = doc.getZip().files["docProps/core.xml"].asText();
+		expect(app).to.contain("resolvedvalue1");
+		expect(core).to.contain("resolvedvalue1");
+		expect(core).to.contain("resolvedvalue2");
+		expect(core).to.contain("resolvedvalue3");
+		expect(app).to.contain("resolvedvalue4");
+		expect(app).to.contain("resolvedvalue5");
+		expect(core).to.contain("resolvedvalue6");
+		expect(core).to.contain("resolvedvalue7");
+		expect(core).to.contain("resolvedvalue8");
+		expect(app).to.contain("resolvedvalue9");
+	});
 });
 
 describe("Load Office 365 file", function() {

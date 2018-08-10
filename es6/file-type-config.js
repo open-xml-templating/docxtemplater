@@ -23,12 +23,19 @@ const PptXFileTypeConfig = {
 		return "ppt/slides/slide1.xml";
 	},
 	tagsXmlTextArray: [
+		"Company",
+		"HyperlinkBase",
+		"Manager",
+		"cp:category",
+		"cp:keywords",
+		"dc:creator",
+		"dc:description",
+		"dc:subject",
+		"dc:title",
+
 		"a:t",
 		"m:t",
 		"vt:lpstr",
-		"dc:title",
-		"dc:creator",
-		"cp:keywords",
 	],
 	tagsXmlLexedArray: ["p:sp", "a:tc", "a:tr", "a:table", "a:p", "a:r", "a:rPr"],
 	expandTags: [{ contains: "a:tc", expand: "a:tr" }],
@@ -62,12 +69,19 @@ const DocXFileTypeConfig = {
 		}
 	},
 	tagsXmlTextArray: [
+		"Company",
+		"HyperlinkBase",
+		"Manager",
+		"cp:category",
+		"cp:keywords",
+		"dc:creator",
+		"dc:description",
+		"dc:subject",
+		"dc:title",
+
 		"w:t",
 		"m:t",
 		"vt:lpstr",
-		"dc:title",
-		"dc:creator",
-		"cp:keywords",
 	],
 	tagsXmlLexedArray: [
 		"w:tc",
