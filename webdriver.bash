@@ -14,8 +14,17 @@ cleanup() {
 	fi
 }
 trap "cleanup" EXIT INT
+BROWSER="${BROWSER:-CHROME|FIREFOX|}"
 PATH="$PATH:./node_modules/.bin/"
-BROWSER="${BROWSER:-CHROME}"
+if grep '|' <<<"$BROWSER" >/dev/null
+then
+	while read -d '|' browser
+	do
+		echo "$browser"
+		BROWSER="$browser" ./webdriver.bash
+	done <<<"$BROWSER"
+	exit 0
+fi
 
 if [ "$BROWSER" != "SAUCELABS" ]
 then
