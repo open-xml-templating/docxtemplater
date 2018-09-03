@@ -154,6 +154,8 @@ It will log this object :
 
 You can also get a more detailled tree by using : 
 
+.. code-block:: javascript
+
     console.log(iModule.fullInspected["word/document.xml"]);
 
 The code of the inspect-module is very simple, and can be found here : https://github.com/open-xml-templating/docxtemplater/blob/master/es6/inspect-module.js
