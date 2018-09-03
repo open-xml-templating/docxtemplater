@@ -8,20 +8,23 @@ matrix:
       sauce_connect:
         username: jsninja
   - node_js: '4'
-    env: COMMAND=test
+    env: COMMAND=mocha
   - node_js: '5'
-    env: COMMAND=test
+    env: COMMAND=mocha
   - node_js: '6'
-    env: COMMAND=test
+    env: COMMAND=mocha
   - node_js: '7'
-    env: COMMAND=test
+    env: COMMAND=mocha
   - node_js: '8'
-    env: COMMAND=test
+    env: COMMAND=mocha
   - node_js: '9'
-    env: COMMAND=test
+    env: COMMAND=mocha
   - node_js: '10'
-    env: COMMAND=test
+    env: COMMAND=mocha
 script:
+- nvm install stable
+- npm run convertto:es5
+- nvm use $TRAVIS_NODE_VERSION
 - npm run "$COMMAND"
 env:
   global:
