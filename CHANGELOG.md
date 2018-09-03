@@ -1,3 +1,7 @@
+### 3.8.4
+
+Fix bug with {linebreaks: true} throwing `a.split is not a function`
+
 ### 3.8.3
 
 Add templating of more meta data of the document, including :

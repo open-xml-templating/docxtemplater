@@ -169,6 +169,16 @@ describe("Pptx generation", function() {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-multiline.pptx" });
 	});
+
+	it("should not fail when using linebreaks and tagvalue not a string", function() {
+		const doc = createDoc("tag-multiline.pptx");
+		doc.setData({
+			description: true,
+		});
+		doc.setOptions({ linebreaks: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-regression-multiline.pptx" });
+	});
 });
 
 describe("Table", function() {

@@ -76,6 +76,9 @@ class Render {
 			if (hasCorruptCharacters(value)) {
 				throwCorruptCharacters({ tag: part.value, value });
 			}
+			if (typeof value !== "string") {
+				value = value.toString();
+			}
 			if (linebreaks) {
 				const p = ftprefix[this.fileType];
 				const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
