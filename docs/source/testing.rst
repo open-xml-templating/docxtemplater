@@ -26,14 +26,14 @@ The integration tests are in es6/tests/integration.js
 	it("should work with table pptx", function () {
 		const doc = createDoc("table-example.pptx");
 		doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render();
-		shouldBeSame({doc, expectedName: "table-example-expected.pptx"});
+		shouldBeSame({doc, expectedName: "expected-table-example.pptx"});
 	});
 
 All of the test documents are in the folder `examples/`
 
 * We first load a document from table-example.pptx 
 * We then set data and render the document.
-* We then verify that the document is the same as "table-example-expected.pptx"
+* We then verify that the document is the same as "expected-table-example.pptx"
 
 shouldBeSame will, for each XML file that is inside the zip document, pretty print it, and then compare them. That way, we have a more beautiful diff and spacing differences do not matter in the output document.
 
@@ -51,10 +51,7 @@ Docxtemplater was not able to render text that was written in russian (because o
 .. code-block:: javascript
 
     it("should insert russian characters", function () {
-        const russianText = [1055, 1091, 1087, 1082, 1080, 1085, 1072];
-        const russian = russianText.map(function (char) {
-            return String.fromCharCode(char);
-        }).join("");
+        const russian = "Пупкина"
         const doc = createDoc("tag-example.docx");
         const zip = new JSZip(doc.loadedContent);
         const d = new Docxtemplater().loadZip(zip);

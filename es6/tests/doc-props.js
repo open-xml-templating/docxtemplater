@@ -18,6 +18,6 @@ describe("Docx docprops", function() {
 		expect(doc.getFullText("word/footer1.xml")).to.be.equal(
 			"EdgarHipp0652455478"
 		);
-		shouldBeSame({ doc, expectedName: "tag-docprops-expected.docx" });
+		shouldBeSame({ doc, expectedName: "expected-tag-docprops.docx" });
 	});
 });

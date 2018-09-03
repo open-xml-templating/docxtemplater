@@ -94,7 +94,7 @@ describe("Pptx generation", function() {
 				users: [{ msg: "hello", name: "mary" }, { msg: "hello", name: "john" }],
 			})
 			.render();
-		shouldBeSame({ doc, expectedName: "table-example-expected.pptx" });
+		shouldBeSame({ doc, expectedName: "expected-table-example.pptx" });
 	});
 	it("should work with loop pptx", function() {
 		const doc = createDoc("loop-example.pptx");
@@ -193,7 +193,7 @@ describe("Table", function() {
 		doc.setData(tags);
 		doc.setOptions({ paragraphLoop: true });
 		doc.render();
-		shouldBeSame({ doc, expectedName: "loop-valid-expected.docx" });
+		shouldBeSame({ doc, expectedName: "expected-loop-valid.docx" });
 	});
 
 	it("should work with tables", function() {
@@ -214,7 +214,7 @@ describe("Table", function() {
 		expect(text).to.be.equal(expectedText);
 		shouldBeSame({
 			doc,
-			expectedName: "tag-intelligent-loop-table-expected.docx",
+			expectedName: "expected-tag-intelligent-loop-table.docx",
 		});
 	});
 
@@ -368,7 +368,7 @@ describe("Templating", function() {
 			expect(doc.getFullText("word/footer1.xml")).to.be.equal(
 				"EdgarHipp0652455478"
 			);
-			shouldBeSame({ doc, expectedName: "tag-example-expected.docx" });
+			shouldBeSame({ doc, expectedName: "expected-tag-example.docx" });
 		});
 	});
 
@@ -399,7 +399,7 @@ describe("Templating", function() {
 			paragraphLoop: true,
 		});
 		doc.setData({ users: ["John", "Jane", "Louis"] }).render();
-		shouldBeSame({ doc, expectedName: "users-expected.docx" });
+		shouldBeSame({ doc, expectedName: "expected-users.docx" });
 	});
 
 	it("should work with paragraphloop without removing extra text", function() {
@@ -622,7 +622,7 @@ describe("Resolver", function() {
 			})
 			.then(function() {
 				doc.render();
-				shouldBeSame({ doc, expectedName: "multi-loop-expected.docx" });
+				shouldBeSame({ doc, expectedName: "expected-multi-loop.docx" });
 			});
 	});
 

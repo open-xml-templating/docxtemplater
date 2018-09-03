@@ -9,7 +9,6 @@ const {
 	createXmlTemplaterDocx,
 	createDoc,
 	expectToThrow,
-	imageData,
 	getContent,
 } = require("./utils");
 const inspectModule = require("../inspect-module.js");
@@ -24,32 +23,31 @@ function getLength(obj) {
 describe("Loading", function() {
 	describe("ajax done correctly", function() {
 		it("doc and img Data should have the expected length", function() {
-			const doc = createDoc("image-example.docx");
-			expect(getLength(doc.loadedContent)).to.be.equal(729580);
-			expect(getLength(imageData["image.png"])).to.be.equal(18062);
+			const doc = createDoc("tag-example.docx");
+			expect(getLength(doc.loadedContent)).to.be.equal(19424);
 		});
 		it("should have the right number of files (the docx unzipped)", function() {
-			const doc = createDoc("image-example.docx");
+			const doc = createDoc("tag-example.docx");
 			expect(Object.keys(doc.zip.files).length).to.be.equal(16);
 		});
 	});
 	describe("basic loading", function() {
-		it("should load file image-example.docx", function() {
-			const doc = createDoc("image-example.docx");
+		it("should load file tag-example.docx", function() {
+			const doc = createDoc("tag-example.docx");
 			expect(typeof doc).to.be.equal("object");
 		});
 	});
 	describe("content_loading", function() {
 		it("should load the right content for the footer", function() {
-			const doc = createDoc("image-example.docx");
+			const doc = createDoc("tag-example.docx");
 			const fullText = doc.getFullText("word/footer1.xml");
 			expect(fullText.length).not.to.be.equal(0);
 			expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 		});
 		it("should load the right content for the document", function() {
-			const doc = createDoc("image-example.docx");
+			const doc = createDoc("tag-example.docx");
 			const fullText = doc.getFullText();
-			expect(fullText).to.be.equal("");
+			expect(fullText).to.be.equal("{last_name} {first_name}");
 		});
 		it("should load the right template files for the document", function() {
 			const doc = createDoc("tag-example.docx");
@@ -79,7 +77,7 @@ describe("Loading", function() {
 
 describe("Api versioning", function() {
 	it("should work with valid numbers", function() {
-		const doc = createDoc("image-example.docx");
+		const doc = createDoc("tag-example.docx");
 		expect(doc.verifyApiVersion("3.6.0")).to.be.equal(true);
 		expect(doc.verifyApiVersion("3.5.0")).to.be.equal(true);
 		expect(doc.verifyApiVersion("3.4.2")).to.be.equal(true);
@@ -87,7 +85,7 @@ describe("Api versioning", function() {
 	});
 
 	it("should fail with invalid versions", function() {
-		const doc = createDoc("image-example.docx");
+		const doc = createDoc("tag-example.docx");
 		expectToThrow(
 			doc.verifyApiVersion.bind(null, "5.6.0"),
 			Errors.XTAPIVersionError,
@@ -572,12 +570,7 @@ describe("Special characters", function() {
 		expect(fullText.indexOf("Edgar")).to.be.equal(9);
 	});
 	it("should insert russian characters", function() {
-		const russianText = [1055, 1091, 1087, 1082, 1080, 1085, 1072];
-		const russian = russianText
-			.map(function(char) {
-				return String.fromCharCode(char);
-			})
-			.join("");
+		const russian = "Пупкина";
 		const doc = createDoc("tag-example.docx");
 		const zip = new JSZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
