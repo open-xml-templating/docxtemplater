@@ -58,7 +58,7 @@
     "serve-static": "^1.13.2",
     "uglify-js": "^3.4.9",
     "webdriverio": "^4.13.2",
-    "webpack": "^4.17.1",
+    "webpack": "^4.17.2",
     "webpack-cli": "^3.1.0"
   },
   "license": "MIT",
