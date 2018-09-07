@@ -1,3 +1,9 @@
+### 3.9.0
+
+-	Add possibility to change the prefix of the rawxmlmodule and of the loopmodule
+
+-	In parsed output, also add raw containing the full tag, for example {#loop} will be parsed to : {value: "loop", raw: "#loop"}
+
 ### 3.8.4
 
 Fix bug with {linebreaks: true} throwing `a.split is not a function`

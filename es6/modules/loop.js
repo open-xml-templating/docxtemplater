@@ -7,6 +7,7 @@ const {
 	isContent,
 } = require("../doc-utils");
 const wrapper = require("../module-wrapper");
+const { match, getValue, getValues } = require("../prefix-matcher");
 
 const moduleName = "loop";
 
@@ -25,29 +26,6 @@ function isEnclosedByParagraphs(parsed) {
 
 function getOffset(chunk) {
 	return hasContent(chunk) ? 0 : chunk.length;
-}
-
-function match(condition, placeHolderContent) {
-	if (typeof condition === "string") {
-		return placeHolderContent.substr(0, condition.length) === condition;
-	}
-	if (condition instanceof RegExp) {
-		return condition.test(placeHolderContent);
-	}
-}
-function getValue(condition, placeHolderContent) {
-	if (typeof condition === "string") {
-		return placeHolderContent.substr(condition.length);
-	}
-	if (condition instanceof RegExp) {
-		return placeHolderContent.match(condition)[1];
-	}
-}
-
-function getValues(condition, placeHolderContent) {
-	if (condition instanceof RegExp) {
-		return placeHolderContent.match(condition);
-	}
 }
 
 class LoopModule {

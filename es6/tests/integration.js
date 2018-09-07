@@ -3,7 +3,6 @@ const {
 	createDoc,
 	shouldBeSame,
 	expect,
-	getContent,
 	resolveSoon,
 	createXmlTemplaterDocxNoRender,
 	cleanRecursive,
@@ -564,11 +563,7 @@ describe("Templating", function() {
 
 describe("Prefixes", function() {
 	it("should be possible to change the prefix of the loop module", function() {
-		const content = `<w:t>{##tables}</w:t>
-<w:table><w:tr><w:tc>
-<w:t>{user}</w:t>
-</w:tc></w:tr></w:table>
-<w:t>{/tables}</w:t>`;
+		const content = "<w:t>{##tables}{user}{/tables}</w:t>";
 		const scope = {
 			tables: [{ user: "John" }, { user: "Jane" }],
 		};
@@ -579,20 +574,12 @@ describe("Prefixes", function() {
 			}
 		});
 		doc.render();
-		expect(getContent(doc)).to.be.equal(`<w:t/>
-<w:table><w:tr><w:tc>
-<w:t xml:space="preserve">John</w:t>
-</w:tc></w:tr></w:table>
-<w:t/>
-<w:table><w:tr><w:tc>
-<w:t xml:space="preserve">Jane</w:t>
-</w:tc></w:tr></w:table>
-<w:t/>`);
+		expect(doc.getFullText()).to.be.equal("JohnJane");
 	});
 
 	it("should be possible to change the prefix of the loop module to a regexp", function() {
-		const content = `<w:t>{##tables}{user}{/tables}{#tables}{user}{/tables}</w:t>
-`;
+		const content =
+			"<w:t>{##tables}{user}{/tables}{#tables}{user}{/tables}</w:t>";
 		const scope = {
 			tables: [{ user: "A" }, { user: "B" }],
 		};
@@ -604,6 +591,22 @@ describe("Prefixes", function() {
 		});
 		doc.render();
 		expect(doc.getFullText()).to.be.equal("ABAB");
+	});
+
+	it("should be possible to change the prefix of the raw xml module to a regexp", function() {
+		const content = "<w:p><w:t>{!!raw}</w:t></w:p>";
+		const scope = {
+			raw: "<w:p><w:t>HoHo</w:t></w:p>",
+		};
+		const doc = createXmlTemplaterDocxNoRender(content, { tags: scope });
+		doc.modules.forEach(function(module) {
+			if (module.name === "RawXmlModule") {
+				module.prefix = /^!!?(.*)$/;
+			}
+		});
+		doc.render();
+
+		expect(doc.getFullText()).to.be.equal("HoHo");
 	});
 });
 
