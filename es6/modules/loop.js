@@ -6,7 +6,6 @@ const {
 	isParagraphEnd,
 	isContent,
 } = require("../doc-utils");
-const dashInnerRegex = /^-([^\s]+)\s(.+)$/;
 const wrapper = require("../module-wrapper");
 
 const moduleName = "loop";
@@ -28,49 +27,73 @@ function getOffset(chunk) {
 	return hasContent(chunk) ? 0 : chunk.length;
 }
 
-const loopModule = {
-	name: "LoopModule",
-	prefix: {
-		start: "#",
-		end: "/",
-		dash: "-",
-		inverted: "^",
-	},
+function match(condition, placeHolderContent) {
+	if (typeof condition === "string") {
+		return placeHolderContent.substr(0, condition.length) === condition;
+	}
+	if (condition instanceof RegExp) {
+		return condition.test(placeHolderContent);
+	}
+}
+function getValue(condition, placeHolderContent) {
+	if (typeof condition === "string") {
+		return placeHolderContent.substr(condition.length);
+	}
+	if (condition instanceof RegExp) {
+		return placeHolderContent.match(condition)[1];
+	}
+}
+
+function getValues(condition, placeHolderContent) {
+	if (condition instanceof RegExp) {
+		return placeHolderContent.match(condition);
+	}
+}
+
+class LoopModule {
+	constructor() {
+		this.name = "LoopModule";
+		this.prefix = {
+			start: "#",
+			end: "/",
+			dash: /^-([^\s]+)\s(.+)$/,
+			inverted: "^",
+		};
+	}
 	parse(placeHolderContent) {
 		const module = moduleName;
 		const type = "placeholder";
 		const { start, inverted, dash, end } = this.prefix;
-		if (placeHolderContent[0] === start) {
+		if (match(start, placeHolderContent)) {
 			return {
 				type,
-				value: placeHolderContent.substr(1),
+				value: getValue(start, placeHolderContent),
 				expandTo: "auto",
 				module,
 				location: "start",
 				inverted: false,
 			};
 		}
-		if (placeHolderContent[0] === inverted) {
+		if (match(inverted, placeHolderContent)) {
 			return {
 				type,
-				value: placeHolderContent.substr(1),
+				value: getValue(inverted, placeHolderContent),
 				expandTo: "auto",
 				module,
 				location: "start",
 				inverted: true,
 			};
 		}
-		if (placeHolderContent[0] === end) {
+		if (match(end, placeHolderContent)) {
 			return {
 				type,
-				value: placeHolderContent.substr(1),
+				value: getValue(end, placeHolderContent),
 				module,
 				location: "end",
 			};
 		}
-		if (placeHolderContent[0] === dash) {
-			const value = placeHolderContent.replace(dashInnerRegex, "$2");
-			const expandTo = placeHolderContent.replace(dashInnerRegex, "$1");
+		if (match(dash, placeHolderContent)) {
+			const [, expandTo, value] = getValues(dash, placeHolderContent);
 			return {
 				type,
 				value,
@@ -81,7 +104,7 @@ const loopModule = {
 			};
 		}
 		return null;
-	},
+	}
 	getTraits(traitName, parsed) {
 		if (traitName !== "expandPair") {
 			return;
@@ -93,7 +116,7 @@ const loopModule = {
 			}
 			return tags;
 		}, []);
-	},
+	}
 	postparse(parsed, { basePart }) {
 		if (!isEnclosedByParagraphs(parsed)) {
 			return parsed;
@@ -125,7 +148,7 @@ const loopModule = {
 			return parsed;
 		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
-	},
+	}
 	render(part, options) {
 		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
@@ -153,7 +176,7 @@ const loopModule = {
 			part,
 		});
 		return { value: totalValue.join(""), errors };
-	},
+	}
 	resolve(part, options) {
 		if (!part.type === "placeholder" || part.module !== moduleName) {
 			return null;
@@ -189,7 +212,7 @@ const loopModule = {
 			.then(function(r) {
 				return r;
 			});
-	},
-};
+	}
+}
 
-module.exports = () => wrapper(loopModule);
+module.exports = () => wrapper(new LoopModule());

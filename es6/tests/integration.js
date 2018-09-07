@@ -3,7 +3,9 @@ const {
 	createDoc,
 	shouldBeSame,
 	expect,
+	getContent,
 	resolveSoon,
+	createXmlTemplaterDocxNoRender,
 	cleanRecursive,
 } = require("./utils");
 const { cloneDeep } = require("lodash");
@@ -557,6 +559,51 @@ describe("Templating", function() {
 		expect(core).to.contain("resolvedvalue7");
 		expect(core).to.contain("resolvedvalue8");
 		expect(app).to.contain("resolvedvalue9");
+	});
+});
+
+describe("Prefixes", function() {
+	it("should be possible to change the prefix of the loop module", function() {
+		const content = `<w:t>{##tables}</w:t>
+<w:table><w:tr><w:tc>
+<w:t>{user}</w:t>
+</w:tc></w:tr></w:table>
+<w:t>{/tables}</w:t>`;
+		const scope = {
+			tables: [{ user: "John" }, { user: "Jane" }],
+		};
+		const doc = createXmlTemplaterDocxNoRender(content, { tags: scope });
+		doc.modules.forEach(function(module) {
+			if (module.name === "LoopModule") {
+				module.prefix.start = "##";
+			}
+		});
+		doc.render();
+		expect(getContent(doc)).to.be.equal(`<w:t/>
+<w:table><w:tr><w:tc>
+<w:t xml:space="preserve">John</w:t>
+</w:tc></w:tr></w:table>
+<w:t/>
+<w:table><w:tr><w:tc>
+<w:t xml:space="preserve">Jane</w:t>
+</w:tc></w:tr></w:table>
+<w:t/>`);
+	});
+
+	it("should be possible to change the prefix of the loop module to a regexp", function() {
+		const content = `<w:t>{##tables}{user}{/tables}{#tables}{user}{/tables}</w:t>
+`;
+		const scope = {
+			tables: [{ user: "A" }, { user: "B" }],
+		};
+		const doc = createXmlTemplaterDocxNoRender(content, { tags: scope });
+		doc.modules.forEach(function(module) {
+			if (module.name === "LoopModule") {
+				module.prefix.start = /^##?(.*)$/;
+			}
+		});
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("ABAB");
 	});
 });
 
