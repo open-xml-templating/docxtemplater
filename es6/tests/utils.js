@@ -222,6 +222,7 @@ function cleanRecursive(arr) {
 		delete p.lIndex;
 		delete p.endLindex;
 		delete p.offset;
+		delete p.raw;
 		if (p.subparsed) {
 			cleanRecursive(p.subparsed);
 		}

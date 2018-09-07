@@ -15,6 +15,7 @@ function moduleParse(
 			moduleParsed.offset = startOffset;
 			moduleParsed.endLindex = endLindex;
 			moduleParsed.lIndex = endLindex;
+			moduleParsed.raw = placeHolderContent;
 			parsed.push(moduleParsed);
 			return parsed;
 		}

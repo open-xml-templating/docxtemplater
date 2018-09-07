@@ -196,6 +196,7 @@ describe("Inspect module", function() {
 			{
 				type: "placeholder",
 				value: "products",
+				raw: "#products",
 				position: "outsidetag",
 				lIndex: 15,
 				module: "loop",
@@ -228,6 +229,7 @@ describe("Inspect module", function() {
 						type: "placeholder",
 						value: "avantages",
 						module: "loop",
+						raw: "#avantages",
 						inverted: false,
 						offset: 70,
 						endLindex: 89,
@@ -244,6 +246,7 @@ describe("Inspect module", function() {
 								type: "placeholder",
 								value: "proof",
 								module: "loop",
+								raw: "#proof",
 								inverted: false,
 								offset: 117,
 								endLindex: 133,

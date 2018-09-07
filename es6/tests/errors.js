@@ -189,6 +189,7 @@ describe("Compilation errors", function() {
 						module: "rawxml",
 						type: "placeholder",
 						value: "myrawtag",
+						raw: "@myrawtag",
 					},
 					{
 						position: "end",
@@ -238,6 +239,7 @@ describe("Compilation errors", function() {
 					{
 						type: "placeholder",
 						value: "myrawtag",
+						raw: "@myrawtag",
 						module: "rawxml",
 					},
 					{
