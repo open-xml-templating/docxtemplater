@@ -1,16 +1,26 @@
-const { merge } = require("lodash");
+const { merge, cloneDeep } = require("lodash");
+
+function isPlaceholder(part) {
+	return part.type === "placeholder";
+}
+
 function getTags(postParsed) {
-	return postParsed
-		.filter(function(part) {
-			return part.type === "placeholder";
-		})
-		.reduce(function(tags, part) {
-			tags[part.value] = tags[part.value] || {};
-			if (part.subparsed) {
-				tags[part.value] = merge(tags[part.value], getTags(part.subparsed));
-			}
-			return tags;
-		}, {});
+	return postParsed.filter(isPlaceholder).reduce(function(tags, part) {
+		tags[part.value] = tags[part.value] || {};
+		if (part.subparsed) {
+			tags[part.value] = merge(tags[part.value], getTags(part.subparsed));
+		}
+		return tags;
+	}, {});
+}
+
+function getStructuredTags(postParsed) {
+	return postParsed.filter(isPlaceholder).map(function(part) {
+		if (part.subparsed) {
+			part.subparsed = getStructuredTags(part.subparsed);
+		}
+		return part;
+	}, {});
 }
 
 class InspectModule {
@@ -49,12 +59,21 @@ class InspectModule {
 	}
 	getTags(file) {
 		file = file || this.fileTypeConfig.textPath(this.zip);
-		return getTags(this.fullInspected[file].postparsed);
+		return getTags(cloneDeep(this.fullInspected[file].postparsed));
 	}
 	getAllTags() {
 		return Object.keys(this.fullInspected).reduce((result, file) => {
 			return merge(result, this.getTags(file));
 		}, {});
+	}
+	getStructuredTags(file) {
+		file = file || this.fileTypeConfig.textPath(this.zip);
+		return getStructuredTags(cloneDeep(this.fullInspected[file].postparsed));
+	}
+	getAllStructuredTags() {
+		return Object.keys(this.fullInspected).reduce((result, file) => {
+			return result.concat(this.getStructuredTags(file));
+		}, []);
 	}
 }
 

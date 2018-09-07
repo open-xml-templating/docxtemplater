@@ -186,6 +186,84 @@ describe("Inspect module", function() {
 			},
 		});
 	});
+
+	it("should get all tags with additional data", function() {
+		const doc = createDoc("tag-product-loop.docx");
+		const iModule = inspectModule();
+		doc.attachModule(iModule);
+		doc.compile();
+		expect(iModule.getAllStructuredTags()).to.be.deep.equal([
+			{
+				type: "placeholder",
+				value: "products",
+				position: "outsidetag",
+				lIndex: 15,
+				module: "loop",
+				inverted: false,
+				offset: 0,
+				endLindex: 15,
+				subparsed: [
+					{
+						type: "placeholder",
+						value: "title",
+						offset: 11,
+						endLindex: 31,
+						lIndex: 31,
+					},
+					{
+						type: "placeholder",
+						value: "name",
+						offset: 33,
+						endLindex: 55,
+						lIndex: 55,
+					},
+					{
+						type: "placeholder",
+						value: "reference",
+						offset: 59,
+						endLindex: 71,
+						lIndex: 71,
+					},
+					{
+						type: "placeholder",
+						value: "avantages",
+						module: "loop",
+						inverted: false,
+						offset: 70,
+						endLindex: 89,
+						lIndex: 89,
+						subparsed: [
+							{
+								type: "placeholder",
+								value: "title",
+								offset: 82,
+								endLindex: 105,
+								lIndex: 105,
+							},
+							{
+								type: "placeholder",
+								value: "proof",
+								module: "loop",
+								inverted: false,
+								offset: 117,
+								endLindex: 133,
+								lIndex: 133,
+								subparsed: [
+									{
+										type: "placeholder",
+										value: "reason",
+										offset: 143,
+										endLindex: 155,
+										lIndex: 155,
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		]);
+	});
 });
 
 describe("Docxtemplater loops", function() {
