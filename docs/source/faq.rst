@@ -194,3 +194,24 @@ Pptx support
 Docxtemplater handles pptx files without any special configuration (since version 3.0.4).
 
 It does so by detecting whether there is a file called "/word/document.xml", if there is one, the file is "docx", if not, it is pptx.
+
+My document is corrupted, what should I do ?
+--------------------------------------------
+
+If you are inserting multiple images inside a loop, it is possible that word cannot handle the docPr attributes correctly. You can try to add the following code instead of your `doc.render` call : 
+
+.. code-block:: javascript
+
+    doc.render();
+    const zip = doc.getZip();
+    let prId = 1;
+    zip.file(/\.xml$/).forEach(function (f) {
+        const xml = str2xml(f.asText());
+        const nodes = xml.childNodes[0];
+        const pr = xml.getElementsByTagName("wp:docPr");
+        for (var i = 0, len = pr.length; i < len; i++) {
+            pr[i].setAttribute("id", prId++);
+        }
+        const text = xml2str(xml);
+        zip.file(f.name, text);
+    });
