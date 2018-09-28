@@ -202,6 +202,8 @@ If you are inserting multiple images inside a loop, it is possible that word can
 
 .. code-block:: javascript
 
+    const str2xml = Docxtemplater.DocUtils.str2xml;
+    const xml2str = Docxtemplater.DocUtils.xml2str;
     doc.render();
     const zip = doc.getZip();
     let prId = 1;
