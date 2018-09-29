@@ -29,21 +29,21 @@
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.0",
-    "@babel/core": "^7.1.0",
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-json-strings": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-syntax-import-meta": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "angular-expressions": "^0.3.0",
-    "babel-eslint": "^9.0.0",
-    "babel-loader": "^8.0.2",
-    "chai": "^4.1.2",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.4",
+    "chai": "^4.2.0",
     "diff": "^3.5.0",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.5",
-    "eslint": "^5.6.0",
+    "eslint": "^5.6.1",
     "eslint-plugin-dependencies": "^2.4.0",
     "eslint_d": "^7.1.1",
     "finalhandler": "^1.1.1",
@@ -58,8 +58,8 @@
     "serve-static": "^1.13.2",
     "uglify-js": "^3.4.9",
     "webdriverio": "^4.13.2",
-    "webpack": "^4.19.1",
-    "webpack-cli": "^3.1.0"
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
   },
   "license": "MIT",
   "engines": {
