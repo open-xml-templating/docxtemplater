@@ -421,6 +421,14 @@ describe("Templating", function() {
 		doc
 			.setData({
 				condition: [1, 2],
+				l1: [
+					{
+						l2: ["a", "b", "c"],
+					},
+					{
+						l2: ["d", "e", "f"],
+					},
+				],
 				placeholder: "placeholder-value",
 			})
 			.render();

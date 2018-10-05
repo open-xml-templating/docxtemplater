@@ -1,3 +1,17 @@
+### 3.9.1
+
+Fix issue with nested loops with `paragraphLoop` :
+
+```
+{#user}{#pets}
+{name}
+{/}{/}
+```
+
+would produce `No tag "w:p" was found at the left`
+
+It now renders the same way as without paragraphLoop
+
 ### 3.9.0
 
 -	Add possibility to change the prefix of the rawxmlmodule and of the loopmodule

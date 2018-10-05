@@ -1,6 +1,8 @@
 const {
+	getRightOrNull,
 	getRight,
 	getLeft,
+	getLeftOrNull,
 	concatArrays,
 	chunkBy,
 	isTagStart,
@@ -87,8 +89,11 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 		const { contains, expand, onlyTextInTag } = expandTags[i];
 		if (has(contains, xmlElements)) {
 			if (onlyTextInTag) {
-				const left = getLeft(postparsed, contains, pair[0].offset);
-				const right = getRight(postparsed, contains, pair[1].offset);
+				const left = getLeftOrNull(postparsed, contains, pair[0].offset);
+				const right = getRightOrNull(postparsed, contains, pair[1].offset);
+				if (left === null || right === null) {
+					continue;
+				}
 
 				const chunks = chunkBy(postparsed.slice(left, right), function(p) {
 					if (isTagStart(contains, p)) {

@@ -434,6 +434,29 @@ const fixtures = {
 			paragraphLoop: true,
 		},
 	},
+	nestedparagraphlooptag: {
+		it: "should not fail with nested loops if using paragraphLoop",
+		content:
+			"<w:p><w:t>{#users} {#pets}</w:t></w:p><w:p><w:t>Pet {.}</w:t></w:p><w:p><w:t>{/pets}{/users}</w:t></w:p>",
+		scope: {
+			users: [
+				{
+					pets: ["Cat", "Dog"],
+				},
+				{
+					pets: ["Cat", "Dog"],
+				},
+			],
+		},
+		result:
+			'<w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t/></w:p>',
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		options: {
+			paragraphLoop: true,
+		},
+	},
 	spacingloops: {
 		it: "should work with spacing loops",
 		content: "<w:t>{#condition</w:t><w:t>} hello{/</w:t><w:t>condition}</w:t>",

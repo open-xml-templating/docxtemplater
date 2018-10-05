@@ -181,16 +181,32 @@ returns: [{array: {0: 'la'},offset: 2},{array: {0: 'la'},offset: 8},{array: {0: 
 }
 
 function getRight(parsed, element, index) {
+	const val = getRightOrNull(parsed, element, index);
+	if (val !== null) {
+		return val;
+	}
+	throwXmlTagNotFound({ position: "right", element, parsed, index });
+}
+
+function getRightOrNull(parsed, element, index) {
 	for (let i = index, l = parsed.length; i < l; i++) {
 		const part = parsed[i];
 		if (part.value === "</" + element + ">") {
 			return i;
 		}
 	}
-	throwXmlTagNotFound({ position: "right", element, parsed, index });
+	return null;
 }
 
 function getLeft(parsed, element, index) {
+	const val = getLeftOrNull(parsed, element, index);
+	if (val !== null) {
+		return val;
+	}
+	throwXmlTagNotFound({ position: "left", element, parsed, index });
+}
+
+function getLeftOrNull(parsed, element, index) {
 	for (let i = index; i >= 0; i--) {
 		const part = parsed[i];
 		if (
@@ -200,7 +216,7 @@ function getLeft(parsed, element, index) {
 			return i;
 		}
 	}
-	throwXmlTagNotFound({ position: "left", element, parsed, index });
+	return null;
 }
 
 function isTagStart(tagType, { type, tag, position }) {
@@ -279,7 +295,9 @@ module.exports = {
 	mergeObjects,
 	xml2str,
 	str2xml,
+	getRightOrNull,
 	getRight,
+	getLeftOrNull,
 	getLeft,
 	pregMatchAll,
 	convertSpaces,
