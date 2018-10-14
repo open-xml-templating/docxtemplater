@@ -309,7 +309,8 @@ describe("Compilation errors", function() {
 				tag: "name++",
 				rootError: {
 					message:
-						"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+						`[$parse:ueoe] Unexpected end of expression: name++
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				},
 			},
 		};
@@ -634,7 +635,8 @@ describe("Multi errors", function() {
 							tag: "name++",
 							rootError: {
 								message:
-									"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+									`[$parse:ueoe] Unexpected end of expression: name++
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							},
 						},
 					},
@@ -646,7 +648,8 @@ describe("Multi errors", function() {
 							tag: "foo|||bang",
 							rootError: {
 								message:
-									"Syntax Error: Token 'bang' is an unexpected token at column 7 of the expression [foo|||bang] starting at [bang].",
+									`[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20primary%20expression&p2=6&p3=foo%7C%7C%7Cbang&p4=%7Cbang`,
 							},
 						},
 					},
@@ -660,7 +663,7 @@ describe("Multi errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when customparser fails to compile", function() {
+	it("should fail when customparser fails to compile 2", function() {
 		const content = "<w:t>{name++} {foo|||bang}</w:t>";
 		const expectedError = {
 			message: "Multi error",
@@ -675,7 +678,8 @@ describe("Multi errors", function() {
 							tag: "name++",
 							rootError: {
 								message:
-									"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+									`[$parse:ueoe] Unexpected end of expression: name++
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							},
 						},
 					},
@@ -687,7 +691,8 @@ describe("Multi errors", function() {
 							tag: "foo|||bang",
 							rootError: {
 								message:
-									"Syntax Error: Token 'bang' is an unexpected token at column 7 of the expression [foo|||bang] starting at [bang].",
+									`[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20primary%20expression&p2=6&p3=foo%7C%7C%7Cbang&p4=%7Cbang`,
 							},
 						},
 					},
@@ -726,7 +731,8 @@ describe("Multi errors", function() {
 							tag: "name++",
 							rootError: {
 								message:
-									"Syntax Error: Token 'undefined' not a primary expression at column NaN of the expression [name++] starting at [name++].",
+									`[$parse:ueoe] Unexpected end of expression: name++
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							},
 						},
 					},
