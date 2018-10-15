@@ -217,3 +217,21 @@ If you are inserting multiple images inside a loop, it is possible that word can
         const text = xml2str(xml);
         zip.file(f.name, text);
     });
+
+Attaching modules for extra functionality
+-----------------------------------------
+
+If you have created or have access to docxtemplater PRO modules, you can attach them with the following code : 
+
+
+.. code-block:: javascript
+
+    var doc = new Docxtemplater();
+    doc.loadZip(zip);
+
+    // You can call attachModule for each modules you wish to include
+    doc.attachModule(imageModule)
+    doc.attachModule(htmlModule)
+
+    //set the templateVariables
+    doc.setData(data);

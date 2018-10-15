@@ -38,3 +38,9 @@ Methods
     getZip()
 
         This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see https://stuk.github.io/jszip/documentation/api_jszip/generate.html)
+
+    attachModule(module)
+
+        This will attach a module to the docxtemplater instance, which is usually used to add new generation features (possibility to include images, HTML, ...). Pro modules can be bought on https://docxtemplater.com/
+
+        This method can be called multiple times, for example : `doc.loadZip(zip).attachModule(imageModule).attachModule(htmlModule)`
