@@ -308,8 +308,7 @@ describe("Compilation errors", function() {
 				id: "scopeparser_compilation_failed",
 				tag: "name++",
 				rootError: {
-					message:
-						`[$parse:ueoe] Unexpected end of expression: name++
+					message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				},
 			},
@@ -634,8 +633,7 @@ describe("Multi errors", function() {
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
 							rootError: {
-								message:
-									`[$parse:ueoe] Unexpected end of expression: name++
+								message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							},
 						},
@@ -647,8 +645,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							id: "scopeparser_compilation_failed",
 							tag: "foo|||bang",
 							rootError: {
-								message:
-									`[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
+								message: `[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20primary%20expression&p2=6&p3=foo%7C%7C%7Cbang&p4=%7Cbang`,
 							},
 						},
@@ -677,8 +674,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
 							rootError: {
-								message:
-									`[$parse:ueoe] Unexpected end of expression: name++
+								message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							},
 						},
@@ -690,8 +686,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							id: "scopeparser_compilation_failed",
 							tag: "foo|||bang",
 							rootError: {
-								message:
-									`[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
+								message: `[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20primary%20expression&p2=6&p3=foo%7C%7C%7Cbang&p4=%7Cbang`,
 							},
 						},
@@ -730,8 +725,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
 							rootError: {
-								message:
-									`[$parse:ueoe] Unexpected end of expression: name++
+								message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							},
 						},
