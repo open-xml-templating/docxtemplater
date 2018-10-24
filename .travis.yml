@@ -21,6 +21,8 @@ matrix:
     env: COMMAND=mocha
   - node_js: '10'
     env: COMMAND=mocha
+  - node_js: '11'
+    env: COMMAND=mocha
 script:
 - nvm install stable
 - npm run convertto:es5
