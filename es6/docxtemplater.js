@@ -3,6 +3,8 @@
 const DocUtils = require("./doc-utils");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
+
+const Lexer = require("./lexer");
 const {
 	defaults,
 	str2xml,
@@ -19,7 +21,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 6, 0];
+const currentModuleApiVersion = [3, 7, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {
@@ -200,6 +202,7 @@ const Docxtemplater = class Docxtemplater {
 		this.compile();
 		this.setModules({
 			data: this.data,
+			Lexer,
 		});
 		this.mapper = this.modules.reduce(function(value, module) {
 			return module.getRenderedMap(value);
