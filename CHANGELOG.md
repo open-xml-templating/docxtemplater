@@ -1,3 +1,7 @@
+### 3.9.2
+
+Expose `Lexer` to modules
+
 ### 3.9.1
 
 Fix issue with nested loops with `paragraphLoop` :
