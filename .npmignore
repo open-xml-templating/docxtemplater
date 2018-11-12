@@ -6,6 +6,7 @@
 *.png
 *.sublime-project
 *.sublime-workspace
+.babelrc
 .~lock*
 .env
 .nyc_output

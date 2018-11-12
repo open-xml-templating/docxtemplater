@@ -1,3 +1,7 @@
+### 3.9.3
+
+Remove .babelrc from published module
+
 ### 3.9.2
 
 Expose `Lexer` to modules
