@@ -41,10 +41,10 @@ module.exports = function(xml) {
 		const type = single
 			? "single"
 			: closing
-				? "closing"
-				: opening
-					? "opening"
-					: "other";
+			? "closing"
+			: opening
+			? "opening"
+			: "other";
 
 		const fromTo = lastType + "->" + type;
 		if (type === "opening") {
