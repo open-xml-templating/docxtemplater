@@ -89,7 +89,11 @@ class Render {
 						.map(function(line) {
 							return utf8ToWord(line);
 						})
-						.join(`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t>`),
+						.join(
+							`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
+								this.fileType === "docx" ? ' xml:space="preserve"' : ""
+							}>`
+						),
 				};
 			}
 			return { value: utf8ToWord(value) };

@@ -1,3 +1,7 @@
+### 3.9.4
+
+Render all spaces when using linebreak option
+
 ### 3.9.3
 
 Remove .babelrc from published module

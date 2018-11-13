@@ -393,6 +393,19 @@ describe("Templating", function() {
 		shouldBeSame({ doc, expectedName: "expected-multiline.docx" });
 	});
 
+	it("should show spaces with linebreak option", function() {
+		const doc = createDoc("tag-multiline.docx");
+		doc.setData({
+			description: `hello there
+    deep indentation
+       goes here
+    end`,
+		});
+		doc.setOptions({ linebreaks: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-multiline-indent.docx" });
+	});
+
 	it("should work with linebreaks without changing the style", function() {
 		const doc = createDoc("multi-tags.docx");
 		doc.setData({
