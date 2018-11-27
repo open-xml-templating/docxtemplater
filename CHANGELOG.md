@@ -8,7 +8,7 @@ Remove .babelrc from published module
 
 ### 3.9.2
 
-Expose `Lexer` to modules
+Expose `Lexer` to modules (API Version 3-7-0)
 
 ### 3.9.1
 
