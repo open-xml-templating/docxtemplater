@@ -33,19 +33,39 @@ class InspectModule {
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		this.zip = docxtemplater.zip;
-		this.inspect.templatedFiles = docxtemplater.getTemplatedFiles();
-		this.inspect.fileType = docxtemplater.fileType;
+		this.templatedFiles = docxtemplater.getTemplatedFiles();
+		this.fileType = docxtemplater.fileType;
 		return options;
+	}
+	on(eventName) {
+		if (eventName === "attached") {
+			this.inspect = {};
+			this.fullInspected = {};
+			this.filePath = null;
+			this.nullValues = [];
+		}
 	}
 	set(obj) {
 		if (obj.data) {
-			this.inspect = merge({}, this.inspect, { tags: obj.data });
+			this.inspect.tags = obj.data;
 		}
 		if (obj.inspect) {
 			if (obj.inspect.filePath) {
 				this.filePath = obj.inspect.filePath;
+				this.inspect = {};
+			} else if (obj.inspect.content) {
+				this.inspect.content = obj.inspect.content;
+			} else if (obj.inspect.postparsed) {
+				this.inspect.postparsed = cloneDeep(obj.inspect.postparsed);
+			} else if (obj.inspect.parsed) {
+				this.inspect.parsed = cloneDeep(obj.inspect.parsed);
+			} else if (obj.inspect.lexed) {
+				this.inspect.lexed = cloneDeep(obj.inspect.lexed);
+			} else if (obj.inspect.xmllexed) {
+				this.inspect.xmllexed = cloneDeep(obj.inspect.xmllexed);
+			} else if (obj.inspect.resolved) {
+				this.inspect.resolved = obj.inspect.resolved;
 			}
-			this.inspect = merge({}, this.inspect, obj.inspect);
 			this.fullInspected[this.filePath] = this.inspect;
 		}
 	}
@@ -74,6 +94,12 @@ class InspectModule {
 		return Object.keys(this.fullInspected).reduce((result, file) => {
 			return result.concat(this.getStructuredTags(file));
 		}, []);
+	}
+	getFileType() {
+		return this.fileType;
+	}
+	getTemplatedFiles() {
+		return this.templatedFiles;
 	}
 }
 

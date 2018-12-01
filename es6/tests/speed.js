@@ -1,6 +1,9 @@
 "use strict";
 
-const { expect, createXmlTemplaterDocx } = require("./utils");
+const { createDoc, expect, createXmlTemplaterDocx } = require("./utils");
+
+const { times } = require("lodash");
+const inspectModule = require("../inspect-module.js");
 
 describe("Speed test", function() {
 	it("should be fast for simple tags", function() {
@@ -69,6 +72,35 @@ describe("Speed test", function() {
 			doc.render();
 			const duration = new Date() - time;
 			expect(duration).to.be.below(25000);
+		});
+
+		describe("Inspect module", function() {
+			it("should not be slow after multiple generations", function() {
+				const time = new Date();
+				let doc;
+				const iModule = inspectModule();
+				for (let i = 0; i < 10; i++) {
+					doc = createDoc("tag-product-loop.docx");
+					doc.attachModule(iModule);
+					const data = {
+						nom: "Doe",
+						prenom: "John",
+						telephone: "0652455478",
+						description: "New Website",
+						offre: times(20000, i => {
+							return {
+								prix: 1000 + i,
+								nom: "Acme" + i,
+							};
+						}),
+					};
+					doc.setData(data);
+					doc.compile();
+					doc.render();
+				}
+				const duration = new Date() - time;
+				expect(duration).to.be.below(500);
+			});
 		});
 	}
 });

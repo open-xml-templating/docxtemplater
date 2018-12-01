@@ -155,14 +155,14 @@ describe("Inspect module", function() {
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
 		doc.compile();
-		expect(iModule.inspect.fileType).to.be.deep.equal("pptx");
+		expect(iModule.getFileType()).to.be.deep.equal("pptx");
 		expect(iModule.getAllTags()).to.be.deep.equal({
 			tag: {},
 			users: {
 				name: {},
 			},
 		});
-		expect(iModule.inspect.templatedFiles).to.be.deep.equal([
+		expect(iModule.getTemplatedFiles()).to.be.deep.equal([
 			"ppt/slides/slide1.xml",
 			"ppt/slides/slide2.xml",
 			"ppt/slideMasters/slideMaster1.xml",
@@ -197,7 +197,6 @@ describe("Inspect module", function() {
 				type: "placeholder",
 				value: "products",
 				raw: "#products",
-				position: "outsidetag",
 				lIndex: 15,
 				module: "loop",
 				inverted: false,

@@ -1,3 +1,9 @@
+### 3.9.5
+
+Performance fix in inspectModule. This performance fix concerns you only if you do `doc.attachModule(inspectModule)`.
+
+On some templates, and when reusing the same inspectModule instance, the rendering could be very slow (20 minutes in some cases). On a simple test case, the rendering time has decreased from 6 seconds to 90ms.
+
 ### 3.9.4
 
 Render all spaces when using linebreak option

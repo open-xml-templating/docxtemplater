@@ -88,7 +88,9 @@ const Docxtemplater = class Docxtemplater {
 		if (prefix) {
 			module.prefix = prefix;
 		}
-		this.modules.push(moduleWrapper(module));
+		const wrappedModule = moduleWrapper(module);
+		this.modules.push(wrappedModule);
+		wrappedModule.on("attached");
 		return this;
 	}
 	setOptions(options) {
