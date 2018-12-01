@@ -99,7 +99,7 @@ describe("Speed test", function() {
 					doc.render();
 				}
 				const duration = new Date() - time;
-				expect(duration).to.be.below(500);
+				expect(duration).to.be.below(750);
 			});
 		});
 	}
