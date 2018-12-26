@@ -53,7 +53,7 @@
     "selenium-standalone": "^6.15.4",
     "serve-static": "^1.13.2",
     "uglify-js": "^3.4.9",
-    "webdriverio": "^5.0.3",
+    "webdriverio": "^4.14.1",
     "webpack": "^4.28.2",
     "webpack-cli": "^3.1.2"
   },
