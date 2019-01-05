@@ -76,7 +76,7 @@ if (BROWSER === "SAUCELABS") {
 		port: 80,
 		user: SAUCE_USERNAME,
 		key: SAUCE_ACCESS_KEY,
-		logLevel: "silent",
+		logLevel: "info",
 	};
 }
 
