@@ -29,7 +29,7 @@ const http = require("http");
 const browserCapability = {
 	CHROME: {
 		browserName: "chrome",
-		chromeOptions: {
+		"goog:chromeOptions": {
 			args: [
 				"headless",
 				// Use --disable-gpu to avoid an error from a missing Mesa
@@ -80,17 +80,16 @@ if (BROWSER === "SAUCELABS") {
 	};
 }
 
-options.desiredCapabilities = desiredCapabilities;
+options.capabilities = desiredCapabilities;
 
 console.log("Running test on " + fullBrowserName);
 
-const client = webdriverio.remote(options);
 const serve = serveStatic(__dirname);
 const server = http.createServer(function onRequest(req, res) {
 	serve(req, res, finalhandler(req, res));
 });
 
-function updateSaucelabsStatus(result, done) {
+function updateSaucelabsStatus(client, result, done) {
 	request(
 		{
 			headers: { "Content-Type": "text/json" },
@@ -114,74 +113,88 @@ function updateSaucelabsStatus(result, done) {
 	);
 }
 
+const failuresRegex = /.*failures: ([0-9]+).*/;
+const passesRegex = /.*passes: ([0-9]+).*/;
 const startTime = +new Date();
-server.listen(port, function() {
-	function test() {
-		if (+new Date() - startTime > 10000) {
-			exit("Aborting connection to webdriver after 10 seconds");
-		}
-		const postfix = process.env.filter
-			? `?grep=${process.env.filter}&invert=true`
-			: "";
-		const url = `http://localhost:${port}/test/mocha.html${postfix}`;
-		return client
-			.init()
-			.url(url)
-			.then(function() {
-				return client.waitForText("#status", 30000);
-			})
-			.getText("#mocha-stats")
-			.then(function(text) {
-				const passes = parseInt(text.replace(/.*passes: ([0-9]+).*/, "$1"), 10);
-				const failures = parseInt(
-					text.replace(/.*failures: ([0-9]+).*/, "$1"),
-					10
-				);
-				return client
-					.waitForExist("li.failures a", 5000)
-					.then(function() {
-						return client.element("li.failures a").click();
-					})
-					.then(function() {
-						return client.pause(2000);
-					})
-					.then(function() {
-						expect(passes).to.be.above(0);
-						expect(failures).to.be.equal(0);
-						return { failures, passes };
-					});
-			})
-			.then(function({ passes }) {
-				console.log(
-					`browser tests successful (${passes} passes) on ${fullBrowserName}`
-				);
-				if (BROWSER === "SAUCELABS") {
-					updateSaucelabsStatus(true, e => {
-						if (e) {
-							throw e;
-						}
-						server.close();
-					});
-				} else {
+server.listen(port, async function() {
+	console.log(options);
+	const client = await webdriverio.remote(options);
+	async function waitForText(selector, timeout) {
+		return await client.waitUntil(
+			async function getText() {
+				const el = await client.$(selector);
+				if (!(await el.isExisting())) {
+					return false;
+				}
+				const text = await el.getText();
+				if (text.length > 0) {
+					return true;
+				}
+			},
+			timeout,
+			`Expected to find text in ${selector} but did not find it`
+		);
+	}
+	async function waitForExist(selector, timeout) {
+		return await client.waitUntil(
+			async function exists() {
+				const el = await client.$(selector);
+				if (await el.isExisting()) {
+					return true;
+				}
+			},
+			timeout,
+			`Expected to find ${selector} but did not find it`
+		);
+	}
+	async function test() {
+		try {
+			if (+new Date() - startTime > 10000) {
+				exit("Aborting connection to webdriver after 10 seconds");
+			}
+			const postfix = process.env.filter
+				? `?grep=${process.env.filter}&invert=true`
+				: "";
+			const url = `http://localhost:${port}/test/mocha.html${postfix}`;
+			await client.url(url);
+
+			await waitForText("#status", 30000);
+			const text = await (await client.$("#mocha-stats")).getText();
+			const passes = parseInt(text.replace(passesRegex, "$1"), 10);
+			const failures = parseInt(text.replace(failuresRegex, "$1"), 10);
+			await waitForExist("li.failures a", 5000);
+			await (await client.$("li.failures a")).click();
+			await client.pause(2000);
+			expect(passes).to.be.above(0);
+			expect(failures).to.be.equal(0);
+			console.log(
+				`browser tests successful (${passes} passes) on ${fullBrowserName}`
+			);
+			if (BROWSER === "SAUCELABS") {
+				updateSaucelabsStatus(true, e => {
+					if (e) {
+						throw e;
+					}
 					server.close();
-				}
-			})
-			.end()
-			.catch(function(e) {
-				if (e.message.indexOf("ECONNREFUSED") !== -1) {
-					return test();
-				}
-				if (BROWSER === "SAUCELABS") {
-					updateSaucelabsStatus(false, err => {
-						if (err) {
-							throw err;
-						}
-						exit(e);
-					});
-				} else {
+				});
+			} else {
+				server.close();
+			}
+		} catch (e) {
+			if (e.message.indexOf("ECONNREFUSED") !== -1) {
+				return test();
+			}
+			if (BROWSER === "SAUCELABS") {
+				updateSaucelabsStatus(client, false, err => {
+					if (err) {
+						throw err;
+					}
 					exit(e);
-				}
-			});
+				});
+			} else {
+				exit(e);
+			}
+		}
 	}
 	test();
 });
