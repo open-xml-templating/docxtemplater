@@ -88,13 +88,11 @@ const server = http.createServer(function onRequest(req, res) {
 });
 
 function updateSaucelabsStatus(client, result, done) {
-	console.log(client);
-	console.log(client.sessionID);
 	request(
 		{
 			headers: { "Content-Type": "text/json" },
 			url: `http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@saucelabs.com/rest/v1/${SAUCE_USERNAME}/jobs/${
-				client.sessionID
+				client.sessionId
 			}`,
 			method: "PUT",
 			body: JSON.stringify({
@@ -117,7 +115,6 @@ const failuresRegex = /.*failures: ([0-9]+).*/;
 const passesRegex = /.*passes: ([0-9]+).*/;
 const startTime = +new Date();
 server.listen(port, async function() {
-	console.log(options);
 	const client = await webdriverio.remote(options);
 	async function waitForText(selector, timeout) {
 		return await client.waitUntil(
