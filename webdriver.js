@@ -72,8 +72,6 @@ if (BROWSER === "SAUCELABS") {
 		tunnelIdentifier: TRAVIS_JOB_NUMBER,
 		"tunnel-identifier": TRAVIS_JOB_NUMBER,
 		build: TRAVIS_BUILD_NUMBER,
-		host: "ondemand.saucelabs.com",
-		port: 80,
 		user: SAUCE_USERNAME,
 		key: SAUCE_ACCESS_KEY,
 		logLevel: "info",
