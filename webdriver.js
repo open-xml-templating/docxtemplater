@@ -74,7 +74,7 @@ if (BROWSER === "SAUCELABS") {
 		build: TRAVIS_BUILD_NUMBER,
 		user: SAUCE_USERNAME,
 		key: SAUCE_ACCESS_KEY,
-		logLevel: "info",
+		logLevel: "warn",
 	};
 }
 
@@ -171,7 +171,7 @@ server.listen(port, async function() {
 				`browser tests successful (${passes} passes) on ${fullBrowserName}`
 			);
 			if (BROWSER === "SAUCELABS") {
-				updateSaucelabsStatus(true, e => {
+				updateSaucelabsStatus(client, true, e => {
 					if (e) {
 						throw e;
 					}
