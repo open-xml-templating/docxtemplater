@@ -149,8 +149,8 @@ server.listen(port, async function() {
 	}
 	async function test() {
 		try {
-			if (+new Date() - startTime > 10000) {
-				exit("Aborting connection to webdriver after 10 seconds");
+			if (+new Date() - startTime > 90000) {
+				exit("Aborting connection to webdriver after 90 seconds");
 			}
 			const postfix = process.env.filter
 				? `?grep=${process.env.filter}&invert=true`
