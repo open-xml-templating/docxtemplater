@@ -88,11 +88,13 @@ const server = http.createServer(function onRequest(req, res) {
 });
 
 function updateSaucelabsStatus(client, result, done) {
+	console.log(client);
+	console.log(client.sessionID);
 	request(
 		{
 			headers: { "Content-Type": "text/json" },
 			url: `http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@saucelabs.com/rest/v1/${SAUCE_USERNAME}/jobs/${
-				client.requestHandler.sessionID
+				client.sessionID
 			}`,
 			method: "PUT",
 			body: JSON.stringify({
