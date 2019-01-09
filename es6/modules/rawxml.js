@@ -94,7 +94,7 @@ class RawXmlModule {
 		return { value };
 	}
 	resolve(part, options) {
-		if (!part.type === "placeholder" || part.module !== moduleName) {
+		if (part.type !== "placeholder" || part.module !== moduleName) {
 			return null;
 		}
 		return options.scopeManager

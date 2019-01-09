@@ -128,7 +128,7 @@ class LoopModule {
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}
 	render(part, options) {
-		if (!part.type === "placeholder" || part.module !== moduleName) {
+		if (part.type !== "placeholder" || part.module !== moduleName) {
 			return null;
 		}
 		let totalValue = [];
@@ -156,7 +156,7 @@ class LoopModule {
 		return { value: totalValue.join(""), errors };
 	}
 	resolve(part, options) {
-		if (!part.type === "placeholder" || part.module !== moduleName) {
+		if (part.type !== "placeholder" || part.module !== moduleName) {
 			return null;
 		}
 		const value = options.scopeManager.getValue(part.value, { part });
