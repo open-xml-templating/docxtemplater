@@ -150,9 +150,20 @@ class LoopModule {
 			totalValue = totalValue.concat(subRendered.parts);
 			errors = errors.concat(subRendered.errors || []);
 		}
-		options.scopeManager.loopOver(part.value, loopOver, part.inverted, {
-			part,
-		});
+		const result = options.scopeManager.loopOver(
+			part.value,
+			loopOver,
+			part.inverted,
+			{
+				part,
+			}
+		);
+		if (result === false) {
+			return {
+				value: part.emptyValue || "",
+				errors,
+			};
+		}
 		return { value: totalValue.join(""), errors };
 	}
 	resolve(part, options) {

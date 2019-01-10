@@ -78,6 +78,7 @@ const ScopeManager = class ScopeManager {
 		if (inverted) {
 			functor(value, i);
 		}
+		return inverted;
 	}
 	isValueFalsy(value, type) {
 		return (
@@ -100,7 +101,7 @@ const ScopeManager = class ScopeManager {
 				scope = value[i];
 				this.functorIfInverted(!inverted, functor, scope, i);
 			}
-			return;
+			return true;
 		}
 		if (type === "[object Object]") {
 			return this.functorIfInverted(!inverted, functor, value, 0);

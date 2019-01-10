@@ -14,6 +14,35 @@ function parser(tag) {
 	};
 }
 
+function getNearestLeft(parsed, elements, index) {
+	for (let i = index; i >= 0; i--) {
+		const part = parsed[i];
+		for (let j = 0, len = elements.length; j < len; j++) {
+			const element = elements[j];
+			if (
+				part.value.indexOf("<" + element) === 0 &&
+				[">", " "].indexOf(part.value[element.length + 1]) !== -1
+			) {
+				return elements[j];
+			}
+		}
+	}
+	return null;
+}
+
+function getNearestRight(parsed, elements, index) {
+	for (let i = index, l = parsed.length; i < l; i++) {
+		const part = parsed[i];
+		for (let j = 0, len = elements.length; j < len; j++) {
+			const element = elements[j];
+			if (part.value === "</" + element + ">") {
+				return elements[j];
+			}
+		}
+	}
+	return -1;
+}
+
 function endsWith(str, suffix) {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -282,6 +311,8 @@ function hasCorruptCharacters(string) {
 module.exports = {
 	endsWith,
 	startsWith,
+	getNearestLeft,
+	getNearestRight,
 	isContent,
 	isParagraphStart,
 	isParagraphEnd,

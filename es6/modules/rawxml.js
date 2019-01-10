@@ -1,39 +1,10 @@
 const traits = require("../traits");
-const { isContent } = require("../doc-utils");
+const { isContent, getNearestLeft, getNearestRight } = require("../doc-utils");
 const { throwRawTagShouldBeOnlyTextInParagraph } = require("../errors");
 const { match, getValue } = require("../prefix-matcher");
 
 const moduleName = "rawxml";
 const wrapper = require("../module-wrapper");
-
-function getNearestLeft(parsed, elements, index) {
-	for (let i = index; i >= 0; i--) {
-		const part = parsed[i];
-		for (let j = 0, len = elements.length; j < len; j++) {
-			const element = elements[j];
-			if (
-				part.value.indexOf("<" + element) === 0 &&
-				[">", " "].indexOf(part.value[element.length + 1]) !== -1
-			) {
-				return elements[j];
-			}
-		}
-	}
-	return null;
-}
-
-function getNearestRight(parsed, elements, index) {
-	for (let i = index, l = parsed.length; i < l; i++) {
-		const part = parsed[i];
-		for (let j = 0, len = elements.length; j < len; j++) {
-			const element = elements[j];
-			if (part.value === "</" + element + ">") {
-				return elements[j];
-			}
-		}
-	}
-	return -1;
-}
 
 function getInner({ part, left, right, postparsed, index }) {
 	const before = getNearestLeft(postparsed, ["w:p", "w:tc"], left - 1);

@@ -1,3 +1,13 @@
+### 3.9.6
+
+When using a paragraphLoop inside a table like this :
+
+{#loop} Content {/loop}
+
+When loop was falsey, the table cell caused a corruption in the resulting document.
+
+This now fixes the issue, an empty "<w:p>/w:p" is insereted.
+
 ### 3.9.5
 
 Performance fix in inspectModule. This performance fix concerns you only if you do `doc.attachModule(inspectModule)`.

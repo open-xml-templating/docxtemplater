@@ -310,6 +310,14 @@ describe("Table", function() {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
+
+	it("should not corrupt table with empty loop", function() {
+		const doc = createDoc("table-loop.docx");
+		doc.setData({});
+		doc.setOptions({ paragraphLoop: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-empty-table.docx" });
+	});
 });
 
 describe("Dash Loop Testing", function() {
