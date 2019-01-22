@@ -1,3 +1,7 @@
+### 3.9.7
+
+Update moduleApiVersion
+
 ### 3.9.6
 
 When using a paragraphLoop inside a table like this :
