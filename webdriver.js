@@ -149,7 +149,9 @@ server.listen(port, async function() {
 	async function test() {
 		try {
 			if (+new Date() - startTime > timeoutConnection * second) {
-				exit(`Aborting connection to webdriver after ${timeoutConnection} seconds`);
+				exit(
+					`Aborting connection to webdriver after ${timeoutConnection} seconds`
+				);
 			}
 			const postfix = process.env.filter
 				? `?grep=${process.env.filter}&invert=true`
