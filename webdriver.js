@@ -111,6 +111,8 @@ function updateSaucelabsStatus(client, result, done) {
 	);
 }
 
+const second = 1000;
+const timeoutConnection = 180;
 const failuresRegex = /.*failures: ([0-9]+).*/;
 const passesRegex = /.*passes: ([0-9]+).*/;
 const startTime = +new Date();
@@ -146,8 +148,8 @@ server.listen(port, async function() {
 	}
 	async function test() {
 		try {
-			if (+new Date() - startTime > 90000) {
-				exit("Aborting connection to webdriver after 90 seconds");
+			if (+new Date() - startTime > timeoutConnection * second) {
+				exit(`Aborting connection to webdriver after ${timeoutConnection} seconds`);
 			}
 			const postfix = process.env.filter
 				? `?grep=${process.env.filter}&invert=true`
