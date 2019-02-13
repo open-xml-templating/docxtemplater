@@ -1,6 +1,14 @@
+### 3.9.8
+
+-	Add `index` and `prefix` property to `render` method in the second argument ( `options.prefix` and `options.render` )
+
+-	Make sure that postrender returns an array of the same length as it gets
+
+-	Update moduleApiVersion to 3.9.0
+
 ### 3.9.7
 
-Update moduleApiVersion
+-	Update moduleApiVersion to 3.8.0
 
 ### 3.9.6
 

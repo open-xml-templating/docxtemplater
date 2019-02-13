@@ -78,19 +78,27 @@ const spacePreserve = {
 		return result;
 	},
 	postrender(parts) {
-		return parts
-			.filter(p => p.length !== 0)
-			.reduce(function(newParts, p, index, parts) {
-				if (p.indexOf('<w:t xml:space="preserve"></w:t>') !== -1) {
-					p = p.replace(/<w:t xml:space="preserve"><\/w:t>/g, "<w:t/>");
-				}
-				if (endsWith(p, wTpreserve) && startsWith(parts[index + 1], wtEnd)) {
-					p = p.substr(0, p.length - wTpreservelen) + "<w:t/>";
-					parts[index + 1] = parts[index + 1].substr(wtEndlen);
-				}
+		let lastNonEmpty = "";
+		let lastNonEmptyIndex = 0;
+		return parts.reduce(function(newParts, p, index) {
+			if (p === "") {
 				newParts.push(p);
 				return newParts;
-			}, []);
+			}
+			if (p.indexOf('<w:t xml:space="preserve"></w:t>') !== -1) {
+				p = p.replace(/<w:t xml:space="preserve"><\/w:t>/g, "<w:t/>");
+			}
+			if (endsWith(lastNonEmpty, wTpreserve) && startsWith(p, wtEnd)) {
+				newParts[lastNonEmptyIndex] =
+					lastNonEmpty.substr(0, lastNonEmpty.length - wTpreservelen) +
+					"<w:t/>";
+				p = p.substr(wtEndlen);
+			}
+			lastNonEmpty = p;
+			lastNonEmptyIndex = index;
+			newParts.push(p);
+			return newParts;
+		}, []);
 	},
 };
 module.exports = () => wrapper(spacePreserve);

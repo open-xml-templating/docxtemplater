@@ -21,8 +21,15 @@ function render(options) {
 	options.nullGetter = (part, sm) => {
 		return baseNullGetter(part, sm || scopeManager);
 	};
+	if (!options.prefix) {
+		options.prefix = "";
+	}
+	if (options.index) {
+		options.prefix = options.prefix + options.index + "-";
+	}
 	let errors = [];
-	const parts = compiled.map(function(part) {
+	const parts = compiled.map(function(part, i) {
+		options.index = i;
 		const moduleRendered = moduleRender(part, options);
 		if (moduleRendered) {
 			if (moduleRendered.errors) {
