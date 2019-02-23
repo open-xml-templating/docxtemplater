@@ -40,7 +40,7 @@ function render(options) {
 		if (part.type === "content" || part.type === "tag") {
 			return part.value;
 		}
-		throwUnimplementedTagType(part);
+		throwUnimplementedTagType(part, i);
 	});
 	return { errors, parts };
 }

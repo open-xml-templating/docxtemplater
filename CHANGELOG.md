@@ -1,3 +1,9 @@
+### 3.9.9
+
+-	Add support for multiple elements in getRightOrNull and getLeftOrNull (to be able to specify array of elements in traits.expandToOne
+
+-	Add postparse to expandToOne
+
 ### 3.9.8
 
 -	Add `index` and `prefix` property to `render` method in the second argument ( `options.prefix` and `options.render` )

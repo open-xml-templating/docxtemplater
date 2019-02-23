@@ -217,11 +217,17 @@ function getRight(parsed, element, index) {
 	throwXmlTagNotFound({ position: "right", element, parsed, index });
 }
 
-function getRightOrNull(parsed, element, index) {
+function getRightOrNull(parsed, elements, index) {
+	if (typeof elements === "string") {
+		elements = [elements];
+	}
 	for (let i = index, l = parsed.length; i < l; i++) {
 		const part = parsed[i];
-		if (part.value === "</" + element + ">") {
-			return i;
+		for (let j = 0, len = elements.length; j < len; j++) {
+			const element = elements[j];
+			if (part.value === "</" + element + ">") {
+				return i;
+			}
 		}
 	}
 	return null;
@@ -235,14 +241,20 @@ function getLeft(parsed, element, index) {
 	throwXmlTagNotFound({ position: "left", element, parsed, index });
 }
 
-function getLeftOrNull(parsed, element, index) {
+function getLeftOrNull(parsed, elements, index) {
+	if (typeof elements === "string") {
+		elements = [elements];
+	}
 	for (let i = index; i >= 0; i--) {
 		const part = parsed[i];
-		if (
-			part.value.indexOf("<" + element) === 0 &&
-			[">", " "].indexOf(part.value[element.length + 1]) !== -1
-		) {
-			return i;
+		for (let j = 0, len = elements.length; j < len; j++) {
+			const element = elements[j];
+			if (
+				part.value.indexOf("<" + element) === 0 &&
+				[">", " "].indexOf(part.value[element.length + 1]) !== -1
+			) {
+				return i;
+			}
 		}
 	}
 	return null;

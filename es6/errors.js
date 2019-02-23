@@ -235,10 +235,11 @@ function getLoopPositionProducesInvalidXMLError({ tag }) {
 	return err;
 }
 
-function throwUnimplementedTagType(part) {
+function throwUnimplementedTagType(part, index) {
 	const err = new XTTemplateError(`Unimplemented tag type "${part.type}"`);
 	err.properties = {
 		part,
+		index,
 		id: "unimplemented_tag_type",
 	};
 	throw err;

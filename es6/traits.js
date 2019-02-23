@@ -149,6 +149,7 @@ function expandOne(part, postparsed, options) {
 	const leftParts = postparsed.slice(left, index);
 	const rightParts = postparsed.slice(index + 1, right + 1);
 	let inner = options.getInner({
+		postparse: options.postparse,
 		index,
 		part,
 		leftParts,
