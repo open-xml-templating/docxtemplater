@@ -41,7 +41,7 @@ Here's a code sample for how to use the angularParser :
 
 .. code-block:: javascript
 
-    var expressions= require('angular-expressions');
+    var expressions = require('angular-expressions');
     // define your filter functions here, for example, to be able to write {clientname | lower}
     expressions.filters.lower = function(input) {
         // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
