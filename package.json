@@ -40,7 +40,7 @@
     "diff": "^4.0.1",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.6",
-    "eslint": "^5.15.1",
+    "eslint": "^5.15.2",
     "eslint-plugin-dependencies": "^2.4.0",
     "eslint_d": "^7.3.0",
     "finalhandler": "^1.1.1",
@@ -53,10 +53,10 @@
     "rimraf": "^2.6.3",
     "selenium-standalone": "^6.16.0",
     "serve-static": "^1.13.2",
-    "uglify-js": "^3.4.9",
+    "uglify-js": "^3.4.10",
     "webdriverio": "^5.7.2",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.3.0"
   },
   "license": "MIT",
   "engines": {
