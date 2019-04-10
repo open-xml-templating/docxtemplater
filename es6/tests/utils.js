@@ -493,9 +493,17 @@ function removeSpaces(text) {
 	return text.replace(/\n|\t/g, "");
 }
 
+const contentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`;
+
 function makeDocx(name, content) {
 	const zip = new JSZip();
 	zip.file("word/document.xml", content, { createFolders: true });
+	zip.file("[Content_Types].xml", contentTypeContent, { createFolders: true });
 	const base64 = zip.generate({ type: "string" });
 	return load(name, base64, "docx", docX);
 }

@@ -52,14 +52,15 @@ describe("Loading", function() {
 		it("should load the right template files for the document", function() {
 			const doc = createDoc("tag-example.docx");
 			const templatedFiles = doc.getTemplatedFiles();
-			expect(templatedFiles).to.be.eql([
-				"word/header1.xml",
-				"word/footer1.xml",
-				"docProps/core.xml",
-				"docProps/app.xml",
-				"word/document.xml",
-				"word/document2.xml",
-			]);
+			expect(templatedFiles.sort()).to.be.eql(
+				[
+					"word/header1.xml",
+					"word/footer1.xml",
+					"docProps/core.xml",
+					"docProps/app.xml",
+					"word/document.xml",
+				].sort()
+			);
 		});
 	});
 	describe("output and input", function() {
@@ -162,14 +163,16 @@ describe("Inspect module", function() {
 				name: {},
 			},
 		});
-		expect(iModule.getTemplatedFiles()).to.be.deep.equal([
-			"ppt/slides/slide1.xml",
-			"ppt/slides/slide2.xml",
-			"ppt/slideMasters/slideMaster1.xml",
-			"ppt/presentation.xml",
-			"docProps/app.xml",
-			"docProps/core.xml",
-		]);
+		expect(iModule.getTemplatedFiles().sort()).to.be.deep.equal(
+			[
+				"ppt/slides/slide1.xml",
+				"ppt/slides/slide2.xml",
+				"ppt/slideMasters/slideMaster1.xml",
+				"ppt/presentation.xml",
+				"docProps/app.xml",
+				"docProps/core.xml",
+			].sort()
+		);
 	});
 
 	it("should get all tags and merge them", function() {

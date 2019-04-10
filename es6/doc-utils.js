@@ -131,6 +131,10 @@ function xml2str(xmlNode) {
 }
 
 function str2xml(str) {
+	if (str.charCodeAt(0) === 65279) {
+		// BOM sequence
+		str = str.substr(1);
+	}
 	const parser = new DOMParser();
 	return parser.parseFromString(str, "text/xml");
 }

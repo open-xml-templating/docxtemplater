@@ -9,7 +9,7 @@ const render = require("./modules/render");
 const PptXFileTypeConfig = {
 	getTemplatedFiles(zip) {
 		const slideTemplates = zip
-			.file(/ppt\/(slides|slideMasters)\/(slide|slideMaster)\d+\.xml/)
+			.file(/ppt\/(slideMasters)\/(slideMaster)\d+\.xml/)
 			.map(function(file) {
 				return file.name;
 			});
@@ -47,12 +47,7 @@ const PptXFileTypeConfig = {
 
 const DocXFileTypeConfig = {
 	getTemplatedFiles(zip) {
-		const baseTags = [
-			"docProps/core.xml",
-			"docProps/app.xml",
-			"word/document.xml",
-			"word/document2.xml",
-		];
+		const baseTags = ["docProps/core.xml", "docProps/app.xml"];
 		const slideTemplates = zip
 			.file(/word\/(header|footer)\d+\.xml/)
 			.map(function(file) {
@@ -60,13 +55,8 @@ const DocXFileTypeConfig = {
 			});
 		return slideTemplates.concat(baseTags);
 	},
-	textPath(zip) {
-		if (zip.files["word/document.xml"]) {
-			return "word/document.xml";
-		}
-		if (zip.files["word/document2.xml"]) {
-			return "word/document2.xml";
-		}
+	textPath(doc) {
+		return doc.targets[0];
 	},
 	tagsXmlTextArray: [
 		"Company",

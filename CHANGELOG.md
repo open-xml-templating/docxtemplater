@@ -1,3 +1,7 @@
+### 3.10.0
+
+-	Improve detection of filetype to read information directly from `[Content_Types].xml` instead of from zip files.
+
 ### 3.9.9
 
 -	Add support for multiple elements in getRightOrNull and getLeftOrNull (to be able to specify array of elements in traits.expandToOne

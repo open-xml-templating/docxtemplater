@@ -22,6 +22,13 @@ const {
 } = require("./errors");
 
 const currentModuleApiVersion = [3, 10, 0];
+function getPartName(override) {
+	let partName = override.getAttribute("PartName");
+	if (partName[0] === "/") {
+		partName = partName.substr(1);
+	}
+	return partName;
+}
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {
@@ -178,16 +185,30 @@ const Docxtemplater = class Docxtemplater {
 		if (this.zip.files.mimetype) {
 			fileType = "odt";
 		}
-		if (
-			this.zip.files["word/document.xml"] ||
-			this.zip.files["word/document2.xml"]
-		) {
-			fileType = "docx";
+		const contentTypes = this.zip.files["[Content_Types].xml"];
+		this.targets = [];
+		if (contentTypes) {
+			const contentTypeXml = str2xml(contentTypes.asText());
+			const overrides = contentTypeXml.getElementsByTagName("Override");
+			for (let i = 0, len = overrides.length; i < len; i++) {
+				const override = overrides[i];
+				const contentType = override.getAttribute("ContentType");
+				if (
+					contentType ===
+					"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+				) {
+					fileType = "docx";
+					this.targets.push(getPartName(override));
+				}
+				if (
+					contentType ===
+					"application/vnd.openxmlformats-officedocument.presentationml.slide+xml"
+				) {
+					fileType = "pptx";
+					this.targets.push(getPartName(override));
+				}
+			}
 		}
-		if (this.zip.files["ppt/presentation.xml"]) {
-			fileType = "pptx";
-		}
-
 		if (fileType === "odt") {
 			throwFileTypeNotHandled(fileType);
 		}
@@ -259,11 +280,14 @@ const Docxtemplater = class Docxtemplater {
 	}
 	getFullText(path) {
 		return this.createTemplateClass(
-			path || this.fileTypeConfig.textPath(this.zip)
+			path || this.fileTypeConfig.textPath(this)
 		).getFullText();
 	}
 	getTemplatedFiles() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
+		this.targets.forEach(target => {
+			this.templatedFiles.push(target);
+		});
 		return this.templatedFiles;
 	}
 };

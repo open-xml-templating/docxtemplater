@@ -33,6 +33,7 @@ class InspectModule {
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		this.zip = docxtemplater.zip;
+		this.targets = docxtemplater.targets;
 		this.templatedFiles = docxtemplater.getTemplatedFiles();
 		this.fileType = docxtemplater.fileType;
 		return options;
@@ -78,7 +79,7 @@ class InspectModule {
 		);
 	}
 	getTags(file) {
-		file = file || this.fileTypeConfig.textPath(this.zip);
+		file = file || this.fileTypeConfig.textPath(this);
 		return getTags(cloneDeep(this.fullInspected[file].postparsed));
 	}
 	getAllTags() {
@@ -87,7 +88,7 @@ class InspectModule {
 		}, {});
 	}
 	getStructuredTags(file) {
-		file = file || this.fileTypeConfig.textPath(this.zip);
+		file = file || this.fileTypeConfig.textPath(this);
 		return getStructuredTags(cloneDeep(this.fullInspected[file].postparsed));
 	}
 	getAllStructuredTags() {
