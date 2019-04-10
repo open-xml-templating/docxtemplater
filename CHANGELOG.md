@@ -1,6 +1,10 @@
-### 3.10.0
+### 3.10.1
 
 -	Improve detection of filetype to read information directly from `[Content_Types].xml` instead of from zip files.
+
+### 3.10.0
+
+-	WIPED - Published by mistake.
 
 ### 3.9.9
 
