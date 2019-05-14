@@ -66,5 +66,5 @@ browserName="firefox" platform="Windows 10" version="65" node webdriver.js || re
 browserName="firefox" platform="Windows 10" version="66" node webdriver.js || result=1
 browserName="internet explorer" platform="Windows 7" filter="Speed test" version="10.0" node webdriver.js || result=1
 browserName="internet explorer" platform="Windows 10" filter="Speed test" version="11" node webdriver.js || result=1
-browserName="iphone" platform="Mac 10.11" version="10.2" node webdriver.js || result=1
+browserName="iphone" platform="Mac 10.11" version="10.3" node webdriver.js || result=1
 exit "$result"
