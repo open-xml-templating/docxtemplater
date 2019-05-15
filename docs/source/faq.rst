@@ -235,3 +235,78 @@ If you have created or have access to docxtemplater PRO modules, you can attach 
 
     //set the templateVariables
     doc.setData(data);
+
+Ternaries are not working well with angular-parser
+--------------------------------------------------
+
+There is a common issue which is to use ternary on scopes that are not the current scope, which makes the ternary appear as if it always showed the second option.
+
+For example, with following data : 
+
+.. code-block:: javascript
+
+   doc.setData({
+      user: {
+         gender: 'F',
+         name: "Mary",
+         hobbies: [{
+            name: 'play football',
+         },{
+            name: 'read books',
+         }]
+      }
+   })
+
+And by using the following template :
+
+.. code-block:: text
+
+   {#user}
+      {name} is a kind person.
+
+      {#hobbies}
+      - {gender == 'F' : 'She' : 'He'} likes to {name}
+      {/hobbies}
+   {/}
+
+This will print : 
+
+
+.. code-block:: text
+
+   Mary is a kind person.
+
+   - He likes to play football
+   - He likes to read books
+
+Note that the pronoun "He" is used instead of "She".
+
+The reason for this behavior is that the {gender == 'F' : "She" : "He"} expression is evaluating in the scope of hobby, where gender does not even exist. Since the condtion `gender == 'F'` is false (since gender is undefined), the return value is "He". However, in the scope of the hobby, we do not know the gender so the return value should be null.
+
+We can instead write a custom filter that will return "She" if the input is "F", "He" if the input is "M", and null if the input is anything else.
+
+The code would look like this : 
+
+.. code-block:: javascript
+
+    expressions.filters.pronoun = function(input) {
+      if(input === "F") {
+         return "She";
+      }
+      if(input === "M") {
+         return "He";
+      }
+      return null;
+    }
+
+And use the following in your template :
+
+.. code-block:: text
+
+   {#user}
+      {name} is a kind person.
+
+      {#hobbies}
+      - {gender | pronoun} likes to {name}
+      {/hobbies}
+   {/}
