@@ -8,13 +8,13 @@ Platform Support
 
 docxtemplater works with
 
-- Node.js versions 0.10, 0.11, 0.12 ,4, 5, 6 ,7, 8, 9 and all future versions
-- Chrome **tested** on version 26
-- Firefox 3+ (**tested** on version 21, but should work with 3+)
-- Safari **tested**
-- IE9+ **tested**
-- Android 4.2+ **tested**
-- iPads and iPhones v8.1 **tested**
+- Node.js versions 6 ,7, 8, 9, 10, 11, 12 and all future versions (older versions will also work, but support has ended)
+- Chrome version 58,71,73
+- Firefox 55,60,66
+- Safari 11,12
+- IE10, IE11, Edge 16-18
+- Android 4.2+
+- iPads and iPhones v8.1, 10.3
 
 You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxtemplater/v3/test/mocha.html
 
