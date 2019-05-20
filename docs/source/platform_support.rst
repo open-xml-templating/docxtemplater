@@ -6,7 +6,7 @@
 Platform Support
 ================
 
-docxtemplater works with
+docxtemplater works on most modern platforms, and also some older ones. Here is a list of what is tested regularly :
 
 - Node.js versions 6 ,7, 8, 9, 10, 11, 12 and all future versions (older versions will also work, but support has ended)
 - Chrome version 58,71,73
@@ -21,7 +21,7 @@ You can test if everything works fine on your browser by using the test runner: 
 Dependencies
 ------------
 
-1. `JSZip`_  to zip and unzip the docx files
+1. `JSZip`_ (Version 2) to zip and unzip the docx files
 2. `xmldom`_  to parse the files as xml
 
 .. _`JSZip`: https://stuk.github.io/jszip/
