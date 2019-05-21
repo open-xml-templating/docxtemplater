@@ -15,18 +15,11 @@ function parser(tag) {
 }
 
 function getNearestLeft(parsed, elements, index) {
-	let level = 1;
 	for (let i = index; i >= 0; i--) {
 		const part = parsed[i];
 		for (let j = 0, len = elements.length; j < len; j++) {
 			const element = elements[j];
 			if (isStarting(part.value, element)) {
-				level--;
-			}
-			if (isEnding(part.value, element)) {
-				level++;
-			}
-			if (level === 0) {
 				return elements[j];
 			}
 		}
@@ -35,18 +28,11 @@ function getNearestLeft(parsed, elements, index) {
 }
 
 function getNearestRight(parsed, elements, index) {
-	let level = 1;
 	for (let i = index, l = parsed.length; i < l; i++) {
 		const part = parsed[i];
 		for (let j = 0, len = elements.length; j < len; j++) {
 			const element = elements[j];
 			if (isEnding(part.value, element)) {
-				level--;
-			}
-			if (isStarting(part.value, element)) {
-				level++;
-			}
-			if (level === 0) {
 				return elements[j];
 			}
 		}

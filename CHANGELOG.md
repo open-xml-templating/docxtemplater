@@ -1,3 +1,7 @@
+### 3.11.1
+
+-	Bugfix speed issue introduced in 3.10.0 for rawXmlModule
+
 ### 3.11.0
 
 -	Bugfix corruption when using paragraphLoop with a template containing `<w:p>` as direct childs of other `<w:p>`.

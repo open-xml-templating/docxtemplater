@@ -67,10 +67,13 @@ describe("Speed test", function() {
 			}
 			const content = result.join("");
 			const users = [];
+			let now = new Date();
 			const doc = createXmlTemplaterDocx(content, { tags: { users } });
-			const time = new Date();
+			const compileDuration = new Date() - now;
+			expect(compileDuration).to.be.below(5000);
+			now = new Date();
 			doc.render();
-			const duration = new Date() - time;
+			const duration = new Date() - now;
 			expect(duration).to.be.below(25000);
 		});
 
