@@ -70,7 +70,10 @@ describe("Speed test", function() {
 			let now = new Date();
 			const doc = createXmlTemplaterDocx(content, { tags: { users } });
 			const compileDuration = new Date() - now;
-			expect(compileDuration).to.be.below(5000);
+			if (typeof window === "undefined") {
+				// Skip this assertion in the browser
+				expect(compileDuration).to.be.below(5000);
+			}
 			now = new Date();
 			doc.render();
 			const duration = new Date() - now;
