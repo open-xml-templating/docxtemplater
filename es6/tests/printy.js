@@ -73,7 +73,7 @@ module.exports = function printy(parsed, indent = 0) {
 		}, "")
 		.split("\n")
 		.map(function(line) {
-			return line.trimRight();
+			return line.replace(/[\s\uFEFF\xA0]+$/g, '');
 		})
 		.join("\n");
 	if (indentWasNegative) {
