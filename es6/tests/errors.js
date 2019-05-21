@@ -201,7 +201,7 @@ describe("Compilation errors", function() {
 				],
 				xtag: "myrawtag",
 				rootError: {
-					message: 'No tag "w:p" was found at the right',
+					message: 'No tag "w:p" was found at the left',
 				},
 			},
 		};
@@ -809,7 +809,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							id: "raw_tag_outerxml_invalid",
 							xtag: "bang",
 							rootError: {
-								message: 'No tag "w:p" was found at the right',
+								message: 'No tag "w:p" was found at the left',
 							},
 							postparsedLength: 12,
 							expandTo: "w:p",

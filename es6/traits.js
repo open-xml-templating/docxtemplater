@@ -132,8 +132,8 @@ function expandOne(part, postparsed, options) {
 	}
 	let right, left;
 	try {
-		right = getRight(postparsed, expandTo, index);
 		left = getLeft(postparsed, expandTo, index);
+		right = getRight(postparsed, expandTo, index);
 	} catch (rootError) {
 		if (rootError instanceof XTTemplateError) {
 			throwRawTagNotInParagraph({

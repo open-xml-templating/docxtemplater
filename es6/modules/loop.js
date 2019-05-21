@@ -106,18 +106,26 @@ class LoopModule {
 		) {
 			return parsed;
 		}
+		let level = 0;
 		const chunks = chunkBy(parsed, function(p) {
 			if (isParagraphStart(p)) {
-				return "start";
+				level++;
+				if (level === 1) {
+					return "start";
+				}
 			}
 			if (isParagraphEnd(p)) {
-				return "end";
+				level--;
+				if (level === 0) {
+					return "end";
+				}
 			}
 			return null;
 		});
 		if (chunks.length <= 2) {
 			return parsed;
 		}
+
 		const firstChunk = chunks[0];
 		const lastChunk = last(chunks);
 		const firstOffset = getOffset(firstChunk);

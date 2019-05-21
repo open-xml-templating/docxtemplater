@@ -1,3 +1,13 @@
+### 3.11.0
+
+-	Bugfix corruption when using paragraphLoop with a template containing `<w:p>` as direct childs of other `<w:p>`.
+
+-	Update getLeft, getRight, getNearestLeft, getNearestRight, getLeftOrNull, getRightOrNull to take into account the nesting of tags.
+
+-	Ensure that the `f` functor is always called when using chunkBy (like the native `.map` function)
+
+-	In expandOne trait, call `getLeft` before `getRight`
+
 ### 3.10.1
 
 -	Improve detection of filetype to read information directly from `[Content_Types].xml` instead of from zip files.
