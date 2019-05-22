@@ -289,29 +289,6 @@ describe("Pptx generation", function() {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-regression-multiline.pptx" });
 	});
-
-	it("should not fail with paragraphLoop when having paragraph in paragraph", function() {
-		const doc = createDoc("regression-par-in-par.docx");
-		const printedPostparsed = [];
-		doc.attachModule({
-			set(obj) {
-				if (obj.inspect && obj.inspect.postparsed) {
-					printedPostparsed.push(printy(obj.inspect.postparsed));
-				}
-			},
-		});
-
-		doc.setOptions({
-			paragraphLoop: true,
-			parser: () => ({
-				get: () => "foo",
-			}),
-		});
-		doc.setData({});
-		doc.render();
-		expect(printedPostparsed[8]).to.be.equal(expectedPrintedPostParsed);
-		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
-	});
 });
 
 describe("Table", function() {
@@ -452,8 +429,8 @@ describe("Table", function() {
 	});
 });
 
-describe("Dash Loop Testing", function() {
-	it("dash loop ok on simple table -> w:tr", function() {
+describe("Dash Loop", function() {
+	it("should work on simple table -> w:tr", function() {
 		const tags = {
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
@@ -468,7 +445,7 @@ describe("Dash Loop Testing", function() {
 		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
-	it("dash loop ok on simple table -> w:table", function() {
+	it("should work on simple table -> w:table", function() {
 		const tags = {
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
@@ -483,7 +460,7 @@ describe("Dash Loop Testing", function() {
 		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
-	it("dash loop ok on simple list -> w:p", function() {
+	it("should work on simple list -> w:p", function() {
 		const tags = {
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
@@ -523,16 +500,46 @@ describe("Templating", function() {
 		});
 	});
 
-	it("should be possible to have linebreaks if setting the option", function() {
-		const doc = createDoc("tag-multiline.docx");
-		doc.setData({
-			description: "The description,\nmultiline",
-		});
-		doc.setOptions({ linebreaks: true });
-		doc.render();
-		shouldBeSame({ doc, expectedName: "expected-multiline.docx" });
+	it("should replace custom properties text", function() {
+		const doc = createDoc("properties.docx");
+		let app = doc.getZip().files["docProps/app.xml"].asText();
+		let core = doc.getZip().files["docProps/core.xml"].asText();
+		expect(app).to.contain("{tag1}");
+		expect(core).to.contain("{tag1}");
+		expect(core).to.contain("{tag2}");
+		expect(core).to.contain("{tag3}");
+		expect(app).to.contain("{tag4}");
+		expect(app).to.contain("{tag5}");
+		expect(core).to.contain("{tag6}");
+		expect(core).to.contain("{tag7}");
+		expect(core).to.contain("{tag8}");
+		expect(app).to.contain("{tag9}");
+		doc
+			.setData({
+				tag1: "resolvedvalue1",
+				tag2: "resolvedvalue2",
+				tag3: "resolvedvalue3",
+				tag4: "resolvedvalue4",
+				tag5: "resolvedvalue5",
+				tag6: "resolvedvalue6",
+				tag7: "resolvedvalue7",
+				tag8: "resolvedvalue8",
+				tag9: "resolvedvalue9",
+			})
+			.render();
+		app = doc.getZip().files["docProps/app.xml"].asText();
+		core = doc.getZip().files["docProps/core.xml"].asText();
+		expect(app).to.contain("resolvedvalue1");
+		expect(core).to.contain("resolvedvalue1");
+		expect(core).to.contain("resolvedvalue2");
+		expect(core).to.contain("resolvedvalue3");
+		expect(app).to.contain("resolvedvalue4");
+		expect(app).to.contain("resolvedvalue5");
+		expect(core).to.contain("resolvedvalue6");
+		expect(core).to.contain("resolvedvalue7");
+		expect(core).to.contain("resolvedvalue8");
+		expect(app).to.contain("resolvedvalue9");
 	});
-
 	it("should show spaces with linebreak option", function() {
 		const doc = createDoc("tag-multiline.docx");
 		doc.setData({
@@ -545,6 +552,18 @@ describe("Templating", function() {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-multiline-indent.docx" });
 	});
+});
+
+describe("Linebreaks", function() {
+	it("should be possible to have linebreaks if setting the option", function() {
+		const doc = createDoc("tag-multiline.docx");
+		doc.setData({
+			description: "The description,\nmultiline",
+		});
+		doc.setOptions({ linebreaks: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-multiline.docx" });
+	});
 
 	it("should work with linebreaks without changing the style", function() {
 		const doc = createDoc("multi-tags.docx");
@@ -556,8 +575,10 @@ describe("Templating", function() {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-two-multiline.docx" });
 	});
+});
 
-	it("should work with paragraphloop", function() {
+describe("ParagraphLoop", function() {
+	it("should work with docx", function() {
 		const doc = createDoc("users.docx");
 		doc.setOptions({
 			paragraphLoop: true,
@@ -566,7 +587,7 @@ describe("Templating", function() {
 		shouldBeSame({ doc, expectedName: "expected-users.docx" });
 	});
 
-	it("should work with paragraphloop without removing extra text", function() {
+	it("should work without removing extra text", function() {
 		const doc = createDoc("paragraph-loops.docx");
 		doc.setOptions({
 			paragraphLoop: true,
@@ -588,7 +609,7 @@ describe("Templating", function() {
 		shouldBeSame({ doc, expectedName: "expected-paragraph-loop.docx" });
 	});
 
-	it("should work with paragraphloop pptx", function() {
+	it("should work with pptx", function() {
 		const doc = createDoc("paragraph-loop.pptx");
 		doc.setOptions({
 			paragraphLoop: true,
@@ -603,6 +624,38 @@ describe("Templating", function() {
 			})
 			.render();
 		shouldBeSame({ doc, expectedName: "expected-paragraph-loop.pptx" });
+	});
+
+	it("should not fail when having paragraph in paragraph", function() {
+		const doc = createDoc("regression-par-in-par.docx");
+		const printedPostparsed = [];
+		doc.attachModule({
+			set(obj) {
+				if (obj.inspect && obj.inspect.postparsed) {
+					printedPostparsed.push(printy(obj.inspect.postparsed));
+				}
+			},
+		});
+
+		doc.setOptions({
+			paragraphLoop: true,
+			parser: () => ({
+				get: () => "foo",
+			}),
+		});
+		doc.setData({});
+		doc.render();
+		expect(printedPostparsed[8]).to.be.equal(expectedPrintedPostParsed);
+		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
+	});
+
+	it("should work with spacing at the end", function() {
+		const doc = createDoc("spacing-end.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({ name: "John" }).render();
+		shouldBeSame({ doc, expectedName: "expected-spacing-end.docx" });
 	});
 
 	it("should fail properly when having lexed + postparsed errors", function() {
@@ -669,56 +722,6 @@ describe("Templating", function() {
 		};
 		const create = doc.render.bind(doc);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
-	});
-
-	it("should work with spacing at the end", function() {
-		const doc = createDoc("spacing-end.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.setData({ name: "John" }).render();
-		shouldBeSame({ doc, expectedName: "expected-spacing-end.docx" });
-	});
-
-	it("should work with custom properties", function() {
-		const doc = createDoc("properties.docx");
-		let app = doc.getZip().files["docProps/app.xml"].asText();
-		let core = doc.getZip().files["docProps/core.xml"].asText();
-		expect(app).to.contain("{tag1}");
-		expect(core).to.contain("{tag1}");
-		expect(core).to.contain("{tag2}");
-		expect(core).to.contain("{tag3}");
-		expect(app).to.contain("{tag4}");
-		expect(app).to.contain("{tag5}");
-		expect(core).to.contain("{tag6}");
-		expect(core).to.contain("{tag7}");
-		expect(core).to.contain("{tag8}");
-		expect(app).to.contain("{tag9}");
-		doc
-			.setData({
-				tag1: "resolvedvalue1",
-				tag2: "resolvedvalue2",
-				tag3: "resolvedvalue3",
-				tag4: "resolvedvalue4",
-				tag5: "resolvedvalue5",
-				tag6: "resolvedvalue6",
-				tag7: "resolvedvalue7",
-				tag8: "resolvedvalue8",
-				tag9: "resolvedvalue9",
-			})
-			.render();
-		app = doc.getZip().files["docProps/app.xml"].asText();
-		core = doc.getZip().files["docProps/core.xml"].asText();
-		expect(app).to.contain("resolvedvalue1");
-		expect(core).to.contain("resolvedvalue1");
-		expect(core).to.contain("resolvedvalue2");
-		expect(core).to.contain("resolvedvalue3");
-		expect(app).to.contain("resolvedvalue4");
-		expect(app).to.contain("resolvedvalue5");
-		expect(core).to.contain("resolvedvalue6");
-		expect(core).to.contain("resolvedvalue7");
-		expect(core).to.contain("resolvedvalue8");
-		expect(app).to.contain("resolvedvalue9");
 	});
 });
 
