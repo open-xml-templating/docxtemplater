@@ -54,7 +54,7 @@ Modules
 
 Functionality can be added with modules. Here is the list of existing modules:
 
-Modules developped by docxtemplater core team members :
+PRO Modules developped by docxtemplater core team :
 
 -	[Image module](https://docxtemplater.com/modules/image/) using the syntax: `{%image}`,
 -	[Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document
@@ -63,11 +63,12 @@ Modules developped by docxtemplater core team members :
 -	[Word-Run Module](https://docxtemplater.com/modules/subtemplate) to include raw runs (<w:r>) inside the document. This makes it possible to include styled text without having to remove the enclosing paragraph like in the {@rawXml} tag.
 -	[QrCode Module](https://docxtemplater.com/modules/qrcode) to replace an image, keeping any existing properties
 -	[Error Location Module](https://docxtemplater.com/modules/error-location) to show the errors in the template with comments inside the template
+-	[Table Module](https://docxtemplater.com/modules/table) to create tables from two dimensional data.
 
-User contributed modules :
+User-contributed modules :
 
--	Chart Module using the syntax: `{$chart}` , user contributed https://github.com/prog666/docxtemplater-chart-module (compatible with v2 only)
--	Hyperlink module using the syntax: `{^link}`, https://github.com/sujith3g/docxtemplater-link-module (compatible with v2 only)
+-	[Chart Module](https://github.com/prog666/docxtemplater-chart-module) using the syntax: `{$chart}` , user contributed (compatible with v2 only)
+-	[Hyperlink module](https://github.com/sujith3g/docxtemplater-link-module) using the syntax: `{^link}`, (compatible with v2 only)
 
 Professional Support
 --------------------
