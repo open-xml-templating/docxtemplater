@@ -2,7 +2,7 @@
   "name": "docxtemplater",
   "version": "3.11.1",
   "author": "Edgar Hipp",
-  "description": ".docx generator working with templates and data (like Mustache)",
+  "description": "docx and pptx generator working with templates and data (like Mustache, for Word and Powerpoint documents)",
   "contributors": [
     {
       "name": "Edgar Hipp"
@@ -17,9 +17,12 @@
   "main": "js/docxtemplater.js",
   "keywords": [
     "docx",
+    "pptx",
     "templates",
     "generation",
-    "microsoft word"
+    "microsoft word",
+    "microsoft powerpoint",
+    "report"
   ],
   "repository": {
     "type": "git",
