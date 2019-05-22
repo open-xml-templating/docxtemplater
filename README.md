@@ -56,13 +56,13 @@ Functionality can be added with modules. Here is the list of existing modules:
 
 Modules developped by docxtemplater core team members :
 
--	Image module using the syntax: `{%image}`, https://docxtemplater.com/modules/image/
--	Html Module to insert formatted text in a docx document https://docxtemplater.com/modules/html/
--	Slides Module to create multiple slides dynamically https://docxtemplater.com/modules/slides/
--	Subtemplate Module to include a document inside an other document https://docxtemplater.com/modules/subtemplate
--	Word-Run Module to include raw runs (<w:r>) inside the document. This makes it possible to include styled text without having to remove the enclosing paragraph like in the {@rawXml} tag. https://docxtemplater.com/modules/subtemplate
--	QrCode Module to replace an image, keeping any existing properties https://docxtemplater.com/modules/qrcode
--	Error Location Module to show the errors in the template with comments inside the template https://docxtemplater.com/modules/error-location
+-	[Image module](https://docxtemplater.com/modules/image/) using the syntax: `{%image}`,
+-	[Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document
+-	[Slides Module](https://docxtemplater.com/modules/slides/) to create multiple slides dynamically
+-	[Subtemplate Module](https://docxtemplater.com/modules/subtemplate) to include a document inside an other document
+-	[Word-Run Module](https://docxtemplater.com/modules/subtemplate) to include raw runs (<w:r>) inside the document. This makes it possible to include styled text without having to remove the enclosing paragraph like in the {@rawXml} tag.
+-	[QrCode Module](https://docxtemplater.com/modules/qrcode) to replace an image, keeping any existing properties
+-	[Error Location Module](https://docxtemplater.com/modules/error-location) to show the errors in the template with comments inside the template
 
 User contributed modules :
 
