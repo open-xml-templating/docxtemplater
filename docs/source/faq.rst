@@ -262,11 +262,11 @@ And by using the following template :
 .. code-block:: text
 
    {#user}
-      {name} is a kind person.
+   {name} is a kind person.
 
-      {#hobbies}
-      - {gender == 'F' : 'She' : 'He'} likes to {name}
-      {/hobbies}
+   {#hobbies}
+   - {gender == 'F' : 'She' : 'He'} likes to {name}
+   {/hobbies}
    {/}
 
 This will print : 
@@ -304,9 +304,9 @@ And use the following in your template :
 .. code-block:: text
 
    {#user}
-      {name} is a kind person.
+   {name} is a kind person.
 
-      {#hobbies}
-      - {gender | pronoun} likes to {name}
-      {/hobbies}
+   {#hobbies}
+   - {gender | pronoun} likes to {name}
+   {/hobbies}
    {/}
