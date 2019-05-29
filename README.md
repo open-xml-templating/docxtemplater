@@ -69,8 +69,3 @@ User-contributed modules :
 
 -	[Chart Module](https://github.com/prog666/docxtemplater-chart-module) using the syntax: `{$chart}` , user contributed (compatible with v2 only)
 -	[Hyperlink module](https://github.com/sujith3g/docxtemplater-link-module) using the syntax: `{^link}`, (compatible with v2 only)
-
-Professional Support
---------------------
-
-I can give your company support for installing, extending, answering support questions, or maintaining your app that runs docxtemplater. The support plan is paid per month and can be booked from https://plasso.com/s/ycwo8O3hDH
