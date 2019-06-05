@@ -7,7 +7,7 @@ browserName="MicrosoftEdge" platform="Windows 10" version="16.16299" node webdri
 browserName="MicrosoftEdge" platform="Windows 10" version="17.17134" node webdriver.js || result=1
 browserName="MicrosoftEdge" platform="Windows 10" version="18.17763" node webdriver.js || result=1
 browserName="safari" platform="macOs 10.12" version="11.0" filter="Speed test" node webdriver.js || result=1
-browserName="safari" platform="macOs 10.13" version="12.0" filter="Speed test" node webdriver.js || result=1
+browserName="safari" platform="macOs 10.14" version="12.0" filter="Speed test" node webdriver.js || result=1
 browserName="chrome" platform="Windows 10" version="58" node webdriver.js || result=1
 browserName="chrome" platform="Windows 10" version="71" node webdriver.js || result=1
 browserName="chrome" platform="Windows 10" version="73" node webdriver.js || result=1
