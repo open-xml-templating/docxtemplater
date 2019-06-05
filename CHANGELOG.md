@@ -1,3 +1,36 @@
+### 3.11.2
+
+-	Bugfix issue with conditions in async mode conflicting sometimes
+
+For example with the template :
+
+```
+{#loop}
+	{#cond2}
+		{label}
+	{/cond2}
+	{#cond3}
+		{label}
+	{/cond3}
+{/loop}
+```
+
+and the data :
+
+```
+{
+	label: "outer",
+	loop: [
+		{
+			cond2: true,
+			label: "inner",
+		},
+	],
+}
+```
+
+The label would render as `outer` even though it should render as `inner`.
+
 ### 3.11.1
 
 -	Bugfix speed issue introduced in 3.10.0 for rawXmlModule

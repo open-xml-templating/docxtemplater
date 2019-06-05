@@ -882,9 +882,6 @@ const fixtures = {
 	error_resolve: {
 		it: "should resolve the data correctly",
 		content: "<w:t>{test}{#test}{label}{/test}{test}</w:t>",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
 		result: '<w:t xml:space="preserve">trueT1true</w:t>',
 		scope: {
 			label: "T1",
@@ -915,13 +912,13 @@ const fixtures = {
 				lIndex: 6,
 			},
 		],
+		lexed: null,
+		parsed: null,
+		postparsed: null,
 	},
 	error_resolve_2: {
 		it: "should resolve 2 the data correctly",
 		content: "<w:t>{^a}{label}{/a}</w:t>",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
 		result: "<w:t/>",
 		scope: {
 			a: true,
@@ -933,14 +930,14 @@ const fixtures = {
 				lIndex: 3,
 			},
 		],
+		lexed: null,
+		parsed: null,
+		postparsed: null,
 	},
 	error_resolve_3: {
 		it: "should resolve 3 the data correctly",
 		content:
 			"<w:t>{#frames}{#true}{label}{#false}{label}{/false}{/true}{#false}{label}{/false}{/frames}</w:t>",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
 		result: '<w:t xml:space="preserve">T1</w:t>',
 		scope: {
 			frames: [
@@ -965,14 +962,14 @@ const fixtures = {
 							value: [
 								[
 									{
-										tag: "false",
-										value: [],
-										lIndex: 12,
-									},
-									{
 										tag: "label",
 										value: "T1",
 										lIndex: 9,
+									},
+									{
+										tag: "false",
+										value: [],
+										lIndex: 12,
 									},
 								],
 							],
@@ -983,6 +980,59 @@ const fixtures = {
 				lIndex: 3,
 			},
 		],
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
+	error_resolve_truthy: {
+		it: "should resolve truthy data correctly",
+		content:
+			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
+		result: '<w:t xml:space="preserve">Linner</w:t>',
+		scope: {
+			label: "outer",
+			loop: [
+				{
+					cond2: true,
+					label: "inner",
+				},
+			],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	error_resolve_truthy_multi: {
+		it: "should resolve truthy multi data correctly",
+		content:
+			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
+		result: '<w:t xml:space="preserve">LinnerLinnerLinnerLouterouter</w:t>',
+		scope: {
+			label: "outer",
+			loop: [
+				{
+					cond2: true,
+					label: "inner",
+				},
+				{
+					cond2: true,
+					label: "inner",
+				},
+				{
+					cond3: true,
+					label: "inner",
+				},
+				{
+					cond2: true,
+					cond3: true,
+				},
+			],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
 	},
 };
 

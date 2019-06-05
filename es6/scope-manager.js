@@ -15,8 +15,7 @@ function find(list, fn) {
 }
 
 function getValue(tag, meta, num) {
-	this.num = num;
-	const scope = this.scopeList[this.num];
+	const scope = this.scopeList[num];
 	if (this.resolved) {
 		let w = this.resolved;
 		this.scopePath.forEach((p, index) => {
@@ -26,29 +25,32 @@ function getValue(tag, meta, num) {
 			});
 			w = w.value[this.scopePathItem[index]];
 		});
-		return find(w, function(r) {
-			return meta.part.lIndex === r.lIndex;
-		}).value;
+		return [
+			this.scopePath.length - 1,
+			find(w, function(r) {
+				return meta.part.lIndex === r.lIndex;
+			}).value,
+		];
 	}
 	// search in the scopes (in reverse order) and keep the first defined value
 	let result;
 	const parser = this.parser(tag, { scopePath: this.scopePath });
 	try {
-		result = parser.get(scope, this.getContext(meta));
+		result = parser.get(scope, this.getContext(meta, num));
 	} catch (error) {
 		throw getScopeParserExecutionError({ tag, scope, error });
 	}
-	if (result == null && this.num > 0) {
+	if (result == null && num > 0) {
 		return getValue.call(this, tag, meta, num - 1);
 	}
-	return result;
+	return [num, result];
 }
+
 function getValueAsync(tag, meta, num) {
-	this.num = num;
-	const scope = this.scopeList[this.num];
+	const scope = this.scopeList[num];
 	// search in the scopes (in reverse order) and keep the first defined value
 	const parser = this.parser(tag, { scopePath: this.scopePath });
-	return Promise.resolve(parser.get(scope, this.getContext(meta)))
+	return Promise.resolve(parser.get(scope, this.getContext(meta, num)))
 		.catch(function(error) {
 			throw getScopeParserExecutionError({ tag, scope, error });
 		})
@@ -109,16 +111,21 @@ const ScopeManager = class ScopeManager {
 		return this.functorIfInverted(!inverted, functor, currentValue, 0);
 	}
 	getValue(tag, meta) {
-		const num = this.scopeList.length - 1;
-		return getValue.call(this, tag, meta, num);
+		const [num, result] = getValue.call(
+			this,
+			tag,
+			meta,
+			this.scopeList.length - 1
+		);
+		this.num = num;
+		return result;
 	}
 	getValueAsync(tag, meta) {
-		const num = this.scopeList.length - 1;
-		return getValueAsync.call(this, tag, meta, num);
+		return getValueAsync.call(this, tag, meta, this.scopeList.length - 1);
 	}
-	getContext(meta) {
+	getContext(meta, num) {
 		return {
-			num: this.num,
+			num,
 			meta,
 			scopeList: this.scopeList,
 			resolved: this.resolved,
@@ -134,6 +141,16 @@ const ScopeManager = class ScopeManager {
 			scopePath: this.scopePath.concat(tag),
 			scopePathItem: this.scopePathItem.concat(i),
 			scopeLindex: this.scopeLindex.concat(part.lIndex),
+		});
+	}
+	clone() {
+		return new ScopeManager({
+			resolved: this.resolved,
+			parser: this.parser,
+			scopeList: this.scopeList.concat([]),
+			scopePath: this.scopePath.concat([]),
+			scopePathItem: this.scopePathItem.concat([]),
+			scopeLindex: this.scopeLindex.concat([]),
 		});
 	}
 };
