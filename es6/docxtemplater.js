@@ -21,7 +21,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 10, 0];
+const currentModuleApiVersion = [3, 11, 0];
 function getPartName(override) {
 	let partName = override.getAttribute("PartName");
 	if (partName[0] === "/") {

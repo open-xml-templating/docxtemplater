@@ -31,17 +31,26 @@ function updateInTextTag(part, inTextTag) {
 }
 
 function getTag(tag) {
-	let position = "start";
+	let position = "";
 	let start = 1;
+	let end = tag.indexOf(" ");
 	if (tag[tag.length - 2] === "/") {
 		position = "selfclosing";
-	}
-	if (tag[1] === "/") {
+		if (end === -1) {
+			end = tag.length - 2;
+		}
+	} else if (tag[1] === "/") {
 		start = 2;
 		position = "end";
+		if (end === -1) {
+			end = tag.length - 1;
+		}
+	} else {
+		position = "start";
+		if (end === -1) {
+			end = tag.length - 1;
+		}
 	}
-	const index = tag.indexOf(" ");
-	const end = index === -1 ? tag.length - 1 : index;
 	return {
 		tag: tag.slice(start, end),
 		position,

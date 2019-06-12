@@ -1,3 +1,7 @@
+### 3.11.3
+
+Parse selfclosing tag correctly, such as in `<w:rPr><w:noProof/></w:rPr>`
+
 ### 3.11.2
 
 -	Bugfix issue with conditions in async mode conflicting sometimes
