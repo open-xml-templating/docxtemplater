@@ -139,6 +139,7 @@ describe("Compilation errors", function() {
 			properties: {
 				id: "unopened_loop",
 				xtag: "loop",
+				offset: 0,
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
@@ -157,6 +158,7 @@ describe("Compilation errors", function() {
 			properties: {
 				id: "unclosed_loop",
 				xtag: "loop",
+				offset: 0,
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content);
@@ -570,6 +572,8 @@ describe("Multi errors", function() {
 						properties: {
 							id: "unclosed_loop",
 							xtag: "yum",
+							// To test that the offset is present and well calculated
+							offset: 68,
 						},
 					},
 				],

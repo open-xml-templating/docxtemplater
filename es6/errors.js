@@ -180,6 +180,7 @@ function getUnmatchedLoopException(options) {
 		id: `${t}_loop`,
 		explanation: `The loop with tag "${tag}" is ${t}`,
 		xtag: tag,
+		offset: options.part.offset,
 	};
 	return err;
 }
