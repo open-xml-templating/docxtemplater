@@ -1,3 +1,7 @@
+### 3.11.4
+
+Add offset property to unopened/unclosed loop error
+
 ### 3.11.3
 
 Parse selfclosing tag correctly, such as in `<w:rPr><w:noProof/></w:rPr>`
