@@ -1,9 +1,16 @@
 const expressions = require("angular-expressions");
 function angularParser(tag) {
-	const expr = expressions.compile(tag.replace(/’/g, "'"));
+	if (tag === ".") {
+		return {
+			get(s) {
+				return s;
+			},
+		};
+	}
+	const expr = expressions.compile(tag.replace(/(’|“|”)/g, "'"));
 	return {
-		get(scope) {
-			return expr(scope);
+		get(s) {
+			return expr(s);
 		},
 	};
 }

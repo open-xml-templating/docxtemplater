@@ -48,10 +48,16 @@ Here's a code sample for how to use the angularParser :
         if(!input) return input;
         return input.toLowerCase(); 
     }
-    var angularParser = function(tag) {
+    function angularParser(tag) {
+        if (tag === '.') {
+            return {
+                get: function(s){ return s;}
+            };
+        }
+        const expr = expressions.compile(tag.replace(/(’|“|”)/g, "'"));
         return {
-            get: tag === '.' ? function(s){ return s;} : function(s) {
-                return expressions.compile(tag.replace(/(’|“|”)/g, "'"))(s);
+            get: function(s) {
+                return expr(s);
             }
         };
     }
