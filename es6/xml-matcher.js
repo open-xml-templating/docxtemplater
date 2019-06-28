@@ -57,9 +57,7 @@ module.exports = function xmlMatcher(content, tagsXmlArray) {
 	res.tagsXmlArray = tagsXmlArray;
 	res.tagsXmlArrayJoined = res.tagsXmlArray.join("|");
 	const regexp = new RegExp(
-		`(?:(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${
-			res.tagsXmlArrayJoined
-		})>)|(<(?:${res.tagsXmlArrayJoined})[^>]*/>)`,
+		`(?:(<(?:${res.tagsXmlArrayJoined})[^>]*>)([^<>]*)</(?:${res.tagsXmlArrayJoined})>)|(<(?:${res.tagsXmlArrayJoined})[^>]*/>)`,
 		"g"
 	);
 	res.matches = pregMatchAll(regexp, res.content);

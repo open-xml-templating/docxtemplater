@@ -107,9 +107,7 @@ function throwXmlTagNotFound(options) {
 	);
 	err.properties = {
 		id: `no_xml_tag_found_at_${options.position}`,
-		explanation: `No tag "${options.element}" was found at the ${
-			options.position
-		}`,
+		explanation: `No tag "${options.element}" was found at the ${options.position}`,
 		part: options.parsed[options.index],
 		parsed: options.parsed,
 		index: options.index,
@@ -191,9 +189,7 @@ function getClosingTagNotMatchOpeningTag(options) {
 	const err = new XTTemplateError("Closing tag does not match opening tag");
 	err.properties = {
 		id: "closing_tag_does_not_match_opening_tag",
-		explanation: `The tag "${tags[0].value}" is closed by the tag "${
-			tags[1].value
-		}"`,
+		explanation: `The tag "${tags[0].value}" is closed by the tag "${tags[1].value}"`,
 		openingtag: tags[0].value,
 		offset: [tags[0].offset, tags[1].offset],
 		closingtag: tags[1].value,

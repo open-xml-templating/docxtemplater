@@ -91,9 +91,7 @@ function updateSaucelabsStatus(client, result, done) {
 	request(
 		{
 			headers: { "Content-Type": "text/json" },
-			url: `http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@saucelabs.com/rest/v1/${SAUCE_USERNAME}/jobs/${
-				client.sessionId
-			}`,
+			url: `http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@saucelabs.com/rest/v1/${SAUCE_USERNAME}/jobs/${client.sessionId}`,
 			method: "PUT",
 			body: JSON.stringify({
 				passed: result,
