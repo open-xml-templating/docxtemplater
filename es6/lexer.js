@@ -6,6 +6,7 @@ const {
 } = require("./errors");
 const { concatArrays, isTextStart, isTextEnd } = require("./doc-utils");
 
+const NONE = -2;
 const EQUAL = 0;
 const START = -1;
 const END = 1;
@@ -158,6 +159,9 @@ function getDelimiterErrors(delimiterMatches, fullText, ranges) {
 }
 
 function compareOffsets(startOffset, endOffset) {
+	if (startOffset === -1 && endOffset === -1) {
+		return NONE;
+	}
 	if (startOffset === endOffset) {
 		return EQUAL;
 	}
@@ -183,21 +187,31 @@ function getAllIndexes(fullText, delimiters) {
 	const indexes = [];
 	let { start, end } = delimiters;
 	let offset = -1;
+	let insideTag = false;
 	while (true) {
 		const startOffset = fullText.indexOf(start, offset + 1);
 		const endOffset = fullText.indexOf(end, offset + 1);
 		let position = null;
 		let len;
-		const compareResult = compareOffsets(startOffset, endOffset);
-		if (compareResult === EQUAL) {
+		let compareResult = compareOffsets(startOffset, endOffset);
+		if (compareResult === NONE) {
 			return indexes;
 		}
+		if (compareResult === EQUAL) {
+			if (!insideTag) {
+				compareResult = START;
+			} else {
+				compareResult = END;
+			}
+		}
 		if (compareResult === END) {
+			insideTag = false;
 			offset = endOffset;
 			position = "end";
 			len = end.length;
 		}
 		if (compareResult === START) {
+			insideTag = true;
 			offset = startOffset;
 			position = "start";
 			len = start.length;

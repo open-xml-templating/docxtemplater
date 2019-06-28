@@ -1,3 +1,11 @@
+### 3.12.0
+
+Add support for setting the same delimiter on the start and beginning, for example :
+
+`%user%`, by doing doc.setOptions({delimiters: {start: "%", end: "%"}});
+
+Remove (internal) scopeManager.clone, which is no more used
+
 ### 3.11.4
 
 Add offset property to unopened/unclosed loop error

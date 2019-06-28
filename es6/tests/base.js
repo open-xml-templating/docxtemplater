@@ -604,6 +604,23 @@ describe("Change the delimiters", function() {
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("Hello John");
 	});
+
+	it("should work with delimiter % both sides", function() {
+		const doc = createDoc("delimiter-pct.docx");
+		doc.setOptions({
+			delimiters: {
+				start: "%",
+				end: "%",
+			},
+		});
+		doc.setData({
+			user: "John",
+			company: "PCorp",
+		});
+		doc.render();
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("Hello John from PCorp");
+	});
 });
 
 describe("Special characters", function() {
