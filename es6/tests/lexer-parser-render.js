@@ -11,7 +11,7 @@ const tagsDocxConfig = {
 describe("Algorithm", function() {
 	Object.keys(fixtures).forEach(function(key) {
 		const fixture = fixtures[key];
-		(fixture.only ? it.only : it)(fixture.it, function() {
+		(fixture.onlySync ? it.only : it)(fixture.it, function() {
 			const doc = makeDocx(key, fixture.content);
 			doc.setOptions(fixture.options);
 			const iModule = inspectModule();
