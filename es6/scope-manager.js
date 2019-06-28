@@ -94,9 +94,13 @@ const ScopeManager = class ScopeManager {
 			inverted = false;
 		}
 		const type = Object.prototype.toString.call(value);
-		const currentValue = this.scopeList[this.num];
 		if (this.isValueFalsy(value, type)) {
-			return this.functorIfInverted(inverted, functor, currentValue, 0);
+			return this.functorIfInverted(
+				inverted,
+				functor,
+				this.scopeList[this.scopeList.length - 1],
+				0
+			);
 		}
 		if (type === "[object Array]") {
 			for (let i = 0, scope; i < value.length; i++) {
@@ -108,7 +112,7 @@ const ScopeManager = class ScopeManager {
 		if (type === "[object Object]") {
 			return this.functorIfInverted(!inverted, functor, value, 0);
 		}
-		return this.functorIfInverted(!inverted, functor, currentValue, 0);
+		return this.functorIfInverted(!inverted, functor, value, 0);
 	}
 	getValue(tag, meta) {
 		const [num, result] = getValue.call(
@@ -141,16 +145,6 @@ const ScopeManager = class ScopeManager {
 			scopePath: this.scopePath.concat(tag),
 			scopePathItem: this.scopePathItem.concat(i),
 			scopeLindex: this.scopeLindex.concat(part.lIndex),
-		});
-	}
-	clone() {
-		return new ScopeManager({
-			resolved: this.resolved,
-			parser: this.parser,
-			scopeList: this.scopeList.concat([]),
-			scopePath: this.scopePath.concat([]),
-			scopePathItem: this.scopePathItem.concat([]),
-			scopeLindex: this.scopeLindex.concat([]),
 		});
 	}
 };

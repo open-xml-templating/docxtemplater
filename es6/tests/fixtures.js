@@ -962,14 +962,14 @@ const fixtures = {
 							value: [
 								[
 									{
-										tag: "label",
-										value: "T1",
-										lIndex: 9,
-									},
-									{
 										tag: "false",
 										value: [],
 										lIndex: 12,
+									},
+									{
+										tag: "label",
+										value: "T1",
+										lIndex: 9,
 									},
 								],
 							],
@@ -1028,6 +1028,65 @@ const fixtures = {
 					cond3: true,
 				},
 			],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	async_loop_issue: {
+		it: "should resolve async loop",
+		content: "<w:t>{#loop}{#cond1}{label}{/}{#cond2}{label}{/}{/loop}</w:t>",
+		result: '<w:t xml:space="preserve">innerouterouter</w:t>',
+		scope: {
+			label: "outer",
+			loop: [
+				{
+					cond1: true,
+					label: "inner",
+				},
+				{
+					cond1: true,
+					cond2: true,
+				},
+			],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	inversed_loop: {
+		it: "should work well with inversed loop",
+		content: "<w:t>{#a}{^b}{label}{/}{/}</w:t>",
+		result: '<w:t xml:space="preserve">hi</w:t>',
+		scope: {
+			a: [{ b: false, label: "hi" }],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	inversed_loop_nested: {
+		it: "should work well with inversed loop nested",
+		content: "<w:t>{#a}{^b}{^c}{label}{/}{/}{/}</w:t>",
+		result: '<w:t xml:space="preserve">hi</w:t>',
+		scope: {
+			a: [{ b: false, label: "hi" }],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	inversed_loop_nested_resolved: {
+		it: "should work well with inversed loop nested",
+		content: "<w:t>{#a}{^b}{^c}{label}{/}{/}{/}</w:t>",
+		result: '<w:t xml:space="preserve">hi</w:t>',
+		scope: {
+			label: "outer",
+			a: [{ b: false, label: "hi" }],
 		},
 		lexed: null,
 		parsed: null,

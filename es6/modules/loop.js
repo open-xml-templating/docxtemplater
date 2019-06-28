@@ -179,7 +179,7 @@ class LoopModule {
 			return null;
 		}
 
-		const sm = options.scopeManager.clone();
+		const sm = options.scopeManager;
 		const promisedValue = sm.getValue(part.value, { part });
 		const promises = [];
 		function loopOver(scope, i) {
