@@ -38,7 +38,12 @@ function getValue(tag, meta, num) {
 	try {
 		result = parser.get(scope, this.getContext(meta, num));
 	} catch (error) {
-		throw getScopeParserExecutionError({ tag, scope, error });
+		throw getScopeParserExecutionError({
+			tag,
+			scope,
+			error,
+			offset: meta.part.offset,
+		});
 	}
 	if (result == null && num > 0) {
 		return getValue.call(this, tag, meta, num - 1);

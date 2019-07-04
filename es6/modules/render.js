@@ -1,7 +1,7 @@
 const wrapper = require("../module-wrapper");
 const { getScopeCompilationError } = require("../errors");
 const { utf8ToWord, hasCorruptCharacters } = require("../doc-utils");
-const { throwCorruptCharacters } = require("../errors");
+const { getCorruptCharactersException } = require("../errors");
 
 const ftprefix = {
 	docx: "w",
@@ -41,7 +41,9 @@ class Render {
 				try {
 					this.parser(tag, { tag: p });
 				} catch (rootError) {
-					errors.push(getScopeCompilationError({ tag, rootError }));
+					errors.push(
+						getScopeCompilationError({ tag, rootError, offset: p.offset })
+					);
 				}
 			}
 		});
@@ -68,36 +70,53 @@ class Render {
 		if (linebreaks) {
 			this.recordRuns(part);
 		}
-		if (part.type === "placeholder" && !part.module) {
-			let value = scopeManager.getValue(part.value, { part });
-			if (value == null) {
-				value = nullGetter(part);
-			}
-			if (hasCorruptCharacters(value)) {
-				throwCorruptCharacters({ tag: part.value, value });
-			}
-			if (typeof value !== "string") {
-				value = value.toString();
-			}
-			if (linebreaks) {
-				const p = ftprefix[this.fileType];
-				const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
-				const lines = value.split("\n");
-				const runprops = this.recordedRun.join("");
-				return {
-					value: lines
-						.map(function(line) {
-							return utf8ToWord(line);
-						})
-						.join(
-							`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
-								this.fileType === "docx" ? ' xml:space="preserve"' : ""
-							}>`
-						),
-				};
-			}
-			return { value: utf8ToWord(value) };
+		if (part.type !== "placeholder" || part.module) {
+			return;
 		}
+		let value;
+		try {
+			value = scopeManager.getValue(part.value, { part });
+		} catch (e) {
+			return { errors: [e] };
+		}
+		if (value == null) {
+			value = nullGetter(part);
+		}
+		if (hasCorruptCharacters(value)) {
+			return {
+				errors: [
+					getCorruptCharactersException({
+						tag: part.value,
+						value,
+						offset: part.offset,
+					}),
+				],
+			};
+		}
+		if (typeof value !== "string") {
+			value = value.toString();
+		}
+		if (linebreaks) {
+			return this.renderLineBreaks(value);
+		}
+		return { value: utf8ToWord(value) };
+	}
+	renderLineBreaks(value) {
+		const p = ftprefix[this.fileType];
+		const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
+		const lines = value.split("\n");
+		const runprops = this.recordedRun.join("");
+		return {
+			value: lines
+				.map(function(line) {
+					return utf8ToWord(line);
+				})
+				.join(
+					`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
+						this.fileType === "docx" ? ' xml:space="preserve"' : ""
+					}>`
+				),
+		};
 	}
 }
 

@@ -20,12 +20,12 @@ function XTTemplateError(message) {
 }
 XTTemplateError.prototype = new XTError();
 
-function RenderingError(message) {
+function XTRenderingError(message) {
 	this.name = "RenderingError";
 	this.message = message;
 	this.stack = new Error(message).stack;
 }
-RenderingError.prototype = new XTError();
+XTRenderingError.prototype = new XTError();
 
 function XTScopeParserError(message) {
 	this.name = "ScopeParserError";
@@ -116,15 +116,16 @@ function throwXmlTagNotFound(options) {
 	throw err;
 }
 
-function throwCorruptCharacters({ tag, value }) {
-	const err = new RenderingError("There are some XML corrupt characters");
+function getCorruptCharactersException({ tag, value, offset }) {
+	const err = new XTRenderingError("There are some XML corrupt characters");
 	err.properties = {
 		id: "invalid_xml_characters",
 		xtag: tag,
 		value,
+		offset,
 		explanation: "There are some corrupt characters for the field ${tag}",
 	};
-	throw err;
+	return err;
 }
 
 function throwContentMustBeString(type) {
@@ -197,10 +198,11 @@ function getClosingTagNotMatchOpeningTag(options) {
 	return err;
 }
 
-function getScopeCompilationError({ tag, rootError }) {
+function getScopeCompilationError({ tag, rootError, offset }) {
 	const err = new XTScopeParserError("Scope parser compilation failed");
 	err.properties = {
 		id: "scopeparser_compilation_failed",
+		offset,
 		tag,
 		explanation: `The scope parser for the tag "${tag}" failed to compile`,
 		rootError,
@@ -208,12 +210,13 @@ function getScopeCompilationError({ tag, rootError }) {
 	return err;
 }
 
-function getScopeParserExecutionError({ tag, scope, error }) {
+function getScopeParserExecutionError({ tag, scope, error, offset }) {
 	const err = new XTScopeParserError("Scope parser execution failed");
 	err.properties = {
 		id: "scopeparser_execution_failed",
 		explanation: `The scope parser for the tag ${tag} failed to execute`,
 		scope,
+		offset,
 		tag,
 		rootError: error,
 	};
@@ -296,7 +299,9 @@ module.exports = {
 	XTInternalError,
 	XTScopeParserError,
 	XTAPIVersionError,
-	RenderingError,
+	// Remove this alias in v4
+	RenderingError: XTRenderingError,
+	XTRenderingError,
 
 	getClosingTagNotMatchOpeningTag,
 	getLoopPositionProducesInvalidXMLError,
@@ -305,10 +310,10 @@ module.exports = {
 	getUnclosedTagException,
 	getUnmatchedLoopException,
 	getUnopenedTagException,
+	getCorruptCharactersException,
 
 	throwApiVersionError,
 	throwContentMustBeString,
-	throwCorruptCharacters,
 	throwFileTypeNotHandled,
 	throwFileTypeNotIdentified,
 	throwLocationInvalid,
