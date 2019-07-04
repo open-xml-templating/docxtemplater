@@ -244,84 +244,80 @@ function getAllIndexes(fullText, delimiters) {
 	}
 }
 
-function Reader(innerContentParts) {
-	this.innerContentParts = innerContentParts;
-	this.full = "";
-	this.parseDelimiters = delimiters => {
-		this.full = this.innerContentParts.map(p => p.value).join("");
-		const delimiterMatches = getAllIndexes(this.full, delimiters);
+function parseDelimiters(innerContentParts, delimiters) {
+	const full = innerContentParts.map(p => p.value).join("");
+	const delimiterMatches = getAllIndexes(full, delimiters);
 
-		let offset = 0;
-		const ranges = this.innerContentParts.map(function(part) {
-			offset += part.value.length;
-			return { offset: offset - part.value.length, lIndex: part.lIndex };
-		});
+	let offset = 0;
+	const ranges = innerContentParts.map(function(part) {
+		offset += part.value.length;
+		return { offset: offset - part.value.length, lIndex: part.lIndex };
+	});
 
-		const errors = getDelimiterErrors(delimiterMatches, this.full, ranges);
-		let cutNext = 0;
-		let delimiterIndex = 0;
+	const errors = getDelimiterErrors(delimiterMatches, full, ranges);
+	let cutNext = 0;
+	let delimiterIndex = 0;
 
-		this.parsed = ranges.map(function(p, i) {
-			const { offset } = p;
-			const range = [offset, offset + this.innerContentParts[i].value.length];
-			const partContent = this.innerContentParts[i].value;
-			const delimitersInOffset = [];
-			while (
-				delimiterIndex < delimiterMatches.length &&
-				inRange(range, delimiterMatches[delimiterIndex])
-			) {
-				delimitersInOffset.push(delimiterMatches[delimiterIndex]);
-				delimiterIndex++;
-			}
-			const parts = [];
-			let cursor = 0;
-			if (cutNext > 0) {
-				cursor = cutNext;
-				cutNext = 0;
-			}
-			let insideDelimiterChange;
-			delimitersInOffset.forEach(function(delimiterInOffset) {
-				const value = partContent.substr(
-					cursor,
-					delimiterInOffset.offset - offset - cursor
-				);
-				if (value.length > 0) {
-					if (insideDelimiterChange) {
-						if (delimiterInOffset.changedelimiter) {
-							cursor =
-								delimiterInOffset.offset - offset + delimiterInOffset.length;
-							insideDelimiterChange = delimiterInOffset.position === "start";
-						}
-						return;
+	const parsed = ranges.map(function(p, i) {
+		const { offset } = p;
+		const range = [offset, offset + innerContentParts[i].value.length];
+		const partContent = innerContentParts[i].value;
+		const delimitersInOffset = [];
+		while (
+			delimiterIndex < delimiterMatches.length &&
+			inRange(range, delimiterMatches[delimiterIndex])
+		) {
+			delimitersInOffset.push(delimiterMatches[delimiterIndex]);
+			delimiterIndex++;
+		}
+		const parts = [];
+		let cursor = 0;
+		if (cutNext > 0) {
+			cursor = cutNext;
+			cutNext = 0;
+		}
+		let insideDelimiterChange;
+		delimitersInOffset.forEach(function(delimiterInOffset) {
+			const value = partContent.substr(
+				cursor,
+				delimiterInOffset.offset - offset - cursor
+			);
+			if (value.length > 0) {
+				if (insideDelimiterChange) {
+					if (delimiterInOffset.changedelimiter) {
+						cursor =
+							delimiterInOffset.offset - offset + delimiterInOffset.length;
+						insideDelimiterChange = delimiterInOffset.position === "start";
 					}
-					parts.push({ type: "content", value, offset: cursor + offset });
-					cursor += value.length;
-				}
-				const delimiterPart = {
-					type: "delimiter",
-					position: delimiterInOffset.position,
-					offset: cursor + offset,
-				};
-				if (delimiterInOffset.error) {
-					delimiterPart.error = delimiterInOffset.error;
-				}
-				if (delimiterInOffset.changedelimiter) {
-					insideDelimiterChange = delimiterInOffset.position === "start";
-					cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
 					return;
 				}
-				parts.push(delimiterPart);
-				cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
-			});
-			cutNext = cursor - partContent.length;
-			const value = partContent.substr(cursor);
-			if (value.length > 0) {
-				parts.push({ type: "content", value, offset });
+				parts.push({ type: "content", value, offset: cursor + offset });
+				cursor += value.length;
 			}
-			return parts;
-		}, this);
-		this.errors = errors;
-	};
+			const delimiterPart = {
+				type: "delimiter",
+				position: delimiterInOffset.position,
+				offset: cursor + offset,
+			};
+			if (delimiterInOffset.error) {
+				delimiterPart.error = delimiterInOffset.error;
+			}
+			if (delimiterInOffset.changedelimiter) {
+				insideDelimiterChange = delimiterInOffset.position === "start";
+				cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
+				return;
+			}
+			parts.push(delimiterPart);
+			cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
+		});
+		cutNext = cursor - partContent.length;
+		const value = partContent.substr(cursor);
+		if (value.length > 0) {
+			parts.push({ type: "content", value, offset });
+		}
+		return parts;
+	}, this);
+	return { parsed, errors };
 }
 
 function getContentParts(xmlparsed) {
@@ -337,10 +333,13 @@ function getContentParts(xmlparsed) {
 }
 
 module.exports = {
+	parseDelimiters,
 	parse(xmlparsed, delimiters) {
 		let inTextTag = false;
-		const reader = new Reader(getContentParts(xmlparsed));
-		reader.parseDelimiters(delimiters);
+		const { parsed: delimiterParsed, errors } = parseDelimiters(
+			getContentParts(xmlparsed),
+			delimiters
+		);
 
 		let lexed = [];
 		let index = 0;
@@ -352,7 +351,7 @@ module.exports = {
 			if (inTextTag && part.type === "content") {
 				Array.prototype.push.apply(
 					lexed,
-					reader.parsed[index].map(function(p) {
+					delimiterParsed[index].map(function(p) {
 						if (p.type === "content") {
 							p.position = "insidetag";
 						}
@@ -368,7 +367,7 @@ module.exports = {
 			p.lIndex = i;
 			return p;
 		});
-		return { errors: reader.errors, lexed };
+		return { errors, lexed };
 	},
 	xmlparse(content, xmltags) {
 		const matches = tagMatcher(content, xmltags.text, xmltags.other);

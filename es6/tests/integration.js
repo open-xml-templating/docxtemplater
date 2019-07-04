@@ -971,6 +971,17 @@ describe("Resolver", function() {
 		shouldBeSame({ doc, expectedName: "expected-regression-1.docx" });
 	});
 
+	it("should not regress when having [Content_Types.xml] contain Default instead of Override", function() {
+		const doc = createDoc("with-default-contenttype.docx");
+		doc.compile();
+		doc.setData({});
+		doc.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-with-default-contenttype.docx",
+		});
+	});
+
 	it("should not regress 1 async", function() {
 		const doc = createDoc("regression-1.docx");
 		doc.compile();

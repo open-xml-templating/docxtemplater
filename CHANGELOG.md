@@ -1,3 +1,11 @@
+### 3.13.0
+
+-	Throw multi Error with offsets when having rendering error (makes it possible to use the error location module on rendering errors).
+
+-	Avoid false positive error "The filetype for this file could not be identified" when the document uses `<Default>` in the `[Content_Types].xml` file
+
+-	Add getFileType module API to add potential support for other filetypes
+
 ### 3.12.0
 
 Add support for setting the same delimiter on the start and beginning, for example :

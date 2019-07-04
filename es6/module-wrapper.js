@@ -8,6 +8,7 @@ module.exports = function(module) {
 		parse: emptyFun,
 		render: emptyFun,
 		getTraits: emptyFun,
+		getFileType: emptyFun,
 		nullGetter: emptyFun,
 		optionsTransformer: identity,
 		postrender: identity,

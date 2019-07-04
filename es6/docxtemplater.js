@@ -4,6 +4,9 @@ const DocUtils = require("./doc-utils");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
 
+const commonModule = require("./modules/common");
+const ctXML = "[Content_Types].xml";
+
 const Lexer = require("./lexer");
 const {
 	defaults,
@@ -21,14 +24,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 11, 0];
-function getPartName(override) {
-	let partName = override.getAttribute("PartName");
-	if (partName[0] === "/") {
-		partName = partName.substr(1);
-	}
-	return partName;
-}
+const currentModuleApiVersion = [3, 12, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {
@@ -38,7 +34,7 @@ const Docxtemplater = class Docxtemplater {
 			);
 		}
 		this.compiled = {};
-		this.modules = [];
+		this.modules = [commonModule()];
 		this.setOptions({});
 	}
 	getModuleApiVersion() {
@@ -185,30 +181,26 @@ const Docxtemplater = class Docxtemplater {
 		if (this.zip.files.mimetype) {
 			fileType = "odt";
 		}
-		const contentTypes = this.zip.files["[Content_Types].xml"];
+		const contentTypes = this.zip.files[ctXML];
 		this.targets = [];
-		if (contentTypes) {
-			const contentTypeXml = str2xml(contentTypes.asText());
-			const overrides = contentTypeXml.getElementsByTagName("Override");
-			for (let i = 0, len = overrides.length; i < len; i++) {
-				const override = overrides[i];
-				const contentType = override.getAttribute("ContentType");
-				if (
-					contentType ===
-					"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
-				) {
-					fileType = "docx";
-					this.targets.push(getPartName(override));
-				}
-				if (
-					contentType ===
-					"application/vnd.openxmlformats-officedocument.presentationml.slide+xml"
-				) {
-					fileType = "pptx";
-					this.targets.push(getPartName(override));
-				}
-			}
-		}
+		const contentTypeXml = contentTypes ? str2xml(contentTypes.asText()) : null;
+		const overrides = contentTypeXml
+			? contentTypeXml.getElementsByTagName("Override")
+			: null;
+		const defaults = contentTypeXml
+			? contentTypeXml.getElementsByTagName("Default")
+			: null;
+		this.modules.forEach(module => {
+			fileType =
+				module.getFileType({
+					zip: this.zip,
+					contentTypes,
+					contentTypeXml,
+					overrides,
+					defaults,
+					doc: this,
+				}) || fileType;
+		});
 		if (fileType === "odt") {
 			throwFileTypeNotHandled(fileType);
 		}
@@ -218,6 +210,7 @@ const Docxtemplater = class Docxtemplater {
 		this.fileType = fileType;
 		this.fileTypeConfig =
 			this.options.fileTypeConfig ||
+			this.fileTypeConfig ||
 			Docxtemplater.FileTypeConfig[this.fileType];
 		return this;
 	}

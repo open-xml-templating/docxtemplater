@@ -11,7 +11,7 @@ const xmlPrettify = require("./xml-prettify");
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;
-const docX = {};
+const documentCache = {};
 const imageData = {};
 const emptyNamespace = /xmlns:[a-z0-9]+=""/;
 
@@ -121,7 +121,7 @@ function shouldBeSame(options) {
 	let expectedZip;
 
 	try {
-		expectedZip = docX[expectedName].zip;
+		expectedZip = documentCache[expectedName].zip;
 	} catch (e) {
 		writeFile(expectedName, zip);
 		console.log(
@@ -268,7 +268,8 @@ function cleanError(e, expectedError) {
 		).to.be.instanceOf(Object);
 		if (expectedError) {
 			expect(e.properties.rootError.message).to.equal(
-				expectedError.properties.rootError.message
+				expectedError.properties.rootError.message,
+				"rootError.message"
 			);
 		}
 		delete e.properties.rootError;
@@ -369,7 +370,7 @@ function expectToThrow(fn, type, expectedError) {
 	return errorVerifier(err, type, expectedError);
 }
 
-function load(name, content, fileType, obj) {
+function load(name, content, obj) {
 	const zip = new JSZip(content);
 	obj[name] = new Docxtemplater();
 	obj[name].loadZip(zip);
@@ -378,7 +379,13 @@ function load(name, content, fileType, obj) {
 	return obj[name];
 }
 function loadDocument(name, content) {
-	return load(name, content, "docx", docX);
+	return load(name, content, documentCache);
+}
+
+function cacheDocument(name, content) {
+	const zip = new JSZip(content);
+	documentCache[name] = { loadedName: name, loadedContent: content, zip };
+	return documentCache[name];
 }
 function loadImage(name, content) {
 	imageData[name] = content;
@@ -455,8 +462,12 @@ function start() {
 		if (startsWith(fileName, ".") || startsWith(fileName, "~")) {
 			return;
 		}
-		if (endsWith(fileName, ".docx") || endsWith(fileName, ".pptx")) {
-			callback = loadDocument;
+		if (
+			endsWith(fileName, ".docx") ||
+			endsWith(fileName, ".pptx") ||
+			endsWith(fileName, ".xlsx")
+		) {
+			callback = cacheDocument;
 		}
 		if (!callback) {
 			callback = loadImage;
@@ -503,13 +514,16 @@ const contentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
 function makeDocx(name, content) {
 	const zip = new JSZip();
 	zip.file("word/document.xml", content, { createFolders: true });
-	zip.file("[Content_Types].xml", contentTypeContent, { createFolders: true });
-	const base64 = zip.generate({ type: "string" });
-	return load(name, base64, "docx", docX);
+	zip.file("[Content_Types].xml", contentTypeContent);
+	return load(name, zip.generate({ type: "string" }), documentCache);
 }
 
 function createDoc(name) {
-	return loadDocument(name, docX[name].loadedContent);
+	return loadDocument(name, documentCache[name].loadedContent);
+}
+
+function getLoadedContent(name) {
+	return documentCache[name].loadedContent;
 }
 
 function getContent(doc) {
@@ -537,6 +551,7 @@ module.exports = {
 	cleanError,
 	cleanRecursive,
 	createDoc,
+	getLoadedContent,
 	createXmlTemplaterDocx,
 	createXmlTemplaterDocxNoRender,
 	expect,

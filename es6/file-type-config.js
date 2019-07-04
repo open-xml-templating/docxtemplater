@@ -48,12 +48,12 @@ const PptXFileTypeConfig = {
 const DocXFileTypeConfig = {
 	getTemplatedFiles(zip) {
 		const baseTags = ["docProps/core.xml", "docProps/app.xml"];
-		const slideTemplates = zip
+		const headerFooters = zip
 			.file(/word\/(header|footer)\d+\.xml/)
 			.map(function(file) {
 				return file.name;
 			});
-		return slideTemplates.concat(baseTags);
+		return headerFooters.concat(baseTags);
 	},
 	textPath(doc) {
 		return doc.targets[0];
