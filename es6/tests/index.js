@@ -15,6 +15,7 @@ function startTest() {
 	require("./lexer-parser-render");
 	require("./integration");
 	require("./doc-props");
+	require("./modules");
 }
 
 start();

@@ -1,3 +1,7 @@
+### 3.13.2
+
+Auto verify moduleAPI version on attachModule
+
 ### 3.13.1
 
 Fix undefined is not a function evaluating 'object.getOwnPropertyDescriptors', by downgrading to babel 7.4

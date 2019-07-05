@@ -87,6 +87,9 @@ const Docxtemplater = class Docxtemplater {
 		});
 	}
 	attachModule(module, options = {}) {
+		if (module.requiredAPIVersion) {
+			this.verifyApiVersion(module.requiredAPIVersion);
+		}
 		const { prefix } = options;
 		if (prefix) {
 			module.prefix = prefix;

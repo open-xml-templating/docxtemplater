@@ -77,9 +77,8 @@ const ScopeManager = class ScopeManager {
 		this.parser = options.parser;
 		this.resolved = options.resolved;
 	}
-	loopOver(tag, callback, inverted, meta) {
-		inverted = inverted || false;
-		return this.loopOverValue(this.getValue(tag, meta), callback, inverted);
+	loopOver(tag, functor, inverted, meta) {
+		return this.loopOverValue(this.getValue(tag, meta), functor, inverted);
 	}
 	functorIfInverted(inverted, functor, value, i) {
 		if (inverted) {

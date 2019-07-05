@@ -1,5 +1,3 @@
-"use strict";
-
 const expressions = require("angular-expressions");
 
 const { loadFile, loadDocument, rejectSoon } = require("./utils");
