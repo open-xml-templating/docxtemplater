@@ -1,3 +1,7 @@
+### 3.13.1
+
+Fix undefined is not a function evaluating 'object.getOwnPropertyDescriptors', by downgrading to babel 7.4
+
 ### 3.13.0
 
 -	Throw multi Error with offsets when having rendering error (makes it possible to use the error location module on rendering errors).
