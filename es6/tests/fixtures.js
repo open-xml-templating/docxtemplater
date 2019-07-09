@@ -1,4 +1,5 @@
 const { clone, merge } = require("lodash");
+const angularParser = require("./angular-parser");
 
 const xmlSpacePreserveTag = {
 	type: "tag",
@@ -962,14 +963,14 @@ const fixtures = {
 							value: [
 								[
 									{
-										tag: "false",
-										value: [],
-										lIndex: 12,
-									},
-									{
 										tag: "label",
 										value: "T1",
 										lIndex: 9,
+									},
+									{
+										tag: "false",
+										value: [],
+										lIndex: 12,
 									},
 								],
 							],
@@ -1087,6 +1088,44 @@ const fixtures = {
 		scope: {
 			label: "outer",
 			a: [{ b: false, label: "hi" }],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	condition_true_value: {
+		it: "should work well with true value for condition",
+		content:
+			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		result: '<w:t xml:space="preserve">low</w:t>',
+		scope: {
+			cond: true,
+			product: {
+				price: 2,
+			},
+		},
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	condition_false_value: {
+		it: "should work well with false value for condition",
+		content:
+			"<w:t>{^cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		result: '<w:t xml:space="preserve">low</w:t>',
+		scope: {
+			cond: false,
+			product: {
+				price: 2,
+			},
+		},
+		options: {
+			parser: angularParser,
 		},
 		lexed: null,
 		parsed: null,

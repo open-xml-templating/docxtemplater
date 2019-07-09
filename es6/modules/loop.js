@@ -142,12 +142,17 @@ class LoopModule {
 		let totalValue = [];
 		let errors = [];
 		function loopOver(scope, i) {
-			const scopeManager = options.scopeManager.createSubScopeManager(
-				scope,
-				part.value,
-				i,
-				part
-			);
+			let scopeManager;
+			if (scope === true) {
+				scopeManager = options.scopeManager;
+			} else {
+				scopeManager = options.scopeManager.createSubScopeManager(
+					scope,
+					part.value,
+					i,
+					part
+				);
+			}
 			const subRendered = options.render(
 				mergeObjects({}, options, {
 					compiled: part.subparsed,
@@ -183,7 +188,12 @@ class LoopModule {
 		const promisedValue = sm.getValue(part.value, { part });
 		const promises = [];
 		function loopOver(scope, i) {
-			const scopeManager = sm.createSubScopeManager(scope, part.value, i, part);
+			let scopeManager;
+			if (scope === true) {
+				scopeManager = sm;
+			} else {
+				scopeManager = sm.createSubScopeManager(scope, part.value, i, part);
+			}
 			promises.push(
 				options.resolve({
 					filePath: options.filePath,

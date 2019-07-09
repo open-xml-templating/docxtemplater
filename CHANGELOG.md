@@ -1,3 +1,7 @@
+### 3.13.3
+
+Bugfix condition when value is truthy, the subscope was incorrect
+
 ### 3.13.2
 
 Auto verify moduleAPI version on attachModule
