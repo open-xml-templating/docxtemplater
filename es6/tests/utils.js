@@ -453,9 +453,9 @@ function startsWith(str, suffix) {
 
 /* eslint-disable no-console */
 function start() {
-	/* eslint-disable dependencies/no-unresolved */
+	/* eslint-disable import/no-unresolved */
 	const fileNames = require("./filenames.js");
-	/* eslint-enable dependencies/no-unresolved */
+	/* eslint-enable import/no-unresolved */
 	fileNames.forEach(function(fullFileName) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
 		let callback;
