@@ -1,6 +1,6 @@
 ### 3.13.4
 
-Rebuild js after upgrade to latest babel version
+Fix support for Node 6 (also for Nashorn): Rebuild js after upgrade to latest babel version
 
 ### 3.13.3
 
