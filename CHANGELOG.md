@@ -1,3 +1,7 @@
+### 3.13.4
+
+Rebuild js after upgrade to latest babel version
+
 ### 3.13.3
 
 Bugfix condition when value is truthy, the subscope was incorrect
