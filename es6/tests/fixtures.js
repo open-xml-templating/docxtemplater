@@ -1113,6 +1113,44 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
+	condition_int_value: {
+		it: "should work well with int value for condition",
+		content:
+			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		result: '<w:t xml:space="preserve">low</w:t>',
+		scope: {
+			cond: 10,
+			product: {
+				price: 2,
+			},
+		},
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	condition_string_value: {
+		it: "should work well with str value for condition",
+		content:
+			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		result: '<w:t xml:space="preserve">low</w:t>',
+		scope: {
+			cond: "cond",
+			product: {
+				price: 2,
+			},
+		},
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
 	condition_false_value: {
 		it: "should work well with false value for condition",
 		content:

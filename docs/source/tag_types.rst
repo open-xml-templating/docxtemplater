@@ -130,13 +130,13 @@ The section behaves in the following way:
 +----------------------+---------------------------+------------------+ 
 | Type of the value    | the section is shown      | scope            | 
 +======================+===========================+==================+ 
-| boolean              | once if true              | unchanged        | 
-+----------------------+---------------------------+------------------+ 
 | falsy or empty array | never                     |                  | 
 +----------------------+---------------------------+------------------+ 
 | non empty array      | for each element of array | element of array | 
 +----------------------+---------------------------+------------------+ 
 | object               | once                      | the object       | 
++----------------------+---------------------------+------------------+ 
+| other truthy value   | once                      | unchanged        | 
 +----------------------+---------------------------+------------------+ 
 
 This table shows for each type of value, what is the condition for the section to be changed and what is the scope of that section.

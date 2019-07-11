@@ -116,7 +116,7 @@ const ScopeManager = class ScopeManager {
 		if (type === "[object Object]") {
 			return this.functorIfInverted(!inverted, functor, value, 0);
 		}
-		return this.functorIfInverted(!inverted, functor, value, 0);
+		return this.functorIfInverted(!inverted, functor, true, 0);
 	}
 	getValue(tag, meta) {
 		const [num, result] = getValue.call(
