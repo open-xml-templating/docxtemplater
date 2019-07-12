@@ -227,6 +227,7 @@ describe("Change the nullGetter", function() {
 	it("should work with null", function() {
 		const content = "<w:t>Hello {#names}{#foo}{bar}{/foo}{/names}</w:t>";
 		function nullGetter(part, scopeManager) {
+			expect(part.value).to.equal("bar");
 			expect(scopeManager.scopePath).to.deep.equal(["names", "foo"]);
 			expect(scopeManager.scopePathItem).to.deep.equal([0, 0]);
 			return "null";
