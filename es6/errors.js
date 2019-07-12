@@ -1,11 +1,6 @@
 "use strict";
+const { last, first } = require("./utils");
 
-function first(a) {
-	return a[0];
-}
-function last(a) {
-	return a[a.length - 1];
-}
 function XTError(message) {
 	this.name = "GenericError";
 	this.message = message;
@@ -191,9 +186,9 @@ function getClosingTagNotMatchOpeningTag(options) {
 	err.properties = {
 		id: "closing_tag_does_not_match_opening_tag",
 		explanation: `The tag "${tags[0].value}" is closed by the tag "${tags[1].value}"`,
-		openingtag: tags[0].value,
-		offset: [tags[0].offset, tags[1].offset],
-		closingtag: tags[1].value,
+		openingtag: first(tags).value,
+		offset: [first(tags).offset, last(tags).offset],
+		closingtag: last(tags).value,
 	};
 	return err;
 }

@@ -1,6 +1,10 @@
 "use strict";
 
-const { createDoc, expect, createXmlTemplaterDocx } = require("./utils");
+const {
+	createDoc,
+	expect,
+	createXmlTemplaterDocxNoRender,
+} = require("./utils");
 
 const { times } = require("lodash");
 const inspectModule = require("../inspect-module.js");
@@ -10,7 +14,7 @@ describe("Speed test", function() {
 		const content = "<w:t>tag {age}</w:t>";
 		const docs = [];
 		for (let i = 0; i < 100; i++) {
-			docs.push(createXmlTemplaterDocx(content, { tags: { age: 12 } }));
+			docs.push(createXmlTemplaterDocxNoRender(content, { tags: { age: 12 } }));
 		}
 		const time = new Date();
 		for (let i = 0; i < 100; i++) {
@@ -30,7 +34,7 @@ describe("Speed test", function() {
 		content = prepost + content + prepost;
 		const docs = [];
 		for (i = 0; i < 20; i++) {
-			docs.push(createXmlTemplaterDocx(content, { tags: { age: 12 } }));
+			docs.push(createXmlTemplaterDocxNoRender(content, { tags: { age: 12 } }));
 		}
 		const time = new Date();
 		for (i = 0; i < 20; i++) {
@@ -45,7 +49,7 @@ describe("Speed test", function() {
 		for (let i = 1; i <= 1000; i++) {
 			users.push({ name: "foo" });
 		}
-		const doc = createXmlTemplaterDocx(content, { tags: { users } });
+		const doc = createXmlTemplaterDocxNoRender(content, { tags: { users } });
 		const time = new Date();
 		doc.render();
 		const duration = new Date() - time;
@@ -67,8 +71,9 @@ describe("Speed test", function() {
 			}
 			const content = result.join("");
 			const users = [];
+			const doc = createXmlTemplaterDocxNoRender(content, { tags: { users } });
 			let now = new Date();
-			const doc = createXmlTemplaterDocx(content, { tags: { users } });
+			doc.compile();
 			const compileDuration = new Date() - now;
 			if (typeof window === "undefined") {
 				// Skip this assertion in the browser
@@ -82,11 +87,11 @@ describe("Speed test", function() {
 
 		describe("Inspect module", function() {
 			it("should not be slow after multiple generations", function() {
-				const time = new Date();
-				let doc;
+				let duration = 0;
 				const iModule = inspectModule();
 				for (let i = 0; i < 10; i++) {
-					doc = createDoc("tag-product-loop.docx");
+					const doc = createDoc("tag-product-loop.docx");
+					const startTime = new Date();
 					doc.attachModule(iModule);
 					const data = {
 						nom: "Doe",
@@ -103,8 +108,8 @@ describe("Speed test", function() {
 					doc.setData(data);
 					doc.compile();
 					doc.render();
+					duration += new Date() - startTime;
 				}
-				const duration = new Date() - time;
 				expect(duration).to.be.below(750);
 			});
 		});

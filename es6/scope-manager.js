@@ -1,5 +1,6 @@
 "use strict";
 const { getScopeParserExecutionError } = require("./errors");
+const { last } = require("./utils");
 
 function find(list, fn) {
 	const length = list.length >>> 0;
@@ -99,24 +100,18 @@ const ScopeManager = class ScopeManager {
 		}
 		const type = Object.prototype.toString.call(value);
 		if (this.isValueFalsy(value, type)) {
-			return this.functorIfInverted(
-				inverted,
-				functor,
-				this.scopeList[this.scopeList.length - 1],
-				0
-			);
+			return this.functorIfInverted(inverted, functor, last(this.scopeList), 0);
 		}
 		if (type === "[object Array]") {
-			for (let i = 0, scope; i < value.length; i++) {
-				scope = value[i];
-				this.functorIfInverted(!inverted, functor, scope, i);
+			for (let i = 0; i < value.length; i++) {
+				this.functorIfInverted(!inverted, functor, value[i], i);
 			}
 			return true;
 		}
 		if (type === "[object Object]") {
 			return this.functorIfInverted(!inverted, functor, value, 0);
 		}
-		return this.functorIfInverted(!inverted, functor, true, 0);
+		return this.functorIfInverted(!inverted, functor, last(this.scopeList), 0);
 	}
 	getValue(tag, meta) {
 		const [num, result] = getValue.call(

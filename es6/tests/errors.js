@@ -4,6 +4,7 @@ const { loadFile, loadDocument, rejectSoon } = require("./utils");
 const Errors = require("../errors.js");
 const {
 	createXmlTemplaterDocx,
+	createXmlTemplaterDocxNoRender,
 	wrapMultiError,
 	expectToThrow,
 	expectToThrowAsync,
@@ -1059,7 +1060,8 @@ describe("Async errors", function() {
 				},
 			},
 		};
-		const doc = createXmlTemplaterDocx(content);
+		const doc = createXmlTemplaterDocxNoRender(content);
+		doc.compile();
 		function create() {
 			return doc.resolveData({ user: rejectSoon(new Error("Foobar")) });
 		}

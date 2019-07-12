@@ -2,6 +2,7 @@
 
 const { DOMParser, XMLSerializer } = require("xmldom");
 const { throwXmlTagNotFound } = require("./errors");
+const { last, first } = require("./utils");
 
 function parser(tag) {
 	return {
@@ -84,10 +85,6 @@ function chunkBy(parsed, f) {
 		.filter(function(p) {
 			return p.length > 0;
 		});
-}
-
-function last(a) {
-	return a[a.length - 1];
 }
 
 const defaults = {
@@ -358,6 +355,7 @@ module.exports = {
 	unique,
 	chunkBy,
 	last,
+	first,
 	mergeObjects,
 	xml2str,
 	str2xml,

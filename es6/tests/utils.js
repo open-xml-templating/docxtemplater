@@ -7,6 +7,7 @@ const { get, unset, omit, uniq } = require("lodash");
 const diff = require("diff");
 
 const Docxtemplater = require("../docxtemplater.js");
+const { first } = require("../utils.js");
 const xmlPrettify = require("./xml-prettify");
 let countFiles = 1;
 let allStarted = false;
@@ -18,10 +19,11 @@ const emptyNamespace = /xmlns:[a-z0-9]+=""/;
 function unifiedDiff(actual, expected) {
 	const indent = "      ";
 	function cleanUp(line) {
-		if (line[0] === "+") {
+		const firstChar = first(line);
+		if (firstChar === "+") {
 			return indent + line;
 		}
-		if (line[0] === "-") {
+		if (firstChar === "-") {
 			return indent + line;
 		}
 		if (line.match(/@@/)) {

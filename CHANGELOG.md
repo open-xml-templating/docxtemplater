@@ -1,3 +1,7 @@
+### 3.13.6
+
+Improved fix for 3.13.5, to still create a scope but that is the same as the parent scope (without deep copy)
+
 ### 3.13.5
 
 Bugfix condition when value is truthy, the subscope was incorrect

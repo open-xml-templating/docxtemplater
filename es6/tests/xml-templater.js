@@ -10,7 +10,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
@@ -18,7 +17,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {name}, you're {age} years old</w:t>";
 		const scope = { name: "Edgar", age: "foo" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"Hello Edgar, you're foo years old"
 		);
@@ -28,7 +26,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {.}</w:t>";
 		const scope = "Edgar";
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
@@ -36,7 +33,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {#names}{.},{/names}</w:t>";
 		const scope = { names: ["Edgar", "John"] };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,John,");
 	});
 
@@ -44,9 +40,9 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>{#loop}Hello {name}{/loop}</w:t>";
 		const scope = { loop: { name: "edgar" } };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
-		const c = getContent(xmlTemplater);
-		expect(c).to.be.equal('<w:t xml:space="preserve">Hello edgar</w:t>');
+		expect(getContent(xmlTemplater)).to.be.equal(
+			'<w:t xml:space="preserve">Hello edgar</w:t>'
+		);
 	});
 
 	it("should handle <w:p/> in loop without error", function() {
@@ -55,7 +51,6 @@ describe("XmlTemplater", function() {
     <w:p><w:r><w:t>{.}{/ab}</w:t></w:r></w:p>`;
 		const scope = { ab: [1, 2, 3] };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("123");
 	});
 
@@ -63,7 +58,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {</w:t><w:t>name}</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
@@ -71,7 +65,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {</w:t><w:t>name</w:t><w:t>}</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
@@ -79,7 +72,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {#person}{name}{/person}</w:t>";
 		const scope = { person: { name: "Edgar" } };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
@@ -89,21 +81,18 @@ describe("XmlTemplater", function() {
 			names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }],
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
 	});
 	it("should work with simple Loop with boolean value truthy", function() {
 		const content = "<w:t>Hello {#showName}{name},{/showName}</w:t>";
 		const scope = { showName: true, name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,");
 	});
 	it("should work with simple Loop with boolean value falsy", function() {
 		const content = "<w:t>Hello {#showName}{name},{/showName}</w:t>";
 		const scope = { showName: false, name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello ");
 	});
 	it("should work with dash Loop", function() {
@@ -112,7 +101,6 @@ describe("XmlTemplater", function() {
 			names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }],
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"Hello Edgar,Hello Mary,Hello John,"
 		);
@@ -131,7 +119,6 @@ describe("XmlTemplater", function() {
 			},
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware"
 		);
@@ -150,7 +137,6 @@ describe("XmlTemplater", function() {
 			},
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"Start Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware End"
 		);
@@ -161,7 +147,6 @@ describe("XmlTemplater", function() {
 			loop: { names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }] },
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(getContent(xmlTemplater)).to.be.equal(
 			'<w:t xml:space="preserve">Hello Edgar,Mary,John,</w:t>'
 		);
@@ -170,7 +155,6 @@ describe("XmlTemplater", function() {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = { name: "{edgar}" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello {edgar}");
 	});
 	it("should work with delimiter in value with loop)", function() {
@@ -179,7 +163,6 @@ describe("XmlTemplater", function() {
 			names: [{ name: "{John}" }, { name: "M}}{ary" }, { name: "Di{{{gory" }],
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"Hello {John},M}}{ary,Di{{{gory,"
 		);
@@ -188,7 +171,6 @@ describe("XmlTemplater", function() {
 		const content = '<w:p><w:t xml:space="preserve">Hello {name}</w:t></w:p>';
 		const scope = { name: "{name}" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		xmlTemplater.getFullText();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello {name}");
 	});
@@ -235,7 +217,6 @@ describe("XmlTemplater", function() {
 		`;
 		const scope = { name: "John", foo: "MyFoo", bar: "MyBar", baz: "MyBaz" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"yMyBar*cos⁡( MyFoo+MyBaz)Hello John"
 		);
@@ -250,13 +231,12 @@ describe("Change the nullGetter", function() {
 			expect(scopeManager.scopePathItem).to.deep.equal([0, 0]);
 			return "null";
 		}
-		const xmlTemplater = createXmlTemplaterDocxNoRender(content, {
+		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: {
 				names: [{ foo: [{}] }],
 			},
 			nullGetter,
 		});
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
 	});
 
@@ -329,7 +309,6 @@ describe("Custom delimiters", function() {
 			tags: scope,
 			delimiters,
 		});
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
@@ -344,7 +323,6 @@ describe("Custom delimiters", function() {
 			tags: scope,
 			delimiters,
 		});
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 	});
 
@@ -359,7 +337,6 @@ describe("Custom delimiters", function() {
 			tags: scope,
 			delimiters,
 		});
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 	});
 
@@ -374,7 +351,6 @@ describe("Custom delimiters", function() {
 			tags: scope,
 			delimiters,
 		});
-		xmlTemplater.render();
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
 	});
 
@@ -382,7 +358,7 @@ describe("Custom delimiters", function() {
 		const content = "<w:t>{#loop}{innertag</w:t><w:t>} {/loop}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { loop: [{ innertag: 10 }, { innertag: 5 }] },
-		}).render();
+		});
 		const c = getContent(xmlt);
 		expect(c).to.be.equal(
 			'<w:t xml:space="preserve">10</w:t><w:t xml:space="preserve"> 5</w:t><w:t xml:space="preserve"> </w:t>'
@@ -393,7 +369,7 @@ describe("Custom delimiters", function() {
 		const content = "<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { looptag: true, innertag: "foo" },
-		}).render();
+		});
 		const c = getContent(xmlt);
 		expect(c).not.to.contain("</w:t></w:t>");
 		expect(c).to.be.equal('<w:t xml:space="preserve">foo</w:t><w:t/>');
@@ -403,7 +379,7 @@ describe("Custom delimiters", function() {
 		const content = "<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { person: [{ name: "Henry" }] },
-		}).render();
+		});
 		const c = getContent(xmlt);
 		expect(c).to.contain("Henry</w:t>");
 		expect(c).not.to.contain("</w:t>Henry</w:t>");
@@ -415,7 +391,7 @@ describe("getting parents context", function() {
 		const content = "<w:t>{#loop}{name}{/loop}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { loop: [1], name: "Henry" },
-		}).render();
+		});
 		const c = getContent(xmlt);
 		expect(c).to.be.equal('<w:t xml:space="preserve">Henry</w:t>');
 	});
@@ -429,7 +405,7 @@ describe("getting parents context", function() {
 				loop_second: [{ name_inner: "John" }],
 				name_outer: "Henry",
 			},
-		}).render();
+		});
 		const c = getContent(xmlt);
 		expect(c).to.be.equal('<w:t xml:space="preserve">John Henry</w:t>');
 	});
