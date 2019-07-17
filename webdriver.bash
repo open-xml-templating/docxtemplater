@@ -36,8 +36,18 @@ then
 	then
 		echo "Using existing selenium"
 	else
+		if ! [ -d node_modules/selenium-standalone/.selenium ]
+		then
+			if [ -d "$HOME/tmp/.selenium" ]
+			then
+				echo "Copying selenium from cache"
+				cp -r "$HOME/tmp/.selenium" node_modules/selenium-standalone/.selenium
+			else
+				echo "Installing selenium"
+				selenium-standalone install
+			fi
+		fi
 		echo "Starting selenium"
-		selenium-standalone install --silent
 		selenium-standalone start -- -log /tmp/protractor.log &
 		pid="$!"
 		while ! port4444used;
