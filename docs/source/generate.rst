@@ -125,3 +125,6 @@ Browser
         </script>
     </html>
 
+Please note that if you want to load a docx from your filesystem, you will need a webserver or you will be blocked by CORS policy.
+
+:ref:`cors`

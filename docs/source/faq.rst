@@ -310,3 +310,27 @@ And use the following in your template :
    - {gender | pronoun} likes to {name}
    {/hobbies}
    {/}
+
+
+Access to XMLHttpRequest at file.docx from origin 'null' has been blocked by CORS policy
+----------------------------------------------------------------------------------------
+
+.. _cors:
+
+This happens if you use the HTML sample script but are not using a webserver.
+
+If your browser window shows a URL starting with `file://`, then you are not using a webserver, but the filesystem itself. 
+
+For security reasons, the browsers don't let you load files from the local file system.
+
+To do this, you have to setup a small web server.
+
+The simplest way of starting a webserver is to run following command : 
+
+.. code-block:: bash
+
+   npx http-server
+   # if you don't have npx, you can also do :
+   # npm install -g http-server && http-server .
+
+On your production server, you should probably use a more robust webserver such as nginx, or any webserver that you are currently using for static files.
