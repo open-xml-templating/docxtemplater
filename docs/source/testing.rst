@@ -53,7 +53,7 @@ Docxtemplater was not able to render text that was written in russian (because o
     it("should insert russian characters", function () {
         const russian = "Пупкина"
         const doc = createDoc("tag-example.docx");
-        const zip = new JSZip(doc.loadedContent);
+        const zip = new PizZip(doc.loadedContent);
         const d = new Docxtemplater().loadZip(zip);
         d.setData({last_name: russian});
         d.render();

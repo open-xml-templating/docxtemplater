@@ -119,7 +119,7 @@ const Docxtemplater = class Docxtemplater {
 	loadZip(zip) {
 		if (zip.loadAsync) {
 			throw new XTInternalError(
-				"Docxtemplater doesn't handle JSZip version >=3, see changelog"
+				"Docxtemplater doesn't handle JSZip version >=3, please use pizzip"
 			);
 		}
 		this.zip = zip;

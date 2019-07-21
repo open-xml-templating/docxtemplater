@@ -1,31 +1,27 @@
-Please read the following before opening an issue :
-===================================================
+# Please read the following before opening an issue :
 
--	Read the docs at http://docxtemplater.readthedocs.io/en/latest/
--	Check whether your issue appears with the latest version of docxtemplater (lots of bugs have already been solved)
+- Read the docs at http://docxtemplater.readthedocs.io/en/latest/
+- Check whether your issue appears with the latest version of docxtemplater (lots of bugs have already been solved)
 
 If you have an error message, please include the full error message + stacktrace, and you can also log the properties object of that error, with for example the following code :
 
 ```js
 try {
-	doc.render();
-}
-catch (error) {
-	console.log(JSON.stringify({error: error}));
+  doc.render();
+} catch (error) {
+  console.log(JSON.stringify({ error: error }));
 }
 ```
 
 Please remove the text before this line when submitting your issue.
 
-Environment
-===========
+# Environment
 
--	Version of docxtemplater :
--	Used docxtemplater-modules :
--	Runner : Browser/Node.JS/...
+- Version of docxtemplater :
+- Used docxtemplater-modules :
+- Runner : Browser/Node.JS/...
 
-How to reproduce my problem :
-=============================
+# How to reproduce my problem :
 
 My template is the following : (Upload the docx file here inside github, which you have to name template.zip (github doesn't accept the docx extension))
 
@@ -39,7 +35,7 @@ var Docxtemplater = require('docxtemplater');
 var content = fs
     .readFileSync(__dirname + "/template.zip", "binary");
 
-var zip = new JSZip(content);
+var zip = new PizZip(content);
 var doc=new Docxtemplater().loadZip(zip)
 
 //set the templateVariables

@@ -9,7 +9,7 @@
   "globals":{
     "saveAs": true,
     "Promise": true,
-    "JSZipUtils": true,
+    "PizZipUtils": true,
     "ArrayBuffer": true
   },
   "env": {
@@ -182,13 +182,6 @@
     "semi": [2, "always"],
     "semi-spacing": [2, {"before": false, "after": true}],
     "sort-vars": 0,
-    "space-before-blocks": 2,
-    "space-before-keywords": 0,
-    "space-before-function-paren": 0,
-    "space-in-parens": [2, "never"],
-    "space-infix-ops": 2,
-    "space-unary-ops": [2, {"words": true, "nonwords": false}],
-    "spaced-comment": [2, "always"],
     "use-isnan": 2,
     "valid-jsdoc": 0,
     "valid-typeof": 2,

@@ -1,7 +1,7 @@
 const path = require("path");
 const chai = require("chai");
 const { expect } = chai;
-const JSZip = require("jszip");
+const PizZip = require("pizzip");
 const fs = require("fs");
 const { get, unset, omit, uniq } = require("lodash");
 const diff = require("diff");
@@ -373,7 +373,7 @@ function expectToThrow(fn, type, expectedError) {
 }
 
 function load(name, content, obj) {
-	const zip = new JSZip(content);
+	const zip = new PizZip(content);
 	obj[name] = new Docxtemplater();
 	obj[name].loadZip(zip);
 	obj[name].loadedName = name;
@@ -385,7 +385,7 @@ function loadDocument(name, content) {
 }
 
 function cacheDocument(name, content) {
-	const zip = new JSZip(content);
+	const zip = new PizZip(content);
 	documentCache[name] = { loadedName: name, loadedContent: content, zip };
 	return documentCache[name];
 }
@@ -402,7 +402,7 @@ function loadFile(name, callback) {
 		);
 		return callback(null, name, buffer);
 	}
-	return JSZipUtils.getBinaryContent("../examples/" + name, function(
+	return PizZipUtils.getBinaryContent("../examples/" + name, function(
 		err,
 		data
 	) {
@@ -514,7 +514,7 @@ const contentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
 </Types>`;
 
 function makeDocx(name, content) {
-	const zip = new JSZip();
+	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", contentTypeContent);
 	return load(name, zip.generate({ type: "string" }), documentCache);

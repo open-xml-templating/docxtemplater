@@ -88,20 +88,20 @@ Support for IE9 and lower
 
 docxtemplater should work on almost all browsers as of version 1 : IE7 + . Safari, Chrome, Opera, Firefox.
 
-The only 'problem' is to load the binary file into the browser. This is not in docxtemplater's scope, but here is the code that jszip's creator recommends to use to load the zip from the browser:
+The only 'problem' is to load the binary file into the browser. This is not in docxtemplater's scope, but here is the recommended code to load the zip from the browser:
 
-https://stuk.github.io/jszip/documentation/howto/read_zip.html
+https://github.com/open-xml-templating/pizzip/blob/master/documentation/howto/read_zip.md
 
 The following code should load the binary content on all browsers:
 
 .. code-block:: javascript
 
-    JSZipUtils.getBinaryContent('path/to/content.zip', function(err, data) {
+    PizZipUtils.getBinaryContent('path/to/content.zip', function(err, data) {
       if(err) {
         throw err; // or handle err
       }
 
-      var zip = new JSZip(data);
+      var zip = new PizZip(data);
     });
 
 Get list of placeholders

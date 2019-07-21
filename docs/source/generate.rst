@@ -6,10 +6,6 @@
 Generate a document
 ===================
 
-.. note::
-
-    Before starting, please make sure to use jszip version 2.x (see `Installation`_), which is not the latest version of jszip, but the only compatible version.
-
 .. _`Installation`: installation.html
 
 Node
@@ -17,7 +13,7 @@ Node
 
 .. code-block:: javascript
 
-    var JSZip = require('jszip');
+    var PizZip = require('pizzip');
     var Docxtemplater = require('docxtemplater');
 
     var fs = require('fs');
@@ -27,7 +23,7 @@ Node
     var content = fs
         .readFileSync(path.resolve(__dirname, 'input.docx'), 'binary');
 
-    var zip = new JSZip(content);
+    var zip = new PizZip(content);
 
     var doc = new Docxtemplater();
     doc.loadZip(zip);
@@ -75,24 +71,24 @@ Browser
         <body>
             <button onclick="generate()">Generate document</button>
         </body>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.14.0/docxtemplater.js"></script>
+        <script src="https://raw.githubusercontent.com/open-xml-templating/pizzip/v3.0.4/dist/pizzip.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+        <script src="https://raw.githubusercontent.com/open-xml-templating/pizzip/v3.0.4/dist/pizzip-utils.js"></script>
         <!--
         Mandatory in IE 6, 7, 8 and 9.
         -->
         <!--[if IE]>
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils-ie.js"></script>
+            <script type="text/javascript" src="https://raw.githubusercontent.com/open-xml-templating/pizzip/v3.0.4/dist/pizzip-utils-ie.js"></script>
         <![endif]-->
         <script>
         function loadFile(url,callback){
-            JSZipUtils.getBinaryContent(url,callback);
+            PizZipUtils.getBinaryContent(url,callback);
         }
         function generate() {
             loadFile("https://docxtemplater.com/tag-example.docx",function(error,content){
                 if (error) { throw error };
-                var zip = new JSZip(content);
+                var zip = new PizZip(content);
                 var doc=new window.docxtemplater().loadZip(zip)
                 doc.setData({
                     first_name: 'John',

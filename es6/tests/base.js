@@ -1,4 +1,4 @@
-const JSZip = require("jszip");
+const PizZip = require("pizzip");
 const { merge } = require("lodash");
 
 const angularParser = require("./angular-parser");
@@ -66,7 +66,7 @@ describe("Loading", function() {
 	});
 	describe("output and input", function() {
 		it("should be the same", function() {
-			const zip = new JSZip(createDoc("tag-example.docx").loadedContent);
+			const zip = new PizZip(createDoc("tag-example.docx").loadedContent);
 			const doc = new Docxtemplater().loadZip(zip);
 			const output = doc.getZip().generate({ type: "base64" });
 			expect(output.length).to.be.equal(90732);
@@ -453,7 +453,7 @@ describe("Changing the parser", function() {
 	});
 	it("should work when setting from the Docxtemplater interface", function() {
 		const doc = createDoc("tag-example.docx");
-		const zip = new JSZip(doc.loadedContent);
+		const zip = new PizZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
 		const tags = {
 			first_name: "Hipp",
@@ -710,7 +710,7 @@ describe("Special characters", function() {
 	it("should insert russian characters", function() {
 		const russian = "Пупкина";
 		const doc = createDoc("tag-example.docx");
-		const zip = new JSZip(doc.loadedContent);
+		const zip = new PizZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
 		d.setData({ last_name: russian });
 		d.render();
