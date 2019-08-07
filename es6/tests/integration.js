@@ -183,6 +183,27 @@ const raw = `<p:sp>
 const angularParser = require("./angular-parser");
 const Errors = require("../errors.js");
 
+describe("Docm/Pptm generation", function() {
+	it("should work with docm", function() {
+		const tags = {
+			user: "John",
+		};
+		const doc = createDoc("docm.docx");
+		doc.setData(tags);
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-docm.docx" });
+	});
+	it("should work with pptm", function() {
+		const tags = {
+			user: "John",
+		};
+		const doc = createDoc("pptm.pptx");
+		doc.setData(tags);
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-pptm.pptx" });
+	});
+});
+
 describe("Pptx generation", function() {
 	it("should work with title", function() {
 		const doc = createDoc("title-example.pptx");

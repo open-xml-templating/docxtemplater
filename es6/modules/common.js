@@ -2,6 +2,8 @@ const wrapper = require("../module-wrapper");
 const ctXML = "[Content_Types].xml";
 const docxContentType =
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
+const docxmContentType =
+	"application/vnd.ms-word.document.macroEnabled.main+xml";
 const pptxContentType =
 	"application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
 
@@ -34,6 +36,10 @@ class Common {
 				fileType = "docx";
 				doc.targets.push(partName);
 			}
+			if (contentType === docxmContentType) {
+				fileType = "docx";
+				doc.targets.push(partName);
+			}
 			if (contentType === pptxContentType) {
 				fileType = "pptx";
 				doc.targets.push(partName);
@@ -45,7 +51,11 @@ class Common {
 		for (let i = 0, len = defaults.length; i < len; i++) {
 			const def = defaults[i];
 			const contentType = def.getAttribute("ContentType");
-			if ([docxContentType, pptxContentType].indexOf(contentType) !== -1) {
+			if (
+				[docxContentType, docxmContentType, pptxContentType].indexOf(
+					contentType
+				) !== -1
+			) {
 				const extension = def.getAttribute("Extension");
 				// eslint-disable-next-line no-loop-func
 				zip.file(/./).map(({ name }) => {
@@ -55,7 +65,7 @@ class Common {
 						name !== ctXML
 					) {
 						doc.targets.push(name);
-						fileType = contentType === docxContentType ? "docx" : "pptx";
+						fileType = contentType === pptxContentType ? "pptx" : "docx";
 					}
 				});
 			}

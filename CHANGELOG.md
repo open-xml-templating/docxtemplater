@@ -1,3 +1,7 @@
+### 3.14.1
+
+Add support for `.docm` format
+
 ### 3.14.0
 
 Document the usage of PizZip instead of JSZip
