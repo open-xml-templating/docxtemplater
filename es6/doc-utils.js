@@ -141,9 +141,9 @@ const charMap = {
 	'"': "&quot;",
 };
 
-const regexStripRegexp = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
 function escapeRegExp(str) {
-	return str.replace(regexStripRegexp, "\\$&");
+	// to be able to use a string as a regex
+	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 const charMapRegexes = Object.keys(charMap).map(function(endChar) {
