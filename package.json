@@ -44,7 +44,7 @@
     "diff": "^4.0.1",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.8",
-    "eslint": "^6.2.2",
+    "eslint": "^6.3.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint_d": "^8.0.0",
     "finalhandler": "^1.1.2",
