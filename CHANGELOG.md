@@ -1,3 +1,9 @@
+### 3.14.2
+
+Update xmlprettify and test it
+
+Update dependencies
+
 ### 3.14.1
 
 Add support for `.docm` format
