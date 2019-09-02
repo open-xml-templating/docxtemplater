@@ -4,7 +4,7 @@ const reg = /(>)\s*(<)(\/*)/g;
 const wsexp = / *(.*) +\n/g;
 const contexp = /(<.+>)(.+\n)/g;
 
-module.exports = function(xml) {
+function xmlprettify(xml) {
 	xml = xml
 		.replace(reg, "$1\n$2$3")
 		.replace(wsexp, "$1\n")
@@ -53,7 +53,7 @@ module.exports = function(xml) {
 			if (aRegex.test(ln)) {
 				rest = ln.replace(aRegex, "$1");
 			}
-			const attrRegex = / +([a-zA-Z0-9:]+)="([^"]+)"/g;
+			const attrRegex = / *([a-zA-Z0-9:]+)="([^"]+)"/g;
 			let match = attrRegex.exec(rest);
 			const attributes = [];
 			while (match != null) {
@@ -74,9 +74,12 @@ module.exports = function(xml) {
 					return `${attribute.key}="${attribute.value}"`;
 				})
 				.join(" ");
-			if (rest) {
-				ln = ln.replace(rest, stringifiedAttrs);
+			if (rest != null) {
+				ln = ln.replace(rest, stringifiedAttrs).replace(/ +>/, ">");
 			}
+		}
+		if (type === "single") {
+			ln = ln.replace(/ +\/>/, "/>");
 		}
 		lastType = type;
 		let padding = "";
@@ -93,4 +96,6 @@ module.exports = function(xml) {
 		}
 	}
 	return formatted;
-};
+}
+
+module.exports = xmlprettify;

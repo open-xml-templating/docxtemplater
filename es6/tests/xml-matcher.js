@@ -1,5 +1,6 @@
 const xmlMatcher = require("../xml-matcher.js");
 const { expect } = require("./utils");
+const xmlprettify = require("./xml-prettify");
 
 describe("XmlMatcher", function() {
 	it("should work with simple tag", function() {
@@ -60,5 +61,78 @@ describe("XmlMatcher", function() {
 	it("should not match with no <w:t> ender", function() {
 		const matcher = xmlMatcher("<w:t>Text1</w:t>TAG", ["w:t"]);
 		expect(matcher.matches.length).to.be.equal(1);
+	});
+});
+
+describe("XML prettify", function() {
+	it("should sort attributes", function() {
+		const str =
+			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo zanc="bar" bar="foo"></foo>';
+		const prettified = xmlprettify(str);
+		expect(prettified).to
+			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<foo bar="foo" zanc="bar"></foo>
+`);
+	});
+	it("should remove space inside tags", function() {
+		const str = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<sst count="9" uniqueCount="9" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+		<si >
+			<t xml:space="preserve">Property</t>
+		</si>
+		<si >
+			<t xml:space="preserve">0 $</t>
+		</si>
+		<si >
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si />
+	</sst>`;
+		const prettified = xmlprettify(str);
+		expect(prettified).to
+			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<sst count="9" uniqueCount="9" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+		<si>
+			<t xml:space="preserve">Property</t>
+		</si>
+		<si>
+			<t xml:space="preserve">0 $</t>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si>
+			<t xml:space="preserve"/>
+		</si>
+		<si/>
+	</sst>
+`);
 	});
 });
