@@ -24,7 +24,7 @@ You can find ``.js`` and ``.min.js`` files for docxtemplater on this repository 
 https://github.com/open-xml-templating/docxtemplater-build/tree/master/build
 
 
-You will also need Pizzip, which you can download here : https://raw.githubusercontent.com/open-xml-templating/pizzip/v3.0.4/dist/pizzip.js
+You will also need Pizzip, which you can download here : https://unpkg.com/pizzip@3.0.6/dist/pizzip.js
 
 Build it yourself
 -----------------
