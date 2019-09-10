@@ -179,9 +179,7 @@ function getUnmatchedLoopException(options) {
 	return err;
 }
 
-function getClosingTagNotMatchOpeningTag(options) {
-	const { tags } = options;
-
+function getClosingTagNotMatchOpeningTag({ tags }) {
 	const err = new XTTemplateError("Closing tag does not match opening tag");
 	err.properties = {
 		id: "closing_tag_does_not_match_opening_tag",
@@ -218,7 +216,7 @@ function getScopeParserExecutionError({ tag, scope, error, offset }) {
 	return err;
 }
 
-function getLoopPositionProducesInvalidXMLError({ tag }) {
+function getLoopPositionProducesInvalidXMLError({ tag, offset }) {
 	const err = new XTTemplateError(
 		`The position of the loop tags "${tag}" would produce invalid XML`
 	);
@@ -226,6 +224,7 @@ function getLoopPositionProducesInvalidXMLError({ tag }) {
 		tag,
 		id: "loop_position_invalid",
 		explanation: `The tags "${tag}" are misplaced in the document, for example one of them is in a table and the other one outside the table`,
+		offset,
 	};
 	return err;
 }

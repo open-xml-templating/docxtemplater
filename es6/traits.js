@@ -82,6 +82,7 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 		return {
 			error: getLoopPositionProducesInvalidXMLError({
 				tag: first(pair).part.value,
+				offset: [first(pair).part.offset, last(pair).part.offset],
 			}),
 		};
 	}

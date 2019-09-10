@@ -1004,6 +1004,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							'The position of the loop tags "users" would produce invalid XML',
 						properties: {
 							tag: "users",
+							offset: [0, 17],
 							id: "loop_position_invalid",
 						},
 					},

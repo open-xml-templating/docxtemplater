@@ -1,3 +1,7 @@
+### 3.14.3
+
+Throw Error with offsets when having loop start tag inside table and loop end tag outside table
+
 ### 3.14.2
 
 Update xmlprettify and test it
