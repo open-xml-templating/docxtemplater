@@ -312,10 +312,64 @@ And use the following in your template :
    {/}
 
 
-Access to XMLHttpRequest at file.docx from origin 'null' has been blocked by CORS policy
-----------------------------------------------------------------------------------------
+Multi scope expressions do not work with the angularParser
+----------------------------------------------------------
+
+If you would like to have multi-scope expressions with the angularparser, for example : 
+
+You would like to do : `{#users}{ date - age }{/users}`, where date is in the "global scope", and age in the subscope `users`, as in the following data : 
+
+.. code-block:: json
+
+   {
+     "date": 2019,
+     "users": [
+       {
+         "name": "John",
+         "age": 44
+       },
+       {
+         "name": "Mary",
+         "age": 22
+       }
+     ]
+   }
+
+You can make use of a feature of the angularParser and the fact that docxtemplater gives you access to the whole scopeList.
+
+.. code-block:: javascript
+
+   function reverseArray(arr) {
+      const newArray = [];
+      for (let i = arr.length - 1; i >= 0; i--) {
+         newArray.push(arr[i]);
+      }
+      return newArray;
+   }
+
+   function angularParser(tag) {
+      if (tag === ".") {
+         return {
+            get(s) {
+               return s;
+            },
+         };
+      }
+      const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
+      return {
+         get(s, options) {
+            const reversed = reverseArray(options.scopeList);
+            return expr(...reversed);
+         },
+      };
+   }
+
+   doc.setOptions({parser: angularParser})
 
 .. _cors:
+
+Access to XMLHttpRequest at file.docx from origin 'null' has been blocked by CORS policy
+----------------------------------------------------------------------------------------
 
 This happens if you use the HTML sample script but are not using a webserver.
 
