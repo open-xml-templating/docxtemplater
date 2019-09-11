@@ -1172,15 +1172,11 @@ const fixtures = {
 	},
 	condition_multi_level: {
 		it: "should work well with multi level angular parser",
-		content:
-			"<w:t>{#users}{name} {date-age} {/}</w:t>",
+		content: "<w:t>{#users}{name} {date-age} {/}</w:t>",
 		result: '<w:t xml:space="preserve">John 1975 Mary 1997 </w:t>',
 		scope: {
 			date: 2019,
-			users: [
-				{ name: "John", age: 44 },
-				{ name: "Mary", age: 22 },
-			],
+			users: [{ name: "John", age: 44 }, { name: "Mary", age: 22 }],
 		},
 		options: {
 			parser: angularParser,
