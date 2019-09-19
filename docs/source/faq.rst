@@ -339,14 +339,6 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
 
 .. code-block:: javascript
 
-   function reverseArray(arr) {
-      const newArray = [];
-      for (let i = arr.length - 1; i >= 0; i--) {
-         newArray.push(arr[i]);
-      }
-      return newArray;
-   }
-
    function angularParser(tag) {
       if (tag === ".") {
          return {
@@ -358,8 +350,7 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
       const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
       return {
          get(s, options) {
-            const reversed = reverseArray(options.scopeList);
-            return expr(...reversed);
+            return expr(...options.scopeList);
          },
       };
    }
