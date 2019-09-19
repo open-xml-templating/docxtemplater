@@ -1176,7 +1176,11 @@ const fixtures = {
 		result: '<w:t xml:space="preserve">John 1975 Mary 1997 Walt 2078 </w:t>',
 		scope: {
 			date: 2019,
-			users: [{ name: "John", age: 44 }, { name: "Mary", age: 22 }, {date: 2100, age: 22, name: "Walt"}],
+			users: [
+				{ name: "John", age: 44 },
+				{ name: "Mary", age: 22 },
+				{ date: 2100, age: 22, name: "Walt" },
+			],
 		},
 		options: {
 			parser: angularParser,
