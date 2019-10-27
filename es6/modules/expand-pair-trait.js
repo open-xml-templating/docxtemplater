@@ -3,8 +3,9 @@ const mergeSort = require("../mergesort");
 const {
 	getLeft,
 	getRight,
-	getNearestLeft,
-	getNearestRight,
+	getNearestLeftWithCache,
+	getNearestRightWithCache,
+	buildNearestCache,
 } = require("../doc-utils");
 
 const wrapper = require("../module-wrapper");
@@ -101,6 +102,9 @@ const expandPairTrait = {
 
 		let currentPairIndex = 0;
 		let innerParts;
+
+		const cachedTags = buildNearestCache(postparsed, ["w:p", "w:tc"]);
+
 		const newParsed = postparsed.reduce(function(newParsed, part, i) {
 			const inPair =
 				currentPairIndex < pairs.length &&
@@ -113,8 +117,8 @@ const expandPairTrait = {
 			}
 			const left = expandedPair[0];
 			const right = expandedPair[1];
-			const before = getNearestLeft(postparsed, ["w:p", "w:tc"], left - 1);
-			const after = getNearestRight(postparsed, ["w:p", "w:tc"], right + 1);
+			const before = getNearestLeftWithCache(left - 1, cachedTags);
+			const after = getNearestRightWithCache(right + 1, cachedTags);
 			if (before === "w:tc" && after === "w:tc") {
 				part.emptyValue = "<w:p></w:p>";
 			}

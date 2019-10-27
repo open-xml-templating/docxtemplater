@@ -41,6 +41,51 @@ function getNearestRight(parsed, elements, index) {
 	return -1;
 }
 
+function buildNearestCache(postparsed, tags) {
+	return postparsed.reduce(function(cached, part, i) {
+		if (part.type === "tag" && tags.indexOf(part.tag) !== -1) {
+			cached.push({ i, part });
+		}
+		return cached;
+	}, []);
+}
+
+function getNearestLeftWithCache(index, cache) {
+	if (cache.length === 0) {
+		return null;
+	}
+	for (let i = 0, len = cache.length; i < len; i++) {
+		const current = cache[i];
+		const next = cache[i + 1];
+		if (
+			current.i < index &&
+			(!next || index < next.i) &&
+			current.part.position === "start"
+		) {
+			return current.part.tag;
+		}
+	}
+	return null;
+}
+
+function getNearestRightWithCache(index, cache) {
+	if (cache.length === 0) {
+		return null;
+	}
+	for (let i = 0, len = cache.length; i < len; i++) {
+		const current = cache[i];
+		const last = cache[i - 1];
+		if (
+			index < current.i &&
+			(!last || last.i < index) &&
+			current.part.position === "end"
+		) {
+			return current.part.tag;
+		}
+	}
+	return null;
+}
+
 function endsWith(str, suffix) {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -345,6 +390,9 @@ module.exports = {
 	startsWith,
 	getNearestLeft,
 	getNearestRight,
+	getNearestLeftWithCache,
+	getNearestRightWithCache,
+	buildNearestCache,
 	isContent,
 	isParagraphStart,
 	isParagraphEnd,

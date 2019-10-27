@@ -1,3 +1,9 @@
+### 3.14.4
+
+Bugfix speed issue when having many loop tags in the same paragraph (over 50 loop tags in one paragraph).
+
+(internal) Update verify moduleAPI to 3.13.0 (addition of `getNearestLeftWithCache`, `getNearestRightWithCache`, `buildNearestCache`)
+
 ### 3.14.3
 
 Throw Error with offsets when having loop start tag inside table and loop end tag outside table

@@ -79,7 +79,7 @@ describe("Speed test", function() {
 		const time = new Date();
 		doc.render();
 		const duration = new Date() - time;
-		expect(duration).to.be.below(100);
+		expect(duration).to.be.below(200);
 	});
 	/* eslint-disable no-process-env */
 	if (!process.env.FAST) {

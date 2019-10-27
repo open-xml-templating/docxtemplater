@@ -4,7 +4,7 @@ const Errors = require("../errors.js");
 describe("Verify apiversion", function() {
 	it("should work with valid api version", function() {
 		const module = {
-			requiredAPIVersion: "3.12.0",
+			requiredAPIVersion: "3.13.0",
 			render(part) {
 				return part.value;
 			},
@@ -28,7 +28,7 @@ describe("Verify apiversion", function() {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 12, 0],
+				currentModuleApiVersion: [3, 13, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});
