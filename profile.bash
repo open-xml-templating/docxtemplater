@@ -4,7 +4,7 @@ set -e
 set -u
 
 profile() {
-	rm p.json
+	rm -f p.json
 	find ./js -name '*.js' | while IFS='' read -r filename; do
 		echo "$filename"
 		echo "${filename/js/prof}"
