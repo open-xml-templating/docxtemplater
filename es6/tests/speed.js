@@ -55,6 +55,32 @@ describe("Speed test", function() {
 		const duration = new Date() - time;
 		expect(duration).to.be.below(100);
 	});
+	it("should be fast for nested loop tags", function() {
+		const result = [];
+		for (let i = 1; i <= 300; i++) {
+			result.push(`
+		<w:proofErr w:type="spellEnd"/>
+		<w:r w:rsidRPr="0000000">
+		<w:rPr>
+		<w:rFonts w:asciiTheme="minorHAnsi" w:eastAsia="Times New Roman" w:hAnsiTheme="minorHAnsi" w:cs="Arial"/>
+		<w:sz w:val="22"/>
+		<w:szCs w:val="22"/>
+		<w:lang w:eastAsia="es-ES"/>
+		</w:rPr>
+		<w:t xml:space="preserve">{#users} Names : {user}</w:t>
+		<w:t xml:space="preserve">{/}</w:t>
+		</w:r>
+		`);
+		}
+		const prepost = result.join("");
+		const content = `<w:p><w:r><w:t>{#foo}</w:t></w:r>${prepost}<w:r><w:t>{/}</w:t></w:r></w:p>`;
+		const users = [{ name: "John" }, { name: "Mary" }];
+		const doc = createXmlTemplaterDocxNoRender(content, { tags: { users } });
+		const time = new Date();
+		doc.render();
+		const duration = new Date() - time;
+		expect(duration).to.be.below(100);
+	});
 	/* eslint-disable no-process-env */
 	if (!process.env.FAST) {
 		it("should not exceed call stack size for big document with rawxml", function() {
