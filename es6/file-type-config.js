@@ -79,6 +79,7 @@ const DocXFileTypeConfig = {
 		"w:table",
 		"w:p",
 		"w:r",
+		"w:br",
 		"w:rPr",
 		"w:pPr",
 		"w:spacing",

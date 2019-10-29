@@ -81,9 +81,9 @@ const ScopeManager = class ScopeManager {
 	loopOver(tag, functor, inverted, meta) {
 		return this.loopOverValue(this.getValue(tag, meta), functor, inverted);
 	}
-	functorIfInverted(inverted, functor, value, i) {
+	functorIfInverted(inverted, functor, value, i, length) {
 		if (inverted) {
-			functor(value, i);
+			functor(value, i, length);
 		}
 		return inverted;
 	}
@@ -100,18 +100,30 @@ const ScopeManager = class ScopeManager {
 		}
 		const type = Object.prototype.toString.call(value);
 		if (this.isValueFalsy(value, type)) {
-			return this.functorIfInverted(inverted, functor, last(this.scopeList), 0);
+			return this.functorIfInverted(
+				inverted,
+				functor,
+				last(this.scopeList),
+				0,
+				1
+			);
 		}
 		if (type === "[object Array]") {
 			for (let i = 0; i < value.length; i++) {
-				this.functorIfInverted(!inverted, functor, value[i], i);
+				this.functorIfInverted(!inverted, functor, value[i], i, value.length);
 			}
 			return true;
 		}
 		if (type === "[object Object]") {
-			return this.functorIfInverted(!inverted, functor, value, 0);
+			return this.functorIfInverted(!inverted, functor, value, 0, 1);
 		}
-		return this.functorIfInverted(!inverted, functor, last(this.scopeList), 0);
+		return this.functorIfInverted(
+			!inverted,
+			functor,
+			last(this.scopeList),
+			0,
+			1
+		);
 	}
 	getValue(tag, meta) {
 		const [num, result] = getValue.call(

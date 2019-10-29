@@ -133,6 +133,16 @@ class LoopModule {
 		if (firstOffset === 0 || lastOffset === 0) {
 			return parsed;
 		}
+		let hasPageBreak = false;
+		lastChunk.forEach(function(part) {
+			if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
+				hasPageBreak = true;
+			}
+		});
+
+		if (hasPageBreak) {
+			basePart.hasPageBreak = true;
+		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}
 	render(part, options) {
@@ -141,7 +151,7 @@ class LoopModule {
 		}
 		let totalValue = [];
 		let errors = [];
-		function loopOver(scope, i) {
+		function loopOver(scope, i, length) {
 			const scopeManager = options.scopeManager.createSubScopeManager(
 				scope,
 				part.value,
@@ -155,6 +165,21 @@ class LoopModule {
 					scopeManager,
 				})
 			);
+			if (part.hasPageBreak && i === length - 1) {
+				let found = false;
+				for (let j = subRendered.parts.length - 1; i >= 0; i--) {
+					const p = subRendered.parts[j];
+					if (p === "</w:p>" && !found) {
+						found = true;
+						subRendered.parts.splice(j, 0, '<w:r><w:br w:type="page"/></w:r>');
+						break;
+					}
+				}
+
+				if (!found) {
+					subRendered.parts.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+				}
+			}
 			totalValue = totalValue.concat(subRendered.parts);
 			errors = errors.concat(subRendered.errors || []);
 		}
@@ -167,6 +192,11 @@ class LoopModule {
 			}
 		);
 		if (result === false) {
+			if (part.hasPageBreak) {
+				return {
+					value: '<w:p><w:r><w:br w:type="page"/></w:r></w:p>',
+				};
+			}
 			return {
 				value: part.emptyValue || "",
 				errors,

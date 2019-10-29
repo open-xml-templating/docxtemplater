@@ -744,6 +744,40 @@ describe("ParagraphLoop", function() {
 		const create = doc.render.bind(doc);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
+
+	it("should work with pagebreak afterwards", function() {
+		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+			parser: angularParser,
+		});
+		doc
+			.setData({
+				users: [{ name: "Bar" }, { name: "John" }, { name: "Baz" }],
+			})
+			.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-paragraph-loop-with-pagebreak.docx",
+		});
+	});
+
+	it("should work with pagebreak afterwards with falsy value", function() {
+		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+			parser: angularParser,
+		});
+		doc
+			.setData({
+				users: false,
+			})
+			.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-paragraph-loop-empty-with-pagebreak.docx",
+		});
+	});
 });
 
 describe("Prefixes", function() {

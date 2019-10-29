@@ -1,3 +1,7 @@
+### 3.14.5
+
+Bugfix when using paragraphLoop section with a pagebreak at the end of the paragraphLoop, the pagebreak was removed by mistake
+
 ### 3.14.4
 
 Bugfix speed issue when having many loop tags in the same paragraph (over 50 loop tags in one paragraph).
