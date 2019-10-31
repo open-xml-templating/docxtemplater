@@ -103,7 +103,7 @@ describe("Speed test", function() {
 			const compileDuration = new Date() - now;
 			if (typeof window === "undefined") {
 				// Skip this assertion in the browser
-				expect(compileDuration).to.be.below(5000);
+				expect(compileDuration).to.be.below(7000);
 			}
 			now = new Date();
 			doc.render();
