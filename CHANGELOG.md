@@ -1,6 +1,6 @@
 ### 3.14.5
 
-Bugfix when using paragraphLoop section with a pagebreak at the end of the paragraphLoop, the pagebreak was removed by mistake
+Bugfix when using paragraphLoop section with a pagebreak : at the end of the paragraphLoop, the pagebreak was removed by mistake. This is no longer the case since this version
 
 ### 3.14.4
 
