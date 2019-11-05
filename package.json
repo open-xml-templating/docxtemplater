@@ -36,7 +36,7 @@
     "@babel/core": "^7.6.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/preset-env": "^7.6.3",
-    "@wdio/cli": "^5.15.4",
+    "@wdio/cli": "^5.15.6",
     "angular-expressions": "^1.0.0",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
@@ -57,10 +57,10 @@
     "rimraf": "^3.0.0",
     "selenium-standalone": "^6.16.0",
     "serve-static": "^1.14.1",
-    "uglify-js": "^3.6.4",
-    "webdriverio": "^5.15.4",
+    "uglify-js": "^3.6.7",
+    "webdriverio": "^5.15.6",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "webpack-cli": "^3.3.10"
   },
   "license": "MIT",
   "engines": {
