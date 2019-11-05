@@ -198,24 +198,59 @@ It does so by detecting whether there is a file called "/word/document.xml", if 
 My document is corrupted, what should I do ?
 --------------------------------------------
 
-If you are inserting multiple images inside a loop, it is possible that word cannot handle the docPr attributes correctly. You can try to add the following code instead of your `doc.render` call : 
+If you are inserting multiple images inside a loop, it is possible that word cannot handle the docPr attributes correctly. You can try to add the following code just after doing `const doc = new Docxtemplater()` : 
 
 .. code-block:: javascript
 
-    const str2xml = Docxtemplater.DocUtils.str2xml;
-    const xml2str = Docxtemplater.DocUtils.xml2str;
-    doc.render();
-    const zip = doc.getZip();
-    let prId = 1;
-    zip.file(/\.xml$/).forEach(function (f) {
-        const xml = str2xml(f.asText());
-        const nodes = xml.childNodes[0];
-        const pr = xml.getElementsByTagName("wp:docPr");
-        for (var i = 0, len = pr.length; i < len; i++) {
-            pr[i].setAttribute("id", prId++);
+    const doc = new Docxtemplater();
+    doc.attachModule({
+        set(options) {
+            if (options.Lexer) {
+                this.Lexer = options.Lexer;
+            }
+            if (options.zip) {
+                this.zip = options.zip;
+            }
+        },
+        on(event) {
+            if (event !== "syncing-zip") {
+                return;
+            }
+            const zip = this.zip;
+            const Lexer = this.Lexer;
+            let prId = 1;
+            function setSingleAttribute(partValue, attr, attrValue) {
+                const regex = new RegExp(`(<.* ${attr}=")([^"]+)(".*)$`);
+                if (regex.test(partValue)) {
+                    return partValue.replace(regex, `$1${attrValue}$3`);
+                }
+                let end = partValue.lastIndexOf("/>");
+                if (end === -1) {
+                    end = partValue.lastIndexOf(">");
+                }
+                return (
+                    partValue.substr(0, end) +
+                        ` ${attr}="${attrValue}"` +
+                        partValue.substr(end)
+                );
+            }
+            zip.file(/\.xml$/).forEach(function(f) {
+                let text = f.asText();
+                const xmllexed = Lexer.xmlparse(text, {
+                    text: [],
+                    other: ["wp:docPr"],
+                });
+                if (xmllexed.length > 1) {
+                    text = xmllexed.reduce(function(fullText, part) {
+                        if (part.tag === "wp:docPr") {
+                            return fullText + setSingleAttribute(part.value, "id", prId++);
+                        }
+                        return fullText + part.value;
+                    }, "");
+                }
+                zip.file(f.name, text);
+            });
         }
-        const text = xml2str(xml);
-        zip.file(f.name, text);
     });
 
 Attaching modules for extra functionality
