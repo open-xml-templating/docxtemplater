@@ -15,30 +15,46 @@ function parser(tag) {
 	};
 }
 
-function getNearestLeft(parsed, elements, index) {
+function getNearestLeftIndex(parsed, elements, index) {
 	for (let i = index; i >= 0; i--) {
 		const part = parsed[i];
 		for (let j = 0, len = elements.length; j < len; j++) {
 			const element = elements[j];
 			if (isStarting(part.value, element)) {
-				return elements[j];
+				return j;
 			}
 		}
 	}
 	return null;
 }
 
-function getNearestRight(parsed, elements, index) {
+function getNearestRightIndex(parsed, elements, index) {
 	for (let i = index, l = parsed.length; i < l; i++) {
 		const part = parsed[i];
 		for (let j = 0, len = elements.length; j < len; j++) {
 			const element = elements[j];
 			if (isEnding(part.value, element)) {
-				return elements[j];
+				return j;
 			}
 		}
 	}
 	return -1;
+}
+
+function getNearestLeft(parsed, elements, index) {
+	const found = getNearestLeftIndex(parsed, elements, index);
+	if (found !== -1) {
+		return elements[found];
+	}
+	return null;
+}
+
+function getNearestRight(parsed, elements, index) {
+	const found = getNearestRightIndex(parsed, elements, index);
+	if (found !== -1) {
+		return elements[found];
+	}
+	return null;
 }
 
 function buildNearestCache(postparsed, tags) {
@@ -50,9 +66,9 @@ function buildNearestCache(postparsed, tags) {
 	}, []);
 }
 
-function getNearestLeftWithCache(index, cache) {
+function getNearestLeftIndexWithCache(index, cache) {
 	if (cache.length === 0) {
-		return null;
+		return -1;
 	}
 	for (let i = 0, len = cache.length; i < len; i++) {
 		const current = cache[i];
@@ -62,15 +78,23 @@ function getNearestLeftWithCache(index, cache) {
 			(!next || index < next.i) &&
 			current.part.position === "start"
 		) {
-			return current.part.tag;
+			return i;
 		}
+	}
+	return -1;
+}
+
+function getNearestLeftWithCache(index, cache) {
+	const found = getNearestLeftIndexWithCache(index, cache);
+	if (found !== -1) {
+		return cache[found].part.tag;
 	}
 	return null;
 }
 
-function getNearestRightWithCache(index, cache) {
+function getNearestRightIndexWithCache(index, cache) {
 	if (cache.length === 0) {
-		return null;
+		return -1;
 	}
 	for (let i = 0, len = cache.length; i < len; i++) {
 		const current = cache[i];
@@ -80,8 +104,16 @@ function getNearestRightWithCache(index, cache) {
 			(!last || last.i < index) &&
 			current.part.position === "end"
 		) {
-			return current.part.tag;
+			return i;
 		}
+	}
+	return -1;
+}
+
+function getNearestRightWithCache(index, cache) {
+	const found = getNearestRightIndexWithCache(index, cache);
+	if (found !== -1) {
+		return cache[found].part.tag;
 	}
 	return null;
 }
@@ -392,6 +424,10 @@ module.exports = {
 	getNearestRight,
 	getNearestLeftWithCache,
 	getNearestRightWithCache,
+	getNearestLeftIndex,
+	getNearestRightIndex,
+	getNearestLeftIndexWithCache,
+	getNearestRightIndexWithCache,
 	buildNearestCache,
 	isContent,
 	isParagraphStart,

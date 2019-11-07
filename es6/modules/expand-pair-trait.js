@@ -1,12 +1,6 @@
 const traitName = "expandPair";
 const mergeSort = require("../mergesort");
-const {
-	getLeft,
-	getRight,
-	getNearestLeftWithCache,
-	getNearestRightWithCache,
-	buildNearestCache,
-} = require("../doc-utils");
+const { getLeft, getRight } = require("../doc-utils");
 
 const wrapper = require("../module-wrapper");
 const { getExpandToDefault } = require("../traits");
@@ -103,8 +97,6 @@ const expandPairTrait = {
 		let currentPairIndex = 0;
 		let innerParts;
 
-		const cachedTags = buildNearestCache(postparsed, ["w:p", "w:tc"]);
-
 		const newParsed = postparsed.reduce(function(newParsed, part, i) {
 			const inPair =
 				currentPairIndex < pairs.length &&
@@ -114,13 +106,6 @@ const expandPairTrait = {
 			if (!inPair) {
 				newParsed.push(part);
 				return newParsed;
-			}
-			const left = expandedPair[0];
-			const right = expandedPair[1];
-			const before = getNearestLeftWithCache(left - 1, cachedTags);
-			const after = getNearestRightWithCache(right + 1, cachedTags);
-			if (before === "w:tc" && after === "w:tc") {
-				part.emptyValue = "<w:p></w:p>";
 			}
 			if (expandedPair[0] === i) {
 				innerParts = [];

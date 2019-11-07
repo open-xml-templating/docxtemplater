@@ -43,6 +43,9 @@ const PptXFileTypeConfig = {
 	tagRawXml: "p:sp",
 	tagTextXml: "a:t",
 	baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
+	tagShouldContain: [
+		{ tag: "p:txBody", shouldContain: "a:p", value: "<a:p></a:p>" },
+	],
 };
 
 const DocXFileTypeConfig = {
@@ -94,6 +97,9 @@ const DocXFileTypeConfig = {
 		expandPairTrait,
 		rawXmlModule,
 		render,
+	],
+	tagShouldContain: [
+		{ tag: "w:tc", shouldContain: "w:p", value: "<w:p></w:p>" },
 	],
 };
 

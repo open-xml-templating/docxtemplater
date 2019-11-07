@@ -46,6 +46,7 @@ class InspectModule {
 			this.nullValues = [];
 		}
 	}
+	// eslint-disable-next-line complexity
 	set(obj) {
 		if (obj.data) {
 			this.inspect.tags = obj.data;
@@ -53,7 +54,7 @@ class InspectModule {
 		if (obj.inspect) {
 			if (obj.inspect.filePath) {
 				this.filePath = obj.inspect.filePath;
-				this.inspect = {};
+				this.inspect = this.fullInspected[this.filePath] || {};
 			} else if (obj.inspect.content) {
 				this.inspect.content = obj.inspect.content;
 			} else if (obj.inspect.postparsed) {

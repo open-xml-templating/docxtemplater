@@ -14,6 +14,7 @@ module.exports = function(module) {
 		postrender: identity,
 		errorsTransformer: identity,
 		getRenderedMap: identity,
+		preparse: identity,
 		postparse: identity,
 		on: emptyFun,
 		resolve: emptyFun,

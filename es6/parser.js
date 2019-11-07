@@ -31,6 +31,14 @@ function moduleParse(
 }
 
 const parser = {
+	preparse(parsed, modules, options) {
+		function preparse(parsed, options) {
+			return modules.forEach(function(module) {
+				module.preparse(parsed, options);
+			});
+		}
+		return { preparsed: preparse(parsed, options) };
+	},
 	postparse(postparsed, modules) {
 		function getTraits(traitName, postparsed) {
 			return modules.map(function(module) {

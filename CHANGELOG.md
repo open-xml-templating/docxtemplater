@@ -1,3 +1,13 @@
+### 3.14.6
+
+- Update moduleApiVersion to 3.14.0
+
+- Add `getNearestLeftIndex`, `getNearestRightIndex`, `getNearestLeftIndexWithCache`, `getNearestRightIndexWithCache` to doc-utils.
+
+- Add `preparse` method to modules to be able to retrieve info about document before the parsing of the whole document by other modules.
+
+- Add `tagShouldContain` to the filetype API to be able to make the documents valid, which would make it possible to remove the `part.emptyValue` trick.
+
 ### 3.14.5
 
 Bugfix when using paragraphLoop section with a pagebreak : at the end of the paragraphLoop, the pagebreak was removed by mistake. This is no longer the case since this version

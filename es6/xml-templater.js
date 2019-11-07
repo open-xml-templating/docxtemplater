@@ -63,8 +63,8 @@ module.exports = class XmlTemplater {
 			module.set(obj);
 		});
 	}
-	parse() {
-		let allErrors = [];
+	preparse() {
+		this.allErrors = [];
 		this.xmllexed = Lexer.xmlparse(this.content, {
 			text: this.fileTypeConfig.tagsXmlTextArray,
 			other: this.fileTypeConfig.tagsXmlLexedArray,
@@ -74,9 +74,14 @@ module.exports = class XmlTemplater {
 			this.xmllexed,
 			this.delimiters
 		);
-		allErrors = allErrors.concat(lexerErrors);
+		this.allErrors = this.allErrors.concat(lexerErrors);
 		this.lexed = lexed;
 		this.setModules({ inspect: { lexed: this.lexed } });
+		const options = this.getOptions();
+		Parser.preparse(this.lexed, this.modules, options);
+	}
+	parse() {
+		this.setModules({ inspect: { filePath: this.filePath } });
 		this.parsed = Parser.parse(this.lexed, this.modules);
 		this.setModules({ inspect: { parsed: this.parsed } });
 		const { postparsed, errors: postparsedErrors } = Parser.postparse(
@@ -85,8 +90,8 @@ module.exports = class XmlTemplater {
 		);
 		this.postparsed = postparsed;
 		this.setModules({ inspect: { postparsed: this.postparsed } });
-		allErrors = allErrors.concat(postparsedErrors);
-		this.errorChecker(allErrors);
+		this.allErrors = this.allErrors.concat(postparsedErrors);
+		this.errorChecker(this.allErrors);
 		return this;
 	}
 	errorChecker(errors) {
@@ -120,6 +125,7 @@ module.exports = class XmlTemplater {
 			parser: this.parser,
 			baseNullGetter: this.baseNullGetter.bind(this),
 			filePath: this.filePath,
+			fileTypeConfig: this.fileTypeConfig,
 			linebreaks: this.linebreaks,
 		};
 	}

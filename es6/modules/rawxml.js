@@ -1,5 +1,5 @@
 const traits = require("../traits");
-const { isContent, getNearestLeft, getNearestRight } = require("../doc-utils");
+const { isContent } = require("../doc-utils");
 const { throwRawTagShouldBeOnlyTextInParagraph } = require("../errors");
 const { match, getValue } = require("../prefix-matcher");
 
@@ -7,11 +7,6 @@ const moduleName = "rawxml";
 const wrapper = require("../module-wrapper");
 
 function getInner({ part, left, right, postparsed, index }) {
-	const before = getNearestLeft(postparsed, ["w:p", "w:tc"], left - 1);
-	const after = getNearestRight(postparsed, ["w:p", "w:tc"], right + 1);
-	if (after === "w:tc" && before === "w:tc") {
-		part.emptyValue = "<w:p></w:p>";
-	}
 	const paragraphParts = postparsed.slice(left + 1, right);
 	paragraphParts.forEach(function(p, i) {
 		if (i === index - left - 1) {

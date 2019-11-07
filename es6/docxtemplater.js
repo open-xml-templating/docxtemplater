@@ -24,7 +24,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 13, 0];
+const currentModuleApiVersion = [3, 14, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {
@@ -134,8 +134,11 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	compileFile(fileName) {
+		this.compiled[fileName].parse();
+	}
+	precompileFile(fileName) {
 		const currentFile = this.createTemplateClass(fileName);
-		currentFile.parse();
+		currentFile.preparse();
 		this.compiled[fileName] = currentFile;
 	}
 	resolveData(data) {
@@ -172,6 +175,11 @@ const Docxtemplater = class Docxtemplater {
 		this.setModules({ compiled: this.compiled });
 		// Loop inside all templatedFiles (ie xml files with content).
 		// Sometimes they don't exist (footer.xml for example)
+		this.templatedFiles.forEach(fileName => {
+			if (this.zip.files[fileName] != null) {
+				this.precompileFile(fileName);
+			}
+		});
 		this.templatedFiles.forEach(fileName => {
 			if (this.zip.files[fileName] != null) {
 				this.compileFile(fileName);
