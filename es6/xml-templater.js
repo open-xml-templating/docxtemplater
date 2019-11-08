@@ -7,6 +7,7 @@ const Parser = require("./parser.js");
 const render = require("./render.js");
 const postrender = require("./postrender.js");
 const resolve = require("./resolve.js");
+const joinUncorrupt = require("./join-uncorrupt");
 
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);
@@ -135,6 +136,7 @@ module.exports = class XmlTemplater {
 		options.resolved = this.resolved;
 		options.scopeManager = createScope(options);
 		options.render = render;
+		options.joinUncorrupt = joinUncorrupt;
 		const { errors, parts } = render(options);
 		this.errorChecker(errors);
 

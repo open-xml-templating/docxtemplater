@@ -1,3 +1,15 @@
+### 3.14.8
+
+- Update moduleApiVersion to 3.15.0
+
+- Add `joinUncorrupt` to `options` in `module.render` to be able to fix corruptions
+
+- Fixes corruption when using `{#loops}` that contain tables with `{@rawXML}` evaluating to empty.
+
+### 3.14.7
+
+- Add p:txBody to pptx-lexed to handle corruption on pptx
+
 ### 3.14.6
 
 - Update moduleApiVersion to 3.14.0

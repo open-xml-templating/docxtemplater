@@ -97,7 +97,7 @@ describe("Api versioning", function() {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 14, 0],
+					currentModuleApiVersion: [3, 15, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -112,7 +112,7 @@ describe("Api versioning", function() {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 14, 0],
+					currentModuleApiVersion: [3, 15, 0],
 					neededVersion: [3, 44, 0],
 				},
 			}
@@ -722,11 +722,11 @@ describe("Special characters", function() {
 describe("Complex table example", function() {
 	it("should not do anything special when loop outside of table", function() {
 		[
-			`<w:t>{#tables}</w:t>
+			`<w:p><w:t>{#tables}</w:t></w:p>
 <w:table><w:tr><w:tc>
-<w:t>{user}</w:t>
+<w:p><w:t>{user}</w:t></w:p>
 </w:tc></w:tr></w:table>
-<w:t>{/tables}</w:t>`,
+<w:p><w:t>{/tables}</w:t></w:p>`,
 		].forEach(function(content) {
 			const scope = {
 				tables: [{ user: "John" }, { user: "Jane" }],
@@ -734,15 +734,15 @@ describe("Complex table example", function() {
 			const doc = createXmlTemplaterDocx(content, { tags: scope });
 			const c = getContent(doc);
 			expect(c).to.be.equal(
-				`<w:t/>
+				`<w:p><w:t/></w:p>
 <w:table><w:tr><w:tc>
-<w:t xml:space="preserve">John</w:t>
+<w:p><w:t xml:space="preserve">John</w:t></w:p>
 </w:tc></w:tr></w:table>
-<w:t/>
+<w:p><w:t/></w:p>
 <w:table><w:tr><w:tc>
-<w:t xml:space="preserve">Jane</w:t>
+<w:p><w:t xml:space="preserve">Jane</w:t></w:p>
 </w:tc></w:tr></w:table>
-<w:t/>`
+<w:p><w:t/></w:p>`
 			);
 		});
 	});
@@ -753,28 +753,28 @@ describe("Complex table example", function() {
 			key: "value",
 		};
 		const template = `<w:tr>
-		<w:tc><w:t>{#table1}Hi</w:t></w:tc>
-		<w:tc><w:t>{/table1}</w:t> </w:tc>
+		<w:tc><w:p><w:t>{#table1}Hi</w:t></w:p></w:tc>
+		<w:tc><w:p><w:t>{/table1}</w:t></w:p> </w:tc>
 		</w:tr>
 		<w:tr>
 		<w:tc><w:p><w:t>{#table1}Ho</w:t></w:p></w:tc>
 		<w:tc><w:p><w:t>{/table1}</w:t></w:p></w:tc>
 		</w:tr>
-		<w:t>{key}</w:t>
+		<w:p><w:t>{key}</w:t></w:p>
 		`;
 		const doc = createXmlTemplaterDocx(template, { tags });
 		const fullText = doc.getFullText();
 
 		expect(fullText).to.be.equal("HiHovalue");
 		const expected = `<w:tr>
-		<w:tc><w:t xml:space="preserve">Hi</w:t></w:tc>
-		<w:tc><w:t/> </w:tc>
+		<w:tc><w:p><w:t xml:space="preserve">Hi</w:t></w:p></w:tc>
+		<w:tc><w:p><w:t/></w:p> </w:tc>
 		</w:tr>
 		<w:tr>
 		<w:tc><w:p><w:t xml:space="preserve">Ho</w:t></w:p></w:tc>
 		<w:tc><w:p><w:t/></w:p></w:tc>
 		</w:tr>
-		<w:t xml:space="preserve">value</w:t>
+		<w:p><w:t xml:space="preserve">value</w:t></w:p>
 		`;
 		const c = getContent(doc);
 		expect(c).to.be.equal(expected);

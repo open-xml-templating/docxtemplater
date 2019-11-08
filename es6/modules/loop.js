@@ -202,7 +202,9 @@ class LoopModule {
 				errors,
 			};
 		}
-		return { value: totalValue.join(""), errors };
+		const contains = options.fileTypeConfig.tagShouldContain || [];
+
+		return { value: options.joinUncorrupt(totalValue, contains), errors };
 	}
 	resolve(part, options) {
 		if (part.type !== "placeholder" || part.module !== moduleName) {

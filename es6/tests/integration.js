@@ -441,6 +441,19 @@ describe("Table", function() {
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
 
+	it("should not corrupt table with empty rawxml within loop", function() {
+		const doc = createDoc("loops-with-table-raw-xml.docx");
+		doc.setData({
+			loop: [
+				{ loop2: [] },
+				{ loop2: {}, raw: "<w:p><w:r><w:t>RAW</w:t></w:r></w:p>" },
+			],
+		});
+		doc.setOptions({ paragraphLoop: true });
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-loop-raw-xml.docx" });
+	});
+
 	it("should not corrupt table with empty loop", function() {
 		const doc = createDoc("table-loop.docx");
 		doc.setData({});
