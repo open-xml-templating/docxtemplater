@@ -222,7 +222,10 @@ describe("Pptx generation", function() {
 		const doc = createDoc("table-example.pptx");
 		doc
 			.setData({
-				users: [{ msg: "hello", name: "mary" }, { msg: "hello", name: "john" }],
+				users: [
+					{ msg: "hello", name: "mary" },
+					{ msg: "hello", name: "john" },
+				],
 			})
 			.render();
 		shouldBeSame({ doc, expectedName: "expected-table-example.pptx" });

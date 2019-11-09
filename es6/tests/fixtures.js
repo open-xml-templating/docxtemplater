@@ -717,7 +717,10 @@ const fixtures = {
 				type: "placeholder",
 				value: "rawxml",
 				module: "rawxml",
-				expanded: [[startParagraph, startText], [endText, endParagraph]],
+				expanded: [
+					[startParagraph, startText],
+					[endText, endParagraph],
+				],
 			},
 			externalContent("AFTER"),
 		],
