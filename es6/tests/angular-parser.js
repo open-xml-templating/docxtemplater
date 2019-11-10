@@ -10,8 +10,8 @@ function angularParser(tag) {
 	}
 	const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
 	return {
-		get(s, options) {
-			return expr(...options.scopeList);
+		get(scope, context) {
+			return expr(...context.scopeList);
 		},
 	};
 }

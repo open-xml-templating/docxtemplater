@@ -384,8 +384,8 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
       }
       const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
       return {
-         get(s, options) {
-            return expr(...options.scopeList);
+         get(scope, context) {
+            return expr(...context.scopeList);
          },
       };
    }
