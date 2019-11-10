@@ -24,17 +24,18 @@ like '+', '-', or even create a Domain Specific Language to specify your tag val
 
 To enable this, you need to specify a custom parser.
 
-docxtemplater comes shipped with this parser:
-
-If the template is : 
+Lets take an example, If your template is : 
 
 .. code-block:: text
 
     Hello {user}
 
+And we call `doc.setData({user: "John"})`
+
+docxtemplater uses by default the following parser :
+
 .. code-block:: javascript
 
-    doc.setData({user: "John"})
     doc.setOptions({
         parser: function(tag) {
           // tag is "user"
@@ -52,7 +53,6 @@ If the template is :
           };
         },
     });
-
 
 A very useful parser is the angular-expressions parser, which has implemented useful features.
 
@@ -113,7 +113,48 @@ For the tag `.` in the first iteration, the arguments will be :
       // Together, scopePath and scopePathItem describe where we are in the data, in this case, we are in the tag users[0] (the first user)
     }
 
-For example, it is possible to use the `{$index}` tag inside a loop by using following parser : 
+Here is an example parser that allows you to lowercase or uppercase the data if writing your tag as : `{user[lower]}` or `{user[upper]}` :
+
+.. code-block:: javascript
+
+    doc.setOptions({
+        parser: function(tag) {
+          // tag is "foo[lower]"
+          let changeCase = false;
+          if(tag.endsWith("[lower]") {
+            changeCase = "lower";
+          }
+          if(tag.endsWith("[upper]") {
+            changeCase = "upper";
+          }
+          return {
+            'get': function(scope) {
+              let result = null;
+              // scope will be {user: "John"}
+              if (tag === '.') {
+                result = scope;
+              }
+              else {
+                // Here we use the property "user" of the object {user: "John"}
+                result = scope[tag];
+              }
+
+              if (typeof result === "string") {
+                if(changeCase === "upper") {
+                  return result.toUpperCase();
+                }
+                else if(changeCase === "lower") {
+                  return result.toLowerCase();
+                }
+              }
+              return result;
+            }
+          };
+        },
+    });
+
+
+As an other example, it is possible to use the `{$index}` tag inside a loop by using following parser : 
 
 .. code-block:: javascript
 
@@ -128,6 +169,7 @@ For example, it is possible to use the `{$index}` tag inside a loop by using fol
             },
         };
     }
+
 
 Custom delimiters
 -----------------
