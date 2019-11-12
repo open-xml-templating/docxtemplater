@@ -16,7 +16,7 @@ function angularParser(tag) {
 			for (let i = 0, len = scopeList.length; i < len; i++) {
 				obj = { ...obj, ...scopeList[i] };
 			}
-			return expr(null, obj);
+			return expr(scope, obj);
 		},
 	};
 }

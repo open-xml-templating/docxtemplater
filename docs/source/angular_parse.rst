@@ -60,9 +60,9 @@ Here's a code sample for how to use the angularParser :
                 let obj = {};
                 const scopeList = context.scopeList;
                 for (let i = 0, len = scopeList.length; i < len; i++) {
-                obj = { ...obj, ...scopeList[i] };
+                    obj = { ...obj, ...scopeList[i] };
                 }
-                return expr(null, obj);
+                return expr(scope, obj);
             }
         };
     }

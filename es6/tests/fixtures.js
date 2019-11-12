@@ -1236,6 +1236,19 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
+	angular_this : {
+		it: "should work with this with angular expressions",
+		content: "<w:t>{#hello}{this}{/hello}</w:t>",
+		result: '<w:t xml:space="preserve">world</w:t>',
+		scope: {"hello": ["world"]},
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	}
 };
 
 fixtures.rawxmlemptycontent = clone(fixtures.rawxml);
