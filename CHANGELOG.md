@@ -1,3 +1,7 @@
+### 3.14.9
+
+- Bugfix for joinUncorrupt method, which produced a corrupt document when having a paragraphLoop containing a table containing a `{-w:tr loop}` loop.
+
 ### 3.14.8
 
 - Update moduleApiVersion to 3.15.0

@@ -385,7 +385,12 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
       const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
       return {
          get(scope, context) {
-            return expr(...context.scopeList);
+            let obj = {};
+            const scopeList = context.scopeList;
+            for (let i = 0, len = scopeList.length; i < len; i++) {
+                obj = { ...obj, ...scopeList[i] };
+            }
+            return expr(null, obj);
          },
       };
    }

@@ -10,6 +10,7 @@ function joinUncorrupt(parts, contains) {
 	return parts.reduce(function(full, part) {
 		for (let i = 0, len = contains.length; i < len; i++) {
 			const { tag, shouldContain, value } = contains[i];
+			const startTagRegex = new RegExp(`^(<(${tag})[^>]*>)$`, "g");
 			if (currentlyCollecting === i) {
 				if (part === `</${tag}>`) {
 					currentlyCollecting = -1;
@@ -25,7 +26,7 @@ function joinUncorrupt(parts, contains) {
 				}
 				return full;
 			}
-			if (currentlyCollecting === -1 && part.indexOf(`<${tag}`) === 0) {
+			if (currentlyCollecting === -1 && startTagRegex.test(part)) {
 				currentlyCollecting = i;
 				collecting = part;
 				return full;

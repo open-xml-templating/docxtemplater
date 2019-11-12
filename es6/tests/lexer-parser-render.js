@@ -21,7 +21,7 @@ describe("Algorithm", function() {
 			cleanRecursive(iModule.inspect.lexed);
 			cleanRecursive(iModule.inspect.parsed);
 			cleanRecursive(iModule.inspect.postparsed);
-			if (iModule.inspect.content && fixture.result !== null) {
+			if (fixture.result !== null) {
 				expect(iModule.inspect.content).to.be.deep.equal(
 					fixture.result,
 					"Content incorrect"
@@ -61,7 +61,7 @@ describe("Algorithm", function() {
 				cleanRecursive(iModule.inspect.lexed);
 				cleanRecursive(iModule.inspect.parsed);
 				cleanRecursive(iModule.inspect.postparsed);
-				if (iModule.inspect.content) {
+				if (fixture.result !== null) {
 					expect(iModule.inspect.content).to.be.deep.equal(
 						fixture.result,
 						"Content incorrect"

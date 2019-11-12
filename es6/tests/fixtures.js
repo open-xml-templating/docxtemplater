@@ -1193,6 +1193,49 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
+	condition_w_tr: {
+		it:
+			"should work well with -w:tr conditions inside table inside paragraphLoop condition",
+		content:
+			"<w:p><w:r><w:t>{#cond}</w:t></w:r></w:p><w:tbl><w:tr><w:tc><w:p><w:r><w:t>{-w:tc cond}{val}{/}</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p><w:r><w:t>{/}</w:t></w:r></w:p>",
+		result:
+			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
+		scope: {
+			cond: true,
+			val: "yep",
+		},
+		options: {
+			paragraphLoop: true,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	angular_expressions: {
+		it: "should work well with nested angular expressions",
+		content: "<w:t>{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}</w:t>",
+		result: '<w:t xml:space="preserve">0123</w:t>',
+		scope: {
+			v: "0",
+			c1: {
+				v: "1",
+				c2: {
+					v: "2",
+					c3: {
+						v: "3",
+					},
+				},
+			},
+		},
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
 };
 
 fixtures.rawxmlemptycontent = clone(fixtures.rawxml);

@@ -1,5 +1,3 @@
-const expressions = require("angular-expressions");
-
 const { loadFile, loadDocument, rejectSoon } = require("./utils");
 const Errors = require("../errors.js");
 const {
@@ -10,14 +8,7 @@ const {
 	expectToThrowAsync,
 } = require("./utils");
 
-function angularParser(tag) {
-	const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
-	return {
-		get(scope, context) {
-			return expr(...context.scopeList);
-		},
-	};
-}
+const angularParser = require("./angular-parser");
 
 describe("Compilation errors", function() {
 	it("should fail when parsing invalid xml (1)", function() {
