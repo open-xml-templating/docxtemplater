@@ -64,7 +64,9 @@ fullBrowserName = BROWSER + " (local)";
 if (!desiredCapabilities) {
 	exit("Unknown browser :" + BROWSER);
 }
-let options = {};
+let options = {
+	logLevel: "warn",
+};
 
 if (BROWSER === "SAUCELABS") {
 	fullBrowserName = `${browserName} ${version} ${platform} (SAUCELABS)`;
@@ -158,14 +160,35 @@ server.listen(port, async function() {
 			await client.url(url);
 
 			await waitForText("#status", 30000);
+			await client.pause(5000);
+			await waitForExist("li.failures a", 5000);
 			const text = await (await client.$("#mocha-stats")).getText();
 			const passes = parseInt(text.replace(passesRegex, "$1"), 10);
 			const failures = parseInt(text.replace(failuresRegex, "$1"), 10);
-			await waitForExist("li.failures a", 5000);
-			await (await client.$("li.failures a")).click();
-			await client.pause(2000);
+			if (failures > 0) {
+				const failedSuites = await client.$$("li.test.fail");
+				for (let i = 0, len = failedSuites.length; i < len; i++) {
+					const titleElement = await await failedSuites[i].$("h2");
+					const title = await client.execute(parent => {
+						let child = parent.firstChild;
+						let ret = "";
+						while (child) {
+							if (child.nodeType === Node.TEXT_NODE) {
+								ret += child.textContent;
+							}
+							child = child.nextSibling;
+						}
+						return ret;
+					}, titleElement);
+					const error = await (await failedSuites[i].$("pre.error")).getText();
+					console.log(title);
+					console.log(title.replace(/./g, "="));
+					console.log(error);
+					console.log();
+				}
+				throw new Error("Failures happened");
+			}
 			expect(passes).to.be.above(0);
-			expect(failures).to.be.equal(0);
 			console.log(
 				`browser tests successful (${passes} passes) on ${fullBrowserName}`
 			);
