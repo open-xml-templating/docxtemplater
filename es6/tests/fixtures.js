@@ -1236,11 +1236,11 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	angular_this : {
+	angular_this: {
 		it: "should work with this with angular expressions",
 		content: "<w:t>{#hello}{this}{/hello}</w:t>",
 		result: '<w:t xml:space="preserve">world</w:t>',
-		scope: {"hello": ["world"]},
+		scope: { hello: ["world"] },
 		options: {
 			parser: angularParser,
 		},
@@ -1249,11 +1249,11 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	angular_get_parent_prop_if_null_child : {
+	angular_get_parent_prop_if_null_child: {
 		it: "should foo",
 		content: "<w:t>{#c}{label}{/c}</w:t>",
 		result: '<w:t xml:space="preserve">hello</w:t>',
-		scope: {"c": { "label": null }, label: "hello"},
+		scope: { c: { label: null }, label: "hello" },
 		options: {
 			parser: angularParser,
 		},
