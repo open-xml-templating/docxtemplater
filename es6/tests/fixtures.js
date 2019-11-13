@@ -1248,7 +1248,20 @@ const fixtures = {
 		parsed: null,
 		postparsed: null,
 		resolved: null,
-	}
+	},
+	angular_get_parent_prop_if_null_child : {
+		it: "should foo",
+		content: "<w:t>{#c}{label}{/c}</w:t>",
+		result: '<w:t xml:space="preserve">hello</w:t>',
+		scope: {"c": { "label": null }, label: "hello"},
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
 };
 
 fixtures.rawxmlemptycontent = clone(fixtures.rawxml);

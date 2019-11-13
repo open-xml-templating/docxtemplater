@@ -13,7 +13,8 @@ function angularParser(tag) {
 		get(scope, context) {
 			let obj = {};
 			const scopeList = context.scopeList;
-			for (let i = 0, len = scopeList.length; i < len; i++) {
+			const num = context.num;
+			for (let i = 0, len = num + 1; i < len; i++) {
 				obj = { ...obj, ...scopeList[i] };
 			}
 			return expr(scope, obj);
