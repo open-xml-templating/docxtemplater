@@ -1,3 +1,7 @@
+### 3.14.10
+
+Use `{}` (empty object) instead of "false" for the `fs` shim in the browser.
+
 ### 3.14.9
 
 - Bugfix for joinUncorrupt method, which produced a corrupt document when having a paragraphLoop containing a table containing a `{-w:tr loop}` loop.
