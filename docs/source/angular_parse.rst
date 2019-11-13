@@ -42,6 +42,7 @@ Here's a code sample for how to use the angularParser :
 .. code-block:: javascript
 
     var expressions = require('angular-expressions');
+    var merge = require("lodash/merge");
     // define your filter functions here, for example, to be able to write {clientname | lower}
     expressions.filters.lower = function(input) {
         // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
@@ -61,7 +62,7 @@ Here's a code sample for how to use the angularParser :
                 const scopeList = context.scopeList;
                 const num = context.num;
                 for (let i = 0, len = num + 1; i < len; i++) {
-                    obj = { ...obj, ...scopeList[i] };
+                    obj = merge(obj, scopeList[i]);
                 }
                 return expr(scope, obj);
             }

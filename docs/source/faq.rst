@@ -374,6 +374,8 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
 
 .. code-block:: javascript
 
+   var expressions = require("angular-expressions");
+   var merge = require("lodash/merge");
    function angularParser(tag) {
       if (tag === ".") {
          return {
@@ -387,8 +389,9 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
          get(scope, context) {
             let obj = {};
             const scopeList = context.scopeList;
-            for (let i = 0, len = scopeList.length; i < len; i++) {
-                obj = { ...obj, ...scopeList[i] };
+            const num = context.num;
+            for (let i = 0, len = num + 1; i < len; i++) {
+                obj = merge(obj, scopeList[i]);
             }
             return expr(scope, obj);
          },

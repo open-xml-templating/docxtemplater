@@ -1,4 +1,5 @@
 const expressions = require("angular-expressions");
+const merge = require("lodash/merge");
 
 function angularParser(tag) {
 	if (tag === ".") {
@@ -15,7 +16,7 @@ function angularParser(tag) {
 			const scopeList = context.scopeList;
 			const num = context.num;
 			for (let i = 0, len = num + 1; i < len; i++) {
-				obj = { ...obj, ...scopeList[i] };
+				obj = merge(obj, scopeList[i]);
 			}
 			return expr(scope, obj);
 		},
