@@ -124,3 +124,27 @@ Browser
 Please note that if you want to load a docx from your filesystem, you will need a webserver or you will be blocked by CORS policy.
 
 :ref:`cors`
+
+It is also possible to read the docx from an `<input type="file" id="doc">`, by using the following : 
+
+.. code-block:: javascript
+
+    var docs = document.getElementById('doc');
+    function generate() {
+        var reader = new FileReader();
+        if (docs.files.length === 0) {
+            alert("No files selected")
+        }
+        reader.readAsBinaryString(docs.files.item(0));
+
+        reader.onerror = function (evt) {
+            console.log("error reading file", evt);
+            alert("error reading file" + evt)
+        }
+        reader.onload = function (evt) {
+            const content = evt.target.result;
+            var zip = new PizZip(content);
+            // Same code as in the main HTML example.
+        }
+    }
+
