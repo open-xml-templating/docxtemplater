@@ -80,7 +80,7 @@ describe("Simple templating", function() {
 	});
 });
 
-describe("Spacing/Linebreaks", function () {
+describe("Spacing/Linebreaks", function() {
 	it("should show spaces with linebreak option", function() {
 		const doc = createDoc("tag-multiline.docx");
 		doc.setData({
@@ -244,7 +244,6 @@ describe("Pptx generation", function() {
 			shouldBeSame({ doc, expectedName: "expected-raw-xml-example.pptx" });
 		});
 	});
-
 });
 
 describe("Table", function() {
