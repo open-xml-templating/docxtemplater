@@ -83,7 +83,7 @@
     "test:coverage": "nyc --reporter=html --reporter=text mocha --  es6/tests/index.js",
     "prettier": "prettier --list-different 'es6/**/!(filenames).js' '*.js'",
     "prettier:fix": "prettier --write 'es6/**/!(filenames).js' '*.js'",
-    "lint": "eslint_d . && ./check-casing.bash",
+    "lint": "eslint_d . && ./check-casing.bash && npm run prettier",
     "lint:fix": "eslint_d . --fix && ./check-casing.bash && npm run prettier:fix",
     "test:chrome": "BROWSER=CHROME ./webdriver.bash",
     "test:firefox": "BROWSER=FIREFOX ./webdriver.bash",
