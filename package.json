@@ -36,7 +36,7 @@
     "@babel/core": "^7.7.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/preset-env": "^7.7.1",
-    "@wdio/cli": "^5.16.6",
+    "@wdio/cli": "^5.16.7",
     "angular-expressions": "^1.0.0",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
@@ -58,7 +58,7 @@
     "selenium-standalone": "^6.16.0",
     "serve-static": "^1.14.1",
     "uglify-js": "^3.6.9",
-    "webdriverio": "^5.16.6",
+    "webdriverio": "^5.16.7",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
