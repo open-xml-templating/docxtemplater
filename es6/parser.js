@@ -5,12 +5,13 @@ function moduleParse(
 	placeHolderContent,
 	parsed,
 	startOffset,
-	endLindex
+	endLindex,
+	options
 ) {
 	let moduleParsed;
 	for (let i = 0, l = modules.length; i < l; i++) {
 		const module = modules[i];
-		moduleParsed = module.parse(placeHolderContent);
+		moduleParsed = module.parse(placeHolderContent, options);
 		if (moduleParsed) {
 			moduleParsed.offset = startOffset;
 			moduleParsed.endLindex = endLindex;
@@ -39,7 +40,7 @@ const parser = {
 		}
 		return { preparsed: preparse(parsed, options) };
 	},
-	postparse(postparsed, modules) {
+	postparse(postparsed, modules, options) {
 		function getTraits(traitName, postparsed) {
 			return modules.map(function(module) {
 				return module.getTraits(traitName, postparsed);
@@ -60,10 +61,10 @@ const parser = {
 				return r;
 			}, postparsed);
 		}
-		return { postparsed: postparse(postparsed), errors };
+		return { postparsed: postparse(postparsed, options), errors };
 	},
 
-	parse(lexed, modules) {
+	parse(lexed, modules, options) {
 		let inPlaceHolder = false;
 		let placeHolderContent = "";
 		let startOffset;
@@ -79,7 +80,8 @@ const parser = {
 						placeHolderContent,
 						parsed,
 						startOffset,
-						endLindex
+						endLindex,
+						options
 					);
 					startOffset = null;
 					Array.prototype.push.apply(parsed, tailParts);

@@ -83,11 +83,13 @@ module.exports = class XmlTemplater {
 	}
 	parse() {
 		this.setModules({ inspect: { filePath: this.filePath } });
-		this.parsed = Parser.parse(this.lexed, this.modules);
+		const options = this.getOptions();
+		this.parsed = Parser.parse(this.lexed, this.modules, options);
 		this.setModules({ inspect: { parsed: this.parsed } });
 		const { postparsed, errors: postparsedErrors } = Parser.postparse(
 			this.parsed,
-			this.modules
+			this.modules,
+			options
 		);
 		this.postparsed = postparsed;
 		this.setModules({ inspect: { postparsed: this.postparsed } });
