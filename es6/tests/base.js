@@ -381,7 +381,7 @@ describe("Docxtemplater loops", function() {
 		const expectedContent = `<w:t xml:space="preserve">No Todos</w:t>
 		<w:t/>`;
 		const scope = { todos: [] };
-		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
+		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope, parser: angularParser});
 		const c = getContent(xmlTemplater);
 		expect(c).to.be.deep.equal(expectedContent);
 	});
