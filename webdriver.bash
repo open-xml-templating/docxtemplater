@@ -38,6 +38,7 @@ then
 	else
 		if ! [ -d node_modules/selenium-standalone/.selenium ]
 		then
+			mkdir -p "$HOME/tmp/"
 			if [ -d "$HOME/tmp/.selenium" ]
 			then
 				echo "Copying selenium from cache"
@@ -45,6 +46,7 @@ then
 			else
 				echo "Installing selenium"
 				selenium-standalone install
+				cp -r node_modules/selenium-standalone/.selenium "$HOME/tmp/.selenium"
 			fi
 		fi
 		echo "Starting selenium"
