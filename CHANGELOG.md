@@ -1,3 +1,9 @@
+### 3.15.0
+
+- Update moduleApiVersion to 3.16.0
+- Disallow to call attachModule twice on a given module
+- Add options to `parse` and `postparse`
+
 ### 3.14.10
 
 Use `{}` (empty object) instead of "false" for the `fs` shim in the browser.
