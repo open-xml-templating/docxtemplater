@@ -40,6 +40,7 @@ class InspectModule {
 	}
 	on(eventName) {
 		if (eventName === "attached") {
+			this.attached = false;
 			this.inspect = {};
 			this.fullInspected = {};
 			this.filePath = null;

@@ -62,6 +62,11 @@ function getPairs(traits) {
 
 const expandPairTrait = {
 	name: "ExpandPairTrait",
+	on(eventName) {
+		if (eventName === "attached") {
+			this.attached = false;
+		}
+	},
 	optionsTransformer(options, docxtemplater) {
 		this.expandTags = docxtemplater.fileTypeConfig.expandTags.concat(
 			docxtemplater.options.paragraphLoop

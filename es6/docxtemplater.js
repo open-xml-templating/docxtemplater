@@ -90,6 +90,10 @@ const Docxtemplater = class Docxtemplater {
 		if (module.requiredAPIVersion) {
 			this.verifyApiVersion(module.requiredAPIVersion);
 		}
+		if (module.attached === true) {
+			throw new Error("Cannot attach a module that was already attached");
+		}
+		module.attached = true;
 		const { prefix } = options;
 		if (prefix) {
 			module.prefix = prefix;
