@@ -1,3 +1,8 @@
+### 3.15.1
+
+- Update moduleApiVersion to 3.17.0
+- Add `options.parse` function in `parse(placeholder, options)` to allow "recursive" parsing
+
 ### 3.15.0
 
 - Update moduleApiVersion to 3.16.0

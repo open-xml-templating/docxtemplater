@@ -1,9 +1,8 @@
 const { wordToUtf8, concatArrays } = require("./doc-utils");
 
 function moduleParse(
-	modules,
 	placeHolderContent,
-	parsed,
+	modules,
 	startOffset,
 	endLindex,
 	options
@@ -17,18 +16,16 @@ function moduleParse(
 			moduleParsed.endLindex = endLindex;
 			moduleParsed.lIndex = endLindex;
 			moduleParsed.raw = placeHolderContent;
-			parsed.push(moduleParsed);
-			return parsed;
+			return moduleParsed;
 		}
 	}
-	parsed.push({
+	return {
 		type: "placeholder",
 		value: placeHolderContent,
 		offset: startOffset,
 		endLindex,
 		lIndex: endLindex,
-	});
-	return parsed;
+	};
 }
 
 const parser = {
@@ -75,15 +72,15 @@ const parser = {
 				if (token.position === "end") {
 					const endLindex = token.lIndex;
 					placeHolderContent = wordToUtf8(placeHolderContent);
-					parsed = moduleParse(
-						modules,
-						placeHolderContent,
-						parsed,
-						startOffset,
-						endLindex,
-						options
-					);
-					startOffset = null;
+					options.parse = placeHolderContent =>
+						moduleParse(
+							placeHolderContent,
+							modules,
+							startOffset,
+							endLindex,
+							options
+						);
+					parsed.push(options.parse(placeHolderContent));
 					Array.prototype.push.apply(parsed, tailParts);
 					tailParts = [];
 				}

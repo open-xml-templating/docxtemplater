@@ -5,7 +5,7 @@ const { expect } = require("chai");
 describe("Verify apiversion", function() {
 	it("should work with valid api version", function() {
 		const module = {
-			requiredAPIVersion: "3.16.0",
+			requiredAPIVersion: "3.17.0",
 			render(part) {
 				return part.value;
 			},
@@ -29,7 +29,7 @@ describe("Verify apiversion", function() {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 16, 0],
+				currentModuleApiVersion: [3, 17, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});

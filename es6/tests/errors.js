@@ -291,6 +291,125 @@ describe("Compilation errors", function() {
 		);
 	});
 
+	it("should count 3 errors when having rawxml and two other errors", function() {
+		const content = "<w:p><w:r><w:t>foo} {@bang} bar}</w:t></w:r></w:p>";
+
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "TemplateError",
+						message: "Unopened tag",
+						properties: {
+							xtag: "foo",
+							id: "unopened_tag",
+							context: "foo",
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Unopened tag",
+						properties: {
+							xtag: "bar",
+							id: "unopened_tag",
+							context: "} bar",
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Raw tag should be the only text in paragraph",
+						properties: {
+							id: "raw_xml_tag_should_be_only_text_in_paragraph",
+							xtag: "bang",
+							paragraphParts: [
+								{
+									type: "tag",
+									position: "start",
+									text: false,
+									value: "<w:r>",
+									tag: "w:r",
+									lIndex: 1,
+								},
+								{
+									type: "tag",
+									position: "start",
+									text: true,
+									value: '<w:t xml:space="preserve">',
+									tag: "w:t",
+									lIndex: 2,
+								},
+								{
+									type: "content",
+									value: "foo",
+									offset: 0,
+									position: "insidetag",
+									lIndex: 3,
+								},
+								{
+									type: "placeholder",
+									value: "",
+									endLindex: 4,
+									lIndex: 4,
+								},
+								{
+									type: "content",
+									value: " ",
+									offset: 4,
+									position: "insidetag",
+									lIndex: 5,
+								},
+								{
+									type: "placeholder",
+									value: "bang",
+									module: "rawxml",
+									offset: 5,
+									endLindex: 8,
+									lIndex: 8,
+									raw: "@bang",
+								},
+								{
+									type: "content",
+									value: " bar",
+									offset: 12,
+									position: "insidetag",
+									lIndex: 9,
+								},
+								{
+									type: "placeholder",
+									value: "",
+									offset: 5,
+									endLindex: 10,
+									lIndex: 10,
+								},
+								{
+									type: "tag",
+									position: "end",
+									text: true,
+									value: "</w:t>",
+									tag: "w:t",
+									lIndex: 11,
+								},
+								{
+									type: "tag",
+									position: "end",
+									text: false,
+									value: "</w:r>",
+									tag: "w:r",
+									lIndex: 12,
+								},
+							],
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+		const create = createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
 	it("should fail when customparser fails to compile", function() {
 		const content = "<w:t>{name++}</w:t>";
 		const expectedError = {
