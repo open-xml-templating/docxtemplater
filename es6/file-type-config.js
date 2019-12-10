@@ -95,6 +95,7 @@ const DocXFileTypeConfig = {
 		"w:rPr",
 		"w:pPr",
 		"w:spacing",
+		"w:sdtContent",
 	],
 	expandTags: [{ contains: "w:tc", expand: "w:tr" }],
 	onParagraphLoop: [{ contains: "w:p", expand: "w:p", onlyTextInTag: true }],
@@ -109,6 +110,7 @@ const DocXFileTypeConfig = {
 	],
 	tagShouldContain: [
 		{ tag: "w:tc", shouldContain: "w:p", value: "<w:p></w:p>" },
+		{ tag: "w:sdtContent", shouldContain: "w:p", value: "<w:p></w:p>" },
 	],
 };
 

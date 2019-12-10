@@ -375,6 +375,18 @@ describe("Table", function() {
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
 
+	it("should not corrupt ", function() {
+		const doc = createDoc("regression-sdtcontent-paragraph.docx");
+		doc.setData({
+			loop: {
+				name: "foo",
+				Id: "bar",
+			},
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-sdtcontent-valid.docx" });
+	});
+
 	it("should not corrupt table with empty rawxml within loop", function() {
 		const doc = createDoc("loops-with-table-raw-xml.docx");
 		doc.setData({

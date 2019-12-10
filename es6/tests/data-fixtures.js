@@ -7,93 +7,101 @@ const expectedPrintedPostParsed = `
 (3)         </w:t>
 (2)      </w:r>
 (2)      <w:p w14:paraId="736A2D9F" w14:textId="77777777" w:rsidR="008E1095" w:rsidRDefault="008E1095"/>
-(2)      <w:sdt><w:sdtPr><w:alias w:val="SF:Table"/><w:id w:val="2039776175"/><w:placeholder><w:docPart w:val="CFCF8C7E6B33489A9DD50D7417AD410D"/></w:placeholder><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr><w:sdtContent>
-(2)      <w:p w14:paraId="4800949B" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00D3440B"/>
-(2)      <w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="0660" w:firstRow="1" w:lastRow="1" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/></w:tblPr><w:tblGrid><w:gridCol w:w="2909"/><w:gridCol w:w="2928"/><w:gridCol w:w="2793"/></w:tblGrid>
-(2)      <w:tr w:rsidR="00D3440B" w14:paraId="5887C255" w14:textId="77777777" w:rsidTr="00F617CB">
-(3)         <w:trPr><w:tblHeader/></w:trPr>
-(3)         <w:tc>
-(4)            <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
-(4)            <w:p w14:paraId="5951DD51" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
-(5)               <w:r>
-(6)                  <w:t xml:space="preserve">
-(7)                     name
-(6)                  </w:t>
-(5)               </w:r>
-(4)            </w:p>
-(3)         </w:tc>
-(3)         <w:tc>
-(4)            <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
-(4)            <w:p w14:paraId="34A4528E" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
-(5)               <w:r>
-(6)                  <w:t xml:space="preserve">
-(7)                     phone
-(6)                  </w:t>
-(5)               </w:r>
-(4)            </w:p>
-(3)         </w:tc>
-(3)         <w:tc>
-(4)            <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
-(4)            <w:p w14:paraId="1EFFDB2B" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
-(5)               <w:r>
-(6)                  <w:t xml:space="preserve">
-(7)                     website
-(6)                  </w:t>
-(5)               </w:r>
-(4)            </w:p>
-(3)         </w:tc>
-(2)      </w:tr>
-(2)      <w:tr w:rsidR="00D3440B" w14:paraId="53971E16" w14:textId="77777777" w:rsidTr="00F617CB">
-(3)         <w:sdt><w:sdtPr><w:alias w:val="SF:R"/><w:id w:val="1927457022"/><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr><w:sdtContent>
-(3)         <w:tc>
-(4)            <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
-(4)            <w:p w14:paraId="6B371C2E" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
-(5)               <w:pPr>
-(6)                  <w:spacing w:line="360" w:lineRule="auto"/>
-(6)                  <w:jc w:val="both"/>
-(5)               </w:pPr>
-(5)               <w:r>
-(6)                  <w:t xml:space="preserve">
-========================{foo}
-(6)                  </w:t>
-(5)               </w:r>
-(4)            </w:p>
-(3)         </w:tc>
-(3)         </w:sdtContent></w:sdt><w:sdt><w:sdtPr><w:alias w:val="SF:R"/><w:id w:val="1556285925"/><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr><w:sdtContent>
-(3)         <w:tc>
-(4)            <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
-(4)            <w:p w14:paraId="3C4100BB" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
-(5)               <w:pPr>
-(6)                  <w:spacing w:line="360" w:lineRule="auto"/>
-(6)                  <w:jc w:val="both"/>
-(5)               </w:pPr>
-(5)               <w:r>
-(6)                  <w:t xml:space="preserve">
-========================{bar}
-(6)                  </w:t>
-(5)               </w:r>
-(4)            </w:p>
-(3)         </w:tc>
-(3)         </w:sdtContent></w:sdt><w:sdt><w:sdtPr><w:alias w:val="SF:R"/><w:id w:val="-788971804"/><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr><w:sdtContent>
-(3)         <w:tc>
-(4)            <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
-(4)            <w:p w14:paraId="24C5CEB1" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
-(5)               <w:pPr>
-(6)                  <w:spacing w:line="360" w:lineRule="auto"/>
-(6)                  <w:jc w:val="both"/>
-(5)               </w:pPr>
-(5)               <w:r>
-(6)                  <w:t xml:space="preserve">
-========================{bar}
-(6)                  </w:t>
-(5)               </w:r>
-(4)            </w:p>
-(3)         </w:tc>
-(3)         </w:sdtContent></w:sdt>
-(2)      </w:tr>
-(2)      </w:tbl>
-(2)      <w:p w14:paraId="676A1E43" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00D3440B"/>
-(2)      </w:sdtContent></w:sdt>
+(2)      <w:sdt><w:sdtPr><w:alias w:val="SF:Table"/><w:id w:val="2039776175"/><w:placeholder><w:docPart w:val="CFCF8C7E6B33489A9DD50D7417AD410D"/></w:placeholder><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr>
+(2)      <w:sdtContent>
+(3)         <w:p w14:paraId="4800949B" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00D3440B"/>
+(3)         <w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="0660" w:firstRow="1" w:lastRow="1" w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/></w:tblPr><w:tblGrid><w:gridCol w:w="2909"/><w:gridCol w:w="2928"/><w:gridCol w:w="2793"/></w:tblGrid>
+(3)         <w:tr w:rsidR="00D3440B" w14:paraId="5887C255" w14:textId="77777777" w:rsidTr="00F617CB">
+(4)            <w:trPr><w:tblHeader/></w:trPr>
+(4)            <w:tc>
+(5)               <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
+(5)               <w:p w14:paraId="5951DD51" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
+(6)                  <w:r>
+(7)                     <w:t xml:space="preserve">
+(8)                        name
+(7)                     </w:t>
+(6)                  </w:r>
+(5)               </w:p>
+(4)            </w:tc>
+(4)            <w:tc>
+(5)               <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
+(5)               <w:p w14:paraId="34A4528E" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
+(6)                  <w:r>
+(7)                     <w:t xml:space="preserve">
+(8)                        phone
+(7)                     </w:t>
+(6)                  </w:r>
+(5)               </w:p>
+(4)            </w:tc>
+(4)            <w:tc>
+(5)               <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
+(5)               <w:p w14:paraId="1EFFDB2B" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
+(6)                  <w:r>
+(7)                     <w:t xml:space="preserve">
+(8)                        website
+(7)                     </w:t>
+(6)                  </w:r>
+(5)               </w:p>
+(4)            </w:tc>
+(3)         </w:tr>
+(3)         <w:tr w:rsidR="00D3440B" w14:paraId="53971E16" w14:textId="77777777" w:rsidTr="00F617CB">
+(4)            <w:sdt><w:sdtPr><w:alias w:val="SF:R"/><w:id w:val="1927457022"/><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr>
+(4)            <w:sdtContent>
+(5)               <w:tc>
+(6)                  <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
+(6)                  <w:p w14:paraId="6B371C2E" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
+(7)                     <w:pPr>
+(8)                        <w:spacing w:line="360" w:lineRule="auto"/>
+(8)                        <w:jc w:val="both"/>
+(7)                     </w:pPr>
+(7)                     <w:r>
+(8)                        <w:t xml:space="preserve">
+=============================={foo}
+(8)                        </w:t>
+(7)                     </w:r>
+(6)                  </w:p>
+(5)               </w:tc>
+(4)            </w:sdtContent>
+(4)            </w:sdt><w:sdt><w:sdtPr><w:alias w:val="SF:R"/><w:id w:val="1556285925"/><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr>
+(4)            <w:sdtContent>
+(5)               <w:tc>
+(6)                  <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
+(6)                  <w:p w14:paraId="3C4100BB" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
+(7)                     <w:pPr>
+(8)                        <w:spacing w:line="360" w:lineRule="auto"/>
+(8)                        <w:jc w:val="both"/>
+(7)                     </w:pPr>
+(7)                     <w:r>
+(8)                        <w:t xml:space="preserve">
+=============================={bar}
+(8)                        </w:t>
+(7)                     </w:r>
+(6)                  </w:p>
+(5)               </w:tc>
+(4)            </w:sdtContent>
+(4)            </w:sdt><w:sdt><w:sdtPr><w:alias w:val="SF:R"/><w:id w:val="-788971804"/><w15:color w:val="008000"/><w15:appearance w15:val="hidden"/></w:sdtPr>
+(4)            <w:sdtContent>
+(5)               <w:tc>
+(6)                  <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>
+(6)                  <w:p w14:paraId="24C5CEB1" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00F617CB">
+(7)                     <w:pPr>
+(8)                        <w:spacing w:line="360" w:lineRule="auto"/>
+(8)                        <w:jc w:val="both"/>
+(7)                     </w:pPr>
+(7)                     <w:r>
+(8)                        <w:t xml:space="preserve">
+=============================={bar}
+(8)                        </w:t>
+(7)                     </w:r>
+(6)                  </w:p>
+(5)               </w:tc>
+(4)            </w:sdtContent>
+(4)            </w:sdt>
+(3)         </w:tr>
+(3)         </w:tbl>
+(3)         <w:p w14:paraId="676A1E43" w14:textId="77777777" w:rsidR="00D3440B" w:rsidRDefault="00D3440B" w:rsidP="00D3440B"/>
+(2)      </w:sdtContent>
+(2)      </w:sdt>
 (2)      <w:p w14:paraId="22D858B2" w14:textId="69A6ACE6" w:rsidR="009843AE" w:rsidRDefault="00EB53B3"/>
 (1)   </w:p>
 (1)   <w:p>

@@ -1,7 +1,9 @@
 ### 3.15.1
 
+- If you use the xlsx module, please update the xlsx module to 3.1.1 or you will get a stacktrace `Cannot set property 'parse' of undefined`
 - Update moduleApiVersion to 3.17.0
 - Add `options.parse` function in `parse(placeholder, options)` to allow "recursive" parsing
+- Fill empty `<w:sdtContent>` with `<w:p>` to avoid corruption
 
 ### 3.15.0
 
