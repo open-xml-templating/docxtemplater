@@ -24,7 +24,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 17, 0];
+const currentModuleApiVersion = [3, 18, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor() {

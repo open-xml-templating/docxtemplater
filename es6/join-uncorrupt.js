@@ -17,12 +17,15 @@ function joinUncorrupt(parts, contains) {
 					return full + collecting + value + part;
 				}
 				collecting += part;
-				if (
-					part.indexOf(`<${shouldContain} `) !== -1 ||
-					part.indexOf(`<${shouldContain}>`) !== -1
-				) {
-					currentlyCollecting = -1;
-					return full + collecting;
+				for (let j = 0, len2 = shouldContain.length; j < len2; j++) {
+					const sc = shouldContain[j];
+					if (
+						part.indexOf(`<${sc} `) !== -1 ||
+						part.indexOf(`<${sc}>`) !== -1
+					) {
+						currentlyCollecting = -1;
+						return full + collecting;
+					}
 				}
 				return full;
 			}

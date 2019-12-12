@@ -1,3 +1,9 @@
+### 3.15.2
+
+- Update moduleApiVersion to 3.18.0
+- (internal) Use array of string for shouldContain to fix corruptions
+- Do not add `<w:p>` in `<w:sdtContent>` if it contains a `<w:r>`
+
 ### 3.15.1
 
 - If you use the xlsx module, please update the xlsx module to 3.1.1 or you will get a stacktrace `Cannot set property 'parse' of undefined`

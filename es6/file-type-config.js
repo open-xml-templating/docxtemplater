@@ -53,7 +53,7 @@ const PptXFileTypeConfig = {
 	tagTextXml: "a:t",
 	baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
 	tagShouldContain: [
-		{ tag: "p:txBody", shouldContain: "a:p", value: "<a:p></a:p>" },
+		{ tag: "p:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 	],
 };
 
@@ -109,8 +109,12 @@ const DocXFileTypeConfig = {
 		render,
 	],
 	tagShouldContain: [
-		{ tag: "w:tc", shouldContain: "w:p", value: "<w:p></w:p>" },
-		{ tag: "w:sdtContent", shouldContain: "w:p", value: "<w:p></w:p>" },
+		{ tag: "w:tc", shouldContain: ["w:p"], value: "<w:p></w:p>" },
+		{
+			tag: "w:sdtContent",
+			shouldContain: ["w:p", "w:r"],
+			value: "<w:p></w:p>",
+		},
 	],
 };
 

@@ -375,7 +375,7 @@ describe("Table", function() {
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
 
-	it("should not corrupt ", function() {
+	it("should not corrupt sdtcontent", function() {
 		const doc = createDoc("regression-sdtcontent-paragraph.docx");
 		doc.setData({
 			loop: {
