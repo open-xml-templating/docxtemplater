@@ -41,6 +41,7 @@ Node
         doc.render()
     }
     catch (error) {
+        // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object).
         var e = {
             message: error.message,
             name: error.name,
@@ -48,7 +49,14 @@ Node
             properties: error.properties,
         }
         console.log(JSON.stringify({error: e}));
-        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+        if (error.properties && error.properties.errors instanceof Array) {
+            const errorMessages = error.properties.errors.map(function (error) {
+                return error.properties.explanation;
+            }).join("\n");
+            console.log('errorMessages', errorMessages);
+            // errorMessages is a humanly readable message looking like this : 
+            // 'The tag beginning with "foobar" is unopened'
+        }
         throw error;
     }
 
@@ -101,6 +109,7 @@ Browser
                     doc.render()
                 }
                 catch (error) {
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object).
                     var e = {
                         message: error.message,
                         name: error.name,
@@ -108,7 +117,14 @@ Browser
                         properties: error.properties,
                     }
                     console.log(JSON.stringify({error: e}));
-                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    if (error.properties && error.properties.errors instanceof Array) {
+                        const errorMessages = error.properties.errors.map(function (error) {
+                            return error.properties.explanation;
+                        }).join("\n");
+                        console.log('errorMessages', errorMessages);
+                        // errorMessages is a humanly readable message looking like this : 
+                        // 'The tag beginning with "foobar" is unopened'
+                    }
                     throw error;
                 }
                 var out=doc.getZip().generate({
