@@ -15,7 +15,7 @@
 
 - Update moduleApiVersion to 3.16.0
 - Disallow to call attachModule twice on a given module
-- Add options to `parse` and `postparse`
+- Add options to `parse` and `postparse` such as filePath
 
 ### 3.14.10
 
