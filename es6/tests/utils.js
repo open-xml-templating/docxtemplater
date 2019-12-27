@@ -52,6 +52,10 @@ function unifiedDiff(actual, expected) {
 	);
 }
 
+function isNode12() {
+	return process && process.version && process.version.indexOf("v12") === 0;
+}
+
 function walk(dir) {
 	let results = [];
 	const list = fs.readdirSync(dir);
@@ -573,4 +577,5 @@ module.exports = {
 	rejectSoon,
 	start,
 	wrapMultiError,
+	isNode12,
 };
