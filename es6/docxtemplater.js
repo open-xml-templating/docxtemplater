@@ -272,8 +272,8 @@ const Docxtemplater = class Docxtemplater {
 		return this.zip;
 	}
 	createTemplateClass(path) {
-		const usedData = this.zip.files[path].asText();
-		return this.createTemplateClassFromContent(usedData, path);
+		const content = this.zip.files[path].asText();
+		return this.createTemplateClassFromContent(content, path);
 	}
 	createTemplateClassFromContent(content, filePath) {
 		const xmltOptions = {
