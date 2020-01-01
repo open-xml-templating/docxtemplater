@@ -1,3 +1,13 @@
+### 3.15.3
+
+Bugfix when having dashloop inside normal loop, like this :
+
+```
+{#foo}test {-w:p loop}loop{/}{/}
+```
+
+we now throw a multi error instead of just the first error encountered.
+
 ### 3.15.2
 
 - Update moduleApiVersion to 3.18.0

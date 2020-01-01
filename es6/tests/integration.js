@@ -612,6 +612,64 @@ describe("ParagraphLoop", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
+	it("should fail when placing paragraph loop inside normal loop", function() {
+		const doc = createDoc("paragraph-loop-error.docx");
+		doc.setData({});
+		const expectedError = {
+			message: "Multi error",
+			name: "TemplateError",
+			properties: {
+				id: "multi_error",
+				errors: [
+					{
+						name: "TemplateError",
+						message: 'No tag "w:p" was found at the left',
+						properties: {
+							id: "no_xml_tag_found_at_left",
+							element: "w:p",
+							index: 1,
+							parsedLength: 4,
+							part: {
+								endLindex: 17,
+								expandTo: "w:p",
+								inverted: false,
+								lIndex: 17,
+								location: "start",
+								module: "loop",
+								offset: 12,
+								raw: "-w:p loop",
+								type: "placeholder",
+								value: "loop",
+							},
+						},
+					},
+					{
+						name: "TemplateError",
+						message: 'No tag "w:p" was found at the right',
+						properties: {
+							id: "no_xml_tag_found_at_right",
+							element: "w:p",
+							index: 3,
+							parsedLength: 4,
+							part: {
+								endLindex: 21,
+								lIndex: 21,
+								location: "end",
+								module: "loop",
+								offset: 26,
+								raw: "/",
+								type: "placeholder",
+								value: "",
+							},
+						},
+					},
+				],
+			},
+		};
+		const create = doc.compile.bind(doc);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
 	it("should work with pagebreak afterwards", function() {
 		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
 		doc.setOptions({

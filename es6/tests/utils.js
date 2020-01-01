@@ -283,6 +283,7 @@ function cleanError(e, expectedError) {
 	}
 	checkLength(e, expectedError, "properties.paragraphParts");
 	checkLength(e, expectedError, "properties.postparsed");
+	checkLength(e, expectedError, "properties.parsed");
 	if (e.stack && expectedError) {
 		expect(e.stack).to.contain("Error: " + expectedError.message);
 	}

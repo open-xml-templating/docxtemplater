@@ -89,8 +89,17 @@ const expandPairTrait = {
 			if (!expandTo) {
 				return [pair[0].offset, pair[1].offset];
 			}
-			const left = getLeft(postparsed, expandTo, pair[0].offset);
-			const right = getRight(postparsed, expandTo, pair[1].offset);
+			let left, right;
+			try {
+				left = getLeft(postparsed, expandTo, pair[0].offset);
+			} catch (e) {
+				errors.push(e);
+			}
+			try {
+				right = getRight(postparsed, expandTo, pair[1].offset);
+			} catch (e) {
+				errors.push(e);
+			}
 			return [left, right];
 		});
 
