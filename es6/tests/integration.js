@@ -629,6 +629,7 @@ describe("ParagraphLoop", function() {
 							element: "w:p",
 							index: 1,
 							parsedLength: 4,
+							offset: 12,
 							part: {
 								endLindex: 17,
 								expandTo: "w:p",
@@ -651,6 +652,7 @@ describe("ParagraphLoop", function() {
 							element: "w:p",
 							index: 3,
 							parsedLength: 4,
+							offset: 26,
 							part: {
 								endLindex: 21,
 								lIndex: 21,

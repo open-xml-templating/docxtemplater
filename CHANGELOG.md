@@ -1,3 +1,12 @@
+### 3.15.4
+
+Add offset property to following errors :
+
+```
+"No w:p was found at the left"
+"No w:p was found at the right"
+```
+
 ### 3.15.3
 
 Bugfix when having dashloop inside normal loop, like this :

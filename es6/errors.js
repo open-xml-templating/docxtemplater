@@ -100,10 +100,12 @@ function throwXmlTagNotFound(options) {
 	const err = new XTTemplateError(
 		`No tag "${options.element}" was found at the ${options.position}`
 	);
+	const part = options.parsed[options.index];
 	err.properties = {
 		id: `no_xml_tag_found_at_${options.position}`,
 		explanation: `No tag "${options.element}" was found at the ${options.position}`,
-		part: options.parsed[options.index],
+		offset: part.offset,
+		part,
 		parsed: options.parsed,
 		index: options.index,
 		element: options.element,
