@@ -156,7 +156,8 @@ class LoopModule {
 				scope,
 				part.value,
 				i,
-				part
+				part,
+				length
 			);
 			const subRendered = options.render(
 				mergeObjects({}, options, {
@@ -214,8 +215,14 @@ class LoopModule {
 		const sm = options.scopeManager;
 		const promisedValue = sm.getValue(part.value, { part });
 		const promises = [];
-		function loopOver(scope, i) {
-			const scopeManager = sm.createSubScopeManager(scope, part.value, i, part);
+		function loopOver(scope, i, length) {
+			const scopeManager = sm.createSubScopeManager(
+				scope,
+				part.value,
+				i,
+				part,
+				length
+			);
 			promises.push(
 				options.resolve({
 					filePath: options.filePath,

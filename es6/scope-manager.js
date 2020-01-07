@@ -73,6 +73,7 @@ const ScopeManager = class ScopeManager {
 	constructor(options) {
 		this.scopePath = options.scopePath;
 		this.scopePathItem = options.scopePathItem;
+		this.scopePathLength = options.scopePathLength;
 		this.scopeList = options.scopeList;
 		this.scopeLindex = options.scopeLindex;
 		this.parser = options.parser;
@@ -146,15 +147,17 @@ const ScopeManager = class ScopeManager {
 			resolved: this.resolved,
 			scopePath: this.scopePath,
 			scopePathItem: this.scopePathItem,
+			scopePathLength: this.scopePathLength,
 		};
 	}
-	createSubScopeManager(scope, tag, i, part) {
+	createSubScopeManager(scope, tag, i, part, length) {
 		return new ScopeManager({
 			resolved: this.resolved,
 			parser: this.parser,
 			scopeList: this.scopeList.concat(scope),
 			scopePath: this.scopePath.concat(tag),
 			scopePathItem: this.scopePathItem.concat(i),
+			scopePathLength: this.scopePathLength.concat(length),
 			scopeLindex: this.scopeLindex.concat(part.lIndex),
 		});
 	}
@@ -163,6 +166,7 @@ const ScopeManager = class ScopeManager {
 module.exports = function(options) {
 	options.scopePath = [];
 	options.scopePathItem = [];
+	options.scopePathLength = [];
 	options.scopeLindex = [];
 	options.scopeList = [options.tags];
 	return new ScopeManager(options);

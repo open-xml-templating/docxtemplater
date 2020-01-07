@@ -6,7 +6,7 @@ const { xml2str } = require("../doc-utils");
 describe("Verify apiversion", function() {
 	it("should work with valid api version", function() {
 		const module = {
-			requiredAPIVersion: "3.18.0",
+			requiredAPIVersion: "3.19.0",
 			render(part) {
 				return part.value;
 			},
@@ -30,7 +30,7 @@ describe("Verify apiversion", function() {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 18, 0],
+				currentModuleApiVersion: [3, 19, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});

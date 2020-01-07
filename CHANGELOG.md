@@ -1,3 +1,8 @@
+### 3.15.5
+
+- Add scopePathLength to scopemanager to be able to write "\$isLast".
+- Update moduleApiVersion to 3.19.0
+
 ### 3.15.4
 
 Add offset property to following errors :

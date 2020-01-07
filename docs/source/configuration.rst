@@ -185,6 +185,18 @@ As an other example, it is possible to use the `{$index}` tag inside a loop by u
                     const indexes = context.scopePathItem;
                     return indexes[indexes.length - 1];
                 }
+                if (tag === "$isLast") {
+                    const totalLength =
+                        context.scopePathLength[context.scopePathLength.length - 1];
+                    const index =
+                        context.scopePathItem[context.scopePathItem.length - 1];
+                    return index === totalLength - 1;
+                }
+                if (tag === "$isFirst") {
+                    const index =
+                        context.scopePathItem[context.scopePathItem.length - 1];
+                    return index === 0;
+                }
                 return scope[tag];
             },
         };

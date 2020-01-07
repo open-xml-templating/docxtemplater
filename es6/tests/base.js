@@ -97,7 +97,7 @@ describe("Api versioning", function() {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 18, 0],
+					currentModuleApiVersion: [3, 19, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -112,7 +112,7 @@ describe("Api versioning", function() {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 18, 0],
+					currentModuleApiVersion: [3, 19, 0],
 					neededVersion: [3, 44, 0],
 				},
 			}
@@ -509,7 +509,8 @@ describe("Changing the parser", function() {
 	});
 
 	it("should be able to access meta to get the index", function() {
-		const content = "<w:t>Hello {#users}{$index} {name} {/users}</w:t>";
+		const content =
+			"<w:t>Hello {#users}{$index} {#$isFirst}@{/}{#$isLast}!{/}{name} {/users}</w:t>";
 		const scope = {
 			users: [{ name: "Jane" }, { name: "Mary" }],
 		};
@@ -521,12 +522,24 @@ describe("Changing the parser", function() {
 						if (tag === "$index") {
 							return last(context.scopePathItem);
 						}
+						if (tag === "$isLast") {
+							const totalLength =
+								context.scopePathLength[context.scopePathLength.length - 1];
+							const index =
+								context.scopePathItem[context.scopePathItem.length - 1];
+							return index === totalLength - 1;
+						}
+						if (tag === "$isFirst") {
+							const index =
+								context.scopePathItem[context.scopePathItem.length - 1];
+							return index === 0;
+						}
 						return scope[tag];
 					},
 				};
 			},
 		});
-		expect(xmlTemplater.getFullText()).to.be.equal("Hello 0 Jane 1 Mary ");
+		expect(xmlTemplater.getFullText()).to.be.equal("Hello 0 @Jane 1 !Mary ");
 	});
 
 	it("should be able to have scopePathItem with different lengths when having conditions", function() {
