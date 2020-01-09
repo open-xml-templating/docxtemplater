@@ -17,14 +17,18 @@ To be able to see these errors, you need to catch them properly.
         doc.render()
     }
     catch (error) {
-        // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object).
-        var e = {
-            message: error.message,
-            name: error.name,
-            stack: error.stack,
-            properties: error.properties,
+        // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+        function replaceErrors(key, value) {
+            if (value instanceof Error) {
+                return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+                    error[key] = value[key];
+                    return error;
+                }, {});
+            }
+            return value;
         }
-        console.log(JSON.stringify({error: e}));
+        console.log(JSON.stringify({error: error}, replaceErrors));
+
         if (error.properties && error.properties.errors instanceof Array) {
             const errorMessages = error.properties.errors.map(function (error) {
                 return error.properties.explanation;

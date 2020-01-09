@@ -1,5 +1,6 @@
 const { loadFile, loadDocument, rejectSoon } = require("./utils");
 const Errors = require("../errors.js");
+const { expect } = require("chai");
 const {
 	createXmlTemplaterDocx,
 	createXmlTemplaterDocxNoRender,
@@ -469,6 +470,35 @@ describe("Runtime errors", function() {
 			parser: errorParser,
 		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
+	it("should be possible to log the error", function() {
+		let errorStringified = "";
+		const content = "<w:t> {name|upper}</w:t>";
+		function errorParser() {
+			return {
+				get() {
+					throw new Error("foo bar 6aaef652-8525-4442-b9b8-5ab942b2c476");
+				},
+			};
+		}
+		function replaceErrors(key, value) {
+			if (value instanceof Error) {
+				return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+					error[key] = value[key];
+					return error;
+				}, {});
+			}
+			return value;
+		}
+		try {
+			createXmlTemplaterDocx(content, { parser: errorParser });
+		} catch (e) {
+			errorStringified = JSON.stringify(e, replaceErrors, 2);
+		}
+		expect(errorStringified).to.contain(
+			"foo bar 6aaef652-8525-4442-b9b8-5ab942b2c476"
+		);
 	});
 
 	it("should fail when customparser fails to execute on multiple tags", function() {

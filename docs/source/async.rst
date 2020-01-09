@@ -18,14 +18,18 @@ You can have promises in your data.
         doc.compile(); // You need to compile your document first.
     }
     catch (error) {
-        // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object).
-        var e = {
-            message: error.message,
-            name: error.name,
-            stack: error.stack,
-            properties: error.properties,
+        // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+        function replaceErrors(key, value) {
+            if (value instanceof Error) {
+                return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+                    error[key] = value[key];
+                    return error;
+                }, {});
+            }
+            return value;
         }
-        console.log(JSON.stringify({error: e}));
+        console.log(JSON.stringify({error: error}, replaceErrors));
+
         if (error.properties && error.properties.errors instanceof Array) {
             const errorMessages = error.properties.errors.map(function (error) {
                 return error.properties.explanation;
@@ -44,21 +48,25 @@ You can have promises in your data.
                .generate({type: 'nodebuffer'});
            fs.writeFileSync(path.resolve(__dirname, 'output.docx'), buf);
        }).catch(function(error) {
-            // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object).
-            var e = {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties,
-            }
-            console.log(JSON.stringify({error: e}));
-            if (error.properties && error.properties.errors instanceof Array) {
-                const errorMessages = error.properties.errors.map(function (error) {
-                    return error.properties.explanation;
-                }).join("\n");
-                console.log('errorMessages', errorMessages);
-                // errorMessages is a humanly readable message looking like this : 
-                // 'The tag beginning with "foobar" is unopened'
-            }
-            throw error;
+           // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+           function replaceErrors(key, value) {
+               if (value instanceof Error) {
+                   return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+                       error[key] = value[key];
+                       return error;
+                   }, {});
+               }
+               return value;
+           }
+           console.log(JSON.stringify({error: error}, replaceErrors));
+
+           if (error.properties && error.properties.errors instanceof Array) {
+               const errorMessages = error.properties.errors.map(function (error) {
+                   return error.properties.explanation;
+               }).join("\n");
+               console.log('errorMessages', errorMessages);
+               // errorMessages is a humanly readable message looking like this : 
+               // 'The tag beginning with "foobar" is unopened'
+           }
+           throw error;
        });

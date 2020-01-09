@@ -374,7 +374,8 @@ function expectToThrow(fn, type, expectedError) {
 	} catch (e) {
 		err = e;
 	}
-	return errorVerifier(err, type, expectedError);
+	errorVerifier(err, type, expectedError);
+	return err;
 }
 
 function load(name, content, obj) {
