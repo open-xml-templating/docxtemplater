@@ -1250,7 +1250,7 @@ const fixtures = {
 		resolved: null,
 	},
 	angular_get_parent_prop_if_null_child: {
-		it: "should foo",
+		it: "should get parent prop if child is null",
 		content: "<w:t>{#c}{label}{/c}</w:t>",
 		result: '<w:t xml:space="preserve">hello</w:t>',
 		scope: { c: { label: null }, label: "hello" },

@@ -1,3 +1,21 @@
+### 3.16.0
+
+Bugfix for loop module and raw module : when having an "execution" error in the parser (eg on render, after the compilation of the template, for example with the angular parser when a filter is called with bad arguments), if one `{#looptag}` or `{@rawtag}` had an execution error, the code would immediately stop collecting other errors. Now docxtemplater will collect all errors, for simple tags, for loop tags, and for rawxml tags.
+
+This means that if your template was like this :
+
+```
+{#foobar|badfilter1}test{/}
+{#foobar|badfilter2}test{/}
+{@rawvalue|badfilter3}
+```
+
+Before version 3.16.0, calling `render` on this template would throw an error with just the first tag erroring.
+
+Since version 3.16.0, a multi error is thrown with all three tags in error being in `.properties.errors`.
+
+This is fixed in sync mode (when calling `doc.render` directly) and also in async mode (when calling `doc.resolveData` and then `doc.render`)
+
 ### 3.15.5
 
 - Add scopePathLength to scopemanager to be able to write "\$isLast".

@@ -3,6 +3,7 @@
 const DocUtils = require("./doc-utils");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
+const { throwMultiError } = require("./errors");
 
 const commonModule = require("./modules/common");
 const ctXML = "[Content_Types].xml";
@@ -146,12 +147,18 @@ const Docxtemplater = class Docxtemplater {
 		this.compiled[fileName] = currentFile;
 	}
 	resolveData(data) {
+		let errors = [];
 		return Promise.all(
 			Object.keys(this.compiled).map(from => {
 				const currentFile = this.compiled[from];
-				return currentFile.resolveTags(data);
+				return currentFile.resolveTags(data).catch(function(errs) {
+					errors = errors.concat(errs);
+				});
 			})
 		).then(resolved => {
+			if (errors.length !== 0) {
+				throwMultiError(errors);
+			}
 			return concatArrays(resolved);
 		});
 	}

@@ -56,9 +56,17 @@ function getValueAsync(tag, meta, num) {
 	const scope = this.scopeList[num];
 	// search in the scopes (in reverse order) and keep the first defined value
 	const parser = this.parser(tag, { scopePath: this.scopePath });
-	return Promise.resolve(parser.get(scope, this.getContext(meta, num)))
+	return Promise.resolve()
+		.then(() => {
+			return parser.get(scope, this.getContext(meta, num));
+		})
 		.catch(function(error) {
-			throw getScopeParserExecutionError({ tag, scope, error });
+			throw getScopeParserExecutionError({
+				tag,
+				scope,
+				error,
+				offset: meta.part.offset,
+			});
 		})
 		.then(result => {
 			if (result == null && num > 0) {

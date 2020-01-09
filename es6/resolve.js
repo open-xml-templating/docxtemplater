@@ -24,24 +24,34 @@ function resolve(options) {
 	return Promise.all(
 		compiled
 			.map(function(part) {
-				const moduleResolved = moduleResolve(part, options);
-				if (moduleResolved) {
-					return moduleResolved.then(function(value) {
-						resolved.push({ tag: part.value, value, lIndex: part.lIndex });
+				return Promise.resolve()
+					.then(function() {
+						const moduleResolved = moduleResolve(part, options);
+						if (moduleResolved) {
+							return moduleResolved.then(function(value) {
+								resolved.push({ tag: part.value, value, lIndex: part.lIndex });
+							});
+						}
+						if (part.type === "placeholder") {
+							return scopeManager
+								.getValueAsync(part.value, { part })
+								.then(function(value) {
+									if (value == null) {
+										value = options.nullGetter(part);
+									}
+									resolved.push({
+										tag: part.value,
+										value,
+										lIndex: part.lIndex,
+									});
+									return value;
+								});
+						}
+						return;
+					})
+					.catch(function(e) {
+						errors.push(e);
 					});
-				}
-				if (part.type === "placeholder") {
-					return scopeManager
-						.getValueAsync(part.value, { part })
-						.then(function(value) {
-							if (value == null) {
-								value = options.nullGetter(part);
-							}
-							resolved.push({ tag: part.value, value, lIndex: part.lIndex });
-							return value;
-						});
-				}
-				return;
 			})
 			.filter(a => {
 				return a;

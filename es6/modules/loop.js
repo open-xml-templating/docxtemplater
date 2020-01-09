@@ -184,14 +184,20 @@ class LoopModule {
 			totalValue = totalValue.concat(subRendered.parts);
 			errors = errors.concat(subRendered.errors || []);
 		}
-		const result = options.scopeManager.loopOver(
-			part.value,
-			loopOver,
-			part.inverted,
-			{
-				part,
-			}
-		);
+		let result;
+		try {
+			result = options.scopeManager.loopOver(
+				part.value,
+				loopOver,
+				part.inverted,
+				{
+					part,
+				}
+			);
+		} catch (e) {
+			errors.push(e);
+			return { errors };
+		}
 		if (result === false) {
 			if (part.hasPageBreak) {
 				return {
@@ -213,7 +219,9 @@ class LoopModule {
 		}
 
 		const sm = options.scopeManager;
-		const promisedValue = sm.getValue(part.value, { part });
+		const promisedValue = Promise.resolve().then(function() {
+			return sm.getValue(part.value, { part });
+		});
 		const promises = [];
 		function loopOver(scope, i, length) {
 			const scopeManager = sm.createSubScopeManager(
@@ -235,7 +243,7 @@ class LoopModule {
 				})
 			);
 		}
-		return Promise.resolve(promisedValue).then(function(value) {
+		return promisedValue.then(function(value) {
 			sm.loopOverValue(value, loopOver, part.inverted);
 			return Promise.all(promises).then(function(r) {
 				return r.map(function({ resolved }) {

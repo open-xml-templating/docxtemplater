@@ -247,8 +247,12 @@ function cleanError(e, expectedError) {
 		expect(e.properties.file).to.equal("word/document.xml");
 	}
 	if (expectedError.properties.offset != null) {
-		expect(e.properties.offset).to.be.deep.equal(
-			expectedError.properties.offset
+		const o1 = e.properties.offset;
+		const o2 = expectedError.properties.offset;
+		// offset can be arrays, so deep compare
+		expect(o1).to.be.deep.equal(
+			o2,
+			`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
 		);
 	}
 	delete e.properties.file;
@@ -331,9 +335,12 @@ function errorVerifier(e, type, expectedError) {
 			"\nactual : \n" +
 			JSON.stringify(e.properties.errors);
 		expect(expectedError.properties.errors).to.be.an("array", msg);
-		expect(e.properties.errors.length).to.equal(
-			expectedError.properties.errors.length,
-			msg
+		const l1 = e.properties.errors.length;
+		const l2 = expectedError.properties.errors.length;
+		expect(l1).to.equal(
+			l2,
+			`Expected to have the same amount of e.properties.errors ${l1} !== ${l2} ` +
+				msg
 		);
 		e.properties.errors = e.properties.errors.map(function(e, i) {
 			return cleanError(e, expectedError.properties.errors[i]);

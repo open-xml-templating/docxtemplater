@@ -501,8 +501,11 @@ describe("Runtime errors", function() {
 		);
 	});
 
-	it("should fail when customparser fails to execute on multiple tags", function() {
-		const content = "<w:t>{name|upper} {othername|upper}</w:t>";
+	it("should fail when customparser fails to execute on multiple raw tags", function() {
+		const content = `
+		<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
+		<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
+		`;
 		let count = 0;
 		function errorParser() {
 			return {
@@ -523,7 +526,7 @@ describe("Runtime errors", function() {
 						properties: {
 							id: "scopeparser_execution_failed",
 							scope: {},
-							tag: "name|upper",
+							tag: "raw|isfalse",
 							rootError: { message: "foo 1" },
 							offset: 0,
 						},
@@ -534,9 +537,9 @@ describe("Runtime errors", function() {
 						properties: {
 							id: "scopeparser_execution_failed",
 							scope: {},
-							tag: "othername|upper",
+							tag: "raw|istrue",
 							rootError: { message: "foo 2" },
-							offset: 13,
+							offset: 14,
 						},
 					},
 				],
@@ -1206,6 +1209,133 @@ describe("Async errors", function() {
 		function create() {
 			return doc.resolveData({ user: rejectSoon(new Error("Foobar")) });
 		}
-		return expectToThrowAsync(create, Errors.XTScopeParserError, expectedError);
+		return expectToThrowAsync(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
+	});
+
+	it("should fail when customparser fails to execute on multiple tags", function() {
+		const content =
+			"<w:t>{#name|istrue}Name{/} {name|upper} {othername|upper}</w:t>";
+		let count = 0;
+		function errorParser() {
+			return {
+				get() {
+					count++;
+					throw new Error(`foo ${count}`);
+				},
+			};
+		}
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							id: "scopeparser_execution_failed",
+							scope: {},
+							tag: "name|istrue",
+							rootError: { message: "foo 1" },
+							offset: 0,
+						},
+					},
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							id: "scopeparser_execution_failed",
+							scope: {},
+							tag: "name|upper",
+							rootError: { message: "foo 2" },
+							offset: 22,
+						},
+					},
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							id: "scopeparser_execution_failed",
+							scope: {},
+							tag: "othername|upper",
+							rootError: { message: "foo 3" },
+							offset: 35,
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+		const doc = createXmlTemplaterDocxNoRender(content, {
+			parser: errorParser,
+		});
+		doc.compile();
+		function create() {
+			return doc.resolveData().then(function() {
+				return doc.render();
+			});
+		}
+		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
+	});
+
+	it("should fail when customparser fails to execute on multiple raw tags", function() {
+		const content = `
+		<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
+		<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
+		`;
+		let count = 0;
+		function errorParser() {
+			return {
+				get() {
+					count++;
+					throw new Error(`foo ${count}`);
+				},
+			};
+		}
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							id: "scopeparser_execution_failed",
+							scope: {},
+							tag: "raw|isfalse",
+							rootError: { message: "foo 1" },
+							offset: 0,
+						},
+					},
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							id: "scopeparser_execution_failed",
+							scope: {},
+							tag: "raw|istrue",
+							rootError: { message: "foo 2" },
+							offset: 14,
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+		const doc = createXmlTemplaterDocxNoRender(content, {
+			parser: errorParser,
+		});
+		doc.compile();
+		function create() {
+			return doc.resolveData().then(function() {
+				return doc.render();
+			});
+		}
+		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
 	});
 });

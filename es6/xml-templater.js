@@ -45,7 +45,10 @@ module.exports = class XmlTemplater {
 		const options = this.getOptions();
 		options.scopeManager = createScope(options);
 		options.resolve = resolve;
-		return resolve(options).then(({ resolved }) => {
+		return resolve(options).then(({ resolved, errors }) => {
+			if (errors.length !== 0) {
+				throw errors;
+			}
 			return Promise.all(
 				resolved.map(function(r) {
 					return Promise.resolve(r);

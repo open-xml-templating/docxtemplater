@@ -50,9 +50,16 @@ class RawXmlModule {
 		if (part.module !== moduleName) {
 			return null;
 		}
-		let value = options.scopeManager.getValue(part.value, { part });
-		if (value == null) {
-			value = options.nullGetter(part);
+		let value;
+		const errors = [];
+		try {
+			value = options.scopeManager.getValue(part.value, { part });
+			if (value == null) {
+				value = options.nullGetter(part);
+			}
+		} catch (e) {
+			errors.push(e);
+			return { errors };
 		}
 		if (!value) {
 			return { value: part.emptyValue || "" };
