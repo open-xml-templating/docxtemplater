@@ -1,7 +1,7 @@
 const { expectToThrow, createDoc, shouldBeSame, isNode12 } = require("./utils");
 const Errors = require("../errors.js");
 const { expect } = require("chai");
-const { xml2str } = require("../doc-utils");
+const { xml2str, traits } = require("../doc-utils");
 
 describe("Verify apiversion", function() {
 	it("should work with valid api version", function() {
@@ -129,5 +129,54 @@ describe("Module unique tags xml", function() {
 		doc.compile();
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-tag-example.docx" });
+	});
+});
+
+describe("Module traits", function() {
+	it("should not cause an issue if using traits.expandTo containing loop", function() {
+		const moduleName = "comment-module";
+		function getInner({ part, leftParts, rightParts, postparse }) {
+			part.subparsed = postparse([].concat(leftParts).concat(rightParts), {
+				basePart: part,
+			});
+			return part;
+		}
+		const module = {
+			requiredAPIVersion: "3.0.0",
+			parse(placeHolderContent) {
+				if (placeHolderContent[0] === "£") {
+					const type = "placeholder";
+					return {
+						type,
+						value: placeHolderContent.substr(1),
+						module: moduleName,
+					};
+				}
+			},
+			postparse(parsed, { postparse }) {
+				parsed = traits.expandToOne(parsed, {
+					moduleName,
+					getInner,
+					expandTo: ["w:p"],
+					postparse,
+				});
+				return parsed;
+			},
+			render(part) {
+				if (part.module === moduleName) {
+					return {
+						value: "",
+					};
+				}
+			},
+		};
+
+		const doc = createDoc("comment-with-loop.docx");
+		doc.attachModule(module);
+		doc
+			.setData({})
+			.compile()
+			.render();
+		shouldBeSame({ doc, expectedName: "expected-comment-example.docx" });
 	});
 });

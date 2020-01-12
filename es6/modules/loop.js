@@ -89,7 +89,11 @@ class LoopModule {
 		}
 
 		return parsed.reduce(function(tags, part, offset) {
-			if (part.type === "placeholder" && part.module === moduleName) {
+			if (
+				part.type === "placeholder" &&
+				part.module === moduleName &&
+				part.subparsed == null
+			) {
 				tags.push({ part, offset });
 			}
 			return tags;

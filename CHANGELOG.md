@@ -1,3 +1,7 @@
+### 3.16.1
+
+Bugfix for loop module contained inside grid slides module : Do not fail with error "Unoponed loop"
+
 ### 3.16.0
 
 Bugfix for loop module and raw module : when having an "execution" error in the parser (eg on render, after the compilation of the template, for example with the angular parser when a filter is called with bad arguments), if one `{#looptag}` or `{@rawtag}` had an execution error, the code would immediately stop collecting other errors. Now docxtemplater will collect all errors, for simple tags, for loop tags, and for rawxml tags.
