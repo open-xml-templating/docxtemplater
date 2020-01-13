@@ -242,10 +242,6 @@ function cleanRecursive(arr) {
 }
 
 function cleanError(e, expectedError) {
-	if (e.properties.file != null) {
-		expect(e.properties.file).to.be.a("string");
-		expect(e.properties.file).to.equal("word/document.xml");
-	}
 	if (expectedError.properties.offset != null) {
 		const o1 = e.properties.offset;
 		const o2 = expectedError.properties.offset;
@@ -255,7 +251,6 @@ function cleanError(e, expectedError) {
 			`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
 		);
 	}
-	delete e.properties.file;
 	delete e.properties.explanation;
 	delete e.properties.offset;
 	delete expectedError.properties.offset;

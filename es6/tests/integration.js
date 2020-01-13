@@ -569,6 +569,7 @@ describe("ParagraphLoop", function() {
 						name: "TemplateError",
 						message: "Unclosed tag",
 						properties: {
+							file: "word/document.xml",
 							xtag: "firstName",
 							id: "unclosed_tag",
 							context: "{firstName ",
@@ -579,6 +580,7 @@ describe("ParagraphLoop", function() {
 						name: "TemplateError",
 						message: "Unclosed tag",
 						properties: {
+							file: "word/document.xml",
 							xtag: "error",
 							id: "unclosed_tag",
 							context: "{error  ",
@@ -589,6 +591,7 @@ describe("ParagraphLoop", function() {
 						name: "TemplateError",
 						message: "Unopened tag",
 						properties: {
+							file: "word/document.xml",
 							xtag: "}",
 							id: "unopened_tag",
 							context: "}",
@@ -599,6 +602,7 @@ describe("ParagraphLoop", function() {
 						name: "TemplateError",
 						message: "Unclosed tag",
 						properties: {
+							file: "word/document.xml",
 							xtag: "",
 							id: "unclosed_tag",
 							context: "{",
@@ -625,6 +629,7 @@ describe("ParagraphLoop", function() {
 						name: "TemplateError",
 						message: 'No tag "w:p" was found at the left',
 						properties: {
+							file: "word/document.xml",
 							id: "no_xml_tag_found_at_left",
 							element: "w:p",
 							index: 1,
@@ -648,6 +653,7 @@ describe("ParagraphLoop", function() {
 						name: "TemplateError",
 						message: 'No tag "w:p" was found at the right',
 						properties: {
+							file: "word/document.xml",
 							id: "no_xml_tag_found_at_right",
 							element: "w:p",
 							index: 3,

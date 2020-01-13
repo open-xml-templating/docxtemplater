@@ -44,6 +44,12 @@ class RawXmlModule {
 			moduleName,
 			getInner,
 			expandTo: this.fileTypeConfig.tagRawXml,
+			error: {
+				message: "Raw tag not in paragraph",
+				id: "raw_tag_outerxml_invalid",
+				explanation: part =>
+					`The tag "${part.value}" is not inside a paragraph, putting raw tags inside an inline loop is disallowed.`,
+			},
 		});
 	}
 	render(part, options) {

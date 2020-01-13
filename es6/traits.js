@@ -13,7 +13,7 @@ const {
 } = require("./doc-utils");
 const {
 	XTTemplateError,
-	throwRawTagNotInParagraph,
+	throwExpandNotFound,
 	getLoopPositionProducesInvalidXMLError,
 } = require("./errors");
 
@@ -137,12 +137,13 @@ function expandOne(part, postparsed, options) {
 		right = getRight(postparsed, expandTo, index);
 	} catch (rootError) {
 		if (rootError instanceof XTTemplateError) {
-			throwRawTagNotInParagraph({
+			throwExpandNotFound({
 				part,
 				rootError,
 				postparsed,
 				expandTo,
 				index,
+				...options.error,
 			});
 		}
 		throw rootError;

@@ -132,14 +132,22 @@ function throwContentMustBeString(type) {
 	throw err;
 }
 
-function throwRawTagNotInParagraph(options) {
-	const err = new XTTemplateError("Raw tag not in paragraph");
+function throwExpandNotFound(options) {
 	const {
 		part: { value, offset },
+		id = "raw_tag_outerxml_invalid",
+		message = "Raw tag not in paragraph",
 	} = options;
+	let {
+		explanation = `The tag "${value}" is not inside a paragraph`,
+	} = options;
+	if (typeof explanation === "function") {
+		explanation = explanation(value);
+	}
+	const err = new XTTemplateError(message);
 	err.properties = {
-		id: "raw_tag_outerxml_invalid",
-		explanation: `The tag "${value}" is not inside a paragraph`,
+		id,
+		explanation,
 		rootError: options.rootError,
 		xtag: value,
 		offset,
@@ -319,7 +327,7 @@ module.exports = {
 	throwLocationInvalid,
 	throwMalformedXml,
 	throwMultiError,
-	throwRawTagNotInParagraph,
+	throwExpandNotFound,
 	throwRawTagShouldBeOnlyTextInParagraph,
 	throwUnimplementedTagType,
 	throwXmlTagNotFound,

@@ -50,6 +50,7 @@ describe("Compilation errors", function() {
 			message: "Unclosed tag",
 			properties: {
 				context: "{unclosedtag my text",
+				file: "word/document.xml",
 				id: "unclosed_tag",
 				xtag: "unclosedtag",
 				offset: 0,
@@ -69,6 +70,7 @@ describe("Compilation errors", function() {
 			name: "TemplateError",
 			message: "Unclosed tag",
 			properties: {
+				file: "word/document.xml",
 				id: "unclosed_tag",
 				context: "{user ",
 				xtag: "user",
@@ -89,6 +91,7 @@ describe("Compilation errors", function() {
 			name: "TemplateError",
 			message: "Unopened tag",
 			properties: {
+				file: "word/document.xml",
 				id: "unopened_tag",
 				context: "foobar",
 				offset: 6,
@@ -109,6 +112,7 @@ describe("Compilation errors", function() {
 			name: "TemplateError",
 			message: "Closing tag does not match opening tag",
 			properties: {
+				file: "word/document.xml",
 				id: "closing_tag_does_not_match_opening_tag",
 				openingtag: "users",
 				closingtag: "foo",
@@ -128,6 +132,7 @@ describe("Compilation errors", function() {
 			name: "TemplateError",
 			message: "Unopened loop",
 			properties: {
+				file: "word/document.xml",
 				id: "unopened_loop",
 				xtag: "loop",
 				offset: 0,
@@ -147,6 +152,7 @@ describe("Compilation errors", function() {
 			name: "TemplateError",
 			message: "Unclosed loop",
 			properties: {
+				file: "word/document.xml",
 				id: "unclosed_loop",
 				xtag: "loop",
 				offset: 0,
@@ -170,6 +176,7 @@ describe("Compilation errors", function() {
 				id: "raw_tag_outerxml_invalid",
 				offset: 0,
 				index: 1,
+				file: "word/document.xml",
 				postparsed: [
 					{
 						position: "start",
@@ -212,6 +219,7 @@ describe("Compilation errors", function() {
 			name: "TemplateError",
 			message: "Raw tag not in paragraph",
 			properties: {
+				file: "word/document.xml",
 				id: "raw_tag_outerxml_invalid",
 				xtag: "myrawtag",
 				postparsed: [
@@ -278,6 +286,7 @@ describe("Compilation errors", function() {
 			name: "TemplateError",
 			message: "Raw tag should be the only text in paragraph",
 			properties: {
+				file: "word/document.xml",
 				id: "raw_xml_tag_should_be_only_text_in_paragraph",
 				xtag: "myrawtag",
 				offset: 1,
@@ -304,6 +313,7 @@ describe("Compilation errors", function() {
 						name: "TemplateError",
 						message: "Unopened tag",
 						properties: {
+							file: "word/document.xml",
 							xtag: "foo",
 							id: "unopened_tag",
 							context: "foo",
@@ -313,6 +323,7 @@ describe("Compilation errors", function() {
 						name: "TemplateError",
 						message: "Unopened tag",
 						properties: {
+							file: "word/document.xml",
 							xtag: "bar",
 							id: "unopened_tag",
 							context: "} bar",
@@ -322,6 +333,7 @@ describe("Compilation errors", function() {
 						name: "TemplateError",
 						message: "Raw tag should be the only text in paragraph",
 						properties: {
+							file: "word/document.xml",
 							id: "raw_xml_tag_should_be_only_text_in_paragraph",
 							xtag: "bang",
 							paragraphParts: [
@@ -417,6 +429,7 @@ describe("Compilation errors", function() {
 			name: "ScopeParserError",
 			message: "Scope parser compilation failed",
 			properties: {
+				file: "word/document.xml",
 				id: "scopeparser_compilation_failed",
 				tag: "name++",
 				rootError: {
@@ -455,6 +468,7 @@ describe("Runtime errors", function() {
 						name: "ScopeParserError",
 						message: "Scope parser execution failed",
 						properties: {
+							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
 							scope: {},
 							tag: "name|upper",
@@ -501,7 +515,7 @@ describe("Runtime errors", function() {
 		);
 	});
 
-	it("should fail when customparser fails to execute on multiple raw tags", function() {
+	it("should fail with multi-error when customparser fails to execute on multiple raw tags", function() {
 		const content = `
 		<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
 		<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
@@ -525,6 +539,7 @@ describe("Runtime errors", function() {
 						message: "Scope parser execution failed",
 						properties: {
 							id: "scopeparser_execution_failed",
+							file: "word/document.xml",
 							scope: {},
 							tag: "raw|isfalse",
 							rootError: { message: "foo 1" },
@@ -535,6 +550,7 @@ describe("Runtime errors", function() {
 						name: "ScopeParserError",
 						message: "Scope parser execution failed",
 						properties: {
+							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
 							scope: {},
 							tag: "raw|istrue",
@@ -590,6 +606,7 @@ describe("Multi errors", function() {
 							context: "foo",
 							id: "unopened_tag",
 							xtag: "foo",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -600,6 +617,7 @@ describe("Multi errors", function() {
 							context: "{user, my age is ",
 							id: "unclosed_tag",
 							xtag: "user,",
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -613,11 +631,11 @@ describe("Multi errors", function() {
 	it("should work with multiple errors complex", function() {
 		const content = `<w:t>foo}
 		Hello {user, my age is {bar}
-		Hi bang}, my name is {user2}
-		Hey {user}, my age is {bar}
-		Hola {bang}, my name is {user2}
-		{user, my age is {bar
-		</w:t>`
+			Hi bang}, my name is {user2}
+			Hey {user}, my age is {bar}
+			Hola {bang}, my name is {user2}
+			{user, my age is {bar
+				</w:t>`
 			.replace(/\t/g, "")
 			.split("\n")
 			.join("!");
@@ -634,6 +652,7 @@ describe("Multi errors", function() {
 							xtag: "foo",
 							id: "unopened_tag",
 							context: "foo",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -643,6 +662,7 @@ describe("Multi errors", function() {
 							xtag: "user,",
 							id: "unclosed_tag",
 							context: "{user, my age is ",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -652,6 +672,7 @@ describe("Multi errors", function() {
 							xtag: "bang",
 							id: "unopened_tag",
 							context: "}!Hi bang",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -661,6 +682,7 @@ describe("Multi errors", function() {
 							xtag: "user,",
 							id: "unclosed_tag",
 							context: "{user, my age is ",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -670,6 +692,7 @@ describe("Multi errors", function() {
 							xtag: "bar!",
 							id: "unclosed_tag",
 							context: "{bar!",
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -695,6 +718,7 @@ describe("Multi errors", function() {
 						name: "TemplateError",
 						message: "Closing tag does not match opening tag",
 						properties: {
+							file: "word/document.xml",
 							id: "closing_tag_does_not_match_opening_tag",
 							openingtag: "users",
 							closingtag: "foo",
@@ -704,6 +728,7 @@ describe("Multi errors", function() {
 						name: "TemplateError",
 						message: "Closing tag does not match opening tag",
 						properties: {
+							file: "word/document.xml",
 							id: "closing_tag_does_not_match_opening_tag",
 							openingtag: "bang",
 							closingtag: "baz",
@@ -734,6 +759,7 @@ describe("Multi errors", function() {
 						name: "TemplateError",
 						message: "Unopened loop",
 						properties: {
+							file: "word/document.xml",
 							id: "unopened_loop",
 							xtag: "loop",
 						},
@@ -745,6 +771,7 @@ describe("Multi errors", function() {
 							id: "closing_tag_does_not_match_opening_tag",
 							openingtag: "users",
 							closingtag: "foo",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -754,6 +781,7 @@ describe("Multi errors", function() {
 							id: "closing_tag_does_not_match_opening_tag",
 							openingtag: "bang",
 							closingtag: "baz",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -762,6 +790,7 @@ describe("Multi errors", function() {
 						properties: {
 							id: "unopened_loop",
 							xtag: "fff",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -770,6 +799,7 @@ describe("Multi errors", function() {
 						properties: {
 							id: "unclosed_loop",
 							xtag: "yum",
+							file: "word/document.xml",
 							// To test that the offset is present and well calculated
 							offset: 68,
 						},
@@ -793,6 +823,7 @@ describe("Multi errors", function() {
 						name: "TemplateError",
 						message: "Raw tag not in paragraph",
 						properties: {
+							file: "word/document.xml",
 							id: "raw_tag_outerxml_invalid",
 							xtag: "first",
 							rootError: {
@@ -808,6 +839,7 @@ describe("Multi errors", function() {
 						name: "TemplateError",
 						message: "Raw tag should be the only text in paragraph",
 						properties: {
+							file: "word/document.xml",
 							id: "raw_xml_tag_should_be_only_text_in_paragraph",
 							paragraphPartsLength: 4,
 							xtag: "second",
@@ -832,6 +864,7 @@ describe("Multi errors", function() {
 						name: "ScopeParserError",
 						message: "Scope parser compilation failed",
 						properties: {
+							file: "word/document.xml",
 							offset: 0,
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
@@ -845,6 +878,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 						name: "ScopeParserError",
 						message: "Scope parser compilation failed",
 						properties: {
+							file: "word/document.xml",
 							offset: 9,
 							id: "scopeparser_compilation_failed",
 							tag: "foo|||bang",
@@ -875,6 +909,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 						name: "ScopeParserError",
 						message: "Scope parser compilation failed",
 						properties: {
+							file: "word/document.xml",
 							id: "scopeparser_compilation_failed",
 							tag: "name++",
 							rootError: {
@@ -887,6 +922,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 						name: "ScopeParserError",
 						message: "Scope parser compilation failed",
 						properties: {
+							file: "word/document.xml",
 							id: "scopeparser_compilation_failed",
 							tag: "foo|||bang",
 							rootError: {
@@ -920,6 +956,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 							context: "foo",
 							id: "unopened_tag",
 							xtag: "foo",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -932,6 +969,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 								message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							},
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -958,6 +996,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							context: "foo",
 							id: "unopened_tag",
 							xtag: "foo",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -967,6 +1006,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							id: "closing_tag_does_not_match_opening_tag",
 							openingtag: "users",
 							closingtag: "bar",
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -994,6 +1034,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							context: "foo",
 							id: "unopened_tag",
 							xtag: "foo",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -1004,6 +1045,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							openingtag: "users",
 							closingtag: "bar",
 							offset: [19, 27],
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -1018,6 +1060,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							postparsedLength: 12,
 							expandTo: "w:p",
 							index: 9,
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -1045,6 +1088,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							xtag: "city,",
 							id: "unclosed_tag",
 							context: "{city, ",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -1055,6 +1099,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							xtag: "state",
 							id: "unclosed_tag",
 							context: "{state ",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -1065,6 +1110,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							xtag: "zip",
 							id: "unclosed_tag",
 							context: "{zip ",
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -1079,7 +1125,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 
 	it("should work with multiple unopened", function() {
 		const content = `<w:t>foo</w:t>
-		<w:t> city}, state} zip}</w:t>`;
+			<w:t> city}, state} zip}</w:t>`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -1092,6 +1138,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							xtag: "city",
 							id: "unopened_tag",
 							context: "foo city",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -1101,6 +1148,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							xtag: "state",
 							id: "unopened_tag",
 							context: "}, state",
+							file: "word/document.xml",
 						},
 					},
 					{
@@ -1110,6 +1158,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							xtag: "zip",
 							id: "unopened_tag",
 							context: "} zip",
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -1124,18 +1173,18 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 
 	it("should show an error when loop tag are badly used (xml open count !== xml close count)", function() {
 		const content = `<w:tbl>
-      <w:tr>
-        <w:tc>
-          <w:p> <w:r> <w:t>{#users}</w:t> </w:r> <w:r> <w:t>test</w:t> </w:r> </w:p>
-        </w:tc>
-        <w:tc>
-          <w:p> <w:r> <w:t>test2</w:t> </w:r> </w:p>
-        </w:tc>
-      </w:tr>
-    </w:tbl>
-    <w:p>
-      <w:r> <w:t>{/users}</w:t> </w:r>
-    </w:p>`;
+		<w:tr>
+		<w:tc>
+		<w:p> <w:r> <w:t>{#users}</w:t> </w:r> <w:r> <w:t>test</w:t> </w:r> </w:p>
+		</w:tc>
+		<w:tc>
+		<w:p> <w:r> <w:t>test2</w:t> </w:r> </w:p>
+		</w:tc>
+		</w:tr>
+		</w:tbl>
+		<w:p>
+		<w:r> <w:t>{/users}</w:t> </w:r>
+		</w:p>`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -1149,6 +1198,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							tag: "users",
 							offset: [0, 17],
 							id: "loop_position_invalid",
+							file: "word/document.xml",
 						},
 					},
 				],
@@ -1173,6 +1223,7 @@ describe("Rendering error", function() {
 				value: "\u001c",
 				xtag: "user",
 				offset: 1,
+				file: "word/document.xml",
 			},
 		};
 		const create = createXmlTemplaterDocx.bind(null, content, {
@@ -1284,9 +1335,9 @@ describe("Async errors", function() {
 
 	it("should fail when customparser fails to execute on multiple raw tags", function() {
 		const content = `
-		<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
-		<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
-		`;
+				<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
+				<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
+				`;
 		let count = 0;
 		function errorParser() {
 			return {

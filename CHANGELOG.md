@@ -1,3 +1,7 @@
+### 3.16.2
+
+Since this version, modules using the expandToOne trait will be able to throw a specific error instead of the one related to the raw-xml module, ("Raw tag not in paragraph")
+
 ### 3.16.1
 
 Bugfix for loop module contained inside grid slides module : Do not fail with error "Unoponed loop"
