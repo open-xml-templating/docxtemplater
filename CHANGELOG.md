@@ -1,3 +1,8 @@
+### 3.16.3
+
+- Add options.lIndex and other information about the current token in the `module.parse` method.
+- Update moduleApiVersion to 3.20.0
+
 ### 3.16.2
 
 Since this version, modules using the expandToOne trait will be able to throw a specific error instead of the one related to the raw-xml module, ("Raw tag not in paragraph")
