@@ -28,6 +28,40 @@ function getOffset(chunk) {
 	return hasContent(chunk) ? 0 : chunk.length;
 }
 
+function addPageBreakAtEnd(subRendered) {
+	let found = false;
+	let i = subRendered.parts.length - 1;
+	for (let j = subRendered.parts.length - 1; i >= 0; i--) {
+		const p = subRendered.parts[j];
+		if (p === "</w:p>" && !found) {
+			found = true;
+			subRendered.parts.splice(j, 0, '<w:r><w:br w:type="page"/></w:r>');
+			break;
+		}
+	}
+
+	if (!found) {
+		subRendered.parts.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+	}
+}
+
+function addPageBreakAtBeginning(subRendered) {
+	let i = 0;
+	let found = false;
+	for (let j = subRendered.parts.length - 1; i >= 0; i--) {
+		const p = subRendered.parts[j];
+		if (p === "</w:p>" && !found) {
+			found = true;
+			subRendered.parts.splice(j, 0, '<w:r><w:br w:type="page"/></w:r>');
+			break;
+		}
+	}
+
+	if (!found) {
+		subRendered.parts.unshift('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+	}
+}
+
 class LoopModule {
 	constructor() {
 		this.name = "LoopModule";
@@ -137,15 +171,26 @@ class LoopModule {
 		if (firstOffset === 0 || lastOffset === 0) {
 			return parsed;
 		}
-		let hasPageBreak = false;
+		let hasPageBreak = false,
+			hasPageBreakBeginning;
+
 		lastChunk.forEach(function(part) {
 			if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
 				hasPageBreak = true;
 			}
 		});
 
+		firstChunk.forEach(function(part) {
+			if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
+				hasPageBreakBeginning = true;
+			}
+		});
+
 		if (hasPageBreak) {
 			basePart.hasPageBreak = true;
+		}
+		if (hasPageBreakBeginning) {
+			basePart.hasPageBreakBeginning = true;
 		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}
@@ -171,19 +216,10 @@ class LoopModule {
 				})
 			);
 			if (part.hasPageBreak && i === length - 1) {
-				let found = false;
-				for (let j = subRendered.parts.length - 1; i >= 0; i--) {
-					const p = subRendered.parts[j];
-					if (p === "</w:p>" && !found) {
-						found = true;
-						subRendered.parts.splice(j, 0, '<w:r><w:br w:type="page"/></w:r>');
-						break;
-					}
-				}
-
-				if (!found) {
-					subRendered.parts.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
-				}
+				addPageBreakAtEnd(subRendered);
+			}
+			if (part.hasPageBreakBeginning && i === 0) {
+				addPageBreakAtBeginning(subRendered);
 			}
 			totalValue = totalValue.concat(subRendered.parts);
 			errors = errors.concat(subRendered.errors || []);
@@ -203,13 +239,16 @@ class LoopModule {
 			return { errors };
 		}
 		if (result === false) {
+			let returnValue = "";
+
 			if (part.hasPageBreak) {
-				return {
-					value: '<w:p><w:r><w:br w:type="page"/></w:r></w:p>',
-				};
+				returnValue += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+			}
+			if (part.hasPageBreakBeginning) {
+				returnValue += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
 			}
 			return {
-				value: part.emptyValue || "",
+				value: returnValue || part.emptyValue || "",
 				errors,
 			};
 		}

@@ -467,6 +467,20 @@ describe("ParagraphLoop", function() {
 		shouldBeSame({ doc, expectedName: "expected-users.docx" });
 	});
 
+	it("should work with pagebreaks at beginning of loop, getting true", function() {
+		const doc = createDoc("page-break-inside-condition.docx");
+		doc.setOptions({ paragraphLoop: true });
+		doc.setData({ cond: true }).render();
+		shouldBeSame({ doc, expectedName: "expected-with-page-break-truthy.docx" });
+	});
+
+	it("should work with pagebreaks at beginning of loop, getting false", function() {
+		const doc = createDoc("page-break-inside-condition.docx");
+		doc.setOptions({ paragraphLoop: true });
+		doc.setData({ cond: false }).render();
+		shouldBeSame({ doc, expectedName: "expected-with-page-break-falsy.docx" });
+	});
+
 	it("should work without removing extra text", function() {
 		const doc = createDoc("paragraph-loops.docx");
 		doc.setOptions({

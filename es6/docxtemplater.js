@@ -105,6 +105,11 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	setOptions(options) {
+		if (!options) {
+			throw new Error(
+				"setOptions should be called with an object as first parameter"
+			);
+		}
 		if (options.delimiters) {
 			options.delimiters.start = utf8ToWord(options.delimiters.start);
 			options.delimiters.end = utf8ToWord(options.delimiters.end);

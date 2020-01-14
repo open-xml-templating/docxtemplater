@@ -1,3 +1,9 @@
+### 3.16.4
+
+Bugfix issue with paragraphLoop and pagebreaks.
+
+In some situations, the pagebreak got removed if the start of the loop is at the top of the page (right after the `w:br` element).
+
 ### 3.16.3
 
 - Add options.lIndex and other information about the current token in the `module.parse` method.
