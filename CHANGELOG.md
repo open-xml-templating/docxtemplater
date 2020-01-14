@@ -9,7 +9,7 @@ Since this version, modules using the expandToOne trait will be able to throw a 
 
 ### 3.16.1
 
-Bugfix for loop module contained inside grid slides module : Do not fail with error "Unoponed loop"
+Bugfix for loop module contained inside grid slides module : Do not fail with error "Unopened loop"
 
 ### 3.16.0
 
