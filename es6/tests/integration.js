@@ -457,6 +457,98 @@ describe("Dash Loop", function() {
 	});
 });
 
+describe("Pagebreaks inside loops", function() {
+	it("should work at beginning of paragraph loop with 3 elements", function() {
+		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
+		const doc = createDoc("page-break-inside-condition.docx");
+		doc.setOptions({ paragraphLoop: true });
+		doc.setData({ cond: [1, 2, 3] }).render();
+		shouldBeSame({ doc, expectedName: "expected-with-page-break-3-els.docx" });
+	});
+	it("should work at beginning of paragraph loop with false", function() {
+		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
+		const doc = createDoc("page-break-inside-condition.docx");
+		doc.setOptions({ paragraphLoop: true });
+		doc.setData({ cond: false }).render();
+		shouldBeSame({ doc, expectedName: "expected-with-page-break-falsy.docx" });
+	});
+
+	it("should work at beginning of std loop with false", function() {
+		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
+		const doc = createDoc("page-break-inside-condition.docx");
+		doc.setData({ cond: false }).render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-page-break-falsy-std-loop.docx",
+		});
+	});
+
+	it("should work at beginning of std loop with 3 elements", function() {
+		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
+		const doc = createDoc("page-break-inside-condition.docx");
+		doc.setData({ cond: [1, 2, 3] }).render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-page-break-3-els-std-loop.docx",
+		});
+	});
+
+	it("should work at beginning of std loop with truthy", function() {
+		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
+		const doc = createDoc("page-break-inside-condition.docx");
+		doc.setData({ cond: true }).render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-page-break-truthy-std-loop.docx",
+		});
+	});
+
+	it("should work at end of std loop", function() {
+		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
+		doc
+			.setData({
+				users: [{ name: "Bar" }, { name: "John" }, { name: "Baz" }],
+			})
+			.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-noparagraph-loop-with-pagebreak.docx",
+		});
+	});
+
+	it("should work at end of paragraph loop", function() {
+		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc
+			.setData({
+				users: [{ name: "Bar" }, { name: "John" }, { name: "Baz" }],
+			})
+			.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-paragraph-loop-with-pagebreak.docx",
+		});
+	});
+
+	it("should work with pagebreak afterwards with falsy value", function() {
+		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc
+			.setData({
+				users: false,
+			})
+			.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-paragraph-loop-empty-with-pagebreak.docx",
+		});
+	});
+});
+
 describe("ParagraphLoop", function() {
 	it("should work with docx", function() {
 		const doc = createDoc("users.docx");
@@ -465,20 +557,6 @@ describe("ParagraphLoop", function() {
 		});
 		doc.setData({ users: ["John", "Jane", "Louis"] }).render();
 		shouldBeSame({ doc, expectedName: "expected-users.docx" });
-	});
-
-	it("should work with pagebreaks at beginning of loop, getting true", function() {
-		const doc = createDoc("page-break-inside-condition.docx");
-		doc.setOptions({ paragraphLoop: true });
-		doc.setData({ cond: true }).render();
-		shouldBeSame({ doc, expectedName: "expected-with-page-break-truthy.docx" });
-	});
-
-	it("should work with pagebreaks at beginning of loop, getting false", function() {
-		const doc = createDoc("page-break-inside-condition.docx");
-		doc.setOptions({ paragraphLoop: true });
-		doc.setData({ cond: false }).render();
-		shouldBeSame({ doc, expectedName: "expected-with-page-break-falsy.docx" });
 	});
 
 	it("should work without removing extra text", function() {
@@ -690,40 +768,6 @@ describe("ParagraphLoop", function() {
 		};
 		const create = doc.compile.bind(doc);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
-	});
-
-	it("should work with pagebreak afterwards", function() {
-		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-			parser: angularParser,
-		});
-		doc
-			.setData({
-				users: [{ name: "Bar" }, { name: "John" }, { name: "Baz" }],
-			})
-			.render();
-		shouldBeSame({
-			doc,
-			expectedName: "expected-paragraph-loop-with-pagebreak.docx",
-		});
-	});
-
-	it("should work with pagebreak afterwards with falsy value", function() {
-		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-			parser: angularParser,
-		});
-		doc
-			.setData({
-				users: false,
-			})
-			.render();
-		shouldBeSame({
-			doc,
-			expectedName: "expected-paragraph-loop-empty-with-pagebreak.docx",
-		});
 	});
 });
 

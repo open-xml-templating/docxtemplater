@@ -1,3 +1,7 @@
+### 3.16.5
+
+Other bugfixes related to pagebreaks and loops
+
 ### 3.16.4
 
 Bugfix issue with paragraphLoop and pagebreaks.

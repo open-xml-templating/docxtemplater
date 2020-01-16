@@ -420,6 +420,8 @@ const fixtures = {
 				type: "placeholder",
 				value: "users",
 				module: "loop",
+				hasPageBreak: false,
+				hasPageBreakBeginning: false,
 				inverted: false,
 				subparsed: [
 					startParagraph,

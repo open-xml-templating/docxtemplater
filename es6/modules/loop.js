@@ -17,6 +17,29 @@ function hasContent(parts) {
 	});
 }
 
+function getFirstMeaningFulPart(parsed) {
+	for (let i = 0, len = parsed.length; i < len; i++) {
+		if (parsed[i].type !== "content") {
+			return parsed[i];
+		}
+	}
+	return null;
+}
+
+function isInsideParagraphLoop(part) {
+	const firstMeaningfulPart = getFirstMeaningFulPart(part.subparsed);
+	return firstMeaningfulPart != null && firstMeaningfulPart.tag !== "w:t";
+}
+
+function getPageBreakIfApplies(part) {
+	if (part.hasPageBreak) {
+		if (isInsideParagraphLoop(part)) {
+			return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+		}
+	}
+	return "";
+}
+
 function isEnclosedByParagraphs(parsed) {
 	if (parsed.length === 0) {
 		return false;
@@ -60,6 +83,14 @@ function addPageBreakAtBeginning(subRendered) {
 	if (!found) {
 		subRendered.parts.unshift('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 	}
+}
+
+function hasPageBreak(chunk) {
+	return chunk.some(function(part) {
+		if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
+			return true;
+		}
+	});
 }
 
 class LoopModule {
@@ -134,16 +165,15 @@ class LoopModule {
 		}, []);
 	}
 	postparse(parsed, { basePart }) {
-		if (!isEnclosedByParagraphs(parsed)) {
-			return parsed;
-		}
 		if (
 			!basePart ||
 			basePart.expandTo !== "auto" ||
-			basePart.module !== moduleName
+			basePart.module !== moduleName ||
+			!isEnclosedByParagraphs(parsed)
 		) {
 			return parsed;
 		}
+
 		let level = 0;
 		const chunks = chunkBy(parsed, function(p) {
 			if (isParagraphStart(p)) {
@@ -163,34 +193,16 @@ class LoopModule {
 		if (chunks.length <= 2) {
 			return parsed;
 		}
-
 		const firstChunk = chunks[0];
 		const lastChunk = last(chunks);
 		const firstOffset = getOffset(firstChunk);
 		const lastOffset = getOffset(lastChunk);
+
+		basePart.hasPageBreak = hasPageBreak(lastChunk);
+		basePart.hasPageBreakBeginning = hasPageBreak(firstChunk);
+
 		if (firstOffset === 0 || lastOffset === 0) {
 			return parsed;
-		}
-		let hasPageBreak = false,
-			hasPageBreakBeginning;
-
-		lastChunk.forEach(function(part) {
-			if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
-				hasPageBreak = true;
-			}
-		});
-
-		firstChunk.forEach(function(part) {
-			if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
-				hasPageBreakBeginning = true;
-			}
-		});
-
-		if (hasPageBreak) {
-			basePart.hasPageBreak = true;
-		}
-		if (hasPageBreakBeginning) {
-			basePart.hasPageBreakBeginning = true;
 		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}
@@ -215,10 +227,14 @@ class LoopModule {
 					scopeManager,
 				})
 			);
-			if (part.hasPageBreak && i === length - 1) {
+			if (
+				part.hasPageBreak &&
+				i === length - 1 &&
+				isInsideParagraphLoop(part)
+			) {
 				addPageBreakAtEnd(subRendered);
 			}
-			if (part.hasPageBreakBeginning && i === 0) {
+			if (part.hasPageBreakBeginning && isInsideParagraphLoop(part)) {
 				addPageBreakAtBeginning(subRendered);
 			}
 			totalValue = totalValue.concat(subRendered.parts);
@@ -238,17 +254,10 @@ class LoopModule {
 			errors.push(e);
 			return { errors };
 		}
+		// if the loop is showing empty content
 		if (result === false) {
-			let returnValue = "";
-
-			if (part.hasPageBreak) {
-				returnValue += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
-			}
-			if (part.hasPageBreakBeginning) {
-				returnValue += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
-			}
 			return {
-				value: returnValue || part.emptyValue || "",
+				value: getPageBreakIfApplies(part) || part.emptyValue || "",
 				errors,
 			};
 		}
