@@ -455,6 +455,18 @@ describe("Dash Loop", function() {
 		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
+
+	it("should not corrupt document if using empty {-a:p} inside table cell", function() {
+		const doc = createDoc("regression-dash-loop-in-table-cell.pptx");
+		doc.setData().render();
+		shouldBeSame({ doc, expectedName: "expected-table-3-cells.pptx" });
+	});
+
+	it("should not corrupt document if using empty {-a:p} inside table cell", function() {
+		const doc = createDoc("regression-dash-loop-in-table-cell.pptx");
+		doc.setData({ cond: [1, 2, 3] }).render();
+		shouldBeSame({ doc, expectedName: "expected-table-3-true-cells.pptx" });
+	});
 });
 
 describe("Pagebreaks inside loops", function() {
@@ -1009,7 +1021,7 @@ describe("Resolver", function() {
 			});
 	});
 
-	const dataNestedLoops = { a: [{ d: "Hello world" }] }
+	const dataNestedLoops = { a: [{ d: "Hello world" }] };
 
 	it("should not regress with nested loops sync", function() {
 		const doc = createDoc("regression-complex-loops.docx");

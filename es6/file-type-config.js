@@ -46,6 +46,7 @@ const PptXFileTypeConfig = {
 		"a:r",
 		"a:rPr",
 		"p:txBody",
+		"a:txBody",
 	],
 	expandTags: [{ contains: "a:tc", expand: "a:tr" }],
 	onParagraphLoop: [{ contains: "a:p", expand: "a:p", onlyTextInTag: true }],
@@ -54,6 +55,7 @@ const PptXFileTypeConfig = {
 	baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
 	tagShouldContain: [
 		{ tag: "p:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
+		{ tag: "a:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 	],
 };
 
