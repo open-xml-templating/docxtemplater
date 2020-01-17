@@ -515,6 +515,16 @@ describe("Pagebreaks inside loops", function() {
 		});
 	});
 
+	it("should work with table inside paragraph loop", function() {
+		const doc = createDoc("pagebreak-table-loop.docx");
+		doc.setOptions({ paragraphLoop: true });
+		doc.setData({ loop: [1, 2, 3] }).render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-pagebreak-table-loop.docx",
+		});
+	});
+
 	it("should work at end of std loop", function() {
 		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
 		doc

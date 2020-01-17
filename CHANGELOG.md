@@ -1,3 +1,7 @@
+### 3.16.7
+
+Bugfix with paragraphLoops containing pagebreaks + tables, the pagebreak got reordered
+
 ### 3.16.6
 
 Bugfix corrupt document when using dashloop : `{-a:p loop}` inside table cell which renders false

@@ -69,20 +69,7 @@ function addPageBreakAtEnd(subRendered) {
 }
 
 function addPageBreakAtBeginning(subRendered) {
-	let i = 0;
-	let found = false;
-	for (let j = subRendered.parts.length - 1; i >= 0; i--) {
-		const p = subRendered.parts[j];
-		if (p === "</w:p>" && !found) {
-			found = true;
-			subRendered.parts.splice(j, 0, '<w:r><w:br w:type="page"/></w:r>');
-			break;
-		}
-	}
-
-	if (!found) {
-		subRendered.parts.unshift('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
-	}
+	subRendered.parts.unshift('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 }
 
 function hasPageBreak(chunk) {
