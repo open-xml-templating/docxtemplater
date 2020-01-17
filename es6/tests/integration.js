@@ -1009,12 +1009,17 @@ describe("Resolver", function() {
 			});
 	});
 
-	it("should not regress 1 sync", function() {
-		const doc = createDoc("regression-1.docx");
+	const dataNestedLoops = { a: [{ d: "Hello world" }] }
+
+	it("should not regress with nested loops sync", function() {
+		const doc = createDoc("regression-complex-loops.docx");
 		doc.compile();
-		doc.setData({ a: [{ d: "Hello world" }] });
+		doc.setData(dataNestedLoops);
 		doc.render();
-		shouldBeSame({ doc, expectedName: "expected-regression-1.docx" });
+		shouldBeSame({
+			doc,
+			expectedName: "expected-regression-complex-loops.docx",
+		});
 	});
 
 	it("should not regress when having [Content_Types.xml] contain Default instead of Override", function() {
@@ -1028,22 +1033,23 @@ describe("Resolver", function() {
 		});
 	});
 
-	it("should not regress 1 async", function() {
-		const doc = createDoc("regression-1.docx");
+	it("should not regress with nested loops async", function() {
+		const doc = createDoc("regression-complex-loops.docx");
 		doc.compile();
-		return doc.resolveData({ a: [{ d: "Hello world" }] }).then(function() {
+		return doc.resolveData(dataNestedLoops).then(function() {
 			doc.render();
-			shouldBeSame({ doc, expectedName: "expected-regression-1.docx" });
+			shouldBeSame({
+				doc,
+				expectedName: "expected-regression-complex-loops.docx",
+			});
 		});
 	});
 
 	const regress2Data = {
 		amount_wheels_car_1: "4",
 		amount_wheels_motorcycle_1: "2",
-
 		amount_wheels_car_2: "6",
 		amount_wheels_motorcycle_2: "3",
-
 		id: [
 			{
 				car: "1",
@@ -1052,20 +1058,26 @@ describe("Resolver", function() {
 		],
 	};
 
-	it("should not regress 2 sync", function() {
-		const doc = createDoc("regression-2.docx");
+	it("should not regress with multiple loops sync", function() {
+		const doc = createDoc("regression-loops-resolve.docx");
 		doc.compile();
 		doc.setData(regress2Data);
 		doc.render();
-		shouldBeSame({ doc, expectedName: "expected-regression-2.docx" });
+		shouldBeSame({
+			doc,
+			expectedName: "expected-regression-loops-resolve.docx",
+		});
 	});
 
-	it("should not regress 2 async", function() {
-		const doc = createDoc("regression-2.docx");
+	it("should not regress with multiple loops async", function() {
+		const doc = createDoc("regression-loops-resolve.docx");
 		doc.compile();
 		return doc.resolveData(regress2Data).then(function() {
 			doc.render();
-			shouldBeSame({ doc, expectedName: "expected-regression-2.docx" });
+			shouldBeSame({
+				doc,
+				expectedName: "expected-regression-loops-resolve.docx",
+			});
 		});
 	});
 });
