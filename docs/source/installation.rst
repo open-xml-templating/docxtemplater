@@ -74,3 +74,13 @@ You can use bower to install docxtemplater
 .. code-block:: bash
 
     bower install --save docxtemplater
+
+When using bower, you can include the following script tag in your HTML :
+
+.. code-block:: html
+    
+    <script src="bower_components/docxtemplater/build/docxtemplater-latest.min.js"></script>
+
+This tag will expose docxtemplater in `window.docxtemplater`.
+
+

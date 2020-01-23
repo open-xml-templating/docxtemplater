@@ -374,6 +374,8 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
 
 .. code-block:: javascript
 
+   // Please make sure to use angular-expressions 1.0.1 or later
+   // More detail at https://github.com/open-xml-templating/docxtemplater/issues/488
    var expressions = require("angular-expressions");
    var merge = require("lodash/merge");
    function angularParser(tag) {

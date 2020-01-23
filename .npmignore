@@ -3,6 +3,7 @@
 *.log
 *.old
 *.tgz
+*.tar.gz
 *.png
 *.sublime-project
 *.sublime-workspace
