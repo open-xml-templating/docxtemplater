@@ -83,7 +83,7 @@ Browser
         <body>
             <button onclick="generate()">Generate document</button>
         </body>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.16.7/docxtemplater.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.16.8/docxtemplater.js"></script>
         <script src="https://unpkg.com/pizzip@3.0.6/dist/pizzip.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
         <script src="https://unpkg.com/pizzip@3.0.6/dist/pizzip-utils.js"></script>
