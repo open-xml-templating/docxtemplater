@@ -251,9 +251,20 @@ function cleanError(e, expectedError) {
 			`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
 		);
 	}
+	if (expectedError.properties.explanation != null) {
+		const e1 = e.properties.explanation;
+		const e2 = expectedError.properties.explanation;
+		expect(e1).to.be.deep.equal(
+			e2,
+			`Explanations differ '${e1}' != '${e2}': for ${JSON.stringify(
+				expectedError
+			)}`
+		);
+	}
 	delete e.properties.explanation;
 	delete e.properties.offset;
 	delete expectedError.properties.offset;
+	delete expectedError.properties.explanation;
 	e = omit(e, ["line", "sourceURL", "stack"]);
 	if (e.properties.postparsed) {
 		e.properties.postparsed.forEach(function(p) {

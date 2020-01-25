@@ -221,6 +221,8 @@ describe("Compilation errors", function() {
 			properties: {
 				file: "word/document.xml",
 				id: "raw_tag_outerxml_invalid",
+				explanation:
+					'The tag "myrawtag" is not inside a paragraph, putting raw tags inside an inline loop is disallowed.',
 				xtag: "myrawtag",
 				postparsed: [
 					{

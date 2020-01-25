@@ -1,3 +1,7 @@
+### 3.16.8
+
+(Internal, for modules) Pass whole part instead of just part.value to explanation function
+
 ### 3.16.7
 
 Bugfix with paragraphLoops containing pagebreaks + tables, the pagebreak got reordered
