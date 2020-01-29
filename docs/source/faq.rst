@@ -439,3 +439,7 @@ width, height of each paragraph determines the number of pages in a document.
 Since docxtemplater does not know how to render a docx document, (which
 determines the page numbers), this is why it is impossible to regenerate the
 page numbers within docxtemplater.
+
+Also, even across different "official" rendering engines, the page numbers may vary. Depending on whether you open a document with Office Online, Word 2013 or Word 2016 or the Mac versions of Word, you can have some slight differences that will, at the end, influence the number of pages or the position of some elements within a page.
+
+The amount of work to write a good rendering engine would be very huge (a few years at least for a team of 5-10 people).
