@@ -424,3 +424,18 @@ The simplest way of starting a webserver is to run following command :
    # npm install -g http-server && http-server .
 
 On your production server, you should probably use a more robust webserver such as nginx, or any webserver that you are currently using for static files.
+
+Getting access to page number / total number of pages or regenerate Table of Contents
+-------------------------------------------------------------------------------------
+
+Sometimes, you would like to know what are the total number of pages in the
+document, or what is the page number at the current tag position.
+
+This is something that will never be achievable with docxtemplater, because
+docxtemplater is only a templating engine : it does know how to parse the docx
+format. However, it has no idea on how the docx is rendered at the end : the
+width, height of each paragraph determines the number of pages in a document.
+
+Since docxtemplater does not know how to render a docx document, (which
+determines the page numbers), this is why it is impossible to regenerate the
+page numbers within docxtemplater.
