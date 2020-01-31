@@ -113,5 +113,5 @@ For example, it is possible to write the following template :
     {#cond4 ? users : usersWithAdminRights}
     Paragraph 3
     {/}
-    They are {users.length} users.
+    There are {users.length} users.
     {/generalCondition}

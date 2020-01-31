@@ -40,7 +40,7 @@ shouldBeSame will, for each XML file that is inside the zip document, pretty pri
 Regression tests
 ----------------
 
-They are many regression tests, eg tests that are there to ensure that bugs that occured once will not appear again in the future.
+There are many regression tests, eg tests that are there to ensure that bugs that occured once will not appear again in the future.
 
 A good example of such a test is 
 

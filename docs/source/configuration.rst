@@ -36,7 +36,7 @@ The scopemanager does the following :
 
  * whenever the tag needs to be rendered, docxtemplater calls `parser('name').get({name: 'John'})`, if `{name: 'John'}` is the current scope.
 
-When inside a loop, for example : `{#users}{name}{/users}`, they are several "scopes" in which it is possible to evaluate the `{name}` property. The "deepest" scope is always evaluated first, so if the data is : `{users: [{name: "John"}], name: "Mary"}`, the parser calls the function `parser('name').get({name:"John"})`. Now if the returned value from the `.get` method is `null` or `undefined`, docxtemplater will call the same parser one level up, until it reaches the end of the scope.
+When inside a loop, for example : `{#users}{name}{/users}`, there are several "scopes" in which it is possible to evaluate the `{name}` property. The "deepest" scope is always evaluated first, so if the data is : `{users: [{name: "John"}], name: "Mary"}`, the parser calls the function `parser('name').get({name:"John"})`. Now if the returned value from the `.get` method is `null` or `undefined`, docxtemplater will call the same parser one level up, until it reaches the end of the scope.
 
 If the root scope also returns `null` or `undefined` for the `.get` call, then the value from the nullGetter is used.
 
