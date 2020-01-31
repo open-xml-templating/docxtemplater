@@ -87,7 +87,11 @@ With the angularParser option set, you can also use conditions :
 .. code-block:: text
 
     {#users.length>1}
-        They are multiple users
+    There are multiple users
+    {/}
+
+    {#userName == "John"}
+    Hello John, welcome back
     {/}
 
 Will render the section only if there are 2 users or more.
