@@ -94,7 +94,9 @@ With the angularParser option set, you can also use conditions :
     Hello John, welcome back
     {/}
 
-Will render the section only if there are 2 users or more.
+The first conditional will render the section only if there are 2 users or more.
+
+The second conditional will render the section only if the userName is the string "John".
 
 It also handles the boolean operators AND ``&&``, OR ``||``, ``+``, ``-``, the ternary operator ``a ? b : c``, operator precendence with parenthesis ``(a && b) || c``, and many other javascript features.
 
