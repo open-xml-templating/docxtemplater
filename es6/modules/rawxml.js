@@ -1,7 +1,6 @@
 const traits = require("../traits");
 const { isContent } = require("../doc-utils");
 const { throwRawTagShouldBeOnlyTextInParagraph } = require("../errors");
-const { match, getValue } = require("../prefix-matcher");
 
 const moduleName = "rawxml";
 const wrapper = require("../module-wrapper");
@@ -28,7 +27,7 @@ class RawXmlModule {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		return options;
 	}
-	parse(placeHolderContent) {
+	parse(placeHolderContent, { match, getValue }) {
 		const type = "placeholder";
 		if (match(this.prefix, placeHolderContent)) {
 			return {

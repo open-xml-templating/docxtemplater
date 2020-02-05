@@ -7,7 +7,6 @@ const {
 	isContent,
 } = require("../doc-utils");
 const wrapper = require("../module-wrapper");
-const { match, getValue, getValues } = require("../prefix-matcher");
 
 const moduleName = "loop";
 
@@ -90,7 +89,7 @@ class LoopModule {
 			inverted: "^",
 		};
 	}
-	parse(placeHolderContent) {
+	parse(placeHolderContent, { match, getValue, getValues }) {
 		const module = moduleName;
 		const type = "placeholder";
 		const { start, inverted, dash, end } = this.prefix;

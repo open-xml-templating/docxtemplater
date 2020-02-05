@@ -1,3 +1,9 @@
+### 3.16.9
+
+- Pass in `{match, getValue, getValues}` functions to second argument of module.parse
+- Allow to have a promise at the root level in resolveData
+- Update moduleApiVersion to 3.21.0
+
 ### 3.16.8
 
 (Internal, for modules) Pass whole part instead of just part.value to explanation function

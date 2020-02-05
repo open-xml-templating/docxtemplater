@@ -1,14 +1,19 @@
 const { wordToUtf8, concatArrays } = require("./doc-utils");
+const { match, getValue, getValues } = require("./prefix-matcher");
 
 function moduleParse(placeHolderContent, options) {
 	const modules = options.modules;
 	const startOffset = options.startOffset;
 	const endLindex = options.lIndex;
 	let moduleParsed;
+	options.offset = startOffset;
+	options.lIndex = endLindex;
+	options.match = match;
+	options.getValue = getValue;
+	options.getValues = getValues;
+
 	for (let i = 0, l = modules.length; i < l; i++) {
 		const module = modules[i];
-		options.offset = startOffset;
-		options.lIndex = endLindex;
 		moduleParsed = module.parse(placeHolderContent, options);
 		if (moduleParsed) {
 			moduleParsed.offset = startOffset;
