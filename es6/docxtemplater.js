@@ -153,19 +153,23 @@ const Docxtemplater = class Docxtemplater {
 	}
 	resolveData(data) {
 		let errors = [];
-		return Promise.all(
-			Object.keys(this.compiled).map(from => {
-				const currentFile = this.compiled[from];
-				return currentFile.resolveTags(data).catch(function(errs) {
-					errors = errors.concat(errs);
-				});
+		return Promise.resolve(data)
+			.then(data => {
+				return Promise.all(
+					Object.keys(this.compiled).map(from => {
+						const currentFile = this.compiled[from];
+						return currentFile.resolveTags(data).catch(function(errs) {
+							errors = errors.concat(errs);
+						});
+					})
+				);
 			})
-		).then(resolved => {
-			if (errors.length !== 0) {
-				throwMultiError(errors);
-			}
-			return concatArrays(resolved);
-		});
+			.then(resolved => {
+				if (errors.length !== 0) {
+					throwMultiError(errors);
+				}
+				return concatArrays(resolved);
+			});
 	}
 	compile() {
 		if (Object.keys(this.compiled).length) {

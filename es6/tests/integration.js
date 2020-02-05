@@ -878,6 +878,26 @@ describe("Resolver", function() {
 			});
 	});
 
+	it("should work at parent level", function() {
+		const doc = createDoc("office365.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.compile();
+		return doc
+			.resolveData(
+				resolveSoon({
+					test: resolveSoon("Value"),
+					test2: "Value2",
+				})
+			)
+			.then(function() {
+				doc.render();
+				expect(doc.getFullText()).to.be.equal("Value Value2");
+				shouldBeSame({ doc, expectedName: "expected-office365.docx" });
+			});
+	});
+
 	it("should resolve loops", function() {
 		const doc = createDoc("multi-loop.docx");
 		doc.setOptions({
