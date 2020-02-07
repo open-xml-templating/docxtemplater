@@ -1,6 +1,6 @@
 # Contribution Guide
 
-This is an open-source project. Please be kind and have a positive attitude. You are not my client.
+This is an open-source project. Please be kind and have a positive attitude.
 
 ## How can you solve an issue by your own
 
@@ -30,6 +30,20 @@ It is **minimal** because it should be the way to show the issue that doesn't ad
 It is **self contained** because everything to reproduce the issue is inside the sample, **including** the docx documents, images, ...
 
 I don't work primarly with microsoft word and don't want to recreate all samples by hand, using a minimal, self contained example will help a lot to get a **faster** answer to your issue.
+
+## Legal
+
+By submitting a Pull Request, you disavow any rights or claims to any changes
+submitted to the Docxtemplater project and assign the copyright of
+those changes to Edgar Hipp.
+
+If you cannot or do not want to reassign those rights (your employment
+contract for your employer may not allow this), you should not submit a PR.
+Open an issue and someone else can do the work.
+
+This is a legal way of saying "If you submit a PR to us, that code becomes ours".
+99.9% of the time that's what you intend anyways; we hope it doesn't scare you
+away from contributing.
 
 ## Pull Requests
 
