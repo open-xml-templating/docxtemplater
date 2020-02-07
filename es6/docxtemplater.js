@@ -92,7 +92,9 @@ const Docxtemplater = class Docxtemplater {
 			this.verifyApiVersion(module.requiredAPIVersion);
 		}
 		if (module.attached === true) {
-			throw new Error("Cannot attach a module that was already attached");
+			throw new Error(
+				`Cannot attach a module that was already attached : "${module.name}". Maybe you are instantiating the module at the root level, and using it for multiple instances of Docxtemplater`
+			);
 		}
 		module.attached = true;
 		const { prefix } = options;

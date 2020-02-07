@@ -40,6 +40,7 @@ describe("Verify apiversion", function() {
 describe("Module attachment", function() {
 	it("should not allow to attach the same module twice", function() {
 		const module = {
+			name: "TestModule",
 			requiredAPIVersion: "3.0.0",
 			render(part) {
 				return part.value;
@@ -56,7 +57,7 @@ describe("Module attachment", function() {
 			errMessage = e.message;
 		}
 		expect(errMessage).to.equal(
-			"Cannot attach a module that was already attached"
+			'Cannot attach a module that was already attached : "TestModule". Maybe you are instantiating the module at the root level, and using it for multiple instances of Docxtemplater'
 		);
 	});
 });
@@ -142,6 +143,7 @@ describe("Module traits", function() {
 			return part;
 		}
 		const module = {
+			name: "Test module",
 			requiredAPIVersion: "3.0.0",
 			parse(placeHolderContent) {
 				if (placeHolderContent[0] === "£") {
