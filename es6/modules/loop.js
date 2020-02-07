@@ -243,7 +243,7 @@ class LoopModule {
 		// if the loop is showing empty content
 		if (result === false) {
 			return {
-				value: getPageBreakIfApplies(part) || part.emptyValue || "",
+				value: getPageBreakIfApplies(part) || "",
 				errors,
 			};
 		}

@@ -67,7 +67,7 @@ class RawXmlModule {
 			return { errors };
 		}
 		if (!value) {
-			return { value: part.emptyValue || "" };
+			return { value: "" };
 		}
 		return { value };
 	}
