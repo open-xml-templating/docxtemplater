@@ -931,62 +931,16 @@ describe("Serialization", function() {
 
 describe("Docxtemplater v4 tests", function() {
 	it("should work with new constructor", function() {
-		let xmlDocuments;
+		let isModuleCalled = false;
 
 		const module = {
-			requiredAPIVersion: "3.0.0",
-			optionsTransformer(options, docxtemplater) {
-				const relsFiles = docxtemplater.zip
-					.file(/document.xml.rels/)
-					.map(file => file.name);
-				options.xmlFileNames = options.xmlFileNames.concat(relsFiles);
+			optionsTransformer(options) {
+				isModuleCalled = true;
 				return options;
-			},
-			set(options) {
-				if (options.xmlDocuments) {
-					xmlDocuments = options.xmlDocuments;
-				}
 			},
 		};
 
-		const moduleV4Templater = {
-			requiredAPIVersion: "3.0.0",
-			optionsTransformer(options, docxtemplater) {
-				const relsFiles = docxtemplater.zip
-					.file(/document.xml.rels/)
-					.map(file => file.name);
-				options.xmlFileNames = options.xmlFileNames.concat(relsFiles);
-				return options;
-			},
-			set(options) {
-				if (options.xmlDocuments) {
-					xmlDocuments = options.xmlDocuments;
-				}
-			},
-		};
-
-		const doc = createDoc("tag-example.docx");
-		doc.attachModule(module);
-		doc.compile();
-		doc.render();
-
-		// create new docxTemplater with new constructor
-		const docV4Templater = createDocV4(doc.getZip(), { modules: [moduleV4Templater] });
-		const xmlKeys = Object.keys(xmlDocuments);
-		expect(xmlKeys).to.deep.equal(["word/_rels/document.xml.rels"]);
-		const rels = xmlDocuments[
-			"word/_rels/document.xml.rels"
-		].getElementsByTagName("Relationship");
-		expect(rels.length).to.equal(10);
-		const str = xml2str(xmlDocuments["word/_rels/document.xml.rels"]);
-
-		if (isNode12()) {
-			expect(str).to
-				.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/></Relationships>`);
-			rels[5].setAttribute("Foobar", "Baz");
-			docV4Templater.render();
-			shouldBeSame({ doc: docV4Templater, expectedName: "expected-module-change-rels.docx" });
-		}
+		createDocV4("tag-example.docx", { modules: [module] });
+		expect(isModuleCalled).to.equal(true);
 	});
 });

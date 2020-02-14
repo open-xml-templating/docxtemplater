@@ -543,7 +543,8 @@ function createDoc(name) {
 	return loadDocument(name, documentCache[name].loadedContent);
 }
 
-function createDocV4(zip, { modules }) {
+function createDocV4(name, { modules }) {
+	const zip = documentCache[name].getZip();
 	return new Docxtemplater(zip, { modules });
 }
 
