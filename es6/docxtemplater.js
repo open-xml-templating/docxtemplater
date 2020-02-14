@@ -28,15 +28,23 @@ const {
 const currentModuleApiVersion = [3, 21, 0];
 
 const Docxtemplater = class Docxtemplater {
-	constructor() {
-		if (arguments.length > 0) {
+	constructor(zip, { modules = [] } = {}) {
+		if (arguments.length > 0 && !zip && modules.length === 0) {
 			throw new Error(
-				"The constructor with parameters has been removed in docxtemplater 3, please check the upgrade guide."
+				"You should add zip and modules as the arguments, please check the v4 version guide."
 			);
 		}
 		this.compiled = {};
 		this.modules = [commonModule()];
 		this.setOptions({});
+
+		if (zip && modules.length > 0) {
+			modules.forEach(module => {
+				this.attachModule(module);
+			});
+			this.loadZip(zip);
+			this.compile();
+		}
 	}
 	getModuleApiVersion() {
 		return currentModuleApiVersion.join(".");
