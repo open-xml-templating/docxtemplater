@@ -543,6 +543,10 @@ function createDoc(name) {
 	return loadDocument(name, documentCache[name].loadedContent);
 }
 
+function createDocV4(zip, { modules }) {
+	return new Docxtemplater(zip, { modules });
+}
+
 function getLoadedContent(name) {
 	return documentCache[name].loadedContent;
 }
@@ -593,4 +597,5 @@ module.exports = {
 	start,
 	wrapMultiError,
 	isNode12,
+	createDocV4,
 };
