@@ -15,6 +15,21 @@ Constructor
 
         This function returns a new Docxtemplater Object
 
+.. code-block:: text
+
+    new Docxtemplater(zip, options)
+
+        You have to pass both the parameters if you are using this constructor.
+
+            zip:
+                a zip instance to that method, coming from pizzip or jszip version 2.
+
+            options:
+                An options object should have a modules key has a value of an array consisting of the modules.
+                For eg: { modules: [exampleModule, otherModule] }
+                
+        This function returns a new Docxtemplater Object 
+
 
 Methods
 -------
