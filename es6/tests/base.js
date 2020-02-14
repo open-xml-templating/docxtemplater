@@ -12,10 +12,7 @@ const {
 	expectToThrow,
 	getContent,
 	createDocV4,
-	shouldBeSame,
-	isNode12,
 } = require("./utils");
-const { xml2str } = require("../doc-utils");
 const inspectModule = require("../inspect-module.js");
 
 function getLength(obj) {
