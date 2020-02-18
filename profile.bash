@@ -1,7 +1,5 @@
-#!/bin/bash
-
-set -e
-set -u
+#!/usr/bin/env bash
+set -euo pipefail
 
 profile() {
 	rm -f p.json

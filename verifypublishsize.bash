@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-rm *.tgz -rf
+rm -rf -- *.tgz
 npm pack .
 size="$(wc -c <*.tgz)"
 echo "size is $size"

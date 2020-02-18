@@ -1,6 +1,6 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 set -euo pipefail
+
 pid=""
 
 cleanup() {
@@ -18,7 +18,7 @@ BROWSER="${BROWSER:-CHROME|FIREFOX|}"
 PATH="$PATH:./node_modules/.bin/"
 if grep '|' <<<"$BROWSER" >/dev/null
 then
-	while read -d '|' browser
+	while read -r -d '|' browser
 	do
 		echo "$browser"
 		BROWSER="$browser" ./webdriver.bash
