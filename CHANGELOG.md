@@ -1,3 +1,7 @@
+### 3.16.10
+
+- Properly decode `&amp;gt;` into `&gt;` in templates, in previous versions, the value was decoded to `>`
+
 ### 3.16.9
 
 - Pass in `{match, getValue, getValues}` functions to second argument of module.parse

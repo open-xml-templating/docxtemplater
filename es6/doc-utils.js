@@ -210,21 +210,20 @@ function str2xml(str) {
 	return parser.parseFromString(str, "text/xml");
 }
 
-const charMap = {
-	"&": "&amp;",
-	"'": "&apos;",
-	"<": "&lt;",
-	">": "&gt;",
-	'"': "&quot;",
-};
+const charMap = [
+	["&", "&amp;"],
+	["<", "&lt;"],
+	[">", "&gt;"],
+	['"', "&quot;"],
+	["'", "&apos;"],
+];
 
 function escapeRegExp(str) {
 	// to be able to use a string as a regex
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-const charMapRegexes = Object.keys(charMap).map(function(endChar) {
-	const startChar = charMap[endChar];
+const charMapRegexes = charMap.map(function([endChar, startChar]) {
 	return {
 		rstart: new RegExp(escapeRegExp(startChar), "g"),
 		rend: new RegExp(escapeRegExp(endChar), "g"),
@@ -235,7 +234,7 @@ const charMapRegexes = Object.keys(charMap).map(function(endChar) {
 
 function wordToUtf8(string) {
 	let r;
-	for (let i = 0, l = charMapRegexes.length; i < l; i++) {
+	for (let i = charMapRegexes.length - 1; i >= 0; i--) {
 		r = charMapRegexes[i];
 		string = string.replace(r.rstart, r.end);
 	}

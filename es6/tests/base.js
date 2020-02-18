@@ -686,6 +686,14 @@ describe("Special characters", function() {
 		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello Edgar</w:t>');
 	});
 
+	it("should not decode xml entities recursively", function() {
+		const content = "<w:t>Hello {&amp;lt;}</w:t>";
+		const scope = { "&lt;": "good", "<": "bad!!" };
+		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello good</w:t>');
+	});
+
 	it("should render placeholder containing special characters", function() {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = { name: "<Edgar>" };
