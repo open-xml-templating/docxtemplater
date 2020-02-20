@@ -19,14 +19,14 @@ Constructor
 
     new Docxtemplater(zip, options)
 
-        You have to pass both the parameters if you are using this constructor.
+        You have to pass a valid zip file to use this constructor. You can pass an array of modules that are needed by templater to attach them at the time of instantiating.
 
             zip:
                 a zip instance to that method, coming from pizzip or jszip version 2.
 
-            options:
-                An options object should have a modules key has a value of an array consisting of the modules.
-                For eg: { modules: [exampleModule, otherModule] }
+            options: (optional)
+                Currently, It supports the ability to add modules. You can attach modules by calling the Docxtemplater like this
+                const doc = new Docxtemplater(zip, { modules: [exampleModule, otherModule] })
                 
         This function returns a new Docxtemplater Object 
 
@@ -49,6 +49,10 @@ Methods
     render()
 
         This function replaces all template variables by their values
+
+    compile()
+
+        This function parses the template to prepare for the rendering. If your template has some issues in the syntax (for example if your tag is never closed like in : `Hello {user`), this function will throw an error with extra properties describing the error. This function is called for you in render() if you didn't call it yourself. This function should be called before doing resolveData() if you have some async data.
 
     getZip()
 
