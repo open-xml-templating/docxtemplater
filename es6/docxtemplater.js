@@ -29,19 +29,18 @@ const currentModuleApiVersion = [3, 21, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [] } = {}) {
-		if (arguments.length > 0 && !zip && modules.length === 0) {
+		if (!Array.isArray(modules)) {
 			throw new Error(
-				"You should add zip and modules as the arguments, please check the v4 version guide."
+				"Please pass modules as an array"
 			);
 		}
 		this.compiled = {};
 		this.modules = [commonModule()];
 		this.setOptions({});
-
-		if (zip && modules.length > 0) {
-			modules.forEach(module => {
-				this.attachModule(module);
-			});
+		modules.forEach(module => {
+			this.attachModule(module);
+		});
+		if (zip) {
 			this.loadZip(zip);
 			this.compile();
 		}
