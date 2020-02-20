@@ -946,4 +946,17 @@ describe("Docxtemplater v4 tests", function() {
 			"Please pass modules as an array"
 		);
 	});
+
+	it("should render correctly using the new constructor", () => {
+		const docForZip = createDoc("tag-example.docx");
+		const zip = new PizZip(docForZip.loadedContent);
+		const doc = new Docxtemplater(zip);
+		const tags = {
+			first_name: "John",
+			last_name: "Doe",
+		};
+		doc.setData(tags);
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("Doe John");
+	});
 });
