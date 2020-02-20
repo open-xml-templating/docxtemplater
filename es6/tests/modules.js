@@ -182,3 +182,44 @@ describe("Module traits", function() {
 		shouldBeSame({ doc, expectedName: "expected-comment-example.docx" });
 	});
 });
+
+describe("Module errors", function() {
+	it("should work", function() {
+		const moduleName = "ErrorModule";
+		const module = {
+			name: "Error module",
+			requiredAPIVersion: "3.0.0",
+			parse(placeHolderContent) {
+				if (placeHolderContent === "first_name") {
+					const type = "placeholder";
+					return {
+						type,
+						value: placeHolderContent.substr(1),
+						module: moduleName,
+					};
+				}
+			},
+			render(part) {
+				if (part.type === "placeholder") {
+					return {
+						errors: [new Error("foobar")],
+					};
+				}
+			},
+		};
+
+		let error = null;
+		const doc = createDoc("tag-example.docx");
+		doc.attachModule(module);
+		doc.setData({}).compile();
+		try {
+			doc.render();
+		} catch (e) {
+			error = e;
+		}
+		expect(error).to.be.an("object");
+		expect(error.message).to.equal("Multi error");
+		expect(error.properties.errors.length).to.equal(1);
+		expect(error.properties.errors[0].message).to.equal("foobar");
+	});
+});
