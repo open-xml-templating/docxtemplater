@@ -940,4 +940,10 @@ describe("Docxtemplater v4 tests", function() {
 		createDocV4("tag-example.docx", { modules: [module] });
 		expect(isModuleCalled).to.equal(true);
 	});
+
+	it("should throw error when modules passed is not an array", function() {
+		expect(createDocV4.bind(this, "tag-example.docx", { modules: {} })).to.throw(
+			"Please pass modules as an array"
+		);
+	});
 });
