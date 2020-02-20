@@ -1,3 +1,8 @@
+### 3.16.11
+
+- Add specific error (`Duplicate open tag` and `Duplicate close tag`) when using `{{foobar}}` in a template when the delimiters are just one single `{` and `}`
+- Avoid error `TypeError: Cannot set property 'file' of undefined` that hides the real error
+
 ### 3.16.10
 
 - Properly decode `&amp;gt;` into `&gt;` in templates, in previous versions, the value was decoded to `>`

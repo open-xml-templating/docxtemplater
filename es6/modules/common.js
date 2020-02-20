@@ -7,19 +7,9 @@ const docxmContentType =
 const pptxContentType =
 	"application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
 
-function getPartName(override) {
-	let partName = override.getAttribute("PartName");
-	if (partName[0] === "/") {
-		partName = partName.substr(1);
-	}
-	return partName;
-}
-
 class Common {
 	constructor() {
 		this.name = "Common";
-		this.recordRun = false;
-		this.recordedRun = [];
 	}
 	getFileType({ zip, contentTypes, overrides, defaults, doc }) {
 		if (!contentTypes) {
@@ -30,7 +20,7 @@ class Common {
 		for (let i = 0, len = overrides.length; i < len; i++) {
 			const override = overrides[i];
 			const contentType = override.getAttribute("ContentType");
-			const partName = getPartName(override);
+			const partName = override.getAttribute("PartName").substr(1);
 			partNames.push(partName);
 			if (contentType === docxContentType) {
 				fileType = "docx";

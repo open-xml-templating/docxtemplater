@@ -1,6 +1,8 @@
 const {
 	getUnclosedTagException,
 	getUnopenedTagException,
+	getDuplicateOpenTagException,
+	getDuplicateCloseTagException,
 	throwMalformedXml,
 	throwXmlInvalid,
 } = require("./errors");
@@ -129,14 +131,52 @@ function getDelimiterErrors(delimiterMatches, fullText, ranges) {
 			(delimiterMatch.position === "end" && !inDelimiter)
 		) {
 			if (delimiterMatch.position === "start") {
-				errors.push(
-					getUnclosedTagException({ xtag, offset: lastDelimiterMatch.offset })
-				);
+				if (
+					lastDelimiterMatch.offset + lastDelimiterMatch.length ===
+					delimiterMatch.offset
+				) {
+					xtag = fullText.substr(
+						lastDelimiterMatch.offset,
+						delimiterMatch.offset -
+							lastDelimiterMatch.offset +
+							lastDelimiterMatch.length +
+							4
+					);
+					errors.push(
+						getDuplicateOpenTagException({
+							xtag,
+							offset: lastDelimiterMatch.offset,
+						})
+					);
+				} else {
+					errors.push(
+						getUnclosedTagException({ xtag, offset: lastDelimiterMatch.offset })
+					);
+				}
 				delimiterMatch.error = true;
 			} else {
-				errors.push(
-					getUnopenedTagException({ xtag, offset: delimiterMatch.offset })
-				);
+				if (
+					lastDelimiterMatch.offset + lastDelimiterMatch.length ===
+					delimiterMatch.offset
+				) {
+					xtag = fullText.substr(
+						lastDelimiterMatch.offset - 4,
+						delimiterMatch.offset -
+							lastDelimiterMatch.offset +
+							4 +
+							lastDelimiterMatch.length
+					);
+					errors.push(
+						getDuplicateCloseTagException({
+							xtag,
+							offset: lastDelimiterMatch.offset,
+						})
+					);
+				} else {
+					errors.push(
+						getUnopenedTagException({ xtag, offset: delimiterMatch.offset })
+					);
+				}
 				delimiterMatch.error = true;
 			}
 		} else {

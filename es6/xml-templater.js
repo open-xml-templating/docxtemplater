@@ -106,6 +106,10 @@ module.exports = class XmlTemplater {
 				errors = module.errorsTransformer(errors);
 			});
 			errors.forEach(error => {
+				// error properties might not be defined if some foreign
+				// (unhandled error not throw by docxtemplater willingly) is
+				// thrown.
+				error.properties = error.properties || {};
 				error.properties.file = this.filePath;
 			});
 			throwMultiError(errors);

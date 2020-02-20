@@ -80,6 +80,40 @@ function getUnopenedTagException(options) {
 	return err;
 }
 
+function getDuplicateOpenTagException(options) {
+	const err = new XTTemplateError("Duplicate open tag, expected one open tag");
+	err.properties = {
+		xtag: first(options.xtag.split(" ")),
+		id: "duplicate_open_tag",
+		context: options.xtag,
+		offset: options.offset,
+		lIndex: options.lIndex,
+		explanation: `The tag beginning with "${options.xtag.substr(
+			0,
+			10
+		)}" has duplicate open tags`,
+	};
+	return err;
+}
+
+function getDuplicateCloseTagException(options) {
+	const err = new XTTemplateError(
+		"Duplicate close tag, expected one close tag"
+	);
+	err.properties = {
+		xtag: first(options.xtag.split(" ")),
+		id: "duplicate_close_tag",
+		context: options.xtag,
+		offset: options.offset,
+		lIndex: options.lIndex,
+		explanation: `The tag ending with "${options.xtag.substr(
+			0,
+			10
+		)}" has duplicate close tags`,
+	};
+	return err;
+}
+
 function getUnclosedTagException(options) {
 	const err = new XTTemplateError("Unclosed tag");
 	err.properties = {
@@ -317,8 +351,10 @@ module.exports = {
 	getScopeCompilationError,
 	getScopeParserExecutionError,
 	getUnclosedTagException,
-	getUnmatchedLoopException,
 	getUnopenedTagException,
+	getUnmatchedLoopException,
+	getDuplicateCloseTagException,
+	getDuplicateOpenTagException,
 	getCorruptCharactersException,
 
 	throwApiVersionError,

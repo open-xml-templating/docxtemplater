@@ -1212,6 +1212,45 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		});
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
+
+	it("should show clean error message when using {{ with single delimiter", function() {
+		const content = `
+				<w:p><w:r><w:t>{{name}}</w:t></w:r></w:p>
+				`;
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "TemplateError",
+						message: "Duplicate open tag, expected one open tag",
+						properties: {
+							context: "{{name",
+							file: "word/document.xml",
+							id: "duplicate_open_tag",
+							offset: 0,
+							xtag: "{{name",
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Duplicate close tag, expected one close tag",
+						properties: {
+							context: "name}}",
+							file: "word/document.xml",
+							id: "duplicate_close_tag",
+							xtag: "name}}",
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+
+		const create = createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
 });
 
 describe("Rendering error", function() {
