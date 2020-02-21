@@ -24,9 +24,13 @@ Node
         .readFileSync(path.resolve(__dirname, 'input.docx'), 'binary');
 
     var zip = new PizZip(content);
-
-    var doc = new Docxtemplater(zip);
-
+    var doc;
+    try {
+        doc = new Docxtemplater(zip);
+    } catch(error) {
+        errorHandler(error);
+    }
+    
     //set the templateVariables
     doc.setData({
         first_name: 'John',
@@ -40,6 +44,10 @@ Node
         doc.render()
     }
     catch (error) {
+        errorHandler(error);
+    }
+
+    function errorHandler(error) {
         // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
         function replaceErrors(key, value) {
             if (value instanceof Error) {
@@ -100,7 +108,13 @@ Browser
             loadFile("https://docxtemplater.com/tag-example.docx",function(error,content){
                 if (error) { throw error };
                 var zip = new PizZip(content);
-                var doc=new window.docxtemplater(zip);
+                var doc;
+                try {
+                    doc=new window.docxtemplater(zip);
+                } catch(error) {
+                    errorHandler(error);
+                }
+                
                 doc.setData({
                     first_name: 'John',
                     last_name: 'Doe',
@@ -109,9 +123,13 @@ Browser
                 });
                 try {
                     // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                    doc.render()
+                    doc.render();
                 }
                 catch (error) {
+                    errorHandler(error);
+                }
+
+                function errorHandler(error) {
                     // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
                     function replaceErrors(key, value) {
                         if (value instanceof Error) {
@@ -134,6 +152,7 @@ Browser
                     }
                     throw error;
                 }
+
                 var out=doc.getZip().generate({
                     type:"blob",
                     mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

@@ -17,16 +17,19 @@ Constructor
 
 .. code-block:: text
 
-    new Docxtemplater(zip, options)
+    new Docxtemplater(zip[, options])
 
-        You have to pass a valid zip file to use this constructor. You can pass an array of modules that are needed by templater to attach them at the time of instantiating.
-
+        This constructor is preferred over the constructor without any arguments. The constructor without arguments will be removed in docxtemplater version 4.
+        When calling the constructor with a zip file as the first argument, the document will be compiled during instantiation, meaning that this will throw an error if some tag is misplaced in your document.
+        The options parameter allows you to attach some modules, and they will be attached before compilation.
+        
             zip:
                 a zip instance to that method, coming from pizzip or jszip version 2.
 
-            options: (optional)
-                Currently, It supports the ability to add modules. You can attach modules by calling the Docxtemplater like this
-                const doc = new Docxtemplater(zip, { modules: [exampleModule, otherModule] })
+            options: (default {modules:[]})
+                You can pass the list of modules that you would like to attach.
+                For example :
+                const doc = new Docxtemplater(zip, { modules: [ new ImageModule(imageOpts) ] });
                 
         This function returns a new Docxtemplater Object 
 

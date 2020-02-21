@@ -548,6 +548,10 @@ function createDocV4(name, { modules }) {
 	return new Docxtemplater(zip, { modules });
 }
 
+function getZip(name) {
+	return documentCache[name].getZip();
+}
+
 function getLoadedContent(name) {
 	return documentCache[name].loadedContent;
 }
@@ -599,4 +603,5 @@ module.exports = {
 	wrapMultiError,
 	isNode12,
 	createDocV4,
+	getZip,
 };

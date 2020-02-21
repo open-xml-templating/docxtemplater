@@ -12,6 +12,7 @@ const {
 	expectToThrow,
 	getContent,
 	createDocV4,
+	getZip,
 } = require("./utils");
 const inspectModule = require("../inspect-module.js");
 
@@ -948,9 +949,7 @@ describe("Docxtemplater v4 tests", function() {
 	});
 
 	it("should render correctly using the new constructor", () => {
-		const docForZip = createDoc("tag-example.docx");
-		const zip = new PizZip(docForZip.loadedContent);
-		const doc = new Docxtemplater(zip);
+		const doc = new Docxtemplater(getZip("tag-example.docx"));
 		const tags = {
 			first_name: "John",
 			last_name: "Doe",

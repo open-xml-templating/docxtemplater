@@ -1,7 +1,35 @@
 ### 3.17.0
 
-- Change the Docxtemplater constructor to accept zip and modules as part of arguments. It is now possible to call `new Docxtemplater(zip)` instead of `new Docxtemplater().loadZip(zip)`
-- This is a backward compatible change
+- Add constructor method that accepts zip and optionally modules. This constructor will be the official constructor in docxtemplater v4, and the methods : `loadZip`, `attachModule` and `compile` will no more be available. 
+
+```
+const doc = new Docxtemplater();
+doc.loadZip(zip)
+doc.attachModule(new ImageModule())
+doc.attachModule(new Htmlmodule())
+doc.attachModule(new Pptxmodule())
+try {
+    doc.compile();
+}
+catch (e) {
+     // error handler
+}
+```
+
+to
+
+```
+try {
+   const doc = new Docxtemplater(zip, {
+          modules: [new ImageModule(), new Htmlmodule(), new Pptxmodule()]
+    });
+}
+catch (e) {
+     // error handler
+}
+```
+
+- This change is backward compatible, meaning that you can continue to use the constructor with no arguments for the time being.
 
 ### 3.16.11
 

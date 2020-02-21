@@ -31,7 +31,7 @@ const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [] } = {}) {
 		if (!Array.isArray(modules)) {
 			throw new Error(
-				"Please pass modules as an array"
+				"The modules argument of docxtemplater's constructor must be an array"
 			);
 		}
 		this.compiled = {};
@@ -41,8 +41,7 @@ const Docxtemplater = class Docxtemplater {
 			this.attachModule(module);
 		});
 		if (zip) {
-			this.loadZip(zip);
-			this.compile();
+			this.loadZip(zip).compile();
 		}
 	}
 	getModuleApiVersion() {
