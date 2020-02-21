@@ -25,8 +25,7 @@ Node
 
     var zip = new PizZip(content);
 
-    var doc = new Docxtemplater();
-    doc.loadZip(zip);
+    var doc = new Docxtemplater(zip);
 
     //set the templateVariables
     doc.setData({
@@ -101,7 +100,7 @@ Browser
             loadFile("https://docxtemplater.com/tag-example.docx",function(error,content){
                 if (error) { throw error };
                 var zip = new PizZip(content);
-                var doc=new window.docxtemplater().loadZip(zip)
+                var doc=new window.docxtemplater(zip);
                 doc.setData({
                     first_name: 'John',
                     last_name: 'Doe',
