@@ -1,3 +1,8 @@
+### 3.17.0
+
+- Change the Docxtemplater constructor to accept zip and modules as part of arguments. It is now possible to call `new Docxtemplater(zip)` instead of `new Docxtemplater().loadZip(zip)`
+- This is a backward compatible change
+
 ### 3.16.11
 
 - Add specific error (`Duplicate open tag` and `Duplicate close tag`) when using `{{foobar}}` in a template when the delimiters are just one single `{` and `}`
