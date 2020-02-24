@@ -47,17 +47,18 @@ Node
         errorHandler(error);
     }
 
-    function errorHandler(error) {
-        // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-        function replaceErrors(key, value) {
-            if (value instanceof Error) {
-                return Object.getOwnPropertyNames(value).reduce(function(error, key) {
-                    error[key] = value[key];
-                    return error;
-                }, {});
-            }
-            return value;
+    // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+    function replaceErrors(key, value) {
+        if (value instanceof Error) {
+            return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+                error[key] = value[key];
+                return error;
+            }, {});
         }
+        return value;
+    }
+
+    function errorHandler(error) {
         console.log(JSON.stringify({error: error}, replaceErrors));
 
         if (error.properties && error.properties.errors instanceof Array) {
@@ -130,16 +131,6 @@ Browser
                 }
 
                 function errorHandler(error) {
-                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-                    function replaceErrors(key, value) {
-                        if (value instanceof Error) {
-                            return Object.getOwnPropertyNames(value).reduce(function(error, key) {
-                                error[key] = value[key];
-                                return error;
-                            }, {});
-                        }
-                        return value;
-                    }
                     console.log(JSON.stringify({error: error}, replaceErrors));
 
                     if (error.properties && error.properties.errors instanceof Array) {
@@ -151,6 +142,17 @@ Browser
                         // 'The tag beginning with "foobar" is unopened'
                     }
                     throw error;
+                }
+
+                // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+                function replaceErrors(key, value) {
+                    if (value instanceof Error) {
+                        return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+                            error[key] = value[key];
+                            return error;
+                        }, {});
+                    }
+                    return value;
                 }
 
                 var out=doc.getZip().generate({
