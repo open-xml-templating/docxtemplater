@@ -29,12 +29,6 @@ const currentModuleApiVersion = [3, 21, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [] } = {}) {
-		if (zip) {
-			if (!zip.files || typeof zip.file !== "function") {
-				throw new Error("The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)");
-			}
-		}
-
 		if (!Array.isArray(modules)) {
 			throw new Error(
 				"The modules argument of docxtemplater's constructor must be an array"
@@ -47,6 +41,11 @@ const Docxtemplater = class Docxtemplater {
 			this.attachModule(module);
 		});
 		if (zip) {
+			if (!zip.files || typeof zip.file !== "function") {
+				throw new Error(
+					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+				);
+			}
 			this.loadZip(zip).compile();
 		}
 	}
