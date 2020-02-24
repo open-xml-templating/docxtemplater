@@ -944,7 +944,15 @@ describe("Docxtemplater v4 tests", function() {
 
 	it("should throw error when modules passed is not an array", function() {
 		expect(createDocV4.bind(this, "tag-example.docx", { modules: {} })).to.throw(
-			"Please pass modules as an array"
+			"The modules argument of docxtemplater's constructor must be an array"
+		);
+	});
+
+	it("should throw error when a valid zip is not passed", function() {
+		const zip = getZip("tag-example.docx");
+		zip.files = null;
+		expect(() => new Docxtemplater(zip)).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 		);
 	});
 
