@@ -544,12 +544,12 @@ function createDoc(name) {
 }
 
 function createDocV4(name, { modules }) {
-	const zip = documentCache[name].getZip();
+	const zip = getZip(name);
 	return new Docxtemplater(zip, { modules });
 }
 
 function getZip(name) {
-	return documentCache[name].getZip();
+	return new PizZip(documentCache[name].loadedContent);
 }
 
 function getLoadedContent(name) {
