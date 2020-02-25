@@ -942,13 +942,13 @@ describe("Docxtemplater v4 tests", function() {
 		expect(isModuleCalled).to.equal(true);
 	});
 
-	it("should throw error when modules passed is not an array", function() {
+	it("should throw an error when modules passed is not an array", function() {
 		expect(createDocV4.bind(this, "tag-example.docx", { modules: {} })).to.throw(
 			"The modules argument of docxtemplater's constructor must be an array"
 		);
 	});
 
-	it("should throw error when a valid zip is not passed", function() {
+	it("should throw an error when an invalid zip is passed", function() {
 		const zip = getZip("tag-example.docx");
 		zip.files = null;
 		expect(() => new Docxtemplater(zip)).to.throw(
