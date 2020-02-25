@@ -36,9 +36,9 @@ Constructor
                 const options = {
                     modules: [ new ImageModule(imageOpts) ],
                     delimiters: {
-				start: "<",
-				end: ">",
-		    },
+                        start: "<",
+                        end: ">",
+                    },
                 }
                 const doc = new Docxtemplater(zip, options);
                 
@@ -74,7 +74,7 @@ Methods
 
     setOptions()
 
-         This function is used to configure the docxtemplater instance by changing parser, delimiters, etc. You can read more about it here (https://docxtemplater.readthedocs.io/en/latest/configuration.html).
+         This function is used to configure the docxtemplater instance by changing parser, delimiters, etc. (See https://docxtemplater.readthedocs.io/en/latest/configuration.html).
 
     attachModule(module)
 
