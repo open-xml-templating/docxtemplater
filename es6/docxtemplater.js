@@ -28,7 +28,7 @@ const {
 const currentModuleApiVersion = [3, 21, 0];
 
 const Docxtemplater = class Docxtemplater {
-	constructor(zip, { modules = [] } = {}) {
+	constructor(zip, { modules = [], ...options } = {}) {
 		if (!Array.isArray(modules)) {
 			throw new Error(
 				"The modules argument of docxtemplater's constructor must be an array"
@@ -36,7 +36,7 @@ const Docxtemplater = class Docxtemplater {
 		}
 		this.compiled = {};
 		this.modules = [commonModule()];
-		this.setOptions({});
+		this.setOptions(options);
 		modules.forEach(module => {
 			this.attachModule(module);
 		});

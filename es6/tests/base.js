@@ -928,7 +928,7 @@ describe("Serialization", function() {
 });
 
 describe("Docxtemplater v4 tests", function() {
-	it("should work with new constructor", function() {
+	it("should work when modules are attached with new constructor", function() {
 		let isModuleCalled = false;
 
 		const module = {
@@ -963,6 +963,46 @@ describe("Docxtemplater v4 tests", function() {
 		expect(() => new Docxtemplater(Buffer.from("content"))).to.throw(
 			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 		);
+	});
+
+	it("should work when the delimiters are passed with new constructor", function() {
+		const options = {
+			delimiters: {
+				start: "<",
+				end: ">",
+			},
+		};
+		const doc = createDocV4("delimiter-gt.docx", options);
+		doc.setData({
+			user: "John",
+		});
+		doc.render();
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("Hello John");
+	});
+
+	it("should work with options object when both modules and delimiters are passed with new constructor", function() {
+		let isModuleCalled = false;
+		const options = {
+			delimiters: {
+				start: "<",
+				end: ">",
+			},
+			modules: [{
+				optionsTransformer(options) {
+					isModuleCalled = true;
+					return options;
+				},
+			}],
+		};
+		const doc = createDocV4("delimiter-gt.docx", options);
+		doc.setData({
+			user: "John",
+		});
+		doc.render();
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("Hello John");
+		expect(isModuleCalled).to.be.equal(true);
 	});
 
 	it("should render correctly using the new constructor", () => {

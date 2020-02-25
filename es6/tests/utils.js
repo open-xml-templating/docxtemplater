@@ -543,9 +543,9 @@ function createDoc(name) {
 	return loadDocument(name, documentCache[name].loadedContent);
 }
 
-function createDocV4(name, { modules }) {
+function createDocV4(name, options) {
 	const zip = getZip(name);
-	return new Docxtemplater(zip, { modules });
+	return new Docxtemplater(zip, options);
 }
 
 function getZip(name) {
