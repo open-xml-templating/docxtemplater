@@ -1,12 +1,18 @@
 ### 3.17.0
 
-- Add a constructor method that accepts zip and optionally modules. This constructor will be the official constructor in docxtemplater v4 and the methods: `loadZip`, `attachModule` and `compile` will no more be available. 
+- Add a constructor method that accepts zip and optionally modules and other options. This constructor will be the official constructor in docxtemplater v4 and the methods: `loadZip`, `attachModule`, `setOptions` and `compile` will no more be available. 
 
 You can migrate the following code:
 
 ```
 const doc = new Docxtemplater();
 doc.loadZip(zip)
+doc.setOptions({
+    delimiters: {
+      start: "<",
+      end: ">",
+    },
+});
 doc.attachModule(new ImageModule())
 doc.attachModule(new Htmlmodule())
 doc.attachModule(new Pptxmodule())
@@ -21,10 +27,15 @@ catch (e) {
 to
 
 ```
+const options = {
+    modules: [new ImageModule(), new Htmlmodule(), new Pptxmodule()],
+    delimiters: {
+      start: "<",
+      end: ">",
+    },
+}
 try {
-   const doc = new Docxtemplater(zip, {
-          modules: [new ImageModule(), new Htmlmodule(), new Pptxmodule()]
-    });
+   const doc = new Docxtemplater(zip, options);
 }
 catch (e) {
      // error handler

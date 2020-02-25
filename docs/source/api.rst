@@ -27,9 +27,20 @@ Constructor
                 a zip instance to that method, coming from pizzip or jszip version 2.
 
             options: (default {modules:[]})
-                You can pass the list of modules that you would like to attach.
+                You can use this object to configure docxtemplater. It is possible to configure in the following ways:
+
+                    * You can pass options to change custom parser, custom delimiters, etc.
+                    * You can pass the list of modules that you would like to attach.
+
                 For example :
-                const doc = new Docxtemplater(zip, { modules: [ new ImageModule(imageOpts) ] });
+                const options = {
+                    modules: [ new ImageModule(imageOpts) ],
+                    delimiters: {
+				start: "<",
+				end: ">",
+		    },
+                }
+                const doc = new Docxtemplater(zip, options);
                 
         This function returns a new Docxtemplater Object 
 
@@ -60,6 +71,10 @@ Methods
     getZip()
 
         This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see https://github.com/open-xml-templating/pizzip/blob/master/documentation/api_pizzip/generate.md)
+
+    setOptions()
+
+         This function is used to configure the docxtemplater instance by changing parser, delimiters, etc. You can read more about it here (https://docxtemplater.readthedocs.io/en/latest/configuration.html).
 
     attachModule(module)
 
