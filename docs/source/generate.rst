@@ -19,35 +19,7 @@ Node
     var fs = require('fs');
     var path = require('path');
 
-    //Load the docx file as a binary
-    var content = fs
-        .readFileSync(path.resolve(__dirname, 'input.docx'), 'binary');
-
-    var zip = new PizZip(content);
-    var doc;
-    try {
-        doc = new Docxtemplater(zip);
-    } catch(error) {
-        errorHandler(error);
-    }
-    
-    //set the templateVariables
-    doc.setData({
-        first_name: 'John',
-        last_name: 'Doe',
-        phone: '0652455478',
-        description: 'New Website'
-    });
-
-    try {
-        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-        doc.render()
-    }
-    catch (error) {
-        errorHandler(error);
-    }
-
-    // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+    // The error object contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
     function replaceErrors(key, value) {
         if (value instanceof Error) {
             return Object.getOwnPropertyNames(value).reduce(function(error, key) {
@@ -70,6 +42,36 @@ Node
             // 'The tag beginning with "foobar" is unopened'
         }
         throw error;
+    }
+
+    //Load the docx file as a binary
+    var content = fs
+        .readFileSync(path.resolve(__dirname, 'input.docx'), 'binary');
+
+    var zip = new PizZip(content);
+    var doc;
+    try {
+        doc = new Docxtemplater(zip);
+    } catch(error) {
+        // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
+        errorHandler(error);
+    }
+    
+    //set the templateVariables
+    doc.setData({
+        first_name: 'John',
+        last_name: 'Doe',
+        phone: '0652455478',
+        description: 'New Website'
+    });
+
+    try {
+        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+        doc.render()
+    }
+    catch (error) {
+        // Catch rendering errors (errors relating to the rendering of the template : angularParser throws an error)
+        errorHandler(error);
     }
 
     var buf = doc.getZip()
@@ -108,26 +110,16 @@ Browser
         function generate() {
             loadFile("https://docxtemplater.com/tag-example.docx",function(error,content){
                 if (error) { throw error };
-                var zip = new PizZip(content);
-                var doc;
-                try {
-                    doc=new window.docxtemplater(zip);
-                } catch(error) {
-                    errorHandler(error);
-                }
-                
-                doc.setData({
-                    first_name: 'John',
-                    last_name: 'Doe',
-                    phone: '0652455478',
-                    description: 'New Website'
-                });
-                try {
-                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                    doc.render();
-                }
-                catch (error) {
-                    errorHandler(error);
+
+                // The error object contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+                function replaceErrors(key, value) {
+                    if (value instanceof Error) {
+                        return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+                            error[key] = value[key];
+                            return error;
+                        }, {});
+                    }
+                    return value;
                 }
 
                 function errorHandler(error) {
@@ -144,15 +136,28 @@ Browser
                     throw error;
                 }
 
-                // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-                function replaceErrors(key, value) {
-                    if (value instanceof Error) {
-                        return Object.getOwnPropertyNames(value).reduce(function(error, key) {
-                            error[key] = value[key];
-                            return error;
-                        }, {});
-                    }
-                    return value;
+                var zip = new PizZip(content);
+                var doc;
+                try {
+                    doc=new window.docxtemplater(zip);
+                } catch(error) {
+                    // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
+                    errorHandler(error);
+                }
+                
+                doc.setData({
+                    first_name: 'John',
+                    last_name: 'Doe',
+                    phone: '0652455478',
+                    description: 'New Website'
+                });
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
+                catch (error) {
+                    // Catch rendering errors (errors relating to the rendering of the template : angularParser throws an error)
+                    errorHandler(error);
                 }
 
                 var out=doc.getZip().generate({
