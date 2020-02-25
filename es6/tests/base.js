@@ -951,7 +951,16 @@ describe("Docxtemplater v4 tests", function() {
 	it("should throw an error when an invalid zip is passed", function() {
 		const zip = getZip("tag-example.docx");
 		zip.files = null;
+
 		expect(() => new Docxtemplater(zip)).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+		);
+
+		expect(() => new Docxtemplater("content")).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+		);
+
+		expect(() => new Docxtemplater(Buffer.from("content"))).to.throw(
 			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 		);
 	});
