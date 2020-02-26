@@ -11,6 +11,8 @@ const {
 	createDoc,
 	expectToThrow,
 	getContent,
+	createDocV4,
+	getZip,
 } = require("./utils");
 const inspectModule = require("../inspect-module.js");
 
@@ -922,5 +924,109 @@ describe("Serialization", function() {
 	it("should be serialiazable (useful for logging)", function() {
 		const doc = createDoc("tag-example.docx");
 		JSON.stringify(doc);
+	});
+});
+
+describe("Constructor v4", function() {
+	it("should work when modules are attached", function() {
+		let isModuleCalled = false;
+
+		const module = {
+			optionsTransformer(options) {
+				isModuleCalled = true;
+				return options;
+			},
+		};
+
+		createDocV4("tag-example.docx", { modules: [module] });
+		expect(isModuleCalled).to.equal(true);
+	});
+
+	it("should throw an error when modules passed is not an array", function() {
+		expect(
+			createDocV4.bind(this, "tag-example.docx", { modules: {} })
+		).to.throw(
+			"The modules argument of docxtemplater's constructor must be an array"
+		);
+	});
+
+	it("should throw an error when an invalid zip is passed", function() {
+		const zip = getZip("tag-example.docx");
+		zip.files = null;
+
+		expect(() => new Docxtemplater(zip)).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+		);
+
+		expect(() => new Docxtemplater("content")).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+		);
+
+		expect(() => new Docxtemplater(Buffer.from("content"))).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+		);
+	});
+
+	it("should work when the delimiters are passed", function() {
+		const options = {
+			delimiters: {
+				start: "<",
+				end: ">",
+			},
+		};
+		const doc = createDocV4("delimiter-gt.docx", options);
+		doc.setData({
+			user: "John",
+		});
+		doc.render();
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("Hello John");
+	});
+
+	it("should work when both modules and delimiters are passed and modules should have access to options object", function() {
+		let isModuleCalled = false,
+			optionsPassedToModule;
+		const options = {
+			delimiters: {
+				start: "%",
+				end: "%",
+			},
+			modules: [
+				{
+					optionsTransformer(options) {
+						optionsPassedToModule = options;
+						isModuleCalled = true;
+						return options;
+					},
+				},
+			],
+		};
+		const doc = createDocV4("delimiter-pct.docx", options);
+		doc.setData({
+			user: "John",
+			company: "Acme",
+		});
+
+		expect(isModuleCalled).to.be.equal(true);
+		expect(optionsPassedToModule.delimiters.start).to.be.equal("%");
+		expect(optionsPassedToModule.delimiters.end).to.be.equal("%");
+		// Verify that default options are passed to the modules
+		expect(optionsPassedToModule.linebreaks).to.be.equal(false);
+
+		doc.render();
+
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("Hello John from Acme");
+	});
+
+	it("should render correctly", () => {
+		const doc = new Docxtemplater(getZip("tag-example.docx"));
+		const tags = {
+			first_name: "John",
+			last_name: "Doe",
+		};
+		doc.setData(tags);
+		doc.render();
+		expect(doc.getFullText()).to.be.equal("Doe John");
 	});
 });

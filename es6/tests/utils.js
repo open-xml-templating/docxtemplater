@@ -543,6 +543,15 @@ function createDoc(name) {
 	return loadDocument(name, documentCache[name].loadedContent);
 }
 
+function createDocV4(name, options) {
+	const zip = getZip(name);
+	return new Docxtemplater(zip, options);
+}
+
+function getZip(name) {
+	return new PizZip(documentCache[name].loadedContent);
+}
+
 function getLoadedContent(name) {
 	return documentCache[name].loadedContent;
 }
@@ -593,4 +602,6 @@ module.exports = {
 	start,
 	wrapMultiError,
 	isNode12,
+	createDocV4,
+	getZip,
 };

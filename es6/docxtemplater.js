@@ -28,15 +28,26 @@ const {
 const currentModuleApiVersion = [3, 21, 0];
 
 const Docxtemplater = class Docxtemplater {
-	constructor() {
-		if (arguments.length > 0) {
+	constructor(zip, { modules = [], ...options } = {}) {
+		if (!Array.isArray(modules)) {
 			throw new Error(
-				"The constructor with parameters has been removed in docxtemplater 3, please check the upgrade guide."
+				"The modules argument of docxtemplater's constructor must be an array"
 			);
 		}
 		this.compiled = {};
 		this.modules = [commonModule()];
-		this.setOptions({});
+		this.setOptions(options);
+		modules.forEach(module => {
+			this.attachModule(module);
+		});
+		if (zip) {
+			if (!zip.files || typeof zip.file !== "function") {
+				throw new Error(
+					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+				);
+			}
+			this.loadZip(zip).compile();
+		}
 	}
 	getModuleApiVersion() {
 		return currentModuleApiVersion.join(".");

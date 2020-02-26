@@ -1,3 +1,49 @@
+### 3.17.0
+
+- Add a constructor method that accepts zip and optionally modules and other options. This constructor will be the official constructor in docxtemplater v4 and the methods: `loadZip`, `attachModule`, `setOptions` and `compile` will no more be available. 
+
+You can migrate the following code:
+
+```
+const doc = new Docxtemplater();
+doc.loadZip(zip)
+doc.setOptions({
+    delimiters: {
+      start: "<",
+      end: ">",
+    },
+});
+doc.attachModule(new ImageModule())
+doc.attachModule(new Htmlmodule())
+doc.attachModule(new Pptxmodule())
+try {
+    doc.compile();
+}
+catch (e) {
+     // error handler
+}
+```
+
+to
+
+```
+const options = {
+    modules: [new ImageModule(), new Htmlmodule(), new Pptxmodule()],
+    delimiters: {
+      start: "<",
+      end: ">",
+    },
+}
+try {
+   const doc = new Docxtemplater(zip, options);
+}
+catch (e) {
+     // error handler
+}
+```
+
+- This change is backward compatible, meaning that you can continue to use the constructor with no arguments for the time being.
+
 ### 3.16.11
 
 - Add specific error (`Duplicate open tag` and `Duplicate close tag`) when using `{{foobar}}` in a template when the delimiters are just one single `{` and `}`
