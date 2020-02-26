@@ -927,8 +927,8 @@ describe("Serialization", function() {
 	});
 });
 
-describe("Docxtemplater v4 tests", function() {
-	it("should work when modules are attached with new constructor", function() {
+describe("Constructor v4", function() {
+	it("should work when modules are attached", function() {
 		let isModuleCalled = false;
 
 		const module = {
@@ -943,7 +943,9 @@ describe("Docxtemplater v4 tests", function() {
 	});
 
 	it("should throw an error when modules passed is not an array", function() {
-		expect(createDocV4.bind(this, "tag-example.docx", { modules: {} })).to.throw(
+		expect(
+			createDocV4.bind(this, "tag-example.docx", { modules: {} })
+		).to.throw(
 			"The modules argument of docxtemplater's constructor must be an array"
 		);
 	});
@@ -965,7 +967,7 @@ describe("Docxtemplater v4 tests", function() {
 		);
 	});
 
-	it("should work when the delimiters are passed with new constructor", function() {
+	it("should work when the delimiters are passed", function() {
 		const options = {
 			delimiters: {
 				start: "<",
@@ -981,31 +983,43 @@ describe("Docxtemplater v4 tests", function() {
 		expect(fullText).to.be.equal("Hello John");
 	});
 
-	it("should work with options object when both modules and delimiters are passed with new constructor", function() {
-		let isModuleCalled = false;
+	it("should work when both modules and delimiters are passed and modules should have access to options object", function() {
+		let isModuleCalled = false,
+			optionsPassedToModule;
 		const options = {
 			delimiters: {
-				start: "<",
-				end: ">",
+				start: "%",
+				end: "%",
 			},
-			modules: [{
-				optionsTransformer(options) {
-					isModuleCalled = true;
-					return options;
+			modules: [
+				{
+					optionsTransformer(options) {
+						optionsPassedToModule = options;
+						isModuleCalled = true;
+						return options;
+					},
 				},
-			}],
+			],
 		};
-		const doc = createDocV4("delimiter-gt.docx", options);
+		const doc = createDocV4("delimiter-pct.docx", options);
 		doc.setData({
 			user: "John",
+			company: "Acme",
 		});
-		doc.render();
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("Hello John");
+
 		expect(isModuleCalled).to.be.equal(true);
+		expect(optionsPassedToModule.delimiters.start).to.be.equal("%");
+		expect(optionsPassedToModule.delimiters.end).to.be.equal("%");
+		// Verify that default options are passed to the modules
+		expect(optionsPassedToModule.linebreaks).to.be.equal(false);
+
+		doc.render();
+
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("Hello John from Acme");
 	});
 
-	it("should render correctly using the new constructor", () => {
+	it("should render correctly", () => {
 		const doc = new Docxtemplater(getZip("tag-example.docx"));
 		const tags = {
 			first_name: "John",
