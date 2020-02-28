@@ -185,6 +185,55 @@ For example, if you write :
 
 this is not allowed since a loop that starts in a table should also end in that table.
 
+Cannot attach a module that was already attached
+------------------------------------------------
+
+You might get this error : 
+
+`Cannot attach a module that was already attached : "ImageModule". Maybe you are instantiating the module at the root level, and using it for multiple instances of Docxtemplater`
+
+In previous versions the error was "Cannot attach a module that was already attached"
+
+This happens if you are reusing the same module instance twice.
+
+It usually means that you are calling `new DocxtemplaterImageModule()`
+just once, but you should call it for each instance of docxtemplater.
+
+The following code will throw the error when calling "generate" twice: 
+
+.. code-block:: javascript
+
+    var Docxtemplater = require("docxtemplater");
+    var ImageModule = require("docxtemplater-image-module");
+    var imageModule = new ImageModule(opts);
+
+    function generate(content) {
+        var zip = new PizZip(content);
+        var doc = new Docxtemplater(zip);
+        doc.attachModule(imageModule);
+        doc.setData(data);
+        doc.render()
+    }
+
+You should always reconstruct an imageModule for each Docxtemplater instance.
+
+The following code will no more throw the error : 
+
+.. code-block:: javascript
+
+    var Docxtemplater = require("docxtemplater");
+    var ImageModule = require("docxtemplater-image-module");
+
+    function generate(content) {
+        var zip = new PizZip(content);
+        var doc = new Docxtemplater(zip);
+        var imageModule = new ImageModule(opts);
+        doc.attachModule(imageModule);
+        doc.setData(data);
+        doc.render()
+    }
+
+
 Handling multiple errors
 ------------------------
 
