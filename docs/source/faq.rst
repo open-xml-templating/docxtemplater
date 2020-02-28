@@ -425,6 +425,92 @@ The simplest way of starting a webserver is to run following command :
 
 On your production server, you should probably use a more robust webserver such as nginx, or any webserver that you are currently using for static files.
 
+Docxtemplater in an angular project
+-----------------------------------
+
+There is an `online demo`_ available on stackblitz. 
+
+.. _`online demo`: https://stackblitz.com/edit/angular-docxtemplater-example?file=src%2Fapp%2Fproduct-list%2Fproduct-list.component.ts
+
+If you are using an angular version that supports the `import` keyword, you can use the following code :
+
+.. code-block:: javascript
+
+    import { Component } from "@angular/core";
+    import Docxtemplater from "docxtemplater";
+    import PizZip from "pizzip";
+    import PizZipUtils from "pizzip/utils/index.js";
+    import { saveAs } from "file-saver";
+
+    function loadFile(url, callback) {
+      PizZipUtils.getBinaryContent(url, callback);
+    }
+
+    @Component({
+      selector: "app-product-list",
+      templateUrl: "./product-list.component.html",
+      styleUrls: ["./product-list.component.css"]
+    })
+    export class ProductListComponent {
+      generate() {
+        loadFile("https://docxtemplater.com/tag-example.docx", function(
+          error,
+          content
+        ) {
+          if (error) {
+            throw error;
+          }
+          var zip = new PizZip(content);
+          var doc = new Docxtemplater().loadZip(zip);
+          doc.setData({
+            first_name: "John",
+            last_name: "Doe",
+            phone: "0652455478",
+            description: "New Website"
+          });
+          try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+          } catch (error) {
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+            function replaceErrors(key, value) {
+              if (value instanceof Error) {
+                return Object.getOwnPropertyNames(value).reduce(function(
+                  error,
+                  key
+                ) {
+                  error[key] = value[key];
+                  return error;
+                },
+                {});
+              }
+              return value;
+            }
+            console.log(JSON.stringify({ error: error }, replaceErrors));
+
+            if (error.properties && error.properties.errors instanceof Array) {
+              const errorMessages = error.properties.errors
+                .map(function(error) {
+                  return error.properties.explanation;
+                })
+                .join("\n");
+              console.log("errorMessages", errorMessages);
+              // errorMessages is a humanly readable message looking like this :
+              // 'The tag beginning with "foobar" is unopened'
+            }
+            throw error;
+          }
+          var out = doc.getZip().generate({
+            type: "blob",
+            mimeType:
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          }); //Output the document using Data-URI
+          saveAs(out, "output.docx");
+        });
+      }
+    }
+
+
 Getting access to page number / total number of pages or regenerate Table of Contents
 -------------------------------------------------------------------------------------
 
