@@ -46,7 +46,31 @@ const Docxtemplater = class Docxtemplater {
 					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 				);
 			}
-			this.loadZip(zip).compile();
+			this.loadZip(zip);
+			const detach = () => {
+				const indexOfModule = this.modules.indexOf(module);
+				// module will always be present in the this.modules, hence we are not validating index.
+				const removedModule = this.modules.splice(indexOfModule, 1)[0];
+				removedModule.attached = false;
+				removedModule.on("detached");
+				return this;
+			};
+			// find the modules which are not supported
+			const toBeDetachedModules = this.modules.filter(module => {
+				if (module.supportedFileTypes) {
+					if (!Array.isArray(module.supportedFileTypes)) {
+						throw new Error(
+							"The supportedFileTypes field of the module must be an array"
+						);
+					}
+					return !module.supportedFileTypes.includes(this.fileType);
+				}
+				return false;
+			});
+			toBeDetachedModules.forEach(module => {
+				detach(module);
+			});
+			this.compile();
 		}
 	}
 	getModuleApiVersion() {

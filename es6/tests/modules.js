@@ -1,7 +1,15 @@
-const { expectToThrow, createDoc, shouldBeSame, isNode12 } = require("./utils");
+const {
+	expectToThrow,
+	createDoc,
+	shouldBeSame,
+	isNode12,
+	createDocV4,
+	getZip,
+} = require("./utils");
 const Errors = require("../errors.js");
 const { expect } = require("chai");
 const { xml2str, traits } = require("../doc-utils");
+const Docxtemplater = require("../docxtemplater.js");
 
 describe("Verify apiversion", function() {
 	it("should work with valid api version", function() {
@@ -223,3 +231,61 @@ describe("Module errors", function() {
 		expect(error.properties.errors[0].message).to.equal("foobar");
 	});
 });
+
+describe("Module detachment", function() {
+	it("should detach the module when file is not in its supported types", function() {
+		const module = {
+			optionsTransformer(options) {
+				return options;
+			},
+			supportedFileTypes: ["pptx"],
+		};
+		const doc = createDocV4("tag-example.docx", { modules: [module] });
+		expect(doc.modules.length).to.equal(6);
+	});
+
+	it("module should not be called", function() {
+		let isModuleCalled = false;
+
+		const module = {
+			optionsTransformer(options) {
+				isModuleCalled = true;
+				return options;
+			},
+			supportedFileTypes: ["pptx"],
+		};
+
+		createDocV4("tag-example.docx", { modules: [module] });
+		expect(isModuleCalled).to.equal(false);
+	});
+
+	it("detached event should be called", function() {
+		let isDetachedCalled = false;
+		const module = {
+			on(eventName) {
+				if(eventName === "detached") {
+					isDetachedCalled = true;
+				}
+			},
+			supportedFileTypes: ["pptx"],
+		};
+		createDocV4("tag-example.docx", { modules: [module] });
+		expect(isDetachedCalled).to.equal(true);
+	});
+});
+
+describe("Module supportedFieldType property", function() {
+	it("should throw error when supportedFieldType is not an Array", function() {
+		const zip = getZip("tag-example.docx");
+		const module = {
+			optionsTransformer(options) {
+				return options;
+			},
+			supportedFileTypes: "pptx",
+		};
+		expect(() => new Docxtemplater(zip, { modules: [module] })).to.throw(
+			"The supportedFileTypes field of the module must be an array"
+		);
+	});
+});
+

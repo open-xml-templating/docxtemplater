@@ -1029,4 +1029,19 @@ describe("Constructor v4", function() {
 		doc.render();
 		expect(doc.getFullText()).to.be.equal("Doe John");
 	});
+
+	it("should work when modules are attached with valid filetypes", function() {
+		let isModuleCalled = false;
+
+		const module = {
+			optionsTransformer(options) {
+				isModuleCalled = true;
+				return options;
+			},
+			supportedFileTypes: ["pptx", "docx"],
+		};
+
+		createDocV4("tag-example.docx", { modules: [module] });
+		expect(isModuleCalled).to.equal(true);
+	});
 });
