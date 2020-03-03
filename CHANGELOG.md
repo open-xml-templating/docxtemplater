@@ -1,3 +1,8 @@
+### 3.17.1
+
+- Bugfix issue related to conditional attachment of modules. Some modules work with a particular file-type(docx, pptx). So, now when modules have a property `supportedFileTypes` listing the supported file types the constructor will attach only the valid modules
+- Update moduleApiVersion to 3.22.0
+
 ### 3.17.0
 
 - Add a constructor method that accepts zip and optionally modules and other options. This constructor will be the official constructor in docxtemplater v4 and the methods: `loadZip`, `attachModule`, `setOptions` and `compile` will no more be available. 
