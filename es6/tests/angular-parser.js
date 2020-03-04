@@ -9,7 +9,9 @@ function angularParser(tag) {
 			},
 		};
 	}
-	const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
+	const expr = expressions.compile(
+		tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+	);
 	return {
 		get(scope, context) {
 			let obj = {};

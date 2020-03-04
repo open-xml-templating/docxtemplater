@@ -57,7 +57,9 @@ Here's a code sample for how to use the angularParser :
                 get: function(s){ return s;}
             };
         }
-        const expr = expressions.compile(tag.replace(/(’|“|”|‘)/g, "'"));
+        const expr = expressions.compile(
+            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        );
         return {
             get: function(scope, context) {
                 let obj = {};
