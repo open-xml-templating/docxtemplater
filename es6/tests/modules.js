@@ -233,35 +233,14 @@ describe("Module errors", function() {
 });
 
 describe("Module detachment", function() {
-	it("should detach the module when file is not in its supported types", function() {
-		const module = {
-			optionsTransformer(options) {
-				return options;
-			},
-			supportedFileTypes: ["pptx"],
-		};
-		const doc = createDocV4("tag-example.docx", { modules: [module] });
-		expect(doc.modules.length).to.equal(6);
-	});
-
-	it("module should not be called", function() {
+	it("should detach the module when the module does not support the document filetype", function() {
 		let isModuleCalled = false;
-
+		let isDetachedCalled = false;
 		const module = {
 			optionsTransformer(options) {
 				isModuleCalled = true;
 				return options;
 			},
-			supportedFileTypes: ["pptx"],
-		};
-
-		createDocV4("tag-example.docx", { modules: [module] });
-		expect(isModuleCalled).to.equal(false);
-	});
-
-	it("detached event should be called", function() {
-		let isDetachedCalled = false;
-		const module = {
 			on(eventName) {
 				if(eventName === "detached") {
 					isDetachedCalled = true;
@@ -271,6 +250,7 @@ describe("Module detachment", function() {
 		};
 		createDocV4("tag-example.docx", { modules: [module] });
 		expect(isDetachedCalled).to.equal(true);
+		expect(isModuleCalled).to.equal(false);
 	});
 });
 

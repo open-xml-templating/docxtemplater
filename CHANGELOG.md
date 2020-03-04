@@ -1,6 +1,32 @@
 ### 3.17.1
+- Add support for automatically detaching modules that do not support the current filetype when using constructor v4. In previous versions, you would do the following:
 
-- Bugfix issue related to conditional attachment of modules. Some modules work with a particular file-type(docx, pptx). So, now when modules have a property `supportedFileTypes` listing the supported file types the constructor will attach only the valid modules.
+```
+let doc = new Docxtemplater();
+const zip = new PizZip(buffer)
+doc.loadZip(zip);
+
+if (doc.fileType === "pptx") {
+    doc.attachModule(new SlidesModule());
+}
+```
+
+Now it is possible to write instead the following, without needing the condition on filetype:
+
+```
+const zip = new PizZip(buffer)
+const options = {
+    modules: [new SlidesModule()],
+}
+try {
+   const doc = new Docxtemplater(zip, options);
+}
+catch (e) {
+    console.log(e);
+    // error handler
+}
+```
+
 - Update moduleApiVersion to 3.22.0.
 
 ### 3.17.0

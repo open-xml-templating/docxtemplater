@@ -37,8 +37,8 @@ const Docxtemplater = class Docxtemplater {
 		this.compiled = {};
 		this.modules = [commonModule()];
 		this.setOptions(options);
-		modules.forEach(mod => {
-			this.attachModule(mod);
+		modules.forEach(module => {
+			this.attachModule(module);
 		});
 		if (zip) {
 			if (!zip.files || typeof zip.file !== "function") {
@@ -47,28 +47,21 @@ const Docxtemplater = class Docxtemplater {
 				);
 			}
 			this.loadZip(zip);
-			const detach = (mod) => {
-				const indexOfModule = this.modules.indexOf(mod);
-				// module will always be present in the this.modules, hence we are not validating index.
-				const removedModule = this.modules.splice(indexOfModule, 1)[0];
-				removedModule.attached = false;
-				removedModule.on("detached");
-				return this;
-			};
-			// find the modules which are not supported
-			const toBeDetachedModules = this.modules.filter(mod => {
-				if (mod.supportedFileTypes) {
-					if (!Array.isArray(mod.supportedFileTypes)) {
+			// remove the unsupported modules
+			this.modules = this.modules.filter(module => {
+				if (module.supportedFileTypes) {
+					if (!Array.isArray(module.supportedFileTypes)) {
 						throw new Error(
 							"The supportedFileTypes field of the module must be an array"
 						);
 					}
-					return !mod.supportedFileTypes.includes(this.fileType);
+					const isSupportedModule = module.supportedFileTypes.includes(this.fileType);
+					if (!isSupportedModule) {
+						module.on("detached");
+					}
+					return isSupportedModule;
 				}
-				return false;
-			});
-			toBeDetachedModules.forEach(mod => {
-				detach(mod);
+				return true;
 			});
 			this.compile();
 		}
