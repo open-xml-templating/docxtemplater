@@ -12,3 +12,5 @@ do
 	echo "$i"
 done
 
+git add '*.rst'
+git commit -m "Update versions in documentation"
