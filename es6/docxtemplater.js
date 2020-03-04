@@ -47,7 +47,7 @@ const Docxtemplater = class Docxtemplater {
 				);
 			}
 			this.loadZip(zip);
-			const detach = () => {
+			const detach = (module) => {
 				const indexOfModule = this.modules.indexOf(module);
 				// module will always be present in the this.modules, hence we are not validating index.
 				const removedModule = this.modules.splice(indexOfModule, 1)[0];
