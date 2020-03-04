@@ -529,3 +529,18 @@ page numbers within docxtemplater.
 Also, even across different "official" rendering engines, the page numbers may vary. Depending on whether you open a document with Office Online, Word 2013 or Word 2016 or the Mac versions of Word, you can have some slight differences that will, at the end, influence the number of pages or the position of some elements within a page.
 
 The amount of work to write a good rendering engine would be very huge (a few years at least for a team of 5-10 people).
+
+Special character keys with angular parser throws error
+-------------------------------------------------------
+
+The error that you could see is this, when using the tag `{être}`.
+
+.. code-block:: text
+
+    Error: [$parse:lexerr] Lexer Error: Unexpected next character  at columns 0-0 [ê] in expression [être].
+
+This is because angular-expressions do not allow non-ascii characters.
+
+You can fix this issue by using `{this["être"]}` in your template.
+
+The reason for not handling this character comes from angular itself : https://github.com/angular/angular.js/issues/2174#issuecomment-63541918
