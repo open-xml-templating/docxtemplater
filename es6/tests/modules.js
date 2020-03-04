@@ -253,19 +253,3 @@ describe("Module detachment", function() {
 		expect(isModuleCalled).to.equal(false);
 	});
 });
-
-describe("Module supportedFieldType property", function() {
-	it("should throw error when supportedFieldType is not an Array", function() {
-		const zip = getZip("tag-example.docx");
-		const module = {
-			optionsTransformer(options) {
-				return options;
-			},
-			supportedFileTypes: "pptx",
-		};
-		expect(() => new Docxtemplater(zip, { modules: [module] })).to.throw(
-			"The supportedFileTypes field of the module must be an array"
-		);
-	});
-});
-

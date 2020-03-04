@@ -1044,4 +1044,17 @@ describe("Constructor v4", function() {
 		createDocV4("tag-example.docx", { modules: [module] });
 		expect(isModuleCalled).to.equal(true);
 	});
+
+	it("should throw an error when supportedFieldType property in passed module is not an Array", function() {
+		const zip = getZip("tag-example.docx");
+		const module = {
+			optionsTransformer(options) {
+				return options;
+			},
+			supportedFileTypes: "pptx",
+		};
+		expect(() => new Docxtemplater(zip, { modules: [module] })).to.throw(
+			"The supportedFileTypes field of the module must be an array"
+		);
+	});
 });
