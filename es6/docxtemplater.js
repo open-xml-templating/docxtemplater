@@ -55,7 +55,7 @@ const Docxtemplater = class Docxtemplater {
 							"The supportedFileTypes field of the module must be an array"
 						);
 					}
-					const isSupportedModule = module.supportedFileTypes.includes(this.fileType);
+					const isSupportedModule = module.supportedFileTypes.indexOf(this.fileType) !== -1;
 					if (!isSupportedModule) {
 						module.on("detached");
 					}

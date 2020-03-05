@@ -1,4 +1,5 @@
 ### 3.17.1
+
 - Add support for automatically detaching modules that do not support the current filetype when using constructor v4. In previous versions, you would do the following:
 
 ```
@@ -11,7 +12,7 @@ if (doc.fileType === "pptx") {
 }
 ```
 
-Now it is possible to write instead the following, without needing the condition on filetype:
+Now it is possible to write the following, without needing the condition on filetype:
 
 ```
 const zip = new PizZip(buffer)

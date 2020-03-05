@@ -1032,7 +1032,6 @@ describe("Constructor v4", function() {
 
 	it("should work when modules are attached with valid filetypes", function() {
 		let isModuleCalled = false;
-
 		const module = {
 			optionsTransformer(options) {
 				isModuleCalled = true;
@@ -1040,7 +1039,6 @@ describe("Constructor v4", function() {
 			},
 			supportedFileTypes: ["pptx", "docx"],
 		};
-
 		createDocV4("tag-example.docx", { modules: [module] });
 		expect(isModuleCalled).to.equal(true);
 	});

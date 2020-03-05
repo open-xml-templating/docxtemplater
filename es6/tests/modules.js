@@ -4,12 +4,10 @@ const {
 	shouldBeSame,
 	isNode12,
 	createDocV4,
-	getZip,
 } = require("./utils");
 const Errors = require("../errors.js");
 const { expect } = require("chai");
 const { xml2str, traits } = require("../doc-utils");
-const Docxtemplater = require("../docxtemplater.js");
 
 describe("Verify apiversion", function() {
 	it("should work with valid api version", function() {
