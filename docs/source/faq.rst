@@ -541,8 +541,46 @@ The error that you could see is this, when using the tag `{être}`.
 
     Error: [$parse:lexerr] Lexer Error: Unexpected next character  at columns 0-0 [ê] in expression [être].
 
-This is because angular-expressions do not allow non-ascii characters.
+This is because angular-expressions does not allow non-ascii characters.
+You will need angular-expressions version 1.1.0 which adds the
+`isIdentifierStart` and `isIdentifierContinue` properties.
 
-You can fix this issue by using `{this["être"]}` in your template.
+You can fix this issue by adding the characters that you would like to support, for example : 
 
-The reason for not handling this character comes from angular itself : https://github.com/angular/angular.js/issues/2174#issuecomment-63541918
+.. code-block:: javascript
+
+    function validChars(ch) {
+        return (
+            (ch >= "a" && ch <= "z") ||
+            (ch >= "A" && ch <= "Z") ||
+            ch === "_" ||
+            ch === "$" ||
+            "ÀÈÌÒÙàèìòùÁÉÍÓÚáéíóúÂÊÎÔÛâêîôûÃÑÕãñõÄËÏÖÜŸäëïöüÿß".indexOf(ch) !== -1
+        );
+    }
+    function angularParser(tag) {
+        if (tag === '.') {
+            return {
+                get: function(s){ return s;}
+            };
+        }
+        const expr = expressions.compile(
+            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"'),
+            {
+                isIdentifierStart: validChars,
+                isIdentifierContinue: validChars
+            }
+        );
+        return {
+            get: function(scope, context) {
+                let obj = {};
+                const scopeList = context.scopeList;
+                const num = context.num;
+                for (let i = 0, len = num + 1; i < len; i++) {
+                    obj = merge(obj, scopeList[i]);
+                }
+                return expr(scope, obj);
+            }
+        };
+    }
+    new Docxtemplater().loadZip(zip).setOptions({parser:angularParser})
