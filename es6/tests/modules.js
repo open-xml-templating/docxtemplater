@@ -240,7 +240,7 @@ describe("Module detachment", function() {
 				return options;
 			},
 			on(eventName) {
-				if(eventName === "detached") {
+				if (eventName === "detached") {
 					isDetachedCalled = true;
 				}
 			},
