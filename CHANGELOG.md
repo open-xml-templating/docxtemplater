@@ -1,3 +1,35 @@
+### 3.17.1
+
+- Add support for automatically detaching modules that do not support the current filetype when using constructor v4. In previous versions, you would do the following:
+
+```
+let doc = new Docxtemplater();
+const zip = new PizZip(buffer)
+doc.loadZip(zip);
+
+if (doc.fileType === "pptx") {
+    doc.attachModule(new SlidesModule());
+}
+```
+
+Now it is possible to write the following, without needing the condition on filetype:
+
+```
+const zip = new PizZip(buffer)
+const options = {
+    modules: [new SlidesModule()],
+}
+try {
+   const doc = new Docxtemplater(zip, options);
+}
+catch (e) {
+    console.log(e);
+    // error handler
+}
+```
+
+- Update moduleApiVersion to 3.22.0.
+
 ### 3.17.0
 
 - Add a constructor method that accepts zip and optionally modules and other options. This constructor will be the official constructor in docxtemplater v4 and the methods: `loadZip`, `attachModule`, `setOptions` and `compile` will no more be available. 

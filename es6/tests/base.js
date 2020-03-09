@@ -99,7 +99,7 @@ describe("Api versioning", function() {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 21, 0],
+					currentModuleApiVersion: [3, 22, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -114,7 +114,7 @@ describe("Api versioning", function() {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 21, 0],
+					currentModuleApiVersion: [3, 22, 0],
 					neededVersion: [3, 44, 0],
 				},
 			}
@@ -1028,5 +1028,31 @@ describe("Constructor v4", function() {
 		doc.setData(tags);
 		doc.render();
 		expect(doc.getFullText()).to.be.equal("Doe John");
+	});
+
+	it("should work when modules are attached with valid filetypes", function() {
+		let isModuleCalled = false;
+		const module = {
+			optionsTransformer(options) {
+				isModuleCalled = true;
+				return options;
+			},
+			supportedFileTypes: ["pptx", "docx"],
+		};
+		createDocV4("tag-example.docx", { modules: [module] });
+		expect(isModuleCalled).to.equal(true);
+	});
+
+	it("should throw an error when supportedFieldType property in passed module is not an Array", function() {
+		const zip = getZip("tag-example.docx");
+		const module = {
+			optionsTransformer(options) {
+				return options;
+			},
+			supportedFileTypes: "pptx",
+		};
+		expect(() => new Docxtemplater(zip, { modules: [module] })).to.throw(
+			"The supportedFileTypes field of the module must be an array"
+		);
 	});
 });

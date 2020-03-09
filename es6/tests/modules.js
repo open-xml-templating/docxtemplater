@@ -1,4 +1,10 @@
-const { expectToThrow, createDoc, shouldBeSame, isNode12 } = require("./utils");
+const {
+	expectToThrow,
+	createDoc,
+	shouldBeSame,
+	isNode12,
+	createDocV4,
+} = require("./utils");
 const Errors = require("../errors.js");
 const { expect } = require("chai");
 const { xml2str, traits } = require("../doc-utils");
@@ -6,7 +12,7 @@ const { xml2str, traits } = require("../doc-utils");
 describe("Verify apiversion", function() {
 	it("should work with valid api version", function() {
 		const module = {
-			requiredAPIVersion: "3.21.0",
+			requiredAPIVersion: "3.22.0",
 			render(part) {
 				return part.value;
 			},
@@ -30,7 +36,7 @@ describe("Verify apiversion", function() {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 21, 0],
+				currentModuleApiVersion: [3, 22, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});
@@ -221,5 +227,27 @@ describe("Module errors", function() {
 		expect(error.message).to.equal("Multi error");
 		expect(error.properties.errors.length).to.equal(1);
 		expect(error.properties.errors[0].message).to.equal("foobar");
+	});
+});
+
+describe("Module detachment", function() {
+	it("should detach the module when the module does not support the document filetype", function() {
+		let isModuleCalled = false;
+		let isDetachedCalled = false;
+		const module = {
+			optionsTransformer(options) {
+				isModuleCalled = true;
+				return options;
+			},
+			on(eventName) {
+				if (eventName === "detached") {
+					isDetachedCalled = true;
+				}
+			},
+			supportedFileTypes: ["pptx"],
+		};
+		createDocV4("tag-example.docx", { modules: [module] });
+		expect(isDetachedCalled).to.equal(true);
+		expect(isModuleCalled).to.equal(false);
 	});
 });

@@ -25,7 +25,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 21, 0];
+const currentModuleApiVersion = [3, 22, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
@@ -46,7 +46,25 @@ const Docxtemplater = class Docxtemplater {
 					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 				);
 			}
-			this.loadZip(zip).compile();
+			this.loadZip(zip);
+			// remove the unsupported modules
+			this.modules = this.modules.filter(module => {
+				if (module.supportedFileTypes) {
+					if (!Array.isArray(module.supportedFileTypes)) {
+						throw new Error(
+							"The supportedFileTypes field of the module must be an array"
+						);
+					}
+					const isSupportedModule =
+						module.supportedFileTypes.indexOf(this.fileType) !== -1;
+					if (!isSupportedModule) {
+						module.on("detached");
+					}
+					return isSupportedModule;
+				}
+				return true;
+			});
+			this.compile();
 		}
 	}
 	getModuleApiVersion() {
