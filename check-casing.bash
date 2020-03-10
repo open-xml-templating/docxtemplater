@@ -5,9 +5,6 @@ tgrep() {
 	grep "$@" || true
 }
 
-ignored="$(git ls-files -o -i --exclude-standard)"
-all="$(find . -type f | cut -c 3- | tgrep -v '^.git')"
-
 ( git status --short|cut -d\  -f2- && git ls-files ) |
 sort -u |
 ( xargs -d '\n' -- stat -c%n 2>/dev/null  ||: ) > trackedfiles.log
