@@ -1,6 +1,7 @@
 language: node_js
-sudo: false
-matrix:
+os: linux
+dist: xenial
+jobs:
   include:
   - node_js: stable
     env: COMMAND=preversion BROWSER=SAUCELABS
