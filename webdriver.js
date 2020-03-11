@@ -159,7 +159,7 @@ server.listen(port, async function() {
 			const url = `http://localhost:${port}/test/mocha.html${postfix}`;
 			await client.url(url);
 
-			await waitForText("#status", 30000);
+			await waitForText("#status", 120000);
 			await client.pause(5000);
 			await waitForExist("li.failures a", 5000);
 			const text = await (await client.$("#mocha-stats")).getText();
