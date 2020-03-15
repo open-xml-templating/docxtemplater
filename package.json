@@ -37,7 +37,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/preset-env": "^7.8.7",
     "@wdio/cli": "^5.22.0",
-    "angular-expressions": "^1.0.1",
+    "angular-expressions": "^1.1.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
