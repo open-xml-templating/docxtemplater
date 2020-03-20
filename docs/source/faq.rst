@@ -595,8 +595,8 @@ The proofstate tag is by default, not removed.
 
 To remove it, one could do the following, starting with docxtemplater 3.17.2
 
-```js
-const proofstateModule = require("docxtemplater/js/proof-state-module.js");
-doc = new Docxtemplater();
-doc.attachModule(proofstateModule);
-```
+.. code-block:: javascript
+
+    const proofstateModule = require("docxtemplater/js/proof-state-module.js");
+    doc = new Docxtemplater();
+    doc.attachModule(proofstateModule);
