@@ -61,6 +61,7 @@ describe("Loading", function() {
 					"word/footer1.xml",
 					"docProps/core.xml",
 					"docProps/app.xml",
+					"word/settings.xml",
 					"word/document.xml",
 				].sort()
 			);

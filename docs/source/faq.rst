@@ -584,3 +584,19 @@ You can fix this issue by adding the characters that you would like to support, 
         };
     }
     new Docxtemplater().loadZip(zip).setOptions({parser:angularParser})
+
+
+Remove proofstate tag
+---------------------
+
+The proofstate tag in a document marks the document as spell-checked when last saved.
+After rendering a document with docxtemplater, some spelling errors might have been introduced by the addition of text.
+The proofstate tag is by default, not removed.
+
+To remove it, one could do the following, starting with docxtemplater 3.17.2
+
+```js
+const proofstateModule = require("docxtemplater/js/proof-state-module.js");
+doc = new Docxtemplater();
+doc.attachModule(proofstateModule);
+```

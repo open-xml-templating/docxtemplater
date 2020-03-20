@@ -1,3 +1,7 @@
+### 3.17.2
+
+Add proofstate module to allow to remove the `<w:proofState w:grammar="clean" w:spelling="clean"/>` tag during `.render()`
+
 ### 3.17.1
 
 - Add support for automatically detaching modules that do not support the current filetype when using constructor v4. In previous versions, you would do the following:

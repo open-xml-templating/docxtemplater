@@ -55,6 +55,9 @@ const parser = {
 					postparse,
 					getTraits,
 				});
+				if (r == null) {
+					return postparsed;
+				}
 				if (r.errors) {
 					errors = concatArrays([errors, r.errors]);
 					return r.postparsed;

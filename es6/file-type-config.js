@@ -61,7 +61,11 @@ const PptXFileTypeConfig = {
 
 const DocXFileTypeConfig = {
 	getTemplatedFiles(zip) {
-		const baseTags = ["docProps/core.xml", "docProps/app.xml"];
+		const baseTags = [
+			"docProps/core.xml",
+			"docProps/app.xml",
+			"word/settings.xml",
+		];
 		const headerFooters = zip
 			.file(/word\/(header|footer)\d+\.xml/)
 			.map(function(file) {
@@ -88,6 +92,7 @@ const DocXFileTypeConfig = {
 		"vt:lpstr",
 	],
 	tagsXmlLexedArray: [
+		"w:proofState",
 		"w:tc",
 		"w:tr",
 		"w:table",
