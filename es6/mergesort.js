@@ -17,17 +17,17 @@ function getMinFromArrays(arrays, state) {
 	return minIndex;
 }
 
-module.exports = function(arrays) {
-	const totalLength = arrays.reduce(function(sum, array) {
+module.exports = function (arrays) {
+	const totalLength = arrays.reduce(function (sum, array) {
 		return sum + array.length;
 	}, 0);
-	arrays = arrays.filter(function(array) {
+	arrays = arrays.filter(function (array) {
 		return array.length > 0;
 	});
 
 	const resultArray = new Array(totalLength);
 
-	const state = arrays.map(function() {
+	const state = arrays.map(function () {
 		return 0;
 	});
 

@@ -100,7 +100,7 @@ function updateSaucelabsStatus(client, result, done) {
 				public: true,
 			}),
 		},
-		function(err) {
+		function (err) {
 			if (err) {
 				done(err);
 				return false;
@@ -116,7 +116,7 @@ const timeoutConnection = 180;
 const failuresRegex = /.*failures: ([0-9]+).*/;
 const passesRegex = /.*passes: ([0-9]+).*/;
 const startTime = +new Date();
-server.listen(port, async function() {
+server.listen(port, async function () {
 	const client = await webdriverio.remote(options);
 	async function waitForText(selector, timeout) {
 		return await client.waitUntil(
@@ -169,7 +169,7 @@ server.listen(port, async function() {
 				const failedSuites = await client.$$("li.test.fail");
 				for (let i = 0, len = failedSuites.length; i < len; i++) {
 					const titleElement = await await failedSuites[i].$("h2");
-					const title = await client.execute(parent => {
+					const title = await client.execute((parent) => {
 						let child = parent.firstChild;
 						let ret = "";
 						while (child) {
@@ -193,7 +193,7 @@ server.listen(port, async function() {
 				`browser tests successful (${passes} passes) on ${fullBrowserName}`
 			);
 			if (BROWSER === "SAUCELABS") {
-				updateSaucelabsStatus(client, true, e => {
+				updateSaucelabsStatus(client, true, (e) => {
 					if (e) {
 						throw e;
 					}
@@ -207,7 +207,7 @@ server.listen(port, async function() {
 				return test();
 			}
 			if (BROWSER === "SAUCELABS") {
-				updateSaucelabsStatus(client, false, err => {
+				updateSaucelabsStatus(client, false, (err) => {
 					if (err) {
 						throw err;
 					}

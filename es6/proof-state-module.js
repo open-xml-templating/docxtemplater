@@ -8,7 +8,7 @@ module.exports = {
 		if (filePath !== "word/settings.xml") {
 			return null;
 		}
-		return postparsed.map(function(part) {
+		return postparsed.map(function (part) {
 			if (part.type === "tag" && part.tag === "w:proofState") {
 				return { type: "content", value: "" };
 			}

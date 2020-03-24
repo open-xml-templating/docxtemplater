@@ -7,7 +7,7 @@ const wrapper = require("../module-wrapper");
 
 function getInner({ part, left, right, postparsed, index }) {
 	const paragraphParts = postparsed.slice(left + 1, right);
-	paragraphParts.forEach(function(p, i) {
+	paragraphParts.forEach(function (p, i) {
 		if (i === index - left - 1) {
 			return;
 		}
@@ -46,7 +46,7 @@ class RawXmlModule {
 			error: {
 				message: "Raw tag not in paragraph",
 				id: "raw_tag_outerxml_invalid",
-				explanation: part =>
+				explanation: (part) =>
 					`The tag "${part.value}" is not inside a paragraph, putting raw tags inside an inline loop is disallowed.`,
 			},
 		});
@@ -77,7 +77,7 @@ class RawXmlModule {
 		}
 		return options.scopeManager
 			.getValueAsync(part.value, { part })
-			.then(function(value) {
+			.then(function (value) {
 				if (value == null) {
 					return options.nullGetter(part);
 				}

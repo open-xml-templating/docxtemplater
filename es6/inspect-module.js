@@ -5,7 +5,7 @@ function isPlaceholder(part) {
 }
 
 function getTags(postParsed) {
-	return postParsed.filter(isPlaceholder).reduce(function(tags, part) {
+	return postParsed.filter(isPlaceholder).reduce(function (tags, part) {
 		tags[part.value] = tags[part.value] || {};
 		if (part.subparsed) {
 			tags[part.value] = merge(tags[part.value], getTags(part.subparsed));
@@ -15,7 +15,7 @@ function getTags(postParsed) {
 }
 
 function getStructuredTags(postParsed) {
-	return postParsed.filter(isPlaceholder).map(function(part) {
+	return postParsed.filter(isPlaceholder).map(function (part) {
 		if (part.subparsed) {
 			part.subparsed = getStructuredTags(part.subparsed);
 		}

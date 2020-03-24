@@ -36,7 +36,7 @@ function getListXmlElements(parts) {
 	get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
 	returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
 	*/
-	const tags = parts.filter(function(part) {
+	const tags = parts.filter(function (part) {
 		return part.type === "tag";
 	});
 
@@ -71,10 +71,10 @@ function has(name, xmlElements) {
 function getExpandToDefault(postparsed, pair, expandTags) {
 	const parts = postparsed.slice(pair[0].offset, pair[1].offset);
 	const xmlElements = getListXmlElements(parts);
-	const closingTagCount = xmlElements.filter(function(xmlElement) {
+	const closingTagCount = xmlElements.filter(function (xmlElement) {
 		return xmlElement.tag[1] === "/";
 	}).length;
-	const startingTagCount = xmlElements.filter(function(xmlElement) {
+	const startingTagCount = xmlElements.filter(function (xmlElement) {
 		const { tag } = xmlElement;
 		return tag[1] !== "/" && tag[tag.length - 2] !== "/";
 	}).length;
@@ -96,7 +96,7 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 					continue;
 				}
 
-				const chunks = chunkBy(postparsed.slice(left, right), function(p) {
+				const chunks = chunkBy(postparsed.slice(left, right), function (p) {
 					if (isTagStart(contains, p)) {
 						return "start";
 					}
@@ -177,14 +177,14 @@ function expandToOne(postparsed, options) {
 		errors = postparsed.errors;
 		postparsed = postparsed.postparsed;
 	}
-	const expandToElements = postparsed.reduce(function(elements, part) {
+	const expandToElements = postparsed.reduce(function (elements, part) {
 		if (part.type === "placeholder" && part.module === options.moduleName) {
 			elements.push(part);
 		}
 		return elements;
 	}, []);
 
-	expandToElements.forEach(function(part) {
+	expandToElements.forEach(function (part) {
 		try {
 			postparsed = expandOne(part, postparsed, options);
 		} catch (error) {

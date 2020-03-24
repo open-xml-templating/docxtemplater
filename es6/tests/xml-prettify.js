@@ -63,14 +63,14 @@ function xmlprettify(xml) {
 				attributes.push({ key: match[1], value: match[2] });
 				match = attrRegex.exec(rest);
 			}
-			attributes.sort(function(a1, a2) {
+			attributes.sort(function (a1, a2) {
 				if (a1.key === a2.key) {
 					return 0;
 				}
 				return a1.key > a2.key ? 1 : -1;
 			});
 			const stringifiedAttrs = attributes
-				.map(function(attribute) {
+				.map(function (attribute) {
 					return `${attribute.key}="${attribute.value}"`;
 				})
 				.join(" ");

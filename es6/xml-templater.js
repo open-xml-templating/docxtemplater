@@ -11,7 +11,7 @@ const joinUncorrupt = require("./join-uncorrupt");
 
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);
-	const result = matcher.matches.map(function(match) {
+	const result = matcher.matches.map(function (match) {
 		return match.array[2];
 	});
 	return wordToUtf8(convertSpaces(result.join("")));
@@ -22,7 +22,7 @@ module.exports = class XmlTemplater {
 		this.filePath = options.filePath;
 		this.modules = options.modules;
 		this.fileTypeConfig = options.fileTypeConfig;
-		Object.keys(defaults).map(function(key) {
+		Object.keys(defaults).map(function (key) {
 			this[key] = options[key] != null ? options[key] : defaults[key];
 		}, this);
 		this.setModules({ inspect: { filePath: this.filePath } });
@@ -50,10 +50,10 @@ module.exports = class XmlTemplater {
 				throw errors;
 			}
 			return Promise.all(
-				resolved.map(function(r) {
+				resolved.map(function (r) {
 					return Promise.resolve(r);
 				})
-			).then(resolved => {
+			).then((resolved) => {
 				this.setModules({ inspect: { resolved } });
 				return (this.resolved = resolved);
 			});
@@ -63,7 +63,7 @@ module.exports = class XmlTemplater {
 		return getFullText(this.content, this.fileTypeConfig.tagsXmlTextArray);
 	}
 	setModules(obj) {
-		this.modules.forEach(module => {
+		this.modules.forEach((module) => {
 			module.set(obj);
 		});
 	}
@@ -102,10 +102,10 @@ module.exports = class XmlTemplater {
 	}
 	errorChecker(errors) {
 		if (errors.length) {
-			this.modules.forEach(function(module) {
+			this.modules.forEach(function (module) {
 				errors = module.errorsTransformer(errors);
 			});
-			errors.forEach(error => {
+			errors.forEach((error) => {
 				// error properties might not be defined if some foreign
 				// (unhandled error not throw by docxtemplater willingly) is
 				// thrown.

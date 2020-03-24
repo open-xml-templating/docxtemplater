@@ -23,19 +23,19 @@ function resolve(options) {
 	const errors = [];
 	return Promise.all(
 		compiled
-			.map(function(part) {
+			.map(function (part) {
 				return Promise.resolve()
-					.then(function() {
+					.then(function () {
 						const moduleResolved = moduleResolve(part, options);
 						if (moduleResolved) {
-							return moduleResolved.then(function(value) {
+							return moduleResolved.then(function (value) {
 								resolved.push({ tag: part.value, value, lIndex: part.lIndex });
 							});
 						}
 						if (part.type === "placeholder") {
 							return scopeManager
 								.getValueAsync(part.value, { part })
-								.then(function(value) {
+								.then(function (value) {
 									if (value == null) {
 										value = options.nullGetter(part);
 									}
@@ -49,14 +49,14 @@ function resolve(options) {
 						}
 						return;
 					})
-					.catch(function(e) {
+					.catch(function (e) {
 						errors.push(e);
 					});
 			})
-			.filter(a => {
+			.filter((a) => {
 				return a;
 			})
-	).then(function() {
+	).then(function () {
 		return { errors, resolved };
 	});
 }

@@ -35,7 +35,7 @@ function moduleParse(placeHolderContent, options) {
 const parser = {
 	preparse(parsed, modules, options) {
 		function preparse(parsed, options) {
-			return modules.forEach(function(module) {
+			return modules.forEach(function (module) {
 				module.preparse(parsed, options);
 			});
 		}
@@ -43,13 +43,13 @@ const parser = {
 	},
 	postparse(postparsed, modules, options) {
 		function getTraits(traitName, postparsed) {
-			return modules.map(function(module) {
+			return modules.map(function (module) {
 				return module.getTraits(traitName, postparsed);
 			});
 		}
 		let errors = [];
 		function postparse(postparsed, options) {
-			return modules.reduce(function(postparsed, module) {
+			return modules.reduce(function (postparsed, module) {
 				const r = module.postparse(postparsed, {
 					...options,
 					postparse,
@@ -78,7 +78,7 @@ const parser = {
 				inPlaceHolder = token.position === "start";
 				if (token.position === "end") {
 					placeHolderContent = wordToUtf8(placeHolderContent);
-					options.parse = placeHolderContent =>
+					options.parse = (placeHolderContent) =>
 						moduleParse(placeHolderContent, {
 							...options,
 							...token,

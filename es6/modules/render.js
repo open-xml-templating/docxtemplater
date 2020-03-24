@@ -35,7 +35,7 @@ class Render {
 	}
 	postparse(postparsed) {
 		const errors = [];
-		postparsed.forEach(p => {
+		postparsed.forEach((p) => {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {
@@ -108,7 +108,7 @@ class Render {
 		const runprops = this.recordedRun.join("");
 		return {
 			value: lines
-				.map(function(line) {
+				.map(function (line) {
 					return utf8ToWord(line);
 				})
 				.join(

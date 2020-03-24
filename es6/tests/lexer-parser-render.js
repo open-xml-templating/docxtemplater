@@ -8,10 +8,10 @@ const tagsDocxConfig = {
 	other: docxconfig.tagsXmlLexedArray,
 };
 
-describe("Algorithm", function() {
-	Object.keys(fixtures).forEach(function(key) {
+describe("Algorithm", function () {
+	Object.keys(fixtures).forEach(function (key) {
 		const fixture = fixtures[key];
-		(fixture.onlySync ? it.only : it)(fixture.it, function() {
+		(fixture.onlySync ? it.only : it)(fixture.it, function () {
 			const doc = makeDocx(key, fixture.content);
 			doc.setOptions(fixture.options);
 			const iModule = inspectModule();
@@ -48,15 +48,15 @@ describe("Algorithm", function() {
 		});
 	});
 
-	Object.keys(fixtures).forEach(function(key) {
+	Object.keys(fixtures).forEach(function (key) {
 		const fixture = fixtures[key];
-		(fixture.only ? it.only : it)(`Async ${fixture.it}`, function() {
+		(fixture.only ? it.only : it)(`Async ${fixture.it}`, function () {
 			const doc = makeDocx(key, fixture.content);
 			doc.setOptions(fixture.options);
 			const iModule = inspectModule();
 			doc.attachModule(iModule);
 			doc.compile();
-			return doc.resolveData(fixture.scope).then(function() {
+			return doc.resolveData(fixture.scope).then(function () {
 				doc.render();
 				cleanRecursive(iModule.inspect.lexed);
 				cleanRecursive(iModule.inspect.parsed);
@@ -95,7 +95,7 @@ describe("Algorithm", function() {
 		});
 	});
 
-	it("should xmlparse strange tags", function() {
+	it("should xmlparse strange tags", function () {
 		const xmllexed = Lexer.xmlparse(
 			fixtures.strangetags.content,
 			tagsDocxConfig
@@ -104,7 +104,7 @@ describe("Algorithm", function() {
 		expect(xmllexed).to.be.deep.equal(fixtures.strangetags.xmllexed);
 	});
 
-	it("should xmlparse selfclosing tag", function() {
+	it("should xmlparse selfclosing tag", function () {
 		const xmllexed = Lexer.xmlparse("<w:rPr><w:noProof/></w:rPr>", {
 			text: [],
 			other: ["w:rPr", "w:noProof"],

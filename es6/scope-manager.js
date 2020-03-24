@@ -21,14 +21,14 @@ function getValue(tag, meta, num) {
 		let w = this.resolved;
 		this.scopePath.forEach((p, index) => {
 			const lIndex = this.scopeLindex[index];
-			w = find(w, function(r) {
+			w = find(w, function (r) {
 				return r.lIndex === lIndex;
 			});
 			w = w.value[this.scopePathItem[index]];
 		});
 		return [
 			this.scopePath.length - 1,
-			find(w, function(r) {
+			find(w, function (r) {
 				return meta.part.lIndex === r.lIndex;
 			}).value,
 		];
@@ -60,7 +60,7 @@ function getValueAsync(tag, meta, num) {
 		.then(() => {
 			return parser.get(scope, this.getContext(meta, num));
 		})
-		.catch(function(error) {
+		.catch(function (error) {
 			throw getScopeParserExecutionError({
 				tag,
 				scope,
@@ -68,7 +68,7 @@ function getValueAsync(tag, meta, num) {
 				offset: meta.part.offset,
 			});
 		})
-		.then(result => {
+		.then((result) => {
 			if (result == null && num > 0) {
 				return getValueAsync.call(this, tag, meta, num - 1);
 			}
@@ -171,7 +171,7 @@ const ScopeManager = class ScopeManager {
 	}
 };
 
-module.exports = function(options) {
+module.exports = function (options) {
 	options.scopePath = [];
 	options.scopePathItem = [];
 	options.scopePathLength = [];

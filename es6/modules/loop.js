@@ -11,7 +11,7 @@ const wrapper = require("../module-wrapper");
 const moduleName = "loop";
 
 function hasContent(parts) {
-	return parts.some(function(part) {
+	return parts.some(function (part) {
 		return isContent(part);
 	});
 }
@@ -72,7 +72,7 @@ function addPageBreakAtBeginning(subRendered) {
 }
 
 function hasPageBreak(chunk) {
-	return chunk.some(function(part) {
+	return chunk.some(function (part) {
 		if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
 			return true;
 		}
@@ -139,7 +139,7 @@ class LoopModule {
 			return;
 		}
 
-		return parsed.reduce(function(tags, part, offset) {
+		return parsed.reduce(function (tags, part, offset) {
 			if (
 				part.type === "placeholder" &&
 				part.module === moduleName &&
@@ -161,7 +161,7 @@ class LoopModule {
 		}
 
 		let level = 0;
-		const chunks = chunkBy(parsed, function(p) {
+		const chunks = chunkBy(parsed, function (p) {
 			if (isParagraphStart(p)) {
 				level++;
 				if (level === 1) {
@@ -257,7 +257,7 @@ class LoopModule {
 		}
 
 		const sm = options.scopeManager;
-		const promisedValue = Promise.resolve().then(function() {
+		const promisedValue = Promise.resolve().then(function () {
 			return sm.getValue(part.value, { part });
 		});
 		const promises = [];
@@ -281,10 +281,10 @@ class LoopModule {
 				})
 			);
 		}
-		return promisedValue.then(function(value) {
+		return promisedValue.then(function (value) {
 			sm.loopOverValue(value, loopOver, part.inverted);
-			return Promise.all(promises).then(function(r) {
-				return r.map(function({ resolved }) {
+			return Promise.all(promises).then(function (r) {
+				return r.map(function ({ resolved }) {
 					return resolved;
 				});
 			});

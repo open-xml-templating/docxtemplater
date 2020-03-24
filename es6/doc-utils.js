@@ -58,7 +58,7 @@ function getNearestRight(parsed, elements, index) {
 }
 
 function buildNearestCache(postparsed, tags) {
-	return postparsed.reduce(function(cached, part, i) {
+	return postparsed.reduce(function (cached, part, i) {
 		if (part.type === "tag" && tags.indexOf(part.tag) !== -1) {
 			cached.push({ i, part });
 		}
@@ -140,7 +140,7 @@ function unique(arr) {
 function chunkBy(parsed, f) {
 	return parsed
 		.reduce(
-			function(chunks, p) {
+			function (chunks, p) {
 				const currentChunk = last(chunks);
 				const res = f(p);
 				if (currentChunk.length === 0) {
@@ -159,7 +159,7 @@ function chunkBy(parsed, f) {
 			},
 			[[]]
 		)
-		.filter(function(p) {
+		.filter(function (p) {
 			return p.length > 0;
 		});
 }
@@ -223,7 +223,7 @@ function escapeRegExp(str) {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-const charMapRegexes = charMap.map(function([endChar, startChar]) {
+const charMapRegexes = charMap.map(function ([endChar, startChar]) {
 	return {
 		rstart: new RegExp(escapeRegExp(startChar), "g"),
 		rend: new RegExp(escapeRegExp(endChar), "g"),

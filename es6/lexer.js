@@ -64,13 +64,13 @@ function tagMatcher(content, textMatchArray, othersMatchArray) {
 	let cursor = 0;
 	const contentLength = content.length;
 	const allMatches = concatArrays([
-		textMatchArray.map(function(tag) {
+		textMatchArray.map(function (tag) {
 			return { tag, text: true };
 		}),
-		othersMatchArray.map(function(tag) {
+		othersMatchArray.map(function (tag) {
 			return { tag, text: false };
 		}),
-	]).reduce(function(allMatches, t) {
+	]).reduce(function (allMatches, t) {
 		allMatches[t.tag] = t.text;
 		return allMatches;
 	}, {});
@@ -115,7 +115,7 @@ function getDelimiterErrors(delimiterMatches, fullText, ranges) {
 	let lastDelimiterMatch = { offset: 0 };
 	let xtag;
 	let rangeIndex = 0;
-	delimiterMatches.forEach(function(delimiterMatch) {
+	delimiterMatches.forEach(function (delimiterMatch) {
 		while (ranges[rangeIndex + 1]) {
 			if (ranges[rangeIndex + 1].offset > delimiterMatch.offset) {
 				break;
@@ -285,11 +285,11 @@ function getAllIndexes(fullText, delimiters) {
 }
 
 function parseDelimiters(innerContentParts, delimiters) {
-	const full = innerContentParts.map(p => p.value).join("");
+	const full = innerContentParts.map((p) => p.value).join("");
 	const delimiterMatches = getAllIndexes(full, delimiters);
 
 	let offset = 0;
-	const ranges = innerContentParts.map(function(part) {
+	const ranges = innerContentParts.map(function (part) {
 		offset += part.value.length;
 		return { offset: offset - part.value.length, lIndex: part.lIndex };
 	});
@@ -298,7 +298,7 @@ function parseDelimiters(innerContentParts, delimiters) {
 	let cutNext = 0;
 	let delimiterIndex = 0;
 
-	const parsed = ranges.map(function(p, i) {
+	const parsed = ranges.map(function (p, i) {
 		const { offset } = p;
 		const range = [offset, offset + innerContentParts[i].value.length];
 		const partContent = innerContentParts[i].value;
@@ -317,7 +317,7 @@ function parseDelimiters(innerContentParts, delimiters) {
 			cutNext = 0;
 		}
 		let insideDelimiterChange;
-		delimitersInOffset.forEach(function(delimiterInOffset) {
+		delimitersInOffset.forEach(function (delimiterInOffset) {
 			const value = partContent.substr(
 				cursor,
 				delimiterInOffset.offset - offset - cursor
@@ -363,7 +363,7 @@ function parseDelimiters(innerContentParts, delimiters) {
 function getContentParts(xmlparsed) {
 	let inTextTag = false;
 	const innerContentParts = [];
-	xmlparsed.forEach(function(part) {
+	xmlparsed.forEach(function (part) {
 		inTextTag = updateInTextTag(part, inTextTag);
 		if (inTextTag && part.type === "content") {
 			innerContentParts.push(part);
@@ -383,7 +383,7 @@ module.exports = {
 
 		let lexed = [];
 		let index = 0;
-		xmlparsed.forEach(function(part) {
+		xmlparsed.forEach(function (part) {
 			inTextTag = updateInTextTag(part, inTextTag);
 			if (part.type === "content") {
 				part.position = inTextTag ? "insidetag" : "outsidetag";
@@ -391,7 +391,7 @@ module.exports = {
 			if (inTextTag && part.type === "content") {
 				Array.prototype.push.apply(
 					lexed,
-					delimiterParsed[index].map(function(p) {
+					delimiterParsed[index].map(function (p) {
 						if (p.type === "content") {
 							p.position = "insidetag";
 						}
@@ -403,7 +403,7 @@ module.exports = {
 				lexed.push(part);
 			}
 		});
-		lexed = lexed.map(function(p, i) {
+		lexed = lexed.map(function (p, i) {
 			p.lIndex = i;
 			return p;
 		});
@@ -412,7 +412,7 @@ module.exports = {
 	xmlparse(content, xmltags) {
 		const matches = tagMatcher(content, xmltags.text, xmltags.other);
 		let cursor = 0;
-		const parsed = matches.reduce(function(parsed, match) {
+		const parsed = matches.reduce(function (parsed, match) {
 			const value = content.substr(cursor, match.offset - cursor);
 			if (value.length > 0) {
 				parsed.push({ type: "content", value });

@@ -2,7 +2,7 @@ function emptyFun() {}
 function identity(i) {
 	return i;
 }
-module.exports = function(module) {
+module.exports = function (module) {
 	const defaults = {
 		set: emptyFun,
 		parse: emptyFun,
@@ -20,7 +20,7 @@ module.exports = function(module) {
 		resolve: emptyFun,
 	};
 	if (
-		Object.keys(defaults).every(function(key) {
+		Object.keys(defaults).every(function (key) {
 			return !module[key];
 		})
 	) {
@@ -28,7 +28,7 @@ module.exports = function(module) {
 			"This module cannot be wrapped, because it doesn't define any of the necessary functions"
 		);
 	}
-	Object.keys(defaults).forEach(function(key) {
+	Object.keys(defaults).forEach(function (key) {
 		module[key] = module[key] || defaults[key];
 	});
 	return module;

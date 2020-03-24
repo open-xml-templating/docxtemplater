@@ -40,7 +40,7 @@ function repeat(input, count) {
 module.exports = function printy(parsed, indent = 0) {
 	let indentWasNegative = false;
 	const result = parsed
-		.reduce(function(output, p) {
+		.reduce(function (output, p) {
 			const splitted = p.value.split(/(?:\n|\r|\t)(?: |\r|\t)*/g);
 			const value = splitted.join("");
 			if (value === "") {
@@ -72,7 +72,7 @@ module.exports = function printy(parsed, indent = 0) {
 			return output;
 		}, "")
 		.split("\n")
-		.map(function(line) {
+		.map(function (line) {
 			return line.replace(/[\s\uFEFF\xA0]+$/g, "");
 		})
 		.join("\n");

@@ -9,8 +9,8 @@ const Errors = require("../errors.js");
 const { expect } = require("chai");
 const { xml2str, traits } = require("../doc-utils");
 
-describe("Verify apiversion", function() {
-	it("should work with valid api version", function() {
+describe("Verify apiversion", function () {
+	it("should work with valid api version", function () {
 		const module = {
 			requiredAPIVersion: "3.22.0",
 			render(part) {
@@ -21,7 +21,7 @@ describe("Verify apiversion", function() {
 		doc.attachModule(module);
 	});
 
-	it("should fail with valid api version", function() {
+	it("should fail with valid api version", function () {
 		const module = {
 			requiredAPIVersion: "3.92.0",
 			render(part) {
@@ -43,8 +43,8 @@ describe("Verify apiversion", function() {
 	});
 });
 
-describe("Module attachment", function() {
-	it("should not allow to attach the same module twice", function() {
+describe("Module attachment", function () {
+	it("should not allow to attach the same module twice", function () {
 		const module = {
 			name: "TestModule",
 			requiredAPIVersion: "3.0.0",
@@ -68,8 +68,8 @@ describe("Module attachment", function() {
 	});
 });
 
-describe("Module xml parse", function() {
-	it("should be possible to parse xml files", function() {
+describe("Module xml parse", function () {
+	it("should be possible to parse xml files", function () {
 		let xmlDocuments;
 
 		const module = {
@@ -77,7 +77,7 @@ describe("Module xml parse", function() {
 			optionsTransformer(options, docxtemplater) {
 				const relsFiles = docxtemplater.zip
 					.file(/document.xml.rels/)
-					.map(file => file.name);
+					.map((file) => file.name);
 				options.xmlFileNames = options.xmlFileNames.concat(relsFiles);
 				return options;
 			},
@@ -111,8 +111,8 @@ describe("Module xml parse", function() {
 	});
 });
 
-describe("Module unique tags xml", function() {
-	it("should not cause an issue if tagsXmlLexedArray contains duplicates", function() {
+describe("Module unique tags xml", function () {
+	it("should not cause an issue if tagsXmlLexedArray contains duplicates", function () {
 		const module = {
 			requiredAPIVersion: "3.0.0",
 			optionsTransformer(options, docxtemplater) {
@@ -139,8 +139,8 @@ describe("Module unique tags xml", function() {
 	});
 });
 
-describe("Module traits", function() {
-	it("should not cause an issue if using traits.expandTo containing loop", function() {
+describe("Module traits", function () {
+	it("should not cause an issue if using traits.expandTo containing loop", function () {
 		const moduleName = "comment-module";
 		function getInner({ part, leftParts, rightParts, postparse }) {
 			part.subparsed = postparse([].concat(leftParts).concat(rightParts), {
@@ -181,16 +181,13 @@ describe("Module traits", function() {
 
 		const doc = createDoc("comment-with-loop.docx");
 		doc.attachModule(module);
-		doc
-			.setData({})
-			.compile()
-			.render();
+		doc.setData({}).compile().render();
 		shouldBeSame({ doc, expectedName: "expected-comment-example.docx" });
 	});
 });
 
-describe("Module errors", function() {
-	it("should work", function() {
+describe("Module errors", function () {
+	it("should work", function () {
 		const moduleName = "ErrorModule";
 		const module = {
 			name: "Error module",
@@ -230,8 +227,8 @@ describe("Module errors", function() {
 	});
 });
 
-describe("Module detachment", function() {
-	it("should detach the module when the module does not support the document filetype", function() {
+describe("Module detachment", function () {
+	it("should detach the module when the module does not support the document filetype", function () {
 		let isModuleCalled = false;
 		let isDetachedCalled = false;
 		const module = {

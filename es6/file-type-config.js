@@ -10,7 +10,7 @@ const PptXFileTypeConfig = {
 	getTemplatedFiles(zip) {
 		const slideTemplates = zip
 			.file(/ppt\/(slideMasters)\/(slideMaster)\d+\.xml/)
-			.map(function(file) {
+			.map(function (file) {
 				return file.name;
 			});
 		return slideTemplates.concat([
@@ -68,7 +68,7 @@ const DocXFileTypeConfig = {
 		];
 		const headerFooters = zip
 			.file(/word\/(header|footer)\d+\.xml/)
-			.map(function(file) {
+			.map(function (file) {
 				return file.name;
 			});
 		return headerFooters.concat(baseTags);

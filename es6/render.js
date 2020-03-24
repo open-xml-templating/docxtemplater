@@ -28,7 +28,7 @@ function render(options) {
 		options.prefix = options.prefix + options.index + "-";
 	}
 	let errors = [];
-	const parts = compiled.map(function(part, i) {
+	const parts = compiled.map(function (part, i) {
 		options.index = i;
 		const moduleRendered = moduleRender(part, options);
 		if (moduleRendered) {

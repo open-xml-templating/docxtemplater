@@ -45,10 +45,7 @@ function unifiedDiff(actual, expected) {
 		" " +
 		"- actual" +
 		"\n\n" +
-		lines
-			.map(cleanUp)
-			.filter(notBlank)
-			.join("\n")
+		lines.map(cleanUp).filter(notBlank).join("\n")
 	);
 }
 
@@ -59,7 +56,7 @@ function isNode12() {
 function walk(dir) {
 	let results = [];
 	const list = fs.readdirSync(dir);
-	list.forEach(function(file) {
+	list.forEach(function (file) {
 		if (file.indexOf(".") === 0) {
 			return;
 		}
@@ -138,7 +135,7 @@ function shouldBeSame(options) {
 
 	try {
 		uniq(Object.keys(zip.files).concat(Object.keys(expectedZip.files))).map(
-			function(filePath) {
+			function (filePath) {
 				const suffix = `for "${filePath}"`;
 				expect(expectedZip.files[filePath]).to.be.an(
 					"object",
@@ -224,7 +221,7 @@ function checkLength(e, expectedError, propertyPath) {
 }
 
 function cleanRecursive(arr) {
-	arr.forEach(function(p) {
+	arr.forEach(function (p) {
 		delete p.lIndex;
 		delete p.endLindex;
 		delete p.offset;
@@ -267,7 +264,7 @@ function cleanError(e, expectedError) {
 	delete expectedError.properties.explanation;
 	e = omit(e, ["line", "sourceURL", "stack"]);
 	if (e.properties.postparsed) {
-		e.properties.postparsed.forEach(function(p) {
+		e.properties.postparsed.forEach(function (p) {
 			delete p.lIndex;
 			delete p.endLindex;
 			delete p.offset;
@@ -348,13 +345,13 @@ function errorVerifier(e, type, expectedError) {
 			`Expected to have the same amount of e.properties.errors ${l1} !== ${l2} ` +
 				msg
 		);
-		e.properties.errors = e.properties.errors.map(function(e, i) {
+		e.properties.errors = e.properties.errors.map(function (e, i) {
 			return cleanError(e, expectedError.properties.errors[i]);
 		});
 	}
 	expect(
 		JSON.parse(
-			JSON.stringify(e, function(key, value) {
+			JSON.stringify(e, function (key, value) {
 				if (value instanceof Promise) {
 					return {};
 				}
@@ -366,16 +363,16 @@ function errorVerifier(e, type, expectedError) {
 
 function expectToThrowAsync(fn, type, expectedError) {
 	return Promise.resolve(null)
-		.then(function() {
+		.then(function () {
 			const r = fn();
-			return r.then(function() {
+			return r.then(function () {
 				return null;
 			});
 		})
-		.catch(function(error) {
+		.catch(function (error) {
 			return error;
 		})
-		.then(function(e) {
+		.then(function (e) {
 			return errorVerifier(e, type, expectedError);
 		});
 }
@@ -421,7 +418,7 @@ function loadFile(name, callback) {
 		);
 		return callback(null, name, buffer);
 	}
-	return PizZipUtils.getBinaryContent("../examples/" + name, function(
+	return PizZipUtils.getBinaryContent("../examples/" + name, function (
 		err,
 		data
 	) {
@@ -477,7 +474,7 @@ function start() {
 	/* eslint-disable import/no-unresolved */
 	const fileNames = require("./filenames.js");
 	/* eslint-enable import/no-unresolved */
-	fileNames.forEach(function(fullFileName) {
+	fileNames.forEach(function (fullFileName) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
 		let callback;
 		if (startsWith(fileName, ".") || startsWith(fileName, "~")) {
@@ -511,7 +508,7 @@ function start() {
 function setExamplesDirectory(ed) {
 	examplesDirectory = ed;
 	if (fs && fs.writeFileSync) {
-		const fileNames = walk(examplesDirectory).map(function(f) {
+		const fileNames = walk(examplesDirectory).map(function (f) {
 			return f.replace(examplesDirectory + "/", "");
 		});
 		fs.writeFileSync(
@@ -561,16 +558,16 @@ function getContent(doc) {
 }
 
 function resolveSoon(data) {
-	return new Promise(function(resolve) {
-		setTimeout(function() {
+	return new Promise(function (resolve) {
+		setTimeout(function () {
 			resolve(data);
 		}, 1);
 	});
 }
 
 function rejectSoon(data) {
-	return new Promise(function(resolve, reject) {
-		setTimeout(function() {
+	return new Promise(function (resolve, reject) {
+		setTimeout(function () {
 			reject(data);
 		}, 1);
 	});

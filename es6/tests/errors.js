@@ -11,8 +11,8 @@ const {
 
 const angularParser = require("./angular-parser");
 
-describe("Compilation errors", function() {
-	it("should fail when parsing invalid xml (1)", function() {
+describe("Compilation errors", function () {
+	it("should fail when parsing invalid xml (1)", function () {
 		const content = "<w:t";
 		const expectedError = {
 			name: "TemplateError",
@@ -27,7 +27,7 @@ describe("Compilation errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when parsing invalid xml (2)", function() {
+	it("should fail when parsing invalid xml (2)", function () {
 		const content =
 			"<w:t>Foobar </w:t><w:t>Foobar </w:t><w:t>Foobar </w:t> <w:t John Jane Mary Doe</w:t>";
 		const expectedError = {
@@ -43,7 +43,7 @@ describe("Compilation errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when tag unclosed at end of document", function() {
+	it("should fail when tag unclosed at end of document", function () {
 		const content = "<w:t>{unclosedtag my text</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -64,7 +64,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when tag unclosed", function() {
+	it("should fail when tag unclosed", function () {
 		const content = "<w:t>{user {name}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -85,7 +85,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when tag unopened", function() {
+	it("should fail when tag unopened", function () {
 		const content = "<w:t>foobar}age</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -106,7 +106,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when closing {#users} with {/foo}", function() {
+	it("should fail when closing {#users} with {/foo}", function () {
 		const content = "<w:t>{#users}User {name}{/foo}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -126,7 +126,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when closing an unopened loop", function() {
+	it("should fail when closing an unopened loop", function () {
 		const content = "<w:t>{/loop} {foobar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -146,7 +146,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when a loop is never closed", function() {
+	it("should fail when a loop is never closed", function () {
 		const content = "<w:t>{#loop} {foobar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -166,7 +166,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when rawtag is not in paragraph", function() {
+	it("should fail when rawtag is not in paragraph", function () {
 		const content = "<w:t>{@myrawtag}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -213,7 +213,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when rawtag is in table without paragraph", function() {
+	it("should fail when rawtag is in table without paragraph", function () {
 		const content = "<w:table><w:t>{@myrawtag}</w:t></w:p></w:table>";
 		const expectedError = {
 			name: "TemplateError",
@@ -282,7 +282,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should fail when rawtag is not only text in paragraph", function() {
+	it("should fail when rawtag is not only text in paragraph", function () {
 		const content = "<w:p><w:t> {@myrawtag}</w:t><w:t>foobar</w:t></w:p>";
 		const expectedError = {
 			name: "TemplateError",
@@ -303,7 +303,7 @@ describe("Compilation errors", function() {
 		);
 	});
 
-	it("should count 3 errors when having rawxml and two other errors", function() {
+	it("should count 3 errors when having rawxml and two other errors", function () {
 		const content = "<w:p><w:r><w:t>foo} {@bang} bar}</w:t></w:r></w:p>";
 
 		const expectedError = {
@@ -425,7 +425,7 @@ describe("Compilation errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when customparser fails to compile", function() {
+	it("should fail when customparser fails to compile", function () {
 		const content = "<w:t>{name++}</w:t>";
 		const expectedError = {
 			name: "ScopeParserError",
@@ -451,8 +451,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 	});
 });
 
-describe("Runtime errors", function() {
-	it("should fail when customparser fails to execute", function() {
+describe("Runtime errors", function () {
+	it("should fail when customparser fails to execute", function () {
 		const content = "<w:t> {name|upper}</w:t>";
 		function errorParser() {
 			return {
@@ -488,7 +488,7 @@ describe("Runtime errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should be possible to log the error", function() {
+	it("should be possible to log the error", function () {
 		let errorStringified = "";
 		const content = "<w:t> {name|upper}</w:t>";
 		function errorParser() {
@@ -500,7 +500,7 @@ describe("Runtime errors", function() {
 		}
 		function replaceErrors(key, value) {
 			if (value instanceof Error) {
-				return Object.getOwnPropertyNames(value).reduce(function(error, key) {
+				return Object.getOwnPropertyNames(value).reduce(function (error, key) {
 					error[key] = value[key];
 					return error;
 				}, {});
@@ -517,7 +517,7 @@ describe("Runtime errors", function() {
 		);
 	});
 
-	it("should fail with multi-error when customparser fails to execute on multiple raw tags", function() {
+	it("should fail with multi-error when customparser fails to execute on multiple raw tags", function () {
 		const content = `
 		<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
 		<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
@@ -571,8 +571,8 @@ describe("Runtime errors", function() {
 	});
 });
 
-describe("Internal errors", function() {
-	it("should fail if using odt format", function(done) {
+describe("Internal errors", function () {
+	it("should fail if using odt format", function (done) {
 		const expectedError = {
 			name: "InternalError",
 			message: 'The filetype "odt" is not handled by docxtemplater',
@@ -591,8 +591,8 @@ describe("Internal errors", function() {
 	});
 });
 
-describe("Multi errors", function() {
-	it("should work with multiple errors simple", function() {
+describe("Multi errors", function () {
+	it("should work with multiple errors simple", function () {
 		const content = "<w:t>foo} Hello {user, my age is {bar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -630,7 +630,7 @@ describe("Multi errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple errors complex", function() {
+	it("should work with multiple errors complex", function () {
 		const content = `<w:t>foo}
 		Hello {user, my age is {bar}
 			Hi bang}, my name is {user2}
@@ -705,7 +705,7 @@ describe("Multi errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with loops", function() {
+	it("should work with loops", function () {
 		const content = `
 		<w:t>{#users}User name{/foo}
 		{#bang}User name{/baz}
@@ -744,7 +744,7 @@ describe("Multi errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with loops unopened", function() {
+	it("should work with loops unopened", function () {
 		const content = `
 		<w:t>{/loop} {#users}User name{/foo}
 		{#bang}User name{/baz}
@@ -814,7 +814,7 @@ describe("Multi errors", function() {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when rawtag is not in paragraph", function() {
+	it("should fail when rawtag is not in paragraph", function () {
 		const content = "<w:t>{@first}</w:t><w:p><w:t>foo{@second}</w:t></w:p>";
 		const expectedError = {
 			name: "TemplateError",
@@ -855,7 +855,7 @@ describe("Multi errors", function() {
 		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
-	it("should fail when customparser fails to compile", function() {
+	it("should fail when customparser fails to compile", function () {
 		const content = "<w:t>{name++} {foo|||bang}</w:t>";
 		const expectedError = {
 			message: "Multi error",
@@ -900,7 +900,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when customparser fails to compile 2", function() {
+	it("should fail when customparser fails to compile 2", function () {
 		const content = "<w:t>{name++} {foo|||bang}</w:t>";
 		const expectedError = {
 			message: "Multi error",
@@ -943,7 +943,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with lexer and customparser", function() {
+	it("should work with lexer and customparser", function () {
 		const content = "<w:t>foo} Hello {name++}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -983,7 +983,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with lexer and loop", function() {
+	it("should work with lexer and loop", function () {
 		const content = "<w:t>foo} The users are {#users}{/bar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -1020,7 +1020,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple errors", function() {
+	it("should work with multiple errors", function () {
 		const content =
 			"<w:t>foo</w:t><w:t>} The users are {#users}{/bar} {@bang} </w:t>";
 		const expectedError = {
@@ -1074,7 +1074,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple unclosed", function() {
+	it("should work with multiple unclosed", function () {
 		const content = `<w:t>foo</w:t>
 		<w:t>{city, {state {zip </w:t>`;
 		const expectedError = {
@@ -1125,7 +1125,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should work with multiple unopened", function() {
+	it("should work with multiple unopened", function () {
 		const content = `<w:t>foo</w:t>
 			<w:t> city}, state} zip}</w:t>`;
 		const expectedError = {
@@ -1173,7 +1173,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should show an error when loop tag are badly used (xml open count !== xml close count)", function() {
+	it("should show an error when loop tag are badly used (xml open count !== xml close count)", function () {
 		const content = `<w:tbl>
 		<w:tr>
 		<w:tc>
@@ -1213,7 +1213,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should show clean error message when using {{ with single delimiter", function() {
+	it("should show clean error message when using {{ with single delimiter", function () {
 		const content = `
 				<w:p><w:r><w:t>{{name}}</w:t></w:r></w:p>
 				`;
@@ -1253,8 +1253,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 	});
 });
 
-describe("Rendering error", function() {
-	it("should show an error when using corrupt characters", function() {
+describe("Rendering error", function () {
+	it("should show an error when using corrupt characters", function () {
 		const content = "<w:t> {user}</w:t>";
 		const expectedError = {
 			name: "RenderingError",
@@ -1279,8 +1279,8 @@ describe("Rendering error", function() {
 	});
 });
 
-describe("Async errors", function() {
-	it("should show error when having async promise", function() {
+describe("Async errors", function () {
+	it("should show error when having async promise", function () {
 		const content = "<w:t>{user}</w:t>";
 		const expectedError = {
 			name: "ScopeParserError",
@@ -1308,7 +1308,7 @@ describe("Async errors", function() {
 		);
 	});
 
-	it("should fail when customparser fails to execute on multiple tags", function() {
+	it("should fail when customparser fails to execute on multiple tags", function () {
 		const content =
 			"<w:t>{#name|istrue}Name{/} {name|upper} {othername|upper}</w:t>";
 		let count = 0;
@@ -1367,14 +1367,14 @@ describe("Async errors", function() {
 		});
 		doc.compile();
 		function create() {
-			return doc.resolveData().then(function() {
+			return doc.resolveData().then(function () {
 				return doc.render();
 			});
 		}
 		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when customparser fails to execute on multiple raw tags", function() {
+	it("should fail when customparser fails to execute on multiple raw tags", function () {
 		const content = `
 				<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
 				<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
@@ -1424,7 +1424,7 @@ describe("Async errors", function() {
 		});
 		doc.compile();
 		function create() {
-			return doc.resolveData().then(function() {
+			return doc.resolveData().then(function () {
 				return doc.render();
 			});
 		}

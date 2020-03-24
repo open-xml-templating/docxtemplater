@@ -1271,7 +1271,7 @@ fixtures.rawxmlemptycontent.it = "should work with rawxml with undefined tags";
 fixtures.rawxmlemptycontent.scope = {};
 fixtures.rawxmlemptycontent.result = "BEFOREAFTER";
 
-Object.keys(fixtures).forEach(function(key) {
+Object.keys(fixtures).forEach(function (key) {
 	const fixture = fixtures[key];
 	const delimiters = {
 		delimiters: fixture.delimiters || {

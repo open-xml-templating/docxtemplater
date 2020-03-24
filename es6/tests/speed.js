@@ -9,8 +9,8 @@ const {
 const { times } = require("lodash");
 const inspectModule = require("../inspect-module.js");
 
-describe("Speed test", function() {
-	it("should be fast for simple tags", function() {
+describe("Speed test", function () {
+	it("should be fast for simple tags", function () {
 		const content = "<w:t>tag {age}</w:t>";
 		const docs = [];
 		for (let i = 0; i < 100; i++) {
@@ -23,7 +23,7 @@ describe("Speed test", function() {
 		const duration = new Date() - time;
 		expect(duration).to.be.below(400);
 	});
-	it("should be fast for simple tags with huge content", function() {
+	it("should be fast for simple tags with huge content", function () {
 		let content = "<w:t>tag {age}</w:t>";
 		let i;
 		const result = [];
@@ -43,7 +43,7 @@ describe("Speed test", function() {
 		const duration = new Date() - time;
 		expect(duration).to.be.below(400);
 	});
-	it("should be fast for loop tags", function() {
+	it("should be fast for loop tags", function () {
 		const content = "<w:t>{#users}{name}{/users}</w:t>";
 		const users = [];
 		for (let i = 1; i <= 1000; i++) {
@@ -55,7 +55,7 @@ describe("Speed test", function() {
 		const duration = new Date() - time;
 		expect(duration).to.be.below(100);
 	});
-	it("should be fast for nested loop tags", function() {
+	it("should be fast for nested loop tags", function () {
 		const result = [];
 		for (let i = 1; i <= 300; i++) {
 			result.push(`
@@ -83,7 +83,7 @@ describe("Speed test", function() {
 	});
 	/* eslint-disable no-process-env */
 	if (!process.env.FAST) {
-		it("should not exceed call stack size for big document with rawxml", function() {
+		it("should not exceed call stack size for big document with rawxml", function () {
 			this.timeout(30000);
 			const result = [];
 			const normalContent = "<w:p><w:r><w:t>foo</w:t></w:r></w:p>";
@@ -111,8 +111,8 @@ describe("Speed test", function() {
 			expect(duration).to.be.below(25000);
 		});
 
-		describe("Inspect module", function() {
-			it("should not be slow after multiple generations", function() {
+		describe("Inspect module", function () {
+			it("should not be slow after multiple generations", function () {
 				let duration = 0;
 				const iModule = inspectModule();
 				for (let i = 0; i < 10; i++) {
@@ -124,7 +124,7 @@ describe("Speed test", function() {
 						prenom: "John",
 						telephone: "0652455478",
 						description: "New Website",
-						offre: times(20000, i => {
+						offre: times(20000, (i) => {
 							return {
 								prix: 1000 + i,
 								nom: "Acme" + i,

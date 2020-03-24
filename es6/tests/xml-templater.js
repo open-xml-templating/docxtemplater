@@ -5,15 +5,15 @@ const {
 	createXmlTemplaterDocxNoRender,
 } = require("./utils");
 
-describe("XmlTemplater", function() {
-	it("should work with simpleContent", function() {
+describe("XmlTemplater", function () {
+	it("should work with simpleContent", function () {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
-	it("should work with doublecontent in w:t", function() {
+	it("should work with doublecontent in w:t", function () {
 		const content = "<w:t>Hello {name}, you're {age} years old</w:t>";
 		const scope = { name: "Edgar", age: "foo" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
@@ -22,21 +22,21 @@ describe("XmlTemplater", function() {
 		);
 	});
 
-	it("should work with {.} for this", function() {
+	it("should work with {.} for this", function () {
 		const content = "<w:t>Hello {.}</w:t>";
 		const scope = "Edgar";
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
-	it("should work with {.} for this inside loop", function() {
+	it("should work with {.} for this inside loop", function () {
 		const content = "<w:t>Hello {#names}{.},{/names}</w:t>";
 		const scope = { names: ["Edgar", "John"] };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,John,");
 	});
 
-	it("should work with non w:t content", function() {
+	it("should work with non w:t content", function () {
 		const content = "<w:t>{#loop}Hello {name}{/loop}</w:t>";
 		const scope = { loop: { name: "edgar" } };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
@@ -45,7 +45,7 @@ describe("XmlTemplater", function() {
 		);
 	});
 
-	it("should handle <w:p/> in loop without error", function() {
+	it("should handle <w:p/> in loop without error", function () {
 		const content = `<w:p><w:r><w:t>{#ab}</w:t></w:r></w:p>
     <w:p w14:paraId="79563C14" w14:textId="77777777" w:rsidR="00F22CAA" w:rsidRDefault="00F22CAA" w:rsidP="00324963"/>
     <w:p><w:r><w:t>{.}{/ab}</w:t></w:r></w:p>`;
@@ -54,28 +54,28 @@ describe("XmlTemplater", function() {
 		expect(xmlTemplater.getFullText()).to.be.equal("123");
 	});
 
-	it("should work with tag in two elements", function() {
+	it("should work with tag in two elements", function () {
 		const content = "<w:t>Hello {</w:t><w:t>name}</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
-	it("should work with splitted tag in three elements", function() {
+	it("should work with splitted tag in three elements", function () {
 		const content = "<w:t>Hello {</w:t><w:t>name</w:t><w:t>}</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
-	it("should work with simple loop with object value", function() {
+	it("should work with simple loop with object value", function () {
 		const content = "<w:t>Hello {#person}{name}{/person}</w:t>";
 		const scope = { person: { name: "Edgar" } };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
-	it("should work with simple Loop", function() {
+	it("should work with simple Loop", function () {
 		const content = "<w:t>Hello {#names}{name},{/names}</w:t>";
 		const scope = {
 			names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }],
@@ -83,19 +83,19 @@ describe("XmlTemplater", function() {
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
 	});
-	it("should work with simple Loop with boolean value truthy", function() {
+	it("should work with simple Loop with boolean value truthy", function () {
 		const content = "<w:t>Hello {#showName}{name},{/showName}</w:t>";
 		const scope = { showName: true, name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,");
 	});
-	it("should work with simple Loop with boolean value falsy", function() {
+	it("should work with simple Loop with boolean value falsy", function () {
 		const content = "<w:t>Hello {#showName}{name},{/showName}</w:t>";
 		const scope = { showName: false, name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello ");
 	});
-	it("should work with dash Loop", function() {
+	it("should work with dash Loop", function () {
 		const content = "<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>";
 		const scope = {
 			names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }],
@@ -105,7 +105,7 @@ describe("XmlTemplater", function() {
 			"Hello Edgar,Hello Mary,Hello John,"
 		);
 	});
-	it("should work with loop and innerContent", function() {
+	it("should work with loop and innerContent", function () {
 		const content =
 			'<w:p><w:t>{#loop}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t>{/loop}</w:t></w:p>';
 		const scope = {
@@ -123,7 +123,7 @@ describe("XmlTemplater", function() {
 			"Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware"
 		);
 	});
-	it("should work with loop and innerContent (with last)", function() {
+	it("should work with loop and innerContent (with last)", function () {
 		const content =
 			'<w:p><w:t>{#loop}Start </w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:pStyle w:val="Titre1"/></w:pPr><w:r><w:t>{title</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRPr="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:r><w:t>Proof that it works nicely :</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00923B77" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{#pr</w:t></w:r><w:r w:rsidR="00713414"><w:t>oof</w:t></w:r><w:r><w:t xml:space="preserve">} </w:t></w:r><w:r w:rsidR="00713414"><w:t>It works because</w:t></w:r><w:r><w:t xml:space="preserve"> {</w:t></w:r><w:r w:rsidR="006F26AC"><w:t>reason</w:t></w:r><w:r><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00923B77" w:rsidRDefault="00713414" w:rsidP="00923B77"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{/proof</w:t></w:r><w:r w:rsidR="00923B77"><w:t>}</w:t></w:r></w:p><w:p w:rsidR="00FD04E9" w:rsidRDefault="00923B77"><w:r><w:t> End{/loop}</w:t></w:p>';
 		const scope = {
@@ -141,7 +141,7 @@ describe("XmlTemplater", function() {
 			"Start Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different Hardware End"
 		);
 	});
-	it("should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ", function() {
+	it("should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ", function () {
 		const content = "<w:t>{#loop}Hello {#names}{name},{/names}{/loop}</w:t>";
 		const scope = {
 			loop: { names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }] },
@@ -151,13 +151,13 @@ describe("XmlTemplater", function() {
 			'<w:t xml:space="preserve">Hello Edgar,Mary,John,</w:t>'
 		);
 	});
-	it("should work with delimiter in value", function() {
+	it("should work with delimiter in value", function () {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = { name: "{edgar}" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello {edgar}");
 	});
-	it("should work with delimiter in value with loop)", function() {
+	it("should work with delimiter in value with loop)", function () {
 		const content = "<w:t>Hello {#names}{name},{/names}</w:t>";
 		const scope = {
 			names: [{ name: "{John}" }, { name: "M}}{ary" }, { name: "Di{{{gory" }],
@@ -167,7 +167,7 @@ describe("XmlTemplater", function() {
 			"Hello {John},M}}{ary,Di{{{gory,"
 		);
 	});
-	it("should work when replacing with exact same value", function() {
+	it("should work when replacing with exact same value", function () {
 		const content = '<w:p><w:t xml:space="preserve">Hello {name}</w:t></w:p>';
 		const scope = { name: "{name}" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
@@ -175,7 +175,7 @@ describe("XmlTemplater", function() {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello {name}");
 	});
 
-	it("should work with equations", function() {
+	it("should work with equations", function () {
 		const content = `<w:p>
 		<m:oMathPara>
 		<m:oMath>
@@ -223,8 +223,8 @@ describe("XmlTemplater", function() {
 	});
 });
 
-describe("Change the nullGetter", function() {
-	it("should work with null", function() {
+describe("Change the nullGetter", function () {
+	it("should work with null", function () {
 		const content = "<w:t>Hello {#names}{#foo}{bar}{/foo}{/names}</w:t>";
 		function nullGetter(part, scopeManager) {
 			expect(part.value).to.equal("bar");
@@ -241,7 +241,7 @@ describe("Change the nullGetter", function() {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
 	});
 
-	it("should work with null in resolve", function() {
+	it("should work with null in resolve", function () {
 		const content = "<w:t>Hello {#names}{#foo}{bar}{/foo}{/names}</w:t>";
 		let calls = 0;
 		function nullGetter(part, scopeManager) {
@@ -257,7 +257,7 @@ describe("Change the nullGetter", function() {
 			nullGetter,
 		});
 		xmlTemplater.compile();
-		return xmlTemplater.resolveData(data).then(function() {
+		return xmlTemplater.resolveData(data).then(function () {
 			expect(calls).to.be.equal(1);
 			xmlTemplater.render();
 			expect(calls).to.be.equal(1);
@@ -266,8 +266,8 @@ describe("Change the nullGetter", function() {
 	});
 });
 
-describe("intelligent tagging multiple tables", function() {
-	it("should work with multiple rows", function() {
+describe("intelligent tagging multiple tables", function () {
+	it("should work with multiple rows", function () {
 		const content = `<w:tbl>
 		<w:tr>
 		<w:tc>
@@ -298,8 +298,8 @@ describe("intelligent tagging multiple tables", function() {
 	});
 });
 
-describe("Custom delimiters", function() {
-	it("should work with custom tags", function() {
+describe("Custom delimiters", function () {
+	it("should work with custom tags", function () {
 		const delimiters = {
 			start: "[",
 			end: "]",
@@ -313,7 +313,7 @@ describe("Custom delimiters", function() {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
-	it("should work with custom delimiters with two chars", function() {
+	it("should work with custom delimiters with two chars", function () {
 		const delimiters = {
 			start: "[[",
 			end: "]]",
@@ -327,7 +327,7 @@ describe("Custom delimiters", function() {
 		expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 	});
 
-	it("should work with custom delimiters as strings with different length", function() {
+	it("should work with custom delimiters as strings with different length", function () {
 		const delimiters = {
 			start: "[[[",
 			end: "]]",
@@ -341,7 +341,7 @@ describe("Custom delimiters", function() {
 		expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 	});
 
-	it("should work with custom tags and loops", function() {
+	it("should work with custom tags and loops", function () {
 		const delimiters = {
 			start: "[[[",
 			end: "]]",
@@ -355,7 +355,7 @@ describe("Custom delimiters", function() {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
 	});
 
-	it("should work with loops", function() {
+	it("should work with loops", function () {
 		const content = "<w:t>{#loop}{innertag</w:t><w:t>} {/loop}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { loop: [{ innertag: 10 }, { innertag: 5 }] },
@@ -366,7 +366,7 @@ describe("Custom delimiters", function() {
 		);
 	});
 
-	it("should work with complex loops (1)", function() {
+	it("should work with complex loops (1)", function () {
 		const content = "<w:t>{#looptag}{innertag</w:t><w:t>}{/looptag}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { looptag: true, innertag: "foo" },
@@ -376,7 +376,7 @@ describe("Custom delimiters", function() {
 		expect(c).to.be.equal('<w:t xml:space="preserve">foo</w:t><w:t/>');
 	});
 
-	it("should work with complex loops (2)", function() {
+	it("should work with complex loops (2)", function () {
 		const content = "<w:t>{#person}</w:t><w:t>{name}{/person}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { person: [{ name: "Henry" }] },
@@ -387,8 +387,8 @@ describe("Custom delimiters", function() {
 	});
 });
 
-describe("getting parents context", function() {
-	it("should work with simple loops", function() {
+describe("getting parents context", function () {
+	it("should work with simple loops", function () {
 		const content = "<w:t>{#loop}{name}{/loop}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { loop: [1], name: "Henry" },
@@ -397,7 +397,7 @@ describe("getting parents context", function() {
 		expect(c).to.be.equal('<w:t xml:space="preserve">Henry</w:t>');
 	});
 
-	it("should work with double loops", function() {
+	it("should work with double loops", function () {
 		const content =
 			"<w:t>{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}</w:t>";
 		const xmlt = createXmlTemplaterDocx(content, {

@@ -44,7 +44,7 @@ const spacePreserve = {
 				chunk.length > 1
 			);
 		}
-		const result = postparsed.reduce(function(postparsed, part) {
+		const result = postparsed.reduce(function (postparsed, part) {
 			if (isWtStart(part)) {
 				inTextTag = true;
 				lastTextTag = chunk.length;
@@ -80,7 +80,7 @@ const spacePreserve = {
 	postrender(parts) {
 		let lastNonEmpty = "";
 		let lastNonEmptyIndex = 0;
-		return parts.reduce(function(newParts, p, index) {
+		return parts.reduce(function (newParts, p, index) {
 			if (p === "") {
 				newParts.push(p);
 				return newParts;

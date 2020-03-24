@@ -23,36 +23,36 @@ function getLength(obj) {
 	return obj.length;
 }
 
-describe("Loading", function() {
-	describe("ajax done correctly", function() {
-		it("doc and img Data should have the expected length", function() {
+describe("Loading", function () {
+	describe("ajax done correctly", function () {
+		it("doc and img Data should have the expected length", function () {
 			const doc = createDoc("tag-example.docx");
 			expect(getLength(doc.loadedContent)).to.be.equal(19424);
 		});
-		it("should have the right number of files (the docx unzipped)", function() {
+		it("should have the right number of files (the docx unzipped)", function () {
 			const doc = createDoc("tag-example.docx");
 			expect(Object.keys(doc.zip.files).length).to.be.equal(16);
 		});
 	});
-	describe("basic loading", function() {
-		it("should load file tag-example.docx", function() {
+	describe("basic loading", function () {
+		it("should load file tag-example.docx", function () {
 			const doc = createDoc("tag-example.docx");
 			expect(typeof doc).to.be.equal("object");
 		});
 	});
-	describe("content_loading", function() {
-		it("should load the right content for the footer", function() {
+	describe("content_loading", function () {
+		it("should load the right content for the footer", function () {
 			const doc = createDoc("tag-example.docx");
 			const fullText = doc.getFullText("word/footer1.xml");
 			expect(fullText.length).not.to.be.equal(0);
 			expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 		});
-		it("should load the right content for the document", function() {
+		it("should load the right content for the document", function () {
 			const doc = createDoc("tag-example.docx");
 			const fullText = doc.getFullText();
 			expect(fullText).to.be.equal("{last_name} {first_name}");
 		});
-		it("should load the right template files for the document", function() {
+		it("should load the right template files for the document", function () {
 			const doc = createDoc("tag-example.docx");
 			const templatedFiles = doc.getTemplatedFiles();
 			expect(templatedFiles.sort()).to.be.eql(
@@ -67,8 +67,8 @@ describe("Loading", function() {
 			);
 		});
 	});
-	describe("output and input", function() {
-		it("should be the same", function() {
+	describe("output and input", function () {
+		it("should be the same", function () {
 			const zip = new PizZip(createDoc("tag-example.docx").loadedContent);
 			const doc = new Docxtemplater().loadZip(zip);
 			const output = doc.getZip().generate({ type: "base64" });
@@ -80,8 +80,8 @@ describe("Loading", function() {
 	});
 });
 
-describe("Api versioning", function() {
-	it("should work with valid numbers", function() {
+describe("Api versioning", function () {
+	it("should work with valid numbers", function () {
 		const doc = createDoc("tag-example.docx");
 		expect(doc.verifyApiVersion("3.6.0")).to.be.equal(true);
 		expect(doc.verifyApiVersion("3.5.0")).to.be.equal(true);
@@ -89,7 +89,7 @@ describe("Api versioning", function() {
 		expect(doc.verifyApiVersion("3.4.22")).to.be.equal(true);
 	});
 
-	it("should fail with invalid versions", function() {
+	it("should fail with invalid versions", function () {
 		const doc = createDoc("tag-example.docx");
 		expectToThrow(
 			doc.verifyApiVersion.bind(null, "5.6.0"),
@@ -123,8 +123,8 @@ describe("Api versioning", function() {
 	});
 });
 
-describe("Inspect module", function() {
-	it("should get main tags", function() {
+describe("Inspect module", function () {
+	it("should get main tags", function () {
 		const doc = createDoc("tag-loop-example.docx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
@@ -155,7 +155,7 @@ describe("Inspect module", function() {
 		]);
 	});
 
-	it("should get all tags", function() {
+	it("should get all tags", function () {
 		const doc = createDoc("multi-page.pptx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
@@ -179,7 +179,7 @@ describe("Inspect module", function() {
 		);
 	});
 
-	it("should get all tags and merge them", function() {
+	it("should get all tags and merge them", function () {
 		const doc = createDoc("multi-page-to-merge.pptx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
@@ -194,7 +194,7 @@ describe("Inspect module", function() {
 		});
 	});
 
-	it("should get all tags with additional data", function() {
+	it("should get all tags with additional data", function () {
 		const doc = createDoc("tag-product-loop.docx");
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
@@ -275,8 +275,8 @@ describe("Inspect module", function() {
 	});
 });
 
-describe("Docxtemplater loops", function() {
-	it("should replace all the tags", function() {
+describe("Docxtemplater loops", function () {
+	it("should replace all the tags", function () {
 		const tags = {
 			nom: "Hipp",
 			prenom: "Edgar",
@@ -295,7 +295,7 @@ describe("Docxtemplater loops", function() {
 			"Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar"
 		);
 	});
-	it("should work with loops inside loops", function() {
+	it("should work with loops inside loops", function () {
 		const tags = {
 			products: [
 				{
@@ -353,14 +353,14 @@ describe("Docxtemplater loops", function() {
 		expect(text.length).to.be.equal(expectedText.length);
 		expect(text).to.be.equal(expectedText);
 	});
-	it("should work with object value", function() {
+	it("should work with object value", function () {
 		const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
 		const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
 		const scope = { todo: { todo: "abc" } };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(getContent(xmlTemplater)).to.be.deep.equal(expectedContent);
 	});
-	it("should work with string value", function() {
+	it("should work with string value", function () {
 		const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
 		const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
 		const scope = { todo: "abc" };
@@ -368,7 +368,7 @@ describe("Docxtemplater loops", function() {
 		const c = getContent(xmlTemplater);
 		expect(c).to.be.deep.equal(expectedContent);
 	});
-	it("should not have sideeffects with inverted with array length 3", function() {
+	it("should not have sideeffects with inverted with array length 3", function () {
 		const content = `<w:t>{^todos}No {/todos}Todos</w:t>
 <w:t>{#todos}{.}{/todos}</w:t>`;
 		const expectedContent = `<w:t xml:space="preserve">Todos</w:t>
@@ -378,7 +378,7 @@ describe("Docxtemplater loops", function() {
 		const c = getContent(xmlTemplater);
 		expect(c).to.be.deep.equal(expectedContent);
 	});
-	it("should not have sideeffects with inverted with empty array", function() {
+	it("should not have sideeffects with inverted with empty array", function () {
 		const content = `<w:t>{^todos}No {/todos}Todos</w:t>
 		<w:t>{#todos}{.}{/todos}</w:t>`;
 		const expectedContent = `<w:t xml:space="preserve">No Todos</w:t>
@@ -392,9 +392,9 @@ describe("Docxtemplater loops", function() {
 		expect(c).to.be.deep.equal(expectedContent);
 	});
 
-	it("should provide inverted loops", function() {
+	it("should provide inverted loops", function () {
 		const content = "<w:t>{^products}No products found{/products}</w:t>";
-		[{ products: [] }, { products: false }, {}].forEach(function(tags) {
+		[{ products: [] }, { products: false }, {}].forEach(function (tags) {
 			const doc = createXmlTemplaterDocx(content, { tags });
 			expect(doc.getFullText()).to.be.equal("No products found");
 		});
@@ -404,27 +404,27 @@ describe("Docxtemplater loops", function() {
 			{ products: true },
 			{ products: "Bread" },
 			{ products: { name: "Bread" } },
-		].forEach(function(tags) {
+		].forEach(function (tags) {
 			const doc = createXmlTemplaterDocx(content, { tags });
 			expect(doc.getFullText()).to.be.equal("");
 		});
 	});
 
-	it("should be possible to close loops with {/}", function() {
+	it("should be possible to close loops with {/}", function () {
 		const content = "<w:t>{#products}Product {name}{/}</w:t>";
 		const tags = { products: [{ name: "Bread" }] };
 		const doc = createXmlTemplaterDocx(content, { tags });
 		expect(doc.getFullText()).to.be.equal("Product Bread");
 	});
 
-	it("should be possible to close double loops with {/}", function() {
+	it("should be possible to close double loops with {/}", function () {
 		const content = "<w:t>{#companies}{#products}Product {name}{/}{/}</w:t>";
 		const tags = { companies: [{ products: [{ name: "Bread" }] }] };
 		const doc = createXmlTemplaterDocx(content, { tags });
 		expect(doc.getFullText()).to.be.equal("Product Bread");
 	});
 
-	it("should work with complex loops", function() {
+	it("should work with complex loops", function () {
 		const content =
 			"<w:t>{title} {#users} {name} friends are : {#friends} {.</w:t>TAG..TAG<w:t>},{/friends} {/users</w:t>TAG2<w:t>}</w:t>";
 		const scope = {
@@ -440,8 +440,8 @@ describe("Docxtemplater loops", function() {
 	});
 });
 
-describe("Changing the parser", function() {
-	it("should work with uppercassing", function() {
+describe("Changing the parser", function () {
+	it("should work with uppercassing", function () {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = { name: "Edgar" };
 		function parser(tag) {
@@ -457,7 +457,7 @@ describe("Changing the parser", function() {
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
 	});
-	it("should work when setting from the Docxtemplater interface", function() {
+	it("should work when setting from the Docxtemplater interface", function () {
 		const doc = createDoc("tag-example.docx");
 		const zip = new PizZip(doc.loadedContent);
 		const d = new Docxtemplater().loadZip(zip);
@@ -468,7 +468,7 @@ describe("Changing the parser", function() {
 			description: "New Website",
 		};
 		d.setData(tags);
-		d.parser = function(tag) {
+		d.parser = function (tag) {
 			return {
 				["get"](scope) {
 					return scope[tag].toUpperCase();
@@ -485,7 +485,7 @@ describe("Changing the parser", function() {
 		);
 	});
 
-	it("should work with angular parser", function() {
+	it("should work with angular parser", function () {
 		const tags = {
 			person: {
 				first_name: "Hipp",
@@ -501,7 +501,7 @@ describe("Changing the parser", function() {
 		expect(doc.getFullText()).to.be.equal("Hipp Edgar 2014");
 	});
 
-	it("should work with loops", function() {
+	it("should work with loops", function () {
 		const content = "<w:t>Hello {#person.adult}you{/person.adult}</w:t>";
 		const scope = { person: { name: "Edgar", adult: true } };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
@@ -511,7 +511,7 @@ describe("Changing the parser", function() {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 	});
 
-	it("should be able to access meta to get the index", function() {
+	it("should be able to access meta to get the index", function () {
 		const content =
 			"<w:t>Hello {#users}{$index} {#$isFirst}@{/}{#$isLast}!{/}{name} {/users}</w:t>";
 		const scope = {
@@ -545,7 +545,7 @@ describe("Changing the parser", function() {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello 0 @Jane 1 !Mary ");
 	});
 
-	it("should be able to have scopePathItem with different lengths when having conditions", function() {
+	it("should be able to have scopePathItem with different lengths when having conditions", function () {
 		const content = "<w:t>{#cond}{name}{/}</w:t>";
 		const scope = {
 			cond: true,
@@ -574,7 +574,7 @@ describe("Changing the parser", function() {
 		);
 	});
 
-	it("should call the parser just once", function() {
+	it("should call the parser just once", function () {
 		let calls = 0;
 		const content = "<w:t>{name}</w:t>";
 		const scope = {
@@ -594,7 +594,7 @@ describe("Changing the parser", function() {
 		expect(calls).to.equal(1);
 	});
 
-	it("should be able to access meta to get the type of tag", function() {
+	it("should be able to access meta to get the type of tag", function () {
 		const content = `<w:p><w:t>Hello {#users}{name}{/users}</w:t></w:p>
 		<w:p><w:t>{@rrr}</w:t></w:p>
 		`;
@@ -618,7 +618,7 @@ describe("Changing the parser", function() {
 			},
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Jane");
-		const values = contexts.map(function({
+		const values = contexts.map(function ({
 			meta: {
 				part: { type, value, module },
 			},
@@ -645,8 +645,8 @@ describe("Changing the parser", function() {
 	});
 });
 
-describe("Change the delimiters", function() {
-	it("should work with lt and gt delimiter < and >", function() {
+describe("Change the delimiters", function () {
+	it("should work with lt and gt delimiter < and >", function () {
 		const doc = createDoc("delimiter-gt.docx");
 		doc.setOptions({
 			delimiters: {
@@ -662,7 +662,7 @@ describe("Change the delimiters", function() {
 		expect(fullText).to.be.equal("Hello John");
 	});
 
-	it("should work with delimiter % both sides", function() {
+	it("should work with delimiter % both sides", function () {
 		const doc = createDoc("delimiter-pct.docx");
 		doc.setOptions({
 			delimiters: {
@@ -680,8 +680,8 @@ describe("Change the delimiters", function() {
 	});
 });
 
-describe("Special characters", function() {
-	it("should parse placeholder containing special characters", function() {
+describe("Special characters", function () {
+	it("should parse placeholder containing special characters", function () {
 		const content = "<w:t>Hello {&gt;name}</w:t>";
 		const scope = { ">name": "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
@@ -689,7 +689,7 @@ describe("Special characters", function() {
 		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello Edgar</w:t>');
 	});
 
-	it("should not decode xml entities recursively", function() {
+	it("should not decode xml entities recursively", function () {
 		const content = "<w:t>Hello {&amp;lt;}</w:t>";
 		const scope = { "&lt;": "good", "<": "bad!!" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
@@ -697,7 +697,7 @@ describe("Special characters", function() {
 		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello good</w:t>');
 	});
 
-	it("should render placeholder containing special characters", function() {
+	it("should render placeholder containing special characters", function () {
 		const content = "<w:t>Hello {name}</w:t>";
 		const scope = { name: "<Edgar>" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
@@ -707,7 +707,7 @@ describe("Special characters", function() {
 		);
 	});
 
-	it("should read full text correctly", function() {
+	it("should read full text correctly", function () {
 		const doc = createDoc("cyrillic.docx");
 		const fullText = doc.getFullText();
 		expect(fullText.charCodeAt(0)).to.be.equal(1024);
@@ -719,7 +719,7 @@ describe("Special characters", function() {
 		expect(fullText.charCodeAt(6)).to.be.equal(1039);
 		expect(fullText.charCodeAt(7)).to.be.equal(1040);
 	});
-	it("should still read full text after applying tags", function() {
+	it("should still read full text after applying tags", function () {
 		const doc = createDoc("cyrillic.docx");
 		doc.setData({ name: "Edgar" });
 		doc.render();
@@ -734,7 +734,7 @@ describe("Special characters", function() {
 		expect(fullText.charCodeAt(7)).to.be.equal(1040);
 		expect(fullText.indexOf("Edgar")).to.be.equal(9);
 	});
-	it("should insert russian characters", function() {
+	it("should insert russian characters", function () {
 		const russian = "Пупкина";
 		const doc = createDoc("tag-example.docx");
 		const zip = new PizZip(doc.loadedContent);
@@ -746,15 +746,15 @@ describe("Special characters", function() {
 	});
 });
 
-describe("Complex table example", function() {
-	it("should not do anything special when loop outside of table", function() {
+describe("Complex table example", function () {
+	it("should not do anything special when loop outside of table", function () {
 		[
 			`<w:p><w:t>{#tables}</w:t></w:p>
 <w:table><w:tr><w:tc>
 <w:p><w:t>{user}</w:t></w:p>
 </w:tc></w:tr></w:table>
 <w:p><w:t>{/tables}</w:t></w:p>`,
-		].forEach(function(content) {
+		].forEach(function (content) {
 			const scope = {
 				tables: [{ user: "John" }, { user: "Jane" }],
 			};
@@ -774,7 +774,7 @@ describe("Complex table example", function() {
 		});
 	});
 
-	it("should work when looping inside tables", function() {
+	it("should work when looping inside tables", function () {
 		const tags = {
 			table1: [1],
 			key: "value",
@@ -807,8 +807,8 @@ describe("Complex table example", function() {
 		expect(c).to.be.equal(expected);
 	});
 });
-describe("Raw Xml Insertion", function() {
-	it("should work with simple example", function() {
+describe("Raw Xml Insertion", function () {
+	it("should work with simple example", function () {
 		const inner = "<w:p><w:r><w:t>{@complexXml}</w:t></w:r></w:p>";
 		const content = `<w:document>${inner}</w:document>`;
 		const scope = {
@@ -823,7 +823,7 @@ describe("Raw Xml Insertion", function() {
 		expect(c).to.contain(scope.complexXml);
 	});
 
-	it("should work even when tags are after the xml", function() {
+	it("should work even when tags are after the xml", function () {
 		const content = `<w:tbl>
 		<w:tr>
 		<w:tc>
@@ -895,7 +895,7 @@ describe("Raw Xml Insertion", function() {
 		);
 	});
 
-	it("should work with closing tag in the form of <w:t>}{/body}</w:t>", function() {
+	it("should work with closing tag in the form of <w:t>}{/body}</w:t>", function () {
 		const scope = { body: [{ paragraph: "hello" }] };
 		const content = `<w:t>{#body}</w:t>
 		<w:t>{paragraph</w:t>
@@ -904,7 +904,7 @@ describe("Raw Xml Insertion", function() {
 		const c = getContent(xmlTemplater);
 		expect(c).not.to.contain("</w:t></w:t>");
 	});
-	it("should work with simple example and given options", function() {
+	it("should work with simple example and given options", function () {
 		const scope = {
 			xmlTag:
 				'<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>',
@@ -921,15 +921,15 @@ describe("Raw Xml Insertion", function() {
 	});
 });
 
-describe("Serialization", function() {
-	it("should be serialiazable (useful for logging)", function() {
+describe("Serialization", function () {
+	it("should be serialiazable (useful for logging)", function () {
 		const doc = createDoc("tag-example.docx");
 		JSON.stringify(doc);
 	});
 });
 
-describe("Constructor v4", function() {
-	it("should work when modules are attached", function() {
+describe("Constructor v4", function () {
+	it("should work when modules are attached", function () {
 		let isModuleCalled = false;
 
 		const module = {
@@ -943,7 +943,7 @@ describe("Constructor v4", function() {
 		expect(isModuleCalled).to.equal(true);
 	});
 
-	it("should throw an error when modules passed is not an array", function() {
+	it("should throw an error when modules passed is not an array", function () {
 		expect(
 			createDocV4.bind(this, "tag-example.docx", { modules: {} })
 		).to.throw(
@@ -951,7 +951,7 @@ describe("Constructor v4", function() {
 		);
 	});
 
-	it("should throw an error when an invalid zip is passed", function() {
+	it("should throw an error when an invalid zip is passed", function () {
 		const zip = getZip("tag-example.docx");
 		zip.files = null;
 
@@ -968,7 +968,7 @@ describe("Constructor v4", function() {
 		);
 	});
 
-	it("should work when the delimiters are passed", function() {
+	it("should work when the delimiters are passed", function () {
 		const options = {
 			delimiters: {
 				start: "<",
@@ -984,7 +984,7 @@ describe("Constructor v4", function() {
 		expect(fullText).to.be.equal("Hello John");
 	});
 
-	it("should work when both modules and delimiters are passed and modules should have access to options object", function() {
+	it("should work when both modules and delimiters are passed and modules should have access to options object", function () {
 		let isModuleCalled = false,
 			optionsPassedToModule;
 		const options = {
@@ -1031,7 +1031,7 @@ describe("Constructor v4", function() {
 		expect(doc.getFullText()).to.be.equal("Doe John");
 	});
 
-	it("should work when modules are attached with valid filetypes", function() {
+	it("should work when modules are attached with valid filetypes", function () {
 		let isModuleCalled = false;
 		const module = {
 			optionsTransformer(options) {
@@ -1044,7 +1044,7 @@ describe("Constructor v4", function() {
 		expect(isModuleCalled).to.equal(true);
 	});
 
-	it("should throw an error when supportedFieldType property in passed module is not an Array", function() {
+	it("should throw an error when supportedFieldType property in passed module is not an Array", function () {
 		const zip = getZip("tag-example.docx");
 		const module = {
 			optionsTransformer(options) {

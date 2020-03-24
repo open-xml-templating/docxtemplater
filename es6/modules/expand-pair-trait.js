@@ -72,12 +72,12 @@ const expandPairTrait = {
 	},
 	postparse(postparsed, { getTraits, postparse }) {
 		let traits = getTraits(traitName, postparsed);
-		traits = traits.map(function(trait) {
+		traits = traits.map(function (trait) {
 			return trait || [];
 		});
 		traits = mergeSort(traits);
 		const { pairs, errors } = getPairs(traits);
-		const expandedPairs = pairs.map(pair => {
+		const expandedPairs = pairs.map((pair) => {
 			let { expandTo } = pair[0].part;
 			if (expandTo === "auto") {
 				const result = getExpandToDefault(postparsed, pair, this.expandTags);
@@ -106,7 +106,7 @@ const expandPairTrait = {
 		let currentPairIndex = 0;
 		let innerParts;
 
-		const newParsed = postparsed.reduce(function(newParsed, part, i) {
+		const newParsed = postparsed.reduce(function (newParsed, part, i) {
 			const inPair =
 				currentPairIndex < pairs.length &&
 				expandedPairs[currentPairIndex][0] <= i;
