@@ -12,7 +12,7 @@ const { xml2str, traits } = require("../doc-utils");
 describe("Verify apiversion", function () {
 	it("should work with valid api version", function () {
 		const module = {
-			requiredAPIVersion: "3.22.0",
+			requiredAPIVersion: "3.23.0",
 			render(part) {
 				return part.value;
 			},
@@ -36,7 +36,7 @@ describe("Verify apiversion", function () {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 22, 0],
+				currentModuleApiVersion: [3, 23, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});
@@ -224,6 +224,85 @@ describe("Module errors", function () {
 		expect(error.message).to.equal("Multi error");
 		expect(error.properties.errors.length).to.equal(1);
 		expect(error.properties.errors[0].message).to.equal("foobar");
+	});
+});
+
+describe("Module should pass options to module.parse, module.postparse, module.render, module.postrender", function () {
+	it("should pass filePath and contentType options", function () {
+		const doc = createDoc("tag-example.docx");
+		const filePaths = [];
+		let renderFP = "",
+			renderCT = "",
+			postrenderFP = "",
+			postrenderCT = "",
+			postparseFP = "",
+			postparseCT = "";
+		const ct = [];
+
+		const module = {
+			name: "Test module",
+			requiredAPIVersion: "3.0.0",
+			parse(a, options) {
+				filePaths.push(options.filePath);
+				ct.push(options.contentType);
+			},
+			postparse(a, options) {
+				postparseFP = options.filePath;
+				postparseCT = options.contentType;
+				return a;
+			},
+			render(a, options) {
+				renderFP = options.filePath;
+				renderCT = options.contentType;
+			},
+			postrender(a, options) {
+				postrenderFP = options.filePath;
+				postrenderCT = options.contentType;
+				return a;
+			},
+		};
+		doc.attachModule(module);
+		doc.setData({}).compile();
+		doc.render();
+		expect(renderFP).to.equal("word/document.xml");
+		expect(renderCT).to.equal(
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+		);
+		expect(postparseFP).to.equal("word/document.xml");
+		expect(postparseCT).to.equal(
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+		);
+		expect(postrenderFP).to.equal("word/document.xml");
+		expect(postrenderCT).to.equal(
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+		);
+
+		expect(filePaths).to.deep.equal([
+			// Header appears 4 times because there are 4 tags in the header
+			"word/header1.xml",
+			"word/header1.xml",
+			"word/header1.xml",
+			"word/header1.xml",
+			// Footer appears 3 times because there are 3 tags in the header
+			"word/footer1.xml",
+			"word/footer1.xml",
+			"word/footer1.xml",
+			// Document appears 2 times because there are 2 tags in the header
+			"word/document.xml",
+			"word/document.xml",
+		]);
+
+		expect(ct).to.deep.equal([
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
+		]);
 	});
 });
 

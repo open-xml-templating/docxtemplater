@@ -1,3 +1,9 @@
+### 3.17.3
+
+- Update moduleApiVersion to 3.23.0.
+- Add `contentType` property in options passed to parse, postparse, render and postrender.
+- Bugfix in apiversion check, the patch version was not taken into account at all previously
+
 ### 3.17.2
 
 Add proofstate module to allow to remove the `<w:proofState w:grammar="clean" w:spelling="clean"/>` tag during `.render()`

@@ -416,6 +416,15 @@ function hasCorruptCharacters(string) {
 	return corruptCharacters.test(string);
 }
 
+function invertMap(map) {
+	return Object.keys(map).reduce(function (invertedMap, key) {
+		const value = map[key];
+		invertedMap[value] = invertedMap[value] || [];
+		invertedMap[value].push(key);
+		return invertedMap;
+	}, {});
+}
+
 module.exports = {
 	endsWith,
 	startsWith,
@@ -455,5 +464,6 @@ module.exports = {
 	wordToUtf8,
 	utf8ToWord,
 	concatArrays,
+	invertMap,
 	charMap,
 };

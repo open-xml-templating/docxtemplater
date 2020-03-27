@@ -22,6 +22,7 @@ module.exports = class XmlTemplater {
 		this.filePath = options.filePath;
 		this.modules = options.modules;
 		this.fileTypeConfig = options.fileTypeConfig;
+		this.contentType = options.contentType;
 		Object.keys(defaults).map(function (key) {
 			this[key] = options[key] != null ? options[key] : defaults[key];
 		}, this);
@@ -133,6 +134,7 @@ module.exports = class XmlTemplater {
 			tags: this.tags,
 			modules: this.modules,
 			parser: this.parser,
+			contentType: this.contentType,
 			baseNullGetter: this.baseNullGetter.bind(this),
 			filePath: this.filePath,
 			fileTypeConfig: this.fileTypeConfig,

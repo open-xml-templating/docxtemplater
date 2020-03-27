@@ -100,7 +100,7 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 22, 0],
+					currentModuleApiVersion: [3, 23, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -115,8 +115,23 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 22, 0],
+					currentModuleApiVersion: [3, 23, 0],
 					neededVersion: [3, 44, 0],
+				},
+			}
+		);
+
+		expectToThrow(
+			doc.verifyApiVersion.bind(null, "3.23.100"),
+			Errors.XTAPIVersionError,
+			{
+				message:
+					"The patch api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
+				name: "APIVersionError",
+				properties: {
+					id: "api_version_error",
+					currentModuleApiVersion: [3, 23, 0],
+					neededVersion: [3, 23, 100],
 				},
 			}
 		);

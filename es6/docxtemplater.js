@@ -5,8 +5,9 @@ DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
 const { throwMultiError } = require("./errors");
 
-const commonModule = require("./modules/common");
+const collectContentTypes = require("./collect-content-types");
 const ctXML = "[Content_Types].xml";
+const commonModule = require("./modules/common");
 
 const Lexer = require("./lexer");
 const {
@@ -25,7 +26,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 22, 0];
+const currentModuleApiVersion = [3, 23, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
@@ -95,6 +96,21 @@ const Docxtemplater = class Docxtemplater {
 		if (neededVersion[1] > currentModuleApiVersion[1]) {
 			throwApiVersionError(
 				"The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
+				{
+					neededVersion,
+					currentModuleApiVersion,
+					explanation: `moduleAPIVersionMismatch : needed=${neededVersion.join(
+						"."
+					)}, current=${currentModuleApiVersion.join(".")}`,
+				}
+			);
+		}
+		if (
+			neededVersion[1] === currentModuleApiVersion[1] &&
+			neededVersion[2] > currentModuleApiVersion[2]
+		) {
+			throwApiVersionError(
+				"The patch api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
 				{
 					neededVersion,
 					currentModuleApiVersion,
@@ -252,6 +268,18 @@ const Docxtemplater = class Docxtemplater {
 		const defaults = contentTypeXml
 			? contentTypeXml.getElementsByTagName("Default")
 			: null;
+		if (contentTypeXml) {
+			this.filesContentTypes = collectContentTypes(
+				overrides,
+				defaults,
+				this.zip
+			);
+			this.invertedContentTypes = DocUtils.invertMap(this.filesContentTypes);
+			this.setModules({
+				contentTypes: this.contentTypes,
+				invertedContentTypes: this.invertedContentTypes,
+			});
+		}
 		this.modules.forEach((module) => {
 			fileType =
 				module.getFileType({
@@ -269,7 +297,9 @@ const Docxtemplater = class Docxtemplater {
 		if (!fileType) {
 			throwFileTypeNotIdentified();
 		}
+
 		this.fileType = fileType;
+
 		this.fileTypeConfig =
 			this.options.fileTypeConfig ||
 			this.fileTypeConfig ||
@@ -325,12 +355,13 @@ const Docxtemplater = class Docxtemplater {
 	createTemplateClassFromContent(content, filePath) {
 		const xmltOptions = {
 			filePath,
+			contentType: this.filesContentTypes[filePath],
 		};
-		Object.keys(defaults).forEach((key) => {
-			xmltOptions[key] = this[key];
-		});
-		xmltOptions.fileTypeConfig = this.fileTypeConfig;
-		xmltOptions.modules = this.modules;
+		Object.keys(defaults)
+			.concat(["filesContentTypes", "fileTypeConfig", "modules"])
+			.forEach((key) => {
+				xmltOptions[key] = this[key];
+			});
 		return new Docxtemplater.XmlTemplater(content, xmltOptions);
 	}
 	getFullText(path) {
