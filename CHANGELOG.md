@@ -1,3 +1,35 @@
+### 3.17.4
+
+Make docxtemplater fail with following error messages when using the v4 constructor with either setOptions or attachModule :
+
+- `setOptions() should not be called manually when using the v4 constructor`
+- `attachModule() should not be called manually when using the v4 constructor`
+
+You should not write :
+
+```
+const doc = new Docxtemplater(zip);
+doc.setOptions({
+    delimiters: {
+      start: "<",
+      end: ">",
+    },
+});
+doc.attachModule(new ImageModule())
+```
+
+You should instead write :
+
+```
+const doc = new Docxtemplater(zip, {
+	modules: [new ImageModule()],
+    delimiters: {
+      start: "<",
+      end: ">",
+    },
+});
+```
+
 ### 3.17.3
 
 - Update moduleApiVersion to 3.23.0.

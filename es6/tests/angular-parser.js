@@ -12,6 +12,15 @@ function angularParser(tag) {
 	const expr = expressions.compile(
 		tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
 	);
+	// isAngularAssignment will be true if your tag contains a `=`, for example
+	// when you write the following in your template :
+	// {full_name = first_name + last_name}
+	// In that case, it makes sense to return an empty string so
+	// that the tag does not write something to the generated document.
+	const isAngularAssignment =
+		expr.ast.body[0] &&
+		expr.ast.body[0].expression.type === "AssignmentExpression";
+
 	return {
 		get(scope, context) {
 			let obj = {};
@@ -20,7 +29,11 @@ function angularParser(tag) {
 			for (let i = 0, len = num + 1; i < len; i++) {
 				obj = merge(obj, scopeList[i]);
 			}
-			return expr(scope, obj);
+			const result = expr(scope, obj);
+			if (isAngularAssignment) {
+				return "";
+			}
+			return result;
 		},
 	};
 }

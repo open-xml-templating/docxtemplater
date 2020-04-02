@@ -66,6 +66,7 @@ const Docxtemplater = class Docxtemplater {
 				return true;
 			});
 			this.compile();
+			this.v4Constructor = true;
 		}
 	}
 	getModuleApiVersion() {
@@ -133,6 +134,11 @@ const Docxtemplater = class Docxtemplater {
 		});
 	}
 	attachModule(module, options = {}) {
+		if (this.v4Constructor) {
+			throw new Error(
+				"attachModule() should not be called manually when using the v4 constructor"
+			);
+		}
 		if (module.requiredAPIVersion) {
 			this.verifyApiVersion(module.requiredAPIVersion);
 		}
@@ -152,6 +158,11 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	setOptions(options) {
+		if (this.v4Constructor) {
+			throw new Error(
+				"setOptions() should not be called manually when using the v4 constructor"
+			);
+		}
 		if (!options) {
 			throw new Error(
 				"setOptions should be called with an object as first parameter"

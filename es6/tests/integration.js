@@ -93,6 +93,7 @@ describe("Spacing/Linebreaks", function () {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-multiline-indent.docx" });
 	});
+
 	it("should be possible to have linebreaks if setting the option", function () {
 		const doc = createDoc("tag-multiline.docx");
 		doc.setData({
@@ -131,6 +132,22 @@ describe("Spacing/Linebreaks", function () {
 		doc.setOptions({ linebreaks: true });
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-regression-multiline.pptx" });
+	});
+});
+
+describe("Assignment", function () {
+	it("should be possible to assign a value from the template", function () {
+		const doc = createDoc("assignment.docx");
+		doc.setData({
+			first_name: "Jane",
+			last_name: "Doe",
+		});
+		doc.setOptions({
+			paragraphLoop: true,
+			parser: angularParser,
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-assignment.docx" });
 	});
 });
 

@@ -1035,6 +1035,26 @@ describe("Constructor v4", function () {
 		expect(fullText).to.be.equal("Hello John from Acme");
 	});
 
+	it("should throw if using new constructor and setOptions", function () {
+		const doc = createDocV4("tag-multiline.docx");
+		doc.setData({
+			description: "a\nb\nc",
+		});
+		expect(() => doc.setOptions({ linebreaks: true })).to.throw(
+			"setOptions() should not be called manually when using the v4 constructor"
+		);
+	});
+
+	it("should throw if using new constructor and attachModule", function () {
+		const doc = createDocV4("tag-multiline.docx");
+		doc.setData({
+			description: "a\nb\nc",
+		});
+		expect(() => doc.attachModule({ render() {} })).to.throw(
+			"attachModule() should not be called manually when using the v4 constructor"
+		);
+	});
+
 	it("should render correctly", () => {
 		const doc = new Docxtemplater(getZip("tag-example.docx"));
 		const tags = {
