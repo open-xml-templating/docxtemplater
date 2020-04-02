@@ -6,6 +6,9 @@
 Angular parser
 ==============
 
+Introduction
+------------
+
 The angular-parser makes creating complex templates easier.
 You can for example now use : 
 
@@ -25,17 +28,8 @@ To access the nested name property in the following data :
 
 You can also use `+`, `-`, `*`, `/`, `>`, `<` operators.
 
-You also get access to filters : 
-
-It is possible to write the template ``{user.name | upper}``, and have the resulting string be uppercased.
-
-.. code-block:: javascript
-
-    expressions.filters.upper = function(input) {
-        // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
-        if(!input) return input;
-        return input.toUpperCase(); 
-    }
+Setup
+-----
 
 Here's a code sample for how to use the angularParser :
 
@@ -72,7 +66,7 @@ Here's a code sample for how to use the angularParser :
             }
         };
     }
-    new Docxtemplater().loadZip(zip).setOptions({parser:angularParser})
+    new Docxtemplater(zip, {parser:angularParser});
 
 .. note::
 
@@ -122,3 +116,140 @@ For example, it is possible to write the following template :
     {/}
     There are {users.length} users.
     {/generalCondition}
+
+Filters
+-------
+
+With filters, it is possible to write the following template to have the resulting string be uppercased: 
+
+.. code-block:: text
+
+    {user.name | upper}
+
+.. code-block:: javascript
+
+    var expressions = require('angular-expressions');
+    expressions.filters.upper = function(input) {
+        // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
+        if(!input) return input;
+        return input.toUpperCase(); 
+    }
+
+More complex filters are possible, for example, if you would like to list the names of all active users. If your data is the following : 
+
+.. code-block:: json
+
+    {
+        "users": [
+            {
+                "name": "John",
+                "age": 15,
+            },
+            {
+                "name": "Mary",
+                "age": 26,
+            }
+        ],
+    }
+
+You could show the list of users that are older than 18, by writing the following code :
+
+.. code-block:: javascript
+
+    var expressions = require('angular-expressions');
+    expressions.filters.olderThan = function(users, minAge) {
+        // This condition should be used to make sure that if your users is undefined, your output will be undefined as well and will not throw an error
+        if(!users) return users;
+        return users.filter(function(user) {
+            return user.age >= minAge;
+        });
+    }
+
+And in your template, 
+
+.. code-block:: text
+
+    The allowed users are : 
+
+    {#users | olderThan:15}
+    {name} - {age} years old
+    {/}
+
+There are some interesting use cases for filters
+
+Assignments
+-----------
+
+With the angular expression option, it is possible to assign a value to a variable directly from your template. 
+
+For example, in your template, write : 
+
+.. code-block:: text
+
+    {full_name = first_name + last_name}
+
+The problem with this expression is that it will return the value of full_name.
+There are two ways to fix this issue, either, if you still would like to keep this as the default behavior, add `; ''` after your expression, for example
+
+.. code-block:: text
+
+    {full_name = first_name + last_name; ''}
+
+This will first execute the expression, and then execute the second statement which is an empty string, and return it.
+
+An other approach is to automatically silence the return values of expression containing variable assignments.
+
+You can do so by using the following parser option : 
+
+.. code-block:: javascript
+
+    var expressions = require("angular-expressions");
+    var merge = require("lodash/merge");
+
+    function angularParser(tag) {
+        if (tag === ".") {
+            return {
+                get(s) {
+                    return s;
+                },
+            };
+        }
+        const expr = expressions.compile(
+            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        );
+        // isAngularAssignment will be true if your tag contains a `=`, for example
+        // when you write the following in your template :
+        // {full_name = first_name + last_name}
+        // In that case, it makes sense to return an empty string so
+        // that the tag does not write something to the generated document.
+        const isAngularAssignment =
+            expr.ast.body[0] &&
+            expr.ast.body[0].expression.type === "AssignmentExpression";
+
+        return {
+            get(scope, context) {
+                let obj = {};
+                const scopeList = context.scopeList;
+                const num = context.num;
+                for (let i = 0, len = num + 1; i < len; i++) {
+                    obj = merge(obj, scopeList[i]);
+                }
+                const result = expr(scope, obj);
+                if (isAngularAssignment) {
+                    return "";
+                }
+                return result;
+            },
+        };
+    }
+    new Docxtemplater(zip, {parser:angularParser});
+
+Note that if you use a standard tag, like `{full_name = first_name + last_name}` and if you put no other content on that paragraph, the line will still be there but it will be an empty line. If you wish to remove the line, you could use a rawXML tag which will remove the paragraph, like this : 
+
+.. code-block:: text
+
+    {@full_name = first_name + last_name}
+    {@vat = price * 0.2}
+    {@total_price = price + vat}
+
+This way, all these assignment lines will be dropped.

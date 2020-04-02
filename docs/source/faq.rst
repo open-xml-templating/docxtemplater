@@ -11,7 +11,7 @@ Inserting new lines
 
 .. code-block:: javascript
 
-    doc.setOptions({linebreaks: true})
+    const doc = new Docxtemplater(zip, {linebreaks: true});
 
 then in your data, if a string contains a newline, it will be translated to a linebreak in the document.
 
@@ -124,8 +124,8 @@ suite :
 
     var InspectModule = require("docxtemplater/js/inspect-module");
     var iModule = InspectModule();
-    doc.attachModule(iModule);
-    doc.render(); // doc.compile can also be used to avoid having runtime errors
+    const doc = new Docxtemplater(zip, { modules: [iModule] });
+    doc.render(); 
     var tags = iModule.getAllTags();
     console.log(tags);
 
@@ -198,12 +198,11 @@ It does so by detecting whether there is a file called "/word/document.xml", if 
 My document is corrupted, what should I do ?
 --------------------------------------------
 
-If you are inserting multiple images inside a loop, it is possible that word cannot handle the docPr attributes correctly. You can try to add the following code just after doing `const doc = new Docxtemplater()` : 
+If you are inserting multiple images inside a loop, it is possible that word cannot handle the docPr attributes correctly. You can try to add the following code in your constructor.
 
 .. code-block:: javascript
 
-    const doc = new Docxtemplater();
-    doc.attachModule({
+    const myModule = {
         set(options) {
             if (options.Lexer) {
                 this.Lexer = options.Lexer;
@@ -252,6 +251,7 @@ If you are inserting multiple images inside a loop, it is possible that word can
             });
         }
     });
+    const doc = new Docxtemplater(zip, { modules: [myModule]});
 
 Attaching modules for extra functionality
 -----------------------------------------
@@ -261,14 +261,7 @@ If you have created or have access to docxtemplater PRO modules, you can attach 
 
 .. code-block:: javascript
 
-    var doc = new Docxtemplater();
-    doc.loadZip(zip);
-
-    // You can call attachModule for each modules you wish to include
-    doc.attachModule(imageModule)
-    doc.attachModule(htmlModule)
-
-    //set the templateVariables
+    const doc = new Docxtemplater(zip, {modules: [...]});
     doc.setData(data);
 
 Ternaries are not working well with angular-parser
@@ -402,7 +395,7 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
       };
    }
 
-   doc.setOptions({parser: angularParser})
+   const doc = new Docxtemplater(zip, {parser: angularParser});
 
 .. _cors:
 
@@ -463,7 +456,7 @@ If you are using an angular version that supports the `import` keyword, you can 
             throw error;
           }
           var zip = new PizZip(content);
-          var doc = new Docxtemplater().loadZip(zip);
+          var doc = new Docxtemplater(zip);
           doc.setData({
             first_name: "John",
             last_name: "Doe",
@@ -543,7 +536,7 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
               throw error;
             }
             var zip = new PizZip(content);
-            var doc = new Docxtemplater().loadZip(zip);
+            var doc = new Docxtemplater(zip);
             doc.setData({
               first_name: "John",
               last_name: "Doe",
@@ -669,7 +662,7 @@ You can fix this issue by adding the characters that you would like to support, 
             }
         };
     }
-    new Docxtemplater().loadZip(zip).setOptions({parser:angularParser})
+    new Docxtemplater(zip, {parser:angularParser});
 
 
 Remove proofstate tag
@@ -684,5 +677,9 @@ To remove it, one could do the following, starting with docxtemplater 3.17.2
 .. code-block:: javascript
 
     const proofstateModule = require("docxtemplater/js/proof-state-module.js");
-    doc = new Docxtemplater();
-    doc.attachModule(proofstateModule);
+    doc = new Docxtemplater(zip, {modules: [proofstateModule] });
+
+Assignment expression in template
+---------------------------------
+
+By using the angular expressions options, it is possible to add assignment expressions (for example `{full_name = first_name + last_name}` in your template. See `following part of the doc <angular_parse.html#assignments>`__. 

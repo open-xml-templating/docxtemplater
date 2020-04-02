@@ -116,25 +116,19 @@ To correct this error, you have to add manually the text that you want in your r
 
 Writing 
 
-```
-{@my_first_tag}{my_second_tag}
-```
+.. code-block:: text
+
+    {@my_first_tag}{my_second_tag}
 
 Or even 
 
-```
-Hello {@my_first_tag}
-```
+.. code-block:: text
+
+    Hello {@my_first_tag}
 
 Is misusing docxtemplater.
 
 The `@` at the beginning means "replace the xml of **the current paragraph** with scope.my_first_tag" so that means that everything else in that Paragraph will be removed.
-
-A workaround is to put the text of the second tag in the first tag. (The tag must of course be valid xml)
-
-.. code-block:: text
-
-    Hello {@raw} !
 
 **unclosed_loop** and **unopened_loop** happen when a loop is closed but never opened : for example 
 
@@ -154,7 +148,7 @@ or
 
     {#users}{name}{/people}
 
-**scopeparser_compilation_failed** happens when your parser throws an error during compilation. The parser is defined in doc.setOptions({parser: function parser(tag) {}})
+**scopeparser_compilation_failed** happens when your parser throws an error during compilation. The parser is the second argument of the constructor ``new Docxtemplater(zip, {parser: function parser(tag) {}});``
 
 For example, if your template is :
 
@@ -162,7 +156,7 @@ For example, if your template is :
 
     {name++}
 
-and you use the angularParser, you will have this error. The error happens when you call parser('name++'); The underlying error ca be read in `e.properties.rootError`
+and you use the angularParser, you will have this error. The error happens when you call parser('name++'); The underlying error can be read in `e.properties.rootError`
 
 
 **unimplemented_tag_type** happens when a tag type is not implemented. It should normally not happen, unless you changed docxtemplater code. 
@@ -192,12 +186,12 @@ You might get this error :
 
 `Cannot attach a module that was already attached : "ImageModule". Maybe you are instantiating the module at the root level, and using it for multiple instances of Docxtemplater`
 
-In previous versions the error was "Cannot attach a module that was already attached"
+In previous versions the error was `Cannot attach a module that was already attached`
 
 This happens if you are reusing the same module instance twice.
 
-It usually means that you are calling `new DocxtemplaterImageModule()`
-just once, but you should call it for each instance of docxtemplater.
+It usually means that you are calling `new ImageModule()` just once, but you
+should call it for each instance of docxtemplater.
 
 The following code will throw the error when calling "generate" twice: 
 
@@ -209,8 +203,7 @@ The following code will throw the error when calling "generate" twice:
 
     function generate(content) {
         var zip = new PizZip(content);
-        var doc = new Docxtemplater(zip);
-        doc.attachModule(imageModule);
+        var doc = new Docxtemplater(zip, {modules: [imageModule]});
         doc.setData(data);
         doc.render()
     }
@@ -226,9 +219,8 @@ The following code will no more throw the error :
 
     function generate(content) {
         var zip = new PizZip(content);
-        var doc = new Docxtemplater(zip);
         var imageModule = new ImageModule(opts);
-        doc.attachModule(imageModule);
+        var doc = new Docxtemplater(zip, {modules: [imageModule] });
         doc.setData(data);
         doc.render()
     }

@@ -6,13 +6,11 @@
 Configuration
 =============
 
-You can configure docxtemplater with an options object by using the ``setOptions`` method.
+You can configure docxtemplater with an options object by using the ``v4 constructor`` with two arguments.
 
 .. code-block:: javascript
 
-    var doc = new Docxtemplater();
-    doc.loadZip(zip);
-    doc.setOptions(options)
+    var doc = new Docxtemplater(zip, options);
 
 Custom Parser
 --------------
@@ -56,7 +54,7 @@ docxtemplater uses by default the following parser :
 
 .. code-block:: javascript
 
-    doc.setOptions({
+    const options = {
         parser: function(tag) {
           // tag is "user"
           return {
@@ -72,7 +70,8 @@ docxtemplater uses by default the following parser :
             }
           };
         },
-    });
+    };
+    const doc = new Docxtemplater(zip, options);
 
 A very useful parser is the angular-expressions parser, which has implemented useful features.
 
@@ -88,11 +87,13 @@ For the template
 
     Hello {#users}{.}{/}
 
-With the data : 
+Using following data : 
 
 .. code-block:: javascript
 
     {users: ['Mary', 'John']}
+
+And with this parser
 
 .. code-block:: javascript
 
@@ -137,7 +138,7 @@ Here is an example parser that allows you to lowercase or uppercase the data if 
 
 .. code-block:: javascript
 
-    doc.setOptions({
+    options = {
         parser: function(tag) {
           // tag is "foo[lower]"
           let changeCase = false;
@@ -171,7 +172,8 @@ Here is an example parser that allows you to lowercase or uppercase the data if 
             }
           };
         },
-    });
+    };
+    new Docxtemplater(zip, options);
 
 
 As an other example, it is possible to use the `{$index}` tag inside a loop by using following parser : 
@@ -206,13 +208,11 @@ As an other example, it is possible to use the `{$index}` tag inside a loop by u
 Custom delimiters
 -----------------
 
-You can set up your custom delimiters with this syntax:
+You can set up your custom delimiters:
 
 .. code-block:: javascript
 
-    new Docxtemplater()
-        .loadZip(zip)
-        .setOptions({delimiters:{start:'[[',end:']]'}})
+    new Docxtemplater(zip, {delimiters:{start:'[[',end:']]'}});
 
 
 paragraphLoop
@@ -220,15 +220,11 @@ paragraphLoop
 
 The paragraphLoop option has been added in version 3.2.0.
 
-It is recommended to turn that option on, since it makes the rendering a little bit easier to reason about.
-
-However since it breaks backwards-compatibility, it is turned off by default.
+It is recommended to turn that option on, since it makes the rendering a little bit easier to reason about. Since it breaks backwards-compatibility, it is turned off by default.
 
 .. code-block:: javascript
 
-    new Docxtemplater()
-        .loadZip(zip)
-        .setOptions({paragraphLoop:true})
+    new Docxtemplater(zip, {paragraphLoop:true});
 
 It allows to loop around paragraphs without having additional spacing.
 
@@ -274,16 +270,17 @@ With the paragraphLoop option turned on, the output becomes :
 The rule is quite simple : 
 
 If the opening loop ({#users}) and the closing loop ({/users}) are both on
-separate paragraphs, treat the loop as a paragraph loop (eg create one new
-paragraph for each loop) where you remove the first and last paragraphs (the
-ones containing the loop tags).
-
+separate paragraphs (and there is no other content on those paragraphs), treat
+the loop as a paragraph loop (eg create one new paragraph for each loop) where
+you remove the first and last paragraphs (the ones containing the loop open and
+loop close tags).
 
 nullGetter
 ----------
 
-You can customize the value that is shown whenever the parser (documented above) returns 'null' or undefined.
-By default the nullGetter is the following function
+You can customize the value that is shown whenever the parser (documented
+above) returns 'null' or undefined. By default the nullGetter is the following
+function
 
 .. code-block:: javascript
 
@@ -300,17 +297,16 @@ By default the nullGetter is the following function
 This means that the default value for simple tags is to show "undefined".
 The default for rawTags ({@rawTag}) is to drop the paragraph completely (you could enter any xml here).
 
-
-The scopeManager variable contains some meta information about the tag, for example, if the template is : {#users}{name}{/users} and the tag name is undefined, scopeManager.scopePath === ["users", "name"]
+The scopeManager variable contains some meta information about the tag, for example, if the template is : {#users}{name}{/users} and the tag `{name}` is undefined, `scopeManager.scopePath === ["users", "name"]`
 
 linebreaks
 ----------
 
-You can enable linebreaks, eg if your data contains newlines, those will be shown as linebreaks in the document
+You can enable linebreaks, if your data contains newlines, those will be shown as linebreaks in the document
 
 .. code-block:: javascript
 
-    doc.setOptions({linebreaks:true});
+    const doc = new Docxtemplater(zip, {linebreaks:true});
     doc.setData({text: "My text,\nmultiline"});
     doc.render();
 

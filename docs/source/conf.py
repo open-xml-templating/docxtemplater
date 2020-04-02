@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'docxtemplater'
-copyright = u'2014, Edgar Hipp'
+copyright = u'Edgar Hipp'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -143,10 +143,6 @@ This table shows for each type of value, what is the condition for the section t
 
 If the value is of type **boolean**, the section is shown **once if the value is true**, and the scope of the section is **unchanged**.
 
-
-Example 1 
-~~~~~~~~~
-
 If we have the section
 
 .. code-block:: text
