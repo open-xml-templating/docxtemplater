@@ -21,7 +21,7 @@ describe("Verify apiversion", function () {
 		doc.attachModule(module);
 	});
 
-	it("should fail with valid api version", function () {
+	it("should fail with invalid api version", function () {
 		const module = {
 			requiredAPIVersion: "3.92.0",
 			render(part) {
@@ -36,7 +36,7 @@ describe("Verify apiversion", function () {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 23, 0],
+				currentModuleApiVersion: [3, 24, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});

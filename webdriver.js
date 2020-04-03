@@ -12,9 +12,8 @@ const {
 } = process.env;
 function exit(message) {
 	console.log(message);
-	/* eslint-disable no-process-exit */
+	/* eslint-disable-next-line no-process-exit */
 	process.exit(1);
-	/* eslint-enable no-process-exit */
 }
 
 let fullBrowserName = null;
@@ -31,11 +30,11 @@ const browserCapability = {
 		browserName: "chrome",
 		"goog:chromeOptions": {
 			args: [
-				"headless",
+				"--headless",
 				// Use --disable-gpu to avoid an error from a missing Mesa
 				// library, as per
 				// https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md
-				"disable-gpu",
+				"--disable-gpu",
 			],
 		},
 	},

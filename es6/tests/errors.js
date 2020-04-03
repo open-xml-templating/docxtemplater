@@ -814,7 +814,7 @@ describe("Multi errors", function () {
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});
 
-	it("should fail when rawtag is not in paragraph", function () {
+	it("should fail when having multiple rawtags without a surrounding paragraph", function () {
 		const content = "<w:t>{@first}</w:t><w:p><w:t>foo{@second}</w:t></w:p>";
 		const expectedError = {
 			name: "TemplateError",

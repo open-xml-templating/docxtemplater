@@ -3,6 +3,7 @@ const { expect, makeDocx, cleanRecursive } = require("./utils");
 const fixtures = require("./fixtures");
 const docxconfig = require("../file-type-config").docx;
 const inspectModule = require("../inspect-module.js");
+const AssertionModule = require("./assertion-module.js");
 const tagsDocxConfig = {
 	text: docxconfig.tagsXmlTextArray,
 	other: docxconfig.tagsXmlLexedArray,
@@ -15,7 +16,7 @@ describe("Algorithm", function () {
 			const doc = makeDocx(key, fixture.content);
 			doc.setOptions(fixture.options);
 			const iModule = inspectModule();
-			doc.attachModule(iModule);
+			doc.attachModule(iModule).attachModule(new AssertionModule());
 			doc.setData(fixture.scope);
 			doc.render();
 			cleanRecursive(iModule.inspect.lexed);

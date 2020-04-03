@@ -5,6 +5,7 @@ const PizZip = require("pizzip");
 const fs = require("fs");
 const { get, unset, omit, uniq } = require("lodash");
 const diff = require("diff");
+const AssertionModule = require("./assertion-module.js");
 
 const Docxtemplater = require("../docxtemplater.js");
 const { first } = require("../utils.js");
@@ -537,11 +538,24 @@ function makeDocx(name, content) {
 }
 
 function createDoc(name) {
-	return loadDocument(name, documentCache[name].loadedContent);
+	const doc = loadDocument(name, documentCache[name].loadedContent);
+	/* eslint-disable-next-line no-process-env */
+	if (!process.env.FAST) {
+		doc.attachModule(new AssertionModule());
+	}
+	return doc;
 }
 
 function createDocV4(name, options) {
 	const zip = getZip(name);
+	/* eslint-disable-next-line no-process-env */
+	if (!process.env.FAST) {
+		options = options || {};
+		if (!options.modules || options.modules instanceof Array) {
+			options.modules = options.modules || [];
+			options.modules.push(new AssertionModule());
+		}
+	}
 	return new Docxtemplater(zip, options);
 }
 

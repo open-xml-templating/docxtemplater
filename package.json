@@ -93,6 +93,7 @@
     "mocha": "mocha --full-trace --check-leaks js/tests/index.js",
     "test:es6": "mocha --full-trace --check-leaks es6/tests/index.js",
     "test:es6:fast": "FAST=true mocha --full-trace --check-leaks es6/tests/index.js",
+    "test:es6:slow": "FAST= mocha --full-trace --check-leaks es6/tests/index.js",
     "test": "npm run convertto:es5 && npm run mocha",
     "test:es5": "npm test",
     "verifypublishsize": "./verifypublishsize.bash"

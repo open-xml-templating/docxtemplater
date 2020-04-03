@@ -52,7 +52,9 @@ const parser = {
 			return modules.reduce(function (postparsed, module) {
 				const r = module.postparse(postparsed, {
 					...options,
-					postparse,
+					postparse: (parsed, opts) => {
+						return postparse(parsed, { ...options, ...opts });
+					},
 					getTraits,
 				});
 				if (r == null) {

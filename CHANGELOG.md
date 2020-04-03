@@ -1,3 +1,9 @@
+### 3.17.5
+
+- Make expandToOne recursive, to allow to have multiple tags expand to the same level. (for example, for multiple "paragraph-placeholder" tags in the same paragraph).
+- Update moduleApiVersion to 3.24.0.
+- Make sure all postparse (also recursive ones) get the options such as filePath and contentType
+
 ### 3.17.4
 
 Make docxtemplater fail with following error messages when using the v4 constructor with either setOptions or attachModule :

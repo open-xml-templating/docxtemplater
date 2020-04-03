@@ -125,9 +125,8 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 	return false;
 }
 
-function expandOne(part, postparsed, options) {
+function expandOne(part, index, postparsed, options) {
 	const expandTo = part.expandTo || options.expandTo;
-	const index = postparsed.indexOf(part);
 	if (!expandTo) {
 		return postparsed;
 	}
@@ -177,24 +176,25 @@ function expandToOne(postparsed, options) {
 		errors = postparsed.errors;
 		postparsed = postparsed.postparsed;
 	}
-	const expandToElements = postparsed.reduce(function (elements, part) {
+	for (let i = 0, len = postparsed.length; i < len; i++) {
+		const part = postparsed[i];
+		if (options.lIndex != null && part.lIndex <= options.lIndex) {
+			continue;
+		}
 		if (part.type === "placeholder" && part.module === options.moduleName) {
-			elements.push(part);
-		}
-		return elements;
-	}, []);
-
-	expandToElements.forEach(function (part) {
-		try {
-			postparsed = expandOne(part, postparsed, options);
-		} catch (error) {
-			if (error instanceof XTTemplateError) {
-				errors.push(error);
-			} else {
-				throw error;
+			try {
+				postparsed = expandOne(part, i, postparsed, options);
+			} catch (error) {
+				if (error instanceof XTTemplateError) {
+					errors.push(error);
+				} else {
+					throw error;
+				}
 			}
+			options.lIndex = part.lIndex;
+			return expandToOne({ postparsed, errors }, options);
 		}
-	});
+	}
 	return { postparsed, errors };
 }
 

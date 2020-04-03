@@ -81,7 +81,7 @@ describe("Speed test", function () {
 		const duration = new Date() - time;
 		expect(duration).to.be.below(250);
 	});
-	/* eslint-disable no-process-env */
+	/* eslint-disable-next-line no-process-env */
 	if (!process.env.FAST) {
 		it("should not exceed call stack size for big document with rawxml", function () {
 			this.timeout(30000);
