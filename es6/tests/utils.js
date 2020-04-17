@@ -466,6 +466,11 @@ function endLoadFile(change) {
 function endsWith(str, suffix) {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
+function endsWithOne(str, suffixes) {
+	return suffixes.some(function (suffix) {
+		return endsWith(str, suffix);
+	});
+}
 function startsWith(str, suffix) {
 	return str.indexOf(suffix) === 0;
 }
@@ -482,9 +487,15 @@ function start() {
 			return;
 		}
 		if (
-			endsWith(fileName, ".docx") ||
-			endsWith(fileName, ".pptx") ||
-			endsWith(fileName, ".xlsx")
+			endsWithOne(fileName, [
+				".dotx",
+				".dotm",
+				".docx",
+				".docm",
+				".pptm",
+				".pptx",
+				".xlsx",
+			])
 		) {
 			callback = cacheDocument;
 		}

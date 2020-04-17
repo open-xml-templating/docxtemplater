@@ -1,3 +1,7 @@
+### 3.17.6
+
+Add support for dotx and dotm file formats
+
 ### 3.17.5
 
 - Make expandToOne recursive, to allow to have multiple tags expand to the same level. (for example, for multiple "paragraph-placeholder" tags in the same paragraph).

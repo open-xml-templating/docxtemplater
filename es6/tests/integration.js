@@ -156,19 +156,42 @@ describe("Docm/Pptm generation", function () {
 		const tags = {
 			user: "John",
 		};
-		const doc = createDoc("docm.docx");
+		const doc = createDoc("input.docm");
 		doc.setData(tags);
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-docm.docx" });
 	});
+
 	it("should work with pptm", function () {
 		const tags = {
 			user: "John",
 		};
-		const doc = createDoc("pptm.pptx");
+		const doc = createDoc("input.pptm");
 		doc.setData(tags);
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-pptm.pptx" });
+	});
+});
+
+describe("Dotm/dotx generation", function () {
+	it("should work with dotx", function () {
+		const tags = {
+			user: "John",
+		};
+		const doc = createDoc("input.dotx");
+		doc.setData(tags);
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-dotx.docx" });
+	});
+
+	it("should work with dotm", function () {
+		const tags = {
+			user: "John",
+		};
+		const doc = createDoc("input.dotm");
+		doc.setData(tags);
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-dotm.docx" });
 	});
 });
 
