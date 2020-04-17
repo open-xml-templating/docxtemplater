@@ -11,6 +11,11 @@ const dotxContentType =
 const dotmContentType =
 	"application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
 
+const filetypes = {
+	docx: [docxContentType, docxmContentType, dotxContentType, dotmContentType],
+	pptx: [pptxContentType],
+};
+
 class Common {
 	constructor() {
 		this.name = "Common";
@@ -21,47 +26,22 @@ class Common {
 		}
 	}
 	getFileType({ doc }) {
+		const invertedContentTypes = this.invertedContentTypes;
 		if (!this.invertedContentTypes) {
 			return;
 		}
-		let fileType = null;
-		const invertedContentTypes = this.invertedContentTypes;
-		if (invertedContentTypes[docxContentType]) {
-			fileType = "docx";
-			doc.targets = concatArrays([
-				doc.targets,
-				invertedContentTypes[docxContentType],
-			]);
+		const keys = Object.keys(filetypes);
+		for (let i = 0, len = keys.length; i < len; i++) {
+			const ftCandidate = keys[i];
+			const contentTypes = filetypes[ftCandidate];
+			for (let j = 0, len2 = contentTypes.length; j < len2; j++) {
+				const ct = contentTypes[j];
+				if (invertedContentTypes[ct]) {
+					doc.targets = concatArrays([doc.targets, invertedContentTypes[ct]]);
+					return ftCandidate;
+				}
+			}
 		}
-		if (invertedContentTypes[docxmContentType]) {
-			fileType = "docx";
-			doc.targets = concatArrays([
-				doc.targets,
-				invertedContentTypes[docxmContentType],
-			]);
-		}
-		if (invertedContentTypes[dotxContentType]) {
-			fileType = "docx";
-			doc.targets = concatArrays([
-				doc.targets,
-				invertedContentTypes[dotxContentType],
-			]);
-		}
-		if (invertedContentTypes[dotmContentType]) {
-			fileType = "docx";
-			doc.targets = concatArrays([
-				doc.targets,
-				invertedContentTypes[dotmContentType],
-			]);
-		}
-		if (invertedContentTypes[pptxContentType]) {
-			fileType = "pptx";
-			doc.targets = concatArrays([
-				doc.targets,
-				invertedContentTypes[pptxContentType],
-			]);
-		}
-		return fileType;
 	}
 }
 module.exports = () => wrapper(new Common());
