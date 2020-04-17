@@ -64,6 +64,8 @@ if (!desiredCapabilities) {
 	exit("Unknown browser :" + BROWSER);
 }
 let options = {
+	path: "/wd/hub/",
+	automationProtocol: "webdriver",
 	logLevel: "warn",
 };
 
@@ -129,8 +131,10 @@ server.listen(port, async function () {
 					return true;
 				}
 			},
-			timeout,
-			`Expected to find text in ${selector} but did not find it`
+			{
+				timeout,
+				timeoutMsg: `Expected to find text in ${selector} but did not find it`,
+			}
 		);
 	}
 	async function waitForExist(selector, timeout) {
@@ -141,8 +145,10 @@ server.listen(port, async function () {
 					return true;
 				}
 			},
-			timeout,
-			`Expected to find ${selector} but did not find it`
+			{
+				timeout,
+				timeoutMsg: `Expected to find ${selector} but did not find it`,
+			}
 		);
 	}
 	async function test() {
@@ -201,6 +207,7 @@ server.listen(port, async function () {
 			} else {
 				server.close();
 			}
+			client.deleteSession();
 		} catch (e) {
 			if (e.message.indexOf("ECONNREFUSED") !== -1) {
 				return test();

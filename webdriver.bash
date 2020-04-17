@@ -27,7 +27,7 @@ then
 fi
 
 port4444used() {
-	netstat -tnlp 2>/dev/null | grep --color -E 4444 >/dev/null
+	netstat -tnlp 2>/dev/null | grep 4444 >/dev/null
 }
 
 if [ "$BROWSER" != "SAUCELABS" ]
