@@ -19,6 +19,8 @@ jobs:
     env: COMMAND=mocha
   - node_js: '13'
     env: COMMAND=mocha
+  - node_js: '14'
+    env: COMMAND=mocha
 script:
 - nvm install stable
 - npm run convertto:es5
