@@ -66,24 +66,33 @@ if (!desiredCapabilities) {
 
 const second = 1000;
 const minute = 60 * second;
-let options = {
-	path: "/wd/hub/",
+
+let commonOptions = {
 	automationProtocol: "webdriver",
-	logLevel: "warn",
+	// logLevel: "warn",
 	connectionRetryTimeout: 5 * minute,
 };
+
+let options;
 
 if (BROWSER === "SAUCELABS") {
 	fullBrowserName = `${browserName} ${version} ${platform} (SAUCELABS)`;
 	options = {
+		...commonOptions,
 		tunnelIdentifier: TRAVIS_JOB_NUMBER,
 		"tunnel-identifier": TRAVIS_JOB_NUMBER,
 		build: TRAVIS_BUILD_NUMBER,
 		user: SAUCE_USERNAME,
 		key: SAUCE_ACCESS_KEY,
-		logLevel: "warn",
 	};
 }
+else {
+	options = {
+		...commonOptions,
+		path: "/wd/hub/",
+	};
+}
+
 
 options.capabilities = desiredCapabilities;
 
