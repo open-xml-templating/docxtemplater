@@ -63,10 +63,14 @@ fullBrowserName = BROWSER + " (local)";
 if (!desiredCapabilities) {
 	exit("Unknown browser :" + BROWSER);
 }
+
+const second = 1000;
+const minute = 60 * second;
 let options = {
 	path: "/wd/hub/",
 	automationProtocol: "webdriver",
 	logLevel: "warn",
+	connectionRetryTimeout: 5 * minute,
 };
 
 if (BROWSER === "SAUCELABS") {
@@ -112,7 +116,6 @@ function updateSaucelabsStatus(client, result, done) {
 	);
 }
 
-const second = 1000;
 const timeoutConnection = 180;
 const failuresRegex = /.*failures: ([0-9]+).*/;
 const passesRegex = /.*passes: ([0-9]+).*/;
