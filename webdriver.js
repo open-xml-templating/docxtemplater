@@ -67,7 +67,7 @@ if (!desiredCapabilities) {
 const second = 1000;
 const minute = 60 * second;
 
-let commonOptions = {
+const commonOptions = {
 	automationProtocol: "webdriver",
 	// logLevel: "warn",
 	connectionRetryTimeout: 5 * minute,
@@ -85,14 +85,12 @@ if (BROWSER === "SAUCELABS") {
 		user: SAUCE_USERNAME,
 		key: SAUCE_ACCESS_KEY,
 	};
-}
-else {
+} else {
 	options = {
 		...commonOptions,
 		path: "/wd/hub/",
 	};
 }
-
 
 options.capabilities = desiredCapabilities;
 
