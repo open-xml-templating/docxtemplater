@@ -679,6 +679,77 @@ To remove it, one could do the following, starting with docxtemplater 3.17.2
     const proofstateModule = require("docxtemplater/js/proof-state-module.js");
     doc = new Docxtemplater(zip, {modules: [proofstateModule] });
 
+Adding page break except for last item in loop
+----------------------------------------------
+
+It is possible, in a condition, to have some specific behavior for the last item in the loop using a custom parser. You can read more `about how custom parsers work here <configuration.html#custom-parser>`__.
+
+It will allow you to add a page break at the end of each loop, except for the last item in the loop.
+
+The template will look like this : 
+
+.. code-block:: text 
+
+    {#users}
+    The user {name} is aged {age}
+    {description}
+    Some other content
+    {@$pageBreakExceptLast}
+    {/}
+
+And each user block will be followed by a pagebreak, except the last user.
+
+.. code-block:: javascript
+
+    function angularParser(tag) {
+        if (tag === '.') {
+            return {
+                get: function(s){ return s;}
+            };
+        }
+        const expr = expressions.compile(
+            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        );
+        return {
+            get: function(scope, context) {
+                let obj = {};
+                const scopeList = context.scopeList;
+                const num = context.num;
+                for (let i = 0, len = num + 1; i < len; i++) {
+                    obj = merge(obj, scopeList[i]);
+                }
+                return expr(scope, obj);
+            }
+        };
+    }
+    function parser(tag) {
+        // We write an exception to handle the tag "$pageBreakExceptLast"
+        if (tag === "$pageBreakExceptLast") {
+            return {
+                get(scope, context) {
+                    const totalLength = context.scopePathLength[context.scopePathLength.length - 1];
+                    const index = context.scopePathItem[context.scopePathItem.length - 1];
+                    const isLast = index === totalLength - 1;
+                    if (!isLast) {
+                        return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+                    }
+                    else {
+                        return '';
+                    }
+                }
+            }
+        }
+        // We use the angularParser as the default fallback
+        // If you don't wish to use the angularParser, you can use the default parser as documented here : https://docxtemplater.readthedocs.io/en/latest/configuration.html#default-parser
+        return angularParser(tag);
+    }
+    const doc = new Docxtemplater();
+    doc.setOptions({
+        parser: parser
+    });
+    doc.loadZip(zip);
+    doc.render();
+
 Assignment expression in template
 ---------------------------------
 

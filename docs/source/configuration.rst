@@ -22,6 +22,9 @@ like '+', '-', or even create a Domain Specific Language to specify your tag val
 
 To enable this, you need to specify a custom parser.
 
+Introduction
+~~~~~~~~~~~~
+
 To understand this option better, it is good to understand how docxtemplater manages the scope.
 
 Whenever docxtemplater needs to render any tag, for example `{name}`, docxtemplater will delegate the retrieval of the value to the scopemanager.
@@ -50,6 +53,9 @@ Lets take an example, If your template is :
 
 And we call `doc.setData({user: "John"})`
 
+Default Parser
+~~~~~~~~~~~~~~
+
 docxtemplater uses by default the following parser :
 
 .. code-block:: javascript
@@ -73,11 +79,17 @@ docxtemplater uses by default the following parser :
     };
     const doc = new Docxtemplater(zip, options);
 
+Angular Parser
+~~~~~~~~~~~~~~
+
 A very useful parser is the angular-expressions parser, which has implemented useful features.
 
 See `angular parser`_ for comprehensive documentation
 
 .. _`angular parser`: angular_parse.html
+
+Deep Dive on the parser
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The parser function is given two arguments, 
 
@@ -134,6 +146,10 @@ For the tag `.` in the first iteration, the arguments will be :
       // Together, scopePath and scopePathItem describe where we are in the data, in this case, we are in the tag users[0] (the first user)
     }
 
+
+Simple Parser example for [lower] and [upper]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Here is an example parser that allows you to lowercase or uppercase the data if writing your tag as : `{user[lower]}` or `{user[upper]}` :
 
 .. code-block:: javascript
@@ -175,6 +191,8 @@ Here is an example parser that allows you to lowercase or uppercase the data if 
     };
     new Docxtemplater(zip, options);
 
+Simple Parser example for {$index} and {$isLast} inside loops
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As an other example, it is possible to use the `{$index}` tag inside a loop by using following parser : 
 
