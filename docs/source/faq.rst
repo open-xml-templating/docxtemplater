@@ -740,7 +740,9 @@ And each user block will be followed by a pagebreak, except the last user.
             }
         }
         // We use the angularParser as the default fallback
-        // If you don't wish to use the angularParser, you can use the default parser as documented here : https://docxtemplater.readthedocs.io/en/latest/configuration.html#default-parser
+        // If you don't wish to use the angularParser,
+        // you can use the default parser as documented here :
+        // https://docxtemplater.readthedocs.io/en/latest/configuration.html#default-parser
         return angularParser(tag);
     }
     const doc = new Docxtemplater();
