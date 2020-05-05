@@ -6,7 +6,7 @@
 Asynchronous Data Resolving
 ===========================
 
-You can have promises in your data. Note that the only step running asynchronously is the resolving of your data, the compilation (parsing of your template to parse position of each tags), and the rendering (using the compiled version + the resolved data) will still be fully synchronous
+You can have promises in your data. Note that the only step running asynchronously is the resolving of your data. The compilation (parsing of your template to parse position of each tags), and the rendering (using the compiled version + the resolved data) will still be fully synchronous
 
 .. code-block:: javascript
 
