@@ -86,13 +86,25 @@ For example, with the following template
 
 .. code-block:: text
 
-    Hello {name}, your hobby is {hobby}
+    Hello {name}, your hobby is {hobby}.
 
 .. code-block:: json
 
     {
         "hobby": "football",
     }
+
+The default behavior is to return "undefined" for empty values.
+
+.. code-block:: text
+
+    Hello undefined, your hobby is football.
+
+You can customize this to either return another string, or return the name of the tag itself, so that it will show :
+
+.. code-block:: text
+
+    Hello {name}, your hobby is football.
 
 It is possible to customize the value that will be shown for {name} by using the nullGetter option. In the following case, it will return "{name}", hence it will keep the placeholder {name} if the value does not exist.
 
