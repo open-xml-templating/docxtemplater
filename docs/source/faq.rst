@@ -76,6 +76,43 @@ See `angular parser`_ for comprehensive documentation
 
 .. _`angular parser`: angular_parse.html
 
+Keep placeholders that don't have data
+--------------------------------------
+
+It is possible to define which value to show when a tag resolves to
+undefined or null (for example when no data is present for that value).
+
+For example, with the following template
+
+.. code-block:: text
+
+    Hello {name}, your hobby is {hobby}
+
+.. code-block:: json
+
+    {
+        "hobby": "football",
+    }
+
+It is possible to customize the value that will be shown for {name} by using the nullGetter option. In the following case, it will return "{name}", hence it will keep the placeholder {name} if the value does not exist.
+
+.. code-block:: javascript
+
+    function nullGetter(part, scopeManager) {
+        // part.module can be "loop", "rawxml", or empty, (or any other module name that you use)
+        if (!part.module) {
+            // part.value contains the content of the tag, eg "name" in our example
+            return '{' + part.value + '}';
+        }
+        if (part.module === "rawxml") {
+            return "";
+        }
+        return "";
+    }
+    doc.setOptions({
+        nullGetter: nullGetter,
+    });
+
 Performance
 -----------
 

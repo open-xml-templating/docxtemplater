@@ -241,6 +241,32 @@ describe("Change the nullGetter", function () {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
 	});
 
+	it("should be possible to keep null tags as is", function () {
+		const content = "<w:t>Hello {name}, your hobby is {hobby}</w:t>";
+		function nullGetter(part) {
+			if (!part.module) {
+				return "{" + part.value + "}";
+			}
+			if (part.module === "rawxml") {
+				return "";
+			}
+			return "";
+		}
+		const data = {
+			hobby: "diving",
+		};
+		const xmlTemplater = createXmlTemplaterDocxNoRender(content, {
+			nullGetter,
+		});
+		xmlTemplater.compile();
+		return xmlTemplater.resolveData(data).then(function () {
+			xmlTemplater.render();
+			expect(xmlTemplater.getFullText()).to.be.equal(
+				"Hello {name}, your hobby is diving"
+			);
+		});
+	});
+
 	it("should work with null in resolve", function () {
 		const content = "<w:t>Hello {#names}{#foo}{bar}{/foo}{/names}</w:t>";
 		let calls = 0;
