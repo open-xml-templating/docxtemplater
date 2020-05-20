@@ -121,9 +121,7 @@ It is possible to customize the value that will be shown for {name} by using the
         }
         return "";
     }
-    doc.setOptions({
-        nullGetter: nullGetter,
-    });
+    const doc = new Docxtemplater(zip, {nullGetter: nullGetter,});
 
 Performance
 -----------
@@ -795,10 +793,7 @@ And each user block will be followed by a pagebreak, except the last user.
         return angularParser(tag);
     }
     const doc = new Docxtemplater();
-    doc.setOptions({
-        parser: parser
-    });
-    doc.loadZip(zip);
+    const doc = new Docxtemplater(zip, {parser: parser,});
     doc.render();
 
 Assignment expression in template

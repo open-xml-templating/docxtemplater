@@ -281,9 +281,9 @@ Here we have a list with three items. The first item uses the default tag style,
 
 Custom delimiters may not contain whitespace or the equals sign.
 
-It is also possible to `change the delimiters from docxtemplater.setOptions`_.
+It is also possible to `change the delimiters by using docxtemplater options object`_.
 
-.. _`change the delimiters from docxtemplater.setOptions`: configuration.html#custom-delimiters
+.. _`change the delimiters by using docxtemplater options object`: configuration.html#custom-delimiters
 
 Dash syntax
 -----------

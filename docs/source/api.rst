@@ -74,11 +74,6 @@ Methods
 
         This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see https://github.com/open-xml-templating/pizzip/blob/master/documentation/api_pizzip/generate.md)
 
-    setOptions()
-
-        This function is deprecated and you should instead use the new constructor with two arguments.
-        This function is used to configure the docxtemplater instance by changing parser, delimiters, etc. (See https://docxtemplater.readthedocs.io/en/latest/configuration.html).
-
     attachModule(module)
 
         This function is deprecated and you should instead use the new constructor with two arguments.
