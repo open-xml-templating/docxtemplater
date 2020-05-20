@@ -60,11 +60,6 @@ Methods
 
         This function replaces all template variables by their values
 
-    loadZip(zip)
-
-        This function is deprecated and you should instead use the new constructor with two arguments.
-        You have to pass a zip instance to that method, coming from pizzip or jszip version 2
-
     compile()
 
         This function is deprecated and you should instead use the new constructor with two arguments.
