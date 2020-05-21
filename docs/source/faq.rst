@@ -30,13 +30,13 @@ The size of the docx output can be big, in the case where you generate the zip t
 
 .. code-block:: javascript
 
-    docx.getZip().generate({ type: "nodebuffer"})
+    doc.getZip().generate({ type: "nodebuffer"})
 
 This is because the zip will not be compressed in that case. To force the compression (which could be slow because it is running in JS for files bigger than 10 MB)
 
 .. code-block:: javascript
 
-    var zip = docx.getZip().generate({
+    var zip = doc.getZip().generate({
             type: "nodebuffer",
             compression: "DEFLATE"
     });
