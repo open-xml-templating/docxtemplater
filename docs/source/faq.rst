@@ -792,7 +792,6 @@ And each user block will be followed by a pagebreak, except the last user.
         // https://docxtemplater.readthedocs.io/en/latest/configuration.html#default-parser
         return angularParser(tag);
     }
-    const doc = new Docxtemplater();
     const doc = new Docxtemplater(zip, {parser: parser});
     doc.render();
 
