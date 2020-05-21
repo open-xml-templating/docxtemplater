@@ -30,13 +30,13 @@ The size of the docx output can be big, in the case where you generate the zip t
 
 .. code-block:: javascript
 
-    docx.getZip().generate({ type: "nodebuffer"})
+    doc.getZip().generate({ type: "nodebuffer"})
 
 This is because the zip will not be compressed in that case. To force the compression (which could be slow because it is running in JS for files bigger than 10 MB)
 
 .. code-block:: javascript
 
-    var zip = docx.getZip().generate({
+    var zip = doc.getZip().generate({
             type: "nodebuffer",
             compression: "DEFLATE"
     });
@@ -121,9 +121,7 @@ It is possible to customize the value that will be shown for {name} by using the
         }
         return "";
     }
-    doc.setOptions({
-        nullGetter: nullGetter,
-    });
+    const doc = new Docxtemplater(zip, {nullGetter: nullGetter});
 
 Performance
 -----------
@@ -794,11 +792,7 @@ And each user block will be followed by a pagebreak, except the last user.
         // https://docxtemplater.readthedocs.io/en/latest/configuration.html#default-parser
         return angularParser(tag);
     }
-    const doc = new Docxtemplater();
-    doc.setOptions({
-        parser: parser
-    });
-    doc.loadZip(zip);
+    const doc = new Docxtemplater(zip, {parser: parser});
     doc.render();
 
 Assignment expression in template
