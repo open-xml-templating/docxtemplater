@@ -32,11 +32,11 @@
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.6",
-    "@babel/plugin-proposal-object-rest-spread": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
-    "@wdio/cli": "^6.1.12",
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.10.1",
+    "@babel/preset-env": "^7.10.1",
+    "@wdio/cli": "^6.1.15",
     "angular-expressions": "^1.1.1",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
@@ -57,8 +57,8 @@
     "rimraf": "^3.0.2",
     "selenium-standalone": "^6.17.0",
     "serve-static": "^1.14.1",
-    "uglify-js": "^3.9.3",
-    "webdriverio": "^6.1.12",
+    "uglify-js": "^3.9.4",
+    "webdriverio": "^6.1.14",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11"
   },
