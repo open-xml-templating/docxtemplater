@@ -795,6 +795,17 @@ And each user block will be followed by a pagebreak, except the last user.
     const doc = new Docxtemplater(zip, {parser: parser});
     doc.render();
 
+Encrypting files
+----------------
+
+Docxtemplater itself does not handle the Encryption of the docx files.
+
+There seem to be two solutions for this : 
+
+* Use a Python tool that does exactly this, it is available here : https://github.com/nolze/msoffcrypto-tool
+
+* The xlsx-populate library also implements the Encryption/Decryption (algorithms are inspired by msoffcrypto-tool), however, the code probably needs to be a bit changed to work with docxtemplater : https://github.com/dtjohnson/xlsx-populate/blob/7480a02575c9140c0e7995623ea192c88c1886d3/lib/Encryptor.js#L236
+
 Assignment expression in template
 ---------------------------------
 
