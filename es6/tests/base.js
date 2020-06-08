@@ -560,6 +560,41 @@ describe("Changing the parser", function () {
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello 0 @Jane 1 !Mary ");
 	});
 
+	it("should be able to disable parent scope inheritance", function () {
+		const content = "<w:t>Hello {#users}{companyName}-{name} {/}</w:t>";
+		const scope = {
+			users: [{ name: "Jane" }, {}],
+			companyName: "My company, should not be shown",
+			name: "Foo",
+		};
+
+		const xmlTemplater = createXmlTemplaterDocx(content, {
+			tags: scope,
+			nullGetter(part) {
+				if (!part.module) {
+					return "NULL";
+				}
+				if (part.module === "rawxml") {
+					return "";
+				}
+				return "";
+			},
+			parser(tag) {
+				return {
+					get(scope, context) {
+						if (context.num < context.scopePath.length) {
+							return null;
+						}
+						return scope[tag];
+					},
+				};
+			},
+		});
+		expect(xmlTemplater.getFullText()).to.be.equal(
+			"Hello NULL-Jane NULL-NULL "
+		);
+	});
+
 	it("should be able to have scopePathItem with different lengths when having conditions", function () {
 		const content = "<w:t>{#cond}{name}{/}</w:t>";
 		const scope = {

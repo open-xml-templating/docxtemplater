@@ -222,6 +222,66 @@ As an other example, it is possible to use the `{$index}` tag inside a loop by u
         };
     }
 
+Parser example to avoid using the parent scope if a value is null on the main scope
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+When using following template:
+
+.. code-block:: text
+
+    {#products}
+        {name}, {price} €
+    {/products}
+
+With following data :
+
+.. code-block:: javascript
+
+    doc.setData({
+        name: 'Santa Katerina',
+        products: [
+          {
+            price: '$3.99'
+          }
+        ]
+    });
+
+The {name} tag will use the "root scope", since it is not present in the products array.
+
+If you explicitly don't want this behavior because you want the nullGetter to handle the tag in this case, you can use the following parser :
+
+.. code-block:: javascript
+
+    parser(tag) {
+        return {
+            get(scope, context) {
+                if (context.num < context.scopePath.length) {
+                    return null;
+                }
+                // You can customize your parser here instead of scope[tag] of course
+                return scope[tag];
+            },
+        };
+    },
+
+The context.num value contains the scope level for this particular evalutation.
+
+When evaluating the {name} tag in the example above, there are two evaluations:
+
+.. code-block:: javascript
+
+    // For the first evaluation, when evaluating in the {#users} scope
+    context.num = 1;
+    context.scopePath = ["users"];
+    // This evaluation returns null because the
+    // first product doesn't have a name property
+
+    // For the second evaluation, when evaluating in the root scope
+    context.num = 0;
+    context.scopePath = ["users"];
+    // This evaluation returns null because of the extra added condition
+
 
 Custom delimiters
 -----------------

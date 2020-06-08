@@ -99,7 +99,7 @@ The ids are :
 
     Hello {name !
 
-**no_xml_tag_found_at_left** and **no_xml_tag_found_at_right**: This error happens if a rawXMLTag does'nt find a `<w:p>` element
+**no_xml_tag_found_at_left** and **no_xml_tag_found_at_right**: This error happens if a rawXMLTag doesn't find a `<w:p>` element
 
 .. code-block:: text
 
