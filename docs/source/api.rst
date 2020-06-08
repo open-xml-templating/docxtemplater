@@ -42,7 +42,7 @@ Constructor
                 }
                 const doc = new Docxtemplater(zip, options);
 
-        This function returns a new Docxtemplater instance 
+        This function returns a new Docxtemplater instance
 
 
 Methods
@@ -63,7 +63,7 @@ Methods
     getZip()
 
         This will return you the zip that represents the docx. You can then call `.generate` on this to generate a buffer, string , ... (see https://github.com/open-xml-templating/pizzip/blob/master/documentation/api_pizzip/generate.md)
-        
+
     compile()
 
         This function is **deprecated** and you should instead use the new constructor with two arguments.

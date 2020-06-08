@@ -34,13 +34,13 @@ To be able to see these errors, you need to catch them properly.
                 return error.properties.explanation;
             }).join("\n");
             console.log('errorMessages', errorMessages);
-            // errorMessages is a humanly readable message looking like this : 
+            // errorMessages is a humanly readable message looking like this :
             // 'The tag beginning with "foobar" is unopened'
         }
         throw error;
     }
 
-Error Schema 
+Error Schema
 ------------
 
 All errors thrown by docxtemplater have the following schema:
@@ -69,7 +69,7 @@ If the content of your template is `{user {name}`, docxtemplater will throw the 
     }
     catch (e) {
         // All these expressions are true
-        e.name === "TemplateError" 
+        e.name === "TemplateError"
         e.message === "Unclosed tag"
         e.properties.explanation === "The tag beginning with '{user ' is unclosed"
         e.properties.id === "unclosed_tag"
@@ -83,17 +83,17 @@ List of all Error Identifiers
 
 All errors can be identified with their id (`e.properties.id`).
 
-The ids are : 
+The ids are :
 
 **multi_error**: This error means that multiple errors where found in the template (1 or more). See below for handling these errors.
 
-**unopened_tag**: This error happens if a tag is closed but not opened. For example with the following template : 
+**unopened_tag**: This error happens if a tag is closed but not opened. For example with the following template :
 
 .. code-block:: text
 
     Hello name} !
 
-**unclosed_tag**: This error happens if a tag is opened but not closed. For example with the following template : 
+**unclosed_tag**: This error happens if a tag is opened but not closed. For example with the following template :
 
 .. code-block:: text
 
@@ -114,13 +114,13 @@ The ids are :
 
 To correct this error, you have to add manually the text that you want in your raw tag. (Or you can use the https://docxtemplater.com/modules/word-run/ which adds a tag that can replace rawXML inside a tag).
 
-Writing 
+Writing
 
 .. code-block:: text
 
     {@my_first_tag}{my_second_tag}
 
-Or even 
+Or even
 
 .. code-block:: text
 
@@ -130,7 +130,7 @@ Is misusing docxtemplater.
 
 The `@` at the beginning means "replace the xml of **the current paragraph** with scope.my_first_tag" so that means that everything else in that Paragraph will be removed.
 
-**unclosed_loop** and **unopened_loop** happen when a loop is closed but never opened : for example 
+**unclosed_loop** and **unopened_loop** happen when a loop is closed but never opened : for example
 
 .. code-block:: text
 
@@ -159,13 +159,13 @@ For example, if your template is :
 and you use the angularParser, you will have this error. The error happens when you call parser('name++'); The underlying error can be read in `e.properties.rootError`
 
 
-**unimplemented_tag_type** happens when a tag type is not implemented. It should normally not happen, unless you changed docxtemplater code. 
+**unimplemented_tag_type** happens when a tag type is not implemented. It should normally not happen, unless you changed docxtemplater code.
 
 **malformed_xml** happens when a xml file of the document cannot be parsed correctly.
 
 **loop_position_invalid** happens when a loop would produce invalid XML.
 
-For example, if you write : 
+For example, if you write :
 
 .. code-block:: text
 
@@ -182,7 +182,7 @@ this is not allowed since a loop that starts in a table should also end in that 
 Cannot attach a module that was already attached
 ------------------------------------------------
 
-You might get this error : 
+You might get this error :
 
 `Cannot attach a module that was already attached : "ImageModule". Maybe you are instantiating the module at the root level, and using it for multiple instances of Docxtemplater`
 
@@ -193,7 +193,7 @@ This happens if you are reusing the same module instance twice.
 It usually means that you are calling `new ImageModule()` just once, but you
 should call it for each instance of docxtemplater.
 
-The following code will throw the error when calling "generate" twice: 
+The following code will throw the error when calling "generate" twice:
 
 .. code-block:: javascript
 
@@ -210,7 +210,7 @@ The following code will throw the error when calling "generate" twice:
 
 You should always reconstruct an imageModule for each Docxtemplater instance.
 
-The following code will no more throw the error : 
+The following code will no more throw the error :
 
 .. code-block:: javascript
 
@@ -232,7 +232,7 @@ Handling multiple errors
 docxtemplater now has the ability to detect multiple errors in your template.
 If it detects multiple errors, it will throw an error that has the id **multi_error**
 
-You can then have the following to view all errors : 
+You can then have the following to view all errors :
 
 .. code-block:: javascript
 

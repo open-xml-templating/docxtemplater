@@ -38,7 +38,7 @@ Node
                 return error.properties.explanation;
             }).join("\n");
             console.log('errorMessages', errorMessages);
-            // errorMessages is a humanly readable message looking like this : 
+            // errorMessages is a humanly readable message looking like this :
             // 'The tag beginning with "foobar" is unopened'
         }
         throw error;
@@ -56,7 +56,7 @@ Node
         // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
         errorHandler(error);
     }
-    
+
     //set the templateVariables
     doc.setData({
         first_name: 'John',
@@ -130,7 +130,7 @@ Browser
                             return error.properties.explanation;
                         }).join("\n");
                         console.log('errorMessages', errorMessages);
-                        // errorMessages is a humanly readable message looking like this : 
+                        // errorMessages is a humanly readable message looking like this :
                         // 'The tag beginning with "foobar" is unopened'
                     }
                     throw error;
@@ -144,7 +144,7 @@ Browser
                     // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
                     errorHandler(error);
                 }
-                
+
                 doc.setData({
                     first_name: 'John',
                     last_name: 'Doe',
@@ -174,7 +174,7 @@ Please note that if you want to load a docx from your filesystem, you will need 
 
 :ref:`cors`
 
-It is also possible to read the docx from an `<input type="file" id="doc">`, by using the following : 
+It is also possible to read the docx from an `<input type="file" id="doc">`, by using the following :
 
 .. code-block:: javascript
 

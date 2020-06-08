@@ -25,7 +25,7 @@ Why you shouldn't write a similar library from scratch
 ------------------------------------------------------
 
 Docx is a zipped format that contains some xml.
-If you want to build a simple replace {tag} by value system, it could easily be challenging, because the {tag} is internally separated into : 
+If you want to build a simple replace {tag} by value system, it could easily be challenging, because the {tag} is internally separated into :
 
 .. code-block:: text
 

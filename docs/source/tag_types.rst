@@ -36,14 +36,14 @@ docxtemplater will produce (output.docx):
 Conditions
 ----------
 
-Conditions start with a pound and end with a slash. That is `{#hasKitty}` starts a condition and `{/hasKitty}` ends it. 
+Conditions start with a pound and end with a slash. That is `{#hasKitty}` starts a condition and `{/hasKitty}` ends it.
 
 .. code-block:: text
 
     {#hasKitty}Cat’s name: {kitty}{/hasKitty}
     {#hasDog}Dog’s name: {dog}{/hasDog}
 
-and this data: 
+and this data:
 
 .. code-block:: javascript
 
@@ -101,7 +101,7 @@ will result in :
 To loop over an array containing primitive data (ex: string):
 
 .. code-block:: javascript
-   
+
    {
       "products": [
           "Windows",
@@ -111,7 +111,7 @@ To loop over an array containing primitive data (ex: string):
    }
 
 .. code-block:: text
-   
+
    {#products} {.} {/products}
 
 Will result in :
@@ -119,7 +119,7 @@ Will result in :
 .. code-block:: text
 
     Windows Mac OSX Ubuntu
-    
+
 Sections
 --------
 
@@ -127,17 +127,17 @@ A section begins with a pound and ends with a slash. That is {#person} begins a 
 
 The section behaves in the following way:
 
-+----------------------+---------------------------+------------------+ 
-| Type of the value    | the section is shown      | scope            | 
-+======================+===========================+==================+ 
-| falsy or empty array | never                     |                  | 
-+----------------------+---------------------------+------------------+ 
-| non empty array      | for each element of array | element of array | 
-+----------------------+---------------------------+------------------+ 
-| object               | once                      | the object       | 
-+----------------------+---------------------------+------------------+ 
-| other truthy value   | once                      | unchanged        | 
-+----------------------+---------------------------+------------------+ 
++----------------------+---------------------------+------------------+
+| Type of the value    | the section is shown      | scope            |
++======================+===========================+==================+
+| falsy or empty array | never                     |                  |
++----------------------+---------------------------+------------------+
+| non empty array      | for each element of array | element of array |
++----------------------+---------------------------+------------------+
+| object               | once                      | the object       |
++----------------------+---------------------------+------------------+
+| other truthy value   | once                      | unchanged        |
++----------------------+---------------------------+------------------+
 
 This table shows for each type of value, what is the condition for the section to be changed and what is the scope of that section.
 
@@ -199,7 +199,7 @@ Output:
 Sections and newlines
 ---------------------
 
-New lines are kept inside sections, so the template : 
+New lines are kept inside sections, so the template :
 
 .. code-block:: text
 
@@ -296,7 +296,7 @@ If between the two tags {#tag}______{/tag}
  * by default, it will loop over ``<w:t>``, which is the default Text Tag
 
 With the Dash syntax you can specify the tag you want to loop on:
-For example, if you want to loop on paragraphs (``w:p``), so that each of the loop creates a new paragraph, you can write : 
+For example, if you want to loop on paragraphs (``w:p``), so that each of the loop creates a new paragraph, you can write :
 
 .. code-block:: text
 

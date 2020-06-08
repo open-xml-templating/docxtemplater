@@ -10,13 +10,13 @@ Introduction
 ------------
 
 The angular-parser makes creating complex templates easier.
-You can for example now use : 
+You can for example now use :
 
 .. code-block:: text
 
     {user.name}
 
-To access the nested name property in the following data : 
+To access the nested name property in the following data :
 
 .. code-block:: javascript
 
@@ -43,7 +43,7 @@ Here's a code sample for how to use the angularParser :
     expressions.filters.lower = function(input) {
         // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
         if(!input) return input;
-        return input.toLowerCase(); 
+        return input.toLowerCase();
     }
     function angularParser(tag) {
         if (tag === '.') {
@@ -81,7 +81,7 @@ http://teropa.info/blog/2014/03/23/angularjs-expressions-cheatsheet.html
 Conditions
 ----------
 
-With the angularParser option set, you can also use conditions : 
+With the angularParser option set, you can also use conditions :
 
 .. code-block:: text
 
@@ -99,7 +99,7 @@ The second conditional will render the section only if the userName is the strin
 
 It also handles the boolean operators AND ``&&``, OR ``||``, ``+``, ``-``, the ternary operator ``a ? b : c``, operator precendence with parenthesis ``(a && b) || c``, and many other javascript features.
 
-For example, it is possible to write the following template : 
+For example, it is possible to write the following template :
 
 
 .. code-block:: text
@@ -120,7 +120,7 @@ For example, it is possible to write the following template :
 Filters
 -------
 
-With filters, it is possible to write the following template to have the resulting string be uppercased: 
+With filters, it is possible to write the following template to have the resulting string be uppercased:
 
 .. code-block:: text
 
@@ -132,10 +132,10 @@ With filters, it is possible to write the following template to have the resulti
     expressions.filters.upper = function(input) {
         // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
         if(!input) return input;
-        return input.toUpperCase(); 
+        return input.toUpperCase();
     }
 
-More complex filters are possible, for example, if you would like to list the names of all active users. If your data is the following : 
+More complex filters are possible, for example, if you would like to list the names of all active users. If your data is the following :
 
 .. code-block:: json
 
@@ -165,11 +165,11 @@ You could show the list of users that are older than 18, by writing the followin
         });
     }
 
-And in your template, 
+And in your template,
 
 .. code-block:: text
 
-    The allowed users are : 
+    The allowed users are :
 
     {#users | olderThan:15}
     {name} - {age} years old
@@ -180,9 +180,9 @@ There are some interesting use cases for filters
 Assignments
 -----------
 
-With the angular expression option, it is possible to assign a value to a variable directly from your template. 
+With the angular expression option, it is possible to assign a value to a variable directly from your template.
 
-For example, in your template, write : 
+For example, in your template, write :
 
 .. code-block:: text
 
@@ -199,7 +199,7 @@ This will first execute the expression, and then execute the second statement wh
 
 An other approach is to automatically silence the return values of expression containing variable assignments.
 
-You can do so by using the following parser option : 
+You can do so by using the following parser option :
 
 .. code-block:: javascript
 
@@ -244,7 +244,7 @@ You can do so by using the following parser option :
     }
     new Docxtemplater(zip, {parser:angularParser});
 
-Note that if you use a standard tag, like `{full_name = first_name + last_name}` and if you put no other content on that paragraph, the line will still be there but it will be an empty line. If you wish to remove the line, you could use a rawXML tag which will remove the paragraph, like this : 
+Note that if you use a standard tag, like `{full_name = first_name + last_name}` and if you put no other content on that paragraph, the line will still be there but it will be an empty line. If you wish to remove the line, you could use a rawXML tag which will remove the paragraph, like this :
 
 .. code-block:: text
 

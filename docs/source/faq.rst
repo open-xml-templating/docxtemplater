@@ -58,7 +58,7 @@ Conditional Formatting
 
 With the `PRO styling module`_ it is possible to have a table cell be styled depending on a given condition (for example).
 
-.. _`PRO styling module`: https://docxtemplater.com/modules/styling/. 
+.. _`PRO styling module`: https://docxtemplater.com/modules/styling/.
 
 Using data filters
 ------------------
@@ -130,7 +130,7 @@ Docxtemplater is quite fast, for a pretty complex 50 page document, it can gener
 
 There is also an interesting blog article https://javascript-ninja.fr/ at https://javascript-ninja.fr/optimizing-speed-in-node-js/ that explains how I optimized loops in docxtemplater.
 
-Support for IE9 and lower 
+Support for IE9 and lower
 -------------------------
 
 docxtemplater should work on almost all browsers as of version 1 : IE7 + . Safari, Chrome, Opera, Firefox.
@@ -163,7 +163,7 @@ the variables and list them in a JSON object.
 
 With the simple inspection module, it is possible to get this compiled form and
 show the list of tags.
-suite : 
+suite :
 
 .. _`AST`: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 
@@ -172,11 +172,11 @@ suite :
     var InspectModule = require("docxtemplater/js/inspect-module");
     var iModule = InspectModule();
     const doc = new Docxtemplater(zip, { modules: [iModule] });
-    doc.render(); 
+    doc.render();
     var tags = iModule.getAllTags();
     console.log(tags);
 
-With the following template : 
+With the following template :
 
 .. code-block:: text
 
@@ -199,7 +199,7 @@ It will log this object :
         },
     }
 
-You can also get a more detailled tree by using : 
+You can also get a more detailled tree by using :
 
 .. code-block:: javascript
 
@@ -303,7 +303,7 @@ If you are inserting multiple images inside a loop, it is possible that word can
 Attaching modules for extra functionality
 -----------------------------------------
 
-If you have created or have access to docxtemplater PRO modules, you can attach them with the following code : 
+If you have created or have access to docxtemplater PRO modules, you can attach them with the following code :
 
 
 .. code-block:: javascript
@@ -316,7 +316,7 @@ Ternaries are not working well with angular-parser
 
 There is a common issue which is to use ternary on scopes that are not the current scope, which makes the ternary appear as if it always showed the second option.
 
-For example, with following data : 
+For example, with following data :
 
 .. code-block:: javascript
 
@@ -344,7 +344,7 @@ And by using the following template :
    {/hobbies}
    {/}
 
-This will print : 
+This will print :
 
 
 .. code-block:: text
@@ -360,7 +360,7 @@ The reason for this behavior is that the {gender == 'F' : "She" : "He"} expressi
 
 We can instead write a custom filter that will return "She" if the input is "F", "He" if the input is "M", and null if the input is anything else.
 
-The code would look like this : 
+The code would look like this :
 
 .. code-block:: javascript
 
@@ -390,9 +390,9 @@ And use the following in your template :
 Multi scope expressions do not work with the angularParser
 ----------------------------------------------------------
 
-If you would like to have multi-scope expressions with the angularparser, for example : 
+If you would like to have multi-scope expressions with the angularparser, for example :
 
-You would like to do : `{#users}{ date - age }{/users}`, where date is in the "global scope", and age in the subscope `users`, as in the following data : 
+You would like to do : `{#users}{ date - age }{/users}`, where date is in the "global scope", and age in the subscope `users`, as in the following data :
 
 .. code-block:: json
 
@@ -451,13 +451,13 @@ Access to XMLHttpRequest at file.docx from origin 'null' has been blocked by COR
 
 This happens if you use the HTML sample script but are not using a webserver.
 
-If your browser window shows a URL starting with `file://`, then you are not using a webserver, but the filesystem itself. 
+If your browser window shows a URL starting with `file://`, then you are not using a webserver, but the filesystem itself.
 
 For security reasons, the browsers don't let you load files from the local file system.
 
 To do this, you have to setup a small web server.
 
-The simplest way of starting a webserver is to run following command : 
+The simplest way of starting a webserver is to run following command :
 
 .. code-block:: bash
 
@@ -470,7 +470,7 @@ On your production server, you should probably use a more robust webserver such 
 Docxtemplater in an angular project
 -----------------------------------
 
-There is an `online angular demo`_ available on stackblitz. 
+There is an `online angular demo`_ available on stackblitz.
 
 .. _`online angular demo`: https://stackblitz.com/edit/angular-docxtemplater-example?file=src%2Fapp%2Fproduct-list%2Fproduct-list.component.ts
 
@@ -555,7 +555,7 @@ If you are using an angular version that supports the `import` keyword, you can 
 Docxtemplater in a vuejs project
 --------------------------------
 
-There is an `online vuejs demo`_ available on stackblitz. 
+There is an `online vuejs demo`_ available on stackblitz.
 
 .. _`online vuejs demo`: https://stackblitz.com/edit/vuejs-docxtemplater-example?file=button.component.js
 
@@ -671,7 +671,7 @@ This is because angular-expressions does not allow non-ascii characters.
 You will need angular-expressions version 1.1.0 which adds the
 `isIdentifierStart` and `isIdentifierContinue` properties.
 
-You can fix this issue by adding the characters that you would like to support, for example : 
+You can fix this issue by adding the characters that you would like to support, for example :
 
 .. code-block:: javascript
 
@@ -733,9 +733,9 @@ It is possible, in a condition, to have some specific behavior for the last item
 
 It will allow you to add a page break at the end of each loop, except for the last item in the loop.
 
-The template will look like this : 
+The template will look like this :
 
-.. code-block:: text 
+.. code-block:: text
 
     {#users}
     The user {name} is aged {age}
@@ -800,7 +800,7 @@ Encrypting files
 
 Docxtemplater itself does not handle the Encryption of the docx files.
 
-There seem to be two solutions for this : 
+There seem to be two solutions for this :
 
 * Use a Python tool that does exactly this, it is available here : https://github.com/nolze/msoffcrypto-tool
 
@@ -809,4 +809,4 @@ There seem to be two solutions for this :
 Assignment expression in template
 ---------------------------------
 
-By using the angular expressions options, it is possible to add assignment expressions (for example `{full_name = first_name + last_name}` in your template. See `following part of the doc <angular_parse.html#assignments>`__. 
+By using the angular expressions options, it is possible to add assignment expressions (for example `{full_name = first_name + last_name}` in your template. See `following part of the doc <angular_parse.html#assignments>`__.

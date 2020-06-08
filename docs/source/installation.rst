@@ -26,7 +26,7 @@ You will also need Pizzip, which you can `download here <https://unpkg.com/pizzi
 Build it yourself
 -----------------
 
-If you want to build docxtemplater for the browser yourself, here is how you should do : 
+If you want to build docxtemplater for the browser yourself, here is how you should do :
 
 .. code-block:: bash
 
@@ -47,7 +47,7 @@ Minifying the build
 
 On Browsers that have `window.XMLSerializer` and `window.DOMParser` (all browsers normally have it), you can use that as a replacement for the xmldom dependency.
 
-As an example, if you use webpack, you can do the following in your webpack.config.js : 
+As an example, if you use webpack, you can do the following in your webpack.config.js :
 
 .. code-block:: javascript
 
@@ -66,7 +66,7 @@ As an example, if you use webpack, you can do the following in your webpack.conf
 Bower
 -----
 
-You can use bower to install docxtemplater 
+You can use bower to install docxtemplater
 
 .. code-block:: bash
 
@@ -75,7 +75,7 @@ You can use bower to install docxtemplater
 When using bower, you can include the following script tag in your HTML :
 
 .. code-block:: html
-    
+
     <script src="bower_components/docxtemplater/build/docxtemplater-latest.min.js"></script>
 
 This tag will expose docxtemplater in `window.docxtemplater`.

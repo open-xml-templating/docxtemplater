@@ -31,7 +31,7 @@ The integration tests are in es6/tests/integration.js
 
 All of the test documents are in the folder `examples/`
 
-* We first load a document from table-example.pptx 
+* We first load a document from table-example.pptx
 * We then set data and render the document.
 * We then verify that the document is the same as "expected-table-example.pptx"
 
@@ -42,7 +42,7 @@ Regression tests
 
 There are many regression tests, eg tests that are there to ensure that bugs that occured once will not appear again in the future.
 
-A good example of such a test is 
+A good example of such a test is
 
 Docxtemplater https://github.com/open-xml-templating/docxtemplater/issues/14
 
@@ -115,7 +115,7 @@ To ensure that there is no regression on the speed of docxtemplater, we test the
 
 These tests can be found in es6/tests/speed.js
 
-For example for this test: 
+For example for this test:
 
 .. code-block:: javascript
 

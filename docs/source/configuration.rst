@@ -29,7 +29,7 @@ To understand this option better, it is good to understand how docxtemplater man
 
 Whenever docxtemplater needs to render any tag, for example `{name}`, docxtemplater will delegate the retrieval of the value to the scopemanager.
 
-The scopemanager does the following : 
+The scopemanager does the following :
 
  * it compiles the tag, by calling `parser('name')`  where 'name' is the string representing what is inside the docxtemplater tag. For loop tags, if the tag is `{#condition}`,  the passed string is only `condition` (it does not contain the #).
 
@@ -45,7 +45,7 @@ As a second argument to the `parser()` call, you receive more meta data about th
 
 As a second argument to the `get()` call, you receive more meta data about the scope, including the full scopeList.
 
-Lets take an example, If your template is : 
+Lets take an example, If your template is :
 
 .. code-block:: text
 
@@ -91,15 +91,15 @@ See `angular parser`_ for comprehensive documentation
 Deep Dive on the parser
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The parser function is given two arguments, 
+The parser function is given two arguments,
 
-For the template 
+For the template
 
 .. code-block:: text
 
     Hello {#users}{.}{/}
 
-Using following data : 
+Using following data :
 
 .. code-block:: javascript
 
@@ -110,12 +110,12 @@ And with this parser
 .. code-block:: javascript
 
     function parser(scope, context) [
-        console.log(scope); 
+        console.log(scope);
         console.log(context);
     }
 
 
-For the tag `.` in the first iteration, the arguments will be : 
+For the tag `.` in the first iteration, the arguments will be :
 
 .. code-block:: javascript
 
@@ -194,7 +194,7 @@ Here is an example parser that allows you to lowercase or uppercase the data if 
 Simple Parser example for {$index} and {$isLast} inside loops
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As an other example, it is possible to use the `{$index}` tag inside a loop by using following parser : 
+As an other example, it is possible to use the `{$index}` tag inside a loop by using following parser :
 
 .. code-block:: javascript
 
@@ -250,7 +250,7 @@ When you write the following template
 
 .. code-block:: text
 
-    The users list is : 
+    The users list is :
     {#users}
     {name}
     {/users}
@@ -259,11 +259,11 @@ When you write the following template
 Most users of the library would expect to have no spaces between the different
 names.
 
-The output without the option is as follows : 
+The output without the option is as follows :
 
 .. code-block:: text
 
-    The users list is : 
+    The users list is :
 
     John
 
@@ -274,18 +274,18 @@ The output without the option is as follows :
     End of users list
 
 
-With the paragraphLoop option turned on, the output becomes : 
+With the paragraphLoop option turned on, the output becomes :
 
 
 .. code-block:: text
 
-    The users list is : 
+    The users list is :
     John
     Jane
     Mary
     End of users list
 
-The rule is quite simple : 
+The rule is quite simple :
 
 If the opening loop ({#users}) and the closing loop ({/users}) are both on
 separate paragraphs (and there is no other content on those paragraphs), treat
