@@ -7,8 +7,6 @@ jobs:
     addons:
       sauce_connect:
         username: jsninja
-  - node_js: '6'
-    env: COMMAND=mocha
   - node_js: '8'
     env: COMMAND=mocha
   - node_js: '10'
