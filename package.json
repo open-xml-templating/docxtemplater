@@ -77,7 +77,7 @@
     "browserify:lib": "webpack",
     "uglify:lib": "MIN=true webpack",
     "uglify": "npm run uglify:lib",
-    "updtr": "updtr --exclude mocha",
+    "updtr": "updtr",
     "browserify": "npm run browserify:test && npm run browserify:lib",
     "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel && cp es6/tests/*.xml js/tests ",
     "convertto:es5:watch": "npm run babel -- --watch",
