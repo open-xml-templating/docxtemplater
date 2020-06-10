@@ -240,58 +240,62 @@ function cleanRecursive(arr) {
 }
 
 function cleanError(e, expectedError) {
-	if (expectedError.properties.offset != null) {
-		const o1 = e.properties.offset;
-		const o2 = expectedError.properties.offset;
-		// offset can be arrays, so deep compare
-		expect(o1).to.be.deep.equal(
-			o2,
-			`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
-		);
-	}
-	if (expectedError.properties.explanation != null) {
-		const e1 = e.properties.explanation;
-		const e2 = expectedError.properties.explanation;
-		expect(e1).to.be.deep.equal(
-			e2,
-			`Explanations differ '${e1}' != '${e2}': for ${JSON.stringify(
-				expectedError
-			)}`
-		);
-	}
-	delete e.properties.explanation;
-	delete e.properties.offset;
-	delete expectedError.properties.offset;
-	delete expectedError.properties.explanation;
+	const message = e.message;
 	e = omit(e, ["line", "sourceURL", "stack"]);
-	if (e.properties.postparsed) {
-		e.properties.postparsed.forEach(function (p) {
-			delete p.lIndex;
-			delete p.endLindex;
-			delete p.offset;
-		});
-	}
-	if (e.properties.rootError) {
-		expect(
-			e.properties.rootError,
-			JSON.stringify(e.properties)
-		).to.be.instanceOf(Error);
-		expect(
-			expectedError.properties.rootError,
-			JSON.stringify(expectedError.properties)
-		).to.be.instanceOf(Object);
-		if (expectedError) {
-			expect(e.properties.rootError.message).to.equal(
-				expectedError.properties.rootError.message,
-				"rootError.message"
+	e.message = message;
+	if (expectedError.properties || e.properties) {
+		if (expectedError.properties.offset != null) {
+			const o1 = e.properties.offset;
+			const o2 = expectedError.properties.offset;
+			// offset can be arrays, so deep compare
+			expect(o1).to.be.deep.equal(
+				o2,
+				`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
 			);
 		}
-		delete e.properties.rootError;
-		delete expectedError.properties.rootError;
+		if (expectedError.properties.explanation != null) {
+			const e1 = e.properties.explanation;
+			const e2 = expectedError.properties.explanation;
+			expect(e1).to.be.deep.equal(
+				e2,
+				`Explanations differ '${e1}' != '${e2}': for ${JSON.stringify(
+					expectedError
+				)}`
+			);
+		}
+		delete e.properties.explanation;
+		delete e.properties.offset;
+		delete expectedError.properties.offset;
+		delete expectedError.properties.explanation;
+		if (e.properties.postparsed) {
+			e.properties.postparsed.forEach(function (p) {
+				delete p.lIndex;
+				delete p.endLindex;
+				delete p.offset;
+			});
+		}
+		if (e.properties.rootError) {
+			expect(
+				e.properties.rootError,
+				JSON.stringify(e.properties)
+			).to.be.instanceOf(Error);
+			expect(
+				expectedError.properties.rootError,
+				JSON.stringify(expectedError.properties)
+			).to.be.instanceOf(Object);
+			if (expectedError) {
+				expect(e.properties.rootError.message).to.equal(
+					expectedError.properties.rootError.message,
+					"rootError.message"
+				);
+			}
+			delete e.properties.rootError;
+			delete expectedError.properties.rootError;
+		}
+		checkLength(e, expectedError, "properties.paragraphParts");
+		checkLength(e, expectedError, "properties.postparsed");
+		checkLength(e, expectedError, "properties.parsed");
 	}
-	checkLength(e, expectedError, "properties.paragraphParts");
-	checkLength(e, expectedError, "properties.postparsed");
-	checkLength(e, expectedError, "properties.parsed");
 	if (e.stack && expectedError) {
 		expect(e.stack).to.contain("Error: " + expectedError.message);
 	}
@@ -316,6 +320,17 @@ function wrapMultiError(error) {
 			errors,
 		},
 	};
+}
+
+function jsonifyError(e) {
+	return JSON.parse(
+		JSON.stringify(e, function (key, value) {
+			if (value instanceof Promise) {
+				return {};
+			}
+			return value;
+		})
+	);
 }
 
 function errorVerifier(e, type, expectedError) {
@@ -347,19 +362,14 @@ function errorVerifier(e, type, expectedError) {
 				msg
 		);
 		e.properties.errors = e.properties.errors.map(function (e, i) {
-			return cleanError(e, expectedError.properties.errors[i]);
+			const cleaned = cleanError(e, expectedError.properties.errors[i]);
+			const jsonified = jsonifyError(cleaned);
+			return jsonified;
 		});
 	}
-	expect(
-		JSON.parse(
-			JSON.stringify(e, function (key, value) {
-				if (value instanceof Promise) {
-					return {};
-				}
-				return value;
-			})
-		)
-	).to.be.deep.equal(expectedError);
+
+	const realError = jsonifyError(e);
+	expect(realError).to.be.deep.equal(expectedError);
 }
 
 function expectToThrowAsync(fn, type, expectedError) {
