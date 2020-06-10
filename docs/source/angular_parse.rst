@@ -41,7 +41,9 @@ Here's a code sample for how to use the angularParser :
     var merge = require("lodash/merge");
     // define your filter functions here, for example, to be able to write {clientname | lower}
     expressions.filters.lower = function(input) {
-        // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
+        // This condition should be used to make sure that if your input is
+        // undefined, your output will be undefined as well and will not
+        // throw an error
         if(!input) return input;
         return input.toLowerCase();
     }
@@ -130,7 +132,9 @@ With filters, it is possible to write the following template to have the resulti
 
     var expressions = require('angular-expressions');
     expressions.filters.upper = function(input) {
-        // This condition should be used to make sure that if your input is undefined, your output will be undefined as well and will not throw an error
+        // This condition should be used to make sure that if your input is
+        // undefined, your output will be undefined as well and will not
+        // throw an error
         if(!input) return input;
         return input.toUpperCase();
     }
@@ -158,7 +162,9 @@ You could show the list of users that are older than 18, by writing the followin
 
     var expressions = require('angular-expressions');
     expressions.filters.olderThan = function(users, minAge) {
-        // This condition should be used to make sure that if your users is undefined, your output will be undefined as well and will not throw an error
+        // This condition should be used to make sure that if your input is
+        // undefined, your output will be undefined as well and will not
+        // throw an error
         if(!users) return users;
         return users.filter(function(user) {
             return user.age >= minAge;
@@ -176,6 +182,93 @@ And in your template,
     {/}
 
 There are some interesting use cases for filters
+
+Data aggregation
+~~~~~~~~~~~~~~~~
+
+If your data is the following :
+
+.. code-block:: json
+
+    {
+        "items": [
+            {
+                "name": "Acme Computer",
+                "price": 1000,
+            },
+            {
+                "name": "Mouse & Keyboard",
+                "price": 150,
+            }
+        ],
+    }
+
+And you would like to show the total price, you can write in your template :
+
+.. code-block:: text
+
+    {#items}
+    {name} for a price of {price} €
+    {/}
+    Total Price of your purchase : {items | sumby:'price'}€
+
+The `sumby` is a filter that you can write like this :
+
+.. code-block:: javascript
+
+    expressions.filters.sumby = function(input, field) {
+        // In our example field is the string "price"
+        // This condition should be used to make sure that if your input is
+        // undefined, your output will be undefined as well and will not
+        // throw an error
+        if(!input) return input;
+        return input.reduce(function(sum, object) {
+            return sum + object[field];
+        }, 0);
+    }
+
+Data formatting
+~~~~~~~~~~~~~~~
+
+This example is to format numbers in the format : "150.00" (2 digits of precision)
+If your data is the following :
+
+.. code-block:: json
+
+    {
+        "items": [
+            {
+                "name": "Acme Computer",
+                "price": 1000,
+            },
+            {
+                "name": "Mouse & Keyboard",
+                "price": 150,
+            }
+        ],
+    }
+
+And you would like to show the price with two digits of precision, you can write in your template :
+
+.. code-block:: text
+
+    {#items}
+    {name} for a price of {price | toFixed:2} €
+    {/}
+
+The `toFixed` is an angular filter that you can write like this :
+
+.. code-block:: javascript
+
+    expressions.filters.toFixed = function(input, precision) {
+        // In our example precision is the integer 2
+        // This condition should be used to make sure that if your input is
+        // undefined, your output will be undefined as well and will not
+        // throw an error
+        if(!input) return input;
+        return input.toFixed(precision);
+    }
+
 
 Assignments
 -----------
