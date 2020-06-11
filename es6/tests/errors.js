@@ -1286,6 +1286,7 @@ describe("Async errors", function () {
 			name: "ScopeParserError",
 			message: "Scope parser execution failed",
 			properties: {
+				file: "word/document.xml",
 				id: "scopeparser_execution_failed",
 				tag: "user",
 				scope: {
@@ -1306,6 +1307,72 @@ describe("Async errors", function () {
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
+	});
+
+	it("should show error when having async reject within loop", function () {
+		const content = "<w:t>{#users}{user}{/}</w:t>";
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							file: "word/document.xml",
+							id: "scopeparser_execution_failed",
+							scope: 1,
+							tag: "user",
+							rootError: { message: "foo 1" },
+						},
+					},
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							file: "word/document.xml",
+							id: "scopeparser_execution_failed",
+							scope: 2,
+							tag: "user",
+							rootError: { message: "foo 2" },
+						},
+					},
+					{
+						name: "ScopeParserError",
+						message: "Scope parser execution failed",
+						properties: {
+							file: "word/document.xml",
+							id: "scopeparser_execution_failed",
+							scope: 3,
+							tag: "user",
+							rootError: { message: "foo 3" },
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+		let count = 0;
+		function errorParser(tag) {
+			return {
+				get() {
+					if (tag === "users") {
+						return [1, 2, 3];
+					}
+					count++;
+					throw new Error(`foo ${count}`);
+				},
+			};
+		}
+		const doc = createXmlTemplaterDocxNoRender(content, {
+			parser: errorParser,
+		});
+		doc.compile();
+		function create() {
+			return doc.resolveData({});
+		}
+		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
 	});
 
 	it("should fail when customparser fails to execute on multiple tags", function () {
@@ -1330,6 +1397,7 @@ describe("Async errors", function () {
 						message: "Scope parser execution failed",
 						properties: {
 							id: "scopeparser_execution_failed",
+							file: "word/document.xml",
 							scope: {},
 							tag: "name|istrue",
 							rootError: { message: "foo 1" },
@@ -1341,6 +1409,7 @@ describe("Async errors", function () {
 						message: "Scope parser execution failed",
 						properties: {
 							id: "scopeparser_execution_failed",
+							file: "word/document.xml",
 							scope: {},
 							tag: "name|upper",
 							rootError: { message: "foo 2" },
@@ -1352,6 +1421,7 @@ describe("Async errors", function () {
 						message: "Scope parser execution failed",
 						properties: {
 							id: "scopeparser_execution_failed",
+							file: "word/document.xml",
 							scope: {},
 							tag: "othername|upper",
 							rootError: { message: "foo 3" },
@@ -1398,6 +1468,7 @@ describe("Async errors", function () {
 						message: "Scope parser execution failed",
 						properties: {
 							id: "scopeparser_execution_failed",
+							file: "word/document.xml",
 							scope: {},
 							tag: "raw|isfalse",
 							rootError: { message: "foo 1" },
@@ -1409,6 +1480,7 @@ describe("Async errors", function () {
 						message: "Scope parser execution failed",
 						properties: {
 							id: "scopeparser_execution_failed",
+							file: "word/document.xml",
 							scope: {},
 							tag: "raw|istrue",
 							rootError: { message: "foo 2" },

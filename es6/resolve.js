@@ -50,7 +50,11 @@ function resolve(options) {
 						return;
 					})
 					.catch(function (e) {
-						errors.push(e);
+						if (e.length > 1) {
+							errors.push(...e);
+						} else {
+							errors.push(e);
+						}
 					});
 			})
 			.filter((a) => {

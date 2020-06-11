@@ -1,3 +1,11 @@
+### 3.17.7
+
+When using docxtemplater in async mode, inside loops, rejections would be ignored.
+
+With this version, if one or more tags turn into a rejected Promise,
+`doc.resolveData(data)` will also reject (with a multi error containing all
+suberrors)
+
 ### 3.17.6
 
 Add support for dotx and dotm file formats

@@ -243,7 +243,7 @@ function cleanError(e, expectedError) {
 	const message = e.message;
 	e = omit(e, ["line", "sourceURL", "stack"]);
 	e.message = message;
-	if (expectedError.properties || e.properties) {
+	if (expectedError.properties && e.properties) {
 		if (expectedError.properties.offset != null) {
 			const o1 = e.properties.offset;
 			const o2 = expectedError.properties.offset;
@@ -361,8 +361,8 @@ function errorVerifier(e, type, expectedError) {
 			`Expected to have the same amount of e.properties.errors ${l1} !== ${l2} ` +
 				msg
 		);
-		e.properties.errors = e.properties.errors.map(function (e, i) {
-			const cleaned = cleanError(e, expectedError.properties.errors[i]);
+		e.properties.errors = e.properties.errors.map(function (suberror, i) {
+			const cleaned = cleanError(suberror, expectedError.properties.errors[i]);
 			const jsonified = jsonifyError(cleaned);
 			return jsonified;
 		});

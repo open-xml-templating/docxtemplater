@@ -281,13 +281,24 @@ class LoopModule {
 				})
 			);
 		}
+		const errorList = [];
 		return promisedValue.then(function (value) {
 			sm.loopOverValue(value, loopOver, part.inverted);
-			return Promise.all(promises).then(function (r) {
-				return r.map(function ({ resolved }) {
-					return resolved;
+			return Promise.all(promises)
+				.then(function (r) {
+					return r.map(function ({ resolved, errors }) {
+						if (errors.length > 0) {
+							errorList.push(...errors);
+						}
+						return resolved;
+					});
+				})
+				.then(function (value) {
+					if (errorList.length > 0) {
+						throw errorList;
+					}
+					return value;
 				});
-			});
 		});
 	}
 }

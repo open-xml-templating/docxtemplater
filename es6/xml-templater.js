@@ -47,6 +47,13 @@ module.exports = class XmlTemplater {
 		options.scopeManager = createScope(options);
 		options.resolve = resolve;
 		return resolve(options).then(({ resolved, errors }) => {
+			errors.forEach((error) => {
+				// error properties might not be defined if some foreign
+				// (unhandled error not throw by docxtemplater willingly) is
+				// thrown.
+				error.properties = error.properties || {};
+				error.properties.file = this.filePath;
+			});
 			if (errors.length !== 0) {
 				throw errors;
 			}
