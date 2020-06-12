@@ -165,6 +165,7 @@ function chunkBy(parsed, f) {
 }
 
 const defaults = {
+	paragraphLoop: false,
 	nullGetter(part) {
 		if (!part.module) {
 			return "undefined";
@@ -177,6 +178,7 @@ const defaults = {
 	xmlFileNames: [],
 	parser,
 	linebreaks: false,
+	fileTypeConfig: null,
 	delimiters: {
 		start: "{",
 		end: "}",

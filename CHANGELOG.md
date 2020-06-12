@@ -1,3 +1,16 @@
+### 3.17.8
+
+Do not mutate options when calling setOptions.
+
+This means that if you do :
+
+```
+const options = { paragraphLoop: true };
+doc.setOptions(options);
+```
+
+The options object will not be mutated at all anymore. Before this release, this could lead to fatal errors if using the options object across multiple Docxtemplater instances.
+
 ### 3.17.7
 
 When using docxtemplater in async mode, inside loops, rejections would be ignored.

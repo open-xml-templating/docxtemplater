@@ -69,6 +69,25 @@ describe("Module attachment", function () {
 });
 
 describe("Module xml parse", function () {
+	it("should not mutate options (regression for issue #526)", function () {
+		const module = {
+			requiredAPIVersion: "3.0.0",
+			optionsTransformer(options, docxtemplater) {
+				const relsFiles = docxtemplater.zip
+					.file(/document.xml.rels/)
+					.map((file) => file.name);
+				options.xmlFileNames = options.xmlFileNames.concat(relsFiles);
+				return options;
+			},
+		};
+		const doc = createDoc("tag-example.docx");
+		const opts = {};
+		doc.setOptions(opts);
+		doc.attachModule(module);
+		doc.compile();
+		expect(opts).to.deep.equal({});
+	});
+
 	it("should be possible to parse xml files", function () {
 		let xmlDocuments;
 

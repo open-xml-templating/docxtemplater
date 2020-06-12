@@ -172,11 +172,10 @@ const Docxtemplater = class Docxtemplater {
 			options.delimiters.start = utf8ToWord(options.delimiters.start);
 			options.delimiters.end = utf8ToWord(options.delimiters.end);
 		}
-		this.options = options;
+		this.options = {};
 		Object.keys(defaults).forEach((key) => {
 			const defaultValue = defaults[key];
-			this.options[key] =
-				this.options[key] != null ? this.options[key] : defaultValue;
+			this.options[key] = options[key] != null ? options[key] : defaultValue;
 			this[key] = this.options[key];
 		});
 		if (this.zip) {
