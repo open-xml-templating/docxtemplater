@@ -220,6 +220,7 @@ describe("Inspect module", function () {
 				value: "products",
 				raw: "#products",
 				lIndex: 15,
+				sectPrCount: 0,
 				module: "loop",
 				inverted: false,
 				offset: 0,
@@ -253,6 +254,7 @@ describe("Inspect module", function () {
 						raw: "#avantages",
 						inverted: false,
 						offset: 70,
+						sectPrCount: 0,
 						endLindex: 89,
 						lIndex: 89,
 						subparsed: [
@@ -268,6 +270,7 @@ describe("Inspect module", function () {
 								value: "proof",
 								module: "loop",
 								raw: "#proof",
+								sectPrCount: 0,
 								inverted: false,
 								offset: 117,
 								endLindex: 133,

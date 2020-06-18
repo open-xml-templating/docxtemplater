@@ -103,6 +103,10 @@ const DocXFileTypeConfig = {
 		"w:pPr",
 		"w:spacing",
 		"w:sdtContent",
+
+		"w:sectPr",
+		"w:headerReference",
+		"w:footerReference",
 	],
 	expandTags: [{ contains: "w:tc", expand: "w:tr" }],
 	onParagraphLoop: [{ contains: "w:p", expand: "w:p", onlyTextInTag: true }],

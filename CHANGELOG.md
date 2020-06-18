@@ -1,3 +1,9 @@
+### 3.17.9
+
+Bugfix corruption when having loops containing one section.
+
+In that case, the generated file would be marked as corrupt by Word.
+
 ### 3.17.8
 
 Do not mutate options when calling setOptions.

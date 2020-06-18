@@ -415,6 +415,25 @@ describe("Table", function () {
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
 
+	it("should not corrupt loop containing section", function () {
+		const doc = createDoc("loop-with-section.docx");
+		doc.setData({
+			loop1: [
+				{
+					loop2: [1, 2],
+				},
+				{
+					loop2: [],
+				},
+				{
+					loop2: [3, 4, 5],
+				},
+			],
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-multi-section.docx" });
+	});
+
 	it("should not corrupt sdtcontent", function () {
 		const doc = createDoc("regression-sdtcontent-paragraph.docx");
 		doc.setData({

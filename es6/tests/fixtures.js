@@ -337,6 +337,7 @@ const fixtures = {
 				value: "users",
 				module: "loop",
 				inverted: false,
+				sectPrCount: 0,
 				subparsed: [{ type: "placeholder", value: "name" }, content(", ")],
 			},
 			endText,
@@ -420,6 +421,7 @@ const fixtures = {
 				type: "placeholder",
 				value: "users",
 				module: "loop",
+				sectPrCount: 0,
 				hasPageBreak: false,
 				hasPageBreakBeginning: false,
 				inverted: false,
@@ -590,6 +592,7 @@ const fixtures = {
 				value: "users",
 				module: "loop",
 				inverted: false,
+				sectPrCount: 0,
 				subparsed: [
 					startParagraph,
 					xmlSpacePreserveTag,

@@ -5,6 +5,7 @@ const {
 	isParagraphStart,
 	isParagraphEnd,
 	isContent,
+	startsWith,
 } = require("../doc-utils");
 const wrapper = require("../module-wrapper");
 
@@ -71,12 +72,47 @@ function addPageBreakAtBeginning(subRendered) {
 	subRendered.parts.unshift('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 }
 
+function dropHeaderFooterRefs(parts) {
+	return parts.filter(function (text) {
+		if (
+			startsWith(text, "<w:headerReference") ||
+			startsWith(text, "<w:footerReference")
+		) {
+			return false;
+		}
+		return true;
+	});
+}
+
 function hasPageBreak(chunk) {
 	return chunk.some(function (part) {
 		if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
 			return true;
 		}
 	});
+}
+
+function getSectPrHeaderFooterChangeCount(chunks) {
+	let collectSectPr = false;
+	let sectPrCount = 0;
+	chunks.forEach(function (part) {
+		if (part.tag === "w:sectPr" && part.position === "start") {
+			collectSectPr = true;
+		}
+		if (collectSectPr) {
+			if (
+				part.tag === "w:headerReference" ||
+				part.tag === "w:footerReference"
+			) {
+				sectPrCount++;
+				collectSectPr = false;
+			}
+		}
+		if (part.tag === "w:sectPr" && part.position === "end") {
+			collectSectPr = false;
+		}
+	});
+	return sectPrCount;
 }
 
 class LoopModule {
@@ -151,6 +187,9 @@ class LoopModule {
 		}, []);
 	}
 	postparse(parsed, { basePart }) {
+		if (basePart) {
+			basePart.sectPrCount = getSectPrHeaderFooterChangeCount(parsed);
+		}
 		if (
 			!basePart ||
 			basePart.expandTo !== "auto" ||
@@ -219,6 +258,16 @@ class LoopModule {
 				isInsideParagraphLoop(part)
 			) {
 				addPageBreakAtEnd(subRendered);
+			}
+			if (part.sectPrCount === 1) {
+				if (
+					i !== 0 ||
+					scopeManager.scopePathItem.some(function (i) {
+						return i !== 0;
+					})
+				) {
+					subRendered.parts = dropHeaderFooterRefs(subRendered.parts);
+				}
 			}
 			if (part.hasPageBreakBeginning && isInsideParagraphLoop(part)) {
 				addPageBreakAtBeginning(subRendered);
