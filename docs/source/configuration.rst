@@ -249,7 +249,7 @@ With following data :
 
 The {name} tag will use the "root scope", since it is not present in the products array.
 
-If you explicitly don't want this behavior because you want the nullGetter to handle the tag in this case, you can use the following parser :
+If you explicitly don't want this behavior because you want the nullGetter to handle the tag in this case, you could use the following parser :
 
 .. code-block:: javascript
 
@@ -282,6 +282,31 @@ When evaluating the {name} tag in the example above, there are two evaluations:
     context.scopePath = ["users"];
     // This evaluation returns null because of the extra added condition
 
+Note that you could even make this behavior dependent on a given prefix, for
+example, if you want to by default, use the mechanism of scope traversal, but
+for some tags, allow only to evaluate on the deepest scope, you could add the
+following condition :
+
+.. code-block:: javascript
+
+    parser(tag) {
+        return {
+            get(scope, context) {
+                const onlyDeepestScope = tag[0] === '!';
+                if (onlyDeepestScope) {
+                    if (context.num < context.scopePath.length) {
+                        return null;
+                    }
+                    else {
+                        // Transform "!name" into "name"
+                        tag = tag.substr(1);
+                    }
+                }
+                // You can customize your parser here instead of scope[tag] of course
+                return scope[tag];
+            },
+        };
+    },
 
 Custom delimiters
 -----------------
