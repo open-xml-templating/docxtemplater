@@ -244,7 +244,7 @@ Pptx support
 
 Docxtemplater handles pptx files without any special configuration (since version 3.0.4).
 
-It does so by detecting whether there is a file called "/word/document.xml", if there is one, the file is "docx", if not, it is pptx.
+It does so by looking at the content of the "[Content_Types].xml" file and by looking at some docx/pptx specific content types.
 
 My document is corrupted, what should I do ?
 --------------------------------------------
