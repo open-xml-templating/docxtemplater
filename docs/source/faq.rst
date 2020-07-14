@@ -46,10 +46,14 @@ Writing if else
 
 To write if/else, see the documentation on `sections`_ for if and `inverted sections`_ for else.
 
-You can also have conditions with operators `>` and `<` using `angular parser conditions`_.
-
-.. _`sections`: tag_types.html#sections
 .. _`inverted sections`: tag_types.html#inverted-sections
+.. _`sections`: tag_types.html#sections
+
+Using boolean operators (AND, OR) and comparison operators (`<`, `>`)
+---------------------------------------------------------------------
+
+You can also have conditions with comparison operators (`<` and `>`), or boolean operators (`&&` and `||`) using `angular parser conditions`_.
+
 .. _`angular parser conditions`: angular_parse.html#conditions
 
 
