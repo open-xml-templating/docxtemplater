@@ -282,7 +282,7 @@ function cleanError(e, expectedError) {
 			expect(
 				expectedError.properties.rootError,
 				JSON.stringify(expectedError.properties)
-			).to.be.instanceOf(Object);
+			).to.be.instanceOf(Object, "expectedError doesn't have a rootError");
 			if (expectedError) {
 				expect(e.properties.rootError.message).to.equal(
 					expectedError.properties.rootError.message,
