@@ -1,4 +1,4 @@
-const { clone, merge } = require("lodash");
+const { clone, assign } = require("lodash");
 const angularParser = require("./angular-parser");
 
 const xmlSpacePreserveTag = {
@@ -1282,7 +1282,7 @@ Object.keys(fixtures).forEach(function (key) {
 			end: "}",
 		},
 	};
-	fixture.options = merge({}, fixture.options, delimiters);
+	fixture.options = assign({}, fixture.options, delimiters);
 });
 
 module.exports = fixtures;

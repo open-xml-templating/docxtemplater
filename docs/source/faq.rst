@@ -421,7 +421,7 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
    // Please make sure to use angular-expressions 1.0.1 or later
    // More detail at https://github.com/open-xml-templating/docxtemplater/issues/488
    var expressions = require("angular-expressions");
-   var merge = require("lodash/merge");
+   var assign = require("lodash/assign");
    function angularParser(tag) {
       if (tag === ".") {
          return {
@@ -439,7 +439,7 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
             const scopeList = context.scopeList;
             const num = context.num;
             for (let i = 0, len = num + 1; i < len; i++) {
-                obj = merge(obj, scopeList[i]);
+                obj = assign(obj, scopeList[i]);
             }
             return expr(scope, obj);
          },
@@ -707,7 +707,7 @@ You can fix this issue by adding the characters that you would like to support, 
                 const scopeList = context.scopeList;
                 const num = context.num;
                 for (let i = 0, len = num + 1; i < len; i++) {
-                    obj = merge(obj, scopeList[i]);
+                    obj = assign(obj, scopeList[i]);
                 }
                 return expr(scope, obj);
             }
@@ -767,7 +767,7 @@ And each user block will be followed by a pagebreak, except the last user.
                 const scopeList = context.scopeList;
                 const num = context.num;
                 for (let i = 0, len = num + 1; i < len; i++) {
-                    obj = merge(obj, scopeList[i]);
+                    obj = assign(obj, scopeList[i]);
                 }
                 return expr(scope, obj);
             }

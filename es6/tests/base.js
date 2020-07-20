@@ -1,5 +1,5 @@
 const PizZip = require("pizzip");
-const { merge } = require("lodash");
+const { assign } = require("lodash");
 
 const angularParser = require("./angular-parser");
 const Docxtemplater = require("../docxtemplater.js");
@@ -964,7 +964,7 @@ describe("Raw Xml Insertion", function () {
 		};
 		const doc = createDoc("one-raw-xml-tag.docx");
 		doc.setOptions({
-			fileTypeConfig: merge({}, Docxtemplater.FileTypeConfig.docx, {
+			fileTypeConfig: assign({}, Docxtemplater.FileTypeConfig.docx, {
 				tagRawXml: "w:r",
 			}),
 		});

@@ -38,7 +38,7 @@ Here's a code sample for how to use the angularParser :
     // Please make sure to use angular-expressions 1.0.1 or later
     // More detail at https://github.com/open-xml-templating/docxtemplater/issues/488
     var expressions = require('angular-expressions');
-    var merge = require("lodash/merge");
+    var assign = require("lodash/assign");
     // define your filter functions here, for example, to be able to write {clientname | lower}
     expressions.filters.lower = function(input) {
         // This condition should be used to make sure that if your input is
@@ -62,7 +62,7 @@ Here's a code sample for how to use the angularParser :
                 const scopeList = context.scopeList;
                 const num = context.num;
                 for (let i = 0, len = num + 1; i < len; i++) {
-                    obj = merge(obj, scopeList[i]);
+                    obj = assign(obj, scopeList[i]);
                 }
                 return expr(scope, obj);
             }
@@ -297,7 +297,7 @@ You can do so by using the following parser option :
 .. code-block:: javascript
 
     var expressions = require("angular-expressions");
-    var merge = require("lodash/merge");
+    var assign = require("lodash/assign");
 
     function angularParser(tag) {
         if (tag === ".") {
@@ -325,7 +325,7 @@ You can do so by using the following parser option :
                 const scopeList = context.scopeList;
                 const num = context.num;
                 for (let i = 0, len = num + 1; i < len; i++) {
-                    obj = merge(obj, scopeList[i]);
+                    obj = assign(obj, scopeList[i]);
                 }
                 const result = expr(scope, obj);
                 if (isAngularAssignment) {
