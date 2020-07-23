@@ -77,9 +77,6 @@ Here's a code sample for how to use the angularParser :
 .. _`webpack`: https://webpack.github.io/
 .. _`browserify`: http://browserify.org/
 
-See for a complete reference of all possibilities of angularjs parsing:
-http://teropa.info/blog/2014/03/23/angularjs-expressions-cheatsheet.html
-
 Conditions
 ----------
 
