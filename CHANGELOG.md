@@ -870,7 +870,7 @@ The **JSZip version that you use should be 2.x**, the 3.x is now exclusively asy
 
 ### 2.0.0
 
-- **Breaking** : To choose between docx or pptx, you now have to pass docx.setOptions({fileType:'docx'}) where the fileTypes are one of 'pptx', 'docx' (default is 'docx')
+- **Breaking** : To choose between docx or pptx, you now have to pass doc.setOptions({fileType:'docx'}) where the fileTypes are one of 'pptx', 'docx' (default is 'docx')
 - Using es6 instead of coffeescript to code (code is still compiled to es5, to be usable with node v0.{10,12} or in the browser)
 - Add finalize step in render function to throw an error if a tag is unclosed
 - Module API has been updated, notably the tagXml property doesn't exist anymore, you should use the properties in `fileTypeConfig`
@@ -954,7 +954,7 @@ Upgrade guide :
 
 ### 1.0.3
 
-- docx.setOptions({delimiters:{start:”[“,end:”]”}}) now works e2d06dedd88860d2dac3d598b590bf81e2d113a6
+- doc.setOptions({delimiters:{start:”[“,end:”]”}}) now works e2d06dedd88860d2dac3d598b590bf81e2d113a6
 
 ### 1.0.2
 
