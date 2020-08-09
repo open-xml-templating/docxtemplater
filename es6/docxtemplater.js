@@ -3,7 +3,7 @@
 const DocUtils = require("./doc-utils");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
-const { throwMultiError } = require("./errors");
+const { throwMultiError, throwResolveBeforeCompile } = require("./errors");
 
 const collectContentTypes = require("./collect-content-types");
 const ctXML = "[Content_Types].xml";
@@ -210,6 +210,9 @@ const Docxtemplater = class Docxtemplater {
 	}
 	resolveData(data) {
 		let errors = [];
+		if (!Object.keys(this.compiled).length) {
+			throwResolveBeforeCompile();
+		}
 		return Promise.resolve(data)
 			.then((data) => {
 				return Promise.all(

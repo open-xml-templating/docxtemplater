@@ -1,3 +1,8 @@
+### 3.18.0
+
+- Throw error if calling `.resolveData(data)` before `.compile()`
+- Add TypeScript typings
+
 ### 3.17.9
 
 Bugfix corruption when having loops containing one section.

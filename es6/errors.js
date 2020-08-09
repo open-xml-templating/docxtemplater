@@ -303,14 +303,12 @@ function throwLocationInvalid(part) {
 	);
 }
 
-function throwFileTypeNotHandled(fileType) {
+function throwResolveBeforeCompile() {
 	const err = new XTInternalError(
-		`The filetype "${fileType}" is not handled by docxtemplater`
+		"You must run `.compile()` before running `.resolveData()`"
 	);
 	err.properties = {
-		id: "filetype_not_handled",
-		explanation: `The file you are trying to generate is of type "${fileType}", but only docx and pptx formats are handled`,
-		fileType,
+		id: "resolve_before_compile",
 	};
 	throw err;
 }
@@ -332,6 +330,18 @@ function throwXmlInvalid(content, offset) {
 		content,
 		offset,
 		explanation: "The docx contains invalid XML, it is most likely corrupt",
+	};
+	throw err;
+}
+
+function throwFileTypeNotHandled(fileType) {
+	const err = new XTInternalError(
+		`The filetype "${fileType}" is not handled by docxtemplater`
+	);
+	err.properties = {
+		id: "filetype_not_handled",
+		explanation: `The file you are trying to generate is of type "${fileType}", but only docx and pptx formats are handled`,
+		fileType,
 	};
 	throw err;
 }
@@ -369,4 +379,5 @@ module.exports = {
 	throwUnimplementedTagType,
 	throwXmlTagNotFound,
 	throwXmlInvalid,
+	throwResolveBeforeCompile,
 };

@@ -1375,6 +1375,22 @@ describe("Async errors", function () {
 		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
 	});
 
+	it("should show error when running resolveData before compile", function () {
+		const content = "<w:t>{#users}{user}{/}</w:t>";
+		const expectedError = {
+			name: "InternalError",
+			message: "You must run `.compile()` before running `.resolveData()`",
+			properties: {
+				id: "resolve_before_compile",
+			},
+		};
+		const doc = createXmlTemplaterDocxNoRender(content);
+		function create() {
+			return doc.resolveData({});
+		}
+		return expectToThrowAsync(create, Errors.XTInternalError, expectedError);
+	});
+
 	it("should fail when customparser fails to execute on multiple tags", function () {
 		const content =
 			"<w:t>{#name|istrue}Name{/} {name|upper} {othername|upper}</w:t>";
