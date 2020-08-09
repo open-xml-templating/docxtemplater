@@ -341,11 +341,13 @@ function errorVerifier(e, type, expectedError) {
 	expect(e, toShowOnFail).to.be.an("object");
 	expect(e, toShowOnFail).to.have.property("properties");
 	expect(e.properties, toShowOnFail).to.be.an("object");
-	expect(e.properties, toShowOnFail).to.have.property("explanation");
-	expect(e.properties.explanation, toShowOnFail).to.be.a("string");
+	if (type.name !== "XTInternalError") {
+		expect(e.properties, toShowOnFail).to.have.property("explanation");
+		expect(e.properties.explanation, toShowOnFail).to.be.a("string");
+		expect(e.properties.explanation, toShowOnFail).to.be.a("string");
+	}
 	expect(e.properties, toShowOnFail).to.have.property("id");
 	expect(e.properties.id, toShowOnFail).to.be.a("string");
-	expect(e.properties.explanation, toShowOnFail).to.be.a("string");
 	e = cleanError(e, expectedError);
 	if (e.properties.errors) {
 		const msg =
