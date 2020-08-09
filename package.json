@@ -24,6 +24,7 @@
     "microsoft powerpoint",
     "report"
   ],
+  "types": "./js/docxtemplater.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/open-xml-templating/docxtemplater"
@@ -57,6 +58,7 @@
     "rimraf": "^3.0.2",
     "selenium-standalone": "^6.17.0",
     "serve-static": "^1.14.1",
+    "tsd": "^0.13.1",
     "uglify-js": "^3.10.0",
     "webdriverio": "^6.3.3",
     "webpack": "^4.43.0",
@@ -79,7 +81,7 @@
     "uglify": "npm run uglify:lib",
     "updtr": "updtr",
     "browserify": "npm run browserify:test && npm run browserify:lib",
-    "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel && cp es6/tests/*.xml js/tests ",
+    "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel && cp es6/tests/*.xml js/tests && cp es6/*.ts js",
     "convertto:es5:watch": "npm run babel -- --watch",
     "test:coverage": "nyc --reporter=html --reporter=text mocha --  es6/tests/index.js",
     "prettier": "prettier --list-different 'es6/**/!(filenames).js' '*.js' README.md CHANGELOG.md",
