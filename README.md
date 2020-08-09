@@ -61,7 +61,7 @@ PRO Modules developped by docxtemplater core team :
 - [Styling Module](https://docxtemplater.com/modules/styling) restyle a paragraph, a cell or a table depending on some data.
 - [XLSX Module](https://docxtemplater.com/modules/xlsx) to be able to do templating on Excel files (xlsx extension), also with loops and conditions.
 - [Footnotes Module](https://docxtemplater.com/modules/footnotes) to be able to add footnotes to a document.
-- [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder)to simplify conditions that should show or hide a given paragraph.
+- [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder) to simplify conditions that should show or hide a given paragraph.
 
 User-contributed modules :
 
