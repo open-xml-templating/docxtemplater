@@ -212,19 +212,17 @@ describe("Module errors", function () {
 			name: "Error module",
 			requiredAPIVersion: "3.0.0",
 			parse(placeHolderContent) {
-				if (placeHolderContent === "first_name") {
 					const type = "placeholder";
 					return {
 						type,
-						value: placeHolderContent.substr(1),
+						value: placeHolderContent,
 						module: moduleName,
 					};
-				}
 			},
 			render(part) {
-				if (part.type === "placeholder") {
+				if (part.module === moduleName) {
 					return {
-						errors: [new Error("foobar")],
+						errors: [new Error(`foobar ${part.value}`)],
 					};
 				}
 			},
@@ -241,8 +239,10 @@ describe("Module errors", function () {
 		}
 		expect(error).to.be.an("object");
 		expect(error.message).to.equal("Multi error");
-		expect(error.properties.errors.length).to.equal(1);
-		expect(error.properties.errors[0].message).to.equal("foobar");
+		expect(error.properties.errors.length).to.equal(9);
+		expect(error.properties.errors[0].message).to.equal("foobar last_name");
+		expect(error.properties.errors[1].message).to.equal("foobar first_name");
+		expect(error.properties.errors[2].message).to.equal("foobar phone");
 	});
 });
 

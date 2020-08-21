@@ -110,17 +110,16 @@ module.exports = class XmlTemplater {
 	}
 	errorChecker(errors) {
 		if (errors.length) {
-			this.modules.forEach(function (module) {
-				errors = module.errorsTransformer(errors);
-			});
 			errors.forEach((error) => {
 				// error properties might not be defined if some foreign
-				// (unhandled error not throw by docxtemplater willingly) is
+				// (unhandled error not thrown by docxtemplater willingly) is
 				// thrown.
 				error.properties = error.properties || {};
 				error.properties.file = this.filePath;
 			});
-			throwMultiError(errors);
+			this.modules.forEach(function (module) {
+				errors = module.errorsTransformer(errors);
+			});
 		}
 	}
 	baseNullGetter(part, sm) {
@@ -156,7 +155,11 @@ module.exports = class XmlTemplater {
 		options.render = render;
 		options.joinUncorrupt = joinUncorrupt;
 		const { errors, parts } = render(options);
+		this.allErrors = errors;
 		this.errorChecker(errors);
+		if (errors.length > 0) {
+			return this;
+		}
 
 		this.content = postrender(parts, options);
 		this.setModules({ inspect: { content: this.content } });

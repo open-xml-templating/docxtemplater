@@ -719,6 +719,59 @@ describe("ParagraphLoop", function () {
 		shouldBeSame({ doc, expectedName: "expected-spacing-end.docx" });
 	});
 
+	it("should fail with errors from header and footer", function () {
+		const doc = createDoc("errors-footer-and-header.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+			parser: angularParser,
+		});
+		doc.setData({});
+		const expectedError = {
+			message: "Multi error",
+			name: "TemplateError",
+			properties: {
+				id: "multi_error",
+				errors: [
+					{
+						name: "TemplateError",
+						message: "Unclosed tag",
+						properties: {
+							file: "word/footer1.xml",
+							xtag: "footer",
+							id: "unclosed_tag",
+							context: "{footer",
+							offset: 2,
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Duplicate close tag, expected one close tag",
+						properties: {
+							file: "word/header1.xml",
+							xtag: "itle}}",
+							id: "duplicate_close_tag",
+							context: "itle}}",
+							offset: 15,
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Closing tag does not match opening tag",
+						properties: {
+							closingtag: "bang",
+							openingtag: "users",
+							file: "word/document.xml",
+							id: "closing_tag_does_not_match_opening_tag",
+							offset: [8, 16],
+						},
+					},
+				],
+			},
+		};
+		const create = doc.render.bind(doc);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
 	it("should fail properly when having lexed + postparsed errors", function () {
 		const doc = createDoc("multi-errors.docx");
 		doc.setOptions({

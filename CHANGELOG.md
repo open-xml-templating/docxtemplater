@@ -1,3 +1,7 @@
+### 3.18.1
+
+When there are errors both in the header and the footer, all errors are shown up instead of seeing only the errors of the first parsed file. This helps to find errors more quickly.
+
 ### 3.18.0
 
 - Throw error if calling `.resolveData(data)` before `.compile()`

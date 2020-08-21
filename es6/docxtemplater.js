@@ -265,6 +265,7 @@ const Docxtemplater = class Docxtemplater {
 				this.compileFile(fileName);
 			}
 		});
+		verifyErrors(this.compiled);
 		return this;
 	}
 	updateFileTypeConfig() {
@@ -343,6 +344,8 @@ const Docxtemplater = class Docxtemplater {
 			currentFile.render(to);
 			this.zip.file(to, currentFile.content, { createFolders: true });
 		});
+
+		verifyErrors(this.compiled);
 		this.sendEvent("syncing-zip");
 		this.syncZip();
 		return this;
@@ -390,6 +393,18 @@ const Docxtemplater = class Docxtemplater {
 		return this.templatedFiles;
 	}
 };
+
+function verifyErrors(compiled) {
+	let allErrors = [];
+	Object.keys(compiled).forEach((name) => {
+		const templatePart = compiled[name];
+		allErrors = concatArrays([allErrors, templatePart.allErrors]);
+	});
+
+	if (allErrors.length !== 0) {
+		throwMultiError(allErrors);
+	}
+}
 
 Docxtemplater.DocUtils = DocUtils;
 Docxtemplater.Errors = require("./errors");
