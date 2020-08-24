@@ -244,15 +244,6 @@ function cleanError(e, expectedError) {
 	e = omit(e, ["line", "sourceURL", "stack"]);
 	e.message = message;
 	if (expectedError.properties && e.properties) {
-		if (expectedError.properties.offset != null) {
-			const o1 = e.properties.offset;
-			const o2 = expectedError.properties.offset;
-			// offset can be arrays, so deep compare
-			expect(o1).to.be.deep.equal(
-				o2,
-				`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
-			);
-		}
 		if (expectedError.properties.explanation != null) {
 			const e1 = e.properties.explanation;
 			const e2 = expectedError.properties.explanation;
@@ -264,8 +255,6 @@ function cleanError(e, expectedError) {
 			);
 		}
 		delete e.properties.explanation;
-		delete e.properties.offset;
-		delete expectedError.properties.offset;
 		delete expectedError.properties.explanation;
 		if (e.properties.postparsed) {
 			e.properties.postparsed.forEach(function (p) {
@@ -292,6 +281,17 @@ function cleanError(e, expectedError) {
 			delete e.properties.rootError;
 			delete expectedError.properties.rootError;
 		}
+		if (expectedError.properties.offset != null) {
+			const o1 = e.properties.offset;
+			const o2 = expectedError.properties.offset;
+			// offset can be arrays, so deep compare
+			expect(o1).to.be.deep.equal(
+				o2,
+				`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
+			);
+		}
+		delete expectedError.properties.offset;
+		delete e.properties.offset;
 		checkLength(e, expectedError, "properties.paragraphParts");
 		checkLength(e, expectedError, "properties.postparsed");
 		checkLength(e, expectedError, "properties.parsed");
