@@ -306,9 +306,7 @@ class LoopModule {
 		}
 
 		const sm = options.scopeManager;
-		const promisedValue = Promise.resolve().then(function () {
-			return sm.getValue(part.value, { part });
-		});
+		const promisedValue = sm.getValueAsync(part.value, { part });
 		const promises = [];
 		function loopOver(scope, i, length) {
 			const scopeManager = sm.createSubScopeManager(

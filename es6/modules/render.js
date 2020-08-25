@@ -33,13 +33,13 @@ class Render {
 		this.fileType = docxtemplater.fileType;
 		return options;
 	}
-	postparse(postparsed) {
+	postparse(postparsed, options) {
 		const errors = [];
 		postparsed.forEach((p) => {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {
-					this.parser(tag, { tag: p });
+					options.cachedParsers[p.lIndex] = this.parser(tag, { tag: p });
 				} catch (rootError) {
 					errors.push(
 						getScopeCompilationError({ tag, rootError, offset: p.offset })

@@ -1,7 +1,7 @@
 const { wordToUtf8, convertSpaces, defaults } = require("./doc-utils");
 const createScope = require("./scope-manager");
 const xmlMatcher = require("./xml-matcher");
-const { throwMultiError, throwContentMustBeString } = require("./errors");
+const { throwContentMustBeString } = require("./errors");
 const Lexer = require("./lexer");
 const Parser = require("./parser.js");
 const render = require("./render.js");
@@ -20,6 +20,7 @@ function getFullText(content, tagsXmlArray) {
 module.exports = class XmlTemplater {
 	constructor(content, options) {
 		this.filePath = options.filePath;
+		this.cachedParsers = {};
 		this.modules = options.modules;
 		this.fileTypeConfig = options.fileTypeConfig;
 		this.contentType = options.contentType;
@@ -37,12 +38,20 @@ module.exports = class XmlTemplater {
 	}
 	setTags(tags) {
 		this.tags = tags != null ? tags : {};
-		this.scopeManager = createScope({ tags: this.tags, parser: this.parser });
+		this.scopeManager = createScope({
+			tags: this.tags,
+			parser: this.parser,
+			cachedParsers: this.cachedParsers,
+		});
 		return this;
 	}
 	resolveTags(tags) {
 		this.tags = tags != null ? tags : {};
-		this.scopeManager = createScope({ tags: this.tags, parser: this.parser });
+		this.scopeManager = createScope({
+			tags: this.tags,
+			parser: this.parser,
+			cachedParsers: this.cachedParsers,
+		});
 		const options = this.getOptions();
 		options.scopeManager = createScope(options);
 		options.resolve = resolve;
@@ -57,11 +66,7 @@ module.exports = class XmlTemplater {
 			if (errors.length !== 0) {
 				throw errors;
 			}
-			return Promise.all(
-				resolved.map(function (r) {
-					return Promise.resolve(r);
-				})
-			).then((resolved) => {
+			return Promise.all(resolved).then((resolved) => {
 				this.setModules({ inspect: { resolved } });
 				return (this.resolved = resolved);
 			});
@@ -137,6 +142,7 @@ module.exports = class XmlTemplater {
 	getOptions() {
 		return {
 			compiled: this.postparsed,
+			cachedParsers: this.cachedParsers,
 			tags: this.tags,
 			modules: this.modules,
 			parser: this.parser,

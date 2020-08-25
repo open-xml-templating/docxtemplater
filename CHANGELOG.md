@@ -1,3 +1,11 @@
+### 3.18.2
+
+Huge performance improvements when using resolveData with loops with many iterations or with huge content inside the loop. On a document with loops of 8000 iterations, a total of 130000 Promises were created, now only about 8000 are created, (This is a 16x improvement in this case). This will produce noticeable improvements in particular in browser environments, where creating many promises costs more than in Node JS.
+
+Some other improvements to call the `parser()` function only when needed, and using some internal caching.
+
+If you're using the PRO xlsx module, you should upgrade the module to version 3.3.4 or higher, or you might see some rendered values duplicated at multiple points in the generated spreadsheet.
+
 ### 3.18.1
 
 When there are errors both in the header and the footer, all errors are shown up instead of seeing only the errors of the first parsed file. This helps to find errors more quickly.

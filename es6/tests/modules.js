@@ -212,12 +212,12 @@ describe("Module errors", function () {
 			name: "Error module",
 			requiredAPIVersion: "3.0.0",
 			parse(placeHolderContent) {
-					const type = "placeholder";
-					return {
-						type,
-						value: placeHolderContent,
-						module: moduleName,
-					};
+				const type = "placeholder";
+				return {
+					type,
+					value: placeHolderContent,
+					module: moduleName,
+				};
 			},
 			render(part) {
 				if (part.module === moduleName) {

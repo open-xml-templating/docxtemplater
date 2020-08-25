@@ -35,7 +35,19 @@ function getValue(tag, meta, num) {
 	}
 	// search in the scopes (in reverse order) and keep the first defined value
 	let result;
-	const parser = this.parser(tag, { scopePath: this.scopePath });
+
+	let parser;
+	if (!this.cachedParsers || !meta.part) {
+		parser = this.parser(tag, {
+			scopePath: this.scopePath,
+		});
+	} else if (this.cachedParsers[meta.part.lIndex]) {
+		parser = this.cachedParsers[meta.part.lIndex];
+	} else {
+		parser = this.cachedParsers[meta.part.lIndex] = this.parser(tag, {
+			scopePath: this.scopePath,
+		});
+	}
 	try {
 		result = parser.get(scope, this.getContext(meta, num));
 	} catch (error) {
@@ -55,7 +67,19 @@ function getValue(tag, meta, num) {
 function getValueAsync(tag, meta, num) {
 	const scope = this.scopeList[num];
 	// search in the scopes (in reverse order) and keep the first defined value
-	const parser = this.parser(tag, { scopePath: this.scopePath });
+	let parser;
+	if (!this.cachedParsers || !meta.part) {
+		parser = this.parser(tag, {
+			scopePath: this.scopePath,
+		});
+	} else if (this.cachedParsers[meta.part.lIndex]) {
+		parser = this.cachedParsers[meta.part.lIndex];
+	} else {
+		parser = this.cachedParsers[meta.part.lIndex] = this.parser(tag, {
+			scopePath: this.scopePath,
+		});
+	}
+
 	return Promise.resolve()
 		.then(() => {
 			return parser.get(scope, this.getContext(meta, num));
@@ -86,6 +110,7 @@ const ScopeManager = class ScopeManager {
 		this.scopeLindex = options.scopeLindex;
 		this.parser = options.parser;
 		this.resolved = options.resolved;
+		this.cachedParsers = options.cachedParsers;
 	}
 	loopOver(tag, functor, inverted, meta) {
 		return this.loopOverValue(this.getValue(tag, meta), functor, inverted);
@@ -162,6 +187,7 @@ const ScopeManager = class ScopeManager {
 		return new ScopeManager({
 			resolved: this.resolved,
 			parser: this.parser,
+			cachedParsers: this.cachedParsers,
 			scopeList: this.scopeList.concat(scope),
 			scopePath: this.scopePath.concat(tag),
 			scopePathItem: this.scopePathItem.concat(i),
