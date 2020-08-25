@@ -4,6 +4,7 @@ const { expect } = chai;
 const PizZip = require("pizzip");
 const fs = require("fs");
 const { get, unset, omit, uniq } = require("lodash");
+const errorLogger = require("../error-logger");
 const diff = require("diff");
 const AssertionModule = require("./assertion-module.js");
 
@@ -489,6 +490,14 @@ function startsWith(str, suffix) {
 
 /* eslint-disable no-console */
 function start() {
+	afterEach(function () {
+		if (
+			this.currentTest.state === "failed" &&
+			this.currentTest.err.properties
+		) {
+			errorLogger(this.currentTest.err);
+		}
+	});
 	/* eslint-disable import/no-unresolved */
 	const fileNames = require("./filenames.js");
 	/* eslint-enable import/no-unresolved */
