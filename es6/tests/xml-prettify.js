@@ -72,6 +72,9 @@ function xmlprettify(xml) {
 		}
 		if (type === "closing") {
 			indent--;
+			if (indent < 0) {
+				throw new Error(`Malformed xml : ${xml}`);
+			}
 			result += getIndent(indent) + value + "\n";
 		}
 		if (type === "single") {
@@ -81,6 +84,9 @@ function xmlprettify(xml) {
 			result += getIndent(indent) + value.trim() + "\n";
 		}
 	});
+	if (indent !== 0) {
+		throw new Error(`Malformed xml : ${xml}`);
+	}
 	return result;
 }
 

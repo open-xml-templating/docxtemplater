@@ -6,6 +6,31 @@ const {
 	createXmlTemplaterDocxNoRender,
 } = require("./utils");
 
+function getParameterByName(name) {
+	if (typeof window === "undefined") {
+		return null;
+	}
+	const url = window.location.href;
+	name = name.replace(/[\[\]]/g, "\\$&");
+	const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+	if (!results) {
+		return null;
+	}
+	if (!results[2]) {
+		return "";
+	}
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function browserMatches(regex) {
+	const currentBrowser = getParameterByName("browser");
+	if (currentBrowser === null) {
+		return false;
+	}
+	return regex.test(currentBrowser);
+}
+
 const { times } = require("lodash");
 const inspectModule = require("../inspect-module.js");
 
@@ -137,6 +162,72 @@ describe("Speed test", function () {
 					duration += new Date() - startTime;
 				}
 				expect(duration).to.be.below(750);
+			});
+		});
+
+		it("should not be slow when having many loops with resolveData", function () {
+			this.timeout(30000);
+			const OldPromise = global.Promise;
+			let resolveCount = 0;
+			let allCount = 0;
+			let parserCount = 0;
+			let parserGetCount = 0;
+			global.Promise = function (arg1, arg2) {
+				return new OldPromise(arg1, arg2);
+			};
+			global.Promise.resolve = function (arg1) {
+				resolveCount++;
+				return OldPromise.resolve(arg1);
+			};
+			global.Promise.all = function (arg1) {
+				allCount++;
+				return OldPromise.all(arg1);
+			};
+			const doc = createDoc("multi-level.docx");
+			doc.setOptions({
+				paragraphLoop: true,
+				parser: (tag) => {
+					parserCount++;
+					return {
+						get: (scope) => {
+							parserGetCount++;
+							return scope[tag];
+						},
+					};
+				},
+			});
+			let start = +new Date();
+			doc.compile();
+			const stepCompile = +new Date() - start;
+			start = +new Date();
+			const multiplier = 20;
+			const total = Math.pow(multiplier, 3);
+			const data = {
+				l1: times(multiplier),
+				l2: times(multiplier),
+				l3: times(multiplier, () => ({ content: "Hello" })),
+			};
+			return doc.resolveData(data).then(function () {
+				const stepResolve = +new Date() - start;
+				start = +new Date();
+				doc.render();
+				const stepRender = +new Date() - start;
+				expect(stepCompile).to.be.below(100);
+				let maxResolveTime = 2000;
+				if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
+					maxResolveTime = 20000;
+				}
+				if (browserMatches(/firefox 55/)) {
+					maxResolveTime = 4000;
+				}
+				expect(stepResolve).to.be.below(maxResolveTime);
+				expect(stepRender).to.be.below(1000);
+				expect(parserCount).to.be.equal(4);
+				// 20**3 + 20**2 *3 + 20 * 2 + 1  = 9241
+				expect(parserGetCount).to.be.equal(9241);
+				expect(resolveCount).to.be.within(total, total * 1.2);
+				expect(allCount).to.be.within(total, total * 1.2);
+				global.Promise = OldPromise;
 			});
 		});
 	}

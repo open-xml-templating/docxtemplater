@@ -9,7 +9,7 @@ const {
 } = require("./utils");
 
 const printy = require("./printy");
-const { cloneDeep, times } = require("lodash");
+const { cloneDeep } = require("lodash");
 const { expectedPrintedPostParsed, rawXMLValue } = require("./data-fixtures");
 
 const angularParser = require("./angular-parser");
@@ -93,67 +93,6 @@ describe("Spacing/Linebreaks", function () {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-multiline-indent.docx" });
 	});
-
-	/* eslint-disable-next-line no-process-env */
-	if (!process.env.FAST) {
-		it("should work with regression speed", function () {
-			const OldPromise = global.Promise;
-			let resolveCount = 0;
-			let allCount = 0;
-			let parserCount = 0;
-			let parserGetCount = 0;
-			global.Promise = function (arg1, arg2) {
-				return new OldPromise(arg1, arg2);
-			};
-			global.Promise.resolve = function (arg1) {
-				resolveCount++;
-				return OldPromise.resolve(arg1);
-			};
-			global.Promise.all = function (arg1) {
-				allCount++;
-				return OldPromise.all(arg1);
-			};
-			const doc = createDoc("multi-level.docx");
-			doc.setOptions({
-				paragraphLoop: true,
-				parser: (tag) => {
-					parserCount++;
-					return {
-						get: (scope) => {
-							parserGetCount++;
-							return scope[tag];
-						},
-					};
-				},
-			});
-			let start = +new Date();
-			doc.compile();
-			const stepCompile = +new Date() - start;
-			start = +new Date();
-			const multiplier = 20;
-			const total = Math.pow(multiplier, 3);
-			const data = {
-				l1: times(multiplier),
-				l2: times(multiplier),
-				l3: times(multiplier, () => ({ content: "Hello" })),
-			};
-			return doc.resolveData(data).then(function () {
-				const stepResolve = +new Date() - start;
-				start = +new Date();
-				doc.render();
-				const stepRender = +new Date() - start;
-				expect(stepCompile).to.be.below(100);
-				expect(stepResolve).to.be.below(2000);
-				expect(stepRender).to.be.below(1000);
-				expect(parserCount).to.be.equal(4);
-				// 20**3 + 20**2 *3 + 20 * 2 + 1  = 9241
-				expect(parserGetCount).to.be.equal(9241);
-				expect(resolveCount).to.be.within(total, total * 1.2);
-				expect(allCount).to.be.within(total, total * 1.2);
-				global.Promise = OldPromise;
-			});
-		});
-	}
 
 	it("should be possible to have linebreaks if setting the option", function () {
 		const doc = createDoc("tag-multiline.docx");

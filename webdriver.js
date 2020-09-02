@@ -17,6 +17,7 @@ function exit(message) {
 }
 
 let fullBrowserName = null;
+const url = require("url");
 const finalhandler = require("finalhandler");
 const webdriverio = require("webdriverio");
 const { expect } = require("chai");
@@ -168,11 +169,18 @@ server.listen(port, async function () {
 					`Aborting connection to webdriver after ${timeoutConnection} seconds`
 				);
 			}
-			const postfix = process.env.filter
-				? `?grep=${process.env.filter}&invert=true`
-				: "";
-			const url = `http://localhost:${port}/test/mocha.html${postfix}`;
-			await client.url(url);
+
+			const mochaUrl = url.parse(
+				`http://localhost:${port}/test/mocha.html`,
+				true
+			);
+			delete mochaUrl.search;
+			if (process.env.filter) {
+				mochaUrl.query.grep = process.env.filter;
+				mochaUrl.query.invert = "true";
+			}
+			mochaUrl.query.browser = fullBrowserName;
+			await client.url(url.format(mochaUrl));
 
 			await waitForText("#status", 120000);
 			await client.pause(5000);
@@ -196,6 +204,7 @@ server.listen(port, async function () {
 						return ret;
 					}, titleElement);
 					const error = await (await failedSuites[i].$("pre.error")).getText();
+					console.log(title.replace(/./g, "="));
 					console.log(title);
 					console.log(title.replace(/./g, "="));
 					console.log(error);
