@@ -22,7 +22,7 @@ browserName="chrome" platform="Windows 10" version="58" test
 browserName="chrome" platform="Windows 10" version="71" test
 browserName="chrome" platform="Windows 10" version="73" test
 browserName="chrome" platform="Windows 10" version="75" test
-browserName="chrome" platform="Windows 10" version="80" test
+browserName="chrome" platform="Windows 10" version="81" test
 browserName="firefox" platform="Windows 10" version="55" test
 browserName="firefox" platform="Windows 10" version="60" test
 browserName="firefox" platform="Windows 10" version="64" test
