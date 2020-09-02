@@ -1,3 +1,7 @@
+### 3.19.1
+
+[Internal Only, for tests] : Rewrite xml-prettify to handle canonicalization of `<w:t>Hello></w:t>`
+
 ### 3.19.0
 
 When there are errors both in the header and the footer, all errors are shown up instead of seeing only the errors of the first parsed file. This helps to find errors more quickly.
