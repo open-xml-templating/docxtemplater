@@ -69,7 +69,7 @@ const minute = 60 * second;
 
 const commonOptions = {
 	automationProtocol: "webdriver",
-	// logLevel: "warn",
+	logLevel: "warn",
 	connectionRetryTimeout: 5 * minute,
 };
 
@@ -201,7 +201,7 @@ server.listen(port, async function () {
 					console.log(error);
 					console.log();
 				}
-				throw new Error("Failures happened");
+				throw new Error(`Failures happened on ${fullBrowserName}`);
 			}
 			expect(passes).to.be.above(0);
 			console.log(
