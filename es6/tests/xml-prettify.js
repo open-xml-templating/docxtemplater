@@ -1,101 +1,154 @@
 /* eslint-disable complexity */
 
-const reg = /(>)\s*(<)(\/*)/g;
-const wsexp = / *(.*) +\n/g;
-const contexp = /(<.+>)(.+\n)/g;
+function getIndent(indent) {
+	return "    ".repeat(indent);
+}
+
+function attributeSorter(ln) {
+	const aRegex = /<[A-Za-z0-9:]+ (.*?)([/ ]*)>/;
+	let rest;
+	if (aRegex.test(ln)) {
+		rest = ln.replace(aRegex, "$1");
+	}
+	const attrRegex = / *([a-zA-Z0-9:]+)="([^"]+)"/g;
+	let match = attrRegex.exec(rest);
+	const attributes = [];
+	while (match != null) {
+		// matched text: match[0]
+		// match start: match.index
+		// capturing group n: match[n]
+		attributes.push({ key: match[1], value: match[2] });
+		match = attrRegex.exec(rest);
+	}
+	attributes.sort(function (a1, a2) {
+		if (a1.key === a2.key) {
+			return 0;
+		}
+		return a1.key > a2.key ? 1 : -1;
+	});
+	const stringifiedAttrs = attributes
+		.map(function (attribute) {
+			return `${attribute.key}="${attribute.value}"`;
+		})
+		.join(" ");
+	if (rest != null) {
+		ln = ln.replace(rest, stringifiedAttrs).replace(/ +>/, ">");
+	}
+	return ln;
+}
 
 function xmlprettify(xml) {
-	xml = xml
-		.replace(reg, "$1\n$2$3")
-		.replace(wsexp, "$1\n")
-		.replace(contexp, "$1\n$2");
-	let formatted = "";
-	const lines = xml.split("\n");
-	let indent = 0;
-	let lastType = "other";
-	// 4 types of tags - single, closing, opening, other (text, doctype, comment) - 4*4 = 16 transitions
-	const transitions = {
-		"single->single": 0,
-		"single->closing": -1,
-		"single->opening": 0,
-		"single->other": 0,
-		"closing->single": 0,
-		"closing->closing": -1,
-		"closing->opening": 0,
-		"closing->other": 0,
-		"opening->single": 1,
-		"opening->closing": 0,
-		"opening->opening": 1,
-		"opening->other": 1,
-		"other->single": 0,
-		"other->closing": -1,
-		"other->opening": 0,
-		"other->other": 0,
-	};
-
-	for (let i = 0; i < lines.length; i++) {
-		let ln = lines[i];
-		const single = Boolean(ln.match(/<.+\/>/)); // is this line a single tag? ex. <br />
-		const closing = Boolean(ln.match(/<\/.+>/)); // is this a closing tag? ex. </a>
-		const opening = Boolean(ln.match(/<[^!].*>/)); // is this even a tag (that's not <!something>)
-		const type = single
-			? "single"
-			: closing
-			? "closing"
-			: opening
-			? "opening"
-			: "other";
-
-		const fromTo = lastType + "->" + type;
+	let result = "",
+		skip = 0,
+		indent = 0;
+	const parsed = miniparser(xml);
+	parsed.forEach(function ({ type, value }, i) {
+		if (skip > 0) {
+			skip--;
+			return;
+		}
+		const nextType = i < parsed.length - 1 ? parsed[i + 1].type : "";
+		const nnextType = i < parsed.length - 2 ? parsed[i + 2].type : "";
+		if (type === "declaration") {
+			result += value + "\n";
+		}
+		if (
+			type === "opening" &&
+			nextType === "content" &&
+			nnextType === "closing"
+		) {
+			result +=
+				getIndent(indent) +
+				value +
+				parsed[i + 1].value +
+				parsed[i + 2].value +
+				"\n";
+			skip = 2;
+			return;
+		}
 		if (type === "opening") {
-			const aRegex = /<[A-Za-z0-9:]+ (.*)>/;
-			let rest;
-			if (aRegex.test(ln)) {
-				rest = ln.replace(aRegex, "$1");
-			}
-			const attrRegex = / *([a-zA-Z0-9:]+)="([^"]+)"/g;
-			let match = attrRegex.exec(rest);
-			const attributes = [];
-			while (match != null) {
-				// matched text: match[0]
-				// match start: match.index
-				// capturing group n: match[n]
-				attributes.push({ key: match[1], value: match[2] });
-				match = attrRegex.exec(rest);
-			}
-			attributes.sort(function (a1, a2) {
-				if (a1.key === a2.key) {
-					return 0;
-				}
-				return a1.key > a2.key ? 1 : -1;
-			});
-			const stringifiedAttrs = attributes
-				.map(function (attribute) {
-					return `${attribute.key}="${attribute.value}"`;
-				})
-				.join(" ");
-			if (rest != null) {
-				ln = ln.replace(rest, stringifiedAttrs).replace(/ +>/, ">");
-			}
+			result += getIndent(indent) + value + "\n";
+			indent++;
+		}
+		if (type === "closing") {
+			indent--;
+			result += getIndent(indent) + value + "\n";
 		}
 		if (type === "single") {
-			ln = ln.replace(/ +\/>/, "/>");
+			result += getIndent(indent) + value + "\n";
 		}
-		lastType = type;
-		let padding = "";
+		if (type === "content" && !/^[ \n\r\t]+$/.test(value)) {
+			result += getIndent(indent) + value.trim() + "\n";
+		}
+	});
+	return result;
+}
 
-		indent += transitions[fromTo];
-		for (let j = 0; j < indent; j++) {
-			padding += "\t";
+function miniparser(xml) {
+	let cursor = 0;
+	let state = "outside";
+	let currentType = "";
+	let content = "";
+	const renderedArray = [];
+	while (cursor < xml.length) {
+		if (state === "outside") {
+			const opening = xml.indexOf("<", cursor);
+			if (opening !== -1) {
+				if (opening !== cursor) {
+					content = xml.substr(cursor, opening - cursor);
+					content = content.replace(/>/g, "&gt;");
+					renderedArray.push({ type: "content", value: content });
+				}
+				state = "inside";
+				cursor = opening;
+			} else {
+				const content = xml.substr(cursor);
+				renderedArray.push({ type: "content", value: content });
+				return renderedArray;
+			}
 		}
-		if (fromTo === "opening->closing") {
-			// substr removes line break (\n) from prev loop
-			formatted = formatted.substr(0, formatted.length - 1) + ln + "\n";
-		} else {
-			formatted += padding + ln + "\n";
+		if (state === "inside") {
+			const closing = xml.indexOf(">", cursor);
+			if (closing !== -1) {
+				let tag = xml.substr(cursor, closing - cursor + 1);
+				const isSingle = Boolean(tag.match(/^<.+\/>/)); // is this line a single tag? ex. <br />
+				const isClosing = Boolean(tag.match(/^<\/.+>/)); // is this a closing tag? ex. </a>
+				const isXMLDeclaration = Boolean(tag.match(/^<\?xml/)); // is this a closing tag? ex. </a>
+
+				state = "outside";
+				cursor = closing + 1;
+				if (isXMLDeclaration) {
+					const encodingRegex = /encoding="([^"]+)"/;
+					if (encodingRegex.test(tag)) {
+						tag = tag.replace(encodingRegex, function (x, p0) {
+							return `encoding="${p0.toUpperCase()}"`;
+						});
+					}
+					currentType = "declaration";
+				} else if (isSingle) {
+					// drop whitespace at the end
+					tag = tag.replace(/\s*\/\s*>$/g, "/>");
+					tag = attributeSorter(tag);
+					currentType = "single";
+				} else if (isClosing) {
+					// drop whitespace at the end
+					tag = tag.replace(/\s+>$/g, ">");
+					currentType = "closing";
+				} else {
+					// drop whitespace at the end
+					tag = tag.replace(/\s+>$/g, ">");
+					tag = attributeSorter(tag);
+					currentType = "opening";
+				}
+				renderedArray.push({ type: currentType, value: tag });
+			} else {
+				const content = xml.substr(cursor);
+				renderedArray.push({ type: "content", value: content });
+				return renderedArray;
+			}
 		}
 	}
-	return formatted;
+	return renderedArray;
 }
 
 module.exports = xmlprettify;

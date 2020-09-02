@@ -67,11 +67,14 @@ describe("XmlMatcher", function () {
 describe("XML prettify", function () {
 	it("should sort attributes", function () {
 		const str =
-			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo zanc="bar" bar="foo"></foo>';
+			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo zanc="bar" bar="foo"></foo><foo zak="foo" uk="bar"/>';
+
 		const prettified = xmlprettify(str);
 		expect(prettified).to
 			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-	<foo bar="foo" zanc="bar"></foo>
+<foo bar="foo" zanc="bar">
+</foo>
+<foo uk="bar" zak="foo"/>
 `);
 	});
 	it("should remove space inside tags", function () {
@@ -94,7 +97,7 @@ describe("XML prettify", function () {
 		</si>
 		<si>
 			<t xml:space="preserve"/>
-		</si>
+		</si >
 		<si>
 			<t xml:space="preserve"/>
 		</si>
@@ -106,33 +109,33 @@ describe("XML prettify", function () {
 		const prettified = xmlprettify(str);
 		expect(prettified).to
 			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-	<sst count="9" uniqueCount="9" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-		<si>
-			<t xml:space="preserve">Property</t>
-		</si>
-		<si>
-			<t xml:space="preserve">0 $</t>
-		</si>
-		<si>
-			<t xml:space="preserve"/>
-		</si>
-		<si>
-			<t xml:space="preserve"/>
-		</si>
-		<si>
-			<t xml:space="preserve"/>
-		</si>
-		<si>
-			<t xml:space="preserve"/>
-		</si>
-		<si>
-			<t xml:space="preserve"/>
-		</si>
-		<si>
-			<t xml:space="preserve"/>
-		</si>
-		<si/>
-	</sst>
+<sst count="9" uniqueCount="9" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <si>
+        <t xml:space="preserve">Property</t>
+    </si>
+    <si>
+        <t xml:space="preserve">0 $</t>
+    </si>
+    <si>
+        <t xml:space="preserve"/>
+    </si>
+    <si>
+        <t xml:space="preserve"/>
+    </si>
+    <si>
+        <t xml:space="preserve"/>
+    </si>
+    <si>
+        <t xml:space="preserve"/>
+    </si>
+    <si>
+        <t xml:space="preserve"/>
+    </si>
+    <si>
+        <t xml:space="preserve"/>
+    </si>
+    <si/>
+</sst>
 `);
 	});
 });
