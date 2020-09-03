@@ -1,7 +1,8 @@
 /* eslint-disable complexity */
+const repeat = require("./string-repeat");
 
 function getIndent(indent) {
-	return "    ".repeat(indent);
+	return repeat("    ", indent);
 }
 
 function attributeSorter(ln) {

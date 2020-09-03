@@ -342,7 +342,7 @@ function errorVerifier(e, type, expectedError) {
 	expect(e, toShowOnFail).to.be.an("object");
 	expect(e, toShowOnFail).to.have.property("properties");
 	expect(e.properties, toShowOnFail).to.be.an("object");
-	if (type.name !== "XTInternalError") {
+	if (type.name && type.name !== "XTInternalError") {
 		expect(e.properties, toShowOnFail).to.have.property("explanation");
 		expect(e.properties.explanation, toShowOnFail).to.be.a("string");
 		expect(e.properties.explanation, toShowOnFail).to.be.a("string");
@@ -619,6 +619,31 @@ function rejectSoon(data) {
 	});
 }
 
+function getParameterByName(name) {
+	if (typeof window === "undefined") {
+		return null;
+	}
+	const url = window.location.href;
+	name = name.replace(/[\[\]]/g, "\\$&");
+	const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+	if (!results) {
+		return null;
+	}
+	if (!results[2]) {
+		return "";
+	}
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function browserMatches(regex) {
+	const currentBrowser = getParameterByName("browser");
+	if (currentBrowser === null) {
+		return false;
+	}
+	return regex.test(currentBrowser);
+}
+
 module.exports = {
 	chai,
 	cleanError,
@@ -647,4 +672,6 @@ module.exports = {
 	isNode12,
 	createDocV4,
 	getZip,
+	getParameterByName,
+	browserMatches,
 };

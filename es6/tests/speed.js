@@ -4,32 +4,8 @@ const {
 	createDoc,
 	expect,
 	createXmlTemplaterDocxNoRender,
+	browserMatches,
 } = require("./utils");
-
-function getParameterByName(name) {
-	if (typeof window === "undefined") {
-		return null;
-	}
-	const url = window.location.href;
-	name = name.replace(/[\[\]]/g, "\\$&");
-	const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-		results = regex.exec(url);
-	if (!results) {
-		return null;
-	}
-	if (!results[2]) {
-		return "";
-	}
-	return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
-function browserMatches(regex) {
-	const currentBrowser = getParameterByName("browser");
-	if (currentBrowser === null) {
-		return false;
-	}
-	return regex.test(currentBrowser);
-}
 
 const { times } = require("lodash");
 const inspectModule = require("../inspect-module.js");
@@ -104,7 +80,14 @@ describe("Speed test", function () {
 		const time = new Date();
 		doc.render();
 		const duration = new Date() - time;
-		expect(duration).to.be.below(250);
+		let maxDuration = 250;
+		if (
+			browserMatches(/internet explorer (10|11)/) ||
+			browserMatches(/iphone 10.3/)
+		) {
+			maxDuration = 500;
+		}
+		expect(duration).to.be.below(maxDuration);
 	});
 	/* eslint-disable-next-line no-process-env */
 	if (!process.env.FAST) {
@@ -221,7 +204,14 @@ describe("Speed test", function () {
 					maxResolveTime = 4000;
 				}
 				expect(stepResolve).to.be.below(maxResolveTime);
-				expect(stepRender).to.be.below(1000);
+				let maxRenderTime = 1000;
+				if (
+					browserMatches(/iphone 10.3/) ||
+					browserMatches(/MicrosoftEdge (16|17|18)/)
+				) {
+					maxRenderTime = 2000;
+				}
+				expect(stepRender).to.be.below(maxRenderTime);
 				expect(parserCount).to.be.equal(4);
 				// 20**3 + 20**2 *3 + 20 * 2 + 1  = 9241
 				expect(parserGetCount).to.be.equal(9241);
