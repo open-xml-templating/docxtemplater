@@ -67,3 +67,11 @@ doc2.setOptions({
         }
     }
 });
+
+const doc3 = new Docxtemplater();
+doc3.loadZip(new PizZip("hello"));
+doc3.compile();
+doc3.resolveData({a: "b"}).then(function() {
+    doc3.render();
+});
+

@@ -86,7 +86,7 @@ export namespace DXT {
     }
 }
 
-export class Docxtemplater {
+declare class Docxtemplater {
     /**
      * Create Docxtemplater instance (and compile it on the fly)
      *
@@ -100,6 +100,7 @@ export class Docxtemplater {
     constructor ();
 
     setData(data: any): this
+    resolveData(data: any): Promise<any>
     render() : this
     getZip() : any
 

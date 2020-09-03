@@ -1,3 +1,7 @@
+### 3.19.2
+
+Update typescript bindings to be able to write `doc.resolveData()`
+
 ### 3.19.1
 
 [Internal Only, for tests] : Rewrite xml-prettify to handle canonicalization of `<w:t>Hello></w:t>`
