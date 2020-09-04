@@ -313,6 +313,16 @@ function throwResolveBeforeCompile() {
 	throw err;
 }
 
+function throwRenderInvalidTemplate() {
+	const err = new XTInternalError(
+		"You should not call .render on a document that had compilation errors"
+	);
+	err.properties = {
+		id: "render_on_invalid_template",
+	};
+	throw err;
+}
+
 function throwFileTypeNotIdentified() {
 	const err = new XTInternalError(
 		"The filetype for this file could not be identified, is this file corrupted ?"
@@ -380,4 +390,5 @@ module.exports = {
 	throwXmlTagNotFound,
 	throwXmlInvalid,
 	throwResolveBeforeCompile,
+	throwRenderInvalidTemplate,
 };

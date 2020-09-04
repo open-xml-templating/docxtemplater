@@ -719,6 +719,31 @@ describe("ParagraphLoop", function () {
 		shouldBeSame({ doc, expectedName: "expected-spacing-end.docx" });
 	});
 
+	it("should throw specific error if calling .render() on document with invalid tags", function () {
+		const doc = createDoc("errors-footer-and-header.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+			parser: angularParser,
+		});
+		let catched = false;
+		try {
+			doc.compile();
+		} catch (e) {
+			catched = true;
+			const expectedError = {
+				name: "InternalError",
+				message:
+					"You should not call .render on a document that had compilation errors",
+				properties: {
+					id: "render_on_invalid_template",
+				},
+			};
+			expectToThrow(() => doc.render(), Errors.XTInternalError, expectedError);
+			/* handle error */
+		}
+		expect(catched).to.equal(true);
+	});
+
 	it("should fail with errors from header and footer", function () {
 		const doc = createDoc("errors-footer-and-header.docx");
 		doc.setOptions({

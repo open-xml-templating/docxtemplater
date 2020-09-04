@@ -1,3 +1,22 @@
+### 3.19.3
+
+Throw an error when calling render on an invalid template.
+
+Before this version, it was possible to do the following on an invalid template :
+
+```
+try	{
+	doc.compile();
+}
+catch (e) {
+	doc.render();
+}
+```
+
+And, this would produce, most of the times, a generated document that is corrupted.
+
+Now, `doc.render()` will also throw in this case the error "You should not call .render on a document that had compilation errors"
+
 ### 3.19.2
 
 Update typescript bindings to be able to write `doc.resolveData()`

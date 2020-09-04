@@ -3,7 +3,11 @@
 const DocUtils = require("./doc-utils");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
-const { throwMultiError, throwResolveBeforeCompile } = require("./errors");
+const {
+	throwMultiError,
+	throwResolveBeforeCompile,
+	throwRenderInvalidTemplate,
+} = require("./errors");
 
 const collectContentTypes = require("./collect-content-types");
 const ctXML = "[Content_Types].xml";
@@ -265,7 +269,7 @@ const Docxtemplater = class Docxtemplater {
 				this.compileFile(fileName);
 			}
 		});
-		verifyErrors(this.compiled);
+		verifyErrors(this);
 		return this;
 	}
 	updateFileTypeConfig() {
@@ -322,6 +326,9 @@ const Docxtemplater = class Docxtemplater {
 	}
 	render() {
 		this.compile();
+		if (this.errors.length > 0) {
+			throwRenderInvalidTemplate();
+		}
 		this.setModules({
 			data: this.data,
 			Lexer,
@@ -345,7 +352,7 @@ const Docxtemplater = class Docxtemplater {
 			this.zip.file(to, currentFile.content, { createFolders: true });
 		});
 
-		verifyErrors(this.compiled);
+		verifyErrors(this);
 		this.sendEvent("syncing-zip");
 		this.syncZip();
 		return this;
@@ -394,12 +401,14 @@ const Docxtemplater = class Docxtemplater {
 	}
 };
 
-function verifyErrors(compiled) {
+function verifyErrors(doc) {
+	const compiled = doc.compiled;
 	let allErrors = [];
 	Object.keys(compiled).forEach((name) => {
 		const templatePart = compiled[name];
 		allErrors = concatArrays([allErrors, templatePart.allErrors]);
 	});
+	doc.errors = allErrors;
 
 	if (allErrors.length !== 0) {
 		throwMultiError(allErrors);
