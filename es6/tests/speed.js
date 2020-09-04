@@ -54,7 +54,11 @@ describe("Speed test", function () {
 		const time = new Date();
 		doc.render();
 		const duration = new Date() - time;
-		expect(duration).to.be.below(100);
+		let maxDuration = 100;
+		if (browserMatches(/firefox 65/)) {
+			maxDuration = 150;
+		}
+		expect(duration).to.be.below(maxDuration);
 	});
 	it("should be fast for nested loop tags", function () {
 		const result = [];
@@ -82,6 +86,7 @@ describe("Speed test", function () {
 		const duration = new Date() - time;
 		let maxDuration = 250;
 		if (
+			browserMatches(/MicrosoftEdge (16|17|18)/) ||
 			browserMatches(/internet explorer (10|11)/) ||
 			browserMatches(/iphone 10.3/)
 		) {
