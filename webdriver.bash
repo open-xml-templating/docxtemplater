@@ -1,17 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-pid=""
-
-cleanup() {
-	if [ "$pid" != "" ]
+selenium_pid=""
+port4444used() {
+	netstat -tnlp 2>/dev/null | grep 4444 >/dev/null
+}
+install_selenium() {
+	echo "Installing selenium"
+	selenium-standalone install
+	rsync node_modules/selenium-standalone/.selenium/ "$HOME/tmp/.selenium/"
+}
+start_selenium() {
+	{ selenium-standalone start 2>&1 | tee /tmp/webdriver.log ; } &
+	selenium_pid="$!"
+}
+stop_selenium() {
+	if [ "$selenium_pid" != "" ]
 	then
 		while true
 		do
-			kill "$pid" 1>/dev/null 2>&1 || break
+			kill "$selenium_pid" 1>/dev/null 2>&1 || break
 			sleep 1
 		done
 	fi
+}
+cleanup() {
+	stop_selenium
 }
 trap "cleanup" EXIT INT
 BROWSER="${BROWSER:-CHROME|FIREFOX|}"
@@ -26,9 +40,7 @@ then
 	exit 0
 fi
 
-port4444used() {
-	netstat -tnlp 2>/dev/null | grep 4444 >/dev/null
-}
+export -f stop_selenium
 
 if [ "$BROWSER" != "SAUCELABS" ]
 then
@@ -44,16 +56,20 @@ then
 				echo "Copying selenium from cache"
 				cp -r "$HOME/tmp/.selenium" node_modules/selenium-standalone/.selenium
 			else
-				echo "Installing selenium"
-				selenium-standalone install
-				cp -r node_modules/selenium-standalone/.selenium "$HOME/tmp/.selenium"
+				install_selenium
 			fi
 		fi
 		echo "Starting selenium"
-		selenium-standalone start -- -log /tmp/protractor.log &
-		pid="$!"
+		start_selenium
 		while ! port4444used;
 		do
+			if grep 'Missing.*driver' </tmp/webdriver.log
+			then
+				echo "missing driver"
+				rm /tmp/webdriver.log
+				install_selenium
+				start_selenium
+			fi
 			sleep 0.5
 		done
 	fi

@@ -129,7 +129,12 @@ const failuresRegex = /.*failures: ([0-9]+).*/;
 const passesRegex = /.*passes: ([0-9]+).*/;
 const startTime = +new Date();
 server.listen(port, async function () {
-	const client = await webdriverio.remote(options);
+	let client;
+	try {
+		client = await webdriverio.remote(options);
+	} catch (e) {
+		exit(e);
+	}
 	async function waitForText(selector, timeout) {
 		return await client.waitUntil(
 			async function getText() {
