@@ -6,7 +6,7 @@ const { last, first } = require("./utils");
 
 function parser(tag) {
 	return {
-		["get"](scope) {
+		get(scope) {
 			if (tag === ".") {
 				return scope;
 			}
