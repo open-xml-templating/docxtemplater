@@ -1,6 +1,7 @@
 const {
 	expectToThrow,
 	createDoc,
+	createDocV4,
 	shouldBeSame,
 	expect,
 	resolveSoon,
@@ -24,7 +25,7 @@ describe("Simple templating", function () {
 				phone: "0652455478",
 				description: "New Website",
 			};
-			const doc = createDoc("tag-example.docx");
+			const doc = createDocV4("tag-example.docx");
 			doc.setData(tags);
 			doc.render();
 			expect(doc.getFullText()).to.be.equal("Edgar Hipp");
