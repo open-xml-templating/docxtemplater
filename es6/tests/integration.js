@@ -416,6 +416,16 @@ describe("Table", function () {
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
 
+	it("should not corrupt document with selfclosing w:sdtContent tag", function () {
+		const doc = createDoc("self-closing-w-sdtcontent.docx");
+		doc.setData({});
+		doc.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-self-closing-w-sdtcontent.docx",
+		});
+	});
+
 	it("should not corrupt loop containing section", function () {
 		const doc = createDoc("loop-with-section.docx");
 		doc.setData({

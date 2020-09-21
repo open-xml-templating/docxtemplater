@@ -30,6 +30,9 @@ function joinUncorrupt(parts, contains) {
 				return full;
 			}
 			if (currentlyCollecting === -1 && startTagRegex.test(part)) {
+				if (part[part.length - 2] === "/") {
+					return full;
+				}
 				currentlyCollecting = i;
 				collecting = part;
 				return full;

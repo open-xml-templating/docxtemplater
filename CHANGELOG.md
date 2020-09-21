@@ -1,3 +1,7 @@
+### 3.19.4
+
+Avoid corruption when having self closing `<w:sdtContent/>` in the document.
+
 ### 3.19.3
 
 Throw an error when calling render on an invalid template.
