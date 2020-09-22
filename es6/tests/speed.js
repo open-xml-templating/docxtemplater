@@ -84,7 +84,7 @@ describe("Speed test", function () {
 		const time = new Date();
 		doc.render();
 		const duration = new Date() - time;
-		let maxDuration = 250;
+		let maxDuration = 300;
 		if (
 			browserMatches(/MicrosoftEdge (16|17|18)/) ||
 			browserMatches(/internet explorer (10|11)/) ||
