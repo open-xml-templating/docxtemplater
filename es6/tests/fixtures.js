@@ -1267,6 +1267,19 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
+	double_nested_array: {
+		it: "should work when using double nested arrays",
+		content: "<w:t>{#a}</w:t><w:t>{this}</w:t><w:t>{/}</w:t>",
+		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
+		scope: { a: [["first-part", "other-part"]] },
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
 };
 
 fixtures.rawxmlemptycontent = clone(fixtures.rawxml);

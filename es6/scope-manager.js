@@ -1,6 +1,7 @@
 "use strict";
 const { getScopeParserExecutionError } = require("./errors");
 const { last } = require("./utils");
+const { concatArrays } = require("./doc-utils");
 
 function find(list, fn) {
 	const length = list.length >>> 0;
@@ -188,11 +189,11 @@ const ScopeManager = class ScopeManager {
 			resolved: this.resolved,
 			parser: this.parser,
 			cachedParsers: this.cachedParsers,
-			scopeList: this.scopeList.concat(scope),
-			scopePath: this.scopePath.concat(tag),
-			scopePathItem: this.scopePathItem.concat(i),
-			scopePathLength: this.scopePathLength.concat(length),
-			scopeLindex: this.scopeLindex.concat(part.lIndex),
+			scopeList: concatArrays([this.scopeList, [scope]]),
+			scopePath: concatArrays([this.scopePath, [tag]]),
+			scopePathItem: concatArrays([this.scopePathItem, [i]]),
+			scopePathLength: concatArrays([this.scopePathLength, [length]]),
+			scopeLindex: concatArrays([this.scopeLindex, [part.lIndex]]),
 		});
 	}
 };

@@ -1,3 +1,21 @@
+### 3.19.5
+
+Bugfix when data contains double array, the scope parser would not do the right thing.
+
+With the following template + data :
+
+```
+{#a}{.}{/a}
+```
+
+and the following data :
+
+```
+{ a: [[ "b", "c"]] }
+```
+
+This would render just the "c", but it should render the array `[ "b", "c" ]` which will render as `b,c`
+
 ### 3.19.4
 
 Avoid corruption when having self closing `<w:sdtContent/>` in the document.
