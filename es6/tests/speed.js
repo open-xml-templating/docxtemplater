@@ -55,7 +55,10 @@ describe("Speed test", function () {
 		doc.render();
 		const duration = new Date() - time;
 		let maxDuration = 100;
-		if (browserMatches(/firefox 65/) || browserMatches(/MicrosoftEdge (16)/)) {
+		if (
+			browserMatches(/firefox (55|60|64|65)/) ||
+			browserMatches(/MicrosoftEdge (16)/)
+		) {
 			maxDuration = 150;
 		}
 		expect(duration).to.be.below(maxDuration);
