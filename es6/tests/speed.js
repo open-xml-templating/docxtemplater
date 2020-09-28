@@ -99,7 +99,7 @@ describe("Speed test", function () {
 	});
 	/* eslint-disable-next-line no-process-env */
 	if (!process.env.FAST) {
-		it("should not exceed call stack size for big document with rawxml", function () {
+		it("should not exceed call stack size for big document with a few rawxml tags", function () {
 			this.timeout(30000);
 			const result = [];
 			const normalContent = "<w:p><w:r><w:t>foo</w:t></w:r></w:p>";
@@ -119,12 +119,40 @@ describe("Speed test", function () {
 			const compileDuration = new Date() - now;
 			if (typeof window === "undefined") {
 				// Skip this assertion in the browser
-				expect(compileDuration).to.be.below(7000);
+				expect(compileDuration).to.be.below(3000);
 			}
 			now = new Date();
 			doc.render();
-			const duration = new Date() - now;
-			expect(duration).to.be.below(25000);
+			const renderDuration = new Date() - now;
+			expect(renderDuration).to.be.below(2000);
+		});
+
+		it("should not exceed call stack size for big document with many rawxml tags", function () {
+			this.timeout(30000);
+			const result = [];
+			const normalContent = "<w:p><w:r><w:t>foo</w:t></w:r></w:p>";
+			const rawContent = "<w:p><w:r><w:t>{@raw}</w:t></w:r></w:p>";
+
+			for (let i = 1; i <= 50000; i++) {
+				if (i % 2 === 1) {
+					result.push(rawContent);
+				}
+				result.push(normalContent);
+			}
+			const content = result.join("");
+			const users = [];
+			const doc = createXmlTemplaterDocxNoRender(content, { tags: { users } });
+			let now = new Date();
+			doc.compile();
+			const compileDuration = new Date() - now;
+			if (typeof window === "undefined") {
+				// Skip this assertion in the browser
+				expect(compileDuration).to.be.below(3000);
+			}
+			now = new Date();
+			doc.render();
+			const renderDuration = new Date() - now;
+			expect(renderDuration).to.be.below(2000);
 		});
 
 		describe("Inspect module", function () {

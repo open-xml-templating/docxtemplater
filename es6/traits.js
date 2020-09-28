@@ -3,7 +3,6 @@ const {
 	getRight,
 	getLeft,
 	getLeftOrNull,
-	concatArrays,
 	chunkBy,
 	isTagStart,
 	isTagEnd,
@@ -163,11 +162,7 @@ function expandOne(part, index, postparsed, options) {
 		inner.expanded = [leftParts, rightParts];
 		inner = [inner];
 	}
-	return concatArrays([
-		postparsed.slice(0, left),
-		inner,
-		postparsed.slice(right + 1),
-	]);
+	return { left, right, inner };
 }
 
 function expandToOne(postparsed, options) {
@@ -176,14 +171,14 @@ function expandToOne(postparsed, options) {
 		errors = postparsed.errors;
 		postparsed = postparsed.postparsed;
 	}
+	const results = [];
 	for (let i = 0, len = postparsed.length; i < len; i++) {
 		const part = postparsed[i];
-		if (options.lIndex != null && part.lIndex <= options.lIndex) {
-			continue;
-		}
 		if (part.type === "placeholder" && part.module === options.moduleName) {
 			try {
-				postparsed = expandOne(part, i, postparsed, options);
+				const result = expandOne(part, i, postparsed, options);
+				i = result.right;
+				results.push(result);
 			} catch (error) {
 				if (error instanceof XTTemplateError) {
 					errors.push(error);
@@ -191,11 +186,22 @@ function expandToOne(postparsed, options) {
 					throw error;
 				}
 			}
-			options.lIndex = part.lIndex;
-			return expandToOne({ postparsed, errors }, options);
 		}
 	}
-	return { postparsed, errors };
+	const newParsed = [];
+	let currentResult = 0;
+	for (let i = 0, len = postparsed.length; i < len; i++) {
+		const part = postparsed[i];
+		const result = results[currentResult];
+		if (result && result.left === i) {
+			newParsed.push(...results[currentResult].inner);
+			currentResult++;
+			i = result.right;
+		} else {
+			newParsed.push(part);
+		}
+	}
+	return { postparsed: newParsed, errors };
 }
 
 module.exports = {

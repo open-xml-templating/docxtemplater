@@ -1,3 +1,13 @@
+### 3.19.6
+
+Fix speed regression when having big document with many rawxml tag.
+
+This was caused by the fact that expandToOne was a recursive function.
+
+Now that the function uses simple for loop, the rendering is way faster.
+
+If you use the PRO word-run module, you should update the word-run-module to version 3.1.1
+
 ### 3.19.5
 
 Bugfix when data contains double array, the scope parser would not do the right thing.
