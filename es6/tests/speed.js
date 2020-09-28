@@ -151,8 +151,12 @@ describe("Speed test", function () {
 			}
 			now = new Date();
 			doc.render();
+			let maxRenderDuration = 2000;
 			const renderDuration = new Date() - now;
-			expect(renderDuration).to.be.below(2000);
+			if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
+				maxRenderDuration = 3000;
+			}
+			expect(renderDuration).to.be.below(maxRenderDuration);
 		});
 
 		describe("Inspect module", function () {
@@ -180,7 +184,11 @@ describe("Speed test", function () {
 					doc.render();
 					duration += new Date() - startTime;
 				}
-				expect(duration).to.be.below(750);
+				let maxInspectDuration = 750;
+				if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
+					maxInspectDuration = 1000;
+				}
+				expect(duration).to.be.below(maxInspectDuration);
 			});
 		});
 
