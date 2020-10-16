@@ -38,7 +38,7 @@ If you want to build docxtemplater for the browser yourself, here is how you sho
     ./node_modules/.bin/browserify -r "./js/docxtemplater.js" -s docxtemplater > "browser/docxtemplater.js"
     ./node_modules/.bin/uglifyjs "browser/docxtemplater.js" > "browser/docxtemplater.min.js" --verbose --ascii-only
 
-Docxtemplater will be exported to window.docxtemplater for easy usage.
+Docxtemplater will be exported to window.docxtemplater.
 
 The generated files of docxtemplater will be in /browser (minified and non minified).
 

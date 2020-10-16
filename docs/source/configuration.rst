@@ -121,7 +121,8 @@ For the tag `.` in the first iteration, the arguments will be :
 
     scope = { "name": "Jane" }
     context = {
-      "num": 1, // This corresponds to the level of the nesting, the {#users} tag is level 0, the {.} is level 1
+      "num": 1, // This corresponds to the level of the nesting,
+                // the {#users} tag is level 0, the {.} is level 1
       "scopeList": [
         {
           "users": [
@@ -143,7 +144,9 @@ For the tag `.` in the first iteration, the arguments will be :
       "scopePathItem": [
         0
       ]
-      // Together, scopePath and scopePathItem describe where we are in the data, in this case, we are in the tag users[0] (the first user)
+      // Together, scopePath and scopePathItem describe where we
+      // are in the data, in this case, we are in the tag users[0]
+      // (the first user)
     }
 
 
@@ -265,7 +268,7 @@ If you explicitly don't want this behavior because you want the nullGetter to ha
         };
     },
 
-The context.num value contains the scope level for this particular evalutation.
+The context.num value contains the scope level for this particular evaluation.
 
 When evaluating the {name} tag in the example above, there are two evaluations:
 
@@ -298,11 +301,12 @@ following condition :
                         return null;
                     }
                     else {
-                        // Transform "!name" into "name"
+                        // Replace "!name" by "name"
                         tag = tag.substr(1);
                     }
                 }
-                // You can customize your parser here instead of scope[tag] of course
+                // You can customize the rest of your parser here instead of
+                // scope[tag], by using the angular-parser for example.
                 return scope[tag];
             },
         };
