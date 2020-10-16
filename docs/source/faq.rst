@@ -253,7 +253,7 @@ If you are inserting multiple images inside a loop, it is possible that word can
 
 .. code-block:: javascript
 
-    const myModule = {
+    const fixDocPrCorruptionModule = {
         set(options) {
             if (options.Lexer) {
                 this.Lexer = options.Lexer;
@@ -263,6 +263,9 @@ If you are inserting multiple images inside a loop, it is possible that word can
             }
         },
         on(event) {
+            if (eventName === "attached") {
+                this.attached = false;
+            }
             if (event !== "syncing-zip") {
                 return;
             }
@@ -280,29 +283,35 @@ If you are inserting multiple images inside a loop, it is possible that word can
                 }
                 return (
                     partValue.substr(0, end) +
-                        ` ${attr}="${attrValue}"` +
-                        partValue.substr(end)
+                    ` ${attr}="${attrValue}"` +
+                    partValue.substr(end)
                 );
             }
-            zip.file(/\.xml$/).forEach(function(f) {
+            zip.file(/\.xml$/).forEach(function (f) {
                 let text = f.asText();
                 const xmllexed = Lexer.xmlparse(text, {
                     text: [],
                     other: ["wp:docPr"],
                 });
                 if (xmllexed.length > 1) {
-                    text = xmllexed.reduce(function(fullText, part) {
-                        if (part.tag === "wp:docPr") {
-                            return fullText + setSingleAttribute(part.value, "id", prId++);
+                    text = xmllexed.reduce(function (fullText, part) {
+                        if (
+                            part.tag === "wp:docPr" &&
+                            ["start", "selfclosing"].indexOf(part.position) !== -1
+                        ) {
+                            return (
+                                fullText +
+                                setSingleAttribute(part.value, "id", prId++)
+                            );
                         }
                         return fullText + part.value;
                     }, "");
                 }
                 zip.file(f.name, text);
             });
-        }
-    });
-    const doc = new Docxtemplater(zip, { modules: [myModule]});
+        },
+    };
+    const doc = new Docxtemplater(zip, { modules: [fixDocPrCorruptionModule] });
 
 Attaching modules for extra functionality
 -----------------------------------------
