@@ -45,8 +45,8 @@ const Docxtemplater = class Docxtemplater {
 		modules.forEach((module) => {
 			this.attachModule(module);
 		});
-		if (zip) {
-			if (!zip.files || typeof zip.file !== "function") {
+		if (arguments.length > 0) {
+			if (!zip || !zip.files || typeof zip.file !== "function") {
 				throw new Error(
 					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 				);

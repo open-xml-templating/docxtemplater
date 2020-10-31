@@ -1073,7 +1073,7 @@ describe("Constructor v4", function () {
 		expect(fullText).to.be.equal("Hello John from Acme");
 	});
 
-	it("should throw if using new constructor and setOptions", function () {
+	it("should throw if using v4 constructor and setOptions", function () {
 		const doc = createDocV4("tag-multiline.docx");
 		doc.setData({
 			description: "a\nb\nc",
@@ -1083,7 +1083,7 @@ describe("Constructor v4", function () {
 		);
 	});
 
-	it("should throw if using new constructor and attachModule", function () {
+	it("should throw if using v4 constructor and attachModule", function () {
 		const doc = createDocV4("tag-multiline.docx");
 		doc.setData({
 			description: "a\nb\nc",
@@ -1127,6 +1127,20 @@ describe("Constructor v4", function () {
 		};
 		expect(() => new Docxtemplater(zip, { modules: [module] })).to.throw(
 			"The supportedFileTypes field of the module must be an array"
+		);
+	});
+
+	it("should fail with readable error when using new Docxtemplater(null)", function () {
+		expect(() => new Docxtemplater(null, {})).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+		);
+	});
+
+	it("should fail with readable error when using new Docxtemplater(null, {modules: [inspectModule()]})", function () {
+		expect(
+			() => new Docxtemplater(null, { modules: [inspectModule()] })
+		).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 		);
 	});
 });
