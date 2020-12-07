@@ -337,8 +337,14 @@ function jsonifyError(e) {
 function errorVerifier(e, type, expectedError) {
 	expect(e, "No error has been thrown").not.to.be.equal(null);
 	const toShowOnFail = e.stack;
-	expect(e, toShowOnFail).to.be.instanceOf(Error, "error is not a Javascript error");
-	expect(e, toShowOnFail).to.be.instanceOf(type, "error doesn't have the correct type");
+	expect(e, toShowOnFail).to.be.instanceOf(
+		Error,
+		"error is not a Javascript error"
+	);
+	expect(e, toShowOnFail).to.be.instanceOf(
+		type,
+		"error doesn't have the correct type"
+	);
 	expect(e, toShowOnFail).to.be.an("object");
 	expect(e, toShowOnFail).to.have.property("properties");
 	expect(e.properties, toShowOnFail).to.be.an("object");
@@ -432,15 +438,15 @@ function loadFile(name, callback) {
 		);
 		return callback(null, name, buffer);
 	}
-	return PizZipUtils.getBinaryContent("../examples/" + name, function (
-		err,
-		data
-	) {
-		if (err) {
-			return callback(err);
+	return PizZipUtils.getBinaryContent(
+		"../examples/" + name,
+		function (err, data) {
+			if (err) {
+				return callback(err);
+			}
+			return callback(null, name, data);
 		}
-		return callback(null, name, data);
-	});
+	);
 }
 
 function unhandledRejectionHandler(reason) {
