@@ -268,7 +268,7 @@ function cleanError(e, expectedError) {
 			expect(
 				e.properties.rootError,
 				JSON.stringify(e.properties)
-			).to.be.instanceOf(Error);
+			).to.be.instanceOf(Error, "rootError doesn't have correct type");
 			expect(
 				expectedError.properties.rootError,
 				JSON.stringify(expectedError.properties)
@@ -337,8 +337,8 @@ function jsonifyError(e) {
 function errorVerifier(e, type, expectedError) {
 	expect(e, "No error has been thrown").not.to.be.equal(null);
 	const toShowOnFail = e.stack;
-	expect(e, toShowOnFail).to.be.instanceOf(Error);
-	expect(e, toShowOnFail).to.be.instanceOf(type);
+	expect(e, toShowOnFail).to.be.instanceOf(Error, "error is not a Javascript error");
+	expect(e, toShowOnFail).to.be.instanceOf(type, "error doesn't have the correct type");
 	expect(e, toShowOnFail).to.be.an("object");
 	expect(e, toShowOnFail).to.have.property("properties");
 	expect(e.properties, toShowOnFail).to.be.an("object");
