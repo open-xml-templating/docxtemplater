@@ -115,9 +115,21 @@ It is possible to customize the value that will be shown for {name} by using the
 .. code-block:: javascript
 
     function nullGetter(part, scopeManager) {
-        // part.module can be "loop", "rawxml", or empty, (or any other module name that you use)
+        /*
+            If the template is {#users}{name}{/} and a value is undefined on the
+            name property :
+
+            - part.value will be the string "name"
+            - scopeManager.scopePath will be ["users"] (for nested loops, you would have multiple values in this array, for example one could have ["companies", "users"])
+            - scopeManager.scopePathItem will be equal to the array [2] if
+              this happens for the third user in the array.
+            - part.module would be empty in this case, but it could be "loop",
+              "rawxml", or or any other module name that you use.
+        */
+
         if (!part.module) {
             // part.value contains the content of the tag, eg "name" in our example
+            // By returning '{' and part.value and '}', it will actually do no replacement in reality. You could also return the empty string if you prefered.
             return '{' + part.value + '}';
         }
         if (part.module === "rawxml") {
