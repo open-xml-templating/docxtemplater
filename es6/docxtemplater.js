@@ -321,7 +321,7 @@ const Docxtemplater = class Docxtemplater {
 		this.fileTypeConfig =
 			this.options.fileTypeConfig ||
 			this.fileTypeConfig ||
-			Docxtemplater.FileTypeConfig[this.fileType];
+			Docxtemplater.FileTypeConfig[this.fileType]();
 		return this;
 	}
 	render() {

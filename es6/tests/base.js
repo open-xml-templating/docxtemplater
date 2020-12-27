@@ -964,7 +964,7 @@ describe("Raw Xml Insertion", function () {
 		};
 		const doc = createDoc("one-raw-xml-tag.docx");
 		doc.setOptions({
-			fileTypeConfig: assign({}, Docxtemplater.FileTypeConfig.docx, {
+			fileTypeConfig: assign({}, Docxtemplater.FileTypeConfig.docx(), {
 				tagRawXml: "w:r",
 			}),
 		});

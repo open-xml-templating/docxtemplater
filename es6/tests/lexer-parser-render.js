@@ -1,7 +1,7 @@
 const Lexer = require("../lexer.js");
 const { expect, makeDocx, cleanRecursive } = require("./utils");
 const fixtures = require("./fixtures");
-const docxconfig = require("../file-type-config").docx;
+const docxconfig = require("../file-type-config").docx();
 const inspectModule = require("../inspect-module.js");
 const AssertionModule = require("./assertion-module.js");
 const tagsDocxConfig = {

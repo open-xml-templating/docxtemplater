@@ -1,3 +1,21 @@
+### 3.19.8
+
+Don't override global configuration for docx/pptx when using a module, instead, a new fresh configuration is passed to a docxtemplater instance.
+
+### 3.19.7
+
+Fail with a clear error message when instantiating Docxtemplater with a null value, like this :
+
+```
+new Docxtemplater(null);
+```
+
+This will now throw :
+
+```
+The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)
+```
+
 ### 3.19.6
 
 Fix speed regression when having big document with many rawxml tag.
