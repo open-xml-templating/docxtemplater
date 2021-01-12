@@ -680,4 +680,5 @@ module.exports = {
 	getZip,
 	getParameterByName,
 	browserMatches,
+	errorVerifier,
 };

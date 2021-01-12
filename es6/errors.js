@@ -224,6 +224,28 @@ function getUnmatchedLoopException(options) {
 	return err;
 }
 
+function getUnbalancedLoopException(pair, lastPair) {
+	const err = new XTTemplateError("Unbalanced loop tag");
+	const lastL = lastPair[0].part.value;
+	const lastR = lastPair[1].part.value;
+	const l = pair[0].part.value;
+	const r = pair[1].part.value;
+	err.properties = {
+		id: "unbalanced_loop_tags",
+		explanation: `Unbalanced loop tags {#${lastL}}{/${lastR}}{#${l}}{/${r}}`,
+		offset: [lastPair[0].part.offset, pair[1].part.offset],
+		lastPair: {
+			left: lastPair[0].part.value,
+			right: lastPair[1].part.value,
+		},
+		pair: {
+			left: pair[0].part.value,
+			right: pair[1].part.value,
+		},
+	};
+	return err;
+}
+
 function getClosingTagNotMatchOpeningTag({ tags }) {
 	const err = new XTTemplateError("Closing tag does not match opening tag");
 	err.properties = {
@@ -376,6 +398,7 @@ module.exports = {
 	getDuplicateCloseTagException,
 	getDuplicateOpenTagException,
 	getCorruptCharactersException,
+	getUnbalancedLoopException,
 
 	throwApiVersionError,
 	throwContentMustBeString,

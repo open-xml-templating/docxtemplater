@@ -8,6 +8,7 @@ const {
 	getUnmatchedLoopException,
 	getClosingTagNotMatchOpeningTag,
 	throwLocationInvalid,
+	getUnbalancedLoopException,
 } = require("../errors");
 
 function getOpenCountChange(part) {
@@ -77,6 +78,8 @@ const expandPairTrait = {
 		});
 		traits = mergeSort(traits);
 		const { pairs, errors } = getPairs(traits);
+		let lastRight = 0;
+		let lastPair = null;
 		const expandedPairs = pairs.map((pair) => {
 			let { expandTo } = pair[0].part;
 			if (expandTo === "auto") {
@@ -87,7 +90,14 @@ const expandPairTrait = {
 				expandTo = result.value;
 			}
 			if (!expandTo) {
-				return [pair[0].offset, pair[1].offset];
+				const left = pair[0].offset;
+				const right = pair[1].offset;
+				if (left < lastRight) {
+					errors.push(getUnbalancedLoopException(pair, lastPair));
+				}
+				lastPair = pair;
+				lastRight = right;
+				return [left, right];
 			}
 			let left, right;
 			try {
@@ -100,6 +110,11 @@ const expandPairTrait = {
 			} catch (e) {
 				errors.push(e);
 			}
+			if (left < lastRight) {
+				errors.push(getUnbalancedLoopException(pair, lastPair));
+			}
+			lastRight = right;
+			lastPair = pair;
 			return [left, right];
 		});
 
@@ -109,7 +124,8 @@ const expandPairTrait = {
 		const newParsed = postparsed.reduce(function (newParsed, part, i) {
 			const inPair =
 				currentPairIndex < pairs.length &&
-				expandedPairs[currentPairIndex][0] <= i;
+				expandedPairs[currentPairIndex][0] <= i &&
+				i <= expandedPairs[currentPairIndex][1];
 			const pair = pairs[currentPairIndex];
 			const expandedPair = expandedPairs[currentPairIndex];
 			if (!inPair) {
@@ -132,6 +148,7 @@ const expandPairTrait = {
 			}
 			return newParsed;
 		}, []);
+
 		return { postparsed: newParsed, errors };
 	},
 };

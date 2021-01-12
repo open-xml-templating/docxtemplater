@@ -1,5 +1,7 @@
 const { clone, assign } = require("lodash");
 const angularParser = require("./angular-parser");
+const Errors = require("../errors.js");
+const { wrapMultiError } = require("./utils");
 
 const xmlSpacePreserveTag = {
 	type: "tag",
@@ -1279,6 +1281,33 @@ const fixtures = {
 		parsed: null,
 		postparsed: null,
 		resolved: null,
+	},
+	table_with_nested_loops: {
+		it: "should work for table with nested loops",
+		lexed: null,
+		content: `<w:tbl>
+		<w:tr><w:tc><w:p><w:r><w:t>{#c1}A</w:t></w:r></w:p></w:tc></w:tr>
+		<w:tr><w:tc><w:p><w:r><w:t>{/}{#c2}B</w:t></w:r><w:r><w:t>{/}</w:t></w:r></w:p></w:tc></w:tr>
+</w:tbl>`,
+		errorType: Errors.XTTemplateError,
+		error: wrapMultiError({
+			name: "TemplateError",
+			message: "Unbalanced loop tag",
+			properties: {
+				explanation: "Unbalanced loop tags {#c1}{/}{#c2}{/}",
+				file: "word/document.xml",
+				id: "unbalanced_loop_tags",
+				lastPair: {
+					left: "c1",
+					right: "",
+				},
+				offset: [0, 15],
+				pair: {
+					left: "c2",
+					right: "",
+				},
+			},
+		}),
 	},
 };
 

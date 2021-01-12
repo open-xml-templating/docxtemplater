@@ -1,3 +1,44 @@
+### 3.19.9
+
+When having a document containing a table like this :
+
+```
+================================
+| {#users} abc                 |
+--------------------------------
+| {/users}{#cond} def {/cond}  |
+================================
+```
+
+Docxtemplater will now throw an error : `id: "unbalanced_loop_tags"`,
+and explanation: `Unbalanced loop tags {#users}{/users}{#cond}{/cond}`,
+
+In previous versions, this would most likely lead to a corrupt document.
+
+The reason is that when a loop tag is spanning across multiple cells of a table, it will automatically expand to "row-mode", eg it will create 2 rows for each user in the users iterable.
+
+However, the {#cond} loop tag is in one single cell, hence it will not expand to "row-mode".
+
+Instead, the template should be written like this if the cond loop should be part of the users loop :
+
+```
+================================
+| {#users} abc                 |
+--------------------------------
+| {#cond} def {/cond}{/users}  |
+================================
+```
+
+or like this if the loops are to be kept separate
+
+```
+===========================
+| {#users} abc {/users}   |
+---------------------------
+| {#cond} def {/cond}     |
+===========================
+```
+
 ### 3.19.8
 
 Don't override global configuration for docx/pptx when using a module, instead, a new fresh configuration is passed to a docxtemplater instance.

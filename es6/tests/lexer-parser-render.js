@@ -1,5 +1,5 @@
 const Lexer = require("../lexer.js");
-const { expect, makeDocx, cleanRecursive } = require("./utils");
+const { expect, makeDocx, cleanRecursive, errorVerifier } = require("./utils");
 const fixtures = require("./fixtures");
 const docxconfig = require("../file-type-config").docx();
 const inspectModule = require("../inspect-module.js");
@@ -18,10 +18,20 @@ describe("Algorithm", function () {
 			const iModule = inspectModule();
 			doc.attachModule(iModule).attachModule(new AssertionModule());
 			doc.setData(fixture.scope);
-			doc.render();
+			try {
+				doc.compile();
+			} catch (error) {
+				errorVerifier(error, fixture.errorType, fixture.error);
+				return;
+			}
 			cleanRecursive(iModule.inspect.lexed);
 			cleanRecursive(iModule.inspect.parsed);
 			cleanRecursive(iModule.inspect.postparsed);
+			try {
+				doc.render();
+			} catch (error) {
+				errorVerifier(error, fixture.errorType, fixture.error);
+			}
 			if (fixture.result !== null) {
 				expect(iModule.inspect.content).to.be.deep.equal(
 					fixture.result,
@@ -56,9 +66,21 @@ describe("Algorithm", function () {
 			doc.setOptions(fixture.options);
 			const iModule = inspectModule();
 			doc.attachModule(iModule);
-			doc.compile();
+			try {
+				doc.compile();
+			} catch (error) {
+				errorVerifier(error, fixture.errorType, fixture.error);
+				return;
+			}
+			cleanRecursive(iModule.inspect.lexed);
+			cleanRecursive(iModule.inspect.parsed);
+			cleanRecursive(iModule.inspect.postparsed);
 			return doc.resolveData(fixture.scope).then(function () {
-				doc.render();
+				try {
+					doc.render();
+				} catch (error) {
+					errorVerifier(error, fixture.errorType, fixture.error);
+				}
 				cleanRecursive(iModule.inspect.lexed);
 				cleanRecursive(iModule.inspect.parsed);
 				cleanRecursive(iModule.inspect.postparsed);
