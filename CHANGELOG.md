@@ -96,11 +96,11 @@ Throw an error when calling render on an invalid template.
 Before this version, it was possible to do the following on an invalid template :
 
 ```
-try	{
-	doc.compile();
+try {
+    doc.compile();
 }
 catch (e) {
-	doc.render();
+    doc.render();
 }
 ```
 
@@ -192,7 +192,7 @@ You should instead write :
 
 ```
 const doc = new Docxtemplater(zip, {
-	modules: [new ImageModule()],
+    modules: [new ImageModule()],
     delimiters: {
       start: "<",
       end: ">",
@@ -515,12 +515,12 @@ For example with the template :
 
 ```
 {#loop}
-	{#cond2}
-		{label}
-	{/cond2}
-	{#cond3}
-		{label}
-	{/cond3}
+    {#cond2}
+        {label}
+    {/cond2}
+    {#cond3}
+        {label}
+    {/cond3}
 {/loop}
 ```
 
@@ -528,13 +528,13 @@ and the data :
 
 ```
 {
-	label: "outer",
-	loop: [
-		{
-			cond2: true,
-			label: "inner",
-		},
-	],
+    label: "outer",
+    loop: [
+        {
+            cond2: true,
+            label: "inner",
+        },
+    ],
 }
 ```
 
