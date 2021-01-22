@@ -23,6 +23,12 @@ You can find ``.js`` and ``.min.js`` files for docxtemplater on `this repository
 
 You will also need Pizzip, which you can `download here <https://unpkg.com/pizzip@3.0.6/dist/pizzip.js>`__
 
+For React, Angular, and Vue, you can use the npm packages and use these code samples from the FAQ :
+
+- [React](https://docxtemplater.readthedocs.io/en/latest/faq.html#docxtemplater-in-a-react-project)
+- [Angular](https://docxtemplater.readthedocs.io/en/latest/faq.html#docxtemplater-in-an-angular-project)
+- [Vue](https://docxtemplater.readthedocs.io/en/latest/faq.html#docxtemplater-in-a-vuejs-project)
+
 Build it yourself
 -----------------
 

@@ -24,6 +24,7 @@
 - [Installation in the browser](https://docxtemplater.readthedocs.io/en/latest/installation.html#browser)
 - [Generate a document in node](https://docxtemplater.readthedocs.io/en/latest/generate.html#node)
 - [Generate a document in the browser](https://docxtemplater.readthedocs.io/en/latest/generate.html#browser)
+- [Generate a document in React, Angular or Vue](https://docxtemplater.readthedocs.io/en/latest/generate.html#react-angular-vue)
 
 ## Documentation
 
