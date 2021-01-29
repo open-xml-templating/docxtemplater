@@ -337,6 +337,8 @@ the default parser.
 
 You could implement it this way, when writing `{$company}` :
 
+.. code-block:: javascript
+
     function parser(tag) {
         return {
             get(scope, context) {
