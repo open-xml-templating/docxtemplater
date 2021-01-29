@@ -256,7 +256,7 @@ If you explicitly don't want this behavior because you want the nullGetter to ha
 
 .. code-block:: javascript
 
-    parser(tag) {
+    function parser(tag) {
         return {
             get(scope, context) {
                 if (context.num < context.scopePath.length) {
@@ -292,7 +292,7 @@ following condition :
 
 .. code-block:: javascript
 
-    parser(tag) {
+    function parser(tag) {
         return {
             get(scope, context) {
                 const onlyDeepestScope = tag[0] === '!';
@@ -301,7 +301,7 @@ following condition :
                         return null;
                     }
                     else {
-                        // Replace "!name" by "name"
+                        // Remove the leading "!", ie: "!name" => "name"
                         tag = tag.substr(1);
                     }
                 }
@@ -311,6 +311,52 @@ following condition :
             },
         };
     },
+
+Parser example to always use the root scope
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Let's say that at the root of your data, you have some property called "company".
+
+You need to access it within a loop, but the company is also part of the element
+that is looped upon.
+
+With following data :
+
+.. code-block:: javascript
+
+    doc.setData({
+        company: 'ACME Company',
+        contractors: [
+            { company: "The other Company" },
+            { company: "Foobar Company" },
+        ]
+    });
+
+If you want to access the company at the root level, it is not possible with
+the default parser.
+
+You could implement it this way, when writing `{$company}` :
+
+    function parser(tag) {
+        return {
+            get(scope, context) {
+                const onlyRootScope = tag[0] === '$';
+                if (onlyRootScope) {
+                    if (context.num !== 0) {
+                        return null;
+                    }
+                    else {
+                        // Remove the leading "$", ie: "$company" => "company"
+                        tag = tag.substr(1);
+                    }
+                }
+                // You can customize the rest of your parser here instead of
+                // scope[tag], by using the angular-parser for example.
+                return scope[tag];
+            },
+        };
+    },
+
 
 Custom delimiters
 -----------------
