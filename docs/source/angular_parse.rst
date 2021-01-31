@@ -35,8 +35,8 @@ Here's a code sample for how to use the angularParser :
 
 .. code-block:: javascript
 
-    // Please make sure to use angular-expressions 1.0.1 or later
-    // More detail at https://github.com/open-xml-templating/docxtemplater/issues/488
+    // Please make sure to use angular-expressions 1.1.2 or later
+    // More detail at https://github.com/open-xml-templating/docxtemplater/issues/589
     var expressions = require('angular-expressions');
     var assign = require("lodash/assign");
     // define your filter functions here, for example, to be able to write {clientname | lower}
