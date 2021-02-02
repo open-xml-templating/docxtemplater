@@ -39,7 +39,7 @@ See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older
 There are a few similar libraries that work with docx, here’s a list of those I know a bit about:
 
 - [docx4j](https://www.docx4java.org/trac/docx4j) : JAVA, this is probably the biggest docx library out there. There is no built in templating engine, but you can generate your docx yourself programmatically.
-- [docx.js](https://github.com/stephen-hardy/DOCX.js) : Javascript in the browser, you can create (not modify) your docx from scratch, but only do very simple things such as adding non formatted text. Documentation is missing.
+- [docx](https://github.com/dolanmiu/docx) : Javascript in the browser, you can create your docx from scratch, but not with template syntax, you need to "code your document" in Javascript.
 - [redocx](https://github.com/nitin42/redocx) : Create Docx document from scratch, using JSX syntax, last commit on December 2018.
 - [officegen](https://github.com/Ziv-Barber/officegen) : works only server side for the moment.
 
