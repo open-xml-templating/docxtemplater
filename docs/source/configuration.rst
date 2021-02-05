@@ -53,18 +53,18 @@ Lets take an example, If your template is :
 
 And we call `doc.setData({user: "John"})`
 
-Default Parser
-~~~~~~~~~~~~~~
-
-docxtemplater uses by default the following parser :
+Then you will have the following :
 
 .. code-block:: javascript
 
     const options = {
+        // This is how docxtemplater is configured by default
         parser: function(tag) {
-          // tag is "user"
+          // tag is the string "user", or whatever you have put inside the
+          // brackets, eg if your tag was {a==b}, then the value of tag would be
+          // "a==b"
           return {
-            'get': function(scope) {
+            get: function(scope) {
               // scope will be {user: "John"}
               if (tag === '.') {
                 return scope;
@@ -91,7 +91,7 @@ See `angular parser`_ for comprehensive documentation
 Deep Dive on the parser
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The parser function is given two arguments,
+The parser get function is given two arguments,
 
 For the template
 
@@ -109,10 +109,18 @@ And with this parser
 
 .. code-block:: javascript
 
-    function parser(scope, context) [
-        console.log(scope);
-        console.log(context);
-    }
+    const options = {
+        // This is how docxtemplater is configured by default
+        parser: function(tag) {
+          return {
+             get: function parser(scope, context) [
+                console.log(scope);
+                console.log(context);
+                return scope[tag];
+             }
+         }
+    };
+    const doc = new Docxtemplater(zip, options);
 
 
 For the tag `.` in the first iteration, the arguments will be :
@@ -159,16 +167,22 @@ Here is an example parser that allows you to lowercase or uppercase the data if 
 
     options = {
         parser: function(tag) {
-          // tag is "foo[lower]"
-          let changeCase = false;
-          if(tag.endsWith("[lower]") {
+          // tag can be "user[lower]", "user", or "user[upper]"
+          const lowerRegex = /\[lower\]$/;
+          const upperRegex = /\[upper\]$/;
+          let changeCase = "";
+          if(lowerRegex.test(tag)) {
             changeCase = "lower";
+            // transform tag from "user[lower]" to "user"
+            tag = tag.replace(lowerRegex, "")
           }
-          if(tag.endsWith("[upper]") {
+          if(upperRegex.test(tag)) {
             changeCase = "upper";
+            // transform tag from "user[upper]" to "user"
+            tag = tag.replace(upperRegex, "")
           }
           return {
-            'get': function(scope) {
+            get: function(scope) {
               let result = null;
               // scope will be {user: "John"}
               if (tag === '.') {
@@ -374,8 +388,9 @@ paragraphLoop
 -------------
 
 The paragraphLoop option has been added in version 3.2.0.
+Since it breaks backwards-compatibility, it is turned off by default.
 
-It is recommended to turn that option on, since it makes the rendering a little bit easier to reason about. Since it breaks backwards-compatibility, it is turned off by default.
+It is recommended to turn that option on, since it makes the rendering a little bit easier to reason about.
 
 .. code-block:: javascript
 
