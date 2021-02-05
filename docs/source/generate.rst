@@ -198,11 +198,12 @@ It is also possible to read the docx from an `<input type="file" id="doc">`, by 
     }
 
 
-React, Angular, Vue
--------------------
+React, Angular, Vue, Next.JS
+----------------------------
 
 There are examples of usage to generate a document in the FAQ for the following libraries :
 
-- [React](https://docxtemplater.readthedocs.io/en/latest/faq.html#docxtemplater-in-a-react-project)
-- [Angular](https://docxtemplater.readthedocs.io/en/latest/faq.html#docxtemplater-in-an-angular-project)
-- [Vue](https://docxtemplater.readthedocs.io/en/latest/faq.html#docxtemplater-in-a-vuejs-project)
+- `React <faq.html#docxtemplater-in-a-react-project>`_
+- `Angular <faq.html#docxtemplater-in-an-angular-project>`_
+- `Vue <faq.html#docxtemplater-in-a-vuejs-project>`_
+- `Next.js <faq.html#docxtemplater-in-a-next-js-project>`_

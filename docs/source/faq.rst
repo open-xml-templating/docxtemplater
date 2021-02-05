@@ -753,6 +753,115 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
       `
     };
 
+Docxtemplater in a Next.js project
+----------------------------------
+
+There is an `online nextjs demo`_ available on codesandbox.
+
+.. _`online nextjs demo`: https://codesandbox.io/s/docxtemplater-with-nextjs-o1nqo
+
+You can use the following code :
+
+.. code-block:: javascript
+
+    import SiteLayout from "../components/SiteLayout";
+    import React from "react";
+    import Docxtemplater from "docxtemplater";
+    import PizZip from "pizzip";
+    import { saveAs } from "file-saver";
+    let PizZipUtils = null;
+    if (typeof window !== "undefined") {
+      import("pizzip/utils/index.js").then(function (r) {
+        PizZipUtils = r;
+      });
+    }
+
+    function loadFile(url, callback) {
+      PizZipUtils.getBinaryContent(url, callback);
+    }
+
+    const generateDocument = () => {
+      loadFile("https://docxtemplater.com/tag-example.docx", function (
+        error,
+        content
+      ) {
+        if (error) {
+          throw error;
+        }
+        var zip = new PizZip(content);
+        var doc = new Docxtemplater().loadZip(zip);
+        doc.setData({
+          first_name: "John",
+          last_name: "Doe",
+          phone: "0652455478",
+          description: "New Website"
+        });
+        try {
+          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+          doc.render();
+        } catch (error) {
+          // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+          function replaceErrors(key, value) {
+            if (value instanceof Error) {
+              return Object.getOwnPropertyNames(value).reduce(function (
+                error,
+                key
+              ) {
+                error[key] = value[key];
+                return error;
+              },
+              {});
+            }
+            return value;
+          }
+          console.log(JSON.stringify({ error: error }, replaceErrors));
+
+          if (error.properties && error.properties.errors instanceof Array) {
+            const errorMessages = error.properties.errors
+              .map(function (error) {
+                return error.properties.explanation;
+              })
+              .join("\n");
+            console.log("errorMessages", errorMessages);
+            // errorMessages is a humanly readable message looking like this :
+            // 'The tag beginning with "foobar" is unopened'
+          }
+          throw error;
+        }
+        var out = doc.getZip().generate({
+          type: "blob",
+          mimeType:
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        }); //Output the document using Data-URI
+        saveAs(out, "output.docx");
+      });
+    };
+
+    const Index = () => (
+      <SiteLayout>
+        <div className="mt-8 max-w-xl mx-auto px-8">
+          <h1 className="text-center">
+            <span className="block text-xl text-gray-600 leading-tight">
+              Welcome to this
+            </span>
+            <span className="block text-5xl font-bold leading-none">
+              Awesome Website
+            </span>
+          </h1>
+          <div className="mt-12 text-center">
+            <button
+              onClick={generateDocument}
+              className="inline-block bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg px-6 py-4 leading-tight"
+            >
+              Generate document
+            </button>
+          </div>
+        </div>
+      </SiteLayout>
+    );
+
+    export default Index;
+
 Getting access to page number / total number of pages or regenerate Table of Contents
 -------------------------------------------------------------------------------------
 
