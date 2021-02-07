@@ -221,6 +221,7 @@ describe("Inspect module", function () {
 				raw: "#products",
 				lIndex: 15,
 				sectPrCount: 0,
+				sectPrIndex: 0,
 				module: "loop",
 				inverted: false,
 				offset: 0,
@@ -255,6 +256,7 @@ describe("Inspect module", function () {
 						inverted: false,
 						offset: 70,
 						sectPrCount: 0,
+						sectPrIndex: 0,
 						endLindex: 89,
 						lIndex: 89,
 						subparsed: [
@@ -271,6 +273,7 @@ describe("Inspect module", function () {
 								module: "loop",
 								raw: "#proof",
 								sectPrCount: 0,
+								sectPrIndex: 0,
 								inverted: false,
 								offset: 117,
 								endLindex: 133,

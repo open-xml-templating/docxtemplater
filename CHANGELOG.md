@@ -1,3 +1,9 @@
+### 3.19.10
+
+When having a document that has breaks to change the amount of columns, and loops surrounding the breaks, some pagebreaks could appear in the document.
+
+Now, the section breaks should no more be transformed into page breaks.
+
 ### 3.19.9
 
 When having a document containing a table like this :

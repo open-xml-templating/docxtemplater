@@ -72,6 +72,26 @@ function addPageBreakAtBeginning(subRendered) {
 	subRendered.parts.unshift('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 }
 
+function addContinuousType(parts) {
+	let stop = false;
+	let inSectPr = false;
+	return parts.reduce(function (result, part) {
+		if (stop === false && startsWith(part, "<w:sectPr")) {
+			inSectPr = true;
+		}
+		if (inSectPr) {
+			if (startsWith(part, "<w:type")) {
+				stop = true;
+			}
+			if (stop === false && startsWith(part, "</w:sectPr")) {
+				result.push('<w:type w:val="continuous"/>');
+			}
+		}
+		result.push(part);
+		return result;
+	}, []);
+}
+
 function dropHeaderFooterRefs(parts) {
 	return parts.filter(function (text) {
 		if (
@@ -118,6 +138,7 @@ function getSectPrHeaderFooterChangeCount(chunks) {
 class LoopModule {
 	constructor() {
 		this.name = "LoopModule";
+		this.totalSectPr = 0;
 		this.prefix = {
 			start: "#",
 			end: "/",
@@ -189,6 +210,8 @@ class LoopModule {
 	postparse(parsed, { basePart }) {
 		if (basePart) {
 			basePart.sectPrCount = getSectPrHeaderFooterChangeCount(parsed);
+			basePart.sectPrIndex = this.totalSectPr;
+			this.totalSectPr += basePart.sectPrCount;
 		}
 		if (
 			!basePart ||
@@ -259,14 +282,16 @@ class LoopModule {
 			) {
 				addPageBreakAtEnd(subRendered);
 			}
-			if (part.sectPrCount === 1) {
-				if (
-					i !== 0 ||
-					scopeManager.scopePathItem.some(function (i) {
-						return i !== 0;
-					})
-				) {
+			const isNotFirst = scopeManager.scopePathItem.some(function (i) {
+				return i !== 0;
+			});
+			if (isNotFirst) {
+				if (part.sectPrCount === 1) {
 					subRendered.parts = dropHeaderFooterRefs(subRendered.parts);
+				}
+				if (part.sectPrIndex === 0) {
+					// For the first sectPr in the document, add the continuous attribute (except for the first iteration)
+					subRendered.parts = addContinuousType(subRendered.parts);
 				}
 			}
 			if (part.hasPageBreakBeginning && isInsideParagraphLoop(part)) {

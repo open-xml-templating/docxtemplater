@@ -539,7 +539,7 @@ describe("Dash Loop", function () {
 	});
 });
 
-describe("Pagebreaks inside loops", function () {
+describe("Section breaks inside loops", function () {
 	it("should work at beginning of paragraph loop with 3 elements", function () {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		const doc = createDoc("page-break-inside-condition.docx");
@@ -637,6 +637,37 @@ describe("Pagebreaks inside loops", function () {
 		shouldBeSame({
 			doc,
 			expectedName: "expected-paragraph-loop-empty-with-pagebreak.docx",
+		});
+	});
+
+	it("should make first section break of the file continuous", function () {
+		const tags = {
+			loop: [1, 2, 3],
+		};
+		const doc = createDocV4("loop-with-section-break.docx", {
+			paragraphLoop: true,
+			parser: angularParser,
+		});
+		doc.setData(tags);
+		doc.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-loop-with-section-break.docx",
+		});
+	});
+
+	it("should make first section break of the file continuous", function () {
+		const tags = {
+			loop: [1, 2, 3],
+		};
+		const doc = createDocV4("loop-with-section-break.docx", {
+			parser: angularParser,
+		});
+		doc.setData(tags);
+		doc.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-loop-with-section-break-2.docx",
 		});
 	});
 });
