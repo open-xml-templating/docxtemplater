@@ -40,7 +40,7 @@ shouldBeSame will, for each XML file that is inside the zip document, pretty pri
 Regression tests
 ----------------
 
-There are many regression tests, eg tests that are there to ensure that bugs that occured once will not appear again in the future.
+There are many regression tests, ie tests that are there to ensure that bugs that occured once will not appear again in the future.
 
 A good example of such a test is
 
@@ -132,4 +132,4 @@ For example for this test:
     });
 
 Here we verify that rendering a loop of 1000 items takes less than 60ms.
-This happens to also be a regression test, because they was a problem when generating documents with loops (the loops became very slow for more than 500 items), and we now ensure that such a regression cannot occur in the future.
+This happens to also be a regression test, because there was a problem when generating documents with loops (the loops became very slow for more than 500 items), and we now ensure that such regressions will not appear again.
