@@ -261,7 +261,7 @@ It does so by looking at the content of the "[Content_Types].xml" file and by lo
 My document is corrupted, what should I do ?
 --------------------------------------------
 
-If you are inserting multiple images inside a loop, it is possible that word cannot handle the docPr attributes correctly. You can try to add the following code in your constructor.
+If you are inserting multiple images inside a loop, it is possible that word cannot handle the docPr attributes correctly. You can try to add the following code before instantiating the Docxtemplater instance.
 
 .. code-block:: javascript
 
