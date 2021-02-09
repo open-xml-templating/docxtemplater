@@ -1,4 +1,4 @@
-**29th January 2021 : A security vulnerability has been found in "angular-expressions" that could affect you if you use the angular-parser feature. You should upgrade the angular-parser to 1.1.2. See https://github.com/open-xml-templating/docxtemplater/issues/589 for more details.**
+**29th January 2021 : A security vulnerability has been found in the npm package : "angular-expressions" that could affect you if you use the angular-parser feature. You should upgrade the angular-expressions package to 1.1.2. See https://github.com/open-xml-templating/docxtemplater/issues/589 for more details.**
 
 # docxtemplater
 
