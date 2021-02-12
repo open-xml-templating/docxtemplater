@@ -156,6 +156,9 @@ describe("Speed test", function () {
 			if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
 				maxRenderDuration = 3000;
 			}
+			if (browserMatches(/firefox (68)/)) {
+				maxRenderDuration = 2500;
+			}
 			expect(renderDuration).to.be.below(maxRenderDuration);
 		});
 
