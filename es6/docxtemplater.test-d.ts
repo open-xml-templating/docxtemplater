@@ -74,4 +74,9 @@ doc3.compile();
 doc3.resolveData({a: "b"}).then(function() {
     doc3.render();
 });
+const text = doc3.getFullText();
+const text2 = doc3.getFullText("word/heading1.xml");
 
+// Error because getFullText requires a string parameter
+expectError(doc3.getFullText(false));
+expectError(doc3.getFullText(10));

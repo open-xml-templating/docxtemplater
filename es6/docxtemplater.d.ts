@@ -108,7 +108,7 @@ declare class Docxtemplater {
     setOptions(options: DXT.Options): this
     attachModule(module: DXT.Module): this
     compile(): this
-    getFullText(): string
+    getFullText(path?: string): string
 }
 
 export default Docxtemplater;
