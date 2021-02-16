@@ -3,6 +3,7 @@
 const DocUtils = require("./doc-utils");
 DocUtils.traits = require("./traits");
 DocUtils.moduleWrapper = require("./module-wrapper");
+const createScope = require("./scope-manager");
 const {
 	throwMultiError,
 	throwResolveBeforeCompile,
@@ -30,7 +31,7 @@ const {
 	throwApiVersionError,
 } = require("./errors");
 
-const currentModuleApiVersion = [3, 24, 0];
+const currentModuleApiVersion = [3, 25, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
@@ -39,6 +40,7 @@ const Docxtemplater = class Docxtemplater {
 				"The modules argument of docxtemplater's constructor must be an array"
 			);
 		}
+		this.scopeManagers = {};
 		this.compiled = {};
 		this.modules = [commonModule()];
 		this.setOptions(options);
@@ -212,28 +214,60 @@ const Docxtemplater = class Docxtemplater {
 		currentFile.preparse();
 		this.compiled[fileName] = currentFile;
 	}
+	getScopeManager(to, currentFile, tags) {
+		if (!this.scopeManagers[to]) {
+			this.scopeManagers[to] = createScope({
+				tags: tags || {},
+				parser: this.parser,
+				cachedParsers: currentFile.cachedParsers,
+			});
+		}
+		return this.scopeManagers[to];
+	}
 	resolveData(data) {
 		let errors = [];
 		if (!Object.keys(this.compiled).length) {
 			throwResolveBeforeCompile();
 		}
-		return Promise.resolve(data)
-			.then((data) => {
-				return Promise.all(
-					Object.keys(this.compiled).map((from) => {
+		return Promise.resolve(data).then((data) => {
+			this.setData(data);
+			this.setModules({
+				data: this.data,
+				Lexer,
+			});
+			this.mapper = this.modules.reduce(function (value, module) {
+				return module.getRenderedMap(value);
+			}, {});
+			return Promise.all(
+				Object.keys(this.mapper).map((to) => {
+					const { from, data } = this.mapper[to];
+					return Promise.resolve(data).then((data) => {
 						const currentFile = this.compiled[from];
-						return currentFile.resolveTags(data).catch(function (errs) {
-							errors = errors.concat(errs);
-						});
-					})
-				);
-			})
-			.then((resolved) => {
+						currentFile.filePath = to;
+						currentFile.scopeManager = this.getScopeManager(
+							to,
+							currentFile,
+							data
+						);
+						currentFile.scopeManager.resolved = [];
+						return currentFile.resolveTags(data).then(
+							function (result) {
+								currentFile.scopeManager.finishedResolving = true;
+								return result;
+							},
+							function (errs) {
+								errors = errors.concat(errs);
+							}
+						);
+					});
+				})
+			).then((resolved) => {
 				if (errors.length !== 0) {
 					throwMultiError(errors);
 				}
 				return concatArrays(resolved);
 			});
+		});
 	}
 	compile() {
 		if (Object.keys(this.compiled).length) {
@@ -348,6 +382,7 @@ const Docxtemplater = class Docxtemplater {
 			const { from, data } = this.mapper[to];
 			const currentFile = this.compiled[from];
 			currentFile.setTags(data);
+			currentFile.scopeManager = this.getScopeManager(to, currentFile, data);
 			currentFile.render(to);
 			this.zip.file(to, currentFile.content, { createFolders: true });
 		});

@@ -1474,6 +1474,7 @@ describe("Async errors", function () {
 				},
 			};
 		}
+
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -1485,7 +1486,7 @@ describe("Async errors", function () {
 						properties: {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
-							scope: {},
+							scope: { abc: true },
 							tag: "raw|isfalse",
 							rootError: { message: "foo 1" },
 							offset: 0,
@@ -1497,7 +1498,7 @@ describe("Async errors", function () {
 						properties: {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
-							scope: {},
+							scope: { abc: true },
 							tag: "raw|istrue",
 							rootError: { message: "foo 2" },
 							offset: 14,
@@ -1512,7 +1513,7 @@ describe("Async errors", function () {
 		});
 		doc.compile();
 		function create() {
-			return doc.resolveData().then(function () {
+			return doc.resolveData({ abc: true }).then(function () {
 				return doc.render();
 			});
 		}

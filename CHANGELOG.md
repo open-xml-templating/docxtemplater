@@ -1,3 +1,11 @@
+### 3.20.0
+
+Change how the resolve algorithm works internally.
+
+This fixes a bug in the slides module and image module, when used together, in async mode, where all image tags coming after a condition or loop would not be shown.
+
+Because this induces an internal incompatible change, if you use the footnotes module, you have to upgrade the footnotes module to the version 3.2.0
+
 ### 3.19.10
 
 When having a document that has breaks to change the amount of columns, and loops surrounding the breaks, some pagebreaks could appear in the document.

@@ -1,5 +1,4 @@
 const { wordToUtf8, convertSpaces, defaults } = require("./doc-utils");
-const createScope = require("./scope-manager");
 const xmlMatcher = require("./xml-matcher");
 const { throwContentMustBeString } = require("./errors");
 const Lexer = require("./lexer");
@@ -38,22 +37,12 @@ module.exports = class XmlTemplater {
 	}
 	setTags(tags) {
 		this.tags = tags != null ? tags : {};
-		this.scopeManager = createScope({
-			tags: this.tags,
-			parser: this.parser,
-			cachedParsers: this.cachedParsers,
-		});
 		return this;
 	}
 	resolveTags(tags) {
 		this.tags = tags != null ? tags : {};
-		this.scopeManager = createScope({
-			tags: this.tags,
-			parser: this.parser,
-			cachedParsers: this.cachedParsers,
-		});
 		const options = this.getOptions();
-		options.scopeManager = createScope(options);
+		options.scopeManager = this.scopeManager;
 		options.resolve = resolve;
 		return resolve(options).then(({ resolved, errors }) => {
 			errors.forEach((error) => {
@@ -67,8 +56,10 @@ module.exports = class XmlTemplater {
 				throw errors;
 			}
 			return Promise.all(resolved).then((resolved) => {
+				options.scopeManager.finishedResolving = true;
+				options.scopeManager.resolved = resolved;
 				this.setModules({ inspect: { resolved } });
-				return (this.resolved = resolved);
+				return resolved;
 			});
 		});
 	}
@@ -156,8 +147,8 @@ module.exports = class XmlTemplater {
 	render(to) {
 		this.filePath = to;
 		const options = this.getOptions();
-		options.resolved = this.resolved;
-		options.scopeManager = createScope(options);
+		options.resolved = this.scopeManager.resolved;
+		options.scopeManager = this.scopeManager;
 		options.render = render;
 		options.joinUncorrupt = joinUncorrupt;
 		const { errors, parts } = render(options);

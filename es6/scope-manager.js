@@ -18,7 +18,7 @@ function find(list, fn) {
 
 function getValue(tag, meta, num) {
 	const scope = this.scopeList[num];
-	if (this.resolved) {
+	if (this.root.finishedResolving) {
 		let w = this.resolved;
 		this.scopePath.forEach((p, index) => {
 			const lIndex = this.scopeLindex[index];
@@ -104,6 +104,7 @@ function getValueAsync(tag, meta, num) {
 // This class responsibility is to manage the scope
 const ScopeManager = class ScopeManager {
 	constructor(options) {
+		this.root = options.root || this;
 		this.scopePath = options.scopePath;
 		this.scopePathItem = options.scopePathItem;
 		this.scopePathLength = options.scopePathLength;
@@ -130,7 +131,7 @@ const ScopeManager = class ScopeManager {
 		);
 	}
 	loopOverValue(value, functor, inverted) {
-		if (this.resolved) {
+		if (this.root.finishedResolving) {
 			inverted = false;
 		}
 		const type = Object.prototype.toString.call(value);
@@ -186,6 +187,7 @@ const ScopeManager = class ScopeManager {
 	}
 	createSubScopeManager(scope, tag, i, part, length) {
 		return new ScopeManager({
+			root: this.root,
 			resolved: this.resolved,
 			parser: this.parser,
 			cachedParsers: this.cachedParsers,

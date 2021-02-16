@@ -1070,8 +1070,21 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
+	inversed_loop_simple: {
+		it: "should work well with inversed loop simple",
+		content: "<w:t>{^b}{label}{/}</w:t>",
+		result: '<w:t xml:space="preserve">hi</w:t>',
+		scope: {
+			b: false,
+			label: "hi",
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
 	inversed_loop: {
-		it: "should work well with inversed loop",
+		it: "should work well with nested inversed loop",
 		content: "<w:t>{#a}{^b}{label}{/}{/}</w:t>",
 		result: '<w:t xml:space="preserve">hi</w:t>',
 		scope: {
@@ -1083,23 +1096,10 @@ const fixtures = {
 		resolved: null,
 	},
 	inversed_loop_nested: {
-		it: "should work well with inversed loop nested",
+		it: "should work well with deeply nested inversed loop nested",
 		content: "<w:t>{#a}{^b}{^c}{label}{/}{/}{/}</w:t>",
 		result: '<w:t xml:space="preserve">hi</w:t>',
 		scope: {
-			a: [{ b: false, label: "hi" }],
-		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
-		resolved: null,
-	},
-	inversed_loop_nested_resolved: {
-		it: "should work well with inversed loop nested",
-		content: "<w:t>{#a}{^b}{^c}{label}{/}{/}{/}</w:t>",
-		result: '<w:t xml:space="preserve">hi</w:t>',
-		scope: {
-			label: "outer",
 			a: [{ b: false, label: "hi" }],
 		},
 		lexed: null,
