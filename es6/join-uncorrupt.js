@@ -1,4 +1,29 @@
-function joinUncorrupt(parts, contains) {
+const { endsWith, startsWith } = require("./doc-utils");
+const filetypes = require("./filetypes");
+
+function addEmptyParagraphAfterTable(parts) {
+	let beforeSectPr = false;
+	for (let i = parts.length - 1; i >= 0; i--) {
+		const part = parts[i];
+		if (startsWith(part, "<w:sectPr")) {
+			beforeSectPr = true;
+		}
+		if (beforeSectPr) {
+			const trimmed = part.trim();
+			if (endsWith(trimmed, "</w:tbl>")) {
+				parts.splice(i + 1, 0, "<w:p><w:r><w:t></w:t></w:r></w:p>");
+				return parts;
+			}
+			if (endsWith(trimmed, "</w:p>")) {
+				return parts;
+			}
+		}
+	}
+	return parts;
+}
+
+function joinUncorrupt(parts, options) {
+	const contains = options.fileTypeConfig.tagShouldContain || [];
 	// Before doing this "uncorruption" method here, this was done with the `part.emptyValue` trick, however, there were some corruptions that were not handled, for example with a template like this :
 	//
 	// ------------------------------------------------
@@ -7,6 +32,9 @@ function joinUncorrupt(parts, contains) {
 	// ------------------------------------------------
 	let collecting = "";
 	let currentlyCollecting = -1;
+	if (!options.basePart && filetypes.docx.indexOf(options.contentType) !== -1) {
+		parts = addEmptyParagraphAfterTable(parts);
+	}
 	return parts.reduce(function (full, part) {
 		for (let i = 0, len = contains.length; i < len; i++) {
 			const { tag, shouldContain, value } = contains[i];

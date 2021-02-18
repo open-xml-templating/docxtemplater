@@ -321,9 +321,10 @@ class LoopModule {
 				errors,
 			};
 		}
-		const contains = options.fileTypeConfig.tagShouldContain || [];
-
-		return { value: options.joinUncorrupt(totalValue, contains), errors };
+		return {
+			value: options.joinUncorrupt(totalValue, { ...options, basePart: part }),
+			errors,
+		};
 	}
 	resolve(part, options) {
 		if (part.type !== "placeholder" || part.module !== moduleName) {

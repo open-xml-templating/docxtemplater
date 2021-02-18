@@ -1,3 +1,7 @@
+### 3.20.1
+
+Automatically add empty paragraph after table if the table is the last element in a document.
+
 ### 3.20.0
 
 Change how the resolve algorithm works internally.

@@ -416,6 +416,13 @@ describe("Table", function () {
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
 
+	it("should not corrupt document with empty rawxml after a table, at the end of the document", function () {
+		const doc = createDoc("raw-xml-after-table.docx");
+		doc.setData({});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-raw-xml-after-table.docx" });
+	});
+
 	it("should not corrupt document with selfclosing w:sdtContent tag", function () {
 		const doc = createDoc("self-closing-w-sdtcontent.docx");
 		doc.setData({});
