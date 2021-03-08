@@ -32,6 +32,9 @@ describe("Algorithm", function () {
 			} catch (error) {
 				errorVerifier(error, fixture.errorType, fixture.error);
 			}
+			if (fixture.error) {
+				throw new Error("Fixture should have failed but did not fail");
+			}
 			if (fixture.result !== null) {
 				expect(iModule.inspect.content).to.be.deep.equal(
 					fixture.result,
@@ -80,6 +83,9 @@ describe("Algorithm", function () {
 					doc.render();
 				} catch (error) {
 					errorVerifier(error, fixture.errorType, fixture.error);
+				}
+				if (fixture.error) {
+					throw new Error("Fixture should have failed but did not fail");
 				}
 				cleanRecursive(iModule.inspect.lexed);
 				cleanRecursive(iModule.inspect.parsed);

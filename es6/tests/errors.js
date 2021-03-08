@@ -166,6 +166,40 @@ describe("Compilation errors", function () {
 		);
 	});
 
+	it("should fail early when a loop closes the wrong loop", function () {
+		const content =
+			"<w:t>{#loop1}{#loop2}{/loop3}{/loop3}{/loop2}{/loop1}</w:t>";
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "TemplateError",
+						message: "Unopened loop",
+						properties: {
+							file: "word/document.xml",
+							xtag: "loop3",
+							id: "unopened_loop",
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Unopened loop",
+						properties: {
+							file: "word/document.xml",
+							xtag: "loop3",
+							id: "unopened_loop",
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+		const create = createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
 	it("should fail when rawtag is not in paragraph", function () {
 		const content = "<w:t>{@myrawtag}</w:t>";
 		const expectedError = {
@@ -701,6 +735,44 @@ describe("Multi errors", function () {
 			},
 		};
 
+		const create = createXmlTemplaterDocx.bind(null, content);
+		expectToThrow(create, Errors.XTTemplateError, expectedError);
+	});
+
+	it("should work with wrongly nested loops", function () {
+		const content = `
+		<w:t>
+			{#users}.........{/companies}
+			{#companies}.....{/users}
+		</w:t>
+		`;
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						name: "TemplateError",
+						message: "Unopened loop",
+						properties: {
+							file: "word/document.xml",
+							id: "unopened_loop",
+							xtag: "companies",
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Unclosed loop",
+						properties: {
+							file: "word/document.xml",
+							id: "unclosed_loop",
+							xtag: "companies",
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
 		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(create, Errors.XTTemplateError, expectedError);
 	});

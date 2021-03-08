@@ -208,18 +208,18 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	throw err;
 }
 
-function getUnmatchedLoopException(options) {
-	const { location } = options;
+function getUnmatchedLoopException(part) {
+	const { location, offset } = part;
 	const t = location === "start" ? "unclosed" : "unopened";
 	const T = location === "start" ? "Unclosed" : "Unopened";
 
 	const err = new XTTemplateError(`${T} loop`);
-	const tag = options.part.value;
+	const tag = part.value;
 	err.properties = {
 		id: `${t}_loop`,
 		explanation: `The loop with tag "${tag}" is ${t}`,
 		xtag: tag,
-		offset: options.part.offset,
+		offset,
 	};
 	return err;
 }

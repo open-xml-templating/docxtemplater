@@ -1,3 +1,22 @@
+### 3.21.0
+
+Update algorithm for loops to have more chance to show the underlying error.
+
+For example, with the following template :
+
+```
+{#a}
+	{#b}
+		{#c}
+		{/d}
+		{/d}
+		{/c}
+	{/b}
+{/a}
+```
+
+The algorithm will now show that the {/d} tags are involved in the issue.
+
 ### 3.20.1
 
 Automatically add empty paragraph after table if the table is the last element in a document.
