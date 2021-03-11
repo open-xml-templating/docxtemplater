@@ -1312,6 +1312,74 @@ const fixtures = {
 			},
 		}),
 	},
+	spacepreserve: {
+		it: "should add space=preserve to last tag",
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		content: `<w:p>
+      <w:r>
+        <w:t>Hello {firstName} {</w:t>
+      </w:r>
+      <w:r>
+        <w:t>lastName</w:t>
+      </w:r>
+      <w:r>
+        <w:t>} world</w:t>
+      </w:r>
+    </w:p>`,
+		result: `<w:p>
+      <w:r>
+        <w:t xml:space="preserve">Hello undefined undefined</w:t>
+      </w:r>
+      <w:r>
+        <w:t></w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> world</w:t>
+      </w:r>
+    </w:p>`,
+	},
+	spacepreserve2: {
+		it: "should add space=preserve to last tag when having middle tag",
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		content: `<w:p>
+		<w:r>
+			<w:t>Hello {</w:t>
+		</w:r>
+		<w:r>
+			<w:t>last_name</w:t>
+		</w:r>
+		<w:r>
+			<w:t>} {</w:t>
+		</w:r>
+		<w:r>
+			<w:t>first_name</w:t>
+		</w:r>
+		<w:r>
+			<w:t>} what's up ?</w:t>
+		</w:r>
+    </w:p>`,
+		result: `<w:p>
+		<w:r>
+			<w:t xml:space="preserve">Hello undefined</w:t>
+		</w:r>
+		<w:r>
+			<w:t></w:t>
+		</w:r>
+		<w:r>
+			<w:t xml:space="preserve"> undefined</w:t>
+		</w:r>
+		<w:r>
+			<w:t></w:t>
+		</w:r>
+		<w:r>
+			<w:t xml:space="preserve"> what's up ?</w:t>
+		</w:r>
+    </w:p>`,
+	},
 };
 
 fixtures.rawxmlemptycontent = clone(fixtures.rawxml);

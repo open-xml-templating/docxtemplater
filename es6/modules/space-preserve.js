@@ -38,7 +38,6 @@ const spacePreserve = {
 			lastTextTag = 0;
 		function isStartingPlaceHolder(part, chunk) {
 			return (
-				!endLindex &&
 				part.type === "placeholder" &&
 				(!part.module || part.module === "loop") &&
 				chunk.length > 1
@@ -59,8 +58,8 @@ const spacePreserve = {
 				chunk[0].value = addXMLPreserve(chunk, 0);
 			}
 			if (isStartingPlaceHolder(part, chunk)) {
+				chunk[lastTextTag].value = addXMLPreserve(chunk, lastTextTag);
 				endLindex = part.endLindex;
-				chunk[0].value = addXMLPreserve(chunk, 0);
 			}
 			if (isTextEnd(part) && part.lIndex > endLindex) {
 				if (endLindex !== 0) {
