@@ -343,3 +343,40 @@ Note that if you use a standard tag, like `{full_name = first_name + last_name}`
     {@total_price = price + vat}
 
 This way, all these assignment lines will be dropped.
+
+Retrieving $index as part of an expression
+------------------------------------------
+
+One might need to have a condition on the $index when inside a loop.
+
+To do this, I would recommend the following :
+
+.. code-block:: javascript
+
+    var expressions = require('angular-expressions');
+    var assign = require("lodash/assign");
+    var last = require("lodash/last");
+    function angularParser(tag) {
+        if (tag === '.') {
+            return {
+                get: function(s){ return s;}
+            };
+        }
+        const expr = expressions.compile(
+            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        );
+        return {
+            get: function(scope, context) {
+                let obj = {};
+                const index = last(context.scopePathItem);
+                const scopeList = context.scopeList;
+                const num = context.num;
+                for (let i = 0, len = num + 1; i < len; i++) {
+                    obj = assign(obj, scopeList[i]);
+                }
+                obj = assign(obj, {"$index": index});
+                return expr(scope, obj);
+            }
+        };
+    }
+    new Docxtemplater(zip, {parser:angularParser});

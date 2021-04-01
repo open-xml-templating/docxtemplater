@@ -413,6 +413,21 @@ describe("Docxtemplater loops", function () {
 		expect(c).to.be.deep.equal(expectedContent);
 	});
 
+	it("should be possible to have conditions with $index with angular-parser", function () {
+		const content = `<w:t>{#todos}{#$index==0}FIRST {/}{text} {/todos}</w:t>`;
+		const expectedContent = `<w:t xml:space="preserve">FIRST Hello Other todo </w:t>`;
+		const scope = { todos: [
+			{text: "Hello"},
+			{text: "Other todo"}
+		] };
+		const xmlTemplater = createXmlTemplaterDocx(content, {
+			tags: scope,
+			parser: angularParser,
+		});
+		const c = getContent(xmlTemplater);
+		expect(c).to.be.deep.equal(expectedContent);
+	});
+
 	it("should provide inverted loops", function () {
 		const content = "<w:t>{^products}No products found{/products}</w:t>";
 		[{ products: [] }, { products: false }, {}].forEach(function (tags) {

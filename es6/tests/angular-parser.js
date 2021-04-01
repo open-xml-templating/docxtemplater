@@ -1,5 +1,6 @@
 const expressions = require("angular-expressions");
 const assign = require("lodash/assign");
+const last = require("lodash/last");
 
 function angularParser(tag) {
 	if (tag === ".") {
@@ -25,10 +26,12 @@ function angularParser(tag) {
 		get(scope, context) {
 			let obj = {};
 			const scopeList = context.scopeList;
+			const index = last(context.scopePathItem);
 			const num = context.num;
 			for (let i = 0, len = num + 1; i < len; i++) {
 				obj = assign(obj, scopeList[i]);
 			}
+			obj = assign(obj, { $index: index });
 			const result = expr(scope, obj);
 			if (isAngularAssignment) {
 				return "";
