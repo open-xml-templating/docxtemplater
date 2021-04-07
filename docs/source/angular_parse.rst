@@ -349,7 +349,25 @@ Retrieving $index as part of an expression
 
 One might need to have a condition on the $index when inside a loop.
 
-To do this, I would recommend the following :
+For example, if you have two arrays of the same length and you want to loop
+over both of them at the same time :
+
+.. code-block:: json
+
+    {
+        "names": [ "John", "Mary" ],
+        "ages": [ 15, 26 ],
+    }
+
+.. code-block:: text
+
+    {#names}
+    {#$index == 0}First item !{/}
+    {names[$index]}
+    {ages[$index]}
+    {/names}
+
+To do this, you can use the following parser :
 
 .. code-block:: javascript
 
