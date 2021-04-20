@@ -12,8 +12,15 @@ const outputPath = path.resolve(
 const entry =
 	FILE === "test" ? "./es6/tests/index.js" : "./es6/docxtemplater.js";
 
+const webpack = require("webpack");
+
 module.exports = {
 	entry,
+	plugins: [
+		new webpack.DefinePlugin({
+			"process.env.FAST": "''",
+		}),
+	],
 	output: {
 		path: outputPath,
 		filename: outputFilename,
@@ -25,6 +32,7 @@ module.exports = {
 			xmldom: path.resolve(__dirname, "es6/browser-versions/xmldom.js"),
 			fs: path.resolve(__dirname, "es6/browser-versions/fs.js"),
 		},
+		fallback: { path: false },
 	},
 	module: {
 		rules: [

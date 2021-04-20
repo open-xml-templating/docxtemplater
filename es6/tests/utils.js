@@ -51,8 +51,13 @@ function unifiedDiff(actual, expected) {
 	);
 }
 
-function isNode12() {
-	return process && process.version && process.version.indexOf("v12") === 0;
+function isNode14() {
+	return (
+		typeof process !== "undefined" &&
+		process &&
+		process.version &&
+		process.version.indexOf("v14") === 0
+	);
 }
 
 function walk(dir) {
@@ -89,26 +94,28 @@ function createXmlTemplaterDocx(content, options = {}) {
 }
 
 function writeFile(expectedName, zip) {
-	const writeFile = path.resolve(examplesDirectory, "..", expectedName);
-	if (fs.writeFileSync) {
-		fs.writeFileSync(
-			writeFile,
-			zip.generate({ type: "nodebuffer", compression: "DEFLATE" })
-		);
-	}
-	if (typeof window !== "undefined" && window.saveAs) {
-		const out = zip.generate({
-			type: "blob",
-			mimeType:
-				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-			compression: "DEFLATE",
-		});
-		saveAs(out, expectedName); // comment to see the error
+	if (path.resolve) {
+		const writeFile = path.resolve(examplesDirectory, "..", expectedName);
+		if (fs.writeFileSync) {
+			fs.writeFileSync(
+				writeFile,
+				zip.generate({ type: "nodebuffer", compression: "DEFLATE" })
+			);
+		}
+		if (typeof window !== "undefined" && window.saveAs) {
+			const out = zip.generate({
+				type: "blob",
+				mimeType:
+					"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+				compression: "DEFLATE",
+			});
+			saveAs(out, expectedName); // comment to see the error
+		}
 	}
 }
 function unlinkFile(expectedName) {
-	const writeFile = path.resolve(examplesDirectory, "..", expectedName);
-	if (fs.unlinkSync) {
+	if (path.resolve) {
+		const writeFile = path.resolve(examplesDirectory, "..", expectedName);
 		try {
 			fs.unlinkSync(writeFile);
 		} catch (e) {
@@ -139,30 +146,42 @@ function shouldBeSame(options) {
 		uniq(Object.keys(zip.files).concat(Object.keys(expectedZip.files))).map(
 			function (filePath) {
 				const suffix = `for "${filePath}"`;
+				const file = zip.files[filePath];
+				const expectedFile = expectedZip.files[filePath];
 				expect(expectedZip.files[filePath]).to.be.an(
 					"object",
 					`The file ${filePath} doesn't exist on ${expectedName}`
 				);
-				expect(zip.files[filePath]).to.be.an(
+				expect(file).to.be.an(
 					"object",
 					`The file ${filePath} doesn't exist on generated file`
 				);
-				expect(zip.files[filePath].name).to.be.equal(
-					expectedZip.files[filePath].name,
+				expect(file.name).to.be.equal(
+					expectedFile.name,
 					`Name differs ${suffix}`
 				);
-				expect(zip.files[filePath].options.dir).to.be.equal(
-					expectedZip.files[filePath].options.dir,
+				expect(file.options.dir).to.be.equal(
+					expectedFile.options.dir,
 					`IsDir differs ${suffix}`
 				);
-				const text1 = zip.files[filePath].asText().replace(/\n|\t/g, "");
-				const text2 = expectedZip.files[filePath]
-					.asText()
-					.replace(/\n|\t/g, "");
+				const isImg =
+					filePath.indexOf(".png") !== -1 || filePath.indexOf(".jpeg") !== -1;
+				if (isImg) {
+					const l1 = file._data.crc32;
+					const l2 = expectedFile._data.crc32;
+					expect(l1).to.be.a("number");
+					expect(l1).to.be.equal(l2, `Content differs ${suffix}`);
+					return;
+				}
+				const text1 = file.asText().replace(/\n|\t/g, "");
+				const text2 = expectedFile.asText().replace(/\n|\t/g, "");
 				if (endsWith(filePath, "/")) {
 					return;
 				}
-				if (filePath.indexOf(".png") !== -1) {
+				if (
+					filePath.indexOf(".png") !== -1 ||
+					filePath.indexOf(".jpeg") !== -1
+				) {
 					expect(text1.length).to.be.equal(
 						text2.length,
 						`Content differs ${suffix}`
@@ -675,7 +694,7 @@ module.exports = {
 	rejectSoon,
 	start,
 	wrapMultiError,
-	isNode12,
+	isNode14,
 	createDocV4,
 	getZip,
 	getParameterByName,

@@ -414,12 +414,10 @@ describe("Docxtemplater loops", function () {
 	});
 
 	it("should be possible to have conditions with $index with angular-parser", function () {
-		const content = `<w:t>{#todos}{#$index==0}FIRST {/}{text} {/todos}</w:t>`;
-		const expectedContent = `<w:t xml:space="preserve">FIRST Hello Other todo </w:t>`;
-		const scope = { todos: [
-			{text: "Hello"},
-			{text: "Other todo"}
-		] };
+		const content = "<w:t>{#todos}{#$index==0}FIRST {/}{text} {/todos}</w:t>";
+		const expectedContent =
+			'<w:t xml:space="preserve">FIRST Hello Other todo </w:t>';
+		const scope = { todos: [{ text: "Hello" }, { text: "Other todo" }] };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
 			parser: angularParser,
@@ -1034,9 +1032,11 @@ describe("Constructor v4", function () {
 			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 		);
 
-		expect(() => new Docxtemplater(Buffer.from("content"))).to.throw(
-			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
-		);
+		if (typeof Buffer !== "undefined") {
+			expect(() => new Docxtemplater(Buffer.from("content"))).to.throw(
+				"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+			);
+		}
 	});
 
 	it("should work when the delimiters are passed", function () {
