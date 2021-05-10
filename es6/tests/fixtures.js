@@ -1204,8 +1204,7 @@ const fixtures = {
 		resolved: null,
 	},
 	condition_w_tr: {
-		it:
-			"should work well with -w:tr conditions inside table inside paragraphLoop condition",
+		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
 		content:
 			"<w:p><w:r><w:t>{#cond}</w:t></w:r></w:p><w:tbl><w:tr><w:tc><w:p><w:r><w:t>{-w:tc cond}{val}{/}</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p><w:r><w:t>{/}</w:t></w:r></w:p>",
 		result:

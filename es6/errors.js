@@ -173,9 +173,8 @@ function throwExpandNotFound(options) {
 		message = "Raw tag not in paragraph",
 	} = options;
 	const { part } = options;
-	let {
-		explanation = `The tag "${value}" is not inside a paragraph`,
-	} = options;
+	let { explanation = `The tag "${value}" is not inside a paragraph` } =
+		options;
 	if (typeof explanation === "function") {
 		explanation = explanation(part);
 	}

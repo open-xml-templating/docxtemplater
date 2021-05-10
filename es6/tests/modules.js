@@ -113,9 +113,10 @@ describe("Module xml parse", function () {
 
 		const xmlKeys = Object.keys(xmlDocuments);
 		expect(xmlKeys).to.deep.equal(["word/_rels/document.xml.rels"]);
-		const rels = xmlDocuments[
-			"word/_rels/document.xml.rels"
-		].getElementsByTagName("Relationship");
+		const rels =
+			xmlDocuments["word/_rels/document.xml.rels"].getElementsByTagName(
+				"Relationship"
+			);
 		expect(rels.length).to.equal(10);
 
 		const str = xml2str(xmlDocuments["word/_rels/document.xml.rels"]);

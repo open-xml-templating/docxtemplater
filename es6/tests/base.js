@@ -156,9 +156,8 @@ describe("Inspect module", function () {
 		const data = { offre: [{}], prenom: "John" };
 		doc.setData(data);
 		doc.render();
-		const { summary, detail } = iModule.fullInspected[
-			"word/document.xml"
-		].nullValues;
+		const { summary, detail } =
+			iModule.fullInspected["word/document.xml"].nullValues;
 
 		expect(iModule.inspect.tags).to.be.deep.equal(data);
 		expect(detail).to.be.an("array");
