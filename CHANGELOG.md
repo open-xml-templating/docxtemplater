@@ -1,6 +1,6 @@
 ### 3.21.1
 
-Bugfix issue with spaces that would dissapear after rendering :
+Bugfix issue with spaces that would disappear after rendering :
 
 Correctly add xml:space="preserve" to all relevant w:t tags, ie all `<w:t>` tags that contain a placeholder.
 
