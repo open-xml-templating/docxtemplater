@@ -1,6 +1,13 @@
+const nbspRegex = new RegExp(String.fromCharCode(160), "g");
+function replaceNbsps(str) {
+	return str.replace(nbspRegex, " ");
+}
+
 function match(condition, placeHolderContent) {
 	if (typeof condition === "string") {
-		return placeHolderContent.substr(0, condition.length) === condition;
+		return (
+			replaceNbsps(placeHolderContent.substr(0, condition.length)) === condition
+		);
 	}
 	if (condition instanceof RegExp) {
 		return condition.test(placeHolderContent);

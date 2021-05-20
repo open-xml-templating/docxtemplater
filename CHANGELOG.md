@@ -1,3 +1,11 @@
+### 3.21.2
+
+Internal change to allow to match tags with non-breaking space.
+
+When entering `Ctrl+Shift+Space`, a "non-breaking" space is created.
+
+When using a non-breaking space in the tag `{:subtemplate doc}`, or `{:table data}, the tag would not be replaced correctly. You need to upgrade the PRO modules as well to their latest version in order to fix the bug.
+
 ### 3.21.1
 
 Bugfix issue with spaces that would disappear after rendering :
