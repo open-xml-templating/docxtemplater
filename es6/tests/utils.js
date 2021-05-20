@@ -125,22 +125,24 @@ function unlinkFile(expectedName) {
 		}
 	}
 }
+function getText(file) {
+	return file.asText().replace(/\n|\t/g, "");
+}
 
 /* eslint-disable no-console */
-function shouldBeSame(options) {
-	const zip = options.doc.getZip();
-	const { expectedName } = options;
-	let expectedZip;
+function shouldBeSame({ doc, expectedName }) {
+	const zip = doc.getZip();
 
-	try {
-		expectedZip = documentCache[expectedName].zip;
-	} catch (e) {
+	if (!documentCache[expectedName]) {
 		writeFile(expectedName, zip);
 		console.log(
 			JSON.stringify({ msg: "Expected file does not exists", expectedName })
 		);
-		throw e;
+		throw new Error(
+			"File ${expectedName} does not exist in examples directory"
+		);
 	}
+	const expectedZip = documentCache[expectedName].zip;
 
 	try {
 		uniq(Object.keys(zip.files).concat(Object.keys(expectedZip.files))).map(
@@ -167,48 +169,50 @@ function shouldBeSame(options) {
 				const isImg =
 					filePath.indexOf(".png") !== -1 || filePath.indexOf(".jpeg") !== -1;
 				if (isImg) {
-					const l1 = file._data.crc32;
-					const l2 = expectedFile._data.crc32;
-					expect(l1).to.be.a("number");
-					expect(l1).to.be.equal(l2, `Content differs ${suffix}`);
+					const actualHash = file._data.crc32;
+					if (actualHash) {
+						const expectedHash = expectedFile._data.crc32;
+						expect(actualHash).to.be.a("number");
+						expect(actualHash).to.be.equal(
+							expectedHash,
+							"Content differs for " + suffix
+						);
+					} else {
+						const actualLength = file._data.length;
+						const expectedLength = expectedFile._data.uncompressedSize;
+						expect(actualLength).to.be.a("number");
+						expect(actualLength).to.be.equal(
+							expectedLength,
+							"Content differs for " + suffix
+						);
+					}
 					return;
 				}
-				const text1 = file.asText().replace(/\n|\t/g, "");
-				const text2 = expectedFile.asText().replace(/\n|\t/g, "");
 				if (endsWith(filePath, "/")) {
 					return;
 				}
-				if (
-					filePath.indexOf(".png") !== -1 ||
-					filePath.indexOf(".jpeg") !== -1
-				) {
-					expect(text1.length).to.be.equal(
-						text2.length,
-						`Content differs ${suffix}`
-					);
-					expect(text1).to.be.equal(text2, `Content differs ${suffix}`);
-				} else {
-					expect(text1).to.not.match(
-						emptyNamespace,
-						`The file ${filePath} has empty namespaces`
-					);
-					expect(text2).to.not.match(
-						emptyNamespace,
-						`The file ${filePath} has empty namespaces`
-					);
-					if (text1 === text2) {
-						return;
-					}
-					const pText1 = xmlPrettify(text1, options);
-					const pText2 = xmlPrettify(text2, options);
+				const actualText = getText(file);
+				const expectedText = getText(expectedFile);
+				expect(actualText).to.not.match(
+					emptyNamespace,
+					`The file ${filePath} has empty namespaces`
+				);
+				expect(expectedText).to.not.match(
+					emptyNamespace,
+					`The file ${filePath} has empty namespaces`
+				);
+				if (actualText === expectedText) {
+					return;
+				}
+				const prettyActualText = xmlPrettify(actualText);
+				const prettyExpectedText = xmlPrettify(expectedText);
 
-					if (pText1 !== pText2) {
-						const pd = unifiedDiff(pText1, pText2);
-						expect(pText1).to.be.equal(
-							pText2,
-							"Content differs \n" + suffix + "\n" + pd
-						);
-					}
+				if (prettyActualText !== prettyExpectedText) {
+					const prettyDiff = unifiedDiff(prettyActualText, prettyExpectedText);
+					expect(prettyActualText).to.be.equal(
+						prettyExpectedText,
+						"Content differs \n" + suffix + "\n" + prettyDiff
+					);
 				}
 			}
 		);
@@ -382,6 +386,7 @@ function errorVerifier(e, type, expectedError) {
 			"\nactual : \n" +
 			JSON.stringify(e.properties.errors);
 		expect(expectedError.properties.errors).to.be.an("array", msg);
+
 		const l1 = e.properties.errors.length;
 		const l2 = expectedError.properties.errors.length;
 		expect(l1).to.equal(
