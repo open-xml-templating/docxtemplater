@@ -10,6 +10,7 @@ const {
 	SAUCE_USERNAME,
 	SAUCE_ACCESS_KEY,
 } = process.env;
+const chalk = require("chalk");
 function exit(message) {
 	console.log(message);
 	/* eslint-disable-next-line no-process-exit */
@@ -219,7 +220,9 @@ server.listen(port, async function () {
 			}
 			expect(passes).to.be.above(0);
 			console.log(
-				`browser tests successful (${passes} passes) on ${fullBrowserName}`
+				chalk.green(
+					`browser tests successful (${passes} passes) on ${fullBrowserName}`
+				)
 			);
 			if (BROWSER === "SAUCELABS") {
 				updateSaucelabsStatus(client, true, (e) => {

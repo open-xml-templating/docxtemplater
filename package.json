@@ -43,6 +43,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.4",
+    "chalk": "^2.4.2",
     "diff": "^5.0.0",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.8",

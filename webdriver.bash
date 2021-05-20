@@ -6,12 +6,15 @@ port4444used() {
 	netstat -tnlp 2>/dev/null | grep 4444 >/dev/null
 }
 install_selenium() {
+	rm node_modules/selenium-standalone/.selenium/*driver -rf
 	echo "Installing selenium"
 	selenium-standalone install
 	rsync node_modules/selenium-standalone/.selenium/ "$HOME/tmp/.selenium/"
 }
+export GRAY='[90m'
+export NORMAL='[m'
 start_selenium() {
-	{ selenium-standalone start 2>&1 | tee /tmp/webdriver.log ; } &
+	{ selenium-standalone start 2>&1 | tee /tmp/webdriver.log | sed -E "s/^.*$/$GRAY\0$NORMAL/g" ; } &
 	selenium_pid="$!"
 }
 stop_selenium() {
@@ -24,6 +27,9 @@ stop_selenium() {
 		done
 	fi
 }
+force_stop_selenium() {
+	fuser -k 4444/tcp
+}
 cleanup() {
 	stop_selenium
 }
@@ -34,7 +40,6 @@ if grep '|' <<<"$BROWSER" >/dev/null
 then
 	while read -r -d '|' browser
 	do
-		echo "$browser"
 		BROWSER="$browser" ./webdriver.bash
 	done <<<"$BROWSER"
 	exit 0
@@ -44,37 +49,56 @@ export -f stop_selenium
 
 if [ "$BROWSER" != "SAUCELABS" ]
 then
-	if port4444used
-	then
-		echo "Using existing selenium"
-	else
-		if ! [ -d node_modules/selenium-standalone/.selenium ]
+	retries=5
+	while [ "$retries" -gt 0 ]
+	do
+		retries="$((retries - 1))"
+		if port4444used
 		then
-			mkdir -p "$HOME/tmp/"
-			if [ -d "$HOME/tmp/.selenium" ]
+			echo "Using existing selenium for $BROWSER"
+		else
+			if ! [ -d node_modules/selenium-standalone/.selenium ]
 			then
-				echo "Copying selenium from cache"
-				cp -r "$HOME/tmp/.selenium" node_modules/selenium-standalone/.selenium
-			else
-				install_selenium
+				mkdir -p "$HOME/tmp/"
+				if [ -d "$HOME/tmp/.selenium" ]
+				then
+					echo "Copying selenium from cache"
+					cp -r "$HOME/tmp/.selenium" node_modules/selenium-standalone/.selenium
+				else
+					install_selenium
+				fi
 			fi
+			echo "Starting selenium"
+			start_selenium
+			while ! port4444used;
+			do
+				if grep 'Missing.*driver' </tmp/webdriver.log
+				then
+					echo "missing driver"
+					rm /tmp/webdriver.log
+					force_stop_selenium
+					install_selenium
+					start_selenium
+				fi
+				sleep 0.5
+			done
 		fi
-		echo "Starting selenium"
-		start_selenium
-		while ! port4444used;
-		do
-			if grep 'Missing.*driver' </tmp/webdriver.log
-			then
-				echo "missing driver"
-				rm /tmp/webdriver.log
-				install_selenium
-				start_selenium
-			fi
-			sleep 0.5
-		done
-	fi
-	node webdriver.js
-	exit "$?"
+		result=0
+		{ FORCE_COLOR=1 node webdriver.js | tee /tmp/test.log; } || result="$?"
+		if [ "$result" = "0" ]
+		then
+			exit 0
+		fi
+		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log
+		then
+			echo "Retrying by restarting selenium: $retries"
+			force_stop_selenium
+			install_selenium
+			start_selenium
+		else
+			exit "$result"
+		fi
+	done
 else
 	bash webdriver-saucelabs.bash
 fi
