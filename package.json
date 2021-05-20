@@ -8,12 +8,6 @@
       "name": "Edgar Hipp"
     }
   ],
-  "aliasify": {
-    "aliases": {
-      "xmldom": "./js/browser-versions/xmldom.js",
-      "fs": "./js/browser-versions/fs.js"
-    }
-  },
   "main": "js/docxtemplater.js",
   "keywords": [
     "docx",
