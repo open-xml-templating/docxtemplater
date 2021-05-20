@@ -166,8 +166,13 @@ function shouldBeSame({ doc, expectedName }) {
 					expectedFile.options.dir,
 					`IsDir differs ${suffix}`
 				);
-				const isImg =
-					filePath.indexOf(".png") !== -1 || filePath.indexOf(".jpeg") !== -1;
+
+				if (endsWith(filePath, "/")) {
+					return;
+				}
+
+				const isImg = filePath.indexOf(".png") !== -1 || filePath.indexOf(".jpeg") !== -1 || filePath.indexOf(".jpg") !== -1;
+
 				if (isImg) {
 					const actualHash = file._data.crc32;
 					if (actualHash) {
@@ -186,9 +191,6 @@ function shouldBeSame({ doc, expectedName }) {
 							"Content differs for " + suffix
 						);
 					}
-					return;
-				}
-				if (endsWith(filePath, "/")) {
 					return;
 				}
 				const actualText = getText(file);
