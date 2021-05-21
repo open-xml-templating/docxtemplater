@@ -150,13 +150,13 @@ function shouldBeSame({ doc, expectedName }) {
 				const suffix = `for "${filePath}"`;
 				const file = zip.files[filePath];
 				const expectedFile = expectedZip.files[filePath];
-				expect(expectedZip.files[filePath]).to.be.an(
+				expect(expectedFile).to.be.an(
 					"object",
-					`The file ${filePath} doesn't exist on ${expectedName}`
+					`The file ${filePath} doesn't exist on examples/${expectedName}`
 				);
 				expect(file).to.be.an(
 					"object",
-					`The file ${filePath} doesn't exist on generated file`
+					`The file ${filePath} doesn't exist on ${expectedName}`
 				);
 				expect(file.name).to.be.equal(
 					expectedFile.name,
@@ -167,13 +167,15 @@ function shouldBeSame({ doc, expectedName }) {
 					`IsDir differs ${suffix}`
 				);
 
-				if (endsWith(filePath, "/")) {
+				if (file.options.dir) {
 					return;
 				}
 
-				const isImg = filePath.indexOf(".png") !== -1 || filePath.indexOf(".jpeg") !== -1 || filePath.indexOf(".jpg") !== -1;
+				const isBinary =
+					file.options.binary ||
+					(expectedFile.options.binary && filePath.indexOf(".xml") === -1);
 
-				if (isImg) {
+				if (isBinary) {
 					const actualHash = file._data.crc32;
 					if (actualHash) {
 						const expectedHash = expectedFile._data.crc32;
