@@ -169,6 +169,7 @@ server.listen(port, async function () {
 		);
 	}
 	async function test() {
+		let interval;
 		try {
 			if (+new Date() - startTime > timeoutConnection * second) {
 				exit(
@@ -188,10 +189,38 @@ server.listen(port, async function () {
 			mochaUrl.query.browser = fullBrowserName;
 			await client.url(url.format(mochaUrl));
 
+			await waitForExist("li.test", 120000);
+			let index = 0;
+			let running = false;
+			interval = setInterval(async function () {
+				if (interval === null || running) {
+					return;
+				}
+				running = true;
+				const texts = await client.$$("li.test");
+				if (index === texts.length) {
+					return;
+				}
+				for (let i = index, len = texts.length; i < len; i++) {
+					if (interval === null) {
+						return;
+					}
+					const text = await texts[i].getText();
+					console.log(
+						text
+							.replace(/^(.*)\n(.*)$/g, "$2 $1")
+							.replace(/^(.*[^0-9])([0-9]+ms)$/g, "$1 $2")
+					);
+				}
+				index = texts.length;
+				running = false;
+			}, 100);
 			await waitForText("#status", 120000);
 			await client.pause(5000);
 			await waitForExist("li.failures a", 5000);
 			const text = await (await client.$("#mocha-stats")).getText();
+			clearInterval(interval);
+			interval = null;
 			const passes = parseInt(text.replace(passesRegex, "$1"), 10);
 			const failures = parseInt(text.replace(failuresRegex, "$1"), 10);
 			if (failures > 0) {
@@ -236,6 +265,8 @@ server.listen(port, async function () {
 			}
 			client.deleteSession();
 		} catch (e) {
+			clearInterval(interval);
+			interval = null;
 			if (e.message.indexOf("ECONNREFUSED") !== -1) {
 				return test();
 			}
