@@ -1,6 +1,6 @@
 const expressions = require("angular-expressions");
-const assign = require("lodash/assign");
-const last = require("lodash/last");
+const assign = require("lodash/assign.js");
+const last = require("lodash/last.js");
 
 function angularParser(tag) {
 	if (tag === ".") {

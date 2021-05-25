@@ -1,7 +1,7 @@
-const wrapper = require("../module-wrapper");
-const { getScopeCompilationError } = require("../errors");
-const { utf8ToWord, hasCorruptCharacters } = require("../doc-utils");
-const { getCorruptCharactersException } = require("../errors");
+const wrapper = require("../module-wrapper.js");
+const { getScopeCompilationError } = require("../errors.js");
+const { utf8ToWord, hasCorruptCharacters } = require("../doc-utils.js");
+const { getCorruptCharactersException } = require("../errors.js");
 
 const ftprefix = {
 	docx: "w",

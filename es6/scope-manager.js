@@ -1,7 +1,7 @@
 "use strict";
-const { getScopeParserExecutionError } = require("./errors");
-const { last } = require("./utils");
-const { concatArrays } = require("./doc-utils");
+const { getScopeParserExecutionError } = require("./errors.js");
+const { last } = require("./utils.js");
+const { concatArrays } = require("./doc-utils.js");
 
 function find(list, fn) {
 	const length = list.length >>> 0;

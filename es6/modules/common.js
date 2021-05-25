@@ -1,7 +1,7 @@
-const wrapper = require("../module-wrapper");
-const { concatArrays } = require("../doc-utils");
+const wrapper = require("../module-wrapper.js");
+const { concatArrays } = require("../doc-utils.js");
 
-const filetypes = require("../filetypes");
+const filetypes = require("../filetypes.js");
 
 class Common {
 	constructor() {

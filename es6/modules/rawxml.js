@@ -1,9 +1,9 @@
-const traits = require("../traits");
-const { isContent } = require("../doc-utils");
-const { throwRawTagShouldBeOnlyTextInParagraph } = require("../errors");
+const traits = require("../traits.js");
+const { isContent } = require("../doc-utils.js");
+const { throwRawTagShouldBeOnlyTextInParagraph } = require("../errors.js");
 
 const moduleName = "rawxml";
-const wrapper = require("../module-wrapper");
+const wrapper = require("../module-wrapper.js");
 
 function getInner({ part, left, right, postparsed, index }) {
 	const paragraphParts = postparsed.slice(left + 1, right);

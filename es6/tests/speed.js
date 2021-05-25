@@ -5,7 +5,7 @@ const {
 	expect,
 	createXmlTemplaterDocxNoRender,
 	browserMatches,
-} = require("./utils");
+} = require("./utils.js");
 
 const { times } = require("lodash");
 const inspectModule = require("../inspect-module.js");

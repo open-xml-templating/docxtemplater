@@ -1,4 +1,4 @@
-const { loadFile, loadDocument, rejectSoon } = require("./utils");
+const { loadFile, loadDocument, rejectSoon } = require("./utils.js");
 const Errors = require("../errors.js");
 const { expect } = require("chai");
 const {
@@ -7,9 +7,9 @@ const {
 	wrapMultiError,
 	expectToThrow,
 	expectToThrowAsync,
-} = require("./utils");
+} = require("./utils.js");
 
-const angularParser = require("./angular-parser");
+const angularParser = require("./angular-parser.js");
 
 describe("Compilation errors", function () {
 	it("should fail when parsing invalid xml (1)", function () {

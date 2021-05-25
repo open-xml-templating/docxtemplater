@@ -1,5 +1,5 @@
-const { endsWith, startsWith } = require("./doc-utils");
-const filetypes = require("./filetypes");
+const { endsWith, startsWith } = require("./doc-utils.js");
+const filetypes = require("./filetypes.js");
 
 function addEmptyParagraphAfterTable(parts) {
 	let beforeSectPr = false;

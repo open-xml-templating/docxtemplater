@@ -1,20 +1,20 @@
 "use strict";
 
-const DocUtils = require("./doc-utils");
-DocUtils.traits = require("./traits");
-DocUtils.moduleWrapper = require("./module-wrapper");
-const createScope = require("./scope-manager");
+const DocUtils = require("./doc-utils.js");
+DocUtils.traits = require("./traits.js");
+DocUtils.moduleWrapper = require("./module-wrapper.js");
+const createScope = require("./scope-manager.js");
 const {
 	throwMultiError,
 	throwResolveBeforeCompile,
 	throwRenderInvalidTemplate,
-} = require("./errors");
+} = require("./errors.js");
 
-const collectContentTypes = require("./collect-content-types");
+const collectContentTypes = require("./collect-content-types.js");
 const ctXML = "[Content_Types].xml";
-const commonModule = require("./modules/common");
+const commonModule = require("./modules/common.js");
 
-const Lexer = require("./lexer");
+const Lexer = require("./lexer.js");
 const {
 	defaults,
 	str2xml,
@@ -29,7 +29,7 @@ const {
 	throwFileTypeNotIdentified,
 	throwFileTypeNotHandled,
 	throwApiVersionError,
-} = require("./errors");
+} = require("./errors.js");
 
 const currentModuleApiVersion = [3, 25, 0];
 
@@ -451,8 +451,8 @@ function verifyErrors(doc) {
 }
 
 Docxtemplater.DocUtils = DocUtils;
-Docxtemplater.Errors = require("./errors");
-Docxtemplater.XmlTemplater = require("./xml-templater");
-Docxtemplater.FileTypeConfig = require("./file-type-config");
-Docxtemplater.XmlMatcher = require("./xml-matcher");
+Docxtemplater.Errors = require("./errors.js");
+Docxtemplater.XmlTemplater = require("./xml-templater.js");
+Docxtemplater.FileTypeConfig = require("./file-type-config.js");
+Docxtemplater.XmlMatcher = require("./xml-matcher.js");
 module.exports = Docxtemplater;

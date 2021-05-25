@@ -1,8 +1,8 @@
 "use strict";
 
 const { DOMParser, XMLSerializer } = require("xmldom");
-const { throwXmlTagNotFound } = require("./errors");
-const { last, first } = require("./utils");
+const { throwXmlTagNotFound } = require("./errors.js");
+const { last, first } = require("./utils.js");
 
 function parser(tag) {
 	return {

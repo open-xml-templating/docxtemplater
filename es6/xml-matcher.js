@@ -1,6 +1,6 @@
 "use strict";
 // res class responsibility is to parse the XML.
-const { pregMatchAll } = require("./doc-utils");
+const { pregMatchAll } = require("./doc-utils.js");
 
 function handleRecursiveCase(res) {
 	/*

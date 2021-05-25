@@ -1,10 +1,10 @@
-const wrapper = require("../module-wrapper");
+const wrapper = require("../module-wrapper.js");
 const {
 	isTextStart,
 	isTextEnd,
 	endsWith,
 	startsWith,
-} = require("../doc-utils");
+} = require("../doc-utils.js");
 const wTpreserve = '<w:t xml:space="preserve">';
 const wTpreservelen = wTpreserve.length;
 const wtEnd = "</w:t>";

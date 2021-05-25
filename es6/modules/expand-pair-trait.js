@@ -1,15 +1,15 @@
 const traitName = "expandPair";
-const mergeSort = require("../mergesort");
-const { getLeft, getRight } = require("../doc-utils");
+const mergeSort = require("../mergesort.js");
+const { getLeft, getRight } = require("../doc-utils.js");
 
-const wrapper = require("../module-wrapper");
-const { getExpandToDefault } = require("../traits");
+const wrapper = require("../module-wrapper.js");
+const { getExpandToDefault } = require("../traits.js");
 const {
 	getUnmatchedLoopException,
 	getClosingTagNotMatchOpeningTag,
 	throwLocationInvalid,
 	getUnbalancedLoopException,
-} = require("../errors");
+} = require("../errors.js");
 
 function getOpenCountChange(part) {
 	switch (part.location) {

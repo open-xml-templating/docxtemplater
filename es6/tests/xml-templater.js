@@ -3,7 +3,7 @@ const {
 	expect,
 	getContent,
 	createXmlTemplaterDocxNoRender,
-} = require("./utils");
+} = require("./utils.js");
 
 describe("XmlTemplater", function () {
 	it("should work with simpleContent", function () {

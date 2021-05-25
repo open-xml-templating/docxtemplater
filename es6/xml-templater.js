@@ -1,12 +1,12 @@
-const { wordToUtf8, convertSpaces, defaults } = require("./doc-utils");
-const xmlMatcher = require("./xml-matcher");
-const { throwContentMustBeString } = require("./errors");
-const Lexer = require("./lexer");
+const { wordToUtf8, convertSpaces, defaults } = require("./doc-utils.js");
+const xmlMatcher = require("./xml-matcher.js");
+const { throwContentMustBeString } = require("./errors.js");
+const Lexer = require("./lexer.js");
 const Parser = require("./parser.js");
 const render = require("./render.js");
 const postrender = require("./postrender.js");
 const resolve = require("./resolve.js");
-const joinUncorrupt = require("./join-uncorrupt");
+const joinUncorrupt = require("./join-uncorrupt.js");
 
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);

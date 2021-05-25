@@ -1,4 +1,4 @@
-const { createDoc, shouldBeSame, expect } = require("./utils");
+const { createDoc, shouldBeSame, expect } = require("./utils.js");
 
 describe("Docx docprops", function () {
 	it("should change values with template data", function () {

@@ -1,7 +1,7 @@
 const PizZip = require("pizzip");
 const { assign } = require("lodash");
 
-const angularParser = require("./angular-parser");
+const angularParser = require("./angular-parser.js");
 const Docxtemplater = require("../docxtemplater.js");
 const Errors = require("../errors.js");
 const { last } = require("../utils.js");
@@ -13,7 +13,7 @@ const {
 	getContent,
 	createDocV4,
 	getZip,
-} = require("./utils");
+} = require("./utils.js");
 const inspectModule = require("../inspect-module.js");
 
 function getLength(obj) {

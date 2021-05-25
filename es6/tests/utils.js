@@ -4,13 +4,13 @@ const { expect } = chai;
 const PizZip = require("pizzip");
 const fs = require("fs");
 const { get, unset, omit, uniq } = require("lodash");
-const errorLogger = require("../error-logger");
+const errorLogger = require("../error-logger.js");
 const diff = require("diff");
 const AssertionModule = require("./assertion-module.js");
 
 const Docxtemplater = require("../docxtemplater.js");
 const { first } = require("../utils.js");
-const xmlPrettify = require("./xml-prettify");
+const xmlPrettify = require("./xml-prettify.js");
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;

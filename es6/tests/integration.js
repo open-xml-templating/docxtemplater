@@ -7,13 +7,16 @@ const {
 	resolveSoon,
 	createXmlTemplaterDocxNoRender,
 	cleanRecursive,
-} = require("./utils");
+} = require("./utils.js");
 
-const printy = require("./printy");
+const printy = require("./printy.js");
 const { cloneDeep } = require("lodash");
-const { expectedPrintedPostParsed, rawXMLValue } = require("./data-fixtures");
+const {
+	expectedPrintedPostParsed,
+	rawXMLValue,
+} = require("./data-fixtures.js");
 
-const angularParser = require("./angular-parser");
+const angularParser = require("./angular-parser.js");
 const Errors = require("../errors.js");
 
 describe("Simple templating", function () {

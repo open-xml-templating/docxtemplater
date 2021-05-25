@@ -1,10 +1,10 @@
 "use strict";
 
-const loopModule = require("./modules/loop");
-const spacePreserveModule = require("./modules/space-preserve");
-const rawXmlModule = require("./modules/rawxml");
-const expandPairTrait = require("./modules/expand-pair-trait");
-const render = require("./modules/render");
+const loopModule = require("./modules/loop.js");
+const spacePreserveModule = require("./modules/space-preserve.js");
+const rawXmlModule = require("./modules/rawxml.js");
+const expandPairTrait = require("./modules/expand-pair-trait.js");
+const render = require("./modules/render.js");
 
 function PptXFileTypeConfig() {
 	return {

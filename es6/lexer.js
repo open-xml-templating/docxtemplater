@@ -5,8 +5,8 @@ const {
 	getDuplicateCloseTagException,
 	throwMalformedXml,
 	throwXmlInvalid,
-} = require("./errors");
-const { concatArrays, isTextStart, isTextEnd } = require("./doc-utils");
+} = require("./errors.js");
+const { concatArrays, isTextStart, isTextEnd } = require("./doc-utils.js");
 
 const NONE = -2;
 const EQUAL = 0;

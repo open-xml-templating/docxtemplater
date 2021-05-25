@@ -9,12 +9,12 @@ const {
 	isContent,
 	last,
 	first,
-} = require("./doc-utils");
+} = require("./doc-utils.js");
 const {
 	XTTemplateError,
 	throwExpandNotFound,
 	getLoopPositionProducesInvalidXMLError,
-} = require("./errors");
+} = require("./errors.js");
 
 function lastTagIsOpenTag(tags, tag) {
 	if (tags.length === 0) {

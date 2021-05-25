@@ -1,5 +1,5 @@
-const { wordToUtf8, concatArrays } = require("./doc-utils");
-const { match, getValue, getValues } = require("./prefix-matcher");
+const { wordToUtf8, concatArrays } = require("./doc-utils.js");
+const { match, getValue, getValues } = require("./prefix-matcher.js");
 
 function moduleParse(placeHolderContent, options) {
 	const modules = options.modules;

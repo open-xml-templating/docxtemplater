@@ -1,4 +1,4 @@
-const repeat = require("./string-repeat");
+const repeat = require("./string-repeat.js");
 
 module.exports = function printy(parsed, indent = 0) {
 	let indentWasNegative = false;

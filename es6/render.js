@@ -1,7 +1,7 @@
 "use strict";
 
-const { concatArrays } = require("./doc-utils");
-const { throwUnimplementedTagType } = require("./errors");
+const { concatArrays } = require("./doc-utils.js");
+const { throwUnimplementedTagType } = require("./errors.js");
 
 function moduleRender(part, options) {
 	let moduleRendered;

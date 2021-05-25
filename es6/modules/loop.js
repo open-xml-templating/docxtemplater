@@ -6,8 +6,8 @@ const {
 	isParagraphEnd,
 	isContent,
 	startsWith,
-} = require("../doc-utils");
-const wrapper = require("../module-wrapper");
+} = require("../doc-utils.js");
+const wrapper = require("../module-wrapper.js");
 
 const moduleName = "loop";
 

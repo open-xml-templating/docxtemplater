@@ -1,7 +1,7 @@
 const { clone, assign } = require("lodash");
-const angularParser = require("./angular-parser");
+const angularParser = require("./angular-parser.js");
 const Errors = require("../errors.js");
-const { wrapMultiError } = require("./utils");
+const { wrapMultiError } = require("./utils.js");
 
 const xmlSpacePreserveTag = {
 	type: "tag",

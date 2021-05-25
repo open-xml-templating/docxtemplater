@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-const repeat = require("./string-repeat");
+const repeat = require("./string-repeat.js");
 
 function getIndent(indent) {
 	return repeat("    ", indent);
