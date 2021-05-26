@@ -139,7 +139,7 @@ function shouldBeSame({ doc, expectedName }) {
 			JSON.stringify({ msg: "Expected file does not exists", expectedName })
 		);
 		throw new Error(
-			"File ${expectedName} does not exist in examples directory"
+			`File ${expectedName} does not exist in examples directory`
 		);
 	}
 	const expectedZip = documentCache[expectedName].zip;
