@@ -353,25 +353,28 @@ You could implement it this way, when writing `{$company}` :
 
 .. code-block:: javascript
 
-    function parser(tag) {
-        return {
-            get(scope, context) {
-                const onlyRootScope = tag[0] === '$';
-                if (onlyRootScope) {
-                    if (context.num !== 0) {
-                        return null;
+    const options = {
+        parser: function(tag) {
+            return {
+                get(scope, context) {
+                    const onlyRootScope = tag[0] === '$';
+                    if (onlyRootScope) {
+                        if (context.num !== 0) {
+                            return null;
+                        }
+                        else {
+                            // Remove the leading "$", ie: "$company" => "company"
+                            tag = tag.substr(1);
+                        }
                     }
-                    else {
-                        // Remove the leading "$", ie: "$company" => "company"
-                        tag = tag.substr(1);
-                    }
-                }
-                // You can customize the rest of your parser here instead of
-                // scope[tag], by using the angular-parser for example.
-                return scope[tag];
-            },
-        };
-    },
+                    // You can customize the rest of your parser here instead of
+                    // scope[tag], by using the angular-parser for example.
+                    return scope[tag];
+                },
+            };
+        },
+    };
+    const doc = new Docxtemplater(zip, options);
 
 
 Custom delimiters
