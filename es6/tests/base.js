@@ -100,7 +100,7 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 25, 0],
+					currentModuleApiVersion: [3, 26, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -115,14 +115,14 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 25, 0],
+					currentModuleApiVersion: [3, 26, 0],
 					neededVersion: [3, 44, 0],
 				},
 			}
 		);
 
 		expectToThrow(
-			doc.verifyApiVersion.bind(null, "3.25.100"),
+			doc.verifyApiVersion.bind(null, "3.26.100"),
 			Errors.XTAPIVersionError,
 			{
 				message:
@@ -130,8 +130,8 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 25, 0],
-					neededVersion: [3, 25, 100],
+					currentModuleApiVersion: [3, 26, 0],
+					neededVersion: [3, 26, 100],
 				},
 			}
 		);
@@ -303,7 +303,7 @@ describe("Docxtemplater loops", function () {
 			telephone: "0652455478",
 			description: "New Website",
 			offre: [
-				{ titre: "titre1", prix: "1250" },
+				{ titre: "titre1", prix: "1260" },
 				{ titre: "titre2", prix: "2000" },
 				{ titre: "titre3", prix: "1400", nom: "Offre" },
 			],
@@ -312,7 +312,7 @@ describe("Docxtemplater loops", function () {
 		doc.setData(tags);
 		doc.render();
 		expect(doc.getFullText()).to.be.equal(
-			"Votre proposition commercialeHippPrix: 1250Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar"
+			"Votre proposition commercialeHippPrix: 1260Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar"
 		);
 	});
 	it("should work with loops inside loops", function () {

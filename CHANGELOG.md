@@ -1,3 +1,7 @@
+### 3.22.0
+
+Add resolveOffset internal property on scope managers to be able to handle the slides loop case correctly.
+
 ### 3.21.2
 
 Internal change to allow to match tags with non-breaking space.

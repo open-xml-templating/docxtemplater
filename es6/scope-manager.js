@@ -20,7 +20,7 @@ function getValue(tag, meta, num) {
 	const scope = this.scopeList[num];
 	if (this.root.finishedResolving) {
 		let w = this.resolved;
-		this.scopePath.forEach((p, index) => {
+		this.scopePath.slice(this.resolveOffset).forEach((p, index) => {
 			const lIndex = this.scopeLindex[index];
 			w = find(w, function (r) {
 				return r.lIndex === lIndex;
@@ -105,6 +105,7 @@ function getValueAsync(tag, meta, num) {
 const ScopeManager = class ScopeManager {
 	constructor(options) {
 		this.root = options.root || this;
+		this.resolveOffset = options.resolveOffset || 0;
 		this.scopePath = options.scopePath;
 		this.scopePathItem = options.scopePathItem;
 		this.scopePathLength = options.scopePathLength;
@@ -188,6 +189,7 @@ const ScopeManager = class ScopeManager {
 	createSubScopeManager(scope, tag, i, part, length) {
 		return new ScopeManager({
 			root: this.root,
+			resolveOffset: this.resolveOffset,
 			resolved: this.resolved,
 			parser: this.parser,
 			cachedParsers: this.cachedParsers,

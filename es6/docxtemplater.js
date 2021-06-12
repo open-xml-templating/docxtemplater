@@ -31,7 +31,7 @@ const {
 	throwApiVersionError,
 } = require("./errors.js");
 
-const currentModuleApiVersion = [3, 25, 0];
+const currentModuleApiVersion = [3, 26, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
@@ -367,9 +367,11 @@ const Docxtemplater = class Docxtemplater {
 			data: this.data,
 			Lexer,
 		});
-		this.mapper = this.modules.reduce(function (value, module) {
-			return module.getRenderedMap(value);
-		}, {});
+		if (!this.mapper) {
+			this.mapper = this.modules.reduce(function (value, module) {
+				return module.getRenderedMap(value);
+			}, {});
+		}
 
 		this.fileTypeConfig.tagsXmlLexedArray = unique(
 			this.fileTypeConfig.tagsXmlLexedArray

@@ -42,23 +42,24 @@ module.exports = class XmlTemplater {
 	resolveTags(tags) {
 		this.tags = tags != null ? tags : {};
 		const options = this.getOptions();
+		const filePath = this.filePath;
 		options.scopeManager = this.scopeManager;
 		options.resolve = resolve;
 		return resolve(options).then(({ resolved, errors }) => {
 			errors.forEach((error) => {
-				// error properties might not be defined if some foreign
-				// (unhandled error not throw by docxtemplater willingly) is
+				// error properties might not be defined if some foreign error
+				// (unhandled error not thrown by docxtemplater willingly) is
 				// thrown.
 				error.properties = error.properties || {};
-				error.properties.file = this.filePath;
+				error.properties.file = filePath;
 			});
 			if (errors.length !== 0) {
 				throw errors;
 			}
 			return Promise.all(resolved).then((resolved) => {
-				options.scopeManager.finishedResolving = true;
+				options.scopeManager.root.finishedResolving = true;
 				options.scopeManager.resolved = resolved;
-				this.setModules({ inspect: { resolved } });
+				this.setModules({ inspect: { resolved, filePath } });
 				return resolved;
 			});
 		});
