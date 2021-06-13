@@ -1,6 +1,6 @@
 "use strict";
 
-const { concatArrays } = require("./doc-utils.js");
+const { concatArrays, utf8ToWord } = require("./doc-utils.js");
 const { throwUnimplementedTagType } = require("./errors.js");
 
 function moduleRender(part, options) {
@@ -38,6 +38,9 @@ function render(options) {
 			return moduleRendered.value;
 		}
 		if (part.type === "content" || part.type === "tag") {
+			if (part.position === "insidetag") {
+				return utf8ToWord(part.value);
+			}
 			return part.value;
 		}
 		throwUnimplementedTagType(part, i);

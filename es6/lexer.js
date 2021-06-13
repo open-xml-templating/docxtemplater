@@ -6,7 +6,12 @@ const {
 	throwMalformedXml,
 	throwXmlInvalid,
 } = require("./errors.js");
-const { concatArrays, isTextStart, isTextEnd } = require("./doc-utils.js");
+const {
+	wordToUtf8,
+	concatArrays,
+	isTextStart,
+	isTextEnd,
+} = require("./doc-utils.js");
 
 const NONE = -2;
 const EQUAL = 0;
@@ -361,34 +366,37 @@ function parseDelimiters(innerContentParts, delimiters) {
 }
 
 function getContentParts(xmlparsed) {
+	return xmlparsed.filter(function (part) {
+		return part.type === "content" && part.position === "insidetag";
+	});
+}
+
+function decodeContentParts(xmlparsed) {
 	let inTextTag = false;
-	const innerContentParts = [];
 	xmlparsed.forEach(function (part) {
 		inTextTag = updateInTextTag(part, inTextTag);
+		if (part.type === "content") {
+			part.position = inTextTag ? "insidetag" : "outsidetag";
+		}
 		if (inTextTag && part.type === "content") {
-			innerContentParts.push(part);
+			part.value = wordToUtf8(part.value);
 		}
 	});
-	return innerContentParts;
 }
 
 module.exports = {
 	parseDelimiters,
 	parse(xmlparsed, delimiters) {
-		let inTextTag = false;
+		decodeContentParts(xmlparsed);
 		const { parsed: delimiterParsed, errors } = parseDelimiters(
 			getContentParts(xmlparsed),
 			delimiters
 		);
 
-		let lexed = [];
+		const lexed = [];
 		let index = 0;
 		xmlparsed.forEach(function (part) {
-			inTextTag = updateInTextTag(part, inTextTag);
-			if (part.type === "content") {
-				part.position = inTextTag ? "insidetag" : "outsidetag";
-			}
-			if (inTextTag && part.type === "content") {
+			if (part.type === "content" && part.position === "insidetag") {
 				Array.prototype.push.apply(
 					lexed,
 					delimiterParsed[index].map(function (p) {
@@ -403,9 +411,8 @@ module.exports = {
 				lexed.push(part);
 			}
 		});
-		lexed = lexed.map(function (p, i) {
+		lexed.forEach(function (p, i) {
 			p.lIndex = i;
-			return p;
 		});
 		return { errors, lexed };
 	},

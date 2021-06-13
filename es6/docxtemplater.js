@@ -15,15 +15,8 @@ const ctXML = "[Content_Types].xml";
 const commonModule = require("./modules/common.js");
 
 const Lexer = require("./lexer.js");
-const {
-	defaults,
-	str2xml,
-	xml2str,
-	moduleWrapper,
-	utf8ToWord,
-	concatArrays,
-	unique,
-} = DocUtils;
+const { defaults, str2xml, xml2str, moduleWrapper, concatArrays, unique } =
+	DocUtils;
 const {
 	XTInternalError,
 	throwFileTypeNotIdentified,
@@ -173,10 +166,6 @@ const Docxtemplater = class Docxtemplater {
 			throw new Error(
 				"setOptions should be called with an object as first parameter"
 			);
-		}
-		if (options.delimiters) {
-			options.delimiters.start = utf8ToWord(options.delimiters.start);
-			options.delimiters.end = utf8ToWord(options.delimiters.end);
 		}
 		this.options = {};
 		Object.keys(defaults).forEach((key) => {

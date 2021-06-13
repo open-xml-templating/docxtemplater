@@ -666,6 +666,22 @@ describe("Section breaks inside loops", function () {
 		});
 	});
 
+	it("should work with delimiters << >> when saved in word as &gt;&gt;test>>", function () {
+		const tags = {
+			my_tag: "Hello John",
+		};
+		const doc = createDocV4("gt-delimiters.docx", {
+			parser: angularParser,
+			delimiters: { start: "<<", end: ">>" },
+		});
+		doc.setData(tags);
+		doc.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-rendered-hello.docx",
+		});
+	});
+
 	it("should make first section break of the file continuous", function () {
 		const tags = {
 			loop: [1, 2, 3],

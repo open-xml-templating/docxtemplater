@@ -1,3 +1,7 @@
+### 3.22.1
+
+Correctly handle `<<tag>>` delimiters when saved in word as `&lt;&lt;tag>>` Fixes #606
+
 ### 3.22.0
 
 Add resolveOffset internal property on scope managers to be able to handle the slides loop case correctly.

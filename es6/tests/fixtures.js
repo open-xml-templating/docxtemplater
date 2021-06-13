@@ -1375,7 +1375,7 @@ const fixtures = {
 			<w:t></w:t>
 		</w:r>
 		<w:r>
-			<w:t xml:space="preserve"> what's up ?</w:t>
+			<w:t xml:space="preserve"> what&apos;s up ?</w:t>
 		</w:r>
     </w:p>`,
 	},
