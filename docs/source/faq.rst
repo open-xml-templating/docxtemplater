@@ -36,7 +36,7 @@ This is because the zip will not be compressed in that case. To force the compre
 
 .. code-block:: javascript
 
-    var zip = doc.getZip().generate({
+    const zip = doc.getZip().generate({
             type: "nodebuffer",
             compression: "DEFLATE"
     });
@@ -164,7 +164,7 @@ The following code should load the binary content on all browsers:
         throw err; // or handle err
       }
 
-      var zip = new PizZip(data);
+      const zip = new PizZip(data);
     });
 
 Get list of placeholders
@@ -185,12 +185,14 @@ suite :
 
 .. code-block:: javascript
 
-    var InspectModule = require("docxtemplater/js/inspect-module");
-    var iModule = InspectModule();
+    const InspectModule = require("docxtemplater/js/inspect-module");
+    const iModule = InspectModule();
     const doc = new Docxtemplater(zip, { modules: [iModule] });
-    doc.render();
-    var tags = iModule.getAllTags();
+    const tags = iModule.getAllTags();
     console.log(tags);
+    // After getting the tags, you can optionally set some data and render the document like this :
+    // doc.setData(data);
+    // doc.render();
 
 With the following template :
 
@@ -441,8 +443,8 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
 
    // Please make sure to use angular-expressions 1.1.2 or later
    // More detail at https://github.com/open-xml-templating/docxtemplater/issues/589
-   var expressions = require("angular-expressions");
-   var assign = require("lodash/assign");
+   const expressions = require("angular-expressions");
+   const assign = require("lodash/assign");
    function angularParser(tag) {
       if (tag === ".") {
          return {
@@ -524,8 +526,8 @@ You can use the following code :
             if (error) {
               throw error;
             }
-            var zip = new PizZip(content);
-            var doc = new Docxtemplater().loadZip(zip);
+            const zip = new PizZip(content);
+            const doc = new Docxtemplater().loadZip(zip);
             doc.setData({
               first_name: "John",
               last_name: "Doe",
@@ -564,7 +566,7 @@ You can use the following code :
               }
               throw error;
             }
-            var out = doc.getZip().generate({
+            const out = doc.getZip().generate({
               type: "blob",
               mimeType:
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -616,8 +618,8 @@ If you are using an angular version that supports the `import` keyword, you can 
           if (error) {
             throw error;
           }
-          var zip = new PizZip(content);
-          var doc = new Docxtemplater(zip);
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip);
           doc.setData({
             first_name: "John",
             last_name: "Doe",
@@ -656,7 +658,7 @@ If you are using an angular version that supports the `import` keyword, you can 
             }
             throw error;
           }
-          var out = doc.getZip().generate({
+          const out = doc.getZip().generate({
             type: "blob",
             mimeType:
               "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -696,8 +698,8 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
             if (error) {
               throw error;
             }
-            var zip = new PizZip(content);
-            var doc = new Docxtemplater(zip);
+            const zip = new PizZip(content);
+            const doc = new Docxtemplater(zip);
             doc.setData({
               first_name: "John",
               last_name: "Doe",
@@ -736,7 +738,7 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
               }
               throw error;
             }
-            var out = doc.getZip().generate({
+            const out = doc.getZip().generate({
               type: "blob",
               mimeType:
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -788,8 +790,8 @@ You can use the following code :
         if (error) {
           throw error;
         }
-        var zip = new PizZip(content);
-        var doc = new Docxtemplater().loadZip(zip);
+        const zip = new PizZip(content);
+        const doc = new Docxtemplater().loadZip(zip);
         doc.setData({
           first_name: "John",
           last_name: "Doe",
@@ -828,7 +830,7 @@ You can use the following code :
           }
           throw error;
         }
-        var out = doc.getZip().generate({
+        const out = doc.getZip().generate({
           type: "blob",
           mimeType:
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
