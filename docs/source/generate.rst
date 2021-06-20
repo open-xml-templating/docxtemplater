@@ -44,7 +44,7 @@ Node
         throw error;
     }
 
-    //Load the docx file as a binary
+    // Load the docx file as binary content
     var content = fs
         .readFileSync(path.resolve(__dirname, 'input.docx'), 'binary');
 
