@@ -180,6 +180,54 @@ And in your template,
 
 There are some interesting use cases for filters
 
+Data sorting
+~~~~~~~~~~~~
+
+If your data is the following :
+
+.. code-block:: json
+
+    {
+        "items": [
+            {
+                "name": "Acme Computer",
+                "price": 1000,
+            },
+            {
+                "name": "USB storage",
+                "price": 15,
+            },
+            {
+                "name": "Mouse & Keyboard",
+                "price": 150,
+            }
+        ],
+    }
+
+You might want to sort the items by price (ascending).
+
+You could do that again with a filter, like this :
+
+.. code-block:: text
+
+    {#items | sortBy:'price'}
+    {name} for a price of {price} €
+    {/}
+
+The code for this filter is :
+
+.. code-block:: javascript
+
+    const { sortBy } = require("lodash");
+    expressions.filters.sortBy = function(input, ...fields) {
+        // In our example field is the string "price"
+        // This condition should be used to make sure that if your input is
+        // undefined, your output will be undefined as well and will not
+        // throw an error
+        if (!input) return input;
+        return sortBy(input, fields);
+    }
+
 Data aggregation
 ~~~~~~~~~~~~~~~~
 
