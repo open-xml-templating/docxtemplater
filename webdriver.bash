@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
-selenium_pid=""
 port4444used() {
 	netstat -tnlp 2>/dev/null | grep 4444 >/dev/null
 }
@@ -13,6 +13,8 @@ install_selenium() {
 }
 export GRAY='[90m'
 export NORMAL='[m'
+
+selenium_pid=""
 start_selenium() {
 	{ selenium-standalone start 2>&1 | tee /tmp/webdriver.log | sed -E "s/^.*$/$GRAY\0$NORMAL/g" ; } &
 	selenium_pid="$!"
@@ -34,8 +36,11 @@ cleanup() {
 	stop_selenium
 }
 trap "cleanup" EXIT INT
+
 BROWSER="${BROWSER:-CHROME|FIREFOX|}"
 PATH="$PATH:./node_modules/.bin/"
+selenium_cache_dir="$HOME/tmp/.selenium"
+selenium_dir="node_modules/selenium-standalone/.selenium"
 if grep '|' <<<"$BROWSER" >/dev/null
 then
 	while read -r -d '|' browser
@@ -47,9 +52,13 @@ fi
 
 export -f stop_selenium
 
+isempty() {
+	[ ! "$(ls -A "$1")" ]
+}
+
 if [ "$BROWSER" != "SAUCELABS" ]
 then
-	retries=5
+	retries=2
 	while [ "$retries" -gt 0 ]
 	do
 		retries="$((retries - 1))"
@@ -57,13 +66,14 @@ then
 		then
 			echo "Using existing selenium for $BROWSER"
 		else
-			if ! [ -d node_modules/selenium-standalone/.selenium ]
+			if ! [ -d "$selenium_dir" ] || isempty "$selenium_dir"
 			then
+				rm -rf "$selenium_dir"
 				mkdir -p "$HOME/tmp/"
-				if [ -d "$HOME/tmp/.selenium" ]
+				if [ -d "$selenium_cache_dir" ] && ! isempty "$selenium_cache_dir"
 				then
 					echo "Copying selenium from cache"
-					cp -r "$HOME/tmp/.selenium" node_modules/selenium-standalone/.selenium
+					cp -r "$selenium_cache_dir" node_modules/selenium-standalone/.selenium
 				else
 					install_selenium
 				fi
