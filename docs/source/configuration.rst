@@ -205,6 +205,8 @@ Here is an example parser that allows you to lowercase or uppercase the data if 
             }
           };
         },
+        paragraphLoop: true,
+        linebreaks: true,
     };
     new Docxtemplater(zip, options);
 
@@ -384,7 +386,7 @@ You can set up your custom delimiters:
 
 .. code-block:: javascript
 
-    new Docxtemplater(zip, {delimiters:{start:'[[',end:']]'}});
+    new Docxtemplater(zip, { delimiters: { start:'[[', end:']]' } });
 
 
 paragraphLoop

@@ -180,6 +180,45 @@ And in your template,
 
 There are some interesting use cases for filters
 
+Data filtering
+~~~~~~~~~~~~~~
+
+You can write some generic data filters using angular expressions inside the filter itself.
+
+.. code-block:: json
+
+    {
+        users: [
+            {
+                name: "John",
+                age: 10,
+            },
+            {
+                name: "Mary",
+                age: 20,
+            }
+        ]
+    }
+
+.. code-block:: text
+
+    {#users | where:'age > 15'}
+    Hello {name}
+    {/}
+
+The argument inside the where filter can be any other angular expression, with ||, &&, etc
+
+The code for this filter is extremely terse, and gives a lot of possibilities :
+
+.. code-block:: javascript
+
+    const expressions = require("angular-expressions");
+    expressions.filters.where = function (input, query) {
+        return input.filter(function (item) {
+            return expressions.compile(query)(item);
+        })
+    }
+
 Data sorting
 ~~~~~~~~~~~~
 

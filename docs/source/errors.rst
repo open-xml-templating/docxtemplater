@@ -256,7 +256,7 @@ The following code will no more throw the error :
     function generate(content) {
         var zip = new PizZip(content);
         var imageModule = new ImageModule(opts);
-        var doc = new Docxtemplater(zip, {modules: [imageModule] });
+        var doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, modules: [imageModule] });
         doc.setData(data);
         doc.render()
     }

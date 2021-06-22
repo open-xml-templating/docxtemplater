@@ -11,7 +11,7 @@ Inserting new lines
 
 .. code-block:: javascript
 
-    const doc = new Docxtemplater(zip, {linebreaks: true});
+    const doc = new Docxtemplater(zip, { linebreaks: true });
 
 then in your data, if a string contains a newline, it will be translated to a linebreak in the document.
 
@@ -335,7 +335,7 @@ If you have created or have access to docxtemplater PRO modules, you can attach 
 
 .. code-block:: javascript
 
-    const doc = new Docxtemplater(zip, {modules: [...]});
+    const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, modules: [...] });
     doc.setData(data);
 
 Ternaries are not working well with angular-parser
@@ -505,12 +505,12 @@ You can use the following code :
 
 .. code-block:: javascript
 
-    import React, { Component } from "react";
-    import React from "react";
-    import Docxtemplater from "docxtemplater";
-    import PizZip from "pizzip";
-    import PizZipUtils from "pizzip/utils/index.js";
-    import { saveAs } from "file-saver";
+    import React, { Component } from 'react';
+    import React from 'react';
+    import Docxtemplater from 'docxtemplater';
+    import PizZip from 'pizzip';
+    import PizZipUtils from 'pizzip/utils/index.js';
+    import { saveAs } from 'file-saver';
 
     function loadFile(url, callback) {
       PizZipUtils.getBinaryContent(url, callback);
@@ -519,7 +519,7 @@ You can use the following code :
     export const App = class App extends React.Component {
       render() {
         const generateDocument = () => {
-          loadFile("https://docxtemplater.com/tag-example.docx", function(
+          loadFile('https://docxtemplater.com/tag-example.docx', function(
             error,
             content
           ) {
@@ -527,12 +527,15 @@ You can use the following code :
               throw error;
             }
             const zip = new PizZip(content);
-            const doc = new Docxtemplater().loadZip(zip);
+            const doc = new Docxtemplater(zip, {
+              paragraphLoop: true,
+              linebreaks: true
+            });
             doc.setData({
-              first_name: "John",
-              last_name: "Doe",
-              phone: "0652455478",
-              description: "New Website"
+              first_name: 'John',
+              last_name: 'Doe',
+              phone: '0652455478',
+              description: 'New Website'
             });
             try {
               // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -559,19 +562,19 @@ You can use the following code :
                   .map(function(error) {
                     return error.properties.explanation;
                   })
-                  .join("\n");
-                console.log("errorMessages", errorMessages);
+                  .join('\n');
+                console.log('errorMessages', errorMessages);
                 // errorMessages is a humanly readable message looking like this :
                 // 'The tag beginning with "foobar" is unopened'
               }
               throw error;
             }
             const out = doc.getZip().generate({
-              type: "blob",
+              type: 'blob',
               mimeType:
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             }); //Output the document using Data-URI
-            saveAs(out, "output.docx");
+            saveAs(out, 'output.docx');
           });
         };
 
@@ -619,7 +622,7 @@ If you are using an angular version that supports the `import` keyword, you can 
             throw error;
           }
           const zip = new PizZip(content);
-          const doc = new Docxtemplater(zip);
+          const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
           doc.setData({
             first_name: "John",
             last_name: "Doe",
@@ -662,7 +665,8 @@ If you are using an angular version that supports the `import` keyword, you can 
             type: "blob",
             mimeType:
               "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          }); //Output the document using Data-URI
+          });
+          // Output the document using Data-URI
           saveAs(out, "output.docx");
         });
       }
@@ -699,7 +703,7 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
               throw error;
             }
             const zip = new PizZip(content);
-            const doc = new Docxtemplater(zip);
+            const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
             doc.setData({
               first_name: "John",
               last_name: "Doe",
@@ -742,7 +746,8 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
               type: "blob",
               mimeType:
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            }); //Output the document using Data-URI
+            });
+            // Output the document using Data-URI
             saveAs(out, "output.docx");
           });
         }
@@ -834,7 +839,8 @@ You can use the following code :
           type: "blob",
           mimeType:
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        }); //Output the document using Data-URI
+        });
+        // Output the document using Data-URI
         saveAs(out, "output.docx");
       });
     };

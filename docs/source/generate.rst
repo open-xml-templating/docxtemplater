@@ -51,7 +51,7 @@ Node
     var zip = new PizZip(content);
     var doc;
     try {
-        doc = new Docxtemplater(zip);
+        doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
     } catch(error) {
         // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
         errorHandler(error);
@@ -139,7 +139,7 @@ Browser
                 var zip = new PizZip(content);
                 var doc;
                 try {
-                    doc=new window.docxtemplater(zip);
+                    doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                 } catch(error) {
                     // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
                     errorHandler(error);
@@ -163,8 +163,9 @@ Browser
                 var out=doc.getZip().generate({
                     type:"blob",
                     mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                }) //Output the document using Data-URI
-                saveAs(out,"output.docx")
+                });
+                // Output the document using Data-URI
+                saveAs(out, "output.docx");
             })
         }
         </script>
