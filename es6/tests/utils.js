@@ -172,8 +172,8 @@ function shouldBeSame({ doc, expectedName }) {
 				}
 
 				const isBinary =
-					file.options.binary ||
-					(expectedFile.options.binary && filePath.indexOf(".xml") === -1);
+					filePath.indexOf(".xml") === -1 &&
+					(file.options.binary || expectedFile.options.binary);
 
 				if (isBinary) {
 					const actualHash = file._data.crc32;
