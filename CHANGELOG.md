@@ -1,3 +1,7 @@
+### 3.22.2
+
+Disallow calling loadZip if using v4 constructor
+
 ### 3.22.1
 
 Correctly handle `<<tag>>` delimiters when saved in word as `&lt;&lt;tag>>` Fixes #606

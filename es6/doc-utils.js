@@ -125,7 +125,7 @@ function startsWith(str, prefix) {
 	return str.substring(0, prefix.length) === prefix;
 }
 
-function unique(arr) {
+function uniq(arr) {
 	const hash = {},
 		result = [];
 	for (let i = 0, l = arr.length; i < l; ++i) {
@@ -446,7 +446,7 @@ module.exports = {
 	isTagEnd,
 	isTextStart,
 	isTextEnd,
-	unique,
+	uniq,
 	chunkBy,
 	last,
 	first,

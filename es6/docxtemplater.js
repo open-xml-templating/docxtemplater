@@ -15,7 +15,7 @@ const ctXML = "[Content_Types].xml";
 const commonModule = require("./modules/common.js");
 
 const Lexer = require("./lexer.js");
-const { defaults, str2xml, xml2str, moduleWrapper, concatArrays, unique } =
+const { defaults, str2xml, xml2str, moduleWrapper, concatArrays, uniq } =
 	DocUtils;
 const {
 	XTInternalError,
@@ -179,6 +179,11 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	loadZip(zip) {
+		if (this.v4Constructor) {
+			throw new Error(
+				"loadZip() should not be called manually when using the v4 constructor"
+			);
+		}
 		if (zip.loadAsync) {
 			throw new XTInternalError(
 				"Docxtemplater doesn't handle JSZip version >=3, please use pizzip"
@@ -195,13 +200,13 @@ const Docxtemplater = class Docxtemplater {
 		]);
 		return this;
 	}
-	compileFile(fileName) {
-		this.compiled[fileName].parse();
-	}
 	precompileFile(fileName) {
 		const currentFile = this.createTemplateClass(fileName);
 		currentFile.preparse();
 		this.compiled[fileName] = currentFile;
+	}
+	compileFile(fileName) {
+		this.compiled[fileName].parse();
 	}
 	getScopeManager(to, currentFile, tags) {
 		if (!this.scopeManagers[to]) {
@@ -265,7 +270,7 @@ const Docxtemplater = class Docxtemplater {
 		this.options = this.modules.reduce((options, module) => {
 			return module.optionsTransformer(options, this);
 		}, this.options);
-		this.options.xmlFileNames = unique(this.options.xmlFileNames);
+		this.options.xmlFileNames = uniq(this.options.xmlFileNames);
 		this.xmlDocuments = this.options.xmlFileNames.reduce(
 			(xmlDocuments, fileName) => {
 				const content = this.zip.files[fileName].asText();
@@ -279,7 +284,6 @@ const Docxtemplater = class Docxtemplater {
 			xmlDocuments: this.xmlDocuments,
 		});
 		this.getTemplatedFiles();
-		this.setModules({ compiled: this.compiled });
 		// Loop inside all templatedFiles (ie xml files with content).
 		// Sometimes they don't exist (footer.xml for example)
 		this.templatedFiles.forEach((fileName) => {
@@ -292,6 +296,7 @@ const Docxtemplater = class Docxtemplater {
 				this.compileFile(fileName);
 			}
 		});
+		this.setModules({ compiled: this.compiled });
 		verifyErrors(this);
 		return this;
 	}
@@ -356,16 +361,16 @@ const Docxtemplater = class Docxtemplater {
 			data: this.data,
 			Lexer,
 		});
-		if (!this.mapper) {
-			this.mapper = this.modules.reduce(function (value, module) {
+		this.mapper =
+			this.mapper ||
+			this.modules.reduce(function (value, module) {
 				return module.getRenderedMap(value);
 			}, {});
-		}
 
-		this.fileTypeConfig.tagsXmlLexedArray = unique(
+		this.fileTypeConfig.tagsXmlLexedArray = uniq(
 			this.fileTypeConfig.tagsXmlLexedArray
 		);
-		this.fileTypeConfig.tagsXmlTextArray = unique(
+		this.fileTypeConfig.tagsXmlTextArray = uniq(
 			this.fileTypeConfig.tagsXmlTextArray
 		);
 
