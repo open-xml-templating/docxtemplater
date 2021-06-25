@@ -20,14 +20,14 @@ The name of this option is `parser` (function).
 With a custom parser you can parse the tags to for example add operators
 like '+', '-', or even create a Domain Specific Language to specify your tag values.
 
-To enable this, you need to specify a custom parser.
+To enable those features, you need to specify a custom parser.
 
 Introduction
 ~~~~~~~~~~~~
 
-To understand this option better, it is good to understand how docxtemplater manages the scope.
+To understand this option better, it is good to first know how docxtemplater manages the scope.
 
-Whenever docxtemplater needs to render any tag, for example `{name}`, docxtemplater will delegate the retrieval of the value to the scopemanager.
+Whenever docxtemplater needs to render any tag, for example `{name}`, docxtemplater will use a scopemanager to retrieve the value for a given tag.
 
 The scopemanager does the following :
 
@@ -41,7 +41,7 @@ When inside a loop, for example : `{#users}{name}{/users}`, there are several "s
 
 If the root scope also returns `null` or `undefined` for the `.get` call, then the value from the nullGetter is used.
 
-As a second argument to the `parser()` call, you receive more meta data about the tag of the document (and you could check if it is a loop tag for example).
+As a second argument to the `parser()` call, you receive additional meta data about the tag of the document (and you can for example test if it is a loop tag for example).
 
 As a second argument to the `get()` call, you receive more meta data about the scope, including the full scopeList.
 
@@ -51,7 +51,7 @@ Lets take an example, If your template is :
 
     Hello {user}
 
-And we call `doc.setData({user: "John"})`
+And you call `doc.setData({user: "John"})`
 
 Then you will have the following :
 
@@ -161,7 +161,7 @@ For the tag `.` in the first iteration, the arguments will be :
 Simple Parser example for [lower] and [upper]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is an example parser that allows you to lowercase or uppercase the data if writing your tag as : `{user[lower]}` or `{user[upper]}` :
+Here's an example parser that allows you to lowercase or uppercase the data if writing your tag as : `{user[lower]}` or `{user[upper]}` :
 
 .. code-block:: javascript
 
