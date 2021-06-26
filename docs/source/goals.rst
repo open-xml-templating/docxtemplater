@@ -25,7 +25,7 @@ Why you shouldn't write a similar library from scratch
 ------------------------------------------------------
 
 Docx is a zipped format that contains some xml.
-If you want to build a simple replace {tag} by value system, it could easily be challenging, because the {tag} is internally separated into :
+If you want to build a simple replace {tag} by value system, it could easily be challenging, because the {tag} is internally separated into:
 
 .. code-block:: text
 
@@ -33,7 +33,7 @@ If you want to build a simple replace {tag} by value system, it could easily be 
 	<w:t>tag</w:t>
 	<w:t>}</w:t>
 
-The fact that the tags can be splitted into multiple xml tags makes the code challenging to write. I had to rewrite most of the parsing engine between version 2 and version 3 of docxtemplater to make the code more straighforward : See the migration here :https://github.com/open-xml-templating/docxtemplater/commit/59af93bd281932da4586175bb2428d28298d1e65.
+The fact that the tags can be splitted into multiple xml tags makes the code challenging to write. I had to rewrite most of the parsing engine between version 2 and version 3 of docxtemplater to make the code more straighforward: See the migration here: https://github.com/open-xml-templating/docxtemplater/commit/59af93bd281932da4586175bb2428d28298d1e65.
 
 If you want to have loops to iterate over an array, it will become even more complicated.
 

@@ -29,7 +29,7 @@ To understand this option better, it is good to first know how docxtemplater man
 
 Whenever docxtemplater needs to render any tag, for example `{name}`, docxtemplater will use a scopemanager to retrieve the value for a given tag.
 
-The scopemanager does the following :
+The scopemanager does the following:
 
  * it compiles the tag, by calling `parser('name')`  where 'name' is the string representing what is inside the docxtemplater tag. For loop tags, if the tag is `{#condition}`,  the passed string is only `condition` (it does not contain the #).
 
@@ -37,7 +37,7 @@ The scopemanager does the following :
 
  * whenever the tag needs to be rendered, docxtemplater calls `parser('name').get({name: 'John'})`, if `{name: 'John'}` is the current scope.
 
-When inside a loop, for example : `{#users}{name}{/users}`, there are several "scopes" in which it is possible to evaluate the `{name}` property. The "deepest" scope is always evaluated first, so if the data is : `{users: [{name: "John"}], name: "Mary"}`, the parser calls the function `parser('name').get({name:"John"})`. Now if the returned value from the `.get` method is `null` or `undefined`, docxtemplater will call the same parser one level up, until it reaches the end of the scope.
+When inside a loop, for example: `{#users}{name}{/users}`, there are several "scopes" in which it is possible to evaluate the `{name}` property. The "deepest" scope is always evaluated first, so if the data is: `{users: [{name: "John"}], name: "Mary"}`, the parser calls the function `parser('name').get({name:"John"})`. Now if the returned value from the `.get` method is `null` or `undefined`, docxtemplater will call the same parser one level up, until it reaches the end of the scope.
 
 If the root scope also returns `null` or `undefined` for the `.get` call, then the value from the nullGetter is used.
 
@@ -45,7 +45,7 @@ As a second argument to the `parser()` call, you receive additional meta data ab
 
 As a second argument to the `get()` call, you receive more meta data about the scope, including the full scopeList.
 
-Lets take an example, If your template is :
+Lets take an example, If your template is:
 
 .. code-block:: text
 
@@ -53,7 +53,7 @@ Lets take an example, If your template is :
 
 And you call `doc.setData({user: "John"})`
 
-Then you will have the following :
+Then you will have the following:
 
 .. code-block:: javascript
 
@@ -99,7 +99,7 @@ For the template
 
     Hello {#users}{.}{/}
 
-Using following data :
+Using following data:
 
 .. code-block:: javascript
 
@@ -123,7 +123,7 @@ And with this parser
     const doc = new Docxtemplater(zip, options);
 
 
-For the tag `.` in the first iteration, the arguments will be :
+For the tag `.` in the first iteration, the arguments will be:
 
 .. code-block:: javascript
 
@@ -161,7 +161,7 @@ For the tag `.` in the first iteration, the arguments will be :
 Simple Parser example for [lower] and [upper]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here's an example parser that allows you to lowercase or uppercase the data if writing your tag as : `{user[lower]}` or `{user[upper]}` :
+Here's an example parser that allows you to lowercase or uppercase the data if writing your tag as: `{user[lower]}` or `{user[upper]}`:
 
 .. code-block:: javascript
 
@@ -213,7 +213,7 @@ Here's an example parser that allows you to lowercase or uppercase the data if w
 Simple Parser example for {$index} and {$isLast} inside loops
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As an other example, it is possible to use the `{$index}` tag inside a loop by using following parser :
+As an other example, it is possible to use the `{$index}` tag inside a loop by using following parser:
 
 .. code-block:: javascript
 
@@ -253,7 +253,7 @@ When using following template:
         {name}, {price} €
     {/products}
 
-With following data :
+With following data:
 
 .. code-block:: javascript
 
@@ -268,7 +268,7 @@ With following data :
 
 The {name} tag will use the "root scope", since it is not present in the products array.
 
-If you explicitly don't want this behavior because you want the nullGetter to handle the tag in this case, you could use the following parser :
+If you explicitly don't want this behavior because you want the nullGetter to handle the tag in this case, you could use the following parser:
 
 .. code-block:: javascript
 
@@ -304,7 +304,7 @@ When evaluating the {name} tag in the example above, there are two evaluations:
 Note that you could even make this behavior dependent on a given prefix, for
 example, if you want to by default, use the mechanism of scope traversal, but
 for some tags, allow only to evaluate on the deepest scope, you could add the
-following condition :
+following condition:
 
 .. code-block:: javascript
 
@@ -336,7 +336,7 @@ Let's say that at the root of your data, you have some property called "company"
 You need to access it within a loop, but the company is also part of the element
 that is looped upon.
 
-With following data :
+With following data:
 
 .. code-block:: javascript
 
@@ -351,7 +351,7 @@ With following data :
 If you want to access the company at the root level, it is not possible with
 the default parser.
 
-You could implement it this way, when writing `{$company}` :
+You could implement it this way, when writing `{$company}`:
 
 .. code-block:: javascript
 
@@ -407,7 +407,7 @@ When you write the following template
 
 .. code-block:: text
 
-    The users list is :
+    The users list is:
     {#users}
     {name}
     {/users}
@@ -416,11 +416,11 @@ When you write the following template
 Most users of the library would expect to have no spaces between the different
 names.
 
-The output without the option is as follows :
+The output without the option is as follows:
 
 .. code-block:: text
 
-    The users list is :
+    The users list is:
 
     John
 
@@ -431,18 +431,18 @@ The output without the option is as follows :
     End of users list
 
 
-With the paragraphLoop option turned on, the output becomes :
+With the paragraphLoop option turned on, the output becomes:
 
 
 .. code-block:: text
 
-    The users list is :
+    The users list is:
     John
     Jane
     Mary
     End of users list
 
-The rule is quite simple :
+The rule is quite simple:
 
 If the opening loop ({#users}) and the closing loop ({/users}) are both on
 separate paragraphs (and there is no other content on those paragraphs), treat
@@ -472,7 +472,7 @@ function
 This means that the default value for simple tags is to show "undefined".
 The default for rawTags ({@rawTag}) is to drop the paragraph completely (you could enter any xml here).
 
-The scopeManager variable contains some meta information about the tag, for example, if the template is : {#users}{name}{/users} and the tag `{name}` is undefined, `scopeManager.scopePath === ["users", "name"]`
+The scopeManager variable contains some meta information about the tag, for example, if the template is: {#users}{name}{/users} and the tag `{name}` is undefined, `scopeManager.scopePath === ["users", "name"]`
 
 linebreaks
 ----------

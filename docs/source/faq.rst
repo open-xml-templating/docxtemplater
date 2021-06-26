@@ -69,7 +69,7 @@ Using data filters
 
 You might want to be able to show data a bit differently for each template. For this, you can use the angular parser and the filters functionality.
 
-For example, if a user wants to put something in uppercase, you could write in your template :
+For example, if a user wants to put something in uppercase, you could write in your template:
 
 
 .. code-block:: text
@@ -104,7 +104,7 @@ The default behavior is to return "undefined" for empty values.
 
     Hello undefined, your hobby is football.
 
-You can customize this to either return another string, or return the name of the tag itself, so that it will show :
+You can customize this to either return another string, or return the name of the tag itself, so that it will show:
 
 .. code-block:: text
 
@@ -117,7 +117,7 @@ It is possible to customize the value that will be shown for {name} by using the
     function nullGetter(part, scopeManager) {
         /*
             If the template is {#users}{name}{/} and a value is undefined on the
-            name property :
+            name property:
 
             - part.value will be the string "name"
             - scopeManager.scopePath will be ["users"] (for nested loops, you would have multiple values in this array, for example one could have ["companies", "users"])
@@ -149,7 +149,7 @@ There is also an interesting blog article at https://javascript-ninja.fr/optimiz
 Support for IE9 and lower
 -------------------------
 
-docxtemplater should work on almost all browsers as of version 1 : IE7 + . Safari, Chrome, Opera, Firefox.
+docxtemplater should work on almost all browsers: IE7+, Safari, Chrome, Opera, Firefox.
 
 The only 'problem' is to load the binary file into the browser. This is not in docxtemplater's scope, but here is the recommended code to load the zip from the browser:
 
@@ -179,7 +179,7 @@ the variables and list them in a JSON object.
 
 With the simple inspection module, it is possible to get this compiled form and
 show the list of tags.
-suite :
+suite:
 
 .. _`AST`: https://en.wikipedia.org/wiki/Abstract_syntax_tree
 
@@ -190,11 +190,11 @@ suite :
     const doc = new Docxtemplater(zip, { modules: [iModule] });
     const tags = iModule.getAllTags();
     console.log(tags);
-    // After getting the tags, you can optionally set some data and render the document like this :
+    // After getting the tags, you can optionally set some data and render the document like this:
     // doc.setData(data);
     // doc.render();
 
-With the following template :
+With the following template:
 
 .. code-block:: text
 
@@ -205,7 +205,7 @@ With the following template :
     {age}
     {/users}
 
-It will log this object :
+It will log this object:
 
 .. code-block:: json
 
@@ -217,13 +217,13 @@ It will log this object :
         },
     }
 
-You can also get a more detailled tree by using :
+You can also get a more detailled tree by using:
 
 .. code-block:: javascript
 
     console.log(iModule.fullInspected["word/document.xml"]);
 
-The code of the inspect-module is very simple, and can be found here : https://github.com/open-xml-templating/docxtemplater/blob/master/es6/inspect-module.js
+The code of the inspect-module is very simple, and can be found here: https://github.com/open-xml-templating/docxtemplater/blob/master/es6/inspect-module.js
 
 Convert to PDF
 --------------
@@ -232,9 +232,9 @@ It is not possible to convert docx to PDF with docxtemplater, because docxtempla
 tools to do this conversion.
 
 The first one is to use `libreoffice headless`, which permits you to generate a
-PDF from a docx document :
+PDF from a docx document:
 
-You just have to run :
+You just have to run:
 
 .. code-block:: bash
 
@@ -330,7 +330,7 @@ If you are inserting multiple images inside a loop, it is possible that word can
 Attaching modules for extra functionality
 -----------------------------------------
 
-If you have created or have access to docxtemplater PRO modules, you can attach them with the following code :
+If you have created or have access to docxtemplater PRO modules, you can attach them with the following code:
 
 
 .. code-block:: javascript
@@ -343,7 +343,7 @@ Ternaries are not working well with angular-parser
 
 There is a common issue which is to use ternary on scopes that are not the current scope, which makes the ternary appear as if it always showed the second option.
 
-For example, with following data :
+For example, with following data:
 
 .. code-block:: javascript
 
@@ -359,7 +359,7 @@ For example, with following data :
       }
    })
 
-And by using the following template :
+And by using the following template:
 
 .. code-block:: text
 
@@ -371,7 +371,7 @@ And by using the following template :
    {/hobbies}
    {/}
 
-This will print :
+This will print:
 
 
 .. code-block:: text
@@ -387,7 +387,7 @@ The reason for this behavior is that the {gender == 'F' : "She" : "He"} expressi
 
 We can instead write a custom filter that will return "She" if the input is "F", "He" if the input is "M", and null if the input is anything else.
 
-The code would look like this :
+The code would look like this:
 
 .. code-block:: javascript
 
@@ -401,7 +401,7 @@ The code would look like this :
       return null;
     }
 
-And use the following in your template :
+And use the following in your template:
 
 .. code-block:: text
 
@@ -417,9 +417,9 @@ And use the following in your template :
 Multi scope expressions do not work with the angularParser
 ----------------------------------------------------------
 
-If you would like to have multi-scope expressions with the angularparser, for example :
+If you would like to have multi-scope expressions with the angularparser, for example:
 
-You would like to do : `{#users}{ date - age }{/users}`, where date is in the "global scope", and age in the subscope `users`, as in the following data :
+You would like to do: `{#users}{ date - age }{/users}`, where date is in the "global scope", and age in the subscope `users`, as in the following data:
 
 .. code-block:: json
 
@@ -484,12 +484,12 @@ For security reasons, the browsers don't let you load files from the local file 
 
 To do this, you have to setup a small web server.
 
-The simplest way of starting a webserver is to run following command :
+The simplest way of starting a webserver is to run following command:
 
 .. code-block:: bash
 
    npx http-server
-   # if you don't have npx, you can also do :
+   # if you don't have npx, you can also do:
    # npm install -g http-server && http-server .
 
 On your production server, you should probably use a more robust webserver such as nginx, or any webserver that you are currently using for static files.
@@ -501,7 +501,7 @@ There is an `online react demo`_ available on stackblitz.
 
 .. _`online react demo`: https://stackblitz.com/edit/react-docxtemplater-example?file=app.js
 
-You can use the following code :
+You can use the following code:
 
 .. code-block:: javascript
 
@@ -564,7 +564,7 @@ You can use the following code :
                   })
                   .join('\n');
                 console.log('errorMessages', errorMessages);
-                // errorMessages is a humanly readable message looking like this :
+                // errorMessages is a humanly readable message looking like this:
                 // 'The tag beginning with "foobar" is unopened'
               }
               throw error;
@@ -593,7 +593,7 @@ There is an `online angular demo`_ available on stackblitz.
 
 .. _`online angular demo`: https://stackblitz.com/edit/angular-docxtemplater-example?file=src%2Fapp%2Fproduct-list%2Fproduct-list.component.ts
 
-If you are using an angular version that supports the `import` keyword, you can use the following code :
+If you are using an angular version that supports the `import` keyword, you can use the following code:
 
 .. code-block:: javascript
 
@@ -656,7 +656,7 @@ If you are using an angular version that supports the `import` keyword, you can 
                 })
                 .join("\n");
               console.log("errorMessages", errorMessages);
-              // errorMessages is a humanly readable message looking like this :
+              // errorMessages is a humanly readable message looking like this:
               // 'The tag beginning with "foobar" is unopened'
             }
             throw error;
@@ -679,7 +679,7 @@ There is an `online vuejs demo`_ available on stackblitz.
 
 .. _`online vuejs demo`: https://stackblitz.com/edit/vuejs-docxtemplater-example?file=button.component.js
 
-If you are using vuejs 2.0 version that supports the `import` keyword, you can use the following code :
+If you are using vuejs 2.0 version that supports the `import` keyword, you can use the following code:
 
 .. code-block:: javascript
 
@@ -737,7 +737,7 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
                   })
                   .join("\n");
                 console.log("errorMessages", errorMessages);
-                // errorMessages is a humanly readable message looking like this :
+                // errorMessages is a humanly readable message looking like this:
                 // 'The tag beginning with "foobar" is unopened'
               }
               throw error;
@@ -767,7 +767,7 @@ There is an `online nextjs demo`_ available on codesandbox.
 
 .. _`online nextjs demo`: https://codesandbox.io/s/docxtemplater-with-nextjs-o1nqo
 
-You can use the following code :
+You can use the following code:
 
 .. code-block:: javascript
 
@@ -830,7 +830,7 @@ You can use the following code :
               })
               .join("\n");
             console.log("errorMessages", errorMessages);
-            // errorMessages is a humanly readable message looking like this :
+            // errorMessages is a humanly readable message looking like this:
             // 'The tag beginning with "foobar" is unopened'
           }
           throw error;
@@ -877,8 +877,8 @@ Sometimes, you would like to know what are the total number of pages in the
 document, or what is the page number at the current tag position.
 
 This is something that will never be achievable with docxtemplater, because
-docxtemplater is only a templating engine : it does know how to parse the docx
-format. However, it has no idea on how the docx is rendered at the end : the
+docxtemplater is only a templating engine: it does know how to parse the docx
+format. However, it has no idea on how the docx is rendered at the end: the
 width, height of each paragraph determines the number of pages in a document.
 
 Since docxtemplater does not know how to render a docx document, (which
@@ -902,7 +902,7 @@ This is because angular-expressions does not allow non-ascii characters.
 You will need angular-expressions version 1.1.0 which adds the
 `isIdentifierStart` and `isIdentifierContinue` properties.
 
-You can fix this issue by adding the characters that you would like to support, for example :
+You can fix this issue by adding the characters that you would like to support, for example:
 
 .. code-block:: javascript
 
@@ -964,7 +964,7 @@ It is possible, in a condition, to have some specific behavior for the last item
 
 It will allow you to add a page break at the end of each loop, except for the last item in the loop.
 
-The template will look like this :
+The template will look like this:
 
 .. code-block:: text
 
@@ -1019,7 +1019,7 @@ And each user block will be followed by a pagebreak, except the last user.
         }
         // We use the angularParser as the default fallback
         // If you don't wish to use the angularParser,
-        // you can use the default parser as documented here :
+        // you can use the default parser as documented here:
         // https://docxtemplater.readthedocs.io/en/latest/configuration.html#default-parser
         return angularParser(tag);
     }
@@ -1031,11 +1031,11 @@ Encrypting files
 
 Docxtemplater itself does not handle the Encryption of the docx files.
 
-There seem to be two solutions for this :
+There seem to be two solutions for this:
 
-* Use a Python tool that does exactly this, it is available here : https://github.com/nolze/msoffcrypto-tool
+* Use a Python tool that does exactly this, it is available here: https://github.com/nolze/msoffcrypto-tool
 
-* The xlsx-populate library also implements the Encryption/Decryption (algorithms are inspired by msoffcrypto-tool), however, the code probably needs to be a bit changed to work with docxtemplater : https://github.com/dtjohnson/xlsx-populate/blob/7480a02575c9140c0e7995623ea192c88c1886d3/lib/Encryptor.js#L236
+* The xlsx-populate library also implements the Encryption/Decryption (algorithms are inspired by msoffcrypto-tool), however, the code probably needs to be a bit changed to work with docxtemplater: https://github.com/dtjohnson/xlsx-populate/blob/7480a02575c9140c0e7995623ea192c88c1886d3/lib/Encryptor.js#L236
 
 Assignment expression in template
 ---------------------------------

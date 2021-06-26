@@ -38,7 +38,7 @@ Node
                 return error.properties.explanation;
             }).join("\n");
             console.log('errorMessages', errorMessages);
-            // errorMessages is a humanly readable message looking like this :
+            // errorMessages is a humanly readable message looking like this:
             // 'The tag beginning with "foobar" is unopened'
         }
         throw error;
@@ -53,7 +53,7 @@ Node
     try {
         doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
     } catch(error) {
-        // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
+        // Catch compilation errors (errors caused by the compilation of the template: misplaced tags)
         errorHandler(error);
     }
 
@@ -70,7 +70,7 @@ Node
         doc.render()
     }
     catch (error) {
-        // Catch rendering errors (errors relating to the rendering of the template : angularParser throws an error)
+        // Catch rendering errors (errors relating to the rendering of the template: angularParser throws an error)
         errorHandler(error);
     }
 
@@ -130,7 +130,7 @@ Browser
                             return error.properties.explanation;
                         }).join("\n");
                         console.log('errorMessages', errorMessages);
-                        // errorMessages is a humanly readable message looking like this :
+                        // errorMessages is a humanly readable message looking like this:
                         // 'The tag beginning with "foobar" is unopened'
                     }
                     throw error;
@@ -141,7 +141,7 @@ Browser
                 try {
                     doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                 } catch(error) {
-                    // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
+                    // Catch compilation errors (errors caused by the compilation of the template: misplaced tags)
                     errorHandler(error);
                 }
 
@@ -156,7 +156,7 @@ Browser
                     doc.render();
                 }
                 catch (error) {
-                    // Catch rendering errors (errors relating to the rendering of the template : angularParser throws an error)
+                    // Catch rendering errors (errors relating to the rendering of the template: angularParser throws an error)
                     errorHandler(error);
                 }
 
@@ -175,7 +175,7 @@ Please note that if you want to load a docx from your filesystem, you will need 
 
 :ref:`cors`
 
-It is also possible to read the docx from an `<input type="file" id="doc">`, by using the following :
+It is also possible to read the docx from an `<input type="file" id="doc">`, by using the following:
 
 .. code-block:: javascript
 
@@ -202,7 +202,7 @@ It is also possible to read the docx from an `<input type="file" id="doc">`, by 
 React, Angular, Vue, Next.JS
 ----------------------------
 
-There are examples of usage to generate a document in the FAQ for the following libraries :
+There are examples of usage to generate a document in the FAQ for the following libraries:
 
 - `React <faq.html#docxtemplater-in-a-react-project>`_
 - `Angular <faq.html#docxtemplater-in-an-angular-project>`_

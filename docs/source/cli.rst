@@ -8,7 +8,7 @@ Command Line Interface (CLI)
 
 This section is about the commandline interface of docxtemplater.
 
-To install the cli, please use this command :
+To install the cli, please use this command:
 
 npm install -g docxtemplater-cli
 

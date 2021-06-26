@@ -29,7 +29,7 @@ You can have promises in your data. Note that the only step running asynchronous
                 return error.properties.explanation;
             }).join("\n");
             console.log('errorMessages', errorMessages);
-            // errorMessages is a humanly readable message looking like this :
+            // errorMessages is a humanly readable message looking like this:
             // 'The tag beginning with "foobar" is unopened'
         }
         throw error;
@@ -41,7 +41,7 @@ You can have promises in your data. Note that the only step running asynchronous
         doc = new Docxtemplater(zip, options);
     }
     catch (error) {
-        // Catch compilation errors (errors caused by the compilation of the template : misplaced tags)
+        // Catch compilation errors (errors caused by the compilation of the template: misplaced tags)
         errorHandler(error);
     }
 

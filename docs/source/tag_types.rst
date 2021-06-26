@@ -52,7 +52,7 @@ and this data:
         "hasKitty": true,
         "kitty": "Minie"
         "hasDog": false,
-        "dog" :null
+        "dog": null
     }
 
 renders the following:
@@ -84,13 +84,13 @@ Given the following data:
 
     {
         "products": [
-            { name :"Windows", price: 100},
-            { name :"Mac OSX", price: 200},
-            { name :"Ubuntu", price: 0}
+            { name: "Windows", price: 100 },
+            { name: "Mac OSX", price: 200 },
+            { name: "Ubuntu", price: 0 }
         ]
     }
 
-will result in :
+will result in:
 
 .. code-block:: text
 
@@ -114,7 +114,7 @@ To loop over an array containing primitive data (ex: string):
 
    {#products} {.} {/products}
 
-Will result in :
+Will result in:
 
 .. code-block:: text
 
@@ -157,7 +157,7 @@ Given the following data:
 
     {
         "hasProduct": true,
-        "price" : 10
+        "price": 10
     }
 
 Since hasProduct is a boolean, the section is shown once if `hasProduct` is `true`.
@@ -199,7 +199,7 @@ Output:
 Sections and newlines
 ---------------------
 
-New lines are kept inside sections, so the template :
+New lines are kept inside sections, so the template:
 
 .. code-block:: text
 
@@ -234,7 +234,7 @@ Will actually render
 
 The way to make this work as expected is to not put unnecessary new lines after the start of the section and before the end of the section.
 
-For our example , that would be :
+For our example , that would be:
 
 .. code-block:: text
 
@@ -260,7 +260,7 @@ with this data:
 
 This will loop over the first parent <w:p> tag
 
-If you want to insert HTML styled input, you can also use the docxtemplater html module : https://docxtemplater.com/modules/html/
+If you want to insert HTML styled input, you can also use the docxtemplater html module: https://docxtemplater.com/modules/html/
 
 Set Delimiter
 -------------
@@ -296,7 +296,7 @@ If between the two tags {#tag}______{/tag}
  * by default, it will loop over ``<w:t>``, which is the default Text Tag
 
 With the Dash syntax you can specify the tag you want to loop on:
-For example, if you want to loop on paragraphs (``w:p``), so that each of the loop creates a new paragraph, you can write :
+For example, if you want to loop on paragraphs (``w:p``), so that each of the loop creates a new paragraph, you can write:
 
 .. code-block:: text
 

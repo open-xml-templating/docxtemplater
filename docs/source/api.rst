@@ -37,7 +37,7 @@ Constructor
                     * You can pass options to change custom parser, custom delimiters, etc.
                     * You can pass the list of modules that you would like to attach.
 
-                For example :
+                For example:
                 const options = {
                     modules: [ new ImageModule(imageOpts) ],
                     delimiters: {
@@ -112,6 +112,6 @@ Methods
         used to add new generation features (possibility to include images, HTML, ...).
         Pro modules can be bought on https://docxtemplater.com/
 
-        This method can be called multiple times, for example :
+        This method can be called multiple times, for example:
 
         doc.loadZip(zip).attachModule(imageModule).attachModule(htmlModule)

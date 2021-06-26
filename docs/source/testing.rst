@@ -68,7 +68,7 @@ Every time we correct a bug, we should also add a regression test to make sure t
 Unit tests
 -----------
 
-The input/output for the unit tests can be found in es6/tests/fixtures.js :
+The input/output for the unit tests can be found in es6/tests/fixtures.js:
 
 For example
 

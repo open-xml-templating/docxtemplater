@@ -19,7 +19,7 @@ npm is the easiest way to install docxtemplater
 Browser (Angular, React, Next.JS, Vue)
 --------------------------------------
 
-For React, Angular, and Vue, you can use the npm packages and use these code samples from the FAQ :
+For React, Angular, and Vue, you can use the npm packages and use these code samples from the FAQ:
 
 - `React <faq.html#docxtemplater-in-a-react-project>`_
 - `Angular <faq.html#docxtemplater-in-an-angular-project>`_
@@ -36,7 +36,7 @@ You will also need Pizzip, which you can `download here <https://unpkg.com/pizzi
 Build the JS Files yourself
 ---------------------------
 
-If you want to build docxtemplater for the browser yourself, here is how you should do :
+If you want to build docxtemplater for the browser yourself, here is how you should do:
 
 .. code-block:: bash
 
@@ -57,7 +57,7 @@ Minifying the build
 
 On Browsers that have `window.XMLSerializer` and `window.DOMParser` (all browsers normally have it), you can use that as a replacement for the xmldom dependency.
 
-As an example, if you use webpack, you can do the following in your webpack.config.js :
+As an example, if you use webpack, you can do the following in your webpack.config.js:
 
 .. code-block:: javascript
 
@@ -82,7 +82,7 @@ You can use bower to install docxtemplater
 
     bower install --save docxtemplater
 
-When using bower, you can include the following script tag in your HTML :
+When using bower, you can include the following script tag in your HTML:
 
 .. code-block:: html
 

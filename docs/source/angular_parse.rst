@@ -10,13 +10,13 @@ Introduction
 ------------
 
 The angular-parser makes creating complex templates easier.
-You can for example now use :
+You can for example now use:
 
 .. code-block:: text
 
     {user.name}
 
-To access the nested name property in the following data :
+To access the nested name property in the following data:
 
 .. code-block:: javascript
 
@@ -31,7 +31,7 @@ You can also use `+`, `-`, `*`, `/`, `>`, `<` operators.
 Setup
 -----
 
-Here's a code sample for how to use the angularParser :
+Here's a code sample for how to use the angularParser:
 
 .. code-block:: javascript
 
@@ -80,7 +80,7 @@ Here's a code sample for how to use the angularParser :
 Conditions
 ----------
 
-With the angularParser option set, you can also use conditions :
+With the angularParser option set, you can also use conditions:
 
 .. code-block:: text
 
@@ -98,7 +98,7 @@ The second conditional will render the section only if the userName is the strin
 
 It also handles the boolean operators AND ``&&``, OR ``||``, ``+``, ``-``, the ternary operator ``a ? b : c``, operator precendence with parenthesis ``(a && b) || c``, and many other javascript features.
 
-For example, it is possible to write the following template :
+For example, it is possible to write the following template:
 
 
 .. code-block:: text
@@ -136,7 +136,7 @@ With filters, it is possible to write the following template to have the resulti
         return input.toUpperCase();
     }
 
-More complex filters are possible, for example, if you would like to list the names of all active users. If your data is the following :
+More complex filters are possible, for example, if you would like to list the names of all active users. If your data is the following:
 
 .. code-block:: json
 
@@ -153,7 +153,7 @@ More complex filters are possible, for example, if you would like to list the na
         ],
     }
 
-You could show the list of users that are older than 18, by writing the following code :
+You could show the list of users that are older than 18, by writing the following code:
 
 .. code-block:: javascript
 
@@ -172,7 +172,7 @@ And in your template,
 
 .. code-block:: text
 
-    The allowed users are :
+    The allowed users are:
 
     {#users | olderThan:15}
     {name} - {age} years old
@@ -208,7 +208,7 @@ You can write some generic data filters using angular expressions inside the fil
 
 The argument inside the where filter can be any other angular expression, with ||, &&, etc
 
-The code for this filter is extremely terse, and gives a lot of possibilities :
+The code for this filter is extremely terse, and gives a lot of possibilities:
 
 .. code-block:: javascript
 
@@ -222,7 +222,7 @@ The code for this filter is extremely terse, and gives a lot of possibilities :
 Data sorting
 ~~~~~~~~~~~~
 
-If your data is the following :
+If your data is the following:
 
 .. code-block:: json
 
@@ -245,7 +245,7 @@ If your data is the following :
 
 You might want to sort the items by price (ascending).
 
-You could do that again with a filter, like this :
+You could do that again with a filter, like this:
 
 .. code-block:: text
 
@@ -253,7 +253,7 @@ You could do that again with a filter, like this :
     {name} for a price of {price} €
     {/}
 
-The code for this filter is :
+The code for this filter is:
 
 .. code-block:: javascript
 
@@ -270,7 +270,7 @@ The code for this filter is :
 Data aggregation
 ~~~~~~~~~~~~~~~~
 
-If your data is the following :
+If your data is the following:
 
 .. code-block:: json
 
@@ -287,16 +287,16 @@ If your data is the following :
         ],
     }
 
-And you would like to show the total price, you can write in your template :
+And you would like to show the total price, you can write in your template:
 
 .. code-block:: text
 
     {#items}
     {name} for a price of {price} €
     {/}
-    Total Price of your purchase : {items | sumby:'price'}€
+    Total Price of your purchase: {items | sumby:'price'}€
 
-The `sumby` is a filter that you can write like this :
+The `sumby` is a filter that you can write like this:
 
 .. code-block:: javascript
 
@@ -314,8 +314,8 @@ The `sumby` is a filter that you can write like this :
 Data formatting
 ~~~~~~~~~~~~~~~
 
-This example is to format numbers in the format : "150.00" (2 digits of precision)
-If your data is the following :
+This example is to format numbers in the format: "150.00" (2 digits of precision)
+If your data is the following:
 
 .. code-block:: json
 
@@ -332,7 +332,7 @@ If your data is the following :
         ],
     }
 
-And you would like to show the price with two digits of precision, you can write in your template :
+And you would like to show the price with two digits of precision, you can write in your template:
 
 .. code-block:: text
 
@@ -340,7 +340,7 @@ And you would like to show the price with two digits of precision, you can write
     {name} for a price of {price | toFixed:2} €
     {/}
 
-The `toFixed` is an angular filter that you can write like this :
+The `toFixed` is an angular filter that you can write like this:
 
 .. code-block:: javascript
 
@@ -359,7 +359,7 @@ Assignments
 
 With the angular expression option, it is possible to assign a value to a variable directly from your template.
 
-For example, in your template, write :
+For example, in your template, write:
 
 .. code-block:: text
 
@@ -376,7 +376,7 @@ This will first execute the expression, and then execute the second statement wh
 
 An other approach is to automatically silence the return values of expression containing variable assignments.
 
-You can do so by using the following parser option :
+You can do so by using the following parser option:
 
 .. code-block:: javascript
 
@@ -395,7 +395,7 @@ You can do so by using the following parser option :
             tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
         );
         // isAngularAssignment will be true if your tag contains a `=`, for example
-        // when you write the following in your template :
+        // when you write the following in your template:
         // {full_name = first_name + last_name}
         // In that case, it makes sense to return an empty string so
         // that the tag does not write something to the generated document.
@@ -421,7 +421,7 @@ You can do so by using the following parser option :
     }
     new Docxtemplater(zip, {parser:angularParser});
 
-Note that if you use a standard tag, like `{full_name = first_name + last_name}` and if you put no other content on that paragraph, the line will still be there but it will be an empty line. If you wish to remove the line, you could use a rawXML tag which will remove the paragraph, like this :
+Note that if you use a standard tag, like `{full_name = first_name + last_name}` and if you put no other content on that paragraph, the line will still be there but it will be an empty line. If you wish to remove the line, you could use a rawXML tag which will remove the paragraph, like this:
 
 .. code-block:: text
 
@@ -437,7 +437,7 @@ Retrieving $index as part of an expression
 One might need to have a condition on the $index when inside a loop.
 
 For example, if you have two arrays of the same length and you want to loop
-over both of them at the same time :
+over both of them at the same time:
 
 .. code-block:: json
 
@@ -454,7 +454,7 @@ over both of them at the same time :
     {ages[$index]}
     {/names}
 
-To do this, you can use the following parser :
+To do this, you can use the following parser:
 
 .. code-block:: javascript
 
