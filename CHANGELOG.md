@@ -1,3 +1,7 @@
+### 3.22.3
+
+Update InspectModule to make getTags function work well with XLSXModule
+
 ### 3.22.2
 
 Disallow calling loadZip if using v4 constructor

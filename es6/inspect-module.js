@@ -6,10 +6,23 @@ function isPlaceholder(part) {
 
 function getTags(postParsed) {
 	return postParsed.filter(isPlaceholder).reduce(function (tags, part) {
+		if (part.cellParsed) {
+			part.cellParsed.forEach(function (cp) {
+				if (
+					cp.type === "placeholder" &&
+					cp.module !== "pro-xml-templating/xls-module-loop"
+				) {
+					tags[cp.value] = tags[cp.value] || {};
+				}
+			});
+			return tags;
+		}
 		tags[part.value] = tags[part.value] || {};
+
 		if (part.subparsed) {
 			tags[part.value] = merge(tags[part.value], getTags(part.subparsed));
 		}
+
 		return tags;
 	}, {});
 }
