@@ -6,7 +6,7 @@
 Configuration
 =============
 
-You can configure docxtemplater with an options object by using the ``v4 constructor`` with two arguments.
+You can configure docxtemplater with an options object by using the *v4 constructor* with two arguments.
 
 .. code-block:: javascript
 
