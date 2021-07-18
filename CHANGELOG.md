@@ -12,7 +12,8 @@ Correctly handle `<<tag>>` delimiters when saved in word as `&lt;&lt;tag>>` Fixe
 
 ### 3.22.0
 
-Add resolveOffset internal property on scope managers to be able to handle the slides loop case correctly.
+- Add resolveOffset internal property on scope managers to be able to handle the slides loop case correctly.
+- Update moduleApiVersion to 3.26.0.
 
 ### 3.21.2
 
@@ -58,6 +59,8 @@ Change how the resolve algorithm works internally.
 This fixes a bug in the slides module and image module, when used together, in async mode, where all image tags coming after a condition or loop would not be shown.
 
 Because this induces an internal incompatible change, if you use the footnotes module, you have to upgrade the footnotes module to the version 3.2.0
+
+Update moduleApiVersion to 3.25.0.
 
 ### 3.19.10
 
