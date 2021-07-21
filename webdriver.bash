@@ -2,13 +2,23 @@
 
 set -euo pipefail
 
+if ! [ -f test/mocha.html ]
+then
+	echo "test/mocha.html does not exist" 1>&2
+	exit 1
+fi
 port4444used() {
 	netstat -tnlp 2>/dev/null | grep 4444 >/dev/null
 }
 install_selenium() {
 	rm node_modules/selenium-standalone/.selenium/*driver -rf
 	echo "Installing selenium"
-	selenium-standalone install
+	selenium-standalone install 2>&1 | tee /tmp/selenium_install.log
+	if grep --quiet -E '(Error)|(Could not download)' </tmp/selenium_install.log
+	then
+		echo "Error downloading selenium drivers"
+		exit 1
+	fi
 	rsync node_modules/selenium-standalone/.selenium/ "$HOME/tmp/.selenium/"
 }
 export GRAY='[90m'
@@ -30,7 +40,7 @@ stop_selenium() {
 	fi
 }
 force_stop_selenium() {
-	fuser -k 4444/tcp
+	fuser -k 4444/tcp || true
 }
 cleanup() {
 	stop_selenium
