@@ -109,7 +109,9 @@ then
 		then
 			exit 0
 		fi
-		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log
+
+		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log ||
+			grep 'Error: Failed to create session.' </tmp/test.log
 		then
 			echo "Retrying by restarting selenium: $retries"
 			force_stop_selenium
