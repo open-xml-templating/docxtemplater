@@ -34,7 +34,6 @@
     "@babel/preset-env": "^7.14.7",
     "@wdio/cli": "^7.7.5",
     "angular-expressions": "^1.1.3",
-    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.4",
     "chalk": "^4.1.1",
