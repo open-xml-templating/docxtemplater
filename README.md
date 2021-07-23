@@ -51,6 +51,7 @@ PRO Modules developped by docxtemplater core team :
 
 - [Image module](https://docxtemplater.com/modules/image/) to add a given image with the syntax: `{%image}`.
 - [Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document.
+- [Chart Module](https://docxtemplater.com/modules/chart/) to replace a chart by using data from the JSON object that you give
 - [Html-Pptx Module](https://docxtemplater.com/modules/html-pptx/) to insert formatted text in a pptx document.
 - [Slides Module](https://docxtemplater.com/modules/slides/) to create multiple slides dynamically.
 - [Subtemplate Module](https://docxtemplater.com/modules/subtemplate) to include an external docx file inside a given docx file.
@@ -65,8 +66,3 @@ PRO Modules developped by docxtemplater core team :
 - [XLSX Module](https://docxtemplater.com/modules/xlsx) to be able to do templating on Excel files (xlsx extension), also with loops and conditions.
 - [Footnotes Module](https://docxtemplater.com/modules/footnotes) to be able to add footnotes to a document.
 - [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder) to simplify conditions that should show or hide a given paragraph.
-
-User-contributed modules :
-
-- [Chart Module](https://github.com/prog666/docxtemplater-chart-module) using the syntax: `{$chart}` , user contributed (compatible with v2 only)
-- [Hyperlink module](https://github.com/sujith3g/docxtemplater-link-module) using the syntax: `{^link}`, (compatible with v2 only)
