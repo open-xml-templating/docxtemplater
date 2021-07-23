@@ -108,6 +108,25 @@ describe("Spacing/Linebreaks", function () {
 		shouldBeSame({ doc, expectedName: "expected-multiline.docx" });
 	});
 
+	it("should not remove section if having normal loop just before", function () {
+		const doc = createDoc("loop-with-section-break-after.docx");
+		doc.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-loop-with-section-break-after.docx",
+		});
+	});
+
+	it("should not remove section if having paragraph loop just before", function () {
+		const doc = createDoc("paragraph-loop-with-section-break-after.docx");
+		doc.setOptions({ paragraphLoop: true });
+		doc.render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-paragraph-loop-with-section-break-after.docx",
+		});
+	});
+
 	it("should work with linebreaks without changing the style", function () {
 		const doc = createDoc("multi-tags.docx");
 		doc.setData({
@@ -414,21 +433,18 @@ describe("Table", function () {
 
 	it("should not corrupt table with empty rawxml", function () {
 		const doc = createDoc("table-raw-xml.docx");
-		doc.setData({});
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
 	});
 
 	it("should not corrupt document with empty rawxml after a table, at the end of the document", function () {
 		const doc = createDoc("raw-xml-after-table.docx");
-		doc.setData({});
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-raw-xml-after-table.docx" });
 	});
 
 	it("should not corrupt document with selfclosing w:sdtContent tag", function () {
 		const doc = createDoc("self-closing-w-sdtcontent.docx");
-		doc.setData({});
 		doc.render();
 		shouldBeSame({
 			doc,
@@ -493,7 +509,6 @@ describe("Table", function () {
 
 	it("should not corrupt table with empty loop", function () {
 		const doc = createDoc("table-loop.docx");
-		doc.setData({});
 		doc.setOptions({ paragraphLoop: true });
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-empty-table.docx" });
@@ -781,7 +796,6 @@ describe("ParagraphLoop", function () {
 				get: () => "foo",
 			}),
 		});
-		doc.setData({});
 		doc.render();
 		expect(printedPostparsed["word/document.xml"]).to.be.equal(
 			expectedPrintedPostParsed
@@ -829,7 +843,6 @@ describe("ParagraphLoop", function () {
 			paragraphLoop: true,
 			parser: angularParser,
 		});
-		doc.setData({});
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -948,7 +961,6 @@ describe("ParagraphLoop", function () {
 
 	it("should fail when placing paragraph loop inside normal loop", function () {
 		const doc = createDoc("paragraph-loop-error.docx");
-		doc.setData({});
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -1282,8 +1294,6 @@ describe("Resolver", function () {
 
 	it("should not regress when having [Content_Types.xml] contain Default instead of Override", function () {
 		const doc = createDoc("with-default-contenttype.docx");
-		doc.compile();
-		doc.setData({});
 		doc.render();
 		shouldBeSame({
 			doc,

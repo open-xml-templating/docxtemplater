@@ -1,3 +1,7 @@
+### 3.22.5
+
+Bugfix to avoid dropping section when having a loop right before a section break
+
 ### 3.22.4
 
 When having a loop containing a page section break, the generated document had continuous section breaks in the output.

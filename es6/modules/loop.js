@@ -163,6 +163,32 @@ function getSectPrHeaderFooterChangeCount(chunks) {
 	return sectPrCount;
 }
 
+function getLastSectPr(parsed) {
+	const sectPr = [];
+	let inSectPr = false;
+	for (let i = parsed.length - 1; i >= 0; i--) {
+		const part = parsed[i];
+		if (part.type === "tag" && part.tag === "w:sectPr") {
+			if (part.position === "end") {
+				inSectPr = true;
+			}
+			if (part.position === "start") {
+				sectPr.unshift(part);
+				inSectPr = false;
+			}
+		}
+		if (inSectPr) {
+			sectPr.unshift(part);
+		}
+		if (isParagraphStart(part)) {
+			if (sectPr.length > 0) {
+				return sectPr;
+			}
+			break;
+		}
+	}
+}
+
 class LoopModule {
 	constructor() {
 		this.name = "LoopModule";
@@ -252,6 +278,14 @@ class LoopModule {
 					return true;
 				}
 			});
+			const lastSectPr = getLastSectPr(parsed);
+			if (lastSectPr) {
+				basePart.lastParagrapSectPr = lastSectPr
+					.map(function ({ value }) {
+						return value;
+					})
+					.join("");
+			}
 		}
 		if (
 			!basePart ||
@@ -288,6 +322,7 @@ class LoopModule {
 
 		basePart.hasPageBreak = hasPageBreak(lastChunk);
 		basePart.hasPageBreakBeginning = hasPageBreak(firstChunk);
+		basePart.paragraphLoop = true;
 
 		if (firstOffset === 0 || lastOffset === 0) {
 			return parsed;
@@ -355,6 +390,16 @@ class LoopModule {
 		}
 		// if the loop is showing empty content
 		if (result === false) {
+			if (part.lastParagrapSectPr) {
+				if (part.paragraphLoop) {
+					return {
+						value: `<w:p><w:pPr>${part.lastParagrapSectPr}</w:pPr></w:p>`,
+					};
+				}
+				return {
+					value: `</w:t></w:r></w:p><w:p><w:pPr>${part.lastParagrapSectPr}</w:pPr><w:r><w:t>`,
+				};
+			}
 			return {
 				value: getPageBreakIfApplies(part) || "",
 				errors,

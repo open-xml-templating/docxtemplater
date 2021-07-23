@@ -423,6 +423,7 @@ const fixtures = {
 				type: "placeholder",
 				value: "users",
 				module: "loop",
+				paragraphLoop: true,
 				sectPrCount: 0,
 				hasPageBreak: false,
 				hasPageBreakBeginning: false,
