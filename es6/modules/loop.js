@@ -72,6 +72,16 @@ function addPageBreakAtBeginning(subRendered) {
 	subRendered.parts.unshift('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 }
 
+function isContinuous(parts) {
+	return parts.some(function (part) {
+		return (
+			part.type === "tag" &&
+			part.tag === "w:type" &&
+			part.value.indexOf("continuous") !== -1
+		);
+	});
+}
+
 function addContinuousType(parts) {
 	let stop = false;
 	let inSectPr = false;
@@ -110,6 +120,24 @@ function hasPageBreak(chunk) {
 			return true;
 		}
 	});
+}
+
+function getSectPr(chunks) {
+	let collectSectPr = false;
+	const sectPrs = [];
+	chunks.forEach(function (part) {
+		if (part.tag === "w:sectPr" && part.position === "start") {
+			sectPrs.push([]);
+			collectSectPr = true;
+		}
+		if (collectSectPr) {
+			sectPrs[sectPrs.length - 1].push(part);
+		}
+		if (part.tag === "w:sectPr" && part.position === "end") {
+			collectSectPr = false;
+		}
+	});
+	return sectPrs;
 }
 
 function getSectPrHeaderFooterChangeCount(chunks) {
@@ -207,11 +235,23 @@ class LoopModule {
 			return tags;
 		}, []);
 	}
+	preparse(parsed) {
+		this.sects = getSectPr(parsed);
+	}
 	postparse(parsed, { basePart }) {
 		if (basePart) {
 			basePart.sectPrCount = getSectPrHeaderFooterChangeCount(parsed);
-			basePart.sectPrIndex = this.totalSectPr;
 			this.totalSectPr += basePart.sectPrCount;
+
+			const sects = this.sects;
+			sects.some(function (sect, index) {
+				if (sect[0].lIndex > basePart.lIndex) {
+					if (index + 1 < sects.length && isContinuous(sects[index + 1])) {
+						basePart.addContinuousType = true;
+					}
+					return true;
+				}
+			});
 		}
 		if (
 			!basePart ||
@@ -289,8 +329,7 @@ class LoopModule {
 				if (part.sectPrCount === 1) {
 					subRendered.parts = dropHeaderFooterRefs(subRendered.parts);
 				}
-				if (part.sectPrIndex === 0) {
-					// For the first sectPr in the document, add the continuous attribute (except for the first iteration)
+				if (part.addContinuousType) {
 					subRendered.parts = addContinuousType(subRendered.parts);
 				}
 			}

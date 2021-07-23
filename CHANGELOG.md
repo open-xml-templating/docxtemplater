@@ -1,3 +1,9 @@
+### 3.22.4
+
+When having a loop containing a page section break, the generated document had continuous section breaks in the output.
+
+With this version, the page section break should be rendered as page section breaks, and create as many pages as there are items in the loop.
+
 ### 3.22.3
 
 Update InspectModule to make getTags function work well with XLSXModule

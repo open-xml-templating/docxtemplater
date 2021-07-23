@@ -7,7 +7,6 @@ function moduleParse(placeHolderContent, options) {
 	const endLindex = options.lIndex;
 	let moduleParsed;
 	options.offset = startOffset;
-	options.lIndex = endLindex;
 	options.match = match;
 	options.getValue = getValue;
 	options.getValues = getValues;

@@ -23,7 +23,7 @@ export namespace DXT {
         lIndex: integer
         num: integer
         inverted?: boolean
-        endLIndex?: integer
+        endLindex?: integer
         expanded?: Part[]
         subparsed?: Part[]
     }

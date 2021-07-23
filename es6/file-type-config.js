@@ -108,6 +108,7 @@ function DocXFileTypeConfig() {
 			"w:sdtContent",
 
 			"w:sectPr",
+			"w:type",
 			"w:headerReference",
 			"w:footerReference",
 		],

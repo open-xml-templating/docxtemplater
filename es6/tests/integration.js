@@ -455,6 +455,17 @@ describe("Table", function () {
 		shouldBeSame({ doc, expectedName: "expected-multi-section.docx" });
 	});
 
+	it("should repeat section break if the section break is inside a loop", function () {
+		const doc = createDoc("loop-with-page-section-break.docx", {
+			paragraphLoop: true,
+		});
+		doc.setData({
+			loop: [1, 2, 3],
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-page-section-break.docx" });
+	});
+
 	it("should not corrupt sdtcontent", function () {
 		const doc = createDoc("regression-sdtcontent-paragraph.docx");
 		doc.setData({
@@ -654,7 +665,7 @@ describe("Section breaks inside loops", function () {
 		const tags = {
 			loop: [1, 2, 3],
 		};
-		const doc = createDocV4("loop-with-section-break.docx", {
+		const doc = createDocV4("loop-with-continuous-section-break.docx", {
 			paragraphLoop: true,
 			parser: angularParser,
 		});
@@ -662,7 +673,7 @@ describe("Section breaks inside loops", function () {
 		doc.render();
 		shouldBeSame({
 			doc,
-			expectedName: "expected-loop-with-section-break.docx",
+			expectedName: "expected-loop-with-continuous-section-break.docx",
 		});
 	});
 
@@ -686,14 +697,14 @@ describe("Section breaks inside loops", function () {
 		const tags = {
 			loop: [1, 2, 3],
 		};
-		const doc = createDocV4("loop-with-section-break.docx", {
+		const doc = createDocV4("loop-with-continuous-section-break.docx", {
 			parser: angularParser,
 		});
 		doc.setData(tags);
 		doc.render();
 		shouldBeSame({
 			doc,
-			expectedName: "expected-loop-with-section-break-2.docx",
+			expectedName: "expected-loop-with-continuous-section-break-2.docx",
 		});
 	});
 });
