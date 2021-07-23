@@ -256,7 +256,33 @@ with this data:
 
 .. code-block:: javascript
 
-    {rawXml:'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>'}
+    doc.setData({
+        rawXml : `
+        <w:p>
+            <w:pPr>
+                <w:rPr>
+                    <w:color w:val="FF0000"/>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                    <w:color w:val="FF0000"/>
+                </w:rPr>
+                <w:t>
+                    My custom
+                </w:t>
+            </w:r>
+            <w:r>
+                <w:rPr>
+                    <w:color w:val="00FF00"/>
+                </w:rPr>
+                <w:t>
+                    XML
+                </w:t>
+            </w:r>
+        </w:p>
+        `
+    })
 
 This will loop over the first parent <w:p> tag
 
