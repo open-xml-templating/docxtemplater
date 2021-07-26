@@ -1041,3 +1041,63 @@ Assignment expression in template
 ---------------------------------
 
 By using the angular expressions options, it is possible to add assignment expressions (for example `{full_name = first_name + last_name}` in your template. See `following part of the doc <angular_parse.html#assignments>`__.
+
+Changing the end-user syntax
+----------------------------
+
+If you find that the loop syntax is a bit too complex, you can change it to
+something more human friendly (but more verbose). This could be used to have a
+syntax more similar to what the software "HotDocs" provides.
+
+For example, you could be willing to write loops like this :
+
+.. code-block:: text
+
+    {FOR users}
+    Hello {name}
+    {ENDFOR}
+
+Instead of
+
+.. code-block:: text
+
+    {#users}
+    Hello {name}
+    {/}
+
+This can be done by changing the prefix of the loop module, which is a builtin module.
+
+.. code-block:: javascript
+
+    const doc = new Docxtemplater(zip);
+    doc.modules.forEach(function (module) {
+        if (module.name === "LoopModule") {
+            module.prefix.start = "FOR "
+            module.prefix.start = "ENDFOR "
+        }
+    });
+
+Note that if you don't like the default delimiters which are `{` and `}`, you can also change them, for example :
+
+If you prefer to write :
+
+.. code-block:: text
+
+    [[FOR users]]
+    Hello [[name]]
+    [[ENDFOR]]
+
+You could write your code like this :
+
+.. code-block:: javascript
+
+    const doc = new Docxtemplater(zip, { delimiters: { start: "[[", end: "]]" } });
+    doc.modules.forEach(function (module) {
+        if (module.name === "LoopModule") {
+            module.prefix.start = "FOR "
+            module.prefix.start = "ENDFOR "
+        }
+    });
+
+Note that it is however not possible to use no delimiters at all, docxtemplater
+forces you to have some delimiters.
