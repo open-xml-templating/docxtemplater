@@ -1101,3 +1101,33 @@ You could write your code like this :
 
 Note that it is however not possible to use no delimiters at all, docxtemplater
 forces you to have some delimiters.
+
+Similarly, for each paid module (image module, ...), you can set your own prefixes as well.
+
+For example, for the image module, if you would like to write {IMG mydata} instead of {%mydata} and {CENTERIMG mydata} instead of {%%mydata}, you can write your code like this :
+
+.. code-block:: javascript
+
+    const ImageModule = require("docxtemplater-image-module");
+
+    const opts = {};
+    opts.centered = false;
+    opts.getImage = function (tagValue, tagName) {
+      return fs.readFileSync(tagValue);
+    };
+
+    opts.getSize = function (img, tagValue, tagName) {
+      return [150, 150];
+    };
+
+    const imageModule = new ImageModule(opts);
+    imageModule.prefix.normal = "IMG "
+    imageModule.prefix.centered = "CENTERIMG "
+    const doc = new Docxtemplater(zip, { modules: [imageModule], delimiters: { start: "[[", end: "]]" } });
+    doc.modules.forEach(function (module) {
+        if (module.name === "LoopModule") {
+            module.prefix.start = "FOR "
+            module.prefix.start = "ENDFOR "
+        }
+    });
+
