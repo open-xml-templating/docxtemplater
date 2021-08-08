@@ -678,6 +678,13 @@ function browserMatches(regex) {
 	return regex.test(currentBrowser);
 }
 
+function getLength(obj) {
+	if (obj instanceof ArrayBuffer) {
+		return obj.byteLength;
+	}
+	return obj.length;
+}
+
 module.exports = {
 	chai,
 	cleanError,
@@ -709,4 +716,5 @@ module.exports = {
 	getParameterByName,
 	browserMatches,
 	errorVerifier,
+	getLength,
 };

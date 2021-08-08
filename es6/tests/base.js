@@ -13,15 +13,9 @@ const {
 	getContent,
 	createDocV4,
 	getZip,
+	getLength,
 } = require("./utils.js");
 const inspectModule = require("../inspect-module.js");
-
-function getLength(obj) {
-	if (obj instanceof ArrayBuffer) {
-		return obj.byteLength;
-	}
-	return obj.length;
-}
 
 describe("Loading", function () {
 	describe("ajax done correctly", function () {
@@ -40,33 +34,7 @@ describe("Loading", function () {
 			expect(typeof doc).to.be.equal("object");
 		});
 	});
-	describe("content_loading", function () {
-		it("should load the right content for the footer", function () {
-			const doc = createDoc("tag-example.docx");
-			const fullText = doc.getFullText("word/footer1.xml");
-			expect(fullText.length).not.to.be.equal(0);
-			expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
-		});
-		it("should load the right content for the document", function () {
-			const doc = createDoc("tag-example.docx");
-			const fullText = doc.getFullText();
-			expect(fullText).to.be.equal("{last_name} {first_name}");
-		});
-		it("should load the right template files for the document", function () {
-			const doc = createDoc("tag-example.docx");
-			const templatedFiles = doc.getTemplatedFiles();
-			expect(templatedFiles.sort()).to.be.eql(
-				[
-					"word/header1.xml",
-					"word/footer1.xml",
-					"docProps/core.xml",
-					"docProps/app.xml",
-					"word/settings.xml",
-					"word/document.xml",
-				].sort()
-			);
-		});
-	});
+
 	describe("output and input", function () {
 		it("should be the same", function () {
 			const zip = new PizZip(createDoc("tag-example.docx").loadedContent);
@@ -77,6 +45,35 @@ describe("Loading", function () {
 				"UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn"
 			);
 		});
+	});
+});
+
+describe("Retrieving text content", function () {
+	it("should work for the footer", function () {
+		const doc = createDoc("tag-example.docx");
+		const fullText = doc.getFullText("word/footer1.xml");
+		expect(fullText.length).not.to.be.equal(0);
+		expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
+	});
+	it("should work for the document", function () {
+		const doc = createDoc("tag-example.docx");
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal("{last_name} {first_name}");
+	});
+});
+
+describe("Retrieving list of templated files", function () {
+	it("should work", function () {
+		const doc = createDoc("tag-example.docx");
+		const templatedFiles = doc.getTemplatedFiles();
+		expect(templatedFiles.sort()).to.be.eql([
+			"docProps/app.xml",
+			"docProps/core.xml",
+			"word/document.xml",
+			"word/footer1.xml",
+			"word/header1.xml",
+			"word/settings.xml",
+		]);
 	});
 });
 
