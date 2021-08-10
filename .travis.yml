@@ -9,15 +9,9 @@ jobs:
         username: jsninja
   - node_js: '10'
     env: COMMAND=mocha
-  - node_js: '11'
-    env: COMMAND=mocha
   - node_js: '12'
     env: COMMAND=mocha
-  - node_js: '13'
-    env: COMMAND=mocha
   - node_js: '14'
-    env: COMMAND=mocha
-  - node_js: '15'
     env: COMMAND=mocha
   - node_js: '16'
     env: COMMAND=mocha
