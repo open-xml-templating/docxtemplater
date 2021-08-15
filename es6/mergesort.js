@@ -1,10 +1,13 @@
 function getMinFromArrays(arrays, state) {
-	let minIndex = 0;
+	let minIndex = -1;
 	for (let i = 0, l = arrays.length; i < l; i++) {
 		if (state[i] >= arrays[i].length) {
 			continue;
 		}
-		if (arrays[i][state[i]].offset < arrays[minIndex][state[minIndex]].offset) {
+		if (
+			minIndex === -1 ||
+			arrays[i][state[i]].offset < arrays[minIndex][state[minIndex]].offset
+		) {
 			minIndex = i;
 		}
 	}

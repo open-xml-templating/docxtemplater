@@ -1,3 +1,9 @@
+### 3.22.6
+
+Bugfix to avoid error message `Cannot read property 'offset' of undefined` on some rare templates.
+
+The internal `mergesort` function had a bug.
+
 ### 3.22.5
 
 Bugfix to avoid dropping section when having a loop right before a section break
