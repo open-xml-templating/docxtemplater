@@ -96,13 +96,11 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 				}
 
 				const chunks = chunkBy(postparsed.slice(left, right), function (p) {
-					if (isTagStart(contains, p)) {
-						return "start";
-					}
-					if (isTagEnd(contains, p)) {
-						return "end";
-					}
-					return null;
+					return isTagStart(contains, p)
+						? "start"
+						: isTagEnd(contains, p)
+						? "end"
+						: null;
 				});
 
 				if (chunks.length <= 2) {
