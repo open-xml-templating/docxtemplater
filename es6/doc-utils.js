@@ -364,11 +364,11 @@ function isTagStart(tagType, { type, tag, position }) {
 function isTagEnd(tagType, { type, tag, position }) {
 	return type === "tag" && tag === tagType && position === "end";
 }
-function isParagraphStart(options) {
-	return isTagStart("w:p", options) || isTagStart("a:p", options);
+function isParagraphStart(part) {
+	return isTagStart("w:p", part) || isTagStart("a:p", part);
 }
-function isParagraphEnd(options) {
-	return isTagEnd("w:p", options) || isTagEnd("a:p", options);
+function isParagraphEnd(part) {
+	return isTagEnd("w:p", part) || isTagEnd("a:p", part);
 }
 function isTextStart(part) {
 	return part.type === "tag" && part.position === "start" && part.text;

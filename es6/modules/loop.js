@@ -6,6 +6,8 @@ const {
 	isParagraphEnd,
 	isContent,
 	startsWith,
+	isTagEnd,
+	isTagStart,
 } = require("../doc-utils.js");
 const wrapper = require("../module-wrapper.js");
 
@@ -104,21 +106,16 @@ function addContinuousType(parts) {
 
 function dropHeaderFooterRefs(parts) {
 	return parts.filter(function (text) {
-		if (
-			startsWith(text, "<w:headerReference") ||
-			startsWith(text, "<w:footerReference")
-		) {
-			return false;
-		}
-		return true;
+		return (
+			!startsWith(text, "<w:headerReference") &&
+			!startsWith(text, "<w:footerReference")
+		);
 	});
 }
 
 function hasPageBreak(chunk) {
 	return chunk.some(function (part) {
-		if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
-			return true;
-		}
+		return part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1;
 	});
 }
 
@@ -132,14 +129,14 @@ function getSectPr(chunks) {
 	let collectSectPr = false;
 	const sectPrs = [];
 	chunks.forEach(function (part) {
-		if (part.tag === "w:sectPr" && part.position === "start") {
+		if (isTagStart("w:sectPr", part)) {
 			sectPrs.push([]);
 			collectSectPr = true;
 		}
 		if (collectSectPr) {
 			sectPrs[sectPrs.length - 1].push(part);
 		}
-		if (part.tag === "w:sectPr" && part.position === "end") {
+		if (isTagEnd("w:sectPr", part)) {
 			collectSectPr = false;
 		}
 	});
@@ -150,7 +147,7 @@ function getSectPrHeaderFooterChangeCount(chunks) {
 	let collectSectPr = false;
 	let sectPrCount = 0;
 	chunks.forEach(function (part) {
-		if (part.tag === "w:sectPr" && part.position === "start") {
+		if (isTagStart("w:sectPr", part)) {
 			collectSectPr = true;
 		}
 		if (collectSectPr) {
@@ -162,7 +159,7 @@ function getSectPrHeaderFooterChangeCount(chunks) {
 				collectSectPr = false;
 			}
 		}
-		if (part.tag === "w:sectPr" && part.position === "end") {
+		if (isTagEnd("w:sectPr", part)) {
 			collectSectPr = false;
 		}
 	});
@@ -174,25 +171,29 @@ function getLastSectPr(parsed) {
 	let inSectPr = false;
 	for (let i = parsed.length - 1; i >= 0; i--) {
 		const part = parsed[i];
-		if (part.type === "tag" && part.tag === "w:sectPr") {
-			if (part.position === "end") {
-				inSectPr = true;
-			}
-			if (part.position === "start") {
-				sectPr.unshift(part);
-				inSectPr = false;
-			}
+
+		if (isTagEnd("w:sectPr", part)) {
+			inSectPr = true;
+		}
+		if (isTagStart("w:sectPr", part)) {
+			sectPr.unshift(part);
+			inSectPr = false;
 		}
 		if (inSectPr) {
 			sectPr.unshift(part);
 		}
 		if (isParagraphStart(part)) {
 			if (sectPr.length > 0) {
-				return sectPr;
+				return sectPr
+					.map(function ({ value }) {
+						return value;
+					})
+					.join("");
 			}
 			break;
 		}
 	}
+	return "";
 }
 
 class LoopModule {
@@ -284,14 +285,7 @@ class LoopModule {
 					return true;
 				}
 			});
-			const lastSectPr = getLastSectPr(parsed);
-			if (lastSectPr) {
-				basePart.lastParagrapSectPr = lastSectPr
-					.map(function ({ value }) {
-						return value;
-					})
-					.join("");
-			}
+			basePart.lastParagrapSectPr = getLastSectPr(parsed);
 		}
 		if (
 			!basePart ||

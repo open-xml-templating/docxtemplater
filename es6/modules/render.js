@@ -51,7 +51,6 @@ class Render {
 	}
 	recordRuns(part) {
 		if (part.tag === `${ftprefix[this.fileType]}:r`) {
-			this.recordRun = false;
 			this.recordedRun = [];
 		} else if (part.tag === `${ftprefix[this.fileType]}:rPr`) {
 			if (part.position === "start") {

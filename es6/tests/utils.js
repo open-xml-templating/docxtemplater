@@ -255,6 +255,9 @@ function cleanRecursive(arr) {
 		delete p.endLindex;
 		delete p.offset;
 		delete p.raw;
+		if (p.lastParagrapSectPr === "") {
+			delete p.lastParagrapSectPr;
+		}
 		if (p.subparsed) {
 			cleanRecursive(p.subparsed);
 		}

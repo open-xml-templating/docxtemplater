@@ -20,39 +20,117 @@ function lastTagIsOpenTag(tags, tag) {
 	if (tags.length === 0) {
 		return false;
 	}
-	const innerLastTag = last(tags).tag.substr(1);
-	const innerCurrentTag = tag.substr(2, tag.length - 3);
-	return innerLastTag.indexOf(innerCurrentTag) === 0;
-}
-
-function addTag(tags, tag) {
-	tags.push({ tag });
-	return tags;
+	const innerLastTag = last(tags).substr(1);
+	return innerLastTag.indexOf(tag) === 0;
 }
 
 function getListXmlElements(parts) {
 	/*
-	get the different closing and opening tags between two texts (doesn't take into account tags that are opened then closed (those that are closed then opened are returned)):
-	returns:[{"tag":"</w:r>","offset":13},{"tag":"</w:p>","offset":265},{"tag":"</w:tc>","offset":271},{"tag":"<w:tc>","offset":828},{"tag":"<w:p>","offset":883},{"tag":"<w:r>","offset":1483}]
+	Gets the list of closing and opening tags between two texts. It doesn't take
+	into account tags that are opened then closed. Those that are closed then
+	opened are kept
+
+	Example input :
+
+	[
+		{
+			"type": "placeholder",
+			"value": "table1",
+			...
+		},
+		{
+			"type": "placeholder",
+			"value": "t1data1",
+		},
+		{
+			"type": "tag",
+			"position": "end",
+			"text": true,
+			"value": "</w:t>",
+			"tag": "w:t",
+			"lIndex": 112
+		},
+		{
+			"type": "tag",
+			"value": "</w:r>",
+		},
+		{
+			"type": "tag",
+			"value": "</w:p>",
+		},
+		{
+			"type": "tag",
+			"value": "</w:tc>",
+		},
+		{
+			"type": "tag",
+			"value": "<w:tc>",
+		},
+		{
+			"type": "content",
+			"value": "<w:tcPr><w:tcW w:w="2444" w:type="dxa"/><w:tcBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/></w:tcPr>",
+		},
+		...
+		{
+			"type": "tag",
+			"value": "<w:r>",
+		},
+		{
+			"type": "tag",
+			"value": "<w:t xml:space="preserve">",
+		},
+		{
+			"type": "placeholder",
+			"value": "t1data4",
+		}
+	]
+
+	returns
+		[
+			{
+				"tag": "</w:t>",
+			},
+			{
+				"tag": "</w:r>",
+			},
+			{
+				"tag": "</w:p>",
+			},
+			{
+				"tag": "</w:tc>",
+			},
+			{
+				"tag": "<w:tc>",
+			},
+			{
+				"tag": "<w:p>",
+			},
+			{
+				"tag": "<w:r>",
+			},
+			{
+				"tag": "<w:t>",
+			},
+		]
 	*/
-	const tags = parts.filter(function (part) {
-		return part.type === "tag";
+	const tags = parts.filter(function ({ type }) {
+		return type === "tag";
 	});
 
-	let result = [];
+	const result = [];
 
-	for (let i = 0, tag; i < tags.length; i++) {
-		tag = tags[i].value;
-		// closing tag
-		if (tag[1] === "/") {
+	for (let i = 0; i < tags.length; i++) {
+		const { position, value, tag } = tags[i];
+		if (position === "end") {
 			if (lastTagIsOpenTag(result, tag)) {
 				result.pop();
 			} else {
-				result = addTag(result, tag);
+				result.push(value);
 			}
-		} else if (tag[tag.length - 2] !== "/") {
-			result = addTag(result, tag);
+		} else if (position === "start") {
+			result.push(value);
 		}
+		// ignore position === "selfclosing"
 	}
 	return result;
 }
@@ -60,7 +138,7 @@ function getListXmlElements(parts) {
 function has(name, xmlElements) {
 	for (let i = 0; i < xmlElements.length; i++) {
 		const xmlElement = xmlElements[i];
-		if (xmlElement.tag.indexOf(`<${name}`) === 0) {
+		if (xmlElement.indexOf(`<${name}`) === 0) {
 			return true;
 		}
 	}
@@ -70,11 +148,10 @@ function has(name, xmlElements) {
 function getExpandToDefault(postparsed, pair, expandTags) {
 	const parts = postparsed.slice(pair[0].offset, pair[1].offset);
 	const xmlElements = getListXmlElements(parts);
-	const closingTagCount = xmlElements.filter(function (xmlElement) {
-		return xmlElement.tag[1] === "/";
+	const closingTagCount = xmlElements.filter(function (tag) {
+		return tag[1] === "/";
 	}).length;
-	const startingTagCount = xmlElements.filter(function (xmlElement) {
-		const { tag } = xmlElement;
+	const startingTagCount = xmlElements.filter(function (tag) {
 		return tag[1] !== "/" && tag[tag.length - 2] !== "/";
 	}).length;
 	if (closingTagCount !== startingTagCount) {

@@ -120,7 +120,7 @@ function miniparser(xml) {
 				let tag = xml.substr(cursor, closing - cursor + 1);
 				const isSingle = Boolean(tag.match(/^<.+\/>/)); // is this line a single tag? ex. <br />
 				const isClosing = Boolean(tag.match(/^<\/.+>/)); // is this a closing tag? ex. </a>
-				const isXMLDeclaration = Boolean(tag.match(/^<\?xml/)); // is this a closing tag? ex. </a>
+				const isXMLDeclaration = Boolean(tag.match(/^<\?xml/)); // is this an xml declaration tag? ex. <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
 				state = "outside";
 				cursor = closing + 1;

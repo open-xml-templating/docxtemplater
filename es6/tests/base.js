@@ -222,6 +222,7 @@ describe("Inspect module", function () {
 				module: "loop",
 				inverted: false,
 				offset: 0,
+				lastParagrapSectPr: "",
 				endLindex: 15,
 				subparsed: [
 					{
@@ -253,6 +254,7 @@ describe("Inspect module", function () {
 						inverted: false,
 						offset: 70,
 						sectPrCount: 0,
+						lastParagrapSectPr: "",
 						endLindex: 89,
 						lIndex: 89,
 						subparsed: [
@@ -269,6 +271,7 @@ describe("Inspect module", function () {
 								module: "loop",
 								raw: "#proof",
 								sectPrCount: 0,
+								lastParagrapSectPr: "",
 								inverted: false,
 								offset: 117,
 								endLindex: 133,
