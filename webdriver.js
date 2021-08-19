@@ -27,6 +27,12 @@ const serveStatic = require("serve-static");
 const port = 9000;
 const http = require("http");
 
+async function sleep(ms) {
+	return new Promise(function (resolve) {
+		setTimeout(() => resolve(), ms);
+	});
+}
+
 // These options are the modern, W3C ones
 const sauceLabsW3COptions = {
 	browserName,
@@ -262,6 +268,7 @@ server.listen(port, async function () {
 			const passes = parseInt(text.replace(passesRegex, "$1"), 10);
 			const failures = parseInt(text.replace(failuresRegex, "$1"), 10);
 			if (failures > 0) {
+				await sleep(1000);
 				const failedSuites = await client.$$("li.test.fail");
 				for (let i = 0, len = failedSuites.length; i < len; i++) {
 					const titleElement = await await failedSuites[i].$("h2");
@@ -286,6 +293,7 @@ server.listen(port, async function () {
 				throw new Error(`${failures} failures happened on ${fullBrowserName}`);
 			}
 			expect(passes).to.be.above(0);
+			await sleep(1000);
 			console.log(
 				chalk.green(
 					`browser tests successful (${passes} passes) on ${fullBrowserName}`
