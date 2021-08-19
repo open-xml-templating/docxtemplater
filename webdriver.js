@@ -49,14 +49,14 @@ const browserCapability = {
 	SAUCELABS: {
 		browserName,
 		browserVersion: version,
-		platform,
-		tags: ["docxtemplater"],
-		name: "docxtemplater mocha",
-		"tunnel-identifier": TRAVIS_JOB_NUMBER,
-		tunnelIdentifier: TRAVIS_JOB_NUMBER,
-		build: TRAVIS_BUILD_NUMBER,
-		captureHtml: true,
-		public: true,
+		platformName: platform,
+		"sauce:options": {
+			name: "docxtemplater mocha",
+			build: TRAVIS_BUILD_NUMBER,
+			tags: ["docxtemplater"],
+			tunnelIdentifier: TRAVIS_JOB_NUMBER,
+			public: true,
+		},
 	},
 };
 
