@@ -13,6 +13,7 @@ test() {
 	fi
 }
 
+browserName="Safari" platform="iOS" version="13.0" test
 browserName="firefox" platform="Windows 10" version="55" test
 browserName="firefox" platform="Windows 10" version="60" test
 browserName="firefox" platform="Windows 10" version="64" test
@@ -44,7 +45,6 @@ browserName="chrome" platform="Windows 10" version="88" test
 browserName="chrome" platform="Windows 10" version="91" test
 browserName="internet explorer" platform="Windows 7" filter="Speed test" version="10.0" test
 browserName="internet explorer" platform="Windows 10" filter="Speed test" version="11" test
-browserName="iphone" platform="Mac 10.11" version="10.3" test
 
 if [ "$result" = "1" ]
 then

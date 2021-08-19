@@ -95,6 +95,7 @@ describe("Speed test", function () {
 		if (
 			browserMatches(/MicrosoftEdge (16|17|18)/) ||
 			browserMatches(/internet explorer (10|11)/) ||
+			browserMatches(/chrome (58|71|73|75)/) ||
 			browserMatches(/iphone 10.3/)
 		) {
 			maxDuration = 500;
@@ -260,7 +261,7 @@ describe("Speed test", function () {
 				expect(stepResolve).to.be.below(maxResolveTime);
 				let maxRenderTime = 1000;
 				if (
-					browserMatches(/firefox (55)/) ||
+					browserMatches(/firefox (55|60|64|65|66|67)/) ||
 					browserMatches(/iphone 10.3/) ||
 					browserMatches(/MicrosoftEdge (16|17|18)/)
 				) {
