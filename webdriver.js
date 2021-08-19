@@ -171,6 +171,58 @@ server.listen(port, async function () {
 	} catch (e) {
 		exit(e);
 	}
+	async function mockConsole() {
+		await client.execute(() => {
+			if (window.myLogs) {
+				return;
+			}
+			window.myLogs = [];
+			console.log = function() {
+				const myLog = [];
+				for (let i = 0, len = arguments.length; i < len; i++) {
+					myLog.push(arguments[i]);
+				}
+				window.myLogs.push(myLog);
+			};
+			console.error = function() {
+				const myLog = [];
+				for (let i = 0, len = arguments.length; i < len; i++) {
+					myLog.push(arguments[i]);
+				}
+				window.myLogs.push(myLog);
+			};
+			console.warn = function() {
+				const myLog = [];
+				for (let i = 0, len = arguments.length; i < len; i++) {
+					myLog.push(arguments[i]);
+				}
+				window.myLogs.push(myLog);
+			};
+		});
+	}
+	async function getConsole() {
+		return await client.execute(() => {
+			if (!window.myLogs) {
+				return "[]";
+			}
+			return JSON.stringify(window.myLogs);
+		});
+	}
+	await mockConsole();
+	let logIndex = 0;
+	const int2 = setInterval(async function() {
+		if (logPostRequest) {
+			clearInterval(int2);
+			return;
+		}
+		await mockConsole();
+		const logOutput = await getConsole();
+		const logs = JSON.parse(logOutput);
+		logs.slice(logIndex).forEach(function (log) {
+			console.log("BROWSERLOG:", log.join(" , "));
+		});
+		logIndex = logs.length;
+	}, 100);
 	async function waitForText(selector, timeout) {
 		return await client.waitUntil(
 			async function getText() {
