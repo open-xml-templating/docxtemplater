@@ -256,7 +256,9 @@ server.listen(port, async function () {
 			await waitForExist("li.failures a", 5000);
 			const text = await (await client.$("#mocha-stats")).getText();
 			clearInterval(interval);
-			interval = null;
+			setTimeout(function () {
+				interval = null;
+			}, 1000);
 			const passes = parseInt(text.replace(passesRegex, "$1"), 10);
 			const failures = parseInt(text.replace(failuresRegex, "$1"), 10);
 			if (failures > 0) {
@@ -300,7 +302,9 @@ server.listen(port, async function () {
 				server.close();
 			}
 			logPostRequest = true;
-			client.deleteSession();
+			setTimeout(function () {
+				client.deleteSession();
+			}, 5000);
 		} catch (e) {
 			clearInterval(interval);
 			interval = null;

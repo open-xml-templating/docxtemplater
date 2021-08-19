@@ -192,7 +192,10 @@ describe("Speed test", function () {
 					duration += new Date() - startTime;
 				}
 				let maxInspectDuration = 750;
-				if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
+				if (
+					browserMatches(/firefox (55)/) ||
+					browserMatches(/MicrosoftEdge (16|17|18)/)
+				) {
 					maxInspectDuration = 1000;
 				}
 				expect(duration).to.be.below(maxInspectDuration);
