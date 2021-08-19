@@ -33,7 +33,7 @@ browserName="MicrosoftEdge" platform="Windows 10" version="91.0" test
 browserName="safari" platform="macOs 10.12" version="11.0" filter="Speed test" test
 browserName="safari" platform="macOS 10.14" version="12.0" filter="Speed test" test
 browserName="safari" platform="macOS 10.15" version="13.1" filter="Speed test" test
-browserName="safari" platform="macOS 10.14" version="14.1" filter="Speed test" test
+browserName="safari" platform="macOS 11" version="14" filter="Speed test" test
 browserName="chrome" platform="Windows 10" version="58" test
 browserName="chrome" platform="Windows 10" version="71" test
 browserName="chrome" platform="Windows 10" version="73" test

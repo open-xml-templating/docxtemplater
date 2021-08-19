@@ -251,12 +251,13 @@ describe("Speed test", function () {
 				if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
 					maxResolveTime = 20000;
 				}
-				if (browserMatches(/firefox 55/)) {
+				if (browserMatches(/firefox (55|89)/)) {
 					maxResolveTime = 4000;
 				}
 				expect(stepResolve).to.be.below(maxResolveTime);
 				let maxRenderTime = 1000;
 				if (
+					browserMatches(/firefox (55)/) ||
 					browserMatches(/iphone 10.3/) ||
 					browserMatches(/MicrosoftEdge (16|17|18)/)
 				) {

@@ -27,6 +27,37 @@ const serveStatic = require("serve-static");
 const port = 9000;
 const http = require("http");
 
+// These options are the modern, W3C ones
+const sauceLabsW3COptions = {
+	browserName,
+	browserVersion: version,
+	platformName: platform,
+	"sauce:options": {
+		name: "docxtemplater mocha",
+		build: TRAVIS_BUILD_NUMBER,
+		tags: ["docxtemplater"],
+		tunnelIdentifier: TRAVIS_JOB_NUMBER,
+		public: true,
+	},
+};
+
+// These options are the legacy, JWP ones
+const saucelabsJWPOptions = {
+	browserName,
+	version,
+	platform,
+	tags: ["docxtemplater"],
+	name: "docxtemplater mocha",
+	"tunnel-identifier": TRAVIS_JOB_NUMBER,
+	tunnelIdentifier: TRAVIS_JOB_NUMBER,
+	build: TRAVIS_BUILD_NUMBER,
+	captureHtml: true,
+	public: true,
+};
+
+// USE JWP instead of W3C for chrome < 75 only
+const useJWP = browserName === "chrome" && +version < 75;
+
 const browserCapability = {
 	CHROME: {
 		browserName: "chrome",
@@ -46,18 +77,7 @@ const browserCapability = {
 			args: ["-headless"],
 		},
 	},
-	SAUCELABS: {
-		browserName,
-		browserVersion: version,
-		platformName: platform,
-		"sauce:options": {
-			name: "docxtemplater mocha",
-			build: TRAVIS_BUILD_NUMBER,
-			tags: ["docxtemplater"],
-			tunnelIdentifier: TRAVIS_JOB_NUMBER,
-			public: true,
-		},
-	},
+	SAUCELABS: useJWP ? saucelabsJWPOptions : sauceLabsW3COptions,
 };
 
 const desiredCapabilities = browserCapability[BROWSER];
@@ -197,7 +217,7 @@ server.listen(port, async function () {
 					return;
 				}
 				running = true;
-				const texts = await client.$$("li.test");
+				const texts = await client.$$("li h1, li h2");
 				if (index === texts.length) {
 					return;
 				}
