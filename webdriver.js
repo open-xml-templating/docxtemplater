@@ -145,6 +145,15 @@ function updateSaucelabsStatus(client, result, done) {
 	);
 }
 
+let logPostRequest = false;
+function logE(arg) {
+	if (logPostRequest) {
+		console.log(arg);
+		console.log("Stacktrace is : ");
+		console.log(new Error());
+	}
+}
+
 const timeoutConnection = 180;
 const failuresRegex = /.*failures: ([0-9]+).*/;
 const passesRegex = /.*passes: ([0-9]+).*/;
@@ -159,10 +168,13 @@ server.listen(port, async function () {
 	async function waitForText(selector, timeout) {
 		return await client.waitUntil(
 			async function getText() {
+				logE("client.selector" + selector);
 				const el = await client.$(selector);
+				logE("el.isExisting" + selector);
 				if (!(await el.isExisting())) {
 					return false;
 				}
+				logE("el.getText" + selector);
 				const text = await el.getText();
 				if (text.length > 0) {
 					return true;
@@ -177,7 +189,9 @@ server.listen(port, async function () {
 	async function waitForExist(selector, timeout) {
 		return await client.waitUntil(
 			async function exists() {
+				logE("waitForExist.selector" + selector);
 				const el = await client.$(selector);
+				logE("waitForExist.selector" + selector);
 				if (await el.isExisting()) {
 					return true;
 				}
@@ -217,6 +231,7 @@ server.listen(port, async function () {
 					return;
 				}
 				running = true;
+				logE("get h1,h2");
 				const texts = await client.$$("li h1, li h2");
 				if (index === texts.length) {
 					return;
@@ -225,6 +240,7 @@ server.listen(port, async function () {
 					if (interval === null) {
 						return;
 					}
+					logE("get text[i]" + i);
 					const text = await texts[i].getText();
 					console.log(
 						text
@@ -283,10 +299,12 @@ server.listen(port, async function () {
 			} else {
 				server.close();
 			}
+			logPostRequest = true;
 			client.deleteSession();
 		} catch (e) {
 			clearInterval(interval);
 			interval = null;
+			logPostRequest = true;
 			if (e.message.indexOf("ECONNREFUSED") !== -1) {
 				return test();
 			}
