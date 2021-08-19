@@ -12,6 +12,18 @@ test() {
 		failures+=("Fail for ${browserName} ${version}")
 	fi
 }
+
+browserName="firefox" platform="Windows 10" version="55" test
+browserName="firefox" platform="Windows 10" version="60" test
+browserName="firefox" platform="Windows 10" version="64" test
+browserName="firefox" platform="Windows 10" version="65" test
+browserName="firefox" platform="Windows 10" version="66" test
+browserName="firefox" platform="Windows 10" version="67" test
+browserName="firefox" platform="Windows 10" version="68" test
+browserName="firefox" platform="Windows 10" version="73" test
+browserName="firefox" platform="Windows 10" version="80" test
+browserName="firefox" platform="Windows 10" version="85" test
+browserName="firefox" platform="Windows 10" version="89" test
 browserName="MicrosoftEdge" platform="Windows 10" version="16.16299" test
 browserName="MicrosoftEdge" platform="Windows 10" version="17.17134" test
 browserName="MicrosoftEdge" platform="Windows 10" version="18.17763" test
@@ -30,17 +42,6 @@ browserName="chrome" platform="Windows 10" version="81" test
 browserName="chrome" platform="Windows 10" version="85" test
 browserName="chrome" platform="Windows 10" version="88" test
 browserName="chrome" platform="Windows 10" version="91" test
-browserName="firefox" platform="Windows 10" version="55" test
-browserName="firefox" platform="Windows 10" version="60" test
-browserName="firefox" platform="Windows 10" version="64" test
-browserName="firefox" platform="Windows 10" version="65" test
-browserName="firefox" platform="Windows 10" version="66" test
-browserName="firefox" platform="Windows 10" version="67" test
-browserName="firefox" platform="Windows 10" version="68" test
-browserName="firefox" platform="Windows 10" version="73" test
-browserName="firefox" platform="Windows 10" version="80" test
-browserName="firefox" platform="Windows 10" version="85" test
-browserName="firefox" platform="Windows 10" version="89" test
 browserName="internet explorer" platform="Windows 7" filter="Speed test" version="10.0" test
 browserName="internet explorer" platform="Windows 10" filter="Speed test" version="11" test
 browserName="iphone" platform="Mac 10.11" version="10.3" test

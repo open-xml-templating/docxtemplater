@@ -48,7 +48,7 @@ const browserCapability = {
 	},
 	SAUCELABS: {
 		browserName,
-		version,
+		browserVersion: version,
 		platform,
 		tags: ["docxtemplater"],
 		name: "docxtemplater mocha",
@@ -245,7 +245,7 @@ server.listen(port, async function () {
 					console.log(error);
 					console.log();
 				}
-				throw new Error(`Failures happened on ${fullBrowserName}`);
+				throw new Error(`${failures} failures happened on ${fullBrowserName}`);
 			}
 			expect(passes).to.be.above(0);
 			console.log(

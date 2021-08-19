@@ -41,8 +41,12 @@ describe("Speed test", function () {
 		for (i = 0; i < 20; i++) {
 			docs[i].render();
 		}
+		let maxDuration = 400;
+		if (browserMatches(/chrome (73|71)/)) {
+			maxDuration = 600;
+		}
 		const duration = new Date() - time;
-		expect(duration).to.be.below(400);
+		expect(duration).to.be.below(maxDuration);
 	});
 	it("should be fast for loop tags", function () {
 		const content = "<w:t>{#users}{name}{/users}</w:t>";
