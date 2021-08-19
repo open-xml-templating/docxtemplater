@@ -43,7 +43,8 @@ module.exports = {
 			},
 		],
 	},
-	mode: min ? "production" : "development",
+	mode: "production",
+	target: ["web", "es5"],
 	optimization: {
 		minimize: min,
 	},

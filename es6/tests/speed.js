@@ -158,7 +158,11 @@ describe("Speed test", function () {
 			doc.render();
 			let maxRenderDuration = 2000;
 			const renderDuration = new Date() - now;
-			if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
+
+			if (
+				browserMatches(/internet explorer (10|11)/) ||
+				browserMatches(/MicrosoftEdge (16|17|18)/)
+			) {
 				maxRenderDuration = 3000;
 			}
 			if (browserMatches(/firefox (68)/)) {
