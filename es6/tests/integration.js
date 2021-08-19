@@ -1109,7 +1109,7 @@ describe("Load Office 365 file", function () {
 });
 
 describe("Resolver", function () {
-	it("should work", function () {
+	it("should render the document correctly in async mode", function () {
 		const doc = createDoc("office365.docx");
 		doc.setOptions({
 			paragraphLoop: true,

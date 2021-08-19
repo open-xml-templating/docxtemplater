@@ -207,7 +207,7 @@ describe("Module traits", function () {
 });
 
 describe("Module errors", function () {
-	it("should work", function () {
+	it("should work the error that is returned from render", function () {
 		const moduleName = "ErrorModule";
 		const module = {
 			name: "Error module",

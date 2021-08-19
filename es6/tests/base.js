@@ -65,7 +65,7 @@ describe("Retrieving text content", function () {
 });
 
 describe("Retrieving list of templated files", function () {
-	it("should work", function () {
+	it("should return 6 templatedFiles for a simple document", function () {
 		const doc = createDoc("tag-example.docx");
 		const templatedFiles = doc.getTemplatedFiles();
 		expect(templatedFiles.sort()).to.be.eql([
