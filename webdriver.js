@@ -177,21 +177,21 @@ server.listen(port, async function () {
 				return;
 			}
 			window.myLogs = [];
-			console.log = function() {
+			console.log = function () {
 				const myLog = [];
 				for (let i = 0, len = arguments.length; i < len; i++) {
 					myLog.push(arguments[i]);
 				}
 				window.myLogs.push(myLog);
 			};
-			console.error = function() {
+			console.error = function () {
 				const myLog = [];
 				for (let i = 0, len = arguments.length; i < len; i++) {
 					myLog.push(arguments[i]);
 				}
 				window.myLogs.push(myLog);
 			};
-			console.warn = function() {
+			console.warn = function () {
 				const myLog = [];
 				for (let i = 0, len = arguments.length; i < len; i++) {
 					myLog.push(arguments[i]);
@@ -210,7 +210,7 @@ server.listen(port, async function () {
 	}
 	await mockConsole();
 	let logIndex = 0;
-	const int2 = setInterval(async function() {
+	const int2 = setInterval(async function () {
 		if (logPostRequest) {
 			clearInterval(int2);
 			return;
