@@ -106,6 +106,7 @@ function DocXFileTypeConfig() {
 			"w:pPr",
 			"w:spacing",
 			"w:sdtContent",
+			"w:drawing",
 
 			"w:sectPr",
 			"w:type",

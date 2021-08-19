@@ -1,3 +1,15 @@
+### 3.22.7
+
+Bugfix to avoid loosing an image that is contained inside a paragraph loop.
+
+The image would disappear only when the image was followed directly by the end of the loop, like this :
+
+```
+{#loop}
+[IMAGE]
+{/loop}
+```
+
 ### 3.22.6
 
 Bugfix to avoid error message `Cannot read property 'offset' of undefined` on some rare templates.

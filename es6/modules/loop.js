@@ -122,6 +122,12 @@ function hasPageBreak(chunk) {
 	});
 }
 
+function hasImage(chunk) {
+	return chunk.some(function ({ tag }) {
+		return tag === "w:drawing";
+	});
+}
+
 function getSectPr(chunks) {
 	let collectSectPr = false;
 	const sectPrs = [];
@@ -295,6 +301,7 @@ class LoopModule {
 		) {
 			return parsed;
 		}
+		basePart.paragraphLoop = true;
 
 		let level = 0;
 		const chunks = chunkBy(parsed, function (p) {
@@ -312,20 +319,23 @@ class LoopModule {
 			}
 			return null;
 		});
-		if (chunks.length <= 2) {
-			return parsed;
-		}
+
 		const firstChunk = chunks[0];
 		const lastChunk = last(chunks);
-		const firstOffset = getOffset(firstChunk);
-		const lastOffset = getOffset(lastChunk);
+		let firstOffset = getOffset(firstChunk);
+		let lastOffset = getOffset(lastChunk);
 
-		basePart.hasPageBreak = hasPageBreak(lastChunk);
 		basePart.hasPageBreakBeginning = hasPageBreak(firstChunk);
-		basePart.paragraphLoop = true;
+		basePart.hasPageBreak = hasPageBreak(lastChunk);
 
 		if (firstOffset === 0 || lastOffset === 0) {
 			return parsed;
+		}
+		if (hasImage(firstChunk)) {
+			firstOffset = 0;
+		}
+		if (hasImage(lastChunk)) {
+			lastOffset = 0;
 		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}

@@ -103,10 +103,6 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 						: null;
 				});
 
-				if (chunks.length <= 2) {
-					continue;
-				}
-
 				const firstChunk = first(chunks);
 				const lastChunk = last(chunks);
 

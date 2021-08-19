@@ -734,6 +734,27 @@ describe("ParagraphLoop", function () {
 		shouldBeSame({ doc, expectedName: "expected-users.docx" });
 	});
 
+	it("should not drop image with text", function () {
+		const doc = createDoc("cond-image.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({ cond: true }).render();
+		shouldBeSame({ doc, expectedName: "expected-cond-image.docx" });
+	});
+
+	it("should not drop image without text", function () {
+		const doc = createDoc("cond-image-no-innertext.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({ cond: true }).render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-cond-image-no-innertext.docx",
+		});
+	});
+
 	it("should work without removing extra text", function () {
 		const doc = createDoc("paragraph-loops.docx");
 		doc.setOptions({
