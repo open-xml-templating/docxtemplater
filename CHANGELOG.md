@@ -1,3 +1,9 @@
+### 3.22.8
+
+Use @xmldom/xmldom instead of xmldom
+
+See : https://github.com/xmldom/xmldom/issues/271
+
 ### 3.22.7
 
 Bugfix to avoid loosing an image that is contained inside a paragraph loop.

@@ -29,7 +29,10 @@ module.exports = {
 	},
 	resolve: {
 		alias: {
-			xmldom: path.resolve(__dirname, "es6/browser-versions/xmldom.js"),
+			"@xmldom/xmldom": path.resolve(
+				__dirname,
+				"es6/browser-versions/xmldom.js"
+			),
 			fs: path.resolve(__dirname, "es6/browser-versions/fs.js"),
 		},
 		fallback: { path: false },
