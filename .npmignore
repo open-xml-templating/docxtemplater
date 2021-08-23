@@ -36,3 +36,5 @@ profile_output_total.json
 tags
 browser-demo
 /js/tests/*.xml
+.stryker-tmp
+reports

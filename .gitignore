@@ -22,3 +22,5 @@ tags
 /es6/tests/filenames.js
 browser-demo/
 .nyc_output/
+.stryker-tmp
+reports
