@@ -1,3 +1,11 @@
+### 3.23.0
+
+Internal cleanup :
+
+- Remove internal unused function `getNearestLeftIndex`, `getNearestRightIndex`, `getNearestLeftIndexWithCache`, `getNearestRightIndexWithCache` from doc-utils.
+
+- Add explanation to all errors that have id
+
 ### 3.22.8
 
 Use @xmldom/xmldom instead of xmldom
