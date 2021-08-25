@@ -6,7 +6,14 @@ module.exports = {
 	reporters: ["html", "clear-text", "progress"],
 	testRunner: "mocha",
 	coverageAnalysis: "perTest",
-	mutate: ["es6/*.js", "es6/modules/*.js"],
+	ignorePatterns: [],
+	mutate: [
+		"es6/*.js",
+		"es6/modules/*.js",
+		"!es6/debugger-module.js",
+		"!es6/error-logger.js",
+		"!es6/proof-state-module.js",
+	],
 	mochaOptions: {
 		spec: ["es6/tests/index.js"],
 	},

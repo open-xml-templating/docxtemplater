@@ -18,6 +18,7 @@ function startTest() {
 	require("./integration.js");
 	require("./doc-props.js");
 	require("./modules.js");
+	require("./doc-utils.js");
 }
 
 start();

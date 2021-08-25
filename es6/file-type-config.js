@@ -52,7 +52,6 @@ function PptXFileTypeConfig() {
 		expandTags: [{ contains: "a:tc", expand: "a:tr" }],
 		onParagraphLoop: [{ contains: "a:p", expand: "a:p", onlyTextInTag: true }],
 		tagRawXml: "p:sp",
-		tagTextXml: "a:t",
 		baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
 		tagShouldContain: [
 			{ tag: "p:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
@@ -116,7 +115,6 @@ function DocXFileTypeConfig() {
 		expandTags: [{ contains: "w:tc", expand: "w:tr" }],
 		onParagraphLoop: [{ contains: "w:p", expand: "w:p", onlyTextInTag: true }],
 		tagRawXml: "w:p",
-		tagTextXml: "w:t",
 		baseModules: [
 			loopModule,
 			spacePreserveModule,

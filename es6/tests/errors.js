@@ -392,7 +392,6 @@ describe("Compilation errors", function () {
 								{
 									type: "content",
 									value: "foo",
-									offset: 0,
 									position: "insidetag",
 									lIndex: 3,
 								},
@@ -405,7 +404,6 @@ describe("Compilation errors", function () {
 								{
 									type: "content",
 									value: " ",
-									offset: 4,
 									position: "insidetag",
 									lIndex: 5,
 								},
@@ -421,7 +419,6 @@ describe("Compilation errors", function () {
 								{
 									type: "content",
 									value: " bar",
-									offset: 12,
 									position: "insidetag",
 									lIndex: 9,
 								},
@@ -616,6 +613,24 @@ describe("Internal errors", function () {
 			},
 		};
 		loadFile("test.odt", (e, name, buffer) => {
+			function create() {
+				loadDocument(name, buffer);
+			}
+			expectToThrow(create, Errors.XTInternalError, expectedError);
+			done();
+		});
+	});
+
+	it("should fail if using zip file", function (done) {
+		const expectedError = {
+			name: "InternalError",
+			message:
+				"The filetype for this file could not be identified, is this file corrupted ?",
+			properties: {
+				id: "filetype_not_identified",
+			},
+		};
+		loadFile("simple-zip.zip", (e, name, buffer) => {
 			function create() {
 				loadDocument(name, buffer);
 			}

@@ -29,27 +29,6 @@ describe("XmlMatcher", function () {
 		);
 	});
 
-	it("should work with no tag, with w:t", function () {
-		const matcher = xmlMatcher("Text1</w:t><w:t>Text2", ["w:t"]);
-		expect(matcher.matches[0].array[0]).to.be.equal("Text1");
-		expect(matcher.matches[0].array[1]).to.be.equal("");
-		expect(matcher.matches[0].array[2]).to.be.equal("Text1");
-		expect(matcher.matches[0].offset).to.be.equal(0);
-
-		expect(matcher.matches[1].array[0]).to.be.equal("<w:t>Text2");
-		expect(matcher.matches[1].array[1]).to.be.equal("<w:t>");
-		expect(matcher.matches[1].array[2]).to.be.equal("Text2");
-		expect(matcher.matches[1].offset).to.be.equal(11);
-	});
-
-	it("should work with no tag, no w:t", function () {
-		const matcher = xmlMatcher("Text1", ["w:t"]);
-		expect(matcher.matches[0].array[0]).to.be.equal("Text1");
-		expect(matcher.matches[0].array[1]).to.be.equal("");
-		expect(matcher.matches[0].array[2]).to.be.equal("Text1");
-		expect(matcher.matches[0].offset).to.be.equal(0);
-	});
-
 	it("should not match with no </w:t> starter", function () {
 		const matcher = xmlMatcher("TAG<w:t>Text1</w:t>", ["w:t"]);
 		expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text1</w:t>");

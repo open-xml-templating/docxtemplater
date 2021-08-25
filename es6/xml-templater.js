@@ -1,6 +1,5 @@
-const { wordToUtf8, convertSpaces, defaults } = require("./doc-utils.js");
+const { wordToUtf8, convertSpaces } = require("./doc-utils.js");
 const xmlMatcher = require("./xml-matcher.js");
-const { throwContentMustBeString } = require("./errors.js");
 const Lexer = require("./lexer.js");
 const Parser = require("./parser.js");
 const render = require("./render.js");
@@ -18,29 +17,15 @@ function getFullText(content, tagsXmlArray) {
 
 module.exports = class XmlTemplater {
 	constructor(content, options) {
-		this.filePath = options.filePath;
 		this.cachedParsers = {};
-		this.modules = options.modules;
-		this.fileTypeConfig = options.fileTypeConfig;
-		this.contentType = options.contentType;
-		Object.keys(defaults).map(function (key) {
-			this[key] = options[key] != null ? options[key] : defaults[key];
-		}, this);
-		this.setModules({ inspect: { filePath: this.filePath } });
-		this.load(content);
-	}
-	load(content) {
-		if (typeof content !== "string") {
-			throwContentMustBeString(typeof content);
-		}
 		this.content = content;
-	}
-	setTags(tags) {
-		this.tags = tags != null ? tags : {};
-		return this;
+		Object.keys(options).forEach((key) => {
+			this[key] = options[key];
+		});
+		this.setModules({ inspect: { filePath: options.filePath } });
 	}
 	resolveTags(tags) {
-		this.tags = tags != null ? tags : {};
+		this.tags = tags;
 		const options = this.getOptions();
 		const filePath = this.filePath;
 		options.scopeManager = this.scopeManager;

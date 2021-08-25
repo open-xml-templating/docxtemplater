@@ -250,6 +250,12 @@ function checkLength(e, expectedError, propertyPath) {
 }
 
 function cleanRecursive(arr) {
+	if (arr.lexed) {
+		cleanRecursive(arr.lexed);
+		cleanRecursive(arr.parsed);
+		cleanRecursive(arr.postparsed);
+		return;
+	}
 	arr.forEach(function (p) {
 		delete p.lIndex;
 		delete p.endLindex;
@@ -270,11 +276,15 @@ function cleanRecursive(arr) {
 	});
 }
 
+// eslint-disable-next-line complexity
 function cleanError(e, expectedError) {
 	const message = e.message;
 	e = omit(e, ["line", "sourceURL", "stack"]);
 	e.message = message;
 	if (expectedError.properties && e.properties) {
+		if (!e.properties.explanation) {
+			throw new Error("No explanation for this error");
+		}
 		if (expectedError.properties.explanation != null) {
 			const e1 = e.properties.explanation;
 			const e2 = expectedError.properties.explanation;

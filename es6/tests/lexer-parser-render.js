@@ -14,6 +14,43 @@ const tagsDocxConfig = {
 	other: docxconfig.tagsXmlLexedArray,
 };
 
+function expectations(iModule, fixture) {
+	cleanRecursive(iModule.inspect);
+	if (fixture.error) {
+		throw new Error("Fixture should have failed but did not fail");
+	}
+	if (fixture.result !== null) {
+		expect(iModule.inspect.content).to.be.deep.equal(
+			fixture.result,
+			"Content incorrect"
+		);
+	}
+	if (fixture.lexed !== null) {
+		expect(iModule.inspect.lexed).to.be.deep.equal(
+			fixture.lexed,
+			"Lexed incorrect"
+		);
+	}
+	if (fixture.parsed !== null) {
+		expect(iModule.inspect.parsed).to.be.deep.equal(
+			fixture.parsed,
+			"Parsed incorrect"
+		);
+	}
+	if (fixture.postparsed !== null) {
+		expect(iModule.inspect.postparsed).to.be.deep.equal(
+			fixture.postparsed,
+			"Postparsed incorrect"
+		);
+	}
+	if (fixture.xmllexed != null) {
+		expect(iModule.inspect.xmllexed).to.be.deep.equal(
+			fixture.xmllexed,
+			"Xmllexed incorrect"
+		);
+	}
+}
+
 describe("Algorithm", function () {
 	Object.keys(fixtures).forEach(function (key) {
 		const fixture = fixtures[key];
@@ -29,41 +66,12 @@ describe("Algorithm", function () {
 				errorVerifier(error, fixture.errorType, fixture.error);
 				return;
 			}
-			cleanRecursive(iModule.inspect.lexed);
-			cleanRecursive(iModule.inspect.parsed);
-			cleanRecursive(iModule.inspect.postparsed);
 			try {
 				doc.render();
 			} catch (error) {
 				errorVerifier(error, fixture.errorType, fixture.error);
 			}
-			if (fixture.error) {
-				throw new Error("Fixture should have failed but did not fail");
-			}
-			if (fixture.result !== null) {
-				expect(iModule.inspect.content).to.be.deep.equal(
-					fixture.result,
-					"Content incorrect"
-				);
-			}
-			if (fixture.lexed !== null) {
-				expect(iModule.inspect.lexed).to.be.deep.equal(
-					fixture.lexed,
-					"Lexed incorrect"
-				);
-			}
-			if (fixture.parsed !== null) {
-				expect(iModule.inspect.parsed).to.be.deep.equal(
-					fixture.parsed,
-					"Parsed incorrect"
-				);
-			}
-			if (fixture.postparsed !== null) {
-				expect(iModule.inspect.postparsed).to.be.deep.equal(
-					fixture.postparsed,
-					"Postparsed incorrect"
-				);
-			}
+			expectations(iModule, fixture);
 		});
 	});
 
@@ -80,49 +88,17 @@ describe("Algorithm", function () {
 				errorVerifier(error, fixture.errorType, fixture.error);
 				return;
 			}
-			cleanRecursive(iModule.inspect.lexed);
-			cleanRecursive(iModule.inspect.parsed);
-			cleanRecursive(iModule.inspect.postparsed);
 			return doc.resolveData(fixture.scope).then(function () {
 				try {
 					doc.render();
 				} catch (error) {
 					errorVerifier(error, fixture.errorType, fixture.error);
 				}
-				if (fixture.error) {
-					throw new Error("Fixture should have failed but did not fail");
-				}
-				cleanRecursive(iModule.inspect.lexed);
-				cleanRecursive(iModule.inspect.parsed);
-				cleanRecursive(iModule.inspect.postparsed);
-				if (fixture.result !== null) {
-					expect(iModule.inspect.content).to.be.deep.equal(
-						fixture.result,
-						"Content incorrect"
-					);
-				}
+				expectations(iModule, fixture);
 				if (fixture.resolved) {
 					expect(iModule.inspect.resolved).to.be.deep.equal(
 						fixture.resolved,
 						"Resolved incorrect"
-					);
-				}
-				if (fixture.lexed !== null) {
-					expect(iModule.inspect.lexed).to.be.deep.equal(
-						fixture.lexed,
-						"Lexed incorrect"
-					);
-				}
-				if (fixture.parsed !== null) {
-					expect(iModule.inspect.parsed).to.be.deep.equal(
-						fixture.parsed,
-						"Parsed incorrect"
-					);
-				}
-				if (fixture.postparsed !== null) {
-					expect(iModule.inspect.postparsed).to.be.deep.equal(
-						fixture.postparsed,
-						"Postparsed incorrect"
 					);
 				}
 			});

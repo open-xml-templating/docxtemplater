@@ -7,14 +7,9 @@ class Common {
 	constructor() {
 		this.name = "Common";
 	}
-	set({ invertedContentTypes }) {
-		if (invertedContentTypes) {
-			this.invertedContentTypes = invertedContentTypes;
-		}
-	}
 	getFileType({ doc }) {
-		const invertedContentTypes = this.invertedContentTypes;
-		if (!this.invertedContentTypes) {
+		const { invertedContentTypes } = doc;
+		if (!invertedContentTypes) {
 			return;
 		}
 		const keys = Object.keys(filetypes);

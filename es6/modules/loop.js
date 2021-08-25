@@ -34,18 +34,12 @@ function isInsideParagraphLoop(part) {
 }
 
 function getPageBreakIfApplies(part) {
-	if (part.hasPageBreak) {
-		if (isInsideParagraphLoop(part)) {
-			return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
-		}
-	}
-	return "";
+	return part.hasPageBreak && isInsideParagraphLoop(part)
+		? '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+		: "";
 }
 
 function isEnclosedByParagraphs(parsed) {
-	if (parsed.length === 0) {
-		return false;
-	}
 	return isParagraphStart(parsed[0]) && isParagraphEnd(last(parsed));
 }
 
@@ -448,9 +442,7 @@ class LoopModule {
 			return Promise.all(promises)
 				.then(function (r) {
 					return r.map(function ({ resolved, errors }) {
-						if (errors.length > 0) {
-							errorList.push(...errors);
-						}
+						errorList.push(...errors);
 						return resolved;
 					});
 				})

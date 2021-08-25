@@ -53,10 +53,21 @@ selenium_cache_dir="$HOME/tmp/.selenium"
 selenium_dir="node_modules/selenium-standalone/.selenium"
 if grep '|' <<<"$BROWSER" >/dev/null
 then
+	messages=""
 	while read -r -d '|' browser
 	do
-		BROWSER="$browser" ./webdriver.bash
+		result=0
+		BROWSER="$browser" ./webdriver.bash || result="$?"
+		if [ "$result" != "0" ]
+		then
+			messages="$messages"$'\n'"Fail for $browser"
+		fi
 	done <<<"$BROWSER"
+	if [ "$messages" != "" ]
+	then
+		echo "$messages"
+		exit 1
+	fi
 	exit 0
 fi
 
@@ -108,6 +119,11 @@ then
 		if [ "$result" = "0" ]
 		then
 			exit 0
+		fi
+
+		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log
+		then
+			exit 1
 		fi
 
 		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log ||

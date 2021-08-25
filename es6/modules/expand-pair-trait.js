@@ -7,7 +7,6 @@ const { getExpandToDefault } = require("../traits.js");
 const {
 	getUnmatchedLoopException,
 	getClosingTagNotMatchOpeningTag,
-	throwLocationInvalid,
 	getUnbalancedLoopException,
 } = require("../errors.js");
 
@@ -17,8 +16,6 @@ function getOpenCountChange(part) {
 			return 1;
 		case "end":
 			return -1;
-		default:
-			throwLocationInvalid(part);
 	}
 }
 
@@ -81,9 +78,6 @@ function transformer(traits) {
 				traits,
 				errors,
 			};
-		}
-		if (traits[i] == null) {
-			break;
 		}
 		i++;
 	}

@@ -68,9 +68,6 @@ const Docxtemplater = class Docxtemplater {
 			this.v4Constructor = true;
 		}
 	}
-	getModuleApiVersion() {
-		return currentModuleApiVersion.join(".");
-	}
 	verifyApiVersion(neededVersion) {
 		neededVersion = neededVersion.split(".").map(function (i) {
 			return parseInt(i, 10);
@@ -132,7 +129,7 @@ const Docxtemplater = class Docxtemplater {
 			module.on(eventName);
 		});
 	}
-	attachModule(module, options = {}) {
+	attachModule(module) {
 		if (this.v4Constructor) {
 			throw new Error(
 				"attachModule() should not be called manually when using the v4 constructor"
@@ -147,10 +144,6 @@ const Docxtemplater = class Docxtemplater {
 			);
 		}
 		module.attached = true;
-		const { prefix } = options;
-		if (prefix) {
-			module.prefix = prefix;
-		}
 		const wrappedModule = moduleWrapper(module);
 		this.modules.push(wrappedModule);
 		wrappedModule.on("attached");
@@ -243,7 +236,6 @@ const Docxtemplater = class Docxtemplater {
 							currentFile,
 							data
 						);
-						currentFile.scopeManager.resolved = [];
 						return currentFile.resolveTags(data).then(
 							function (result) {
 								currentFile.scopeManager.finishedResolving = true;
@@ -367,17 +359,9 @@ const Docxtemplater = class Docxtemplater {
 				return module.getRenderedMap(value);
 			}, {});
 
-		this.fileTypeConfig.tagsXmlLexedArray = uniq(
-			this.fileTypeConfig.tagsXmlLexedArray
-		);
-		this.fileTypeConfig.tagsXmlTextArray = uniq(
-			this.fileTypeConfig.tagsXmlTextArray
-		);
-
 		Object.keys(this.mapper).forEach((to) => {
 			const { from, data } = this.mapper[to];
 			const currentFile = this.compiled[from];
-			currentFile.setTags(data);
 			currentFile.scopeManager = this.getScopeManager(to, currentFile, data);
 			currentFile.render(to);
 			this.zip.file(to, currentFile.content, { createFolders: true });

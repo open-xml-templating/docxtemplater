@@ -71,19 +71,6 @@ class RawXmlModule {
 		}
 		return { value };
 	}
-	resolve(part, options) {
-		if (part.type !== "placeholder" || part.module !== moduleName) {
-			return null;
-		}
-		return options.scopeManager
-			.getValueAsync(part.value, { part })
-			.then(function (value) {
-				if (value == null) {
-					return options.nullGetter(part);
-				}
-				return value;
-			});
-	}
 }
 
 module.exports = () => wrapper(new RawXmlModule());

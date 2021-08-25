@@ -5,6 +5,7 @@ const {
 	getDuplicateCloseTagException,
 	throwMalformedXml,
 	throwXmlInvalid,
+	XTTemplateError,
 } = require("./errors.js");
 const {
 	wordToUtf8,
@@ -111,22 +112,12 @@ function tagMatcher(content, textMatchArray, othersMatchArray) {
 	return totalMatches;
 }
 
-function getDelimiterErrors(delimiterMatches, fullText, ranges) {
-	if (delimiterMatches.length === 0) {
-		return [];
-	}
+function getDelimiterErrors(delimiterMatches, fullText) {
 	const errors = [];
 	let inDelimiter = false;
 	let lastDelimiterMatch = { offset: 0 };
 	let xtag;
-	let rangeIndex = 0;
 	delimiterMatches.forEach(function (delimiterMatch) {
-		while (ranges[rangeIndex + 1]) {
-			if (ranges[rangeIndex + 1].offset > delimiterMatch.offset) {
-				break;
-			}
-			rangeIndex++;
-		}
 		xtag = fullText.substr(
 			lastDelimiterMatch.offset,
 			delimiterMatch.offset - lastDelimiterMatch.offset
@@ -219,11 +210,21 @@ function compareOffsets(startOffset, endOffset) {
 function splitDelimiters(inside) {
 	const newDelimiters = inside.split(" ");
 	if (newDelimiters.length !== 2) {
-		throw new Error("New Delimiters cannot be parsed");
+		const err = new XTTemplateError("New Delimiters cannot be parsed");
+		err.properties = {
+			id: "change_delimiters_invalid",
+			explanation: "Cannot parser delimiters",
+		};
+		throw err;
 	}
 	const [start, end] = newDelimiters;
 	if (start.length === 0 || end.length === 0) {
-		throw new Error("New Delimiters cannot be parsed");
+		const err = new XTTemplateError("New Delimiters cannot be parsed");
+		err.properties = {
+			id: "change_delimiters_invalid",
+			explanation: "Cannot parser delimiters",
+		};
+		throw err;
 	}
 	return [start, end];
 }
@@ -336,7 +337,7 @@ function parseDelimiters(innerContentParts, delimiters) {
 					}
 					return;
 				}
-				parts.push({ type: "content", value, offset: cursor + offset });
+				parts.push({ type: "content", value });
 				cursor += value.length;
 			}
 			const delimiterPart = {
@@ -344,9 +345,6 @@ function parseDelimiters(innerContentParts, delimiters) {
 				position: delimiterInOffset.position,
 				offset: cursor + offset,
 			};
-			if (delimiterInOffset.error) {
-				delimiterPart.error = delimiterInOffset.error;
-			}
 			if (delimiterInOffset.changedelimiter) {
 				insideDelimiterChange = delimiterInOffset.position === "start";
 				cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
@@ -358,7 +356,7 @@ function parseDelimiters(innerContentParts, delimiters) {
 		cutNext = cursor - partContent.length;
 		const value = partContent.substr(cursor);
 		if (value.length > 0) {
-			parts.push({ type: "content", value, offset });
+			parts.push({ type: "content", value });
 		}
 		return parts;
 	}, this);
@@ -426,9 +424,7 @@ module.exports = {
 			}
 			cursor = match.offset + match.value.length;
 			delete match.offset;
-			if (match.value.length > 0) {
-				parsed.push(match);
-			}
+			parsed.push(match);
 			return parsed;
 		}, []);
 		const value = content.substr(cursor);

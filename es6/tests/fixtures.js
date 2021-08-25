@@ -87,6 +87,26 @@ const fixtures = {
 			{ type: "placeholder", value: "user" },
 			endText,
 		],
+		xmllexed: [
+			{
+				position: "start",
+				tag: "w:t",
+				text: true,
+				type: "tag",
+				value: "<w:t>",
+			},
+			{
+				type: "content",
+				value: "Hi {user}",
+			},
+			{
+				position: "end",
+				tag: "w:t",
+				text: true,
+				type: "tag",
+				value: "</w:t>",
+			},
+		],
 		postparsed: [
 			xmlSpacePreserveTag,
 			content("Hi "),
@@ -853,6 +873,30 @@ const fixtures = {
 			{ type: "placeholder", value: "user2" },
 			endText,
 		],
+	},
+	delimiters_change_error: {
+		it: "should be possible to change the delimiters",
+		content: "<w:t>Hi {=a b c=}</w:t>",
+		errorType: Errors.XTTemplateError,
+		error: {
+			name: "TemplateError",
+			message: "New Delimiters cannot be parsed",
+			properties: {
+				id: "change_delimiters_invalid",
+			},
+		},
+	},
+	delimiters_change_error2: {
+		it: "should be possible to change the delimiters",
+		content: "<w:t>Hi {= =}</w:t>",
+		errorType: Errors.XTTemplateError,
+		error: {
+			name: "TemplateError",
+			message: "New Delimiters cannot be parsed",
+			properties: {
+				id: "change_delimiters_invalid",
+			},
+		},
 	},
 	delimiters_change_complex: {
 		it: "should be possible to change the delimiters with complex example",

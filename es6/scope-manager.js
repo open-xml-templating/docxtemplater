@@ -27,12 +27,9 @@ function getValue(tag, meta, num) {
 			});
 			w = w.value[this.scopePathItem[index]];
 		});
-		return [
-			this.scopePath.length - 1,
-			find(w, function (r) {
-				return meta.part.lIndex === r.lIndex;
-			}).value,
-		];
+		return find(w, function (r) {
+			return meta.part.lIndex === r.lIndex;
+		}).value;
 	}
 	// search in the scopes (in reverse order) and keep the first defined value
 	let result;
@@ -62,7 +59,7 @@ function getValue(tag, meta, num) {
 	if (result == null && num > 0) {
 		return getValue.call(this, tag, meta, num - 1);
 	}
-	return [num, result];
+	return result;
 }
 
 function getValueAsync(tag, meta, num) {
@@ -101,7 +98,6 @@ function getValueAsync(tag, meta, num) {
 		});
 }
 
-// This class responsibility is to manage the scope
 const ScopeManager = class ScopeManager {
 	constructor(options) {
 		this.root = options.root || this;
@@ -163,14 +159,7 @@ const ScopeManager = class ScopeManager {
 		);
 	}
 	getValue(tag, meta) {
-		const [num, result] = getValue.call(
-			this,
-			tag,
-			meta,
-			this.scopeList.length - 1
-		);
-		this.num = num;
-		return result;
+		return getValue.call(this, tag, meta, this.scopeList.length - 1);
 	}
 	getValueAsync(tag, meta) {
 		return getValueAsync.call(this, tag, meta, this.scopeList.length - 1);

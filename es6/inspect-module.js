@@ -41,7 +41,6 @@ class InspectModule {
 		this.inspect = {};
 		this.fullInspected = {};
 		this.filePath = null;
-		this.nullValues = [];
 	}
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;

@@ -296,10 +296,9 @@ describe("Pptx generation", function () {
 			},
 		});
 		doc.compile();
-		return doc.resolveData({ raw: rawXMLValue }).then(function () {
+		return doc.resolveData({ raw: resolveSoon(rawXMLValue) }).then(function () {
 			doc.render();
 			expect(calls).to.equal(1);
-			expect(scope.raw).to.be.a("string");
 			expect(meta).to.be.an("object");
 			expect(meta.part).to.be.an("object");
 			expect(meta.part.expanded).to.be.an("array");
@@ -435,6 +434,23 @@ describe("Table", function () {
 		const doc = createDoc("table-raw-xml.docx");
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
+	});
+
+	it("should call nullGetter with empty rawxml", function () {
+		const doc = createDocV4("table-raw-xml.docx", {
+			nullGetter: (part) => {
+				if (part.module === "rawxml") {
+					return `<w:p>
+					<w:r>
+						<w:rPr><w:color w:val="FF0000"/></w:rPr>
+						<w:t>UNDEFINED</w:t>
+					</w:r>
+					</w:p>`;
+				}
+			},
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-raw-xml-null.docx" });
 	});
 
 	it("should not corrupt document with empty rawxml after a table, at the end of the document", function () {
@@ -792,6 +808,26 @@ describe("ParagraphLoop", function () {
 			})
 			.render();
 		shouldBeSame({ doc, expectedName: "expected-paragraph-loop.pptx" });
+	});
+
+	it("should fail if trying to attach a module that has none of the properties", function () {
+		const expectedError = {
+			name: "InternalError",
+			message:
+				"This module cannot be wrapped, because it doesn't define any of the necessary functions",
+			properties: {
+				id: "module_cannot_be_wrapped",
+			},
+		};
+		expectToThrow(
+			() => {
+				createDocV4("regression-par-in-par.docx", {
+					modules: [Promise.resolve(1)],
+				});
+			},
+			Error,
+			expectedError
+		);
 	});
 
 	it("should not fail when having paragraph in paragraph", function () {

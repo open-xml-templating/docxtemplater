@@ -15,109 +15,6 @@ function parser(tag) {
 	};
 }
 
-function getNearestLeftIndex(parsed, elements, index) {
-	for (let i = index; i >= 0; i--) {
-		const part = parsed[i];
-		for (let j = 0, len = elements.length; j < len; j++) {
-			const element = elements[j];
-			if (isStarting(part.value, element)) {
-				return j;
-			}
-		}
-	}
-	return null;
-}
-
-function getNearestRightIndex(parsed, elements, index) {
-	for (let i = index, l = parsed.length; i < l; i++) {
-		const part = parsed[i];
-		for (let j = 0, len = elements.length; j < len; j++) {
-			const element = elements[j];
-			if (isEnding(part.value, element)) {
-				return j;
-			}
-		}
-	}
-	return -1;
-}
-
-function getNearestLeft(parsed, elements, index) {
-	const found = getNearestLeftIndex(parsed, elements, index);
-	if (found !== -1) {
-		return elements[found];
-	}
-	return null;
-}
-
-function getNearestRight(parsed, elements, index) {
-	const found = getNearestRightIndex(parsed, elements, index);
-	if (found !== -1) {
-		return elements[found];
-	}
-	return null;
-}
-
-function buildNearestCache(postparsed, tags) {
-	return postparsed.reduce(function (cached, part, i) {
-		if (part.type === "tag" && tags.indexOf(part.tag) !== -1) {
-			cached.push({ i, part });
-		}
-		return cached;
-	}, []);
-}
-
-function getNearestLeftIndexWithCache(index, cache) {
-	if (cache.length === 0) {
-		return -1;
-	}
-	for (let i = 0, len = cache.length; i < len; i++) {
-		const current = cache[i];
-		const next = cache[i + 1];
-		if (
-			current.i < index &&
-			(!next || index < next.i) &&
-			current.part.position === "start"
-		) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-function getNearestLeftWithCache(index, cache) {
-	const found = getNearestLeftIndexWithCache(index, cache);
-	if (found !== -1) {
-		return cache[found].part.tag;
-	}
-	return null;
-}
-
-function getNearestRightIndexWithCache(index, cache) {
-	if (cache.length === 0) {
-		return -1;
-	}
-	for (let i = 0, len = cache.length; i < len; i++) {
-		const current = cache[i];
-		const last = cache[i - 1];
-		if (
-			index < current.i &&
-			(!last || last.i < index) &&
-			current.part.position === "end"
-		) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-function getNearestRightWithCache(index, cache) {
-	const found = getNearestRightIndexWithCache(index, cache);
-	if (found !== -1) {
-		return cache[found].part.tag;
-	}
-	return null;
-}
-
 function endsWith(str, suffix) {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -129,7 +26,7 @@ function uniq(arr) {
 	const hash = {},
 		result = [];
 	for (let i = 0, l = arr.length; i < l; ++i) {
-		if (!hash.hasOwnProperty(arr[i])) {
+		if (!hash[arr[i]]) {
 			hash[arr[i]] = true;
 			result.push(arr[i]);
 		}
@@ -143,10 +40,6 @@ function chunkBy(parsed, f) {
 			function (chunks, p) {
 				const currentChunk = last(chunks);
 				const res = f(p);
-				if (currentChunk.length === 0) {
-					currentChunk.push(p);
-					return chunks;
-				}
 				if (res === "start") {
 					chunks.push([p]);
 				} else if (res === "end") {
@@ -167,13 +60,7 @@ function chunkBy(parsed, f) {
 const defaults = {
 	paragraphLoop: false,
 	nullGetter(part) {
-		if (!part.module) {
-			return "undefined";
-		}
-		if (part.module === "rawxml") {
-			return "";
-		}
-		return "";
+		return part.module ? "" : "undefined";
 	},
 	xmlFileNames: [],
 	parser,
@@ -430,15 +317,6 @@ function invertMap(map) {
 module.exports = {
 	endsWith,
 	startsWith,
-	getNearestLeft,
-	getNearestRight,
-	getNearestLeftWithCache,
-	getNearestRightWithCache,
-	getNearestLeftIndex,
-	getNearestRightIndex,
-	getNearestLeftIndexWithCache,
-	getNearestRightIndexWithCache,
-	buildNearestCache,
 	isContent,
 	isParagraphStart,
 	isParagraphEnd,

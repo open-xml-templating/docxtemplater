@@ -159,13 +159,6 @@ function getCorruptCharactersException({ tag, value, offset }) {
 	return err;
 }
 
-function throwContentMustBeString(type) {
-	const err = new XTInternalError("Content must be a string");
-	err.properties.id = "xmltemplater_content_must_be_string";
-	err.properties.type = type;
-	throw err;
-}
-
 function throwExpandNotFound(options) {
 	const {
 		part: { value, offset },
@@ -318,18 +311,13 @@ function throwMalformedXml(part) {
 	throw err;
 }
 
-function throwLocationInvalid(part) {
-	throw new XTInternalError(
-		`Location should be one of "start" or "end" (given : ${part.location})`
-	);
-}
-
 function throwResolveBeforeCompile() {
 	const err = new XTInternalError(
 		"You must run `.compile()` before running `.resolveData()`"
 	);
 	err.properties = {
 		id: "resolve_before_compile",
+		explanation: "You must run `.compile()` before running `.resolveData()`",
 	};
 	throw err;
 }
@@ -340,6 +328,8 @@ function throwRenderInvalidTemplate() {
 	);
 	err.properties = {
 		id: "render_on_invalid_template",
+		explanation:
+			"You should not call .render on a document that had compilation errors",
 	};
 	throw err;
 }
@@ -350,6 +340,8 @@ function throwFileTypeNotIdentified() {
 	);
 	err.properties = {
 		id: "filetype_not_identified",
+		explanation:
+			"The filetype for this file could not be identified, is this file corrupted ?",
 	};
 	throw err;
 }
@@ -400,10 +392,8 @@ module.exports = {
 	getUnbalancedLoopException,
 
 	throwApiVersionError,
-	throwContentMustBeString,
 	throwFileTypeNotHandled,
 	throwFileTypeNotIdentified,
-	throwLocationInvalid,
 	throwMalformedXml,
 	throwMultiError,
 	throwExpandNotFound,
