@@ -1284,6 +1284,19 @@ const fixtures = [
 		resolved: null,
 	},
 	{
+		it: "should work when using angular assignment that is already in the scope",
+		content: "<w:t>{b=a}{b}</w:t>",
+		result: '<w:t xml:space="preserve">10</w:t>',
+		scope: { a: 10, b: 5 },
+		options: {
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	{
 		it: "should work for table with nested loops",
 		lexed: null,
 		content: `<w:tbl>
