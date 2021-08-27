@@ -1,3 +1,7 @@
+### 3.23.1
+
+Add typescript typings to InspectModule
+
 ### 3.23.0
 
 Internal cleanup :

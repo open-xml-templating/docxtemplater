@@ -5,110 +5,121 @@
 // TypeScript Version: 3.9
 
 export namespace DXT {
-    type integer = number;
+  type integer = number;
 
-    interface SimplePart {
-        type: string
-        value: string
-        module?: string
-        [x: string]: any
-    }
+  interface SimplePart {
+    type: string;
+    value: string;
+    module?: string;
+    [x: string]: any;
+  }
 
-    interface Part {
-        type: string
-        value: string
-        module: string
-        raw: string
-        offset: integer
-        lIndex: integer
-        num: integer
-        inverted?: boolean
-        endLindex?: integer
-        expanded?: Part[]
-        subparsed?: Part[]
-    }
+  interface Part {
+    type: string;
+    value: string;
+    module: string;
+    raw: string;
+    offset: integer;
+    lIndex: integer;
+    num: integer;
+    inverted?: boolean;
+    endLindex?: integer;
+    expanded?: Part[];
+    subparsed?: Part[];
+  }
 
-    interface Rendered {
-        value: string
-        errors: any[]
-    }
+  interface ScopeManager {
+    scopeList: any[];
+    scopeLindex: integer[];
+    scopePath: string[];
+    scopePathItem: integer[];
+    scopePathLength: integer[];
+    resolved: any;
+    cachedParsers: Record<string, (scope: any, context: ParserContext) => any>;
+    parser(tag: string): Parser;
+  }
 
-    type Error = any
+  interface Rendered {
+    value: string;
+    errors: any[];
+  }
 
-    interface Module {
-        set?(options:any): void
-        parse?(placeHolderContent: string): SimplePart | null
-        render?(part: Part): Rendered | null
-        getTraits?(traitName: string, parsed: any): any
-        getFileType?(opts: any): string
-        nullGetter?(part: Part, scopeManager: any) : any
-        optionsTransformer?(options: Options): Options
-        postrender?(parts: string[], options: any) : string[]
-        errorsTransformer?(errors: Error[]) :Error[]
-        getRenderedMap?(map: any): any
-        preparse?(parsed: any, options: any): any
-        postparse?(postparsed: Part[], modules: Module[], options: any): Part[]
-        on?(event :string) :void
-        resolve?(part :Part, options: any): null | Promise<any>
-        [x: string]: any
-    }
+  type Error = any;
 
-    interface ParserContext {
-        meta: {
-            part: Part
-        }
-        scopeList: any[]
-        scopePath: string[]
-        scopePathItem: integer[]
-        scopePathLength: integer[]
-        num: integer
-    }
+  interface Module {
+    set?(options: any): void;
+    parse?(placeHolderContent: string): SimplePart | null;
+    render?(part: Part): Rendered | null;
+    getTraits?(traitName: string, parsed: any): any;
+    getFileType?(opts: any): string;
+    nullGetter?(part: Part, scopeManager: any): any;
+    optionsTransformer?(options: Options): Options;
+    postrender?(parts: string[], options: any): string[];
+    errorsTransformer?(errors: Error[]): Error[];
+    getRenderedMap?(map: any): any;
+    preparse?(parsed: any, options: any): any;
+    postparse?(postparsed: Part[], modules: Module[], options: any): Part[];
+    on?(event: string): void;
+    resolve?(part: Part, options: any): null | Promise<any>;
+    [x: string]: any;
+  }
 
-    interface Parser{
-        get(scope: any, context: ParserContext): any
-    }
+  interface ParserContext {
+    meta: {
+      part: Part;
+    };
+    scopeList: any[];
+    scopePath: string[];
+    scopePathItem: integer[];
+    scopePathLength: integer[];
+    num: integer;
+  }
 
-    interface ConstructorOptions {
-        modules? : Module[]
-        delimiters? : { start: string, end: string }
-        paragraphLoop? : boolean
-        parser?(tag: string) : Parser
-        linebreaks?: boolean
-        nullGetter?(part: Part) : any
-    }
+  interface Parser {
+    get(scope: any, context: ParserContext): any;
+  }
 
-    interface Options {
-        delimiters? : { start: string, end: string }
-        paragraphLoop? : boolean
-        parser?(tag: string) : Parser
-        linebreaks?: boolean
-        nullGetter?(part: Part) : any
-    }
+  interface ConstructorOptions {
+    modules?: Module[];
+    delimiters?: { start: string; end: string };
+    paragraphLoop?: boolean;
+    parser?(tag: string): Parser;
+    linebreaks?: boolean;
+    nullGetter?(part: Part): any;
+  }
+
+  interface Options {
+    delimiters?: { start: string; end: string };
+    paragraphLoop?: boolean;
+    parser?(tag: string): Parser;
+    linebreaks?: boolean;
+    nullGetter?(part: Part): any;
+  }
 }
 
 declare class Docxtemplater {
-    /**
-     * Create Docxtemplater instance (and compile it on the fly)
-     *
-     * @param zip Serialized zip archive
-     * @param options modules and other other options
-     */
-    constructor (zip: any, options?: DXT.ConstructorOptions);
-    /**
-     * Create Docxtemplater instance, without options
-     */
-    constructor ();
+  /**
+   * Create Docxtemplater instance (and compile it on the fly)
+   *
+   * @param zip Serialized zip archive
+   * @param options modules and other other options
+   */
+  constructor(zip: any, options?: DXT.ConstructorOptions);
+  /**
+   * Create Docxtemplater instance, without options
+   */
+  constructor();
 
-    setData(data: any): this
-    resolveData(data: any): Promise<any>
-    render() : this
-    getZip() : any
+  setData(data: any): this;
+  resolveData(data: any): Promise<any>;
+  render(): this;
+  getZip(): any;
 
-    loadZip(zip: any): this
-    setOptions(options: DXT.Options): this
-    attachModule(module: DXT.Module): this
-    compile(): this
-    getFullText(path?: string): string
+  loadZip(zip: any): this;
+  setOptions(options: DXT.Options): this;
+  attachModule(module: DXT.Module): this;
+  compile(): this;
+  getFullText(path?: string): string;
 }
 
 export default Docxtemplater;

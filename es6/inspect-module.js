@@ -94,6 +94,7 @@ class InspectModule {
 			scopeManager.scopePath.concat(part.value)
 		);
 	}
+
 	getTags(file) {
 		file = file || this.fileTypeConfig.textPath(this);
 		return getTags(cloneDeep(this.fullInspected[file].postparsed));

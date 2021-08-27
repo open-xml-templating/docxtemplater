@@ -1397,7 +1397,7 @@ const fixtures = [
 		parsed: null,
 		postparsed: null,
 		result: null,
-		content: "<w:pPr><w:spacing w:line=\"360\" w:lineRule=\"auto\"/></w:pPr>",
+		content: '<w:pPr><w:spacing w:line="360" w:lineRule="auto"/></w:pPr>',
 		xmllexed: [
 			{
 				position: "start",
