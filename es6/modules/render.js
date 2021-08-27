@@ -92,30 +92,27 @@ class Render {
 				],
 			};
 		}
-		if (typeof value !== "string") {
-			value = value.toString();
-		}
-		if (linebreaks) {
-			return this.renderLineBreaks(value);
-		}
-		return { value: utf8ToWord(value) };
+		return {
+			value:
+				linebreaks && typeof value === "string"
+					? this.renderLineBreaks(value)
+					: utf8ToWord(value),
+		};
 	}
 	renderLineBreaks(value) {
 		const p = ftprefix[this.fileType];
 		const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
 		const lines = value.split("\n");
 		const runprops = this.recordedRun.join("");
-		return {
-			value: lines
-				.map(function (line) {
-					return utf8ToWord(line);
-				})
-				.join(
-					`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
-						this.fileType === "docx" ? ' xml:space="preserve"' : ""
-					}>`
-				),
-		};
+		return lines
+			.map(function (line) {
+				return utf8ToWord(line);
+			})
+			.join(
+				`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
+					this.fileType === "docx" ? ' xml:space="preserve"' : ""
+				}>`
+			);
 	}
 }
 
