@@ -1,4 +1,4 @@
-const { clone, assign } = require("lodash");
+const { assign } = require("lodash");
 const angularParser = require("./angular-parser.js");
 const Errors = require("../errors.js");
 const { wrapMultiError } = require("./utils.js");
@@ -65,8 +65,8 @@ function externalContent(value) {
 	return { type: "content", value, position: "outsidetag" };
 }
 
-const fixtures = {
-	simple: {
+const fixtures = [
+	{
 		it: "should handle {user} with tag",
 		content: "<w:t>Hi {user}</w:t>",
 		scope: {
@@ -114,7 +114,7 @@ const fixtures = {
 			endText,
 		],
 	},
-	dot: {
+	{
 		it: "should handle {.} with tag",
 		content: "<w:t>Hi {.}</w:t>",
 		scope: "Foo",
@@ -140,7 +140,7 @@ const fixtures = {
 			endText,
 		],
 	},
-	strangetags: {
+	{
 		it: "should xmlparse strange tags",
 		content: "<w:t>{name} {</w:t>FOO<w:t>age</w:t>BAR<w:t>}</w:t>",
 		scope: {
@@ -194,7 +194,7 @@ const fixtures = {
 		],
 		postparsed: null,
 	},
-	otherdelimiters: {
+	{
 		it: "should work with custom delimiters",
 		content: "<w:t>Hello [[[name]]</w:t>",
 		scope: {
@@ -221,7 +221,7 @@ const fixtures = {
 		],
 		postparsed: null,
 	},
-	otherdelimiterssplitted: {
+	{
 		it: "should work with custom delimiters splitted",
 		content: '<w:t>Hello {name}</w:t><w:t foo="bar">}, how is it ?</w:t>',
 		scope: {
@@ -267,7 +267,7 @@ const fixtures = {
 		],
 		postparsed: null,
 	},
-	otherdelimiterssplittedover2tags: {
+	{
 		it: "should work with custom delimiters splitted over > 2 tags",
 		content:
 			"<w:t>Hello {name}</w:t><w:t>}</w:t>TAG<w:t>}</w:t><w:t>}}foobar</w:t>",
@@ -312,7 +312,7 @@ const fixtures = {
 		],
 		postparsed: null,
 	},
-	looptag: {
+	{
 		it: "should work with loops",
 		content: "<w:t>Hello {#users}{name}, {/users}</w:t>",
 		scope: {
@@ -365,7 +365,7 @@ const fixtures = {
 			endText,
 		],
 	},
-	paragraphlooptag: {
+	{
 		it: "should work with paragraph loops",
 		content:
 			"<w:p><w:t>Hello </w:t></w:p><w:p><w:t>{#users}</w:t></w:p><w:p><w:t>User {.}</w:t></w:p><w:p><w:t>{/users}</w:t></w:p>",
@@ -462,7 +462,7 @@ const fixtures = {
 			paragraphLoop: true,
 		},
 	},
-	nestedparagraphlooptag: {
+	{
 		it: "should not fail with nested loops if using paragraphLoop",
 		content:
 			"<w:p><w:t>{#users} {#pets}</w:t></w:p><w:p><w:t>Pet {.}</w:t></w:p><w:p><w:t>{/pets}{/users}</w:t></w:p>",
@@ -485,7 +485,7 @@ const fixtures = {
 			paragraphLoop: true,
 		},
 	},
-	spacingloops: {
+	{
 		it: "should work with spacing loops",
 		content: "<w:t>{#condition</w:t><w:t>} hello{/</w:t><w:t>condition}</w:t>",
 		result: '<w:t/><w:t xml:space="preserve"> hello</w:t><w:t></w:t>',
@@ -533,7 +533,7 @@ const fixtures = {
 		],
 		postparsed: null,
 	},
-	spacingloops2: {
+	{
 		it: "should work with spacing loops 2",
 		content: "<w:t>{#condition}{text}{/condition}</w:t>",
 		result: '<w:t xml:space="preserve"> hello </w:t>',
@@ -544,7 +544,7 @@ const fixtures = {
 			condition: [{ text: " hello " }],
 		},
 	},
-	spacingloops3: {
+	{
 		it: "should work with spacing loops 3",
 		content: "<w:t>{#condition}</w:t><w:t>{/condition} foo</w:t>",
 		result: '<w:t xml:space="preserve"> foo</w:t>',
@@ -555,7 +555,7 @@ const fixtures = {
 			condition: false,
 		},
 	},
-	spacingloops4: {
+	{
 		it: "should work with spacing loops 4",
 		content: "<w:t>{#condition}foo{/condition}</w:t>",
 		result: "<w:t/>",
@@ -566,7 +566,7 @@ const fixtures = {
 			condition: false,
 		},
 	},
-	dashlooptag: {
+	{
 		it: "should work with dashloops",
 		content: "<w:p><w:t>Hello {-w:p users}{name}, {/users}</w:t></w:p>",
 		scope: {
@@ -628,7 +628,7 @@ const fixtures = {
 			},
 		],
 	},
-	dashloopnested: {
+	{
 		it: "should work with dashloops nested",
 		content:
 			"<w:tr><w:p><w:t>{-w:tr columns} Hello {-w:p users}{name}, {/users}</w:t><w:t>{/columns}</w:t></w:p></w:tr>",
@@ -710,50 +710,7 @@ const fixtures = {
 		],
 		postparsed: null,
 	},
-	rawxml: {
-		it: "should work with rawxml",
-		content: "BEFORE<w:p><w:t>{@rawxml}</w:t></w:p>AFTER",
-		scope: {
-			rawxml:
-				'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>',
-		},
-		result:
-			'BEFORE<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>AFTER',
-		lexed: [
-			externalContent("BEFORE"),
-			startParagraph,
-			startText,
-			delimiters.start,
-			content("@rawxml"),
-			delimiters.end,
-			endText,
-			endParagraph,
-			externalContent("AFTER"),
-		],
-		parsed: [
-			externalContent("BEFORE"),
-			startParagraph,
-			startText,
-			{ type: "placeholder", value: "rawxml", module: "rawxml" },
-			endText,
-			endParagraph,
-			externalContent("AFTER"),
-		],
-		postparsed: [
-			externalContent("BEFORE"),
-			{
-				type: "placeholder",
-				value: "rawxml",
-				module: "rawxml",
-				expanded: [
-					[startParagraph, startText],
-					[endText, endParagraph],
-				],
-			},
-			externalContent("AFTER"),
-		],
-	},
-	selfclosing: {
+	{
 		it: "should handle selfclose tag",
 		content: "<w:t />",
 		scope: {
@@ -788,7 +745,7 @@ const fixtures = {
 			},
 		],
 	},
-	selfclosing_with_placeholderr: {
+	{
 		it: "should handle {user} with tag with selfclosing",
 		content: "<w:t /><w:t>Hi {user}</w:t>",
 		scope: {
@@ -837,7 +794,7 @@ const fixtures = {
 			endText,
 		],
 	},
-	delimiters_change: {
+	{
 		it: "should be possible to change the delimiters",
 		content: "<w:t>Hi {=[[ ]]=}[[user]][[={ }=]] and {user2}</w:t>",
 		scope: {
@@ -874,7 +831,7 @@ const fixtures = {
 			endText,
 		],
 	},
-	delimiters_change_error: {
+	{
 		it: "should be possible to change the delimiters",
 		content: "<w:t>Hi {=a b c=}</w:t>",
 		errorType: Errors.XTTemplateError,
@@ -886,7 +843,7 @@ const fixtures = {
 			},
 		},
 	},
-	delimiters_change_error2: {
+	{
 		it: "should be possible to change the delimiters",
 		content: "<w:t>Hi {= =}</w:t>",
 		errorType: Errors.XTTemplateError,
@@ -898,7 +855,7 @@ const fixtures = {
 			},
 		},
 	},
-	delimiters_change_complex: {
+	{
 		it: "should be possible to change the delimiters with complex example",
 		content: "<w:t>Hi {={{[ ]}}=}{{[user]}}{{[={{ ]=]}} and {{user2]</w:t>",
 		scope: {
@@ -935,7 +892,7 @@ const fixtures = {
 			endText,
 		],
 	},
-	error_resolve: {
+	{
 		it: "should resolve the data correctly",
 		content: "<w:t>{test}{#test}{label}{/test}{test}</w:t>",
 		result: '<w:t xml:space="preserve">trueT1true</w:t>',
@@ -972,7 +929,7 @@ const fixtures = {
 		parsed: null,
 		postparsed: null,
 	},
-	error_resolve_2: {
+	{
 		it: "should resolve 2 the data correctly",
 		content: "<w:t>{^a}{label}{/a}</w:t>",
 		result: "<w:t/>",
@@ -990,7 +947,7 @@ const fixtures = {
 		parsed: null,
 		postparsed: null,
 	},
-	error_resolve_3: {
+	{
 		it: "should resolve 3 the data correctly",
 		content:
 			"<w:t>{#frames}{#true}{label}{#false}{label}{/false}{/true}{#false}{label}{/false}{/frames}</w:t>",
@@ -1040,7 +997,7 @@ const fixtures = {
 		parsed: null,
 		postparsed: null,
 	},
-	error_resolve_truthy: {
+	{
 		it: "should resolve truthy data correctly",
 		content:
 			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
@@ -1059,7 +1016,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	error_resolve_truthy_multi: {
+	{
 		it: "should resolve truthy multi data correctly",
 		content:
 			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
@@ -1090,7 +1047,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	async_loop_issue: {
+	{
 		it: "should resolve async loop",
 		content: "<w:t>{#loop}{#cond1}{label}{/}{#cond2}{label}{/}{/loop}</w:t>",
 		result: '<w:t xml:space="preserve">innerouterouter</w:t>',
@@ -1112,7 +1069,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	inversed_loop_simple: {
+	{
 		it: "should work well with inversed loop simple",
 		content: "<w:t>{^b}{label}{/}</w:t>",
 		result: '<w:t xml:space="preserve">hi</w:t>',
@@ -1125,7 +1082,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	inversed_loop: {
+	{
 		it: "should work well with nested inversed loop",
 		content: "<w:t>{#a}{^b}{label}{/}{/}</w:t>",
 		result: '<w:t xml:space="preserve">hi</w:t>',
@@ -1137,7 +1094,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	inversed_loop_nested: {
+	{
 		it: "should work well with deeply nested inversed loop nested",
 		content: "<w:t>{#a}{^b}{^c}{label}{/}{/}{/}</w:t>",
 		result: '<w:t xml:space="preserve">hi</w:t>',
@@ -1149,7 +1106,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	condition_true_value: {
+	{
 		it: "should work well with true value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
@@ -1168,7 +1125,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	condition_int_value: {
+	{
 		it: "should work well with int value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
@@ -1187,7 +1144,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	condition_string_value: {
+	{
 		it: "should work well with str value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
@@ -1206,7 +1163,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	condition_false_value: {
+	{
 		it: "should work well with false value for condition",
 		content:
 			"<w:t>{^cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
@@ -1225,7 +1182,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	condition_multi_level: {
+	{
 		it: "should work well with multi level angular parser",
 		content: "<w:t>{#users}{name} {date-age} {/}</w:t>",
 		result: '<w:t xml:space="preserve">John 1975 Mary 1997 Walt 2078 </w:t>',
@@ -1245,7 +1202,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	condition_w_tr: {
+	{
 		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
 		content:
 			"<w:p><w:r><w:t>{#cond}</w:t></w:r></w:p><w:tbl><w:tr><w:tc><w:p><w:r><w:t>{-w:tc cond}{val}{/}</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p><w:r><w:t>{/}</w:t></w:r></w:p>",
@@ -1263,7 +1220,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	angular_expressions: {
+	{
 		it: "should work well with nested angular expressions",
 		content: "<w:t>{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}</w:t>",
 		result: '<w:t xml:space="preserve">0123</w:t>',
@@ -1287,7 +1244,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	angular_this: {
+	{
 		it: "should work with this with angular expressions",
 		content: "<w:t>{#hello}{this}{/hello}</w:t>",
 		result: '<w:t xml:space="preserve">world</w:t>',
@@ -1300,7 +1257,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	angular_get_parent_prop_if_null_child: {
+	{
 		it: "should get parent prop if child is null",
 		content: "<w:t>{#c}{label}{/c}</w:t>",
 		result: '<w:t xml:space="preserve">hello</w:t>',
@@ -1313,7 +1270,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	double_nested_array: {
+	{
 		it: "should work when using double nested arrays",
 		content: "<w:t>{#a}</w:t><w:t>{this}</w:t><w:t>{/}</w:t>",
 		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
@@ -1326,7 +1283,7 @@ const fixtures = {
 		postparsed: null,
 		resolved: null,
 	},
-	table_with_nested_loops: {
+	{
 		it: "should work for table with nested loops",
 		lexed: null,
 		content: `<w:tbl>
@@ -1353,7 +1310,7 @@ const fixtures = {
 			},
 		}),
 	},
-	spacepreserve: {
+	{
 		it: "should add space=preserve to last tag",
 		lexed: null,
 		parsed: null,
@@ -1381,7 +1338,7 @@ const fixtures = {
       </w:r>
     </w:p>`,
 	},
-	spacepreserve2: {
+	{
 		it: "should add space=preserve to last tag when having middle tag",
 		lexed: null,
 		parsed: null,
@@ -1421,15 +1378,92 @@ const fixtures = {
 		</w:r>
     </w:p>`,
 	},
+	{
+		it: "should parse self closing tags",
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		result: null,
+		content: "<w:pPr><w:spacing w:line=\"360\" w:lineRule=\"auto\"/></w:pPr>",
+		xmllexed: [
+			{
+				position: "start",
+				tag: "w:pPr",
+				type: "tag",
+				text: false,
+				value: "<w:pPr>",
+			},
+			{
+				position: "selfclosing",
+				tag: "w:spacing",
+				type: "tag",
+				text: false,
+				value: '<w:spacing w:line="360" w:lineRule="auto"/>',
+			},
+			{
+				position: "end",
+				tag: "w:pPr",
+				type: "tag",
+				text: false,
+				value: "</w:pPr>",
+			},
+		],
+	},
+];
+
+const rawXmlTest = {
+	it: "should work with rawxml",
+	content: "BEFORE<w:p><w:t>{@rawxml}</w:t></w:p>AFTER",
+	scope: {
+		rawxml:
+			'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>',
+	},
+	result:
+		'BEFORE<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>AFTER',
+	lexed: [
+		externalContent("BEFORE"),
+		startParagraph,
+		startText,
+		delimiters.start,
+		content("@rawxml"),
+		delimiters.end,
+		endText,
+		endParagraph,
+		externalContent("AFTER"),
+	],
+	parsed: [
+		externalContent("BEFORE"),
+		startParagraph,
+		startText,
+		{ type: "placeholder", value: "rawxml", module: "rawxml" },
+		endText,
+		endParagraph,
+		externalContent("AFTER"),
+	],
+	postparsed: [
+		externalContent("BEFORE"),
+		{
+			type: "placeholder",
+			value: "rawxml",
+			module: "rawxml",
+			expanded: [
+				[startParagraph, startText],
+				[endText, endParagraph],
+			],
+		},
+		externalContent("AFTER"),
+	],
 };
 
-fixtures.rawxmlemptycontent = clone(fixtures.rawxml);
-fixtures.rawxmlemptycontent.it = "should work with rawxml with undefined tags";
-fixtures.rawxmlemptycontent.scope = {};
-fixtures.rawxmlemptycontent.result = "BEFOREAFTER";
+fixtures.push(rawXmlTest);
+fixtures.push({
+	...rawXmlTest,
+	it: "should work with rawxml with undefined tags",
+	scope: {},
+	result: "BEFOREAFTER",
+});
 
-Object.keys(fixtures).forEach(function (key) {
-	const fixture = fixtures[key];
+fixtures.forEach(function (fixture) {
 	const delimiters = {
 		delimiters: fixture.delimiters || {
 			start: "{",
