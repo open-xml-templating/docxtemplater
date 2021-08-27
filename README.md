@@ -49,6 +49,7 @@ PRO Modules developped by docxtemplater core team :
 
 - [Image module](https://docxtemplater.com/modules/image/) to add a given image with the syntax: `{%image}`.
 - [Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document.
+- [XLSX Module](https://docxtemplater.com/modules/xlsx) to be able to do templating on Excel files (xlsx extension), also with loops and conditions.
 - [Chart Module](https://docxtemplater.com/modules/chart/) to replace a chart by using data from the JSON object that you give
 - [Html-Pptx Module](https://docxtemplater.com/modules/html-pptx/) to insert formatted text in a pptx document.
 - [Slides Module](https://docxtemplater.com/modules/slides/) to create multiple slides dynamically.
@@ -61,6 +62,5 @@ PRO Modules developped by docxtemplater core team :
 - [Table Module](https://docxtemplater.com/modules/table) to create tables from two dimensional data.
 - [Meta Module](https://docxtemplater.com/modules/meta) to make a document readonly, add a text watermark or update the margins.
 - [Styling Module](https://docxtemplater.com/modules/styling) restyle a paragraph, a cell or a table depending on some data.
-- [XLSX Module](https://docxtemplater.com/modules/xlsx) to be able to do templating on Excel files (xlsx extension), also with loops and conditions.
 - [Footnotes Module](https://docxtemplater.com/modules/footnotes) to be able to add footnotes to a document.
 - [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder) to simplify conditions that should show or hide a given paragraph.
