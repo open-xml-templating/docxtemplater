@@ -1,3 +1,12 @@
+### 3.23.2
+
+Bugfix error : `Cannot read property 'type' of undefined` when having a loop inside a loop that has an empty content, such as :
+
+```
+{#a}
+{#b}{/}{/}
+```
+
 ### 3.23.1
 
 Add typescript typings to InspectModule

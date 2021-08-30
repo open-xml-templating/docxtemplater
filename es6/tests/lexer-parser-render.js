@@ -55,6 +55,9 @@ function runTest(fixture, async = false) {
 	try {
 		doc.compile();
 	} catch (error) {
+		if (!fixture.error) {
+			throw error;
+		}
 		errorVerifier(error, fixture.errorType, fixture.error);
 		return;
 	}

@@ -1422,6 +1422,15 @@ const fixtures = [
 			},
 		],
 	},
+	{
+		it: "should not fail with empty loop inside loop",
+		content: `<w:p><w:r><w:t>A{#a}</w:t></w:r></w:p>
+		<w:p><w:r><w:t>{#c}{/}{/}</w:t></w:r></w:p>`,
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		result: '<w:p><w:r><w:t xml:space="preserve">A</w:t></w:r></w:p>',
+	},
 ];
 
 const rawXmlTest = {

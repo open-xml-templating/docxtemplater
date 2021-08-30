@@ -40,7 +40,9 @@ function getPageBreakIfApplies(part) {
 }
 
 function isEnclosedByParagraphs(parsed) {
-	return isParagraphStart(parsed[0]) && isParagraphEnd(last(parsed));
+	return (
+		parsed.length && isParagraphStart(parsed[0]) && isParagraphEnd(last(parsed))
+	);
 }
 
 function getOffset(chunk) {
