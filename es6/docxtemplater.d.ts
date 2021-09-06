@@ -1,9 +1,3 @@
-// Type definitions for Docxtemplater 3
-// Project: https://github.com/open-xml-templating/docxtemplater/
-// Definitions by: edi9999 <https://github.com/edi9999>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// TypeScript Version: 3.9
-
 export namespace DXT {
   type integer = number;
 
