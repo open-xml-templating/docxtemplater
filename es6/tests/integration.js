@@ -1224,8 +1224,7 @@ describe("Resolver", function () {
 	});
 
 	it("should resolve with simple table", function () {
-		const doc = createDoc("table-complex2-example.docx");
-		doc.compile();
+		const doc = createDocV4("table-complex2-example.docx");
 		return doc
 			.resolveData({
 				table1: [
@@ -1341,8 +1340,7 @@ describe("Resolver", function () {
 	it("should not regress with nested loops sync", function () {
 		const doc = createDoc("regression-complex-loops.docx");
 		doc.compile();
-		doc.setData(dataNestedLoops);
-		doc.render();
+		doc.render(dataNestedLoops);
 		shouldBeSame({
 			doc,
 			expectedName: "expected-regression-complex-loops.docx",
@@ -1359,10 +1357,8 @@ describe("Resolver", function () {
 	});
 
 	it("should not regress with nested loops async", function () {
-		const doc = createDoc("regression-complex-loops.docx");
-		doc.compile();
-		return doc.resolveData(dataNestedLoops).then(function () {
-			doc.render();
+		const doc = createDocV4("regression-complex-loops.docx");
+		return doc.renderAsync(dataNestedLoops).then(function () {
 			shouldBeSame({
 				doc,
 				expectedName: "expected-regression-complex-loops.docx",

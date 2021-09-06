@@ -344,10 +344,18 @@ const Docxtemplater = class Docxtemplater {
 			Docxtemplater.FileTypeConfig[this.fileType]();
 		return this;
 	}
-	render() {
+	renderAsync(data) {
+		return this.resolveData(data).then(() => {
+			return this.render();
+		});
+	}
+	render(data) {
 		this.compile();
 		if (this.errors.length > 0) {
 			throwRenderInvalidTemplate();
+		}
+		if (data) {
+			this.setData(data);
 		}
 		this.setModules({
 			data: this.data,

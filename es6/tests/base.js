@@ -783,10 +783,9 @@ describe("Change the delimiters", function () {
 				end: ">",
 			},
 		});
-		doc.setData({
+		doc.render({
 			user: "John",
 		});
-		doc.render();
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("Hello John");
 	});
@@ -1127,10 +1126,9 @@ describe("Constructor v4", function () {
 			},
 		};
 		const doc = createDocV4("delimiter-gt.docx", options);
-		doc.setData({
+		doc.render({
 			user: "John",
 		});
-		doc.render();
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("Hello John");
 	});
@@ -1173,9 +1171,6 @@ describe("Constructor v4", function () {
 
 	it("should throw if using v4 constructor and setOptions", function () {
 		const doc = createDocV4("tag-multiline.docx");
-		doc.setData({
-			description: "a\nb\nc",
-		});
 		expect(() => doc.setOptions({ linebreaks: true })).to.throw(
 			"setOptions() should not be called manually when using the v4 constructor"
 		);
@@ -1193,9 +1188,6 @@ describe("Constructor v4", function () {
 
 	it("should throw if using v4 constructor and loadZip", function () {
 		const doc = createDocV4("tag-multiline.docx");
-		doc.setData({
-			description: "a\nb\nc",
-		});
 		expect(() => doc.loadZip()).to.throw(
 			"loadZip() should not be called manually when using the v4 constructor"
 		);
