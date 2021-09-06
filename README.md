@@ -32,15 +32,6 @@ The full documentation of the latest version can be found on [read the docs](htt
 
 See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older versions.
 
-## Similar libraries
-
-There are a few similar libraries that work with docx, here’s a list of those I know a bit about:
-
-- [docx4j](https://www.docx4java.org/trac/docx4j) : JAVA, this is probably the biggest docx library out there. There is no built in templating engine, but you can generate your docx yourself programmatically.
-- [docx](https://github.com/dolanmiu/docx) : Javascript in the browser, you can create your docx from scratch, but not with template syntax, you need to "code your document" in Javascript.
-- [redocx](https://github.com/nitin42/redocx) : Create Docx document from scratch, using JSX syntax, last commit on December 2018.
-- [officegen](https://github.com/Ziv-Barber/officegen) : works only server side for the moment.
-
 ## Modules
 
 Functionality can be added with modules. Here is the list of existing modules:
@@ -64,3 +55,12 @@ PRO Modules developped by docxtemplater core team :
 - [Styling Module](https://docxtemplater.com/modules/styling) restyle a paragraph, a cell or a table depending on some data.
 - [Footnotes Module](https://docxtemplater.com/modules/footnotes) to be able to add footnotes to a document.
 - [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder) to simplify conditions that should show or hide a given paragraph.
+
+## Similar libraries
+
+There are a few similar libraries that work with docx, here’s a list of those I know a bit about:
+
+- [docx4j](https://www.docx4java.org/trac/docx4j) : JAVA, this is probably the biggest docx library out there. There is no built in templating engine, but you can generate your docx yourself programmatically.
+- [docx](https://github.com/dolanmiu/docx) : Javascript in the browser, you can create your docx from scratch, but not with template syntax, you need to "code your document" in Javascript.
+- [redocx](https://github.com/nitin42/redocx) : Create Docx document from scratch, using JSX syntax, last commit on December 2018.
+- [officegen](https://github.com/Ziv-Barber/officegen) : works only server side for the moment.
