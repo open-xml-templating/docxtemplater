@@ -250,7 +250,7 @@ When using following template:
 .. code-block:: text
 
     {#products}
-        {name}, {price} €
+    {name}, {price} €
     {/products}
 
 With following data:

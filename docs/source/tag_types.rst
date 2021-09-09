@@ -204,7 +204,7 @@ New lines are kept inside sections, so the template:
 .. code-block:: text
 
     {#repo}
-      <b>{name}</b>
+      {name}>
     {/repo}
     {^repo}
       No repos :(
@@ -215,8 +215,10 @@ Data:
 .. code-block:: javascript
 
     {
-      "repo": [{name: "John"}]
-      "repo": [{name: "Jane"}]
+      "repo": [
+          {name: "John"},
+          {name: "Jane"},
+      ]
     }
 
 Will actually render
@@ -224,21 +226,35 @@ Will actually render
 .. code-block:: text
 
     NL
-      <b>John</b>
+      John
     NL
     NL
-      <b>Jane</b>
+      Jane
     NL
 
 (where NL represents an emptyline)
 
-The way to make this work as expected is to not put unnecessary new lines after the start of the section and before the end of the section.
+The easiest to make this work is to enable the paragraphLoop option, like this :
+
+
+.. code-block:: javascript
+
+    // Now, all sections in the form of :
+    // {#section}
+    // something
+    // {/section}
+    // will keep just the inner paragraphs, and drop the newlines of the outer section
+    const doc = new Docxtemplater(zip, {paragraphLoop: true});
+
+An other less recommended way if you don't want to set this option, is to
+remove the new lines after the start of the section and before the end of the
+section.
 
 For our example , that would be:
 
 .. code-block:: text
 
-    {#repo} <b>{name}</b>
+    {#repo} {name}
     {/repo} {^repo} No repos :( {/repo}
 
 Raw XML syntax
