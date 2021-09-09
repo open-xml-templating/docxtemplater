@@ -144,7 +144,7 @@ Performance
 
 Docxtemplater is quite fast, for a pretty complex 50 page document, it can generate 250 output of those documents in 44 seconds, which is about 180ms per document.
 
-There is also an interesting blog article at https://javascript-ninja.fr/optimizing-speed-in-node-js/ that explains how I optimized loops in docxtemplater.
+There also is an interesting blog article at https://javascript-ninja.fr/optimizing-speed-in-node-js/ that explains how I optimized loops in docxtemplater.
 
 Support for IE9 and lower
 -------------------------

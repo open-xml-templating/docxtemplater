@@ -16,8 +16,6 @@ docxtemplater works on most modern platforms, and also some older ones. Here is 
 - Android 4.2+
 - iPads and iPhones v8.1, 10.3
 
-You can test if everything works fine on your browser by using the test runner: http://javascript-ninja.fr/docxtemplater/v3/test/mocha.html
-
 Dependencies
 ------------
 
