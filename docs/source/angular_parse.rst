@@ -46,14 +46,8 @@ Here's a code sample for how to use the angularParser:
         return input.toLowerCase();
     }
     function angularParser(tag) {
-        if (tag === '.') {
-            return {
-                get: function(s){ return s;}
-            };
-        }
-        const expr = expressions.compile(
-            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
-        );
+        tag = tag.replace(/^\.$/, "this").replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        const expr = expressions.compile(tag);
         return {
             get: function(scope, context) {
                 let obj = {};
@@ -382,16 +376,8 @@ You can do so by using the following parser option:
     var assign = require("lodash/assign");
 
     function angularParser(tag) {
-        if (tag === ".") {
-            return {
-                get(s) {
-                    return s;
-                },
-            };
-        }
-        const expr = expressions.compile(
-            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
-        );
+        tag = tag.replace(/^\.$/, "this").replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        const expr = expressions.compile(tag);
         // isAngularAssignment will be true if your tag contains a `=`, for example
         // when you write the following in your template:
         // {full_name = first_name + last_name}
@@ -460,14 +446,8 @@ To do this, you can use the following parser:
     var assign = require("lodash/assign");
     var last = require("lodash/last");
     function angularParser(tag) {
-        if (tag === '.') {
-            return {
-                get: function(s){ return s;}
-            };
-        }
-        const expr = expressions.compile(
-            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
-        );
+        tag = tag.replace(/^\.$/, "this").replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        const expr = expressions.compile(tag);
         return {
             get: function(scope, context) {
                 let obj = {};

@@ -446,16 +446,8 @@ You can make use of a feature of the angularParser and the fact that docxtemplat
    const expressions = require("angular-expressions");
    const assign = require("lodash/assign");
    function angularParser(tag) {
-      if (tag === ".") {
-         return {
-            get(s) {
-               return s;
-            },
-         };
-      }
-      const expr = expressions.compile(
-          tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
-      );
+      tag = tag.replace(/^\.$/, "this").replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+      const expr = expressions.compile(tag);
       return {
          get(scope, context) {
             let obj = {};
@@ -916,13 +908,8 @@ You can fix this issue by adding the characters that you would like to support, 
         );
     }
     function angularParser(tag) {
-        if (tag === '.') {
-            return {
-                get: function(s){ return s;}
-            };
-        }
-        const expr = expressions.compile(
-            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"'),
+        tag = tag.replace(/^\.$/, "this").replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        const expr = expressions.compile(tag,
             {
                 isIdentifierStart: validChars,
                 isIdentifierContinue: validChars
@@ -980,14 +967,8 @@ And each user block will be followed by a pagebreak, except the last user.
 .. code-block:: javascript
 
     function angularParser(tag) {
-        if (tag === '.') {
-            return {
-                get: function(s){ return s;}
-            };
-        }
-        const expr = expressions.compile(
-            tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
-        );
+        tag = tag.replace(/^\.$/, "this").replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+        const expr = expressions.compile(tag);
         return {
             get: function(scope, context) {
                 let obj = {};
