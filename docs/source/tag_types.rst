@@ -256,7 +256,7 @@ with this data:
 
 .. code-block:: javascript
 
-    doc.setData({
+    doc.render({
         rawXml : `
         <w:p>
             <w:pPr>

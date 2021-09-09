@@ -190,9 +190,8 @@ suite:
     const doc = new Docxtemplater(zip, { modules: [iModule] });
     const tags = iModule.getAllTags();
     console.log(tags);
-    // After getting the tags, you can optionally set some data and render the document like this:
-    // doc.setData(data);
-    // doc.render();
+    // After getting the tags, you can render the document like this:
+    // doc.render(data);
 
 With the following template:
 
@@ -347,7 +346,7 @@ For example, with following data:
 
 .. code-block:: javascript
 
-   doc.setData({
+   doc.render({
       user: {
          gender: 'F',
          name: "Mary",
@@ -523,15 +522,14 @@ You can use the following code:
               paragraphLoop: true,
               linebreaks: true
             });
-            doc.setData({
-              first_name: 'John',
-              last_name: 'Doe',
-              phone: '0652455478',
-              description: 'New Website'
-            });
             try {
               // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-              doc.render();
+              doc.render({
+                first_name: 'John',
+                last_name: 'Doe',
+                phone: '0652455478',
+                description: 'New Website'
+              });
             } catch (error) {
               // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
               function replaceErrors(key, value) {
@@ -615,15 +613,14 @@ If you are using an angular version that supports the `import` keyword, you can 
           }
           const zip = new PizZip(content);
           const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-          doc.setData({
-            first_name: "John",
-            last_name: "Doe",
-            phone: "0652455478",
-            description: "New Website"
-          });
           try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render();
+            doc.render({
+              first_name: "John",
+              last_name: "Doe",
+              phone: "0652455478",
+              description: "New Website"
+            });
           } catch (error) {
             // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
             function replaceErrors(key, value) {
@@ -696,15 +693,14 @@ If you are using vuejs 2.0 version that supports the `import` keyword, you can u
             }
             const zip = new PizZip(content);
             const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-            doc.setData({
-              first_name: "John",
-              last_name: "Doe",
-              phone: "0652455478",
-              description: "New Website"
-            });
             try {
               // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-              doc.render();
+              doc.render({
+                first_name: "John",
+                last_name: "Doe",
+                phone: "0652455478",
+                description: "New Website"
+              });
             } catch (error) {
               // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
               function replaceErrors(key, value) {
@@ -789,15 +785,14 @@ You can use the following code:
         }
         const zip = new PizZip(content);
         const doc = new Docxtemplater().loadZip(zip);
-        doc.setData({
-          first_name: "John",
-          last_name: "Doe",
-          phone: "0652455478",
-          description: "New Website"
-        });
         try {
           // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-          doc.render();
+          doc.render({
+            first_name: "John",
+            last_name: "Doe",
+            phone: "0652455478",
+            description: "New Website"
+          });
         } catch (error) {
           // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
           function replaceErrors(key, value) {

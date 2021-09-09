@@ -25,7 +25,7 @@ The integration tests are in es6/tests/integration.js
 
 	it("should work with table pptx", function () {
 		const doc = createDoc("table-example.pptx");
-		doc.setData({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]}).render();
+		doc.render({users: [{msg: "hello", name: "mary"}, {msg: "hello", name: "john"}]});
 		shouldBeSame({doc, expectedName: "expected-table-example.pptx"});
 	});
 
@@ -55,8 +55,7 @@ Docxtemplater was not able to render text that was written in russian (because o
         const doc = createDoc("tag-example.docx");
         const zip = new PizZip(doc.loadedContent);
         const d = new Docxtemplater(zip);
-        d.setData({last_name: russian});
-        d.render();
+        d.render({last_name: russian});
         const outputText = d.getFullText();
         expect(outputText.substr(0, 7)).to.be.equal(russian);
     });

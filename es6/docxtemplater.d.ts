@@ -106,7 +106,8 @@ declare class Docxtemplater {
 
   setData(data: any): this;
   resolveData(data: any): Promise<any>;
-  render(): this;
+  render(data?: any): this;
+  renderAsync(data?: any): Promise<any>;
   getZip(): any;
 
   loadZip(zip: any): this;

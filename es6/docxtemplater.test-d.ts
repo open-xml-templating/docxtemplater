@@ -85,6 +85,10 @@ doc3.compile();
 doc3.resolveData({ a: "b" }).then(function () {
   doc3.render();
 });
+const doc4 = new Docxtemplater(new PizZip("hello"));
+doc4.renderAsync({ a: "b" }).then(function () {
+  console.log("end");
+});
 const text = doc3.getFullText();
 const text2 = doc3.getFullText("word/heading1.xml");
 

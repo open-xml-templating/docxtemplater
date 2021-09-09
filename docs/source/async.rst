@@ -45,14 +45,9 @@ You can have promises in your data. Note that the only step running asynchronous
         errorHandler(error);
     }
 
-    doc.resolveData({user: new Promise(resolve) { setTimeout(()=> resolve('John'), 1000)}})
+    doc.renderAsync({user: new Promise(resolve) { setTimeout(()=> resolve('John'), 1000)}})
+       .catch((err) => errorHandler(err));
        .then(function() {
-           try {
-               doc.render();
-           }
-           catch (error) {
-               errorHandler(err);
-           }
            var buf = doc.getZip()
                .generate({type: 'nodebuffer'});
            fs.writeFileSync(path.resolve(__dirname, 'output.docx'), buf);

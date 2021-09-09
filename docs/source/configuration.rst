@@ -51,7 +51,7 @@ Lets take an example, If your template is:
 
     Hello {user}
 
-And you call `doc.setData({user: "John"})`
+And you call `doc.render({user: "John"})`
 
 Then you will have the following:
 
@@ -257,7 +257,7 @@ With following data:
 
 .. code-block:: javascript
 
-    doc.setData({
+    doc.render({
         name: 'Santa Katerina',
         products: [
           {
@@ -340,7 +340,7 @@ With following data:
 
 .. code-block:: javascript
 
-    doc.setData({
+    doc.render({
         company: 'ACME Company',
         contractors: [
             { company: "The other Company" },
@@ -482,6 +482,5 @@ You can enable linebreaks, if your data contains newlines, those will be shown a
 .. code-block:: javascript
 
     const doc = new Docxtemplater(zip, {linebreaks:true});
-    doc.setData({text: "My text,\nmultiline"});
-    doc.render();
+    doc.render({text: "My text,\nmultiline"});
 

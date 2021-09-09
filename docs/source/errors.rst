@@ -240,8 +240,7 @@ The following code will throw the error when calling "generate" twice:
     function generate(content) {
         var zip = new PizZip(content);
         var doc = new Docxtemplater(zip, {modules: [imageModule]});
-        doc.setData(data);
-        doc.render()
+        doc.render(data)
     }
 
 You should always reconstruct an imageModule for each Docxtemplater instance.
@@ -257,8 +256,7 @@ The following code will no more throw the error:
         var zip = new PizZip(content);
         var imageModule = new ImageModule(opts);
         var doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, modules: [imageModule] });
-        doc.setData(data);
-        doc.render()
+        doc.render(data)
     }
 
 

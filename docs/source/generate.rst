@@ -57,17 +57,14 @@ Node
         errorHandler(error);
     }
 
-    //set the templateVariables
-    doc.setData({
-        first_name: 'John',
-        last_name: 'Doe',
-        phone: '0652455478',
-        description: 'New Website'
-    });
-
     try {
         // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-        doc.render()
+        doc.render({
+            first_name: 'John',
+            last_name: 'Doe',
+            phone: '0652455478',
+            description: 'New Website'
+        })
     }
     catch (error) {
         // Catch rendering errors (errors relating to the rendering of the template: angularParser throws an error)
@@ -145,15 +142,14 @@ Browser
                     errorHandler(error);
                 }
 
-                doc.setData({
-                    first_name: 'John',
-                    last_name: 'Doe',
-                    phone: '0652455478',
-                    description: 'New Website'
-                });
                 try {
                     // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                    doc.render();
+                    doc.render({
+                        first_name: 'John',
+                        last_name: 'Doe',
+                        phone: '0652455478',
+                        description: 'New Website'
+                    });
                 }
                 catch (error) {
                     // Catch rendering errors (errors relating to the rendering of the template: angularParser throws an error)
