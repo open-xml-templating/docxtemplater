@@ -1,5 +1,3 @@
-"use strict";
-
 function moduleResolve(part, options) {
 	let moduleResolved;
 	for (let i = 0, l = options.modules.length; i < l; i++) {

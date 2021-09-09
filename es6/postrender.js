@@ -1,5 +1,3 @@
-"use strict";
-
 function postrender(parts, options) {
 	for (let i = 0, l = options.modules.length; i < l; i++) {
 		const module = options.modules[i];

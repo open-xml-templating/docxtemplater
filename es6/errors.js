@@ -1,4 +1,3 @@
-"use strict";
 const { last, first } = require("./utils.js");
 
 function XTError(message) {

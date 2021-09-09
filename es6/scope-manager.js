@@ -1,4 +1,3 @@
-"use strict";
 const { getScopeParserExecutionError } = require("./errors.js");
 const { last } = require("./utils.js");
 const { concatArrays } = require("./doc-utils.js");

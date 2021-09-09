@@ -1,4 +1,3 @@
-"use strict";
 const { pregMatchAll } = require("./doc-utils.js");
 
 module.exports = function xmlMatcher(content, tagsXmlArray) {

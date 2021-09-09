@@ -1,5 +1,3 @@
-"use strict";
-
 require("es6-promise").polyfill();
 const { setExamplesDirectory, setStartFunction, start } = require("./utils.js");
 const path = require("path");

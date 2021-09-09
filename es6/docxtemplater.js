@@ -1,5 +1,3 @@
-"use strict";
-
 const DocUtils = require("./doc-utils.js");
 DocUtils.traits = require("./traits.js");
 DocUtils.moduleWrapper = require("./module-wrapper.js");

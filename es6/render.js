@@ -1,5 +1,3 @@
-"use strict";
-
 const { concatArrays, utf8ToWord } = require("./doc-utils.js");
 const { throwUnimplementedTagType } = require("./errors.js");
 

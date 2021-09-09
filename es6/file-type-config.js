@@ -1,5 +1,3 @@
-"use strict";
-
 const loopModule = require("./modules/loop.js");
 const spacePreserveModule = require("./modules/space-preserve.js");
 const rawXmlModule = require("./modules/rawxml.js");
