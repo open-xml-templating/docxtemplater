@@ -1,3 +1,36 @@
+### 3.24.0
+
+Add support to remove the call to `setData` or `resolveData`.
+
+(The setData function and resolveData will still work, but will be dropped in Docxtemplater v4)
+
+You can now do :
+
+```js
+const doc = new Docxtemplater(zip, { linebreaks: true });
+doc.render({
+  user: "John",
+});
+```
+
+or, in the async version :
+
+```js
+const doc = new Docxtemplater(zip, { linebreaks: true });
+doc
+  .renderAsync({
+    user: new Promise(function (resolve, reject) {
+      resolve("John");
+    }),
+  })
+  .then(function () {
+    const zip = doc.getZip().generate({
+      type: "nodebuffer",
+      compression: "DEFLATE",
+    });
+  });
+```
+
 ### 3.23.2
 
 Bugfix error : `Cannot read property 'type' of undefined` when having a loop inside a loop that has an empty content, such as :
