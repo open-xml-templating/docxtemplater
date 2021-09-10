@@ -304,6 +304,37 @@ This will loop over the first parent <w:p> tag
 
 If you want to insert HTML styled input, you can also use the docxtemplater html module: https://docxtemplater.com/modules/html/
 
+Lambdas
+-------
+
+.. code-block:: javascript
+
+    const doc = new Docxtemplater(zip);
+    doc.render({
+      userGreeting: (scope) => {
+        return "How is it going, " + scope.user + " ? ";
+      },
+      users: [
+        {
+          name: "John",
+        },
+        {
+          name: "Mary",
+        },
+      ],
+    });
+
+
+With the following template :
+
+```txt
+{#users}
+{userGreeting}
+{/}
+```
+
+It will call the function userGreeting twice, with the current scope as first argument, and the scopeManager as the second argument.
+
 Set Delimiter
 -------------
 

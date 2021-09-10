@@ -1,3 +1,34 @@
+### 3.25.0
+
+Add support for "lambdas", eg if a value in the data is a function, that function will be called with the `scope` and the `scopeManager`.
+
+You now can write :
+
+```js
+const doc = new Docxtemplater(zip);
+doc.render({
+  userGreeting: (scope) => {
+    return "How is it going, " + scope.user + " ? ";
+  },
+  users: [
+    {
+      name: "John",
+    },
+    {
+      name: "Mary",
+    },
+  ],
+});
+```
+
+With the following template :
+
+```txt
+{#users}
+{userGreeting}
+{/}
+```
+
 ### 3.24.0
 
 Add support to remove the call to `setData` or `resolveData`.

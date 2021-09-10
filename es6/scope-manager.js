@@ -158,10 +158,21 @@ const ScopeManager = class ScopeManager {
 		);
 	}
 	getValue(tag, meta) {
-		return getValue.call(this, tag, meta, this.scopeList.length - 1);
+		const result = getValue.call(this, tag, meta, this.scopeList.length - 1);
+		if (typeof result === "function") {
+			return result(this.scopeList[this.scopeList.length - 1], this);
+		}
+		return result;
 	}
 	getValueAsync(tag, meta) {
-		return getValueAsync.call(this, tag, meta, this.scopeList.length - 1);
+		return getValueAsync
+			.call(this, tag, meta, this.scopeList.length - 1)
+			.then((result) => {
+				if (typeof result === "function") {
+					return result(this.scopeList[this.scopeList.length - 1], this);
+				}
+				return result;
+			});
 	}
 	getContext(meta, num) {
 		return {

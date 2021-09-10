@@ -130,17 +130,17 @@ With filters, it is possible to write the following template to have the resulti
 
 More complex filters are possible, for example, if you would like to list the names of all active users. If your data is the following:
 
-.. code-block:: json
+.. code-block:: javascript
 
     {
-        "users": [
+        users: [
             {
-                "name": "John",
-                "age": 15,
+                name: "John",
+                age: 15,
             },
             {
-                "name": "Mary",
-                "age": 26,
+                name: "Mary",
+                age: 26,
             }
         ],
     }
@@ -177,7 +177,7 @@ Data filtering
 
 You can write some generic data filters using angular expressions inside the filter itself.
 
-.. code-block:: json
+.. code-block:: javascript
 
     {
         users: [

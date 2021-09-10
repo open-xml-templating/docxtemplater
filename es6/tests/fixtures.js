@@ -141,6 +141,49 @@ const fixtures = [
 		],
 	},
 	{
+		it: "should handle {userGreeting} with lambda function",
+		content: "<w:t>{#users}{userGreeting}{/}</w:t>",
+		scope: {
+			userGreeting: (scope, sm) => {
+				return "How is it going, " + scope.name + " ? " + sm.scopeLindex.length;
+			},
+			users: [
+				{
+					name: "John",
+				},
+				{
+					name: "Mary",
+				},
+			],
+		},
+		result:
+			'<w:t xml:space="preserve">How is it going, John ? 1How is it going, Mary ? 1</w:t>',
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
+	{
+		it: "should handle {#userGet} with lambda function",
+		content: "<w:t>{#userGet}- {name}{/}</w:t>",
+		scope: {
+			userGet: () => {
+				return [
+					{
+						name: "John",
+					},
+					{
+						name: "Mary",
+					},
+				];
+			},
+		},
+		result: '<w:t xml:space="preserve">- John- Mary</w:t>',
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
+
+	{
 		it: "should xmlparse strange tags",
 		content: "<w:t>{name} {</w:t>FOO<w:t>age</w:t>BAR<w:t>}</w:t>",
 		scope: {
