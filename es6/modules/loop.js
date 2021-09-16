@@ -8,6 +8,8 @@ const {
 	startsWith,
 	isTagEnd,
 	isTagStart,
+	getSingleAttribute,
+	setSingleAttribute,
 } = require("../doc-utils.js");
 const wrapper = require("../module-wrapper.js");
 
@@ -329,13 +331,26 @@ class LoopModule {
 		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}
+	// eslint-disable-next-line complexity
 	render(part, options) {
+		if (part.tag === "a:ext") {
+			this.lastExt = part;
+			return part;
+		}
 		if (part.type !== "placeholder" || part.module !== moduleName) {
 			return null;
 		}
 		let totalValue = [];
 		let errors = [];
+		let heightOffset = 0;
+		const firstTag = part.subparsed[0];
+		let tagHeight = 0;
+		if (firstTag.tag === "a:tr") {
+			tagHeight = +getSingleAttribute(firstTag.value, "h");
+		}
+		heightOffset -= tagHeight;
 		function loopOver(scope, i, length) {
+			heightOffset += tagHeight;
 			const scopeManager = options.scopeManager.createSubScopeManager(
 				scope,
 				part.value,
@@ -404,6 +419,14 @@ class LoopModule {
 				value: getPageBreakIfApplies(part) || "",
 				errors,
 			};
+		}
+		if (heightOffset !== 0) {
+			const cy = +getSingleAttribute(this.lastExt.value, "cy");
+			this.lastExt.value = setSingleAttribute(
+				this.lastExt.value,
+				"cy",
+				cy + heightOffset
+			);
 		}
 		return {
 			value: options.joinUncorrupt(totalValue, { ...options, basePart: part }),

@@ -26,23 +26,27 @@ function render(options) {
 		options.prefix = options.prefix + options.index + "-";
 	}
 	let errors = [];
-	const parts = compiled.map(function (part, i) {
-		options.index = i;
-		const moduleRendered = moduleRender(part, options);
-		if (moduleRendered) {
-			if (moduleRendered.errors) {
-				errors = concatArrays([errors, moduleRendered.errors]);
+	const parts = compiled
+		.map(function (part, i) {
+			options.index = i;
+			const moduleRendered = moduleRender(part, options);
+			if (moduleRendered) {
+				if (moduleRendered.errors) {
+					errors = concatArrays([errors, moduleRendered.errors]);
+				}
+				return moduleRendered;
 			}
-			return moduleRendered.value;
-		}
-		if (part.type === "content" || part.type === "tag") {
-			if (part.position === "insidetag") {
-				return utf8ToWord(part.value);
+			if (part.type === "content" || part.type === "tag") {
+				if (part.position === "insidetag") {
+					part.value = utf8ToWord(part.value);
+				}
+				return part;
 			}
-			return part.value;
-		}
-		throwUnimplementedTagType(part, i);
-	});
+			throwUnimplementedTagType(part, i);
+		})
+		.map(function ({ value }) {
+			return value;
+		});
 	return { errors, parts };
 }
 

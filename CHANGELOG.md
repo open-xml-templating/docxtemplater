@@ -1,3 +1,9 @@
+### 3.25.1
+
+When having a loop inside a pptx table, the height of the frame will automatically be updated if some rows are added or removed.
+
+In previous versions, the table would keep the previous height, meaning the added rows would not be shown, except after forcing a rerendering of the table by changing the fontsize.
+
 ### 3.25.0
 
 Add support for "lambdas", eg if a value in the data is a function, that function will be called with the `scope` and the `scopeManager`.

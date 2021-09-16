@@ -244,6 +244,24 @@ describe("Pptx generation", function () {
 			.render();
 		shouldBeSame({ doc, expectedName: "expected-table-example.pptx" });
 	});
+
+	it("should work with loop table", function () {
+		const doc = createDocV4("loop-table.pptx");
+		return doc
+			.renderAsync({
+				products: [
+					{ name: "Acme", price: 10 },
+					{ name: "Ecma", price: 20 },
+				],
+			})
+			.then(function () {
+				shouldBeSame({
+					doc,
+					expectedName: "expected-loop-table.pptx",
+				});
+			});
+	});
+
 	it("should work with loop pptx", function () {
 		const doc = createDoc("loop-example.pptx");
 		doc.setData({ users: [{ name: "Doe" }, { name: "John" }] }).render();

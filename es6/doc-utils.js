@@ -13,6 +13,30 @@ function parser(tag) {
 	};
 }
 
+function setSingleAttribute(partValue, attr, attrValue) {
+	const regex = new RegExp(`(<.* ${attr}=")([^"]+)(".*)$`);
+	if (regex.test(partValue)) {
+		return partValue.replace(regex, `$1${attrValue}$3`);
+	}
+	let end = partValue.lastIndexOf("/>");
+	if (end === -1) {
+		end = partValue.lastIndexOf(">");
+	}
+	return (
+		partValue.substr(0, end) + ` ${attr}="${attrValue}"` + partValue.substr(end)
+	);
+}
+
+function getSingleAttribute(value, attributeName) {
+	const index = value.indexOf(`${attributeName}="`);
+	if (index === -1) {
+		return null;
+	}
+	const startIndex = value.substr(index).search(/["']/) + index;
+	const endIndex = value.substr(startIndex + 1).search(/["']/) + startIndex;
+	return value.substr(startIndex + 1, endIndex - startIndex);
+}
+
 function endsWith(str, suffix) {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -344,4 +368,6 @@ module.exports = {
 	concatArrays,
 	invertMap,
 	charMap,
+	getSingleAttribute,
+	setSingleAttribute,
 };
