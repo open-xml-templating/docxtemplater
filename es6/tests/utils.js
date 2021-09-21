@@ -602,7 +602,7 @@ function removeSpaces(text) {
 	return text.replace(/\n|\t/g, "");
 }
 
-const contentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
+const docxContentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
@@ -612,7 +612,21 @@ const contentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
 function makeDocx(name, content) {
 	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
-	zip.file("[Content_Types].xml", contentTypeContent);
+	zip.file("[Content_Types].xml", docxContentTypeContent);
+	return load(name, zip.generate({ type: "string" }), documentCache);
+}
+
+const pptxContentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>
+</Types>`;
+
+function makePptx(name, content) {
+	const zip = new PizZip();
+	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
+	zip.file("[Content_Types].xml", pptxContentTypeContent);
 	return load(name, zip.generate({ type: "string" }), documentCache);
 }
 
@@ -715,6 +729,7 @@ module.exports = {
 	loadFile,
 	loadImage,
 	makeDocx,
+	makePptx,
 	removeSpaces,
 	setExamplesDirectory,
 	setStartFunction,

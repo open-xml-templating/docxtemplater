@@ -1,6 +1,7 @@
 const {
 	expect,
 	makeDocx,
+	makePptx,
 	cleanRecursive,
 	errorVerifier,
 } = require("./utils.js");
@@ -47,7 +48,9 @@ function expectations(iModule, fixture) {
 }
 
 function runTest(fixture, async = false) {
-	const doc = makeDocx("temp.docx", fixture.content);
+	const doc = fixture.pptx
+		? makePptx("temp.docx", fixture.content)
+		: makeDocx("temp.docx", fixture.content);
 	doc.setOptions(fixture.options);
 	const iModule = inspectModule();
 	doc.attachModule(iModule).attachModule(new AssertionModule());

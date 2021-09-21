@@ -1474,6 +1474,364 @@ const fixtures = [
 		postparsed: null,
 		result: '<w:p><w:r><w:t xml:space="preserve">A</w:t></w:r></w:p>',
 	},
+	{
+		// The specificity of this input is that it contains : <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
+		// So in the algorithm that updates the height of the table, those tags should be ignored
+		it: "should work with table pptx nested and empty 'ext' element",
+		pptx: true,
+		scope: { loop1: [1, 2, 3], loop2: [1, 2, 3] },
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:graphicFrame>
+        <p:xfrm>
+          <a:off x="3561792" y="1315064"/>
+          <a:ext cx="5853297" cy="713565"/>
+        </p:xfrm>
+        <a:graphic>
+          <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table">
+            <a:tbl>
+              <a:tblGrid>
+                <a:gridCol w="3275655">
+                  <a:extLst>
+                    <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
+                      <a16:colId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="3066261218"/>
+                    </a:ext>
+                  </a:extLst>
+                </a:gridCol>
+                <a:gridCol w="2577642">
+                  <a:extLst>
+                    <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
+                      <a16:colId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="913921408"/>
+                    </a:ext>
+                  </a:extLst>
+                </a:gridCol>
+              </a:tblGrid>
+              <a:tr h="347805">
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t>ABC</a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t>DEF</a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:extLst>
+                  <a:ext uri="{0D108BD9-81ED-4DB2-BD59-A6C34878D82A}">
+                    <a16:rowId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="2223618801"/>
+                  </a:ext>
+                </a:extLst>
+              </a:tr>
+              <a:tr h="347805">
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t>{#loop1}{#loop2}</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>{name}</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>{/}{#loop3}</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>TTT</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>{/}</a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t>{#loop3}</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>{name}</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>{/}{#loop4}</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>DEF</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>{/}{/loop1}</a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:extLst>
+                  <a:ext uri="{0D108BD9-81ED-4DB2-BD59-A6C34878D82A}">
+                    <a16:rowId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="1379104515"/>
+                  </a:ext>
+                </a:extLst>
+              </a:tr>
+            </a:tbl>
+          </a:graphicData>
+        </a:graphic>
+      </p:graphicFrame>
+    </p:spTree>
+    <p:extLst>
+      <p:ext uri="{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}">
+        <p14:creationId xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" val="2554173214"/>
+      </p:ext>
+    </p:extLst>
+  </p:cSld>
+  <p:clrMapOvr>
+    <a:masterClrMapping/>
+  </p:clrMapOvr>
+</p:sld>`,
+		result: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:graphicFrame>
+        <p:xfrm>
+          <a:off x="3561792" y="1315064"/>
+          <a:ext cx="5853297" cy="1409175"/>
+        </p:xfrm>
+        <a:graphic>
+          <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table">
+            <a:tbl>
+              <a:tblGrid>
+                <a:gridCol w="3275655">
+                  <a:extLst>
+                    <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
+                      <a16:colId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="3066261218"/>
+                    </a:ext>
+                  </a:extLst>
+                </a:gridCol>
+                <a:gridCol w="2577642">
+                  <a:extLst>
+                    <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
+                      <a16:colId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="913921408"/>
+                    </a:ext>
+                  </a:extLst>
+                </a:gridCol>
+              </a:tblGrid>
+              <a:tr h="347805">
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t>ABC</a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t>DEF</a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:extLst>
+                  <a:ext uri="{0D108BD9-81ED-4DB2-BD59-A6C34878D82A}">
+                    <a16:rowId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="2223618801"/>
+                  </a:ext>
+                </a:extLst>
+              </a:tr>
+              <a:tr h="347805">
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:extLst>
+                  <a:ext uri="{0D108BD9-81ED-4DB2-BD59-A6C34878D82A}">
+                    <a16:rowId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="1379104515"/>
+                  </a:ext>
+                </a:extLst>
+              </a:tr><a:tr h="347805">
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:extLst>
+                  <a:ext uri="{0D108BD9-81ED-4DB2-BD59-A6C34878D82A}">
+                    <a16:rowId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="1379104515"/>
+                  </a:ext>
+                </a:extLst>
+              </a:tr><a:tr h="347805">
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t>undefined</a:t>
+                      </a:r>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:tc>
+                  <a:txBody>
+                    <a:bodyPr/>
+                    <a:lstStyle/>
+                    <a:p>
+                      <a:r>
+                        <a:t></a:t>
+                      </a:r>
+                    </a:p>
+                  </a:txBody>
+                  <a:tcPr/>
+                </a:tc>
+                <a:extLst>
+                  <a:ext uri="{0D108BD9-81ED-4DB2-BD59-A6C34878D82A}">
+                    <a16:rowId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" val="1379104515"/>
+                  </a:ext>
+                </a:extLst>
+              </a:tr>
+            </a:tbl>
+          </a:graphicData>
+        </a:graphic>
+      </p:graphicFrame>
+    </p:spTree>
+    <p:extLst>
+      <p:ext uri="{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}">
+        <p14:creationId xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" val="2554173214"/>
+      </p:ext>
+    </p:extLst>
+  </p:cSld>
+  <p:clrMapOvr>
+    <a:masterClrMapping/>
+  </p:clrMapOvr>
+</p:sld>`,
+	},
 ];
 
 const rawXmlTest = {

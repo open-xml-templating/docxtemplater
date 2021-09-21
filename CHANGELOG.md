@@ -1,3 +1,9 @@
+### 3.25.2
+
+When having a loop inside a pptx table, the height of the frame was not updated if a tag in the form of : `<a:ext uri="{11111111-1111-1111-1111-111111111111}">` was present in the document.
+
+Now, those tags are ignored and the height of the table should be updated appropriately.
+
 ### 3.25.1
 
 When having a loop inside a pptx table, the height of the frame will automatically be updated if some rows are added or removed.

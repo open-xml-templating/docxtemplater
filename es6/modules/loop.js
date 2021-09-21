@@ -197,6 +197,7 @@ function getLastSectPr(parsed) {
 class LoopModule {
 	constructor() {
 		this.name = "LoopModule";
+		this.inXfrm = false;
 		this.totalSectPr = 0;
 		this.prefix = {
 			start: "#",
@@ -333,7 +334,10 @@ class LoopModule {
 	}
 	// eslint-disable-next-line complexity
 	render(part, options) {
-		if (part.tag === "a:ext") {
+		if (part.tag === "p:xfrm") {
+			this.inXfrm = part.position === "start";
+		}
+		if (part.tag === "a:ext" && this.inXfrm) {
 			this.lastExt = part;
 			return part;
 		}
