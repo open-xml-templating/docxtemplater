@@ -1,3 +1,41 @@
+### 3.25.3
+
+Fix issue in rendering of tables generated with loop module for Powerpoint documents by deduplicating a16:rowId tags.
+
+Previously, when having a loop, the following would be generated :
+
+```
+<a:tr>
+<a:t>Content</a:t>
+<a:extLst>
+<a:ext>
+	<a16:rowId val="1379104516"/>
+</a:ext>
+</a:extLst>
+</a:tr>
+<a:tr>
+<a:t>Content</a:t>
+<a:extLst>
+<a:ext>
+	<a16:rowId val="1379104516"/>
+</a:ext>
+</a:extLst>
+</a:tr>
+```
+
+The duplicate `val` attribute for the a16:rowId caused rendering issues on office live.
+
+Now, the values are incremented after each loop, like this :
+
+```
+<a:ext>
+	<a16:rowId val="1379104516"/>
+</a:ext>
+<a:ext>
+	<a16:rowId val="1379104517"/>
+</a:ext>
+```
+
 ### 3.25.2
 
 When having a loop inside a pptx table, the height of the frame was not updated if a tag in the form of : `<a:ext uri="{11111111-1111-1111-1111-111111111111}">` was present in the document.

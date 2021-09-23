@@ -1419,4 +1419,18 @@ describe("Resolver", function () {
 			});
 		});
 	});
+
+	it("should deduplicate a16:rowId tag", function () {
+		const doc = createDocV4("a16-row-id.pptx");
+		return doc
+			.renderAsync({
+				loop: [1, 2, 3, 4],
+			})
+			.then(function () {
+				shouldBeSame({
+					doc,
+					expectedName: "expected-a16-row-id.pptx",
+				});
+			});
+	});
 });

@@ -353,6 +353,7 @@ class LoopModule {
 			tagHeight = +getSingleAttribute(firstTag.value, "h");
 		}
 		heightOffset -= tagHeight;
+		let a16RowIdOffset = 0;
 		function loopOver(scope, i, length) {
 			heightOffset += tagHeight;
 			const scopeManager = options.scopeManager.createSubScopeManager(
@@ -362,6 +363,13 @@ class LoopModule {
 				part,
 				length
 			);
+			part.subparsed.forEach(function (pp) {
+				if (pp.type === "tag" && pp.tag === "a16:rowId") {
+					const val = +getSingleAttribute(pp.value, "val") + a16RowIdOffset;
+					a16RowIdOffset = 1;
+					pp.value = setSingleAttribute(pp.value, "val", val);
+				}
+			});
 			const subRendered = options.render(
 				mergeObjects({}, options, {
 					compiled: part.subparsed,

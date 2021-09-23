@@ -50,6 +50,7 @@ function PptXFileTypeConfig() {
 			"a:ext",
 			"p:graphicFrame",
 			"p:xfrm",
+			"a16:rowId",
 		],
 		expandTags: [{ contains: "a:tc", expand: "a:tr" }],
 		onParagraphLoop: [{ contains: "a:p", expand: "a:p", onlyTextInTag: true }],
