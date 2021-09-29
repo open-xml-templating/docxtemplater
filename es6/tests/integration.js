@@ -84,6 +84,39 @@ describe("Simple templating", function () {
 	});
 });
 
+describe("Special characters", function () {
+	it("should not double escape loop containing hebrew", function () {
+		const tags = {
+			title: "Default title",
+			products: [
+				{
+					title: "Duk",
+					name: "DukSoftware",
+					reference: "DS0",
+				},
+				{
+					title: "Tingerloo",
+					name: "Tingerlee",
+					reference: "T00",
+				},
+				{
+					title: "Tingerloo",
+					name: "Tingerlee",
+					reference: "T00",
+				},
+				{
+					title: "Tingerloo",
+					name: "Tingerlee",
+					reference: "T00",
+				},
+			],
+		};
+		const doc = createDocV4("loop-hebrew.docx");
+		doc.render(tags);
+		shouldBeSame({ doc, expectedName: "expected-loop-hebrew.docx" });
+	});
+});
+
 describe("Spacing/Linebreaks", function () {
 	it("should show spaces with linebreak option", function () {
 		const doc = createDoc("tag-multiline.docx");

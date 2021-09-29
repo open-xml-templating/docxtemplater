@@ -37,7 +37,8 @@ function render(options) {
 				return moduleRendered;
 			}
 			if (part.type === "content" || part.type === "tag") {
-				if (part.position === "insidetag") {
+				if (part.position === "insidetag" && !part.escaped) {
+					part.escaped = true;
 					part.value = utf8ToWord(part.value);
 				}
 				return part;

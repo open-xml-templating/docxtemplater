@@ -1,3 +1,9 @@
+### 3.25.4
+
+Bugfix when having loop containing hebrew, the text would be escaped once for each iteration
+
+The regression was introduced in version 3.25.2 and is now fixed
+
 ### 3.25.3
 
 Fix issue in rendering of tables generated with loop module for Powerpoint documents by deduplicating a16:rowId tags.
