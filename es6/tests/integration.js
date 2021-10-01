@@ -207,14 +207,13 @@ describe("Assignment", function () {
 	});
 });
 
-describe("Docm/Pptm generation", function () {
+describe("Unusual document extensions", function () {
 	it("should work with docm", function () {
 		const tags = {
 			user: "John",
 		};
 		const doc = createDoc("input.docm");
-		doc.setData(tags);
-		doc.render();
+		doc.render(tags);
 		shouldBeSame({ doc, expectedName: "expected-docm.docx" });
 	});
 
@@ -223,20 +222,16 @@ describe("Docm/Pptm generation", function () {
 			user: "John",
 		};
 		const doc = createDoc("input.pptm");
-		doc.setData(tags);
-		doc.render();
+		doc.render(tags);
 		shouldBeSame({ doc, expectedName: "expected-pptm.pptx" });
 	});
-});
 
-describe("Dotm/dotx generation", function () {
 	it("should work with dotx", function () {
 		const tags = {
 			user: "John",
 		};
 		const doc = createDoc("input.dotx");
-		doc.setData(tags);
-		doc.render();
+		doc.render(tags);
 		shouldBeSame({ doc, expectedName: "expected-dotx.docx" });
 	});
 
@@ -245,8 +240,7 @@ describe("Dotm/dotx generation", function () {
 			user: "John",
 		};
 		const doc = createDoc("input.dotm");
-		doc.setData(tags);
-		doc.render();
+		doc.render(tags);
 		shouldBeSame({ doc, expectedName: "expected-dotm.docx" });
 	});
 });
@@ -262,7 +256,7 @@ describe("Pptx generation", function () {
 	});
 	it("should work with simple pptx", function () {
 		const doc = createDoc("simple-example.pptx");
-		doc.setData({ name: "Edgar" }).render();
+		doc.render({ name: "Edgar" });
 		expect(doc.getFullText()).to.be.equal("Hello Edgar");
 	});
 	it("should work with table pptx", function () {
