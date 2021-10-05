@@ -20,15 +20,15 @@
 
 ## Quickstart
 
-- [Installation in node](https://docxtemplater.readthedocs.io/en/latest/installation.html#node)
-- [Installation in the browser](https://docxtemplater.readthedocs.io/en/latest/installation.html#browser)
-- [Generate a document in node](https://docxtemplater.readthedocs.io/en/latest/generate.html#node)
-- [Generate a document in the browser](https://docxtemplater.readthedocs.io/en/latest/generate.html#browser)
-- [Generate a document in React, Angular or Vue](https://docxtemplater.readthedocs.io/en/latest/generate.html#react-angular-vue)
+- [Installation in node](https://docxtemplater.com/docs/installation#node)
+- [Installation in the browser](https://docxtemplater.com/docs/installation#browser)
+- [Generate a document in node](https://docxtemplater.com/docs/generate#node)
+- [Generate a document in the browser](https://docxtemplater.com/docs/generate#browser)
+- [Generate a document in React, Angular or Vue](https://docxtemplater.com/docs/generate#react-angular-vue)
 
 ## Documentation
 
-The full documentation of the latest version can be found on [read the docs](http://docxtemplater.readthedocs.io/en/latest/).
+The full documentation of the latest version can be found on [read the docs](https://docxtemplater.com/docs).
 
 See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older versions.
 
@@ -36,7 +36,7 @@ See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older
 
 Functionality can be added with modules. Here is the list of existing modules:
 
-PRO Modules developped by docxtemplater core team :
+PRO Modules created by docxtemplater core team :
 
 - [Image module](https://docxtemplater.com/modules/image/) to add a given image with the syntax: `{%image}`.
 - [Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document.

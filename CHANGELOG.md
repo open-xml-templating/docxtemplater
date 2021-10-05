@@ -941,7 +941,7 @@ Fixes https://github.com/open-xml-templating/docxtemplater/issues/398
 
 Fix https://github.com/open-xml-templating/docxtemplater/issues/397 : Add more information to `context` in the parser to be able to write `{#users}{$index} - {name}`.
 
-See https://docxtemplater.readthedocs.io/en/latest/configuration.html#custom-parser for full doc.
+See https://docxtemplater.com/docs/configuration#custom-parser for full doc.
 
 ### 3.6.1
 
@@ -1137,7 +1137,7 @@ Bugfix loop over string value (fixes https://github.com/open-xml-templating/docx
 
 Add support for multi errors :
 
-docxtemplater doesn't fail on the first error, but instead, will throw multiple errors at the time. See https://docxtemplater.readthedocs.io/en/latest/errors.html for a detailled explanation.
+docxtemplater doesn't fail on the first error, but instead, will throw multiple errors at the time. See https://docxtemplater.com/docs/errors for a detailled explanation.
 
 ### 3.0.12
 
@@ -1351,7 +1351,7 @@ Upgrade guide :
 - the constructor has changed: eg `new Docxtemplater(content,options)` will now call `JSzip.load(content,options)`.
 - To pass options (such as the parser), you will have to call `setOptions`
 - The `output` function has been removed. You should now call `getZip().generate(options)` where the options are documented here: https://stuk.github.io/jszip/documentation/api_jszip/generate.html
-- the qrcode module has been removed, and will be developped in an other package that will be attached to docxtemplater
+- the qrcode module has been removed, and will be migrated in an other package that will be attached to docxtemplater
 
 ### From 0.6.0 to 0.7.0
 
@@ -1359,4 +1359,4 @@ Upgrade guide :
 
 If you set qrCode:true, you are affected. The Command Line is not affected as of v0.7.0 (but was on 0.6.3 and less). However the command line as of v0.7.0 is not more able to load images over the filesystem.
 
-You should set qrCode to a function now, according to https://docxtemplater.readthedocs.io/en/latest/configuration.html#image-replacing.
+You should set qrCode to a function now, according to https://docxtemplater.com/docs/configuration#image-replacing.
