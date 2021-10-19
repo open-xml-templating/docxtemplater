@@ -142,6 +142,11 @@ const Docxtemplater = class Docxtemplater {
 			);
 		}
 		module.attached = true;
+		if (typeof module === "function") {
+			throw new Error(
+				"Cannot attach a class/function as a module. Most probably you forgot to instantiate the module by using `new` on the module."
+			);
+		}
 		const wrappedModule = moduleWrapper(module);
 		this.modules.push(wrappedModule);
 		wrappedModule.on("attached");

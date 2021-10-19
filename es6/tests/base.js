@@ -1169,6 +1169,27 @@ describe("Constructor v4", function () {
 		expect(fullText).to.be.equal("Hello John from Acme");
 	});
 
+	class MyTestModule {
+		render(part) {
+			return {
+				value: part.value,
+			};
+		}
+	}
+
+	it("should throw error when using a non-instanciated class as a module", function () {
+		const options = {
+			delimiters: {
+				start: "%",
+				end: "%",
+			},
+			modules: [MyTestModule],
+		};
+		expect(() => createDocV4("delimiter-pct.docx", options)).to.throw(
+			"Cannot attach a class/function as a module. Most probably you forgot to instantiate the module by using `new` on the module."
+		);
+	});
+
 	it("should throw if using v4 constructor and setOptions", function () {
 		const doc = createDocV4("tag-multiline.docx");
 		expect(() => doc.setOptions({ linebreaks: true })).to.throw(

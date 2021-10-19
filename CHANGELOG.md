@@ -1,3 +1,27 @@
+### 3.25.5
+
+Add specific error message when using a module without instantiating it.
+
+When doing :
+
+```js
+const HtmlModule = require("docxtemplater-html-module");
+const doc = new Docxtemplater(zip, { modules: [HtmlModule] });
+```
+
+The error message shown will now be :
+
+```
+Cannot attach a class/function as a module. Most probably you forgot to call new on the module.
+```
+
+If you get this error, you should simply write :
+
+```js
+const HtmlModule = require("docxtemplater-html-module");
+const doc = new Docxtemplater(zip, { modules: [new HtmlModule()] });
+```
+
 ### 3.25.4
 
 Bugfix when having loop containing hebrew, the text would be escaped once for each iteration
