@@ -1,10 +1,16 @@
 // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
 function replaceErrors(key, value) {
 	if (value instanceof Error) {
-		return Object.getOwnPropertyNames(value).reduce(function (error, key) {
-			error[key] = value[key];
-			return error;
-		}, {});
+		return Object.getOwnPropertyNames(value)
+			.concat("stack")
+			.reduce(function (error, key) {
+				error[key] = value[key];
+				if (key === "stack") {
+					// This is used because in Firefox, stack is not an own property
+					error[key] = value[key].toString();
+				}
+				return error;
+			}, {});
 	}
 	return value;
 }

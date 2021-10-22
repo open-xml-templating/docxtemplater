@@ -7,6 +7,7 @@ const {
 	wrapMultiError,
 	expectToThrow,
 	expectToThrowAsync,
+	captureLogs,
 } = require("./utils.js");
 
 const angularParser = require("./angular-parser.js");
@@ -62,6 +63,31 @@ describe("Compilation errors", function () {
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
+	});
+
+	it("should be possible to not log error message", function () {
+		const content = "<w:t>{unclosedtag my text</w:t>";
+		const expectedError = {
+			name: "TemplateError",
+			message: "Unclosed tag",
+			properties: {
+				context: "{unclosedtag my text",
+				file: "word/document.xml",
+				id: "unclosed_tag",
+				xtag: "unclosedtag",
+				offset: 0,
+			},
+		};
+		const create = createXmlTemplaterDocx.bind(null, content, {
+			errorLogging: false,
+		});
+		const capture = expectToThrow(
+			create,
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
+		const logs = capture.logs();
+		expect(logs.length).to.equal(0);
 	});
 
 	it("should fail when tag unclosed", function () {
@@ -538,9 +564,12 @@ describe("Runtime errors", function () {
 			}
 			return value;
 		}
+		const capture = captureLogs();
 		try {
 			createXmlTemplaterDocx(content, { parser: errorParser });
+			capture.stop();
 		} catch (e) {
+			capture.stop();
 			errorStringified = JSON.stringify(e, replaceErrors, 2);
 		}
 		expect(errorStringified).to.contain(

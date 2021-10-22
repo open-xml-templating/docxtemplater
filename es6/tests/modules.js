@@ -4,6 +4,7 @@ const {
 	shouldBeSame,
 	isNode14,
 	createDocV4,
+	captureLogs,
 } = require("./utils.js");
 const Errors = require("../errors.js");
 const { expect } = require("chai");
@@ -233,17 +234,35 @@ describe("Module errors", function () {
 		const doc = createDoc("tag-example.docx");
 		doc.attachModule(module);
 		doc.setData({}).compile();
+		const capture = captureLogs();
 		try {
 			doc.render();
 		} catch (e) {
 			error = e;
 		}
+		capture.stop();
+
 		expect(error).to.be.an("object");
 		expect(error.message).to.equal("Multi error");
 		expect(error.properties.errors.length).to.equal(9);
 		expect(error.properties.errors[0].message).to.equal("foobar last_name");
 		expect(error.properties.errors[1].message).to.equal("foobar first_name");
 		expect(error.properties.errors[2].message).to.equal("foobar phone");
+
+		const logs = capture.logs();
+		expect(logs.length).to.equal(1);
+		expect(logs[0]).to.contain("foobar last_name");
+		expect(logs[0]).to.contain("foobar first_name");
+		expect(logs[0]).to.contain("foobar phone");
+		expect(logs[0]).to.satisfy(
+			(log) =>
+				// for chrome
+				log.indexOf(".render") !== -1 ||
+				// for firefox
+				log.indexOf("render@") !== -1
+		);
+		const parsedLog = JSON.parse(logs[0]);
+		expect(parsedLog.error.length).to.equal(9);
 	});
 });
 

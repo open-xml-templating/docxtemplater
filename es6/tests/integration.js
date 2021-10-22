@@ -7,6 +7,7 @@ const {
 	resolveSoon,
 	createXmlTemplaterDocxNoRender,
 	cleanRecursive,
+	captureLogs,
 } = require("./utils.js");
 
 const printy = require("./printy.js");
@@ -921,6 +922,8 @@ describe("ParagraphLoop", function () {
 			parser: angularParser,
 		});
 		let catched = false;
+		const capture = captureLogs();
+
 		try {
 			doc.compile();
 		} catch (e) {
@@ -933,6 +936,7 @@ describe("ParagraphLoop", function () {
 					id: "render_on_invalid_template",
 				},
 			};
+			capture.stop();
 			expectToThrow(() => doc.render(), Errors.XTInternalError, expectedError);
 			/* handle error */
 		}

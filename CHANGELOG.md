@@ -1,3 +1,97 @@
+### 3.26.0
+
+Add automatic error logging using console.log to make code samples easier.
+
+You can replace the following code :
+
+```js
+// The error object contains additional information when logged
+// with JSON.stringify (it contains a properties object containing all suberrors).
+function replaceErrors(key, value) {
+  if (value instanceof Error) {
+    return Object.getOwnPropertyNames(value).reduce(function (error, key) {
+      error[key] = value[key];
+      return error;
+    }, {});
+  }
+  return value;
+}
+
+function errorHandler(error) {
+  console.log(JSON.stringify({ error: error }, replaceErrors));
+
+  if (error.properties && error.properties.errors instanceof Array) {
+    const errorMessages = error.properties.errors
+      .map(function (error) {
+        return error.properties.explanation;
+      })
+      .join("\n");
+    console.log("errorMessages", errorMessages);
+    // errorMessages is a humanly readable message looking like this:
+    // 'The tag beginning with "foobar" is unopened'
+  }
+  throw error;
+}
+
+var zip = new PizZip(content);
+var doc;
+try {
+  doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+} catch (error) {
+  // Catch compilation errors
+  // (errors caused by the compilation of the template: misplaced tags)
+  errorHandler(error);
+}
+
+try {
+  // render the document
+  // (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+  doc.render({
+    first_name: "John",
+    last_name: "Doe",
+    phone: "0652455478",
+    description: "New Website",
+  });
+} catch (error) {
+  // Catch rendering errors
+  // (errors relating to the rendering of the template:
+  // for example when the angularParser throws an error)
+  errorHandler(error);
+}
+```
+
+to this :
+
+```js
+var zip = new PizZip(content);
+var doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+});
+
+// render the document
+// (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+doc.render({
+  first_name: "John",
+  last_name: "Doe",
+  phone: "0652455478",
+  description: "New Website",
+});
+```
+
+To disable this automatic errorLogging, use :
+
+```js
+var doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+  errorLogging: false,
+});
+```
+
 ### 3.25.5
 
 Add specific error message when using a module without instantiating it.

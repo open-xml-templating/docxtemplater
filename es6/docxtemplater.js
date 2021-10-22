@@ -8,6 +8,7 @@ const {
 	throwRenderInvalidTemplate,
 } = require("./errors.js");
 
+const logErrors = require("./error-logger.js");
 const collectContentTypes = require("./collect-content-types.js");
 const ctXML = "[Content_Types].xml";
 const commonModule = require("./modules/common.js");
@@ -252,6 +253,9 @@ const Docxtemplater = class Docxtemplater {
 				})
 			).then((resolved) => {
 				if (errors.length !== 0) {
+					if (this.options.errorLogging) {
+						logErrors(errors);
+					}
 					throwMultiError(errors);
 				}
 				return concatArrays(resolved);
@@ -437,6 +441,9 @@ function verifyErrors(doc) {
 	doc.errors = allErrors;
 
 	if (allErrors.length !== 0) {
+		if (doc.options.errorLogging) {
+			logErrors(allErrors);
+		}
 		throwMultiError(allErrors);
 	}
 }

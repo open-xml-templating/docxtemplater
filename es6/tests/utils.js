@@ -423,30 +423,36 @@ function errorVerifier(e, type, expectedError) {
 }
 
 function expectToThrowAsync(fn, type, expectedError) {
+	const capture = captureLogs();
 	return Promise.resolve(null)
 		.then(function () {
 			const r = fn();
 			return r.then(function () {
+				capture.stop();
 				return null;
 			});
 		})
 		.catch(function (error) {
+			capture.stop();
 			return error;
 		})
 		.then(function (e) {
-			return errorVerifier(e, type, expectedError);
+			errorVerifier(e, type, expectedError);
+			return capture;
 		});
 }
 
 function expectToThrow(fn, type, expectedError) {
 	let err = null;
+	const capture = captureLogs();
 	try {
 		fn();
 	} catch (e) {
 		err = e;
 	}
+	capture.stop();
 	errorVerifier(err, type, expectedError);
-	return err;
+	return capture;
 }
 
 function load(name, content, obj) {
@@ -712,6 +718,22 @@ function getLength(obj) {
 	return obj.length;
 }
 
+function captureLogs() {
+	const oldLog = console.log;
+	const collected = [];
+	console.log = function (a) {
+		collected.push(a);
+	};
+	return {
+		logs() {
+			return collected;
+		},
+		stop() {
+			console.log = oldLog;
+		},
+	};
+}
+
 module.exports = {
 	chai,
 	cleanError,
@@ -745,4 +767,5 @@ module.exports = {
 	browserMatches,
 	errorVerifier,
 	getLength,
+	captureLogs,
 };

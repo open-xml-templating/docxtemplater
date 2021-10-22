@@ -4,6 +4,7 @@ const {
 	makePptx,
 	cleanRecursive,
 	errorVerifier,
+	captureLogs,
 } = require("./utils.js");
 
 const fixtures = require("./fixtures.js");
@@ -55,27 +56,37 @@ function runTest(fixture, async = false) {
 	const iModule = inspectModule();
 	doc.attachModule(iModule).attachModule(new AssertionModule());
 	doc.setData(fixture.scope);
+
+	const capture = captureLogs();
 	try {
 		doc.compile();
+		capture.stop();
 	} catch (error) {
+		capture.stop();
 		if (!fixture.error) {
 			throw error;
 		}
 		errorVerifier(error, fixture.errorType, fixture.error);
 		return;
 	}
+	const capture2 = captureLogs();
 	if (async === false) {
 		try {
 			doc.render();
+			capture2.stop();
 		} catch (error) {
+			capture2.stop();
 			errorVerifier(error, fixture.errorType, fixture.error);
 		}
+		capture2.stop();
 		expectations(iModule, fixture);
 	} else {
 		return doc.resolveData(fixture.scope).then(function () {
 			try {
 				doc.render();
+				capture2.stop();
 			} catch (error) {
+				capture2.stop();
 				errorVerifier(error, fixture.errorType, fixture.error);
 			}
 			expectations(iModule, fixture);

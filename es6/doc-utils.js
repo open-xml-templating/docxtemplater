@@ -80,6 +80,7 @@ function chunkBy(parsed, f) {
 }
 
 const defaults = {
+	errorLogging: true,
 	paragraphLoop: false,
 	nullGetter(part) {
 		return part.module ? "" : "undefined";
