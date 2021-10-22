@@ -433,18 +433,17 @@ const Docxtemplater = class Docxtemplater {
 
 function verifyErrors(doc) {
 	const compiled = doc.compiled;
-	let allErrors = [];
-	Object.keys(compiled).forEach((name) => {
-		const templatePart = compiled[name];
-		allErrors = concatArrays([allErrors, templatePart.allErrors]);
-	});
-	doc.errors = allErrors;
+	doc.errors = concatArrays(
+		Object.keys(compiled).map((name) => {
+			return compiled[name].allErrors;
+		})
+	);
 
-	if (allErrors.length !== 0) {
+	if (doc.errors.length !== 0) {
 		if (doc.options.errorLogging) {
-			logErrors(allErrors);
+			logErrors(doc.errors);
 		}
-		throwMultiError(allErrors);
+		throwMultiError(doc.errors);
 	}
 }
 
