@@ -24,7 +24,7 @@
 
 ## Documentation
 
-The full documentation of the latest version can be found on [read the docs](https://docxtemplater.com/docs).
+The full documentation of the latest version can be found [here](https://docxtemplater.com/docs).
 
 See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older versions.
 
