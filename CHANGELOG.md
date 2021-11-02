@@ -1,3 +1,12 @@
+### 3.26.1
+
+Add code for fix-doc-pr-corruption accessible by doing :
+
+```js
+const fixDocPrCorruption = require("docxtemplater/js/modules/fix-doc-pr-corruption.js");
+const doc = new Docxtemplater(zip, { modules: [fixDocPrCorruption] });
+```
+
 ### 3.26.0
 
 Add automatic error logging using console.log to make code samples easier.
