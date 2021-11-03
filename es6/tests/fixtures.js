@@ -588,6 +588,17 @@ const fixtures = [
 		},
 	},
 	{
+		it: "should work with empty condition",
+		content: "<w:t>{#a}A{/a}{^b}{/b}</w:t>",
+		result: '<w:t xml:space="preserve">A</w:t>',
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		scope: {
+			a: true,
+		},
+	},
+	{
 		it: "should work with spacing loops 3",
 		content: "<w:t>{#condition}</w:t><w:t>{/condition} foo</w:t>",
 		result: '<w:t xml:space="preserve"> foo</w:t>',

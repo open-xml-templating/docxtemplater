@@ -349,7 +349,7 @@ class LoopModule {
 		let heightOffset = 0;
 		const firstTag = part.subparsed[0];
 		let tagHeight = 0;
-		if (firstTag.tag === "a:tr") {
+		if (firstTag && firstTag.tag === "a:tr") {
 			tagHeight = +getSingleAttribute(firstTag.value, "h");
 		}
 		heightOffset -= tagHeight;

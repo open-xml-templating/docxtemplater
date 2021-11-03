@@ -76,6 +76,9 @@ function runTest(fixture, async = false) {
 			capture2.stop();
 		} catch (error) {
 			capture2.stop();
+			if (!fixture.error) {
+				throw error;
+			}
 			errorVerifier(error, fixture.errorType, fixture.error);
 		}
 		capture2.stop();
@@ -86,6 +89,9 @@ function runTest(fixture, async = false) {
 				doc.render();
 				capture2.stop();
 			} catch (error) {
+				if (!fixture.error) {
+					throw error;
+				}
 				capture2.stop();
 				errorVerifier(error, fixture.errorType, fixture.error);
 			}

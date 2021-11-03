@@ -1,3 +1,13 @@
+### 3.26.2
+
+Bugfix issue "Cannot read property 'tag' of undefined" when having an empty condition, like :
+
+```
+Hello {#a}{/a}
+```
+
+Altough there is not really a good reason to create such an empty condition, it is better to not fail with an obscure error message.
+
 ### 3.26.1
 
 Add code for fix-doc-pr-corruption accessible by doing :
