@@ -18,7 +18,7 @@ module.exports = {
 		const Lexer = this.Lexer;
 		let prId = 1;
 		function setSingleAttribute(partValue, attr, attrValue) {
-			const regex = new RegExp(`(<.* ${attr}=")([^"]+)(".*)$`);
+			const regex = new RegExp(`(<.* ${attr}=")([^"]*)(".*)$`);
 			if (regex.test(partValue)) {
 				return partValue.replace(regex, `$1${attrValue}$3`);
 			}

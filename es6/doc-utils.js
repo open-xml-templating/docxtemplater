@@ -14,7 +14,7 @@ function parser(tag) {
 }
 
 function setSingleAttribute(partValue, attr, attrValue) {
-	const regex = new RegExp(`(<.* ${attr}=")([^"]+)(".*)$`);
+	const regex = new RegExp(`(<.* ${attr}=")([^"]*)(".*)$`);
 	if (regex.test(partValue)) {
 		return partValue.replace(regex, `$1${attrValue}$3`);
 	}
