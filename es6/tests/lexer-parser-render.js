@@ -109,10 +109,11 @@ function runTest(fixture, async = false) {
 describe("Algorithm", function () {
 	fixtures.forEach(function (fixture) {
 		(fixture.onlySync ? it.only : it)(fixture.it, function () {
-			runTest(fixture, false);
+			return runTest(fixture, false);
 		});
 		(fixture.only ? it.only : it)(`Async ${fixture.it}`, function () {
-			runTest(fixture, true);
+			// Return is important to make the test fail if there is an async error
+			return runTest(fixture, true);
 		});
 	});
 });

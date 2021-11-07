@@ -1,4 +1,4 @@
-const { concatArrays } = require("./doc-utils.js");
+const { concatArrays, wordToUtf8 } = require("./doc-utils.js");
 const { match, getValue, getValues } = require("./prefix-matcher.js");
 
 function moduleParse(placeHolderContent, options) {
@@ -85,7 +85,7 @@ const parser = {
 							startOffset,
 							modules,
 						});
-					parsed.push(options.parse(placeHolderContent));
+					parsed.push(options.parse(wordToUtf8(placeHolderContent)));
 					Array.prototype.push.apply(parsed, tailParts);
 					tailParts = [];
 				}

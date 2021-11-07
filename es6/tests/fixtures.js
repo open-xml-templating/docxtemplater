@@ -1378,6 +1378,99 @@ const fixtures = [
 		}),
 	},
 	{
+		it: "should not escape explanation for unclosed tag with &&",
+		lexed: null,
+		content: "<w:t>Unclosed tag : {Hi&amp;&amp;Ho</w:t>",
+		errorType: Errors.XTTemplateError,
+		error: wrapMultiError({
+			name: "TemplateError",
+			message: "Unclosed tag",
+			properties: {
+				explanation: 'The tag beginning with "{Hi&&Ho" is unclosed',
+				context: "{Hi&&Ho",
+				xtag: "Hi&&Ho",
+				file: "word/document.xml",
+				id: "unclosed_tag",
+				offset: 15,
+			},
+		}),
+	},
+	{
+		it: "should not escape explanation for unopened tag with &&",
+		lexed: null,
+		content: "<w:t>&&foo}</w:t>",
+		errorType: Errors.XTTemplateError,
+		error: wrapMultiError({
+			name: "TemplateError",
+			message: "Unopened tag",
+			properties: {
+				explanation: 'The tag beginning with "&&foo" is unopened',
+				context: "&&foo",
+				xtag: "&&foo",
+				file: "word/document.xml",
+				id: "unopened_tag",
+				offset: null,
+			},
+		}),
+	},
+	{
+		it: "should not escape explanation for unclosed loop with &&",
+		lexed: null,
+		content: "<w:t>Unclosed tag : {#Hi&amp;&amp;Ho}{/%%>&lt;&&bar}</w:t>",
+		errorType: Errors.XTTemplateError,
+		error: wrapMultiError({
+			name: "TemplateError",
+			message: "Closing tag does not match opening tag",
+			properties: {
+				explanation: 'The tag "Hi&&Ho" is closed by the tag "%%><&&bar"',
+				file: "word/document.xml",
+				openingtag: "Hi&&Ho",
+				closingtag: "%%><&&bar",
+				id: "closing_tag_does_not_match_opening_tag",
+				offset: [15, 32],
+			},
+		}),
+	},
+	{
+		it: "should not escape explanation for duplicate opening with &&",
+		lexed: null,
+		content: "<w:t>Unclosed tag : {Hi&amp;&amp;{foo</w:t>",
+		errorType: Errors.XTTemplateError,
+		error: {
+			message: "Multi error",
+			name: "TemplateError",
+			properties: {
+				id: "multi_error",
+				errors: [
+					{
+						name: "TemplateError",
+						message: "Unclosed tag",
+						properties: {
+							context: "{Hi&&",
+							xtag: "Hi&&",
+							explanation: 'The tag beginning with "{Hi&&" is unclosed',
+							file: "word/document.xml",
+							id: "unclosed_tag",
+							offset: null,
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Unclosed tag",
+						properties: {
+							context: "{foo",
+							xtag: "foo",
+							explanation: 'The tag beginning with "{foo" is unclosed',
+							file: "word/document.xml",
+							id: "unclosed_tag",
+							offset: null,
+						},
+					},
+				],
+			},
+		},
+	},
+	{
 		it: "should add space=preserve to last tag",
 		lexed: null,
 		parsed: null,
@@ -1441,7 +1534,7 @@ const fixtures = [
 			<w:t></w:t>
 		</w:r>
 		<w:r>
-			<w:t xml:space="preserve"> what&apos;s up ?</w:t>
+			<w:t xml:space="preserve"> what's up ?</w:t>
 		</w:r>
     </w:p>`,
 	},

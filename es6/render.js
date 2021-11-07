@@ -1,4 +1,4 @@
-const { concatArrays, utf8ToWord } = require("./doc-utils.js");
+const { concatArrays } = require("./doc-utils.js");
 const { throwUnimplementedTagType } = require("./errors.js");
 
 function moduleRender(part, options) {
@@ -37,10 +37,6 @@ function render(options) {
 				return moduleRendered;
 			}
 			if (part.type === "content" || part.type === "tag") {
-				if (part.position === "insidetag" && !part.escaped) {
-					part.escaped = true;
-					part.value = utf8ToWord(part.value);
-				}
 				return part;
 			}
 			throwUnimplementedTagType(part, i);
@@ -48,6 +44,7 @@ function render(options) {
 		.map(function ({ value }) {
 			return value;
 		});
+
 	return { errors, parts };
 }
 

@@ -1,3 +1,14 @@
+### 3.26.3
+
+Bugfix issue when having tab character in the document, that would, after rendering, appear as "&#9;" in the document.
+
+When updating to this version, you also need to update
+
+- the xlsx module to 3.7.2
+- the error-location module to 3.3.1
+
+Internal update of moduleApiVersion to 3.28.0
+
 ### 3.26.2
 
 Bugfix issue "Cannot read property 'tag' of undefined" when having an empty condition, like :

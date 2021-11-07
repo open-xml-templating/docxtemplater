@@ -23,7 +23,7 @@ const {
 	throwApiVersionError,
 } = require("./errors.js");
 
-const currentModuleApiVersion = [3, 27, 0];
+const currentModuleApiVersion = [3, 28, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
@@ -170,6 +170,8 @@ const Docxtemplater = class Docxtemplater {
 			this.options[key] = options[key] != null ? options[key] : defaultValue;
 			this[key] = this.options[key];
 		});
+		this.delimiters.start = DocUtils.utf8ToWord(this.delimiters.start);
+		this.delimiters.end = DocUtils.utf8ToWord(this.delimiters.end);
 		if (this.zip) {
 			this.updateFileTypeConfig();
 		}

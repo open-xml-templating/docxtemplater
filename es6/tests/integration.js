@@ -86,6 +86,13 @@ describe("Simple templating", function () {
 });
 
 describe("Special characters", function () {
+	it("should not escape tab character", function () {
+		shouldBeSame({
+			doc: createDocV4("tab-character.pptx").render(),
+			expectedName: "expected-tab-character.pptx",
+		});
+	});
+
 	it("should not double escape loop containing hebrew", function () {
 		const tags = {
 			title: "Default title",

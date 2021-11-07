@@ -8,10 +8,10 @@ const {
 	XTTemplateError,
 } = require("./errors.js");
 const {
-	wordToUtf8,
 	concatArrays,
 	isTextStart,
 	isTextEnd,
+	wordToUtf8,
 } = require("./doc-utils.js");
 
 const NONE = -2;
@@ -146,7 +146,10 @@ function getDelimiterErrors(delimiterMatches, fullText) {
 					);
 				} else {
 					errors.push(
-						getUnclosedTagException({ xtag, offset: lastDelimiterMatch.offset })
+						getUnclosedTagException({
+							xtag: wordToUtf8(xtag),
+							offset: lastDelimiterMatch.offset,
+						})
 					);
 				}
 				delimiterMatch.error = true;
@@ -187,7 +190,10 @@ function getDelimiterErrors(delimiterMatches, fullText) {
 	);
 	if (inDelimiter) {
 		errors.push(
-			getUnclosedTagException({ xtag, offset: lastDelimiterMatch.offset })
+			getUnclosedTagException({
+				xtag: wordToUtf8(xtag),
+				offset: lastDelimiterMatch.offset,
+			})
 		);
 		delimiterMatch.error = true;
 	}
@@ -377,7 +383,7 @@ function decodeContentParts(xmlparsed) {
 			part.position = inTextTag ? "insidetag" : "outsidetag";
 		}
 		if (inTextTag && part.type === "content") {
-			part.value = wordToUtf8(part.value);
+			part.value = part.value.replace(/>/g, "&gt;");
 		}
 	});
 }
