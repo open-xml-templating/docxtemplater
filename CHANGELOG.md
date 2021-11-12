@@ -1,3 +1,10 @@
+### 3.26.4
+
+Bugfix to template header and footers created by Office365.
+
+Previously, only files matching header\d.xml would be templated.
+Now, also header.xml (without ant digit) will be templated.
+
 ### 3.26.3
 
 Bugfix issue when having tab character in the document, that would, after rendering, appear as "&#9;" in the document.

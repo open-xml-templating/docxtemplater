@@ -1198,6 +1198,14 @@ describe("Load Office 365 file", function () {
 		expect(doc.getFullText()).to.be.equal("Value Value2");
 		shouldBeSame({ doc, expectedName: "expected-office365.docx" });
 	});
+
+	it("should template header.xml (without digit like header1.xml)", function () {
+		const doc = createDoc("header-without-digit.docx");
+		doc.render({
+			name: "John",
+		});
+		shouldBeSame({ doc, expectedName: "expected-header-without-digit.docx" });
+	});
 });
 
 describe("Resolver", function () {

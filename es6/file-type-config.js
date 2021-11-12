@@ -72,7 +72,7 @@ function DocXFileTypeConfig() {
 				"word/settings.xml",
 			];
 			const headerFooters = zip
-				.file(/word\/(header|footer)\d+\.xml/)
+				.file(/word\/(header|footer)\d*\.xml/)
 				.map(function (file) {
 					return file.name;
 				});
