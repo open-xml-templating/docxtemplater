@@ -3,7 +3,7 @@ const chai = require("chai");
 const { expect } = chai;
 const PizZip = require("pizzip");
 const fs = require("fs");
-const { get, unset, omit, uniq } = require("lodash");
+const { get, unset, omit, uniq, cloneDeep } = require("lodash");
 const errorLogger = require("../error-logger.js");
 const diff = require("diff");
 const AssertionModule = require("./assertion-module.js");
@@ -395,7 +395,7 @@ function errorVerifier(e, type, expectedError) {
 	}
 	expect(e.properties, toShowOnFail).to.have.property("id");
 	expect(e.properties.id, toShowOnFail).to.be.a("string");
-	e = cleanError(e, expectedError);
+	e = cleanError(cloneDeep(e), expectedError);
 	if (e.properties.errors) {
 		const msg =
 			"expected : \n" +
@@ -436,8 +436,14 @@ function expectToThrowAsync(fn, type, expectedError) {
 			capture.stop();
 			return error;
 		})
-		.then(function (e) {
-			errorVerifier(e, type, expectedError);
+		.then(function (err) {
+			if (!type) {
+				expect(err).to.satisfy(function (err) {
+					return !!err;
+				});
+				return;
+			}
+			errorVerifier(err, type, expectedError);
 			return capture;
 		});
 }
@@ -451,6 +457,12 @@ function expectToThrow(fn, type, expectedError) {
 		err = e;
 	}
 	capture.stop();
+	if (!type) {
+		expect(err).to.satisfy(function (err) {
+			return !!err;
+		});
+		return;
+	}
 	errorVerifier(err, type, expectedError);
 	return capture;
 }
