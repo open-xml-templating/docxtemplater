@@ -11,6 +11,7 @@ Please make sure to update the following modules if you use them :
 - subsection 3.4.0 or higher
 - subtemplate 3.8.0 or higher
 - table 3.14.0 or higher
+- styling 3.4.0 or higher
 
 Previously, after a certain limit (usually about 500MB), the error "Invalid String Length" would be thrown by Node, because that is the max string length allowed.
 
