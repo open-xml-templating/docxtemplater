@@ -130,9 +130,18 @@ const Docxtemplater = class Docxtemplater {
 	}
 	attachModule(module) {
 		if (this.v4Constructor) {
-			throw new Error(
+			throw new XTInternalError(
 				"attachModule() should not be called manually when using the v4 constructor"
 			);
+		}
+		const moduleType = typeof module;
+		if (moduleType === "function") {
+			throw new XTInternalError(
+				"Cannot attach a class/function as a module. Most probably you forgot to instantiate the module by using `new` on the module."
+			);
+		}
+		if (!module || moduleType !== "object") {
+			throw new XTInternalError("Cannot attachModule with a falsy value");
 		}
 		if (module.requiredAPIVersion) {
 			this.verifyApiVersion(module.requiredAPIVersion);
@@ -143,11 +152,6 @@ const Docxtemplater = class Docxtemplater {
 			);
 		}
 		module.attached = true;
-		if (typeof module === "function") {
-			throw new Error(
-				"Cannot attach a class/function as a module. Most probably you forgot to instantiate the module by using `new` on the module."
-			);
-		}
 		const wrappedModule = moduleWrapper(module);
 		this.modules.push(wrappedModule);
 		wrappedModule.on("attached");

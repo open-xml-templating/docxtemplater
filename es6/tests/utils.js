@@ -393,8 +393,9 @@ function errorVerifier(e, type, expectedError) {
 		expect(e.properties.explanation, toShowOnFail).to.be.a("string");
 		expect(e.properties.explanation, toShowOnFail).to.be.a("string");
 	}
-	expect(e.properties, toShowOnFail).to.have.property("id");
-	expect(e.properties.id, toShowOnFail).to.be.a("string");
+	if (e.properties.id) {
+		expect(e.properties.id, toShowOnFail).to.be.a("string");
+	}
 	e = cleanError(cloneDeep(e), expectedError);
 	if (e.properties.errors) {
 		const msg =

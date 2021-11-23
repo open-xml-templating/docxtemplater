@@ -42,6 +42,18 @@ describe("Verify apiversion", function () {
 			},
 		});
 	});
+
+	it("should fail when trying to attach null module", function () {
+		expectToThrow(
+			() => createDocV4("loop-valid.docx", { modules: [null] }),
+			Error,
+			{
+				message: "Cannot attachModule with a falsy value",
+				name: "InternalError",
+				properties: {},
+			}
+		);
+	});
 });
 
 describe("Module attachment", function () {
