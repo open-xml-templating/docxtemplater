@@ -1,3 +1,11 @@
+### 3.27.1
+
+Bugfix issue introduced in 3.27.0
+
+When using linebreaks: true, documents could be made corrupt on version 3.27.0
+
+This version fixes the corruption
+
 ### 3.27.0
 
 Add support to output docx files that are bigger than 500MB.

@@ -1351,6 +1351,21 @@ const fixtures = [
 		resolved: null,
 	},
 	{
+		it: "should work with linebreaks",
+		content: "<w:t>{b}</w:t>",
+		result:
+			'<w:t xml:space="preserve">Hello</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Foo</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Bar</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t/>',
+		scope: { b: "Hello\n\nFoo\n\nBar\n\n" },
+		options: {
+			linebreaks: true,
+			parser: angularParser,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+		resolved: null,
+	},
+	{
 		it: "should work for table with nested loops",
 		lexed: null,
 		content: `<w:tbl>

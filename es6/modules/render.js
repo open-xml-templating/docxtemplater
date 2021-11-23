@@ -108,11 +108,17 @@ class Render {
 			.map(function (line) {
 				return utf8ToWord(line);
 			})
-			.join(
-				`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
-					this.fileType === "docx" ? ' xml:space="preserve"' : ""
-				}>`
-			);
+			.reduce((result, line, i) => {
+				result.push(line);
+				if (i < lines.length - 1) {
+					result.push(
+						`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
+							this.fileType === "docx" ? ' xml:space="preserve"' : ""
+						}>`
+					);
+				}
+				return result;
+			}, []);
 	}
 }
 
