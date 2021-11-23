@@ -1,6 +1,4 @@
 const wrapper = require("../module-wrapper.js");
-const { concatArrays } = require("../doc-utils.js");
-
 const filetypes = require("../filetypes.js");
 
 class Common {
@@ -13,17 +11,18 @@ class Common {
 			return;
 		}
 		const keys = Object.keys(filetypes);
+		let ftCandidate;
 		for (let i = 0, len = keys.length; i < len; i++) {
-			const ftCandidate = keys[i];
-			const contentTypes = filetypes[ftCandidate];
+			const contentTypes = filetypes[keys[i]];
 			for (let j = 0, len2 = contentTypes.length; j < len2; j++) {
 				const ct = contentTypes[j];
 				if (invertedContentTypes[ct]) {
-					doc.targets = concatArrays([doc.targets, invertedContentTypes[ct]]);
-					return ftCandidate;
+					ftCandidate = keys[i];
+					Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
 				}
 			}
 		}
+		return ftCandidate;
 	}
 }
 module.exports = () => wrapper(new Common());

@@ -1,3 +1,23 @@
+### 3.27.0
+
+Add support to output docx files that are bigger than 500MB.
+
+Please make sure to update the following modules if you use them :
+
+- chart 3.3.0 or higher
+- error-location 3.4.0 or higher
+- html 3.28.0 or higher
+- image 3.11.0 or higher
+- subsection 3.4.0 or higher
+- subtemplate 3.8.0 or higher
+- table 3.14.0 or higher
+
+Previously, after a certain limit (usually about 500MB), the error "Invalid String Length" would be thrown by Node, because that is the max string length allowed.
+
+Fixes issue reported here : https://stackoverflow.com/questions/68578216/docxtemplater-rangeerror-invalid-string-length
+
+A test has been created, which you can run with `npm run memorytest` if you clone this repository. It will create a file of about 550MB. This test need more memory than the default tests, and takes about 75 seconds on my computer.
+
 ### 3.26.4
 
 Bugfix to template header and footers created by Office365.

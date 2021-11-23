@@ -19,6 +19,7 @@ module.exports = {
 	plugins: [
 		new webpack.DefinePlugin({
 			"process.env.FAST": "''",
+			"process.env.SPEED_TEST": "'true'",
 		}),
 	],
 	output: {

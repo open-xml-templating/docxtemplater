@@ -23,7 +23,7 @@ const {
 	throwApiVersionError,
 } = require("./errors.js");
 
-const currentModuleApiVersion = [3, 28, 0];
+const currentModuleApiVersion = [3, 29, 0];
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
@@ -222,7 +222,7 @@ const Docxtemplater = class Docxtemplater {
 		return this.scopeManagers[to];
 	}
 	resolveData(data) {
-		let errors = [];
+		const errors = [];
 		if (!Object.keys(this.compiled).length) {
 			throwResolveBeforeCompile();
 		}
@@ -252,7 +252,7 @@ const Docxtemplater = class Docxtemplater {
 								return result;
 							},
 							function (errs) {
-								errors = errors.concat(errs);
+								Array.prototype.push.apply(errors, errs);
 							}
 						);
 					});

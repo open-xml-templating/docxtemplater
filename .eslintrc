@@ -7,6 +7,7 @@
     "import"
   ],
   "globals":{
+    "Uint8Array": true,
     "saveAs": true,
     "Promise": true,
     "PizZipUtils": true,

@@ -79,25 +79,25 @@ const spacePreserve = {
 	postrender(parts) {
 		let lastNonEmpty = "";
 		let lastNonEmptyIndex = 0;
-		return parts.reduce(function (newParts, p, index) {
+
+		for (let i = 0, len = parts.length; i < len; i++) {
+			const index = i;
+			let p = parts[i];
 			if (p === "") {
-				newParts.push(p);
-				return newParts;
-			}
-			if (p.indexOf('<w:t xml:space="preserve"></w:t>') !== -1) {
-				p = p.replace(/<w:t xml:space="preserve"><\/w:t>/g, "<w:t/>");
+				continue;
 			}
 			if (endsWith(lastNonEmpty, wTpreserve) && startsWith(p, wtEnd)) {
-				newParts[lastNonEmptyIndex] =
+				parts[lastNonEmptyIndex] =
 					lastNonEmpty.substr(0, lastNonEmpty.length - wTpreservelen) +
 					"<w:t/>";
 				p = p.substr(wtEndlen);
 			}
 			lastNonEmpty = p;
 			lastNonEmptyIndex = index;
-			newParts.push(p);
-			return newParts;
-		}, []);
+			parts[i] = p;
+		}
+
+		return parts;
 	},
 };
 module.exports = () => wrapper(spacePreserve);

@@ -13,8 +13,16 @@ function parser(tag) {
 	};
 }
 
+const attrToRegex = {};
+
 function setSingleAttribute(partValue, attr, attrValue) {
-	const regex = new RegExp(`(<.* ${attr}=")([^"]*)(".*)$`);
+	let regex;
+	if (attrToRegex[attr]) {
+		regex = attrToRegex[attr];
+	} else {
+		regex = new RegExp(`(<.* ${attr}=")([^"]*)(".*)$`);
+		attrToRegex[attr] = regex;
+	}
 	if (regex.test(partValue)) {
 		return partValue.replace(regex, `$1${attrValue}$3`);
 	}
@@ -202,7 +210,7 @@ function isEnding(value, element) {
 function isStarting(value, element) {
 	return (
 		value.indexOf("<" + element) === 0 &&
-		[">", " "].indexOf(value[element.length + 1]) !== -1
+		[">", " ", "/"].indexOf(value[element.length + 1]) !== -1
 	);
 }
 
@@ -347,6 +355,8 @@ module.exports = {
 	isTagEnd,
 	isTextStart,
 	isTextEnd,
+	isStarting,
+	isEnding,
 	uniq,
 	chunkBy,
 	last,

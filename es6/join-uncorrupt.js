@@ -1,16 +1,16 @@
-const { endsWith, startsWith } = require("./doc-utils.js");
+const { endsWith, isStarting, isEnding } = require("./doc-utils.js");
 const filetypes = require("./filetypes.js");
 
 function addEmptyParagraphAfterTable(parts) {
 	let beforeSectPr = false;
 	for (let i = parts.length - 1; i >= 0; i--) {
 		const part = parts[i];
-		if (startsWith(part, "<w:sectPr")) {
+		if (isStarting(part, "w:sectPr")) {
 			beforeSectPr = true;
 		}
 		if (beforeSectPr) {
 			const trimmed = part.trim();
-			if (endsWith(trimmed, "</w:tbl>")) {
+			if (isEnding(trimmed, "w:tbl")) {
 				parts.splice(i + 1, 0, "<w:p><w:r><w:t></w:t></w:r></w:p>");
 				return parts;
 			}
@@ -22,6 +22,7 @@ function addEmptyParagraphAfterTable(parts) {
 	return parts;
 }
 
+// eslint-disable-next-line complexity
 function joinUncorrupt(parts, options) {
 	const contains = options.fileTypeConfig.tagShouldContain || [];
 	// Before doing this "uncorruption" method here, this was done with the `part.emptyValue` trick, however, there were some corruptions that were not handled, for example with a template like this :
@@ -32,42 +33,55 @@ function joinUncorrupt(parts, options) {
 	// ------------------------------------------------
 	let collecting = "";
 	let currentlyCollecting = -1;
-	if (!options.basePart && filetypes.docx.indexOf(options.contentType) !== -1) {
+	if (filetypes.docx.indexOf(options.contentType) !== -1) {
 		parts = addEmptyParagraphAfterTable(parts);
 	}
-	return parts.reduce(function (full, part) {
-		for (let i = 0, len = contains.length; i < len; i++) {
-			const { tag, shouldContain, value } = contains[i];
-			const startTagRegex = new RegExp(`^(<(${tag})[^>]*>)$`, "g");
-			if (currentlyCollecting === i) {
-				if (part === `</${tag}>`) {
+
+	for (let i = 0, len = parts.length; i < len; i++) {
+		const part = parts[i];
+		for (let j = 0, len2 = contains.length; j < len2; j++) {
+			const { tag, shouldContain, value } = contains[j];
+			if (currentlyCollecting === j) {
+				if (isEnding(part, tag)) {
 					currentlyCollecting = -1;
-					return full + collecting + value + part;
+					parts[i] = collecting + value + part;
+					break;
 				}
 				collecting += part;
-				for (let j = 0, len2 = shouldContain.length; j < len2; j++) {
-					const sc = shouldContain[j];
-					if (
-						part.indexOf(`<${sc} `) !== -1 ||
-						part.indexOf(`<${sc}>`) !== -1
-					) {
+				for (let k = 0, len3 = shouldContain.length; k < len3; k++) {
+					const sc = shouldContain[k];
+					if (isStarting(part, sc)) {
 						currentlyCollecting = -1;
-						return full + collecting;
+						parts[i] = collecting;
+						break;
 					}
 				}
-				return full;
-			}
-			if (currentlyCollecting === -1 && startTagRegex.test(part)) {
-				if (part[part.length - 2] === "/") {
-					return full;
+				if (currentlyCollecting > -1) {
+					parts[i] = "";
 				}
-				currentlyCollecting = i;
-				collecting = part;
-				return full;
+				break;
+			}
+
+			if (
+				currentlyCollecting === -1 &&
+				isStarting(part, tag) &&
+				// to verify that the part doesn't have multiple tags, such as <w:tc><w:p>
+				part.substr(1).indexOf("<") === -1
+			) {
+				// self-closing tag such as <w:t/>
+				if (part[part.length - 2] === "/") {
+					parts[i] = "";
+					break;
+				} else {
+					currentlyCollecting = j;
+					collecting = part;
+					parts[i] = "";
+					break;
+				}
 			}
 		}
-		return full + part;
-	}, "");
+	}
+	return parts;
 }
 
 module.exports = joinUncorrupt;

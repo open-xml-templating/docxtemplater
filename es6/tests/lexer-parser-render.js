@@ -10,6 +10,7 @@ const {
 const fixtures = require("./fixtures.js");
 const inspectModule = require("../inspect-module.js");
 const AssertionModule = require("./assertion-module.js");
+const utf8decode = require("../uintarray-to-string.js");
 
 function expectations(iModule, fixture) {
 	cleanRecursive(iModule.inspect);
@@ -17,10 +18,11 @@ function expectations(iModule, fixture) {
 		throw new Error("Fixture should have failed but did not fail");
 	}
 	if (fixture.result !== null) {
-		expect(iModule.inspect.content).to.be.deep.equal(
-			fixture.result,
-			"Content incorrect"
-		);
+		let content = iModule.inspect.content;
+		if (iModule.inspect.content instanceof Uint8Array) {
+			content = utf8decode(content);
+		}
+		expect(content).to.be.deep.equal(fixture.result, "Content incorrect");
 	}
 	if (fixture.lexed !== null) {
 		expect(iModule.inspect.lexed).to.be.deep.equal(

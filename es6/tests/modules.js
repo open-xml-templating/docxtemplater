@@ -37,7 +37,7 @@ describe("Verify apiversion", function () {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 28, 0],
+				currentModuleApiVersion: [3, 29, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});
@@ -257,9 +257,13 @@ describe("Module errors", function () {
 		expect(error).to.be.an("object");
 		expect(error.message).to.equal("Multi error");
 		expect(error.properties.errors.length).to.equal(9);
+
+		expect(error.properties.errors[0].properties.file).to.equal(
+			"word/document.xml"
+		);
 		expect(error.properties.errors[0].message).to.equal("foobar last_name");
 		expect(error.properties.errors[1].message).to.equal("foobar first_name");
-		expect(error.properties.errors[2].message).to.equal("foobar phone");
+		// expect(error.properties.errors[2].message).to.equal("foobar phone");
 
 		const logs = capture.logs();
 		expect(logs.length).to.equal(1);
@@ -275,6 +279,18 @@ describe("Module errors", function () {
 		);
 		const parsedLog = JSON.parse(logs[0]);
 		expect(parsedLog.error.length).to.equal(9);
+
+		expect(error.properties.errors[2].properties.file).to.equal(
+			"word/header1.xml"
+		);
+		expect(error.properties.errors[2].message).to.equal("foobar last_name");
+		expect(error.properties.errors[3].message).to.equal("foobar first_name");
+		expect(error.properties.errors[4].message).to.equal("foobar phone");
+
+		expect(error.properties.errors[6].properties.file).to.equal(
+			"word/footer1.xml"
+		);
+		expect(error.properties.errors[6].message).to.equal("foobar last_name");
 	});
 });
 
@@ -315,20 +331,23 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 		doc.attachModule(module);
 		doc.setData({}).compile();
 		doc.render();
-		expect(renderFP).to.equal("word/document.xml");
+		expect(renderFP).to.equal("word/footer1.xml");
 		expect(renderCT).to.equal(
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
 		);
-		expect(postparseFP).to.equal("word/document.xml");
+		expect(postparseFP).to.equal("word/footer1.xml");
 		expect(postparseCT).to.equal(
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
 		);
-		expect(postrenderFP).to.equal("word/document.xml");
+		expect(postrenderFP).to.equal("word/footer1.xml");
 		expect(postrenderCT).to.equal(
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
 		);
 
 		expect(filePaths).to.deep.equal([
+			// Document appears 2 times because there are 2 tags in the header
+			"word/document.xml",
+			"word/document.xml",
 			// Header appears 4 times because there are 4 tags in the header
 			"word/header1.xml",
 			"word/header1.xml",
@@ -338,21 +357,18 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 			"word/footer1.xml",
 			"word/footer1.xml",
 			"word/footer1.xml",
-			// Document appears 2 times because there are 2 tags in the header
-			"word/document.xml",
-			"word/document.xml",
 		]);
 
 		expect(ct).to.deep.equal([
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 		]);
 	});
 });

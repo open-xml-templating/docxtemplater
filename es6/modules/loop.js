@@ -344,8 +344,8 @@ class LoopModule {
 		if (part.type !== "placeholder" || part.module !== moduleName) {
 			return null;
 		}
-		let totalValue = [];
-		let errors = [];
+		const totalValue = [];
+		const errors = [];
 		let heightOffset = 0;
 		const firstTag = part.subparsed[0];
 		let tagHeight = 0;
@@ -398,8 +398,10 @@ class LoopModule {
 			if (part.hasPageBreakBeginning && isInsideParagraphLoop(part)) {
 				addPageBreakAtBeginning(subRendered);
 			}
-			totalValue = totalValue.concat(subRendered.parts);
-			errors = errors.concat(subRendered.errors || []);
+			for (let i = 0, len = subRendered.parts.length; i < len; i++) {
+				totalValue.push(subRendered.parts[i]);
+			}
+			Array.prototype.push.apply(errors, subRendered.errors);
 		}
 		let result;
 		try {

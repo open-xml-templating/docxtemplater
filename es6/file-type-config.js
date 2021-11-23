@@ -6,20 +6,11 @@ const render = require("./modules/render.js");
 
 function PptXFileTypeConfig() {
 	return {
-		getTemplatedFiles(zip) {
-			const slideTemplates = zip
-				.file(/ppt\/(slideMasters)\/(slideMaster)\d+\.xml/)
-				.map(function (file) {
-					return file.name;
-				});
-			return slideTemplates.concat([
-				"ppt/presentation.xml",
-				"docProps/app.xml",
-				"docProps/core.xml",
-			]);
+		getTemplatedFiles() {
+			return ["ppt/presentation.xml", "docProps/app.xml", "docProps/core.xml"];
 		},
-		textPath() {
-			return "ppt/slides/slide1.xml";
+		textPath(doc) {
+			return doc.targets[0];
 		},
 		tagsXmlTextArray: [
 			"Company",
@@ -65,18 +56,8 @@ function PptXFileTypeConfig() {
 
 function DocXFileTypeConfig() {
 	return {
-		getTemplatedFiles(zip) {
-			const baseTags = [
-				"docProps/core.xml",
-				"docProps/app.xml",
-				"word/settings.xml",
-			];
-			const headerFooters = zip
-				.file(/word\/(header|footer)\d*\.xml/)
-				.map(function (file) {
-					return file.name;
-				});
-			return headerFooters.concat(baseTags);
+		getTemplatedFiles() {
+			return ["docProps/core.xml", "docProps/app.xml", "word/settings.xml"];
 		},
 		textPath(doc) {
 			return doc.targets[0];

@@ -61,7 +61,7 @@ function isNode14() {
 }
 
 function walk(dir) {
-	let results = [];
+	const results = [];
 	const list = fs.readdirSync(dir);
 	list.forEach(function (file) {
 		if (file.indexOf(".") === 0) {
@@ -70,7 +70,7 @@ function walk(dir) {
 		file = dir + "/" + file;
 		const stat = fs.statSync(file);
 		if (stat && stat.isDirectory()) {
-			results = results.concat(walk(file));
+			Array.prototype.push.apply(results, walk(file));
 		} else {
 			results.push(file);
 		}
@@ -550,8 +550,8 @@ function endsWithOne(str, suffixes) {
 		return endsWith(str, suffix);
 	});
 }
-function startsWith(str, suffix) {
-	return str.indexOf(suffix) === 0;
+function startsWith(str, prefix) {
+	return str.indexOf(prefix) === 0;
 }
 
 /* eslint-disable no-console */

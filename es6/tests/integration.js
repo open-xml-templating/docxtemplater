@@ -523,7 +523,7 @@ describe("Table", function () {
 
 	it("should not corrupt loop containing section", function () {
 		const doc = createDoc("loop-with-section.docx");
-		doc.setData({
+		doc.render({
 			loop1: [
 				{
 					loop2: [1, 2],
@@ -536,7 +536,6 @@ describe("Table", function () {
 				},
 			],
 		});
-		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-multi-section.docx" });
 	});
 
@@ -829,20 +828,18 @@ describe("ParagraphLoop", function () {
 		doc.setOptions({
 			paragraphLoop: true,
 		});
-		doc
-			.setData({
-				condition: [1, 2],
-				l1: [
-					{
-						l2: ["a", "b", "c"],
-					},
-					{
-						l2: ["d", "e", "f"],
-					},
-				],
-				placeholder: "placeholder-value",
-			})
-			.render();
+		doc.render({
+			condition: [1, 2],
+			l1: [
+				{
+					l2: ["a", "b", "c"],
+				},
+				{
+					l2: ["d", "e", "f"],
+				},
+			],
+			placeholder: "placeholder-value",
+		});
 		shouldBeSame({ doc, expectedName: "expected-paragraph-loop.docx" });
 	});
 
@@ -964,13 +961,13 @@ describe("ParagraphLoop", function () {
 				errors: [
 					{
 						name: "TemplateError",
-						message: "Unclosed tag",
+						message: "Closing tag does not match opening tag",
 						properties: {
-							file: "word/footer1.xml",
-							xtag: "footer",
-							id: "unclosed_tag",
-							context: "{footer",
-							offset: 2,
+							closingtag: "bang",
+							openingtag: "users",
+							file: "word/document.xml",
+							id: "closing_tag_does_not_match_opening_tag",
+							offset: [8, 16],
 						},
 					},
 					{
@@ -986,13 +983,13 @@ describe("ParagraphLoop", function () {
 					},
 					{
 						name: "TemplateError",
-						message: "Closing tag does not match opening tag",
+						message: "Unclosed tag",
 						properties: {
-							closingtag: "bang",
-							openingtag: "users",
-							file: "word/document.xml",
-							id: "closing_tag_does_not_match_opening_tag",
-							offset: [8, 16],
+							file: "word/footer1.xml",
+							xtag: "footer",
+							id: "unclosed_tag",
+							context: "{footer",
+							offset: 2,
 						},
 					},
 				],

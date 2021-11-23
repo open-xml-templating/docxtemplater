@@ -7,12 +7,7 @@ const {
 	throwXmlInvalid,
 	XTTemplateError,
 } = require("./errors.js");
-const {
-	concatArrays,
-	isTextStart,
-	isTextEnd,
-	wordToUtf8,
-} = require("./doc-utils.js");
+const { isTextStart, isTextEnd, wordToUtf8 } = require("./doc-utils.js");
 
 const NONE = -2;
 const EQUAL = 0;
@@ -69,17 +64,14 @@ function getTag(tag) {
 function tagMatcher(content, textMatchArray, othersMatchArray) {
 	let cursor = 0;
 	const contentLength = content.length;
-	const allMatches = concatArrays([
-		textMatchArray.map(function (tag) {
-			return { tag, text: true };
-		}),
-		othersMatchArray.map(function (tag) {
-			return { tag, text: false };
-		}),
-	]).reduce(function (allMatches, t) {
-		allMatches[t.tag] = t.text;
-		return allMatches;
-	}, {});
+
+	const allMatches = {};
+	for (let i = 0, len = textMatchArray.length; i < len; i++) {
+		allMatches[textMatchArray[i]] = true;
+	}
+	for (let i = 0, len = othersMatchArray.length; i < len; i++) {
+		allMatches[othersMatchArray[i]] = false;
+	}
 	const totalMatches = [];
 
 	while (cursor < contentLength) {
@@ -384,6 +376,9 @@ function decodeContentParts(xmlparsed) {
 		}
 		if (inTextTag && part.type === "content") {
 			part.value = part.value.replace(/>/g, "&gt;");
+			// if (inTextTag) {
+			// 	part.value = wordToUtf8(part.value);
+			// }
 		}
 	});
 }
@@ -399,6 +394,7 @@ module.exports = {
 
 		const lexed = [];
 		let index = 0;
+		let lIndex = 0;
 		xmlparsed.forEach(function (part) {
 			if (part.type === "content" && part.position === "insidetag") {
 				Array.prototype.push.apply(
@@ -407,16 +403,15 @@ module.exports = {
 						if (p.type === "content") {
 							p.position = "insidetag";
 						}
+						p.lIndex = lIndex++;
 						return p;
 					})
 				);
 				index++;
 			} else {
+				part.lIndex = lIndex++;
 				lexed.push(part);
 			}
-		});
-		lexed.forEach(function (p, i) {
-			p.lIndex = i;
 		});
 		return { errors, lexed };
 	},

@@ -1,4 +1,3 @@
-const { concatArrays } = require("./doc-utils.js");
 const { throwUnimplementedTagType } = require("./errors.js");
 
 function moduleRender(part, options) {
@@ -25,14 +24,14 @@ function render(options) {
 	if (options.index) {
 		options.prefix = options.prefix + options.index + "-";
 	}
-	let errors = [];
+	const errors = [];
 	const parts = compiled
 		.map(function (part, i) {
 			options.index = i;
 			const moduleRendered = moduleRender(part, options);
 			if (moduleRendered) {
 				if (moduleRendered.errors) {
-					errors = concatArrays([errors, moduleRendered.errors]);
+					Array.prototype.push.apply(errors, moduleRendered.errors);
 				}
 				return moduleRendered;
 			}
@@ -41,10 +40,16 @@ function render(options) {
 			}
 			throwUnimplementedTagType(part, i);
 		})
-		.map(function ({ value }) {
-			return value;
-		});
-
+		.reduce(function (parts, { value }) {
+			if (value instanceof Array) {
+				for (let i = 0, len = value.length; i < len; i++) {
+					parts.push(value[i]);
+				}
+			} else {
+				parts.push(value);
+			}
+			return parts;
+		}, []);
 	return { errors, parts };
 }
 

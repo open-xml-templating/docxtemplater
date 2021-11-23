@@ -5,11 +5,12 @@ function getIndent(indent) {
 	return repeat("    ", indent);
 }
 
+const attributeRegex = /<[A-Za-z0-9:]+ (.*?)([/ ]*)>/;
+
 function attributeSorter(ln) {
-	const aRegex = /<[A-Za-z0-9:]+ (.*?)([/ ]*)>/;
 	let rest;
-	if (aRegex.test(ln)) {
-		rest = ln.replace(aRegex, "$1");
+	if (attributeRegex.test(ln)) {
+		rest = ln.replace(attributeRegex, "$1");
 	}
 	const attrRegex = / *([a-zA-Z0-9:]+)="([^"]+)"/g;
 	let match = attrRegex.exec(rest);
