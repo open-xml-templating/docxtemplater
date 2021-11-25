@@ -1,7 +1,7 @@
 const {
 	expect,
-	makeDocx,
-	makePptx,
+	makeDocxV4,
+	makePptxV4,
 	cleanRecursive,
 	errorVerifier,
 	captureLogs,
@@ -51,17 +51,28 @@ function expectations(iModule, fixture) {
 }
 
 function runTest(fixture, async = false) {
-	const doc = fixture.pptx
-		? makePptx("temp.docx", fixture.content)
-		: makeDocx("temp.docx", fixture.content);
-	doc.setOptions(fixture.options);
+	fixture.options = fixture.options || {};
+	const modules = [];
 	const iModule = inspectModule();
-	doc.attachModule(iModule).attachModule(new AssertionModule());
-	doc.setData(fixture.scope);
-
+	modules.push(iModule, new AssertionModule());
+	if (fixture.options.modules) {
+		fixture.options.modules().forEach(function (mod) {
+			modules.push(mod);
+		});
+	}
+	let doc;
 	const capture = captureLogs();
 	try {
-		doc.compile();
+		doc = fixture.pptx
+			? makePptxV4("temp.docx", fixture.content, {
+					...fixture.options,
+					modules,
+			  })
+			: makeDocxV4("temp.docx", fixture.content, {
+					...fixture.options,
+					modules,
+			  });
+		doc.setData(fixture.scope);
 		capture.stop();
 	} catch (error) {
 		capture.stop();
@@ -82,29 +93,30 @@ function runTest(fixture, async = false) {
 				throw error;
 			}
 			errorVerifier(error, fixture.errorType, fixture.error);
+			return;
 		}
 		capture2.stop();
 		expectations(iModule, fixture);
 	} else {
-		return doc.resolveData(fixture.scope).then(function () {
-			try {
-				doc.render();
+		return doc.renderAsync(fixture.scope).then(
+			function () {
 				capture2.stop();
-			} catch (error) {
+				expectations(iModule, fixture);
+				if (fixture.resolved) {
+					expect(iModule.inspect.resolved).to.be.deep.equal(
+						fixture.resolved,
+						"Resolved incorrect"
+					);
+				}
+			},
+			function (error) {
+				capture2.stop();
 				if (!fixture.error) {
 					throw error;
 				}
-				capture2.stop();
 				errorVerifier(error, fixture.errorType, fixture.error);
 			}
-			expectations(iModule, fixture);
-			if (fixture.resolved) {
-				expect(iModule.inspect.resolved).to.be.deep.equal(
-					fixture.resolved,
-					"Resolved incorrect"
-				);
-			}
-		});
+		);
 	}
 }
 

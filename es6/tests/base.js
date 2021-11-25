@@ -1070,6 +1070,7 @@ describe("Constructor v4", function () {
 		let isModuleCalled = false;
 
 		const module = {
+			name: "TestModule",
 			optionsTransformer(options) {
 				isModuleCalled = true;
 				return options;
@@ -1143,6 +1144,7 @@ describe("Constructor v4", function () {
 			},
 			modules: [
 				{
+					name: "MyModule",
 					optionsTransformer(options) {
 						optionsPassedToModule = options;
 						isModuleCalled = true;
@@ -1228,6 +1230,7 @@ describe("Constructor v4", function () {
 	it("should work when modules are attached with valid filetypes", function () {
 		let isModuleCalled = false;
 		const module = {
+			name: "FooModule",
 			optionsTransformer(options) {
 				isModuleCalled = true;
 				return options;

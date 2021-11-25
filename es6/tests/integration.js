@@ -85,6 +85,80 @@ describe("Simple templating", function () {
 	});
 });
 
+describe("Docxtemplater internal properties", function () {
+	it("should calculate filesContentTypes and invertedContentTypes", function () {
+		const doc = createDocV4("tag-example.docx");
+		expect(doc.filesContentTypes).to.deep.equal({
+			"_rels/.rels": "application/vnd.openxmlformats-package.relationships+xml",
+			"word/_rels/document.xml.rels":
+				"application/vnd.openxmlformats-package.relationships+xml",
+			"docProps/app.xml":
+				"application/vnd.openxmlformats-officedocument.extended-properties+xml",
+			"docProps/core.xml":
+				"application/vnd.openxmlformats-package.core-properties+xml",
+			"word/document.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
+			"word/endnotes.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml",
+			"word/fontTable.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",
+			"word/footer1.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+			"word/footnotes.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml",
+			"word/header1.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"word/settings.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",
+			"word/styles.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",
+			"word/stylesWithEffects.xml":
+				"application/vnd.ms-word.stylesWithEffects+xml",
+			"word/theme/theme1.xml":
+				"application/vnd.openxmlformats-officedocument.theme+xml",
+			"word/webSettings.xml":
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",
+		});
+
+		expect(doc.invertedContentTypes).to.deep.equal({
+			"application/vnd.openxmlformats-package.relationships+xml": [
+				"_rels/.rels",
+				"word/_rels/document.xml.rels",
+			],
+			"application/vnd.ms-word.stylesWithEffects+xml": [
+				"word/stylesWithEffects.xml",
+			],
+			"application/vnd.openxmlformats-officedocument.extended-properties+xml": [
+				"docProps/app.xml",
+			],
+			"application/vnd.openxmlformats-officedocument.theme+xml": [
+				"word/theme/theme1.xml",
+			],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml":
+				["word/document.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml":
+				["word/endnotes.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml":
+				["word/fontTable.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml":
+				["word/footer1.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml":
+				["word/footnotes.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml":
+				["word/header1.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml":
+				["word/settings.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml":
+				["word/styles.xml"],
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml":
+				["word/webSettings.xml"],
+			"application/vnd.openxmlformats-package.core-properties+xml": [
+				"docProps/core.xml",
+			],
+		});
+	});
+});
+
 describe("Special characters", function () {
 	it("should not escape tab character", function () {
 		shouldBeSame({
@@ -885,6 +959,7 @@ describe("ParagraphLoop", function () {
 		const printedPostparsed = [];
 		let filePath = "";
 		doc.attachModule({
+			name: "MyModule",
 			set(obj) {
 				if (obj.inspect) {
 					if (obj.inspect.filePath) {

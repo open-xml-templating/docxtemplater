@@ -86,7 +86,7 @@ function createXmlTemplaterDocxNoRender(content, options = {}) {
 }
 
 function createXmlTemplaterDocx(content, options = {}) {
-	const doc = makeDocx("temporary.docx", content);
+	const doc = makeDocx("temporary.docx", content, options);
 	doc.setOptions(options);
 	doc.setData(options.tags);
 	doc.render();
@@ -375,6 +375,8 @@ function jsonifyError(e) {
 }
 
 function errorVerifier(e, type, expectedError) {
+	e = cloneDeep(e);
+	expectedError = cloneDeep(expectedError);
 	expect(e, "No error has been thrown").not.to.be.equal(null);
 	const toShowOnFail = e.stack;
 	expect(e, toShowOnFail).to.be.instanceOf(
@@ -396,7 +398,7 @@ function errorVerifier(e, type, expectedError) {
 	if (e.properties.id) {
 		expect(e.properties.id, toShowOnFail).to.be.a("string");
 	}
-	e = cleanError(cloneDeep(e), expectedError);
+	e = cleanError(e, expectedError);
 	if (e.properties.errors) {
 		const msg =
 			"expected : \n" +
@@ -564,8 +566,13 @@ function start() {
 			errorLogger(this.currentTest.err);
 		}
 	});
+	let fileNames;
+	if (typeof global !== "undefined" && global.fileNames) {
+		fileNames = global.fileNames;
+	} else {
+		fileNames = require("./filenames.js");
+	}
 	/* eslint-disable import/no-unresolved */
-	const fileNames = require("./filenames.js");
 	/* eslint-enable import/no-unresolved */
 	fileNames.forEach(function (fullFileName) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
@@ -614,6 +621,7 @@ function setExamplesDirectory(ed) {
 			path.resolve(__dirname, "filenames.js"),
 			"module.exports=" + JSON.stringify(fileNames)
 		);
+		global.fileNames = fileNames;
 	}
 }
 
@@ -634,6 +642,12 @@ function makeDocx(name, content) {
 	zip.file("[Content_Types].xml", docxContentTypeContent);
 	return load(name, zip.generate({ type: "string" }), documentCache);
 }
+function makeDocxV4(name, content, options = {}) {
+	const zip = new PizZip();
+	zip.file("word/document.xml", content, { createFolders: true });
+	zip.file("[Content_Types].xml", docxContentTypeContent);
+	return new Docxtemplater(zip, options);
+}
 
 const pptxContentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -647,6 +661,13 @@ function makePptx(name, content) {
 	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", pptxContentTypeContent);
 	return load(name, zip.generate({ type: "string" }), documentCache);
+}
+
+function makePptxV4(name, content, options = {}) {
+	const zip = new PizZip();
+	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
+	zip.file("[Content_Types].xml", pptxContentTypeContent);
+	return new Docxtemplater(zip, options);
 }
 
 function createDoc(name) {
@@ -735,6 +756,7 @@ function captureLogs() {
 	const oldLog = console.log;
 	const collected = [];
 	console.log = function (a) {
+		// oldLog(a);
 		collected.push(a);
 	};
 	return {
@@ -764,7 +786,9 @@ module.exports = {
 	loadFile,
 	loadImage,
 	makeDocx,
+	makeDocxV4,
 	makePptx,
+	makePptxV4,
 	removeSpaces,
 	setExamplesDirectory,
 	setStartFunction,

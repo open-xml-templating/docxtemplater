@@ -1,3 +1,11 @@
+### 3.27.2
+
+Internal bugfix that would show a stacktrace instead of the real underlying RenderingError.
+
+The stacktrace was "Cannot read property indexOf of undefined" in the `isStarting` function
+
+Tag names containing "non-breaking-spaces" (Ascii code 160) will be converted to normal spaces.
+
 ### 3.27.1
 
 Bugfix issue introduced in 3.27.0
@@ -7,6 +15,8 @@ When using linebreaks: true, documents could be made corrupt on version 3.27.0
 This version fixes the corruption
 
 ### 3.27.0
+
+Internal update of moduleApiVersion to 3.29.0
 
 Add support to output docx files that are bigger than 500MB.
 

@@ -84,6 +84,7 @@ describe("Module attachment", function () {
 describe("Module xml parse", function () {
 	it("should not mutate options (regression for issue #526)", function () {
 		const module = {
+			name: "FooModule",
 			requiredAPIVersion: "3.0.0",
 			optionsTransformer(options, docxtemplater) {
 				const relsFiles = docxtemplater.zip
@@ -105,6 +106,7 @@ describe("Module xml parse", function () {
 		let xmlDocuments;
 
 		const module = {
+			name: "ParseXMLModule",
 			requiredAPIVersion: "3.0.0",
 			optionsTransformer(options, docxtemplater) {
 				const relsFiles = docxtemplater.zip
@@ -147,6 +149,7 @@ describe("Module xml parse", function () {
 describe("Module unique tags xml", function () {
 	it("should not cause an issue if tagsXmlLexedArray contains duplicates", function () {
 		const module = {
+			name: "FooModule",
 			requiredAPIVersion: "3.0.0",
 			optionsTransformer(options, docxtemplater) {
 				docxtemplater.fileTypeConfig.tagsXmlLexedArray.push(

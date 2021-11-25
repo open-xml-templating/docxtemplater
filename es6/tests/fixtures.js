@@ -2,6 +2,7 @@ const { assign } = require("lodash");
 const angularParser = require("./angular-parser.js");
 const Errors = require("../errors.js");
 const { wrapMultiError } = require("./utils.js");
+const nbsp = String.fromCharCode(160);
 
 const xmlSpacePreserveTag = {
 	type: "tag",
@@ -162,6 +163,67 @@ const fixtures = [
 		parsed: null,
 		postparsed: null,
 	},
+	{
+		it: "should handle non breaking space in tag",
+		result: '<w:t xml:space="preserve">Hey Ho</w:t>',
+		content: `<w:t>{:foo${nbsp}${nbsp}bar${nbsp}bar} {:zing${nbsp}${nbsp}${nbsp}bang}</w:t>`,
+		options: {
+			modules: () => [
+				{
+					name: "FooModule",
+					parse(placeHolderContent, options) {
+						if (options.match(":foo  ", placeHolderContent)) {
+							return {
+								type: "placeholder",
+								value: options.getValue(":foo  ", placeHolderContent),
+							};
+						}
+						if (options.match(/^:zing +(.*)/, placeHolderContent)) {
+							return {
+								type: "placeholder",
+								value: options.getValue(/^:zing +(.*)/, placeHolderContent),
+							};
+						}
+					},
+				},
+			],
+			parser(tag) {
+				return {
+					get() {
+						if (tag === "bar bar") {
+							return "Hey";
+						}
+						if (tag === "bang") {
+							return "Ho";
+						}
+						return "Bad";
+					},
+				};
+			},
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
+	{
+		it: "should be possible to add nullGetter to module",
+		result: '<w:t xml:space="preserve">foo</w:t>',
+		content: "<w:t>{foo}</w:t>",
+		options: {
+			modules: () => [
+				{
+					name: "MyModule",
+					nullGetter(tag) {
+						return tag.value;
+					},
+				},
+			],
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
+
 	{
 		it: "should handle {#userGet} with lambda function",
 		content: "<w:t>{#userGet}- {name}{/}</w:t>",
@@ -353,6 +415,45 @@ const fixtures = [
 			content("foobar"),
 			endText,
 		],
+		postparsed: null,
+	},
+	{
+		it: "should show multierror with loops",
+		content: "<w:t>{#a}{b}{/a}</w:t>",
+		scope: {
+			a: [1],
+		},
+		options: {
+			parser(tag) {
+				return {
+					get(scope) {
+						if (tag === "a") {
+							return scope[tag];
+						}
+
+						throw new Error("Foobar");
+					},
+				};
+			},
+		},
+		errorType: Errors.XTTemplateError,
+		error: wrapMultiError({
+			name: "ScopeParserError",
+			message: "Scope parser execution failed",
+			properties: {
+				explanation: "The scope parser for the tag b failed to execute",
+				rootError: {
+					message: "Foobar",
+				},
+				file: "word/document.xml",
+				id: "scopeparser_execution_failed",
+				scope: 1,
+				tag: "b",
+				offset: 4,
+			},
+		}),
+		lexed: null,
+		parsed: null,
 		postparsed: null,
 	},
 	{

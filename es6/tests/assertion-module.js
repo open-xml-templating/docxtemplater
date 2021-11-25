@@ -9,6 +9,17 @@ function isString(thing) {
 }
 
 class AssertionModule {
+	constructor() {
+		this.name = "AssertionModule";
+	}
+	optionsTransformer(options, docxtemplater) {
+		docxtemplater.modules.forEach(function (module) {
+			if (!module.name) {
+				throw new Error("Unnamed module");
+			}
+		});
+		return options;
+	}
 	preparse(parsed) {
 		if (!isArray(parsed)) {
 			throw new Error("Parsed should be an array");

@@ -12,6 +12,8 @@ module.exports = {
 		"es6/modules/*.js",
 		"!es6/debugger-module.js",
 		"!es6/error-logger.js",
+		"!es6/memory-test.js",
+		"!es6/uintarray-to-string.js",
 		"!es6/proof-state-module.js",
 	],
 	mochaOptions: {

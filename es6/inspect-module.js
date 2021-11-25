@@ -38,6 +38,7 @@ function getStructuredTags(postParsed) {
 
 class InspectModule {
 	constructor() {
+		this.name = "InspectModule";
 		this.inspect = {};
 		this.fullInspected = {};
 		this.filePath = null;

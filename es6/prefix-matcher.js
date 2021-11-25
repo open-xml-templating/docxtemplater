@@ -10,21 +10,21 @@ function match(condition, placeHolderContent) {
 		);
 	}
 	if (condition instanceof RegExp) {
-		return condition.test(placeHolderContent);
+		return condition.test(replaceNbsps(placeHolderContent));
 	}
 }
 function getValue(condition, placeHolderContent) {
 	if (typeof condition === "string") {
-		return placeHolderContent.substr(condition.length);
+		return replaceNbsps(placeHolderContent).substr(condition.length);
 	}
 	if (condition instanceof RegExp) {
-		return placeHolderContent.match(condition)[1];
+		return replaceNbsps(placeHolderContent).match(condition)[1];
 	}
 }
 
 function getValues(condition, placeHolderContent) {
 	if (condition instanceof RegExp) {
-		return placeHolderContent.match(condition);
+		return replaceNbsps(placeHolderContent).match(condition);
 	}
 }
 

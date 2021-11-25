@@ -50,7 +50,7 @@ function resolve(options) {
 				}
 				promises.push(
 					result.catch(function (e) {
-						if (e.length > 1) {
+						if (e instanceof Array) {
 							errors.push(...e);
 						} else {
 							errors.push(e);

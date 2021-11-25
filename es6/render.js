@@ -45,7 +45,7 @@ function render(options) {
 				for (let i = 0, len = value.length; i < len; i++) {
 					parts.push(value[i]);
 				}
-			} else {
+			} else if (value) {
 				parts.push(value);
 			}
 			return parts;

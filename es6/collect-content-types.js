@@ -14,7 +14,7 @@ function collectContentTypes(overrides, defaults, zip) {
 		// eslint-disable-next-line no-loop-func
 		zip.file(/./).map(({ name }) => {
 			if (
-				name.slice(name.length - extension.length - 1) === ".xml" &&
+				name.slice(name.length - extension.length) === extension &&
 				!partNames[name] &&
 				name !== ctXML
 			) {

@@ -1,4 +1,5 @@
 // convert string to array (typed, when possible)
+// Stryker disable all : because this is an external function
 // eslint-disable-next-line complexity
 function string2buf(str) {
 	let c,
@@ -58,6 +59,7 @@ function string2buf(str) {
 
 	return buf;
 }
+// Stryker restore all
 
 function postrender(parts, options) {
 	for (let i = 0, l = options.modules.length; i < l; i++) {
@@ -66,11 +68,6 @@ function postrender(parts, options) {
 	}
 	let fullLength = 0;
 	const newParts = options.joinUncorrupt(parts, options);
-
-	for (let i = 0, len = newParts.length; i < len; i++) {
-		fullLength += newParts[i].length;
-	}
-	fullLength = 0;
 
 	let longStr = "";
 	let lenStr = 0;
