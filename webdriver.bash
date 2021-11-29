@@ -115,7 +115,7 @@ then
 			done
 		fi
 		result=0
-		{ FORCE_COLOR=1 node webdriver.js | tee /tmp/test.log; } || result="$?"
+		{ FORCE_COLOR=1 node webdriver.mjs | tee /tmp/test.log; } || result="$?"
 		if [ "$result" = "0" ]
 		then
 			exit 0

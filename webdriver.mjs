@@ -10,7 +10,8 @@ const {
 	SAUCE_USERNAME,
 	SAUCE_ACCESS_KEY,
 } = process.env;
-const chalk = require("chalk");
+
+import chalk from "chalk";
 function exit(message) {
 	console.log(message);
 	/* eslint-disable-next-line no-process-exit */
@@ -18,14 +19,18 @@ function exit(message) {
 }
 
 let fullBrowserName = null;
-const url = require("url");
-const finalhandler = require("finalhandler");
-const webdriverio = require("webdriverio");
-const { expect } = require("chai");
-const request = require("request");
-const serveStatic = require("serve-static");
+import url from "url";
+import finalhandler from "finalhandler";
+import webdriverio from "webdriverio";
+import { expect } from "chai";
+import request from "request";
+import serveStatic from "serve-static";
 const port = 9000;
-const http = require("http");
+import http from "http";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function sleep(ms) {
 	return new Promise(function (resolve) {

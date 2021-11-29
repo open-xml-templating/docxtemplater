@@ -5,7 +5,7 @@ result=0
 declare -a failures=()
 test() {
 	fail=false
-	node webdriver.js || fail=true
+	node webdriver.mjs || fail=true
 	if [ "$fail" = "true" ]
 	then
 		result=1
