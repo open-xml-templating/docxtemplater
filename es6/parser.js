@@ -1,6 +1,49 @@
 const { wordToUtf8 } = require("./doc-utils.js");
 const { match, getValue, getValues } = require("./prefix-matcher.js");
 
+function getMatchers(modules, options) {
+	const matchers = [];
+	for (let i = 0, l = modules.length; i < l; i++) {
+		const module = modules[i];
+		if (module.matchers) {
+			const mmm = module.matchers(options);
+			if (!(mmm instanceof Array)) {
+				throw new Error("module matcher returns a non array");
+			}
+			matchers.push(...mmm);
+		}
+	}
+	return matchers;
+}
+
+function getMatches(matchers, placeHolderContent, options) {
+	const matches = [];
+	for (let i = 0, len = matchers.length; i < len; i++) {
+		const matcher = matchers[i];
+		const [prefix, module] = matcher;
+		let properties = matcher[2] || {};
+		if (options.match(prefix, placeHolderContent)) {
+			const values = options.getValues(prefix, placeHolderContent);
+			if (typeof properties === "function") {
+				properties = properties(values);
+			}
+			if (!properties.value) {
+				[, properties.value] = values;
+			}
+			matches.push({
+				type: "placeholder",
+				prefix,
+				module,
+				onMatch: properties.onMatch,
+				priority: properties.priority,
+				...properties,
+			});
+		}
+	}
+
+	return matches;
+}
+
 function moduleParse(placeHolderContent, options) {
 	const modules = options.modules;
 	const startOffset = options.startOffset;
@@ -10,6 +53,29 @@ function moduleParse(placeHolderContent, options) {
 	options.match = match;
 	options.getValue = getValue;
 	options.getValues = getValues;
+
+	const matchers = getMatchers(modules, options);
+	const matches = getMatches(matchers, placeHolderContent, options);
+	if (matches.length > 0) {
+		let bestMatch = null;
+		matches.forEach(function (match) {
+			match.priority = match.priority || -match.value.length;
+			if (!bestMatch || match.priority > bestMatch.priority) {
+				bestMatch = match;
+			}
+		});
+		bestMatch.offset = startOffset;
+		delete bestMatch.priority;
+		bestMatch.endLindex = endLindex;
+		bestMatch.lIndex = endLindex;
+		bestMatch.raw = placeHolderContent;
+		if (bestMatch.onMatch) {
+			bestMatch.onMatch(bestMatch);
+		}
+		delete bestMatch.onMatch;
+		delete bestMatch.prefix;
+		return bestMatch;
+	}
 
 	for (let i = 0, l = modules.length; i < l; i++) {
 		const module = modules[i];

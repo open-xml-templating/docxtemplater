@@ -37,7 +37,7 @@ describe("Verify apiversion", function () {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 29, 0],
+				currentModuleApiVersion: [3, 30, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});
@@ -395,5 +395,103 @@ describe("Module detachment", function () {
 		createDocV4("tag-example.docx", { modules: [module] });
 		expect(isDetachedCalled).to.equal(true);
 		expect(isModuleCalled).to.equal(false);
+	});
+});
+
+describe("Module Matcher API", function () {
+	it("should call onMatch function", function () {
+		function module1() {
+			let myVal = "";
+			return {
+				name: "module1",
+				matchers() {
+					return [
+						[
+							"l",
+							"module-m1",
+							{
+								onMatch: (part) => {
+									myVal = part.prefix + part.lIndex + "!!";
+								},
+							},
+						],
+					];
+				},
+				render(part) {
+					if (part.module === "module-m1") {
+						return { value: myVal };
+					}
+				},
+			};
+		}
+		expect(
+			createDocV4("tag-example.docx", {
+				modules: [module1()],
+			})
+				.render({
+					first_name: "John",
+				})
+				.getFullText()
+		).to.equal("l28!! John");
+	});
+	it("should automatically choose module with longest value", function () {
+		function module1() {
+			return {
+				name: "module1",
+				matchers() {
+					return [["l", "module-m1"]];
+				},
+				render(part) {
+					if (part.module === "module-m1") {
+						return { value: part.value };
+					}
+				},
+			};
+		}
+		function module2() {
+			return {
+				name: "module2",
+				matchers() {
+					return [[/last_(.*)/, "module-m2"]];
+				},
+				render(part) {
+					if (part.module === "module-m2") {
+						return { value: part.value };
+					}
+				},
+			};
+		}
+		function module3() {
+			return {
+				name: "module3",
+				matchers() {
+					return [["last", "module-m3"]];
+				},
+				render(part) {
+					if (part.module === "module-m3") {
+						return { value: part.value };
+					}
+				},
+			};
+		}
+		expect(
+			createDocV4("tag-example.docx", {
+				modules: [module1(), module2(), module3()],
+			})
+				.render({
+					first_name: "John",
+				})
+				.getFullText()
+		).to.equal("name John");
+
+		expect(
+			createDocV4("tag-example.docx", {
+				modules: [module3(), module2(), module1()],
+			})
+				.render({
+					first_name: "John",
+				})
+				.getFullText()
+		).to.equal("name John");
 	});
 });

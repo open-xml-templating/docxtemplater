@@ -7,6 +7,7 @@ function identity(i) {
 module.exports = function (module) {
 	const defaults = {
 		set: emptyFun,
+		matchers: () => [],
 		parse: emptyFun,
 		render: emptyFun,
 		getTraits: emptyFun,

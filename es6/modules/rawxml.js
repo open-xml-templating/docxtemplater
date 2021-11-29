@@ -27,16 +27,8 @@ class RawXmlModule {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		return options;
 	}
-	parse(placeHolderContent, { match, getValue }) {
-		const type = "placeholder";
-		if (match(this.prefix, placeHolderContent)) {
-			return {
-				type,
-				value: getValue(this.prefix, placeHolderContent),
-				module: moduleName,
-			};
-		}
-		return null;
+	matchers() {
+		return [[this.prefix, moduleName]];
 	}
 	postparse(postparsed) {
 		return traits.expandToOne(postparsed, {

@@ -206,50 +206,45 @@ class LoopModule {
 			inverted: "^",
 		};
 	}
-	parse(placeHolderContent, { match, getValue, getValues }) {
+	matchers() {
 		const module = moduleName;
-		const type = "placeholder";
-		const { start, inverted, dash, end } = this.prefix;
-		if (match(start, placeHolderContent)) {
-			return {
-				type,
-				value: getValue(start, placeHolderContent),
-				expandTo: "auto",
+		return [
+			[
+				this.prefix.start,
 				module,
-				location: "start",
-				inverted: false,
-			};
-		}
-		if (match(inverted, placeHolderContent)) {
-			return {
-				type,
-				value: getValue(inverted, placeHolderContent),
-				expandTo: "auto",
+				{
+					expandTo: "auto",
+					location: "start",
+					inverted: false,
+				},
+			],
+			[
+				this.prefix.inverted,
 				module,
-				location: "start",
-				inverted: true,
-			};
-		}
-		if (match(end, placeHolderContent)) {
-			return {
-				type,
-				value: getValue(end, placeHolderContent),
+				{
+					expandTo: "auto",
+					location: "start",
+					inverted: true,
+				},
+			],
+			[
+				this.prefix.end,
 				module,
-				location: "end",
-			};
-		}
-		if (match(dash, placeHolderContent)) {
-			const [, expandTo, value] = getValues(dash, placeHolderContent);
-			return {
-				type,
-				value,
-				expandTo,
+				{
+					location: "end",
+				},
+			],
+			[
+				this.prefix.dash,
 				module,
-				location: "start",
-				inverted: false,
-			};
-		}
-		return null;
+				([, expandTo, value]) => ({
+					location: "start",
+					inverted: false,
+					expandTo,
+					value,
+				}),
+			],
+		];
 	}
 	getTraits(traitName, parsed) {
 		if (traitName !== "expandPair") {

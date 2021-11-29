@@ -25,6 +25,12 @@ class AssertionModule {
 			throw new Error("Parsed should be an array");
 		}
 	}
+	matchers(options) {
+		if (!isArray(options.modules)) {
+			throw new Error("Options.modules should be an array");
+		}
+		return [];
+	}
 	parse(placeholderContent) {
 		if (!isString(placeholderContent)) {
 			throw new Error("placeholderContent should be a string");

@@ -23,6 +23,12 @@ function getValue(condition, placeHolderContent) {
 }
 
 function getValues(condition, placeHolderContent) {
+	if (typeof condition === "string") {
+		return [
+			placeHolderContent,
+			replaceNbsps(placeHolderContent).substr(condition.length),
+		];
+	}
 	if (condition instanceof RegExp) {
 		return replaceNbsps(placeHolderContent).match(condition);
 	}

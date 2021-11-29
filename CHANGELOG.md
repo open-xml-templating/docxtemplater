@@ -1,3 +1,35 @@
+### 3.28.0
+
+Internal update of moduleApiVersion to 3.30.0
+
+Add `matchers` API for modules, to replace the internal `parse` function.
+
+This internal change fixes bugs that can be triggered between for example the SlidesModule and the TableGridPptxModule.
+
+When two modules have two prefixes that contain each other, for example the SlidesModule has a prefix of `:` as in `{:users}`, and the TableGridPptxModule is `:#` as in `{:#1}`.
+
+In versions before this version, the tag `{:#1}` would be Interpreted as a SlidesModule tag depending on the order of the modules.
+
+Since this version, the `matchers` API makes it possible for docxtemplater to intelligently decide that the tag belongs to the TableGridPptxModule.
+The algorithm used is to use a "priority" integer if present, or to use the tag that has the longest prefix.
+
+This change requires updates in following modules :
+
+- chart 3.4.0 or higher
+- footnotes 3.3.0 or higher
+- html-pptx 3.3.0 or higher
+- html 3.29.0 or higher
+- image 3.12.0 or higher
+- paragraph-placeholder 3.3.0 or higher
+- pptx-sub 3.1.0 or higher
+- slides 3.4.0 or higher
+- styling 3.5.0 or higher
+- subsection 3.5.0 or higher
+- subtemplate 3.9.0 or higher
+- table 3.15.0 or higher
+- word-run 3.2.0 or higher
+- xlsx 3.8.0 or higher
+
 ### 3.27.2
 
 Internal bugfix that would show a stacktrace instead of the real underlying RenderingError.

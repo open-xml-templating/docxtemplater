@@ -43,6 +43,13 @@ export namespace DXT {
   interface Module {
     set?(options: any): void;
     parse?(placeHolderContent: string): SimplePart | null;
+    matchers?(): [
+      prefix: string,
+      module: string,
+      properties:
+        | { [x: string]: any }
+        | ((part: SimplePart) => { [x: string]: any })
+    ][];
     render?(part: Part): Rendered | null;
     getTraits?(traitName: string, parsed: any): any;
     getFileType?(opts: any): string;
