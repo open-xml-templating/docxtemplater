@@ -44,6 +44,16 @@ describe("XmlMatcher", function () {
 });
 
 describe("XML prettify", function () {
+	it("should work with > inside attribute", function () {
+		const str =
+			xmlprettify(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      <w:lvlText w:val=">"/>`);
+		expect(str).to
+			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:lvlText w:val=">"/>
+`);
+	});
+
 	it("should sort attributes", function () {
 		const str =
 			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo zanc="bar" bar="foo"></foo><foo zak="foo" uk="bar"/>';

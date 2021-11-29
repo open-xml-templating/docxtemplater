@@ -75,7 +75,11 @@ function xmlprettify(xml) {
 		if (type === "closing") {
 			indent--;
 			if (indent < 0) {
-				throw new Error(`Malformed xml : ${xml}`);
+				throw new Error(
+					`Malformed xml near ${result.substr(
+						result.length - 30
+					)}**${value}** : ${xml}`
+				);
 			}
 			result += getIndent(indent) + value + "\n";
 		}
@@ -87,7 +91,7 @@ function xmlprettify(xml) {
 		}
 	});
 	if (indent !== 0) {
-		throw new Error(`Malformed xml : ${xml}`);
+		throw new Error(`Malformed xml indent at the end : ${indent} : ${xml}`);
 	}
 	return result;
 }
@@ -116,8 +120,18 @@ function miniparser(xml) {
 			}
 		}
 		if (state === "inside") {
-			const closing = xml.indexOf(">", cursor);
+			let closing = xml.indexOf(">", cursor);
 			if (closing !== -1) {
+				let inAttr = false;
+				let i = cursor;
+				while (inAttr || xml[i] !== ">") {
+					i++;
+					if (xml[i] === '"') {
+						inAttr = !inAttr;
+					}
+				}
+				closing = i;
+
 				let tag = xml.substr(cursor, closing - cursor + 1);
 				const isSingle = Boolean(tag.match(/^<.+\/>/)); // is this line a single tag? ex. <br />
 				const isClosing = Boolean(tag.match(/^<\/.+>/)); // is this a closing tag? ex. </a>
