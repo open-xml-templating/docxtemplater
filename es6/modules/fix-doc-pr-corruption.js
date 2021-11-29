@@ -1,4 +1,5 @@
 module.exports = {
+	name: "FixDocPRCorruptionModule",
 	set(options) {
 		if (options.Lexer) {
 			this.Lexer = options.Lexer;
