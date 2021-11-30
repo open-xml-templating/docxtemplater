@@ -55,7 +55,7 @@ cd docxtemplater
 npm run preversion
 ```
 
-Be sure the tests still pass :
+Be sure the tests still pass if you do a change :
 
 ```
 npm test
