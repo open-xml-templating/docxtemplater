@@ -1,3 +1,9 @@
+### 3.28.1
+
+Typing files : make them Typescript 3.x compatible (a change in 3.28.0 of docxtemplater made the typings only work with typescript 4+)
+
+Add type for "errorLogging" parameter
+
 ### 3.28.0
 
 Internal update of moduleApiVersion to 3.30.0
