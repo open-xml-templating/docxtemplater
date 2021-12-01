@@ -92,6 +92,8 @@ doc4.renderAsync({ a: "b" }).then(function () {
 const text = doc3.getFullText();
 const text2 = doc3.getFullText("word/heading1.xml");
 
+new Docxtemplater(new PizZip("hello"), { errorLogging: false });
+
 // Error because getFullText requires a string parameter
 expectError(doc3.getFullText(false));
 expectError(doc3.getFullText(10));

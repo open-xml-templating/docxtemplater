@@ -85,6 +85,7 @@ export namespace DXT {
     delimiters?: { start: string; end: string };
     paragraphLoop?: boolean;
     parser?(tag: string): Parser;
+    errorLogging?: boolean;
     linebreaks?: boolean;
     nullGetter?(part: Part): any;
   }
