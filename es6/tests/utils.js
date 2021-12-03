@@ -95,8 +95,8 @@ function createXmlTemplaterDocx(content, options = {}) {
 
 function writeFile(expectedName, zip) {
 	if (path.resolve) {
-		const writeFile = path.resolve(examplesDirectory, "..", expectedName);
 		if (fs.writeFileSync) {
+			const writeFile = process.env.UPDATE === 'true' ? path.resolve(examplesDirectory, expectedName) : path.resolve(examplesDirectory, "..", expectedName);
 			fs.writeFileSync(
 				writeFile,
 				zip.generate({ type: "nodebuffer", compression: "DEFLATE" })

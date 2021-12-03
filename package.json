@@ -90,6 +90,7 @@
     "babel": "babel es6 --out-dir js",
     "mocha": "mocha --full-trace --check-leaks js/tests/index.js",
     "test:es6": "mocha --full-trace --check-leaks es6/tests/index.js",
+    "test:es6:update-fixtures": "UPDATE=true mocha --full-trace --check-leaks es6/tests/index.js",
     "test:es6:fast": "FAST=true mocha --full-trace --check-leaks es6/tests/index.js",
     "test:watch": "FAST=true mocha --watch --full-trace --check-leaks es6/tests/index.js",
     "test:es6:slow": "FAST= mocha --full-trace --check-leaks es6/tests/index.js",
