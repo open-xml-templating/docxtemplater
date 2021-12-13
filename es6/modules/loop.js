@@ -3,6 +3,7 @@ const {
 	chunkBy,
 	last,
 	isParagraphStart,
+	isModule,
 	isParagraphEnd,
 	isContent,
 	startsWith,
@@ -75,8 +76,7 @@ function addPageBreakAtBeginning(subRendered) {
 function isContinuous(parts) {
 	return parts.some(function (part) {
 		return (
-			part.type === "tag" &&
-			part.tag === "w:type" &&
+			isTagStart("w:type", part) &&
 			part.value.indexOf("continuous") !== -1
 		);
 	});
@@ -174,18 +174,15 @@ function getLastSectPr(parsed) {
 			inSectPr = true;
 		}
 		if (isTagStart("w:sectPr", part)) {
-			sectPr.unshift(part);
+			sectPr.unshift(part.value);
 			inSectPr = false;
 		}
 		if (inSectPr) {
-			sectPr.unshift(part);
+			sectPr.unshift(part.value);
 		}
 		if (isParagraphStart(part)) {
 			if (sectPr.length > 0) {
 				return sectPr
-					.map(function ({ value }) {
-						return value;
-					})
 					.join("");
 			}
 			break;
@@ -202,7 +199,7 @@ class LoopModule {
 		this.prefix = {
 			start: "#",
 			end: "/",
-			dash: /^-([^\s]+)\s(.+)$/,
+			dash: /^-([^\s]+)\s(.+)/,
 			inverted: "^",
 		};
 	}
@@ -247,14 +244,15 @@ class LoopModule {
 		];
 	}
 	getTraits(traitName, parsed) {
+		// Stryker disable all : because getTraits should disappear in v4
 		if (traitName !== "expandPair") {
 			return;
 		}
+		// Stryker restore all
 
 		return parsed.reduce(function (tags, part, offset) {
 			if (
-				part.type === "placeholder" &&
-				part.module === moduleName &&
+				isModule(part, moduleName) &&
 				part.subparsed == null
 			) {
 				tags.push({ part, offset });
@@ -316,9 +314,6 @@ class LoopModule {
 		basePart.hasPageBreakBeginning = hasPageBreak(firstChunk);
 		basePart.hasPageBreak = hasPageBreak(lastChunk);
 
-		if (firstOffset === 0 || lastOffset === 0) {
-			return parsed;
-		}
 		if (hasImage(firstChunk)) {
 			firstOffset = 0;
 		}
@@ -336,7 +331,7 @@ class LoopModule {
 			this.lastExt = part;
 			return part;
 		}
-		if (part.type !== "placeholder" || part.module !== moduleName) {
+		if (!isModule(part, moduleName)) {
 			return null;
 		}
 		const totalValue = [];
@@ -344,7 +339,7 @@ class LoopModule {
 		let heightOffset = 0;
 		const firstTag = part.subparsed[0];
 		let tagHeight = 0;
-		if (firstTag && firstTag.tag === "a:tr") {
+		if (firstTag?.tag === "a:tr") {
 			tagHeight = +getSingleAttribute(firstTag.value, "h");
 		}
 		heightOffset -= tagHeight;
@@ -359,7 +354,7 @@ class LoopModule {
 				length
 			);
 			part.subparsed.forEach(function (pp) {
-				if (pp.type === "tag" && pp.tag === "a16:rowId") {
+				if (isTagStart("a16:rowId", pp)) {
 					const val = +getSingleAttribute(pp.value, "val") + a16RowIdOffset;
 					a16RowIdOffset = 1;
 					pp.value = setSingleAttribute(pp.value, "val", val);
@@ -398,20 +393,14 @@ class LoopModule {
 			}
 			Array.prototype.push.apply(errors, subRendered.errors);
 		}
-		let result;
-		try {
-			result = options.scopeManager.loopOver(
-				part.value,
-				loopOver,
-				part.inverted,
-				{
-					part,
-				}
-			);
-		} catch (e) {
-			errors.push(e);
-			return { errors };
-		}
+		const result= options.scopeManager.loopOver(
+			part.value,
+			loopOver,
+			part.inverted,
+			{
+				part,
+			}
+		);
 		// if the loop is showing empty content
 		if (result === false) {
 			if (part.lastParagrapSectPr) {
@@ -443,7 +432,7 @@ class LoopModule {
 		};
 	}
 	resolve(part, options) {
-		if (part.type !== "placeholder" || part.module !== moduleName) {
+		if (!isModule(part, moduleName)) {
 			return null;
 		}
 

@@ -1,3 +1,5 @@
+const { setSingleAttribute, isTagStart } = require("../doc-utils.js");
+
 module.exports = {
 	name: "FixDocPRCorruptionModule",
 	set(options) {
@@ -9,30 +11,17 @@ module.exports = {
 		}
 	},
 	on(event) {
+		/* Stryker disable all : because this is an optimisation that won't make any tests fail */
 		if (event === "attached") {
 			this.attached = false;
 		}
+		/* Stryker restore all */
 		if (event !== "syncing-zip") {
 			return;
 		}
 		const zip = this.zip;
 		const Lexer = this.Lexer;
 		let prId = 1;
-		function setSingleAttribute(partValue, attr, attrValue) {
-			const regex = new RegExp(`(<.* ${attr}=")([^"]*)(".*)$`);
-			if (regex.test(partValue)) {
-				return partValue.replace(regex, `$1${attrValue}$3`);
-			}
-			let end = partValue.lastIndexOf("/>");
-			if (end === -1) {
-				end = partValue.lastIndexOf(">");
-			}
-			return (
-				partValue.substr(0, end) +
-				` ${attr}="${attrValue}"` +
-				partValue.substr(end)
-			);
-		}
 		zip.file(/\.xml$/).forEach(function (f) {
 			let text = f.asText();
 			const xmllexed = Lexer.xmlparse(text, {
@@ -41,10 +30,7 @@ module.exports = {
 			});
 			if (xmllexed.length > 1) {
 				text = xmllexed.reduce(function (fullText, part) {
-					if (
-						part.tag === "wp:docPr" &&
-						["start", "selfclosing"].indexOf(part.position) !== -1
-					) {
+					if (isTagStart("wp:docPr", part)) {
 						return fullText + setSingleAttribute(part.value, "id", prId++);
 					}
 					return fullText + part.value;

@@ -6,6 +6,7 @@ function isPlaceholder(part) {
 
 function getTags(postParsed) {
 	return postParsed.filter(isPlaceholder).reduce(function (tags, part) {
+		// Stryker disable all : because this is an external function
 		if (part.cellParsed) {
 			part.cellParsed.forEach(function (cp) {
 				if (
@@ -18,6 +19,7 @@ function getTags(postParsed) {
 			return tags;
 		}
 		tags[part.value] = tags[part.value] || {};
+		// Stryker restore all
 
 		if (part.subparsed) {
 			tags[part.value] = merge(tags[part.value], getTags(part.subparsed));

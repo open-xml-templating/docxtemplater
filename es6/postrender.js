@@ -78,12 +78,16 @@ function postrender(parts, options) {
 	for (let i = 0, len = newParts.length; i < len; i++) {
 		const part = newParts[i];
 
+		// This condition should be hit in the integration test at :
+		// it("should not regress with long file (hit maxCompact value of 65536)", function () {
+		// Stryker disable all : because this is an optimisation that won't make any tests fail
 		if (part.length + lenStr > maxCompact) {
 			const arr = string2buf(longStr);
 			fullLength += arr.length;
 			uintArrays.push(arr);
 			longStr = "";
 		}
+		// Stryker disable all : because this is an optimisation that won't make any tests fail
 
 		longStr += part;
 		lenStr += part.length;
@@ -97,12 +101,14 @@ function postrender(parts, options) {
 
 	let j = 0;
 
+	// Stryker disable all : because this is an optimisation that won't make any tests fail
 	uintArrays.forEach(function (buf) {
 		for (let i = 0; i < buf.length; ++i) {
 			array[i + j] = buf[i];
 		}
 		j += buf.length;
 	});
+	// Stryker restore all
 	return array;
 }
 

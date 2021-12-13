@@ -192,14 +192,16 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 			return { value: expand };
 		}
 	}
-	return false;
+	return {};
 }
 
 function expandOne(part, index, postparsed, options) {
 	const expandTo = part.expandTo || options.expandTo;
+	// Stryker disable all : because this condition can be removed in v4 (the only usage was the image module before version 3.12.3 of the image module
 	if (!expandTo) {
 		return postparsed;
 	}
+	// Stryker restore all
 	let right, left;
 	try {
 		left = getLeft(postparsed, expandTo, index);

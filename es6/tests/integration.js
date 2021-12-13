@@ -9,6 +9,7 @@ const {
 	cleanRecursive,
 	captureLogs,
 } = require("./utils.js");
+const fixDocPrCorruption = require("../modules/fix-doc-pr-corruption.js");
 
 const printy = require("./printy.js");
 const { cloneDeep } = require("lodash");
@@ -156,6 +157,25 @@ describe("Docxtemplater internal properties", function () {
 				"docProps/core.xml",
 			],
 		});
+	});
+
+	it("should load relationships with xmlDocuments", function () {
+		let xmlDocs = null;
+		const mod = {
+			name: "XmlDocumentsModule",
+			set: (options) => {
+				if (options.xmlDocuments) {
+					xmlDocs = options.xmlDocuments;
+				}
+			},
+		};
+		createDocV4("with-default-contenttype.docx", {modules: [mod]});
+		const keys = Object.keys(xmlDocs);
+		const ct = "[Content_Types].xml";
+		expect(keys).to.deep.equal([ct]);
+		const mainDoc = xmlDocs[ct];
+		expect(mainDoc.getElementsByTagName("Override")[0].getAttribute("PartName")).to.equal("/docProps/core.xml");
+		expect(mainDoc.getElementsByTagName("parsererror").length).to.equal(0);
 	});
 });
 
@@ -897,6 +917,18 @@ describe("ParagraphLoop", function () {
 		});
 	});
 
+	it("should not drop image without text at beginning", function () {
+		const doc = createDoc("cond-image-no-innertext-before.docx");
+		doc.setOptions({
+			paragraphLoop: true,
+		});
+		doc.setData({ cond: true }).render();
+		shouldBeSame({
+			doc,
+			expectedName: "expected-cond-image-no-innertext-before.docx",
+		});
+	});
+
 	it("should work without removing extra text", function () {
 		const doc = createDoc("paragraph-loops.docx");
 		doc.setOptions({
@@ -1502,7 +1534,7 @@ describe("Resolver", function () {
 		});
 	});
 
-	const regress2Data = {
+	const regressData = {
 		amount_wheels_car_1: "4",
 		amount_wheels_motorcycle_1: "2",
 		amount_wheels_car_2: "6",
@@ -1516,10 +1548,8 @@ describe("Resolver", function () {
 	};
 
 	it("should not regress with multiple loops sync", function () {
-		const doc = createDoc("regression-loops-resolve.docx");
-		doc.compile();
-		doc.setData(regress2Data);
-		doc.render();
+		const doc = createDocV4("regression-loops-resolve.docx");
+		doc.render(regressData);
 		shouldBeSame({
 			doc,
 			expectedName: "expected-regression-loops-resolve.docx",
@@ -1527,13 +1557,44 @@ describe("Resolver", function () {
 	});
 
 	it("should not regress with multiple loops async", function () {
-		const doc = createDoc("regression-loops-resolve.docx");
-		doc.compile();
-		return doc.resolveData(regress2Data).then(function () {
-			doc.render();
+		const doc = createDocV4("regression-loops-resolve.docx");
+		return doc.renderAsync(regressData).then(function () {
 			shouldBeSame({
 				doc,
 				expectedName: "expected-regression-loops-resolve.docx",
+			});
+		});
+	});
+
+	it("should not regress with long file (hit maxCompact value of 65536)", function () {
+		const doc = createDocV4("regression-loops-resolve.docx", {paragraphLoop: true});
+		return doc.renderAsync({
+			amount_wheels_car_1: "4",
+			amount_wheels_motorcycle_1: "2",
+			amount_wheels_car_2: "6",
+			amount_wheels_motorcycle_2: "3",
+			id: [
+				{
+					car: "1",
+					motorcycle: "2",
+				},
+				{
+					car: "2",
+					motorcycle: "3",
+				},
+				{
+					car: "4",
+					motorcycle: "5",
+				},
+				{
+					car: "4",
+					motorcycle: "5",
+				},
+			],
+		}).then(function () {
+			shouldBeSame({
+				doc,
+				expectedName: "expected-regression-loops-resolve-long.docx",
 			});
 		});
 	});
@@ -1548,6 +1609,20 @@ describe("Resolver", function () {
 				shouldBeSame({
 					doc,
 					expectedName: "expected-a16-row-id.pptx",
+				});
+			});
+	});
+
+	it("should work with fix doc pr corruption", function () {
+		const doc = createDocV4("loop-image.docx", { modules: [fixDocPrCorruption]});
+		return doc
+			.renderAsync({
+				loop: [1, 2, 3, 4],
+			})
+			.then(function () {
+				shouldBeSame({
+					doc,
+					expectedName: "expected-loop-images.docx",
 				});
 			});
 	});

@@ -4,6 +4,12 @@ const Errors = require("../errors.js");
 const { wrapMultiError } = require("./utils.js");
 const nbsp = String.fromCharCode(160);
 
+const noInternals = {
+	lexed: null,
+	parsed: null,
+	postparsed: null,
+	resolved: null,
+};
 const xmlSpacePreserveTag = {
 	type: "tag",
 	position: "start",
@@ -159,9 +165,7 @@ const fixtures = [
 		},
 		result:
 			'<w:t xml:space="preserve">How is it going, John ? 1How is it going, Mary ? 1</w:t>',
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 	{
 		it: "should handle non breaking space in tag",
@@ -201,9 +205,7 @@ const fixtures = [
 				};
 			},
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 	{
 		it: "should be possible to add nullGetter to module",
@@ -219,9 +221,7 @@ const fixtures = [
 				},
 			],
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 
 	{
@@ -240,9 +240,7 @@ const fixtures = [
 			},
 		},
 		result: '<w:t xml:space="preserve">- John- Mary</w:t>',
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 
 	{
@@ -452,9 +450,7 @@ const fixtures = [
 				offset: 4,
 			},
 		}),
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 	{
 		it: "should work with loops",
@@ -622,9 +618,7 @@ const fixtures = [
 		},
 		result:
 			'<w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t/></w:p>',
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		options: {
 			paragraphLoop: true,
 		},
@@ -681,9 +675,7 @@ const fixtures = [
 		it: "should work with spacing loops 2",
 		content: "<w:t>{#condition}{text}{/condition}</w:t>",
 		result: '<w:t xml:space="preserve"> hello </w:t>',
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		scope: {
 			condition: [{ text: " hello " }],
 		},
@@ -692,9 +684,7 @@ const fixtures = [
 		it: "should work with empty condition",
 		content: "<w:t>{#a}A{/a}{^b}{/b}</w:t>",
 		result: '<w:t xml:space="preserve">A</w:t>',
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		scope: {
 			a: true,
 		},
@@ -703,9 +693,7 @@ const fixtures = [
 		it: "should work with spacing loops 3",
 		content: "<w:t>{#condition}</w:t><w:t>{/condition} foo</w:t>",
 		result: '<w:t xml:space="preserve"> foo</w:t>',
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		scope: {
 			condition: false,
 		},
@@ -714,9 +702,7 @@ const fixtures = [
 		it: "should work with spacing loops 4",
 		content: "<w:t>{#condition}foo{/condition}</w:t>",
 		result: "<w:t/>",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		scope: {
 			condition: false,
 		},
@@ -1080,9 +1066,7 @@ const fixtures = [
 				lIndex: 6,
 			},
 		],
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 	{
 		it: "should resolve 2 the data correctly",
@@ -1098,9 +1082,7 @@ const fixtures = [
 				lIndex: 3,
 			},
 		],
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 	{
 		it: "should resolve 3 the data correctly",
@@ -1148,9 +1130,7 @@ const fixtures = [
 				lIndex: 3,
 			},
 		],
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 	},
 	{
 		it: "should resolve truthy data correctly",
@@ -1166,9 +1146,7 @@ const fixtures = [
 				},
 			],
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1197,9 +1175,7 @@ const fixtures = [
 				},
 			],
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1219,9 +1195,7 @@ const fixtures = [
 				},
 			],
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1232,9 +1206,7 @@ const fixtures = [
 			b: false,
 			label: "hi",
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1244,9 +1216,7 @@ const fixtures = [
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1256,9 +1226,7 @@ const fixtures = [
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1275,9 +1243,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1294,9 +1260,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1313,9 +1277,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1332,17 +1294,17 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work well with multi level angular parser",
-		content: "<w:t>{#users}{name} {date-age} {/}</w:t>",
-		result: '<w:t xml:space="preserve">John 1975 Mary 1997 Walt 2078 </w:t>',
+		// This tag was designed to match /-([^\s]+)\s(.+)$/ which is the prefix of the dash loop
+		content: "<w:t>{#users}{name} {date-age+ offset} {/}</w:t>",
+		result: '<w:t xml:space="preserve">John 1976 Mary 1998 Walt 2079 </w:t>',
 		scope: {
 			date: 2019,
+			offset: 1,
 			users: [
 				{ name: "John", age: 44 },
 				{ name: "Mary", age: 22 },
@@ -1352,9 +1314,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1370,9 +1330,7 @@ const fixtures = [
 		options: {
 			paragraphLoop: true,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1394,9 +1352,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1407,9 +1363,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1420,9 +1374,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1433,9 +1385,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1446,9 +1396,7 @@ const fixtures = [
 		options: {
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		resolved: null,
 	},
 	{
@@ -1461,14 +1409,10 @@ const fixtures = [
 			linebreaks: true,
 			parser: angularParser,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
-		resolved: null,
+		...noInternals,
 	},
 	{
 		it: "should work for table with nested loops",
-		lexed: null,
 		content: `<w:tbl>
 		<w:tr><w:tc><w:p><w:r><w:t>{#c1}A</w:t></w:r></w:p></w:tc></w:tr>
 		<w:tr><w:tc><w:p><w:r><w:t>{/}{#c2}B</w:t></w:r><w:r><w:t>{/}</w:t></w:r></w:p></w:tc></w:tr>
@@ -1495,7 +1439,6 @@ const fixtures = [
 	},
 	{
 		it: "should not escape explanation for unclosed tag with &&",
-		lexed: null,
 		content: "<w:t>Unclosed tag : {Hi&amp;&amp;Ho</w:t>",
 		errorType: Errors.XTTemplateError,
 		error: wrapMultiError({
@@ -1513,7 +1456,6 @@ const fixtures = [
 	},
 	{
 		it: "should not escape explanation for unopened tag with &&",
-		lexed: null,
 		content: "<w:t>&&foo}</w:t>",
 		errorType: Errors.XTTemplateError,
 		error: wrapMultiError({
@@ -1531,7 +1473,6 @@ const fixtures = [
 	},
 	{
 		it: "should not escape explanation for unclosed loop with &&",
-		lexed: null,
 		content: "<w:t>Unclosed tag : {#Hi&amp;&amp;Ho}{/%%>&lt;&&bar}</w:t>",
 		errorType: Errors.XTTemplateError,
 		error: wrapMultiError({
@@ -1549,7 +1490,6 @@ const fixtures = [
 	},
 	{
 		it: "should not escape explanation for duplicate opening with &&",
-		lexed: null,
 		content: "<w:t>Unclosed tag : {Hi&amp;&amp;{foo</w:t>",
 		errorType: Errors.XTTemplateError,
 		error: {
@@ -1588,9 +1528,7 @@ const fixtures = [
 	},
 	{
 		it: "should add space=preserve to last tag",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		content: `<w:p>
       <w:r>
         <w:t>Hello {firstName} {</w:t>
@@ -1616,9 +1554,7 @@ const fixtures = [
 	},
 	{
 		it: "should add space=preserve to last tag when having middle tag",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		content: `<w:p>
 		<w:r>
 			<w:t>Hello {</w:t>
@@ -1656,9 +1592,7 @@ const fixtures = [
 	},
 	{
 		it: "should parse self closing tags",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		result: null,
 		content: '<w:pPr><w:spacing w:line="360" w:lineRule="auto"/></w:pPr>',
 		xmllexed: [
@@ -1689,9 +1623,7 @@ const fixtures = [
 		it: "should not fail with empty loop inside loop",
 		content: `<w:p><w:r><w:t>A{#a}</w:t></w:r></w:p>
 		<w:p><w:r><w:t>{#c}{/}{/}</w:t></w:r></w:p>`,
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		result: '<w:p><w:r><w:t xml:space="preserve">A</w:t></w:r></w:p>',
 	},
 	{
@@ -1700,9 +1632,7 @@ const fixtures = [
 		it: "should work with table pptx nested and empty 'ext' element",
 		pptx: true,
 		scope: { loop1: [1, 2, 3], loop2: [1, 2, 3] },
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		...noInternals,
 		content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
   <p:cSld>

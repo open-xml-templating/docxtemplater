@@ -474,13 +474,15 @@ function expectToThrow(fn, type, expectedError) {
 	return capture;
 }
 
-function load(name, content, obj) {
+function load(name, content, cache) {
 	const zip = new PizZip(content);
-	obj[name] = new Docxtemplater();
-	obj[name].loadZip(zip);
-	obj[name].loadedName = name;
-	obj[name].loadedContent = content;
-	return obj[name];
+	const doc = new Docxtemplater();
+	doc.attachModule(new AssertionModule());
+	doc.loadZip(zip);
+	doc.loadedName = name;
+	doc.loadedContent = content;
+	cache[name] = doc;
+	return doc;
 }
 function loadDocument(name, content) {
 	return load(name, content, documentCache);
@@ -676,23 +678,23 @@ function makePptxV4(name, content, options = {}) {
 
 function createDoc(name) {
 	const doc = loadDocument(name, documentCache[name].loadedContent);
-	/* eslint-disable-next-line no-process-env */
-	if (!process.env.FAST) {
+	// /* eslint-disable-next-line no-process-env */
+	// // if (!process.env.FAST) {
 		doc.attachModule(new AssertionModule());
-	}
+	// }
 	return doc;
 }
 
 function createDocV4(name, options) {
 	const zip = getZip(name);
 	/* eslint-disable-next-line no-process-env */
-	if (!process.env.FAST) {
+	// if (!process.env.FAST) {
 		options = options || {};
 		if (!options.modules || options.modules instanceof Array) {
 			options.modules = options.modules || [];
 			options.modules.push(new AssertionModule());
 		}
-	}
+	// }
 	return new Docxtemplater(zip, options);
 }
 

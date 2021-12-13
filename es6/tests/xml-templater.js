@@ -292,18 +292,12 @@ describe("Change the nullGetter", function () {
 	});
 });
 
-describe("intelligent tagging multiple tables", function () {
+describe("Automatic expansion to table row (intelligent tagging)", function () {
 	it("should work with multiple rows", function () {
 		const content = `<w:tbl>
-		<w:tr>
-		<w:tc>
-		<w:p>
-		<w:r>
+		<w:tr><w:tc><w:p><w:r>
 		<w:t>{#clauses} Clause {.}</w:t>
-		</w:r>
-		</w:p>
-		</w:tc>
-		</w:tr>
+		</w:r></w:p></w:tc></w:tr>
 		<w:tr>
 		<w:tc>
 		<w:p>
@@ -320,6 +314,45 @@ describe("intelligent tagging multiple tables", function () {
 		const c = getContent(doc);
 		expect(c).to.be.equal(
 			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Foo</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t/></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Bar</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t/></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve"> Clause Baz</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t/></w:r></w:p></w:tc></w:tr></w:tbl>'
+		);
+	});
+
+	it("should work with rows and inverted loops", function () {
+		const content = `<w:tbl>
+		<w:tr>
+		<w:tc>
+		<w:p>
+		<w:r>
+		<w:t>{^clauses} Clause {clause}</w:t>
+		</w:r>
+		</w:p>
+		</w:tc>
+		</w:tr>
+		<w:tr>
+		<w:tc>
+		<w:p>
+		<w:r>
+		<w:t>{/clauses}end</w:t>
+		</w:r>
+		</w:p>
+		</w:tc>
+		</w:tr>
+		<w:tr>
+		<w:tc>
+		<w:p>
+		<w:r>
+		<w:t>Bye</w:t>
+		</w:r>
+		</w:p>
+		</w:tc>
+		</w:tr>
+		</w:tbl>
+		`.replace(/\t|\n/g, "");
+		const scope = { clauses: [1], clause: "hello" };
+		const doc = createXmlTemplaterDocx(content, { tags: scope });
+		const c = getContent(doc);
+		expect(c).to.be.equal(
+			"<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Bye</w:t></w:r></w:p></w:tc></w:tr></w:tbl>"
 		);
 	});
 });

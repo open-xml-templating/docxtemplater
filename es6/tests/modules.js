@@ -127,7 +127,7 @@ describe("Module xml parse", function () {
 		doc.compile();
 
 		const xmlKeys = Object.keys(xmlDocuments);
-		expect(xmlKeys).to.deep.equal(["word/_rels/document.xml.rels"]);
+		expect(xmlKeys).to.deep.equal(["[Content_Types].xml", "word/_rels/document.xml.rels"]);
 		const rels =
 			xmlDocuments["word/_rels/document.xml.rels"].getElementsByTagName(
 				"Relationship"

@@ -17,6 +17,7 @@ const attrToRegex = {};
 
 function setSingleAttribute(partValue, attr, attrValue) {
 	let regex;
+	// Stryker disable next-line all : because this is an optimisation
 	if (attrToRegex[attr]) {
 		regex = attrToRegex[attr];
 	} else {
@@ -36,7 +37,7 @@ function setSingleAttribute(partValue, attr, attrValue) {
 }
 
 function getSingleAttribute(value, attributeName) {
-	const index = value.indexOf(`${attributeName}="`);
+	const index = value.indexOf(` ${attributeName}="`);
 	if (index === -1) {
 		return null;
 	}
@@ -93,7 +94,7 @@ const defaults = {
 	nullGetter(part) {
 		return part.module ? "" : "undefined";
 	},
-	xmlFileNames: [],
+	xmlFileNames: ["[Content_Types].xml"],
 	parser,
 	linebreaks: false,
 	fileTypeConfig: null,
@@ -126,8 +127,7 @@ function str2xml(str) {
 		// BOM sequence
 		str = str.substr(1);
 	}
-	const parser = new DOMParser();
-	return parser.parseFromString(str, "text/xml");
+	return new DOMParser().parseFromString(str, "text/xml");
 }
 
 const charMap = [
@@ -138,15 +138,10 @@ const charMap = [
 	["'", "&apos;"],
 ];
 
-function escapeRegExp(str) {
-	// to be able to use a string as a regex
-	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 const charMapRegexes = charMap.map(function ([endChar, startChar]) {
 	return {
-		rstart: new RegExp(escapeRegExp(startChar), "g"),
-		rend: new RegExp(escapeRegExp(endChar), "g"),
+		rstart: new RegExp(startChar, "g"),
+		rend: new RegExp(endChar, "g"),
 		start: startChar,
 		end: endChar,
 	};
@@ -162,9 +157,8 @@ function wordToUtf8(string) {
 }
 
 function utf8ToWord(string) {
-	if (typeof string !== "string") {
-		string = string.toString();
-	}
+	// To make sure that the object given is a string (this is a noop for strings).
+	string = string.toString();
 	let r;
 	for (let i = 0, l = charMapRegexes.length; i < l; i++) {
 		r = charMapRegexes[i];
@@ -276,8 +270,11 @@ function getLeftOrNull(parsed, elements, index) {
 	return null;
 }
 
+// Stryker disable all : because those are functions that depend on the parsed
+// structure based and we don't want minimal code here, but rather code that
+// makes things clear.
 function isTagStart(tagType, { type, tag, position }) {
-	return type === "tag" && tag === tagType && position === "start";
+	return type === "tag" && tag === tagType && (position === "start" || position === "selfclosing");
 }
 function isTagEnd(tagType, { type, tag, position }) {
 	return type === "tag" && tag === tagType && position === "end";
@@ -288,19 +285,27 @@ function isParagraphStart(part) {
 function isParagraphEnd(part) {
 	return isTagEnd("w:p", part) || isTagEnd("a:p", part);
 }
-function isTextStart(part) {
-	return part.type === "tag" && part.position === "start" && part.text;
+function isTextStart({type, position, text}) {
+	return type === "tag" && position === "start" && text;
 }
-function isTextEnd(part) {
-	return part.type === "tag" && part.position === "end" && part.text;
+function isTextEnd({type, position, text}) {
+	return type === "tag" && position === "end" && text;
 }
-
-function isContent(p) {
+function isContent({type, position}) {
 	return (
-		p.type === "placeholder" ||
-		(p.type === "content" && p.position === "insidetag")
+		type === "placeholder" ||
+		(type === "content" && position === "insidetag")
 	);
 }
+function isModule({module, type}, modules) {
+	if (!(modules instanceof Array)) {
+		modules = [modules];
+	}
+	return (
+		type === "placeholder" && modules.indexOf(module) !== -1
+	);
+}
+// Stryker restore all
 
 const corruptCharacters = /[\x00-\x08\x0B\x0C\x0E-\x1F]/;
 // 00    NUL '\0' (null character)
@@ -357,6 +362,7 @@ module.exports = {
 	isTextEnd,
 	isStarting,
 	isEnding,
+	isModule,
 	uniq,
 	chunkBy,
 	last,
@@ -370,7 +376,6 @@ module.exports = {
 	getLeft,
 	pregMatchAll,
 	convertSpaces,
-	escapeRegExp,
 	charMapRegexes,
 	hasCorruptCharacters,
 	defaults,
