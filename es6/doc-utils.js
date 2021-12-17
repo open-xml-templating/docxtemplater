@@ -274,7 +274,11 @@ function getLeftOrNull(parsed, elements, index) {
 // structure based and we don't want minimal code here, but rather code that
 // makes things clear.
 function isTagStart(tagType, { type, tag, position }) {
-	return type === "tag" && tag === tagType && (position === "start" || position === "selfclosing");
+	return (
+		type === "tag" &&
+		tag === tagType &&
+		(position === "start" || position === "selfclosing")
+	);
 }
 function isTagEnd(tagType, { type, tag, position }) {
 	return type === "tag" && tag === tagType && position === "end";
@@ -285,25 +289,22 @@ function isParagraphStart(part) {
 function isParagraphEnd(part) {
 	return isTagEnd("w:p", part) || isTagEnd("a:p", part);
 }
-function isTextStart({type, position, text}) {
+function isTextStart({ type, position, text }) {
 	return type === "tag" && position === "start" && text;
 }
-function isTextEnd({type, position, text}) {
+function isTextEnd({ type, position, text }) {
 	return type === "tag" && position === "end" && text;
 }
-function isContent({type, position}) {
+function isContent({ type, position }) {
 	return (
-		type === "placeholder" ||
-		(type === "content" && position === "insidetag")
+		type === "placeholder" || (type === "content" && position === "insidetag")
 	);
 }
-function isModule({module, type}, modules) {
+function isModule({ module, type }, modules) {
 	if (!(modules instanceof Array)) {
 		modules = [modules];
 	}
-	return (
-		type === "placeholder" && modules.indexOf(module) !== -1
-	);
+	return type === "placeholder" && modules.indexOf(module) !== -1;
 }
 // Stryker restore all
 

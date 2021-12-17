@@ -164,7 +164,11 @@ describe("Docxtemplater internal properties", function () {
 
 		const jpegImages = doc.invertedContentTypes["image/jpeg"];
 		expect(jpegImages).to.deep.equal(["word/media/image1.jpeg"]);
-		expect(doc.invertedContentTypes["application/vnd.openxmlformats-package.relationships+xml"]).to.deep.equal(["_rels/.rels", "word/_rels/document.xml.rels"])
+		expect(
+			doc.invertedContentTypes[
+				"application/vnd.openxmlformats-package.relationships+xml"
+			]
+		).to.deep.equal(["_rels/.rels", "word/_rels/document.xml.rels"]);
 	});
 
 	it("should load relationships with xmlDocuments", function () {
@@ -177,12 +181,14 @@ describe("Docxtemplater internal properties", function () {
 				}
 			},
 		};
-		createDocV4("with-default-contenttype.docx", {modules: [mod]});
+		createDocV4("with-default-contenttype.docx", { modules: [mod] });
 		const keys = Object.keys(xmlDocs);
 		const ct = "[Content_Types].xml";
 		expect(keys).to.deep.equal([ct]);
 		const mainDoc = xmlDocs[ct];
-		expect(mainDoc.getElementsByTagName("Override")[0].getAttribute("PartName")).to.equal("/docProps/core.xml");
+		expect(
+			mainDoc.getElementsByTagName("Override")[0].getAttribute("PartName")
+		).to.equal("/docProps/core.xml");
 		expect(mainDoc.getElementsByTagName("parsererror").length).to.equal(0);
 	});
 });
@@ -1575,36 +1581,40 @@ describe("Resolver", function () {
 	});
 
 	it("should not regress with long file (hit maxCompact value of 65536)", function () {
-		const doc = createDocV4("regression-loops-resolve.docx", {paragraphLoop: true});
-		return doc.renderAsync({
-			amount_wheels_car_1: "4",
-			amount_wheels_motorcycle_1: "2",
-			amount_wheels_car_2: "6",
-			amount_wheels_motorcycle_2: "3",
-			id: [
-				{
-					car: "1",
-					motorcycle: "2",
-				},
-				{
-					car: "2",
-					motorcycle: "3",
-				},
-				{
-					car: "4",
-					motorcycle: "5",
-				},
-				{
-					car: "4",
-					motorcycle: "5",
-				},
-			],
-		}).then(function () {
-			shouldBeSame({
-				doc,
-				expectedName: "expected-regression-loops-resolve-long.docx",
-			});
+		const doc = createDocV4("regression-loops-resolve.docx", {
+			paragraphLoop: true,
 		});
+		return doc
+			.renderAsync({
+				amount_wheels_car_1: "4",
+				amount_wheels_motorcycle_1: "2",
+				amount_wheels_car_2: "6",
+				amount_wheels_motorcycle_2: "3",
+				id: [
+					{
+						car: "1",
+						motorcycle: "2",
+					},
+					{
+						car: "2",
+						motorcycle: "3",
+					},
+					{
+						car: "4",
+						motorcycle: "5",
+					},
+					{
+						car: "4",
+						motorcycle: "5",
+					},
+				],
+			})
+			.then(function () {
+				shouldBeSame({
+					doc,
+					expectedName: "expected-regression-loops-resolve-long.docx",
+				});
+			});
 	});
 
 	it("should deduplicate a16:rowId tag", function () {
@@ -1622,7 +1632,9 @@ describe("Resolver", function () {
 	});
 
 	it("should work with fix doc pr corruption", function () {
-		const doc = createDocV4("loop-image.docx", { modules: [fixDocPrCorruption]});
+		const doc = createDocV4("loop-image.docx", {
+			modules: [fixDocPrCorruption],
+		});
 		return doc
 			.renderAsync({
 				loop: [1, 2, 3, 4],

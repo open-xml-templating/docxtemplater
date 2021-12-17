@@ -159,7 +159,9 @@ function getCorruptCharactersException({ tag, value, offset }) {
 }
 
 function getInvalidRawXMLValueException({ tag, value, offset }) {
-	const err = new XTRenderingError("Non string values are not allowed for rawXML tags");
+	const err = new XTRenderingError(
+		"Non string values are not allowed for rawXML tags"
+	);
 	err.properties = {
 		id: "invalid_raw_xml_value",
 		xtag: tag,
@@ -169,7 +171,6 @@ function getInvalidRawXMLValueException({ tag, value, offset }) {
 	};
 	return err;
 }
-
 
 function throwExpandNotFound(options) {
 	const {

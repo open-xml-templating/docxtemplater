@@ -678,23 +678,17 @@ function makePptxV4(name, content, options = {}) {
 
 function createDoc(name) {
 	const doc = loadDocument(name, documentCache[name].loadedContent);
-	// /* eslint-disable-next-line no-process-env */
-	// // if (!process.env.FAST) {
-		doc.attachModule(new AssertionModule());
-	// }
+	doc.attachModule(new AssertionModule());
 	return doc;
 }
 
 function createDocV4(name, options) {
 	const zip = getZip(name);
-	/* eslint-disable-next-line no-process-env */
-	// if (!process.env.FAST) {
-		options = options || {};
-		if (!options.modules || options.modules instanceof Array) {
-			options.modules = options.modules || [];
-			options.modules.push(new AssertionModule());
-		}
-	// }
+	options = options || {};
+	if (!options.modules || options.modules instanceof Array) {
+		options.modules = options.modules || [];
+		options.modules.push(new AssertionModule());
+	}
 	return new Docxtemplater(zip, options);
 }
 

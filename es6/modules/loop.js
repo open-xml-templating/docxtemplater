@@ -76,8 +76,7 @@ function addPageBreakAtBeginning(subRendered) {
 function isContinuous(parts) {
 	return parts.some(function (part) {
 		return (
-			isTagStart("w:type", part) &&
-			part.value.indexOf("continuous") !== -1
+			isTagStart("w:type", part) && part.value.indexOf("continuous") !== -1
 		);
 	});
 }
@@ -182,8 +181,7 @@ function getLastSectPr(parsed) {
 		}
 		if (isParagraphStart(part)) {
 			if (sectPr.length > 0) {
-				return sectPr
-					.join("");
+				return sectPr.join("");
 			}
 			break;
 		}
@@ -251,10 +249,7 @@ class LoopModule {
 		// Stryker restore all
 
 		return parsed.reduce(function (tags, part, offset) {
-			if (
-				isModule(part, moduleName) &&
-				part.subparsed == null
-			) {
+			if (isModule(part, moduleName) && part.subparsed == null) {
 				tags.push({ part, offset });
 			}
 			return tags;
@@ -393,7 +388,7 @@ class LoopModule {
 			}
 			Array.prototype.push.apply(errors, subRendered.errors);
 		}
-		const result= options.scopeManager.loopOver(
+		const result = options.scopeManager.loopOver(
 			part.value,
 			loopOver,
 			part.inverted,

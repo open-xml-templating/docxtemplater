@@ -2038,18 +2038,18 @@ fixtures.push({
 fixtures.push({
 	...rawXmlTest,
 	it: "should throw error with rawxml with scope that is an integer",
-	scope: { rawxml: 11},
+	scope: { rawxml: 11 },
 	errorType: Errors.XTTemplateError,
 	error: wrapMultiError({
 		name: "RenderingError",
 		message: "Non string values are not allowed for rawXML tags",
 		properties: {
 			explanation: "The value of the raw tag : 'rawxml' is not a string",
-				file: "word/document.xml",
-				id: "invalid_raw_xml_value",
-				value: 11,
-				xtag: "rawxml",
-				offset: 0,
+			file: "word/document.xml",
+			id: "invalid_raw_xml_value",
+			value: 11,
+			xtag: "rawxml",
+			offset: 0,
 		},
 	}),
 });

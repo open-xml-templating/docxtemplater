@@ -1,6 +1,9 @@
 const traits = require("../traits.js");
 const { isContent } = require("../doc-utils.js");
-const { throwRawTagShouldBeOnlyTextInParagraph, getInvalidRawXMLValueException } = require("../errors.js");
+const {
+	throwRawTagShouldBeOnlyTextInParagraph,
+	getInvalidRawXMLValueException,
+} = require("../errors.js");
 
 const moduleName = "rawxml";
 const wrapper = require("../module-wrapper.js");
