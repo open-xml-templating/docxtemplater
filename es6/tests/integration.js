@@ -159,6 +159,14 @@ describe("Docxtemplater internal properties", function () {
 		});
 	});
 
+	it("should calculate filesContentTypes and invertedContentTypes", function () {
+		const doc = createDocV4("cond-image.docx");
+
+		const jpegImages = doc.invertedContentTypes["image/jpeg"];
+		expect(jpegImages).to.deep.equal(["word/media/image1.jpeg"]);
+		expect(doc.invertedContentTypes["application/vnd.openxmlformats-package.relationships+xml"]).to.deep.equal(["_rels/.rels", "word/_rels/document.xml.rels"])
+	});
+
 	it("should load relationships with xmlDocuments", function () {
 		let xmlDocs = null;
 		const mod = {
