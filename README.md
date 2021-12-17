@@ -30,27 +30,25 @@ See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older
 
 ## Modules
 
-Functionality can be added with modules. Here is the list of existing modules:
+Functionality can be added with paid modules.
 
-PRO Modules created by docxtemplater core team :
-
-- [Image module](https://docxtemplater.com/modules/image/) to add a given image with the syntax: `{%image}`.
-- [Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document.
-- [XLSX Module](https://docxtemplater.com/modules/xlsx) to be able to do templating on Excel files (xlsx extension), also with loops and conditions.
-- [Chart Module](https://docxtemplater.com/modules/chart/) to replace a chart by using data from the JSON object that you give
-- [Html-Pptx Module](https://docxtemplater.com/modules/html-pptx/) to insert formatted text in a pptx document.
-- [Slides Module](https://docxtemplater.com/modules/slides/) to create multiple slides dynamically.
-- [Subtemplate Module](https://docxtemplater.com/modules/subtemplate) to include an external docx file inside a given docx file.
-- [Subsection Module](https://docxtemplater.com/modules/subsection) to include subsections (headers/footers) from an other document.
-- [Subtemplate-pptx Module](https://docxtemplater.com/modules/pptx-sub/) to include an external pptx file inside a given pptx file.
-- [Word-Run Module](https://docxtemplater.com/modules/word-run) to include raw runs (<w:r>) inside the document. This makes it possible to include styled text without having to remove the enclosing paragraph like in the {@rawXml} tag.
-- [QrCode Module](https://docxtemplater.com/modules/qrcode) to replace an image, keeping any existing properties.
-- [Error Location Module](https://docxtemplater.com/modules/error-location) to show the errors in the template with comments inside the template.
-- [Table Module](https://docxtemplater.com/modules/table) to create tables from two dimensional data.
-- [Meta Module](https://docxtemplater.com/modules/meta) to make a document readonly, add a text watermark or update the margins.
-- [Styling Module](https://docxtemplater.com/modules/styling) restyle a paragraph, a cell or a table depending on some data.
-- [Footnotes Module](https://docxtemplater.com/modules/footnotes) to be able to add footnotes to a document.
-- [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder) to simplify conditions that should show or hide a given paragraph.
+- [Image module](https://docxtemplater.com/modules/image/) to add a given image with the syntax: `{%image}`;
+- [Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document with the syntax `{~html}`;
+- [XLSX Module](https://docxtemplater.com/modules/xlsx) to be able to do templating on Excel files (xlsx extension), also with loops and conditions;
+- [Chart Module](https://docxtemplater.com/modules/chart/) to replace a chart by using data from the JSON object that you give with the syntax `{$chart};
+- [Html-Pptx Module](https://docxtemplater.com/modules/html-pptx/) to insert formatted text in a pptx document with the syntax `{~html}`;
+- [Error Location Module](https://docxtemplater.com/modules/error-location) to show the errors in the template with comments inside the template;
+- [Slides Module](https://docxtemplater.com/modules/slides/) to create multiple slides dynamically with the syntax `{:users}`;
+- [Subtemplate Module](https://docxtemplater.com/modules/subtemplate) to include an external docx file inside a given docx file with the syntax `{:include doc}`;
+- [Subsection Module](https://docxtemplater.com/modules/subsection) to include subsections (headers/footers) from an other document with the syntax `{:subsection doc}`;
+- [Subtemplate-pptx Module](https://docxtemplater.com/modules/pptx-sub/) to include an external pptx file inside a given pptx file with the syntax `{:include doc}`;
+- [Word-Run Module](https://docxtemplater.com/modules/word-run) to include raw runs (<w:r>) inside the document with the syntax `{r@wrun}`. This makes it possible to include styled text without having to remove the enclosing paragraph like in the {@rawXml} tag;
+- [QrCode Module](https://docxtemplater.com/modules/qrcode) to replace an image, keeping any existing properties;
+- [Table Module](https://docxtemplater.com/modules/table) to create tables from two dimensional data using the syntax `{:table data}`;
+- [Meta Module](https://docxtemplater.com/modules/meta) to make a document readonly, add a text watermark or update the margins;
+- [Styling Module](https://docxtemplater.com/modules/styling) restyle a paragraph, a cell or a table depending on some data using the syntax `{:stylepar style}`;
+- [Footnotes Module](https://docxtemplater.com/modules/footnotes) to be able to add footnotes to a document using the syntax `{:footnotes foot}`
+- [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder) to simplify conditions that should show or hide a given paragraph using the syntax `{?tag}`
 
 ## Similar libraries
 
