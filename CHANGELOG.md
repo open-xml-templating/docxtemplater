@@ -1,3 +1,23 @@
+### 3.28.2
+
+Throw specific error when using rawxml tag and the type of the output is not a string.
+
+For example, if you do the following :
+
+```txt
+{@raw}
+```
+
+```js
+doc.render({
+  raw: 42,
+});
+```
+
+This will throw the following error :
+
+`Non string values are not allowed for rawXML tags`
+
 ### 3.28.1
 
 Typing files : make them Typescript 3.x compatible (a change in 3.28.0 of docxtemplater made the typings only work with typescript 4+)

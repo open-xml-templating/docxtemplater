@@ -490,7 +490,7 @@ describe("Compilation errors", function () {
 			properties: {
 				file: "word/document.xml",
 				id: "scopeparser_compilation_failed",
-				tag: "name++",
+				xtag: "name++",
 				rootError: {
 					message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
@@ -530,7 +530,7 @@ describe("Runtime errors", function () {
 							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
 							scope: {},
-							tag: "name|upper",
+							xtag: "name|upper",
 							offset: 1,
 							rootError: { message: "foo bar" },
 						},
@@ -603,7 +603,7 @@ describe("Runtime errors", function () {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
 							scope: {},
-							tag: "raw|isfalse",
+							xtag: "raw|isfalse",
 							rootError: { message: "foo 1" },
 							offset: 0,
 						},
@@ -615,7 +615,7 @@ describe("Runtime errors", function () {
 							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
 							scope: {},
-							tag: "raw|istrue",
+							xtag: "raw|istrue",
 							rootError: { message: "foo 2" },
 							offset: 14,
 						},
@@ -985,7 +985,7 @@ describe("Multi errors", function () {
 							file: "word/document.xml",
 							offset: 0,
 							id: "scopeparser_compilation_failed",
-							tag: "name++",
+							xtag: "name++",
 							rootError: {
 								message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
@@ -999,7 +999,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 							file: "word/document.xml",
 							offset: 9,
 							id: "scopeparser_compilation_failed",
-							tag: "foo|||bang",
+							xtag: "foo|||bang",
 							rootError: {
 								message: `[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20primary%20expression&p2=6&p3=foo%7C%7C%7Cbang&p4=%7Cbang`,
@@ -1029,7 +1029,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 						properties: {
 							file: "word/document.xml",
 							id: "scopeparser_compilation_failed",
-							tag: "name++",
+							xtag: "name++",
 							rootError: {
 								message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
@@ -1042,7 +1042,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 						properties: {
 							file: "word/document.xml",
 							id: "scopeparser_compilation_failed",
-							tag: "foo|||bang",
+							xtag: "foo|||bang",
 							rootError: {
 								message: `[$parse:syntax] Syntax Error: Token '|' not a primary expression at column 6 of the expression [foo|||bang] starting at [|bang].
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20primary%20expression&p2=6&p3=foo%7C%7C%7Cbang&p4=%7Cbang`,
@@ -1082,7 +1082,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 						name: "ScopeParserError",
 						properties: {
 							id: "scopeparser_compilation_failed",
-							tag: "name++",
+							xtag: "name++",
 							rootError: {
 								message: `[$parse:ueoe] Unexpected end of expression: name++
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
@@ -1313,7 +1313,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 						message:
 							'The position of the loop tags "users" would produce invalid XML',
 						properties: {
-							tag: "users",
+							xtag: "users",
 							offset: [0, 17],
 							id: "loop_position_invalid",
 							file: "word/document.xml",
@@ -1404,7 +1404,7 @@ describe("Async errors", function () {
 			properties: {
 				file: "word/document.xml",
 				id: "scopeparser_execution_failed",
-				tag: "user",
+				xtag: "user",
 				scope: {
 					user: {},
 				},
@@ -1439,7 +1439,7 @@ describe("Async errors", function () {
 							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
 							scope: 1,
-							tag: "user",
+							xtag: "user",
 							rootError: { message: "foo 1" },
 						},
 					},
@@ -1450,7 +1450,7 @@ describe("Async errors", function () {
 							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
 							scope: 2,
-							tag: "user",
+							xtag: "user",
 							rootError: { message: "foo 2" },
 						},
 					},
@@ -1461,7 +1461,7 @@ describe("Async errors", function () {
 							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
 							scope: 3,
-							tag: "user",
+							xtag: "user",
 							rootError: { message: "foo 3" },
 						},
 					},
@@ -1531,7 +1531,7 @@ describe("Async errors", function () {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
 							scope: {},
-							tag: "name|upper",
+							xtag: "name|upper",
 							rootError: { message: "foo 2" },
 							offset: 22,
 						},
@@ -1543,7 +1543,7 @@ describe("Async errors", function () {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
 							scope: {},
-							tag: "othername|upper",
+							xtag: "othername|upper",
 							rootError: { message: "foo 3" },
 							offset: 35,
 						},
@@ -1555,7 +1555,7 @@ describe("Async errors", function () {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
 							scope: {},
-							tag: "name|istrue",
+							xtag: "name|istrue",
 							rootError: { message: "foo 1" },
 							offset: 0,
 						},
@@ -1603,7 +1603,7 @@ describe("Async errors", function () {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
 							scope: { abc: true },
-							tag: "raw|isfalse",
+							xtag: "raw|isfalse",
 							rootError: { message: "foo 1" },
 							offset: 0,
 						},
@@ -1615,7 +1615,7 @@ describe("Async errors", function () {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
 							scope: { abc: true },
-							tag: "raw|istrue",
+							xtag: "raw|istrue",
 							rootError: { message: "foo 2" },
 							offset: 14,
 						},

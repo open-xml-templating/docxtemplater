@@ -1,6 +1,6 @@
 const traits = require("../traits.js");
 const { isContent } = require("../doc-utils.js");
-const { throwRawTagShouldBeOnlyTextInParagraph } = require("../errors.js");
+const { throwRawTagShouldBeOnlyTextInParagraph, getInvalidRawXMLValueException } = require("../errors.js");
 
 const moduleName = "rawxml";
 const wrapper = require("../module-wrapper.js");
@@ -61,7 +61,18 @@ class RawXmlModule {
 		if (!value) {
 			return { value: "" };
 		}
-		return { value };
+		if (typeof value === "string") {
+			return { value };
+		}
+		return {
+			errors: [
+				getInvalidRawXMLValueException({
+					tag: part.value,
+					value,
+					offset: part.offset,
+				}),
+			],
+		};
 	}
 }
 

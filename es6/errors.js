@@ -153,10 +153,23 @@ function getCorruptCharactersException({ tag, value, offset }) {
 		xtag: tag,
 		value,
 		offset,
-		explanation: "There are some corrupt characters for the field ${tag}",
+		explanation: `There are some corrupt characters for the field ${tag}`,
 	};
 	return err;
 }
+
+function getInvalidRawXMLValueException({ tag, value, offset }) {
+	const err = new XTRenderingError("Non string values are not allowed for rawXML tags");
+	err.properties = {
+		id: "invalid_raw_xml_value",
+		xtag: tag,
+		value,
+		offset,
+		explanation: `The value of the raw tag : '${tag}' is not a string`,
+	};
+	return err;
+}
+
 
 function throwExpandNotFound(options) {
 	const {
@@ -254,7 +267,7 @@ function getScopeCompilationError({ tag, rootError, offset }) {
 	err.properties = {
 		id: "scopeparser_compilation_failed",
 		offset,
-		tag,
+		xtag: tag,
 		explanation: `The scope parser for the tag "${tag}" failed to compile`,
 		rootError,
 	};
@@ -268,7 +281,7 @@ function getScopeParserExecutionError({ tag, scope, error, offset }) {
 		explanation: `The scope parser for the tag ${tag} failed to execute`,
 		scope,
 		offset,
-		tag,
+		xtag: tag,
 		rootError: error,
 	};
 	return err;
@@ -279,7 +292,7 @@ function getLoopPositionProducesInvalidXMLError({ tag, offset }) {
 		`The position of the loop tags "${tag}" would produce invalid XML`
 	);
 	err.properties = {
-		tag,
+		xtag: tag,
 		id: "loop_position_invalid",
 		explanation: `The tags "${tag}" are misplaced in the document, for example one of them is in a table and the other one outside the table`,
 		offset,
@@ -388,6 +401,7 @@ module.exports = {
 	getDuplicateCloseTagException,
 	getDuplicateOpenTagException,
 	getCorruptCharactersException,
+	getInvalidRawXMLValueException,
 	getUnbalancedLoopException,
 
 	throwApiVersionError,
