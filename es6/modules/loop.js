@@ -201,6 +201,9 @@ class LoopModule {
 			inverted: "^",
 		};
 	}
+	preparse(parsed) {
+		this.sects = getSectPr(parsed);
+	}
 	matchers() {
 		const module = moduleName;
 		return [
@@ -254,9 +257,6 @@ class LoopModule {
 			}
 			return tags;
 		}, []);
-	}
-	preparse(parsed) {
-		this.sects = getSectPr(parsed);
 	}
 	postparse(parsed, { basePart }) {
 		if (basePart) {
@@ -316,6 +316,52 @@ class LoopModule {
 			lastOffset = 0;
 		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
+	}
+	resolve(part, options) {
+		if (!isModule(part, moduleName)) {
+			return null;
+		}
+
+		const sm = options.scopeManager;
+		const promisedValue = sm.getValueAsync(part.value, { part });
+		const promises = [];
+		function loopOver(scope, i, length) {
+			const scopeManager = sm.createSubScopeManager(
+				scope,
+				part.value,
+				i,
+				part,
+				length
+			);
+			promises.push(
+				options.resolve({
+					filePath: options.filePath,
+					modules: options.modules,
+					baseNullGetter: options.baseNullGetter,
+					resolve: options.resolve,
+					compiled: part.subparsed,
+					tags: {},
+					scopeManager,
+				})
+			);
+		}
+		const errorList = [];
+		return promisedValue.then(function (value) {
+			sm.loopOverValue(value, loopOver, part.inverted);
+			return Promise.all(promises)
+				.then(function (r) {
+					return r.map(function ({ resolved, errors }) {
+						errorList.push(...errors);
+						return resolved;
+					});
+				})
+				.then(function (value) {
+					if (errorList.length > 0) {
+						throw errorList;
+					}
+					return value;
+				});
+		});
 	}
 	// eslint-disable-next-line complexity
 	render(part, options) {
@@ -425,52 +471,6 @@ class LoopModule {
 			value: options.joinUncorrupt(totalValue, { ...options, basePart: part }),
 			errors,
 		};
-	}
-	resolve(part, options) {
-		if (!isModule(part, moduleName)) {
-			return null;
-		}
-
-		const sm = options.scopeManager;
-		const promisedValue = sm.getValueAsync(part.value, { part });
-		const promises = [];
-		function loopOver(scope, i, length) {
-			const scopeManager = sm.createSubScopeManager(
-				scope,
-				part.value,
-				i,
-				part,
-				length
-			);
-			promises.push(
-				options.resolve({
-					filePath: options.filePath,
-					modules: options.modules,
-					baseNullGetter: options.baseNullGetter,
-					resolve: options.resolve,
-					compiled: part.subparsed,
-					tags: {},
-					scopeManager,
-				})
-			);
-		}
-		const errorList = [];
-		return promisedValue.then(function (value) {
-			sm.loopOverValue(value, loopOver, part.inverted);
-			return Promise.all(promises)
-				.then(function (r) {
-					return r.map(function ({ resolved, errors }) {
-						errorList.push(...errors);
-						return resolved;
-					});
-				})
-				.then(function (value) {
-					if (errorList.length > 0) {
-						throw errorList;
-					}
-					return value;
-				});
-		});
 	}
 }
 

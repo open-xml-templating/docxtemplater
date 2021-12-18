@@ -49,22 +49,6 @@ class Render {
 		});
 		return { postparsed, errors };
 	}
-	recordRuns(part) {
-		if (part.tag === `${ftprefix[this.fileType]}:r`) {
-			this.recordedRun = [];
-		} else if (part.tag === `${ftprefix[this.fileType]}:rPr`) {
-			if (part.position === "start") {
-				this.recordRun = true;
-				this.recordedRun = [part.value];
-			}
-			if (part.position === "end") {
-				this.recordedRun.push(part.value);
-				this.recordRun = false;
-			}
-		} else if (this.recordRun) {
-			this.recordedRun.push(part.value);
-		}
-	}
 	render(part, { scopeManager, linebreaks, nullGetter }) {
 		if (linebreaks) {
 			this.recordRuns(part);
@@ -98,6 +82,22 @@ class Render {
 					? this.renderLineBreaks(value)
 					: utf8ToWord(value),
 		};
+	}
+	recordRuns(part) {
+		if (part.tag === `${ftprefix[this.fileType]}:r`) {
+			this.recordedRun = [];
+		} else if (part.tag === `${ftprefix[this.fileType]}:rPr`) {
+			if (part.position === "start") {
+				this.recordRun = true;
+				this.recordedRun = [part.value];
+			}
+			if (part.position === "end") {
+				this.recordedRun.push(part.value);
+				this.recordRun = false;
+			}
+		} else if (this.recordRun) {
+			this.recordedRun.push(part.value);
+		}
 	}
 	renderLineBreaks(value) {
 		const p = ftprefix[this.fileType];
