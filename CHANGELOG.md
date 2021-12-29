@@ -68,7 +68,7 @@ Tag names containing "non-breaking-spaces" (Ascii code 160) will be converted to
 
 Bugfix issue introduced in 3.27.0
 
-When using linebreaks: true, documents could be made corrupt on version 3.27.0
+When using the option `{linebreaks: true}`, documents could be made corrupt on version 3.27.0
 
 This version fixes the corruption
 
