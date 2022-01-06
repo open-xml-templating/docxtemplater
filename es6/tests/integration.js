@@ -13,10 +13,8 @@ const fixDocPrCorruption = require("../modules/fix-doc-pr-corruption.js");
 
 const printy = require("./printy.js");
 const { cloneDeep } = require("lodash");
-const {
-	expectedPrintedPostParsed,
-	rawXMLValue,
-} = require("./data-fixtures.js");
+const rawXMLValue = require("./data/raw-xml-pptx.js");
+const expectedPrintedPostParsed = require("./data/printy-postparsed.js");
 
 const angularParser = require("./angular-parser.js");
 const Errors = require("../errors.js");
