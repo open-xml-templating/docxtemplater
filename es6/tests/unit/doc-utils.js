@@ -3,8 +3,8 @@ const {
 	setSingleAttribute,
 	getSingleAttribute,
 	chunkBy,
-} = require("../doc-utils.js");
-const { expect } = require("./utils.js");
+} = require("../../doc-utils.js");
+const { expect } = require("../utils.js");
 
 describe("Uniq", function () {
 	it("should work", function () {

@@ -1,7 +1,7 @@
 const { assign } = require("lodash");
-const angularParser = require("./angular-parser.js");
-const Errors = require("../errors.js");
-const { wrapMultiError } = require("./utils.js");
+const angularParser = require("../angular-parser.js");
+const Errors = require("../../errors.js");
+const { wrapMultiError } = require("../utils.js");
 const nbsp = String.fromCharCode(160);
 
 const noInternals = {
@@ -80,20 +80,6 @@ const fixtures = [
 			user: "Foo",
 		},
 		result: '<w:t xml:space="preserve">Hi Foo</w:t>',
-		lexed: [
-			startText,
-			content("Hi "),
-			delimiters.start,
-			content("user"),
-			delimiters.end,
-			endText,
-		],
-		parsed: [
-			startText,
-			content("Hi "),
-			{ type: "placeholder", value: "user" },
-			endText,
-		],
 		xmllexed: [
 			{
 				position: "start",
@@ -113,6 +99,20 @@ const fixtures = [
 				type: "tag",
 				value: "</w:t>",
 			},
+		],
+		lexed: [
+			startText,
+			content("Hi "),
+			delimiters.start,
+			content("user"),
+			delimiters.end,
+			endText,
+		],
+		parsed: [
+			startText,
+			content("Hi "),
+			{ type: "placeholder", value: "user" },
+			endText,
 		],
 		postparsed: [
 			xmlSpacePreserveTag,
@@ -252,19 +252,6 @@ const fixtures = [
 		},
 		result:
 			'<w:t xml:space="preserve">Foo 12</w:t>FOO<w:t></w:t>BAR<w:t></w:t>',
-		parsed: [
-			startText,
-			{ type: "placeholder", value: "name" },
-			content(" "),
-			{ type: "placeholder", value: "age" },
-			endText,
-			externalContent("FOO"),
-			startText,
-			endText,
-			externalContent("BAR"),
-			startText,
-			endText,
-		],
 		xmllexed: [
 			startText,
 			{ type: "content", value: "{name} {" },
@@ -293,6 +280,19 @@ const fixtures = [
 			externalContent("BAR"),
 			startText,
 			delimiters.end,
+			endText,
+		],
+		parsed: [
+			startText,
+			{ type: "placeholder", value: "name" },
+			content(" "),
+			{ type: "placeholder", value: "age" },
+			endText,
+			externalContent("FOO"),
+			startText,
+			endText,
+			externalContent("BAR"),
+			startText,
 			endText,
 		],
 		postparsed: null,
@@ -418,9 +418,6 @@ const fixtures = [
 	{
 		it: "should show multierror with loops",
 		content: "<w:t>{#a}{b}{/a}</w:t>",
-		scope: {
-			a: [1],
-		},
 		options: {
 			parser(tag) {
 				return {
@@ -434,7 +431,9 @@ const fixtures = [
 				};
 			},
 		},
-		errorType: Errors.XTTemplateError,
+		scope: {
+			a: [1],
+		},
 		error: wrapMultiError({
 			name: "ScopeParserError",
 			message: "Scope parser execution failed",
@@ -450,6 +449,7 @@ const fixtures = [
 				offset: 4,
 			},
 		}),
+		errorType: Errors.XTTemplateError,
 		...noInternals,
 	},
 	{
@@ -509,6 +509,9 @@ const fixtures = [
 		it: "should work with paragraph loops",
 		content:
 			"<w:p><w:t>Hello </w:t></w:p><w:p><w:t>{#users}</w:t></w:p><w:p><w:t>User {.}</w:t></w:p><w:p><w:t>{/users}</w:t></w:p>",
+		options: {
+			paragraphLoop: true,
+		},
 		scope: {
 			users: ["John Doe", "Jane Doe", "Wane Doe"],
 		},
@@ -598,9 +601,6 @@ const fixtures = [
 				],
 			},
 		],
-		options: {
-			paragraphLoop: true,
-		},
 	},
 	{
 		it: "should not fail with nested loops if using paragraphLoop",
@@ -626,10 +626,10 @@ const fixtures = [
 	{
 		it: "should work with spacing loops",
 		content: "<w:t>{#condition</w:t><w:t>} hello{/</w:t><w:t>condition}</w:t>",
-		result: '<w:t/><w:t xml:space="preserve"> hello</w:t><w:t></w:t>',
 		scope: {
 			condition: true,
 		},
+		result: '<w:t/><w:t xml:space="preserve"> hello</w:t><w:t></w:t>',
 		lexed: [
 			startText,
 			delimiters.start,
@@ -975,7 +975,6 @@ const fixtures = [
 	{
 		it: "should be possible to change the delimiters",
 		content: "<w:t>Hi {=a b c=}</w:t>",
-		errorType: Errors.XTTemplateError,
 		error: {
 			name: "TemplateError",
 			message: "New Delimiters cannot be parsed",
@@ -983,11 +982,11 @@ const fixtures = [
 				id: "change_delimiters_invalid",
 			},
 		},
+		errorType: Errors.XTTemplateError,
 	},
 	{
 		it: "should be possible to change the delimiters",
 		content: "<w:t>Hi {= =}</w:t>",
-		errorType: Errors.XTTemplateError,
 		error: {
 			name: "TemplateError",
 			message: "New Delimiters cannot be parsed",
@@ -995,6 +994,7 @@ const fixtures = [
 				id: "change_delimiters_invalid",
 			},
 		},
+		errorType: Errors.XTTemplateError,
 	},
 	{
 		it: "should be possible to change the delimiters with complex example",
@@ -1036,7 +1036,6 @@ const fixtures = [
 	{
 		it: "should resolve the data correctly",
 		content: "<w:t>{test}{#test}{label}{/test}{test}</w:t>",
-		result: '<w:t xml:space="preserve">trueT1true</w:t>',
 		scope: {
 			label: "T1",
 			test: true,
@@ -1066,12 +1065,12 @@ const fixtures = [
 				lIndex: 6,
 			},
 		],
+		result: '<w:t xml:space="preserve">trueT1true</w:t>',
 		...noInternals,
 	},
 	{
 		it: "should resolve 2 the data correctly",
 		content: "<w:t>{^a}{label}{/a}</w:t>",
-		result: "<w:t/>",
 		scope: {
 			a: true,
 		},
@@ -1082,13 +1081,13 @@ const fixtures = [
 				lIndex: 3,
 			},
 		],
+		result: "<w:t/>",
 		...noInternals,
 	},
 	{
 		it: "should resolve 3 the data correctly",
 		content:
 			"<w:t>{#frames}{#true}{label}{#false}{label}{/false}{/true}{#false}{label}{/false}{/frames}</w:t>",
-		result: '<w:t xml:space="preserve">T1</w:t>',
 		scope: {
 			frames: [
 				{
@@ -1130,13 +1129,13 @@ const fixtures = [
 				lIndex: 3,
 			},
 		],
+		result: '<w:t xml:space="preserve">T1</w:t>',
 		...noInternals,
 	},
 	{
 		it: "should resolve truthy data correctly",
 		content:
 			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
-		result: '<w:t xml:space="preserve">Linner</w:t>',
 		scope: {
 			label: "outer",
 			loop: [
@@ -1146,6 +1145,7 @@ const fixtures = [
 				},
 			],
 		},
+		result: '<w:t xml:space="preserve">Linner</w:t>',
 		...noInternals,
 		resolved: null,
 	},
@@ -1153,7 +1153,6 @@ const fixtures = [
 		it: "should resolve truthy multi data correctly",
 		content:
 			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
-		result: '<w:t xml:space="preserve">LinnerLinnerLinnerLouterouter</w:t>',
 		scope: {
 			label: "outer",
 			loop: [
@@ -1175,13 +1174,13 @@ const fixtures = [
 				},
 			],
 		},
+		result: '<w:t xml:space="preserve">LinnerLinnerLinnerLouterouter</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should resolve async loop",
 		content: "<w:t>{#loop}{#cond1}{label}{/}{#cond2}{label}{/}{/loop}</w:t>",
-		result: '<w:t xml:space="preserve">innerouterouter</w:t>',
 		scope: {
 			label: "outer",
 			loop: [
@@ -1195,37 +1194,38 @@ const fixtures = [
 				},
 			],
 		},
+		result: '<w:t xml:space="preserve">innerouterouter</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work well with inversed loop simple",
 		content: "<w:t>{^b}{label}{/}</w:t>",
-		result: '<w:t xml:space="preserve">hi</w:t>',
 		scope: {
 			b: false,
 			label: "hi",
 		},
+		result: '<w:t xml:space="preserve">hi</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work well with nested inversed loop",
 		content: "<w:t>{#a}{^b}{label}{/}{/}</w:t>",
-		result: '<w:t xml:space="preserve">hi</w:t>',
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
+		result: '<w:t xml:space="preserve">hi</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work well with deeply nested inversed loop nested",
 		content: "<w:t>{#a}{^b}{^c}{label}{/}{/}{/}</w:t>",
-		result: '<w:t xml:space="preserve">hi</w:t>',
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
+		result: '<w:t xml:space="preserve">hi</w:t>',
 		...noInternals,
 		resolved: null,
 	},
@@ -1233,16 +1233,16 @@ const fixtures = [
 		it: "should work well with true value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
-		result: '<w:t xml:space="preserve">low</w:t>',
+		options: {
+			parser: angularParser,
+		},
 		scope: {
 			cond: true,
 			product: {
 				price: 2,
 			},
 		},
-		options: {
-			parser: angularParser,
-		},
+		result: '<w:t xml:space="preserve">low</w:t>',
 		...noInternals,
 		resolved: null,
 	},
@@ -1250,16 +1250,16 @@ const fixtures = [
 		it: "should work well with int value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
-		result: '<w:t xml:space="preserve">low</w:t>',
+		options: {
+			parser: angularParser,
+		},
 		scope: {
 			cond: 10,
 			product: {
 				price: 2,
 			},
 		},
-		options: {
-			parser: angularParser,
-		},
+		result: '<w:t xml:space="preserve">low</w:t>',
 		...noInternals,
 		resolved: null,
 	},
@@ -1267,16 +1267,16 @@ const fixtures = [
 		it: "should work well with str value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
-		result: '<w:t xml:space="preserve">low</w:t>',
+		options: {
+			parser: angularParser,
+		},
 		scope: {
 			cond: "cond",
 			product: {
 				price: 2,
 			},
 		},
-		options: {
-			parser: angularParser,
-		},
+		result: '<w:t xml:space="preserve">low</w:t>',
 		...noInternals,
 		resolved: null,
 	},
@@ -1284,16 +1284,16 @@ const fixtures = [
 		it: "should work well with false value for condition",
 		content:
 			"<w:t>{^cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
-		result: '<w:t xml:space="preserve">low</w:t>',
+		options: {
+			parser: angularParser,
+		},
 		scope: {
 			cond: false,
 			product: {
 				price: 2,
 			},
 		},
-		options: {
-			parser: angularParser,
-		},
+		result: '<w:t xml:space="preserve">low</w:t>',
 		...noInternals,
 		resolved: null,
 	},
@@ -1301,7 +1301,9 @@ const fixtures = [
 		it: "should work well with multi level angular parser",
 		// This tag was designed to match /-([^\s]+)\s(.+)$/ which is the prefix of the dash loop
 		content: "<w:t>{#users}{name} {date-age+ offset} {/}</w:t>",
-		result: '<w:t xml:space="preserve">John 1976 Mary 1998 Walt 2079 </w:t>',
+		options: {
+			parser: angularParser,
+		},
 		scope: {
 			date: 2019,
 			offset: 1,
@@ -1311,9 +1313,7 @@ const fixtures = [
 				{ date: 2100, age: 22, name: "Walt" },
 			],
 		},
-		options: {
-			parser: angularParser,
-		},
+		result: '<w:t xml:space="preserve">John 1976 Mary 1998 Walt 2079 </w:t>',
 		...noInternals,
 		resolved: null,
 	},
@@ -1321,22 +1321,24 @@ const fixtures = [
 		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
 		content:
 			"<w:p><w:r><w:t>{#cond}</w:t></w:r></w:p><w:tbl><w:tr><w:tc><w:p><w:r><w:t>{-w:tc cond}{val}{/}</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p><w:r><w:t>{/}</w:t></w:r></w:p>",
-		result:
-			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
+		options: {
+			paragraphLoop: true,
+		},
 		scope: {
 			cond: true,
 			val: "yep",
 		},
-		options: {
-			paragraphLoop: true,
-		},
+		result:
+			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work well with nested angular expressions",
 		content: "<w:t>{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}</w:t>",
-		result: '<w:t xml:space="preserve">0123</w:t>',
+		options: {
+			parser: angularParser,
+		},
 		scope: {
 			v: "0",
 			c1: {
@@ -1349,66 +1351,64 @@ const fixtures = [
 				},
 			},
 		},
-		options: {
-			parser: angularParser,
-		},
+		result: '<w:t xml:space="preserve">0123</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work with this with angular expressions",
 		content: "<w:t>{#hello}{this}{/hello}</w:t>",
-		result: '<w:t xml:space="preserve">world</w:t>',
-		scope: { hello: ["world"] },
 		options: {
 			parser: angularParser,
 		},
+		scope: { hello: ["world"] },
+		result: '<w:t xml:space="preserve">world</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should get parent prop if child is null",
 		content: "<w:t>{#c}{label}{/c}</w:t>",
-		result: '<w:t xml:space="preserve">hello</w:t>',
-		scope: { c: { label: null }, label: "hello" },
 		options: {
 			parser: angularParser,
 		},
+		scope: { c: { label: null }, label: "hello" },
+		result: '<w:t xml:space="preserve">hello</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work when using double nested arrays",
 		content: "<w:t>{#a}</w:t><w:t>{this}</w:t><w:t>{/}</w:t>",
-		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
-		scope: { a: [["first-part", "other-part"]] },
 		options: {
 			parser: angularParser,
 		},
+		scope: { a: [["first-part", "other-part"]] },
+		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work when using angular assignment that is already in the scope",
 		content: "<w:t>{b=a}{b}</w:t>",
-		result: '<w:t xml:space="preserve">10</w:t>',
-		scope: { a: 10, b: 5 },
 		options: {
 			parser: angularParser,
 		},
+		scope: { a: 10, b: 5 },
+		result: '<w:t xml:space="preserve">10</w:t>',
 		...noInternals,
 		resolved: null,
 	},
 	{
 		it: "should work with linebreaks",
 		content: "<w:t>{b}</w:t>",
-		result:
-			'<w:t xml:space="preserve">Hello</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Foo</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Bar</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t/>',
-		scope: { b: "Hello\n\nFoo\n\nBar\n\n" },
 		options: {
 			linebreaks: true,
 			parser: angularParser,
 		},
+		scope: { b: "Hello\n\nFoo\n\nBar\n\n" },
+		result:
+			'<w:t xml:space="preserve">Hello</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Foo</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Bar</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t/>',
 		...noInternals,
 	},
 	{
@@ -1417,7 +1417,6 @@ const fixtures = [
 		<w:tr><w:tc><w:p><w:r><w:t>{#c1}A</w:t></w:r></w:p></w:tc></w:tr>
 		<w:tr><w:tc><w:p><w:r><w:t>{/}{#c2}B</w:t></w:r><w:r><w:t>{/}</w:t></w:r></w:p></w:tc></w:tr>
 </w:tbl>`,
-		errorType: Errors.XTTemplateError,
 		error: wrapMultiError({
 			name: "TemplateError",
 			message: "Unbalanced loop tag",
@@ -1436,11 +1435,11 @@ const fixtures = [
 				},
 			},
 		}),
+		errorType: Errors.XTTemplateError,
 	},
 	{
 		it: "should not escape explanation for unclosed tag with &&",
 		content: "<w:t>Unclosed tag : {Hi&amp;&amp;Ho</w:t>",
-		errorType: Errors.XTTemplateError,
 		error: wrapMultiError({
 			name: "TemplateError",
 			message: "Unclosed tag",
@@ -1453,11 +1452,11 @@ const fixtures = [
 				offset: 15,
 			},
 		}),
+		errorType: Errors.XTTemplateError,
 	},
 	{
 		it: "should not escape explanation for unopened tag with &&",
 		content: "<w:t>&&foo}</w:t>",
-		errorType: Errors.XTTemplateError,
 		error: wrapMultiError({
 			name: "TemplateError",
 			message: "Unopened tag",
@@ -1470,11 +1469,11 @@ const fixtures = [
 				offset: null,
 			},
 		}),
+		errorType: Errors.XTTemplateError,
 	},
 	{
 		it: "should not escape explanation for unclosed loop with &&",
 		content: "<w:t>Unclosed tag : {#Hi&amp;&amp;Ho}{/%%>&lt;&&bar}</w:t>",
-		errorType: Errors.XTTemplateError,
 		error: wrapMultiError({
 			name: "TemplateError",
 			message: "Closing tag does not match opening tag",
@@ -1487,11 +1486,11 @@ const fixtures = [
 				offset: [15, 32],
 			},
 		}),
+		errorType: Errors.XTTemplateError,
 	},
 	{
 		it: "should not escape explanation for duplicate opening with &&",
 		content: "<w:t>Unclosed tag : {Hi&amp;&amp;{foo</w:t>",
-		errorType: Errors.XTTemplateError,
 		error: {
 			message: "Multi error",
 			name: "TemplateError",
@@ -1525,6 +1524,7 @@ const fixtures = [
 				],
 			},
 		},
+		errorType: Errors.XTTemplateError,
 	},
 	{
 		it: "should add space=preserve to last tag",
@@ -1593,8 +1593,8 @@ const fixtures = [
 	{
 		it: "should parse self closing tags",
 		...noInternals,
-		result: null,
 		content: '<w:pPr><w:spacing w:line="360" w:lineRule="auto"/></w:pPr>',
+		result: null,
 		xmllexed: [
 			{
 				position: "start",
@@ -2039,7 +2039,6 @@ fixtures.push({
 	...rawXmlTest,
 	it: "should throw error with rawxml with scope that is an integer",
 	scope: { rawxml: 11 },
-	errorType: Errors.XTTemplateError,
 	error: wrapMultiError({
 		name: "RenderingError",
 		message: "Non string values are not allowed for rawXML tags",
@@ -2052,6 +2051,7 @@ fixtures.push({
 			offset: 0,
 		},
 	}),
+	errorType: Errors.XTTemplateError,
 });
 
 fixtures.forEach(function (fixture) {

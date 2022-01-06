@@ -1,6 +1,5 @@
-const { loadFile, loadDocument, rejectSoon } = require("./utils.js");
-const Errors = require("../errors.js");
-const { expect } = require("chai");
+const { loadFile, loadDocument, rejectSoon, expect } = require("../utils.js");
+const Errors = require("../../errors.js");
 const {
 	createXmlTemplaterDocx,
 	createXmlTemplaterDocxNoRender,
@@ -8,9 +7,8 @@ const {
 	expectToThrow,
 	expectToThrowAsync,
 	captureLogs,
-} = require("./utils.js");
-
-const angularParser = require("./angular-parser.js");
+} = require("../utils.js");
+const angularParser = require("../angular-parser.js");
 
 describe("Compilation errors", function () {
 	it("should fail when parsing invalid xml (1)", function () {

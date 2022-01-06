@@ -14,6 +14,11 @@ class Render {
 		this.recordRun = false;
 		this.recordedRun = [];
 	}
+	optionsTransformer(options, docxtemplater) {
+		this.parser = docxtemplater.parser;
+		this.fileType = docxtemplater.fileType;
+		return options;
+	}
 	set(obj) {
 		if (obj.compiled) {
 			this.compiled = obj.compiled;
@@ -28,11 +33,7 @@ class Render {
 			return mapper;
 		}, mapper);
 	}
-	optionsTransformer(options, docxtemplater) {
-		this.parser = docxtemplater.parser;
-		this.fileType = docxtemplater.fileType;
-		return options;
-	}
+
 	postparse(postparsed, options) {
 		const errors = [];
 		postparsed.forEach((p) => {

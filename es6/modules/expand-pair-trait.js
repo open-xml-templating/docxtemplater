@@ -1,5 +1,5 @@
 const traitName = "expandPair";
-const mergeSort = require("../mergesort.js");
+const mergeSort = require("../merge-sort.js");
 const { getLeft, getRight } = require("../doc-utils.js");
 
 const wrapper = require("../module-wrapper.js");

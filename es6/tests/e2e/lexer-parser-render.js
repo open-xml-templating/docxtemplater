@@ -5,12 +5,12 @@ const {
 	cleanRecursive,
 	errorVerifier,
 	captureLogs,
-} = require("./utils.js");
+} = require("../utils.js");
 
 const fixtures = require("./fixtures.js");
-const inspectModule = require("../inspect-module.js");
-const AssertionModule = require("./assertion-module.js");
-const utf8decode = require("../uintarray-to-string.js");
+const inspectModule = require("../../inspect-module.js");
+const AssertionModule = require("../assertion-module.js");
+const utf8decode = require("../../uintarray-to-string.js");
 
 function expectations(iModule, fixture) {
 	cleanRecursive(iModule.inspect);

@@ -53,15 +53,6 @@ class InspectModule {
 		this.fileType = docxtemplater.fileType;
 		return options;
 	}
-	on(eventName) {
-		if (eventName === "attached") {
-			this.attached = false;
-			this.inspect = {};
-			this.fullInspected = {};
-			this.filePath = null;
-			this.nullValues = [];
-		}
-	}
 	// eslint-disable-next-line complexity
 	set(obj) {
 		if (obj.data) {
@@ -89,6 +80,16 @@ class InspectModule {
 			this.fullInspected[this.filePath] = this.inspect;
 		}
 	}
+	on(eventName) {
+		if (eventName === "attached") {
+			this.attached = false;
+			this.inspect = {};
+			this.fullInspected = {};
+			this.filePath = null;
+			this.nullValues = [];
+		}
+	}
+
 	nullGetter(part, scopeManager, xt) {
 		const inspected = this.fullInspected[xt.filePath];
 		inspected.nullValues = inspected.nullValues || { summary: [], detail: [] };

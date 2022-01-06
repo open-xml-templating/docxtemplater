@@ -5,10 +5,10 @@ const {
 	isNode14,
 	createDocV4,
 	captureLogs,
-} = require("./utils.js");
-const Errors = require("../errors.js");
-const { expect } = require("chai");
-const { xml2str, traits } = require("../doc-utils.js");
+	expect,
+} = require("../utils.js");
+const Errors = require("../../errors.js");
+const { xml2str, traits } = require("../../doc-utils.js");
 
 describe("Verify apiversion", function () {
 	it("should work with valid api version", function () {

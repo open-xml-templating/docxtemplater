@@ -1,6 +1,6 @@
-const xmlMatcher = require("../xml-matcher.js");
-const { expect } = require("./utils.js");
-const xmlprettify = require("./xml-prettify.js");
+const xmlMatcher = require("../../xml-matcher.js");
+const { expect } = require("../utils.js");
+const xmlprettify = require("../xml-prettify.js");
 
 describe("XmlMatcher", function () {
 	it("should work with simple tag", function () {

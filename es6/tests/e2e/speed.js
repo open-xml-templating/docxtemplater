@@ -1,12 +1,12 @@
+const { times } = require("lodash");
+
 const {
 	createDoc,
 	expect,
 	createXmlTemplaterDocxNoRender,
 	browserMatches,
-} = require("./utils.js");
-
-const { times } = require("lodash");
-const inspectModule = require("../inspect-module.js");
+} = require("../utils.js");
+const inspectModule = require("../../inspect-module.js");
 
 /* eslint-disable-next-line no-process-env */
 if (!process.env.SPEED_TEST) {

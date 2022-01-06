@@ -106,35 +106,6 @@ const parser = {
 		}
 		return { preparsed: preparse(parsed, options) };
 	},
-	postparse(postparsed, modules, options) {
-		function getTraits(traitName, postparsed) {
-			return modules.map(function (module) {
-				return module.getTraits(traitName, postparsed);
-			});
-		}
-		const errors = [];
-		function postparse(postparsed, options) {
-			return modules.reduce(function (postparsed, module) {
-				const r = module.postparse(postparsed, {
-					...options,
-					postparse: (parsed, opts) => {
-						return postparse(parsed, { ...options, ...opts });
-					},
-					getTraits,
-				});
-				if (r == null) {
-					return postparsed;
-				}
-				if (r.errors) {
-					Array.prototype.push.apply(errors, r.errors);
-					return r.postparsed;
-				}
-				return r;
-			}, postparsed);
-		}
-		return { postparsed: postparse(postparsed, options), errors };
-	},
-
 	parse(lexed, modules, options) {
 		let inPlaceHolder = false;
 		let placeHolderContent = "";
@@ -173,6 +144,35 @@ const parser = {
 			placeHolderContent += token.value;
 			return parsed;
 		}, []);
+	},
+
+	postparse(postparsed, modules, options) {
+		function getTraits(traitName, postparsed) {
+			return modules.map(function (module) {
+				return module.getTraits(traitName, postparsed);
+			});
+		}
+		const errors = [];
+		function postparse(postparsed, options) {
+			return modules.reduce(function (postparsed, module) {
+				const r = module.postparse(postparsed, {
+					...options,
+					postparse: (parsed, opts) => {
+						return postparse(parsed, { ...options, ...opts });
+					},
+					getTraits,
+				});
+				if (r == null) {
+					return postparsed;
+				}
+				if (r.errors) {
+					Array.prototype.push.apply(errors, r.errors);
+					return r.postparsed;
+				}
+				return r;
+			}, postparsed);
+		}
+		return { postparsed: postparse(postparsed, options), errors };
 	},
 };
 

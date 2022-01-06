@@ -204,6 +204,7 @@ class LoopModule {
 	preparse(parsed) {
 		this.sects = getSectPr(parsed);
 	}
+
 	matchers() {
 		const module = moduleName;
 		return [

@@ -7,16 +7,21 @@ if (path.resolve) {
 setStartFunction(startTest);
 
 function startTest() {
-	require("./base.js");
-	require("./xml-templater.js");
-	require("./xml-matcher.js");
-	require("./errors.js");
-	require("./speed.js");
-	require("./lexer-parser-render.js");
-	require("./integration.js");
-	require("./doc-props.js");
-	require("./modules.js");
-	require("./doc-utils.js");
+	require("./e2e/base.js");
+	require("./e2e/xml-templater.js");
+	require("./e2e/errors.js");
+	require("./e2e/speed.js");
+	require("./e2e/lexer-parser-render.js");
+	require("./e2e/integration.js");
+	require("./e2e/doc-props.js");
+	require("./e2e/modules.js");
+	require("./e2e/pptx.js");
+	require("./e2e/table.js");
+	require("./e2e/async.js");
+
+	require("./unit/xml-matcher.js");
+	require("./unit/doc-utils.js");
+	require("./unit/merge-sort.js");
 }
 
 start();
