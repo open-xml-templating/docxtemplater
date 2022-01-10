@@ -18,12 +18,6 @@ function render(options) {
 	options.nullGetter = (part, sm) => {
 		return baseNullGetter(part, sm || scopeManager);
 	};
-	if (!options.prefix) {
-		options.prefix = "";
-	}
-	if (options.index) {
-		options.prefix = options.prefix + options.index + "-";
-	}
 	const errors = [];
 	const parts = compiled
 		.map(function (part, i) {
