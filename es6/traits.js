@@ -199,7 +199,7 @@ function getExpandLimit(part, index, postparsed, options) {
 	const expandTo = part.expandTo || options.expandTo;
 	// Stryker disable all : because this condition can be removed in v4 (the only usage was the image module before version 3.12.3 of the image module
 	if (!expandTo) {
-		return postparsed;
+		return;
 	}
 	// Stryker restore all
 	let right, left;
@@ -255,7 +255,11 @@ function expandToOne(postparsed, options) {
 		const part = postparsed[i];
 		if (part.type === "placeholder" && part.module === options.moduleName) {
 			try {
-				const [left, right] = getExpandLimit(part, i, postparsed, options);
+				const limit = getExpandLimit(part, i, postparsed, options);
+				if (!limit) {
+					continue;
+				}
+				const [left, right] = limit;
 				limits.push({
 					left,
 					right,

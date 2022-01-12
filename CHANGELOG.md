@@ -1,3 +1,7 @@
+### 3.28.4
+
+Bugfix issue introduced in 3.28.3 when using expandOne trait
+
 ### 3.28.3
 
 Update expandOne trait to work even when having nested `<w:p>` and `<w:txbxContent>` tags
