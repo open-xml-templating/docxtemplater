@@ -195,7 +195,7 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 	return {};
 }
 
-function expandOne(part, index, postparsed, options) {
+function getExpandLimit(part, index, postparsed, options) {
 	const expandTo = part.expandTo || options.expandTo;
 	// Stryker disable all : because this condition can be removed in v4 (the only usage was the image module before version 3.12.3 of the image module
 	if (!expandTo) {
@@ -219,6 +219,12 @@ function expandOne(part, index, postparsed, options) {
 		}
 		throw rootError;
 	}
+
+	return [left, right];
+}
+
+function expandOne([left, right], part, postparsed, options) {
+	const index = postparsed.indexOf(part);
 	const leftParts = postparsed.slice(left, index);
 	const rightParts = postparsed.slice(index + 1, right + 1);
 	let inner = options.getInner({
@@ -244,14 +250,20 @@ function expandToOne(postparsed, options) {
 		errors = postparsed.errors;
 		postparsed = postparsed.postparsed;
 	}
-	const results = [];
+	const limits = [];
 	for (let i = 0, len = postparsed.length; i < len; i++) {
 		const part = postparsed[i];
 		if (part.type === "placeholder" && part.module === options.moduleName) {
 			try {
-				const result = expandOne(part, i, postparsed, options);
-				i = result.right;
-				results.push(result);
+				const [left, right] = getExpandLimit(part, i, postparsed, options);
+				limits.push({
+					left,
+					right,
+					part,
+					i,
+					leftPart: postparsed[left],
+					rightPart: postparsed[right],
+				});
 			} catch (error) {
 				if (error instanceof XTTemplateError) {
 					errors.push(error);
@@ -261,20 +273,46 @@ function expandToOne(postparsed, options) {
 			}
 		}
 	}
-	const newParsed = [];
-	let currentResult = 0;
-	for (let i = 0, len = postparsed.length; i < len; i++) {
-		const part = postparsed[i];
-		const result = results[currentResult];
-		if (result && result.left === i) {
-			newParsed.push(...results[currentResult].inner);
-			currentResult++;
-			i = result.right;
-		} else {
-			newParsed.push(part);
+	limits.sort(function (l1, l2) {
+		if (l1.left === l2.left) {
+			return l2.part.lIndex < l1.part.lIndex ? 1 : -1;
 		}
-	}
-	return { postparsed: newParsed, errors };
+		return l2.left < l1.left ? 1 : -1;
+	});
+	let maxRight = -1;
+	let offset = 0;
+
+	limits.forEach(function (limit, i) {
+		maxRight = Math.max(maxRight, i > 0 ? limits[i - 1].right : 0);
+		if (limit.left < maxRight) {
+			return;
+		}
+		let result;
+		try {
+			result = expandOne(
+				[limit.left + offset, limit.right + offset],
+				limit.part,
+				postparsed,
+				options
+			);
+		} catch (error) {
+			if (error instanceof XTTemplateError) {
+				errors.push(error);
+			} else {
+				throw error;
+			}
+		}
+		if (!result) {
+			return;
+		}
+		offset += result.inner.length - (result.right + 1 - result.left);
+		postparsed.splice(
+			result.left,
+			result.right + 1 - result.left,
+			...result.inner
+		);
+	});
+	return { postparsed, errors };
 }
 
 module.exports = {

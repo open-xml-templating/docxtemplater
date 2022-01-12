@@ -1,3 +1,11 @@
+### 3.28.3
+
+Update expandOne trait to work even when having nested `<w:p>` and `<w:txbxContent>` tags
+
+Fixes issue in the styling module in particular.
+
+This release might slow down documents having many rawxml tags
+
 ### 3.28.2
 
 Throw specific error when using rawxml tag and the type of the output is not a string.

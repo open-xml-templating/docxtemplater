@@ -138,7 +138,7 @@ if (!process.env.SPEED_TEST) {
 				expect(renderDuration).to.be.below(2000);
 			});
 
-			it("should not exceed call stack size for big document with many rawxml tags", function () {
+			it.skip("should not exceed call stack size for big document with many rawxml tags", function () {
 				this.timeout(30000);
 				const result = [];
 				const normalContent = "<w:p><w:r><w:t>foo</w:t></w:r></w:p>";
