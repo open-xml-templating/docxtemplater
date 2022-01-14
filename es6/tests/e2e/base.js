@@ -110,7 +110,7 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 30, 0],
+					currentModuleApiVersion: [3, 31, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -125,14 +125,14 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 30, 0],
+					currentModuleApiVersion: [3, 31, 0],
 					neededVersion: [3, 44, 0],
 				},
 			}
 		);
 
 		expectToThrow(
-			doc.verifyApiVersion.bind(null, "3.30.100"),
+			doc.verifyApiVersion.bind(null, "3.31.100"),
 			Errors.XTAPIVersionError,
 			{
 				message:
@@ -140,8 +140,8 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 30, 0],
-					neededVersion: [3, 30, 100],
+					currentModuleApiVersion: [3, 31, 0],
+					neededVersion: [3, 31, 100],
 				},
 			}
 		);
@@ -197,6 +197,18 @@ describe("Inspect module", function () {
 			[
 				"ppt/slides/slide1.xml",
 				"ppt/slides/slide2.xml",
+				"ppt/slideLayouts/slideLayout1.xml",
+				"ppt/slideLayouts/slideLayout10.xml",
+				"ppt/slideLayouts/slideLayout11.xml",
+				"ppt/slideLayouts/slideLayout12.xml",
+				"ppt/slideLayouts/slideLayout2.xml",
+				"ppt/slideLayouts/slideLayout3.xml",
+				"ppt/slideLayouts/slideLayout4.xml",
+				"ppt/slideLayouts/slideLayout5.xml",
+				"ppt/slideLayouts/slideLayout6.xml",
+				"ppt/slideLayouts/slideLayout7.xml",
+				"ppt/slideLayouts/slideLayout8.xml",
+				"ppt/slideLayouts/slideLayout9.xml",
 				"ppt/slideMasters/slideMaster1.xml",
 				"ppt/presentation.xml",
 				"docProps/app.xml",

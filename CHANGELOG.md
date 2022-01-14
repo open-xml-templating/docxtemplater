@@ -1,3 +1,9 @@
+### 3.28.5
+
+Add slideLayout files to list of templated files
+
+Internal update of moduleApiVersion to 3.31.0
+
 ### 3.28.4
 
 Bugfix issue introduced in 3.28.3 when using expandOne trait
