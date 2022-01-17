@@ -201,8 +201,17 @@ class LoopModule {
 			inverted: "^",
 		};
 	}
-	preparse(parsed) {
-		this.sects = getSectPr(parsed);
+	optionsTransformer(opts, docxtemplater) {
+		this.docxtemplater = docxtemplater;
+		return opts;
+	}
+	preparse(parsed, { contentType }) {
+		if (
+			contentType ===
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+		) {
+			this.sects = getSectPr(parsed);
+		}
 	}
 
 	matchers() {
@@ -260,7 +269,7 @@ class LoopModule {
 		}, []);
 	}
 	postparse(parsed, { basePart }) {
-		if (basePart) {
+		if (basePart && this.docxtemplater.fileType === "docx") {
 			basePart.sectPrCount = getSectPrHeaderFooterChangeCount(parsed);
 			this.totalSectPr += basePart.sectPrCount;
 

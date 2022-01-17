@@ -1,3 +1,7 @@
+### 3.28.6
+
+Template document properties that are set inside `<vt:lpwstr>` in docProps/custom.xml
+
 ### 3.28.5
 
 Add slideLayout files to list of templated files

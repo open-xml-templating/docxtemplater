@@ -433,6 +433,7 @@ const Docxtemplater = class Docxtemplater {
 		this.targets.forEach((target) => {
 			this.templatedFiles.push(target);
 		});
+		this.templatedFiles = uniq(this.templatedFiles);
 		return this.templatedFiles;
 	}
 };

@@ -7,7 +7,7 @@ const render = require("./modules/render.js");
 function DocXFileTypeConfig() {
 	return {
 		getTemplatedFiles() {
-			return ["docProps/core.xml", "docProps/app.xml", "word/settings.xml"];
+			return [];
 		},
 		textPath(doc) {
 			return doc.targets[0];
@@ -26,6 +26,7 @@ function DocXFileTypeConfig() {
 			"w:t",
 			"m:t",
 			"vt:lpstr",
+			"vt:lpwstr",
 		],
 		tagsXmlLexedArray: [
 			"w:proofState",
@@ -70,7 +71,7 @@ function DocXFileTypeConfig() {
 function PptXFileTypeConfig() {
 	return {
 		getTemplatedFiles() {
-			return ["ppt/presentation.xml", "docProps/app.xml", "docProps/core.xml"];
+			return [];
 		},
 		textPath(doc) {
 			return doc.targets[0];
@@ -89,6 +90,7 @@ function PptXFileTypeConfig() {
 			"a:t",
 			"m:t",
 			"vt:lpstr",
+			"vt:lpwstr",
 		],
 		tagsXmlLexedArray: [
 			"p:sp",

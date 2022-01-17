@@ -24,4 +24,16 @@ describe("Docx docprops", function () {
 		expect(doc.getFullText("docProps/app.xml")).to.be.equal("TitleName: Hipp");
 		shouldBeSame({ doc, expectedName: "expected-tag-docprops.docx" });
 	});
+
+	it("should change custom values inside '<vt:lpwstr>' in file docProps/custom.xml", function () {
+		const doc = createDoc("tag-docprops-in-doc.docx");
+		doc.render({
+			first_name: "Hipp",
+			email: "john@acme.com",
+			last_name: "Edgar",
+			phone: "0652455478",
+			description: "New Website",
+		});
+		shouldBeSame({ doc, expectedName: "expected-tag-docprops-in-doc.docx" });
+	});
 });

@@ -337,17 +337,17 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 		doc.attachModule(module);
 		doc.setData({}).compile();
 		doc.render();
-		expect(renderFP).to.equal("word/footer1.xml");
+		expect(renderFP).to.equal("docProps/app.xml");
 		expect(renderCT).to.equal(
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
+			"application/vnd.openxmlformats-officedocument.extended-properties+xml"
 		);
-		expect(postparseFP).to.equal("word/footer1.xml");
+		expect(postparseFP).to.equal("docProps/app.xml");
 		expect(postparseCT).to.equal(
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
+			"application/vnd.openxmlformats-officedocument.extended-properties+xml"
 		);
-		expect(postrenderFP).to.equal("word/footer1.xml");
+		expect(postrenderFP).to.equal("docProps/app.xml");
 		expect(postrenderCT).to.equal(
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
+			"application/vnd.openxmlformats-officedocument.extended-properties+xml"
 		);
 
 		expect(filePaths).to.deep.equal([

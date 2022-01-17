@@ -17,6 +17,8 @@ const pptxSlideMaster =
 	"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
 const pptxSlideLayout =
 	"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
+const pptxPresentationContentType =
+	"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
 
 const filetypes = {
 	docx: [
@@ -27,7 +29,12 @@ const filetypes = {
 		headerContentType,
 		footerContentType,
 	],
-	pptx: [pptxContentType, pptxSlideMaster, pptxSlideLayout],
+	pptx: [
+		pptxContentType,
+		pptxSlideMaster,
+		pptxSlideLayout,
+		pptxPresentationContentType,
+	],
 };
 
 module.exports = filetypes;

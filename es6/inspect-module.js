@@ -49,8 +49,8 @@ class InspectModule {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		this.zip = docxtemplater.zip;
 		this.targets = docxtemplater.targets;
-		this.templatedFiles = docxtemplater.getTemplatedFiles();
 		this.fileType = docxtemplater.fileType;
+		this.docxtemplater = docxtemplater;
 		return options;
 	}
 	// eslint-disable-next-line complexity
@@ -121,7 +121,7 @@ class InspectModule {
 		return this.fileType;
 	}
 	getTemplatedFiles() {
-		return this.templatedFiles;
+		return this.docxtemplater.templatedFiles;
 	}
 }
 
