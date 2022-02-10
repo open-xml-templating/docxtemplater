@@ -76,8 +76,27 @@ describe("Module attachment", function () {
 			errMessage = e.message;
 		}
 		expect(errMessage).to.equal(
-			'Cannot attach a module that was already attached : "TestModule". Maybe you are instantiating the module at the root level, and using it for multiple instances of Docxtemplater'
+			'Cannot attach a module that was already attached : "TestModule". The most likely cause is that you are instantiating the module at the root level, and using it for multiple instances of Docxtemplater'
 		);
+	});
+
+	it("should allow to attach the same module twice if it has a clone method", function () {
+		const module = {
+			name: "TestModule",
+			requiredAPIVersion: "3.0.0",
+			render(part) {
+				return part.value;
+			},
+			clone() {
+				return this;
+			},
+		};
+		const doc1 = createDoc("loop-valid.docx");
+		doc1.attachModule(module);
+		const doc2 = createDoc("tag-example.docx");
+		doc2.attachModule(module);
+		const doc3 = createDoc("tag-example.docx");
+		doc3.attachModule(module);
 	});
 });
 
