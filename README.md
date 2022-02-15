@@ -35,9 +35,9 @@ Functionality can be added with paid modules.
 - [Image module](https://docxtemplater.com/modules/image/) to add a given image with the syntax: `{%image}`;
 - [Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document with the syntax `{~html}`;
 - [XLSX Module](https://docxtemplater.com/modules/xlsx) to be able to do templating on Excel files (xlsx extension), also with loops and conditions;
-- [Chart Module](https://docxtemplater.com/modules/chart/) to replace a chart by using data from the JSON object that you give with the syntax `{$chart};
+- [Chart Module](https://docxtemplater.com/modules/chart/) to replace a chart by using data from the JSON object that you give with the syntax `{$chart}`;
 - [Html-Pptx Module](https://docxtemplater.com/modules/html-pptx/) to insert formatted text in a pptx document with the syntax `{~html}`;
-- [Error Location Module](https://docxtemplater.com/modules/error-location) to show the errors in the template with comments inside the template;
+- [Error Location Module](https://docxtemplater.com/modules/error-location) to show the errors in the template using Word comments
 - [Slides Module](https://docxtemplater.com/modules/slides/) to create multiple slides dynamically with the syntax `{:users}`;
 - [Subtemplate Module](https://docxtemplater.com/modules/subtemplate) to include an external docx file inside a given docx file with the syntax `{:include doc}`;
 - [Subsection Module](https://docxtemplater.com/modules/subsection) to include subsections (headers/footers) from an other document with the syntax `{:subsection doc}`;
@@ -52,9 +52,11 @@ Functionality can be added with paid modules.
 
 ## Similar libraries
 
-There are a few similar libraries that work with docx, here’s a list of those I know a bit about:
+Docxtemplater is my main job, and has been maitained for over 8 years already. Expect to get great support if you buy any modules, and also good support on the open-source version.
 
-- [docx4j](https://www.docx4java.org/trac/docx4j) : JAVA, this is probably the biggest docx library out there. There is no built in templating engine, but you can generate your docx yourself programmatically.
-- [docx](https://github.com/dolanmiu/docx) : Javascript in the browser, you can create your docx from scratch, but not with template syntax, you need to "code your document" in Javascript.
-- [redocx](https://github.com/nitin42/redocx) : Create Docx document from scratch, using JSX syntax, last commit on December 2018.
-- [officegen](https://github.com/Ziv-Barber/officegen) : works only server side for the moment.
+There are a few alternative libraries that work with Word/Powerpoint documents, here’s a list of those I know a bit about:
+
+- [docx4j](https://www.docx4java.org/trac/docx4j) : JAVA, this is probably the biggest docx library out there. There is no built in templating engine, but you can generate your docx yourself programmatically;
+- [docx](https://github.com/dolanmiu/docx) : Javascript in the browser, you can create your docx from scratch, but not with template syntax, you need to "code your document" in Javascript;
+- [redocx](https://github.com/nitin42/redocx) : Create Docx document from scratch, using JSX syntax, last commit on December 2018;
+- [officegen](https://github.com/Ziv-Barber/officegen) : works only server side for the moment, last commit on March 2021;
