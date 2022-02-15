@@ -569,7 +569,7 @@ function start() {
 			this.currentTest.state === "failed" &&
 			this.currentTest.err.properties
 		) {
-			errorLogger(this.currentTest.err);
+			errorLogger(this.currentTest.err, "jsonl");
 		}
 	});
 	let fileNames;

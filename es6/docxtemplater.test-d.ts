@@ -44,6 +44,27 @@ const scope = nullValues.detail[0].scopeManager.scopeList[0];
 expectType<string>(firstTag);
 doc1.render();
 
+new Docxtemplater(
+  {},
+  {
+    errorLogging: false,
+  }
+);
+
+new Docxtemplater(
+  {},
+  {
+    errorLogging: "jsonl",
+  }
+);
+
+new Docxtemplater(
+  {},
+  {
+    errorLogging: "json",
+  }
+);
+
 expectError(doc1.foobar());
 expectError(new Docxtemplater(1, 2));
 expectError(new Docxtemplater({}, { delimiters: { start: 1, end: "]]" } }));

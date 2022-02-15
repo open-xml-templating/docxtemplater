@@ -1,3 +1,22 @@
+### 3.29.0
+
+Log errors on multiple lines instead of on one line.
+
+Previously, error messages were shown in one line only, making the output hard to read.
+
+Now, error messages are shown on multiple lines, using normal JSON indentation.
+
+You can use the previous behavior (one big JSON line) by writing the following :
+
+```js
+var doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+  errorLogging: "jsonl", // JSONL stands for JSON Line, one big JSON entry on a single line
+  // Other options for errorLogging are false, or "json" (which is now the default)
+});
+```
+
 ### 3.28.6
 
 Template document properties that are set inside `<vt:lpwstr>` in docProps/custom.xml

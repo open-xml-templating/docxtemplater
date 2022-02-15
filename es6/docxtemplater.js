@@ -264,7 +264,7 @@ const Docxtemplater = class Docxtemplater {
 			).then((resolved) => {
 				if (errors.length !== 0) {
 					if (this.options.errorLogging) {
-						logErrors(errors);
+						logErrors(errors, this.options.errorLogging);
 					}
 					throwMultiError(errors);
 				}
@@ -452,7 +452,7 @@ function verifyErrors(doc) {
 
 	if (doc.errors.length !== 0) {
 		if (doc.options.errorLogging) {
-			logErrors(doc.errors);
+			logErrors(doc.errors, doc.options.errorLogging);
 		}
 		throwMultiError(doc.errors);
 	}

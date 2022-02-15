@@ -15,9 +15,11 @@ function replaceErrors(key, value) {
 	return value;
 }
 
-function logger(error) {
+function logger(error, logging) {
 	// eslint-disable-next-line no-console
-	console.log(JSON.stringify({ error }, replaceErrors));
+	console.log(
+		JSON.stringify({ error }, replaceErrors, logging === "json" ? 2 : null)
+	);
 	if (error.properties && error.properties.errors instanceof Array) {
 		const errorMessages = error.properties.errors
 			.map(function (error) {
