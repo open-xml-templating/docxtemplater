@@ -269,17 +269,17 @@ describe("Spacing/Linebreaks", function () {
 		});
 	});
 
-	it("should work with linebreaks without changing the style", function () {
-		const doc = createDoc("multi-tags.docx");
-		doc.setData({
+	it("should work with linebreaks and copy the run style onto new lines in docx", function () {
+		const doc = createDocV4("multi-tags.docx", { linebreaks: true });
+		return doc.renderAsync({
 			test: "The tag1,\nmultiline\nfoobaz",
 			test2: "The tag2,\nmultiline\nfoobar",
+		}).then(function () {
+			shouldBeSame({ doc, expectedName: "expected-two-multiline.docx" });
 		});
-		doc.setOptions({ linebreaks: true });
-		doc.render();
-		shouldBeSame({ doc, expectedName: "expected-two-multiline.docx" });
 	});
-	it("should be possible to have linebreaks if setting the option", function () {
+
+	it("should work with linebreaks and copy the run style onto new lines in pptx", function () {
 		const doc = createDoc("tag-multiline.pptx");
 		doc.setData({
 			description: "The description,\nmultiline",
