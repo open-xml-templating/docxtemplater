@@ -588,13 +588,18 @@ function start() {
 		}
 		if (
 			endsWithOne(fileName, [
-				".dotx",
-				".dotm",
-				".docx",
 				".docm",
+				".docx",
+				".dotm",
+				".dotx",
+				".potm",
+				".potx",
 				".pptm",
 				".pptx",
+				".xlsm",
 				".xlsx",
+				".xltm",
+				".xltx",
 			])
 		) {
 			callback = cacheDocument;
