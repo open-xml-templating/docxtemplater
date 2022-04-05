@@ -13,7 +13,7 @@ var doc = new Docxtemplater(zip, {
   paragraphLoop: true,
   linebreaks: true,
   errorLogging: "jsonl", // JSONL stands for JSON Line, one big JSON entry on a single line
-  // Other options for errorLogging are false, or "json" (which is now the default)
+  // Other options for errorLogging are false which means do not log anything, or "json" (which is now the default)
 });
 ```
 
