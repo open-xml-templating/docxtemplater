@@ -356,21 +356,29 @@ class LoopModule {
 			);
 		}
 		const errorList = [];
-		return promisedValue.then(function (value) {
-			sm.loopOverValue(value, loopOver, part.inverted);
-			return Promise.all(promises)
-				.then(function (r) {
-					return r.map(function ({ resolved, errors }) {
-						errorList.push(...errors);
-						return resolved;
+		return promisedValue.then(function (values) {
+			return new Promise(function (resolve) {
+				if (values instanceof Array) {
+					Promise.all(values).then(resolve);
+				} else {
+					resolve(values);
+				}
+			}).then(function (values) {
+				sm.loopOverValue(values, loopOver, part.inverted);
+				return Promise.all(promises)
+					.then(function (r) {
+						return r.map(function ({ resolved, errors }) {
+							errorList.push(...errors);
+							return resolved;
+						});
+					})
+					.then(function (value) {
+						if (errorList.length > 0) {
+							throw errorList;
+						}
+						return value;
 					});
-				})
-				.then(function (value) {
-					if (errorList.length > 0) {
-						throw errorList;
-					}
-					return value;
-				});
+			});
 		});
 	}
 	// eslint-disable-next-line complexity

@@ -60,26 +60,32 @@ describe("Resolver", function () {
 				companies: resolveSoon([
 					{
 						name: "Acme",
-						users: resolveSoon([
-							{
-								name: "John",
-							},
-							{
-								name: "James",
-							},
-						]),
+						users: resolveSoon(
+							[
+								{
+									name: resolveSoon("John", 25),
+								},
+								resolveSoon({
+									name: "James",
+								}),
+							],
+							5
+						),
 					},
-					{
-						name: resolveSoon("Emca"),
-						users: resolveSoon([
-							{
-								name: "Mary",
-							},
-							{
-								name: "Liz",
-							},
-						]),
-					},
+					resolveSoon(
+						{
+							name: resolveSoon("Emca"),
+							users: resolveSoon([
+								{
+									name: "Mary",
+								},
+								{
+									name: "Liz",
+								},
+							]),
+						},
+						20
+					),
 				]),
 				test2: "Value2",
 			})
@@ -319,15 +325,11 @@ describe("Resolver", function () {
 		const doc = createDocV4("loop-image.docx", {
 			modules: [fixDocPrCorruption],
 		});
-		return doc
-			.renderAsync({
-				loop: [1, 2, 3, 4],
-			})
-			.then(function () {
-				shouldBeSame({
-					doc,
-					expectedName: "expected-loop-images.docx",
-				});
+		return doc.renderAsync({ loop: [1, 2, 3, 4] }).then(function () {
+			shouldBeSame({
+				doc,
+				expectedName: "expected-loop-images.docx",
 			});
+		});
 	});
 });

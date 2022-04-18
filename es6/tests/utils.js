@@ -709,19 +709,19 @@ function getContent(doc) {
 	return doc.getZip().files["word/document.xml"].asText();
 }
 
-function resolveSoon(data) {
+function resolveSoon(data, time = 1) {
 	return new Promise(function (resolve) {
 		setTimeout(function () {
 			resolve(data);
-		}, 1);
+		}, time);
 	});
 }
 
-function rejectSoon(data) {
+function rejectSoon(data, time = 1) {
 	return new Promise(function (resolve, reject) {
 		setTimeout(function () {
 			reject(data);
-		}, 1);
+		}, time);
 	});
 }
 
