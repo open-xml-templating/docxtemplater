@@ -1,3 +1,26 @@
+### 3.29.1
+
+Handle following input when using loops with array :
+
+```
+{#users}
+Hello {name}
+{/users}
+```
+
+```js
+doc.renderAsync({
+  users: [
+    new Promise((resolve, reject) => {
+      resolve({ name: "John" });
+    }),
+    new Promise((resolve, reject) => {
+      resolve({ name: "Mary" });
+    }),
+  ],
+});
+```
+
 ### 3.29.0
 
 Log errors on multiple lines instead of on one line.
