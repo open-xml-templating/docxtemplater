@@ -164,7 +164,7 @@ A test has been created, which you can run with `npm run memorytest` if you clon
 Bugfix to template header and footers created by Office365.
 
 Previously, only files matching header\d.xml would be templated.
-Now, also header.xml (without ant digit) will be templated.
+Now, also header.xml (without any digit) will be templated.
 
 ### 3.26.3
 
