@@ -603,6 +603,21 @@ const fixtures = [
 		],
 	},
 	{
+		it: "should work with paragraph loops and selfclosing paragraphs",
+		content:
+			"<w:p><w:t>{#foo}</w:t></w:p><w:p/><w:xxx></w:xxx><w:p><w:t>{/}</w:t></w:p>",
+		options: {
+			paragraphLoop: true,
+		},
+		scope: {
+			foo: true,
+		},
+		result: "<w:p/><w:xxx></w:xxx>",
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
+	{
 		it: "should not fail with nested loops if using paragraphLoop",
 		content:
 			"<w:p><w:t>{#users} {#pets}</w:t></w:p><w:p><w:t>Pet {.}</w:t></w:p><w:p><w:t>{/pets}{/users}</w:t></w:p>",

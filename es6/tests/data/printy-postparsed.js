@@ -104,11 +104,5 @@ module.exports = `
 (2)      </w:sdt>
 (2)      <w:p w14:paraId="22D858B2" w14:textId="69A6ACE6" w:rsidR="009843AE" w:rsidRDefault="00EB53B3"/>
 (1)   </w:p>
-(1)   <w:p>
-(2)      <w:r>
-(3)         <w:t xml:space="preserve">
-(3)         </w:t>
-(2)      </w:r>
-(1)   </w:p>
 ***END LOOP OF hi
 (0)</w:body></w:document>`;

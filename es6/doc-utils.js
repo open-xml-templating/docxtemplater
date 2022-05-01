@@ -280,11 +280,14 @@ function isTagStart(tagType, { type, tag, position }) {
 		(position === "start" || position === "selfclosing")
 	);
 }
+function isTagStartStrict(tagType, { type, tag, position }) {
+	return type === "tag" && tag === tagType && position === "start";
+}
 function isTagEnd(tagType, { type, tag, position }) {
 	return type === "tag" && tag === tagType && position === "end";
 }
 function isParagraphStart(part) {
-	return isTagStart("w:p", part) || isTagStart("a:p", part);
+	return isTagStartStrict("w:p", part) || isTagStartStrict("a:p", part);
 }
 function isParagraphEnd(part) {
 	return isTagEnd("w:p", part) || isTagEnd("a:p", part);

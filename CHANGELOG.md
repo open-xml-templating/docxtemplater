@@ -1,3 +1,9 @@
+### 3.29.2
+
+With the paragraphLoop option turned on, when using a loop that was containing a selfclosing paragraph : `<w:p/>`, the generated output could become corrupt.
+
+Now the output is valid.
+
 ### 3.29.1
 
 Handle following input when using loops with array :
