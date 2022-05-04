@@ -1,3 +1,7 @@
+### 3.29.3
+
+Avoid corruption when having a table without a `<w:p/>`. This corruption only happens on very rare cases, for example when having a table containing a table that has no paragraph after it.
+
 ### 3.29.2
 
 With the paragraphLoop option turned on, when using a loop that was containing a selfclosing paragraph : `<w:p/>`, the generated output could become corrupt.

@@ -912,7 +912,7 @@ describe("Raw Xml Insertion", function () {
 		const doc = createXmlTemplaterDocx(content, { tags: scope });
 		const c = getContent(doc);
 		expect(c.length).to.be.equal(
-			content.length + scope.complexXml.length - inner.length
+			content.length + scope.complexXml.length - inner.length + "<w:p/>".length
 		);
 		expect(c).to.contain(scope.complexXml);
 	});

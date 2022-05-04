@@ -87,7 +87,7 @@ function postrender(parts, options) {
 			uintArrays.push(arr);
 			longStr = "";
 		}
-		// Stryker disable all : because this is an optimisation that won't make any tests fail
+		// Stryker restore all
 
 		longStr += part;
 		lenStr += part.length;

@@ -220,4 +220,13 @@ describe("Table", function () {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-empty-table.docx" });
 	});
+
+	it("should not corrupt table because of missing <w:p> after table", function () {
+		shouldBeSame({
+			doc: createDocV4("table-in-table-corruption.docx", {
+				paragraphLoop: true,
+			}).render(),
+			expectedName: "expected-table-in-table-corruption.docx",
+		});
+	});
 });
