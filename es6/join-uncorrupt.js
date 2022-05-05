@@ -1,23 +1,33 @@
-const { endsWith, isStarting, isEnding } = require("./doc-utils.js");
+const {
+	startsWith,
+	endsWith,
+	isStarting,
+	isEnding,
+	isWhiteSpace,
+} = require("./doc-utils.js");
 const filetypes = require("./filetypes.js");
 
 function addEmptyParagraphAfterTable(parts) {
-	let beforeSectPr = false;
-	for (let i = parts.length - 1; i >= 0; i--) {
-		const part = parts[i];
-		if (isStarting(part, "w:sectPr")) {
-			beforeSectPr = true;
+	let lastNonEmpty = "";
+
+	for (let i = 0, len = parts.length; i < len; i++) {
+		let p = parts[i];
+		if (isWhiteSpace(p)) {
+			continue;
 		}
-		if (beforeSectPr) {
-			const trimmed = part.trim();
-			if (isEnding(trimmed, "w:tbl")) {
-				parts.splice(i + 1, 0, "<w:p><w:r><w:t></w:t></w:r></w:p>");
-				return parts;
-			}
-			if (endsWith(trimmed, "</w:p>")) {
-				return parts;
+
+		if (endsWith(lastNonEmpty, "</w:tbl>")) {
+			if (
+				!startsWith(p, "<w:p") &&
+				!startsWith(p, "<w:tbl") &&
+				!startsWith(p, "<w:sectPr")
+			) {
+				p = `<w:p/>${p}`;
 			}
 		}
+
+		lastNonEmpty = p;
+		parts[i] = p;
 	}
 	return parts;
 }

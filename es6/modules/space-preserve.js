@@ -93,16 +93,6 @@ const spacePreserve = {
 				p = p.substr(wtEndlen);
 			}
 
-			if (endsWith(lastNonEmpty, "</w:tbl>")) {
-				if (
-					!startsWith(p, "<w:p") &&
-					!startsWith(p, "<w:tbl") &&
-					!startsWith(p, "<w:sectPr")
-				) {
-					p = `<w:p/>${p}`;
-				}
-			}
-
 			lastNonEmpty = p;
 			lastNonEmptyIndex = index;
 			parts[i] = p;

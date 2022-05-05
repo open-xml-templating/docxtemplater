@@ -1,3 +1,7 @@
+### 3.29.4
+
+Improve corruption handling of adding `<w:p/>` after some tables, even when the table is added inside a loop.
+
 ### 3.29.3
 
 Avoid corruption when having a table without a `<w:p/>`. This corruption only happens on very rare cases, for example when having a table containing a table that has no paragraph after it.

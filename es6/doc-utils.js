@@ -2,6 +2,10 @@ const { DOMParser, XMLSerializer } = require("@xmldom/xmldom");
 const { throwXmlTagNotFound } = require("./errors.js");
 const { last, first } = require("./utils.js");
 
+function isWhiteSpace(value) {
+	return /^[ \n\r\t]+$/.test(value);
+}
+
 function parser(tag) {
 	return {
 		get(scope) {
@@ -390,4 +394,5 @@ module.exports = {
 	charMap,
 	getSingleAttribute,
 	setSingleAttribute,
+	isWhiteSpace,
 };

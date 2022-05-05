@@ -127,6 +127,7 @@ module.exports = class XmlTemplater {
 			baseNullGetter: this.baseNullGetter.bind(this),
 			filePath: this.filePath,
 			fileTypeConfig: this.fileTypeConfig,
+			fileType: this.fileType,
 			linebreaks: this.linebreaks,
 		};
 	}

@@ -245,7 +245,7 @@ describe("Module traits", function () {
 });
 
 describe("Module errors", function () {
-	it("should work the error that is returned from render", function () {
+	it("should log the error that is returned from render", function () {
 		const moduleName = "ErrorModule";
 		const module = {
 			name: "Error module",
@@ -291,7 +291,7 @@ describe("Module errors", function () {
 		// expect(error.properties.errors[2].message).to.equal("foobar phone");
 
 		const logs = capture.logs();
-		expect(logs.length).to.equal(1);
+		expect(logs.length).to.equal(1, "Incorrect logs count");
 		expect(logs[0]).to.contain("foobar last_name");
 		expect(logs[0]).to.contain("foobar first_name");
 		expect(logs[0]).to.contain("foobar phone");

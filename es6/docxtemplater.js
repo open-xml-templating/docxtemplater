@@ -421,7 +421,7 @@ const Docxtemplater = class Docxtemplater {
 			contentType: this.filesContentTypes[filePath],
 		};
 		Object.keys(defaults)
-			.concat(["filesContentTypes", "fileTypeConfig", "modules"])
+			.concat(["filesContentTypes", "fileTypeConfig", "fileType", "modules"])
 			.forEach((key) => {
 				xmltOptions[key] = this[key];
 			});
