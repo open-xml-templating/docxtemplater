@@ -113,14 +113,16 @@ function getListXmlElements(parts) {
 			},
 		]
 	*/
-	const tags = parts.filter(function ({ type }) {
-		return type === "tag";
-	});
 
 	const result = [];
 
-	for (let i = 0; i < tags.length; i++) {
-		const { position, value, tag } = tags[i];
+	for (let i = 0; i < parts.length; i++) {
+		const { position, value, tag } = parts[i];
+		// Stryker disable all : because removing this condition would also work but we want to make the API future proof
+		if (!tag) {
+			continue;
+		}
+		// Stryker restore all
 		if (position === "end") {
 			if (lastTagIsOpenTag(result, tag)) {
 				result.pop();

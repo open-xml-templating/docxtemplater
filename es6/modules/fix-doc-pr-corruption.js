@@ -11,14 +11,14 @@ module.exports = {
 		}
 	},
 	on(event) {
-		/* Stryker disable all : because this is an optimisation that won't make any tests fail */
+		// Stryker disable all : because this is an optimisation that won't make any tests fail
 		if (event === "attached") {
 			this.attached = false;
 		}
-		/* Stryker restore all */
 		if (event !== "syncing-zip") {
 			return;
 		}
+		// Stryker restore all
 		const zip = this.zip;
 		const Lexer = this.Lexer;
 		let prId = 1;

@@ -86,7 +86,6 @@ class InspectModule {
 			this.inspect = {};
 			this.fullInspected = {};
 			this.filePath = null;
-			this.nullValues = [];
 		}
 	}
 

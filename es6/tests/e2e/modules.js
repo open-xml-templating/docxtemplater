@@ -7,6 +7,7 @@ const {
 	captureLogs,
 	expect,
 } = require("../utils.js");
+const inspectModule = require("../../inspect-module.js");
 const Errors = require("../../errors.js");
 const { xml2str, traits } = require("../../doc-utils.js");
 
@@ -97,6 +98,12 @@ describe("Module attachment", function () {
 		doc2.attachModule(module);
 		const doc3 = createDoc("tag-example.docx");
 		doc3.attachModule(module);
+	});
+
+	it("should automatically detach inspect module", function () {
+		const imodule = inspectModule();
+		createDocV4("loop-valid.docx", { modules: [imodule] }).render();
+		createDocV4("loop-valid.docx", { modules: [imodule] }).render();
 	});
 });
 
@@ -245,6 +252,50 @@ describe("Module traits", function () {
 });
 
 describe("Module errors", function () {
+	it("should pass the errors to errorsTransformer", function () {
+		const moduleName = "ErrorModule";
+		let catched = null;
+		const myErrors = [];
+		const module = {
+			name: "Error module",
+			requiredAPIVersion: "3.0.0",
+			parse(placeHolderContent) {
+				const type = "placeholder";
+				return {
+					type,
+					value: placeHolderContent,
+					module: moduleName,
+				};
+			},
+			render(part) {
+				if (part.module === moduleName) {
+					return {
+						errors: [new Error(`foobar ${part.value}`)],
+					};
+				}
+			},
+			errorsTransformer(errors) {
+				myErrors.push(...errors);
+				return errors.map(function (e) {
+					e.xyz = "xxx";
+					return e;
+				});
+			},
+		};
+
+		const doc = createDocV4("tag-example.docx", { modules: [module] });
+		const capture = captureLogs();
+		try {
+			doc.render();
+		} catch (e) {
+			catched = e;
+		}
+		capture.stop();
+		expect(catched.properties.errors[0].xyz).to.equal("xxx");
+		expect(myErrors.length).to.equal(9);
+		expect(myErrors[0].message).to.equal("foobar last_name");
+	});
+
 	it("should log the error that is returned from render", function () {
 		const moduleName = "ErrorModule";
 		const module = {

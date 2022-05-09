@@ -28,13 +28,10 @@ module.exports = function (arrays) {
 		return 0;
 	});
 
-	let i = 0;
-
-	while (i <= totalLength - 1) {
+	for (let i = 0; i < totalLength; i++) {
 		const arrayIndex = getMinFromArrays(arrays, state);
 		resultArray[i] = arrays[arrayIndex][state[arrayIndex]];
 		state[arrayIndex]++;
-		i++;
 	}
 
 	return resultArray;

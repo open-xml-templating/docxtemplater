@@ -9,10 +9,9 @@ const {
 } = require("./errors.js");
 const { isTextStart, isTextEnd, wordToUtf8 } = require("./doc-utils.js");
 
-const NONE = -2;
-const EQUAL = 0;
-const START = -1;
-const END = 1;
+const [DELIMITER_NONE, DELIMITER_EQUAL, DELIMITER_START, DELIMITER_END] = [
+	0, 1, 2, 3,
+];
 
 function inRange(range, match) {
 	return range[0] <= match.offset && match.offset < range[1];
@@ -21,13 +20,13 @@ function inRange(range, match) {
 function updateInTextTag(part, inTextTag) {
 	if (isTextStart(part)) {
 		if (inTextTag) {
-			throwMalformedXml(part);
+			throwMalformedXml();
 		}
 		return true;
 	}
 	if (isTextEnd(part)) {
 		if (!inTextTag) {
-			throwMalformedXml(part);
+			throwMalformedXml();
 		}
 		return false;
 	}
@@ -194,15 +193,15 @@ function getDelimiterErrors(delimiterMatches, fullText) {
 
 function compareOffsets(startOffset, endOffset) {
 	if (startOffset === -1 && endOffset === -1) {
-		return NONE;
+		return DELIMITER_NONE;
 	}
 	if (startOffset === endOffset) {
-		return EQUAL;
+		return DELIMITER_EQUAL;
 	}
 	if (startOffset === -1 || endOffset === -1) {
-		return endOffset < startOffset ? START : END;
+		return endOffset < startOffset ? DELIMITER_START : DELIMITER_END;
 	}
-	return startOffset < endOffset ? START : END;
+	return startOffset < endOffset ? DELIMITER_START : DELIMITER_END;
 }
 
 function splitDelimiters(inside) {
@@ -227,7 +226,7 @@ function splitDelimiters(inside) {
 	return [start, end];
 }
 
-function getAllIndexes(fullText, delimiters) {
+function getAllDelimiterIndexes(fullText, delimiters) {
 	const indexes = [];
 	let { start, end } = delimiters;
 	let offset = -1;
@@ -238,29 +237,27 @@ function getAllIndexes(fullText, delimiters) {
 		let position = null;
 		let len;
 		let compareResult = compareOffsets(startOffset, endOffset);
-		if (compareResult === NONE) {
-			return indexes;
+		if (compareResult === DELIMITER_EQUAL) {
+			compareResult = insideTag ? DELIMITER_END : DELIMITER_START;
 		}
-		if (compareResult === EQUAL) {
-			if (!insideTag) {
-				compareResult = START;
-			} else {
-				compareResult = END;
-			}
+		switch (compareResult) {
+			case DELIMITER_NONE:
+				return indexes;
+			case DELIMITER_END:
+				insideTag = false;
+				offset = endOffset;
+				position = "end";
+				len = end.length;
+				break;
+			case DELIMITER_START:
+				insideTag = true;
+				offset = startOffset;
+				position = "start";
+				len = start.length;
+				break;
 		}
-		if (compareResult === END) {
-			insideTag = false;
-			offset = endOffset;
-			position = "end";
-			len = end.length;
-		}
-		if (compareResult === START) {
-			insideTag = true;
-			offset = startOffset;
-			position = "start";
-			len = start.length;
-		}
-		if (position === "start" && fullText[offset + start.length] === "=") {
+		// if tag starts with =, such as {=[ ]=}
+		if (DELIMITER_START && fullText[offset + start.length] === "=") {
 			indexes.push({
 				offset: startOffset,
 				position: "start",
@@ -268,10 +265,10 @@ function getAllIndexes(fullText, delimiters) {
 				changedelimiter: true,
 			});
 			const nextEqual = fullText.indexOf("=", offset + start.length + 1);
-			const endOffset = fullText.indexOf(end, nextEqual + 1);
+			const nextEndOffset = fullText.indexOf(end, nextEqual + 1);
 
 			indexes.push({
-				offset: endOffset,
+				offset: nextEndOffset,
 				position: "end",
 				length: end.length,
 				changedelimiter: true,
@@ -281,7 +278,7 @@ function getAllIndexes(fullText, delimiters) {
 				nextEqual - offset - start.length - 1
 			);
 			[start, end] = splitDelimiters(insideTag);
-			offset = endOffset;
+			offset = nextEndOffset;
 			continue;
 		}
 		indexes.push({ offset, position, length: len });
@@ -290,7 +287,7 @@ function getAllIndexes(fullText, delimiters) {
 
 function parseDelimiters(innerContentParts, delimiters) {
 	const full = innerContentParts.map((p) => p.value).join("");
-	const delimiterMatches = getAllIndexes(full, delimiters);
+	const delimiterMatches = getAllDelimiterIndexes(full, delimiters);
 
 	let offset = 0;
 	const ranges = innerContentParts.map(function (part) {
@@ -320,21 +317,22 @@ function parseDelimiters(innerContentParts, delimiters) {
 			cursor = cutNext;
 			cutNext = 0;
 		}
-		let insideDelimiterChange;
 		delimitersInOffset.forEach(function (delimiterInOffset) {
 			const value = partContent.substr(
 				cursor,
 				delimiterInOffset.offset - offset - cursor
 			);
-			if (value.length > 0) {
-				if (insideDelimiterChange) {
-					if (delimiterInOffset.changedelimiter) {
-						cursor =
-							delimiterInOffset.offset - offset + delimiterInOffset.length;
-						insideDelimiterChange = delimiterInOffset.position === "start";
+			if (delimiterInOffset.changedelimiter) {
+				if (delimiterInOffset.position === "start") {
+					if (value.length > 0) {
+						parts.push({ type: "content", value });
 					}
-					return;
+				} else {
+					cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
 				}
+				return;
+			}
+			if (value.length > 0) {
 				parts.push({ type: "content", value });
 				cursor += value.length;
 			}
@@ -343,11 +341,6 @@ function parseDelimiters(innerContentParts, delimiters) {
 				position: delimiterInOffset.position,
 				offset: cursor + offset,
 			};
-			if (delimiterInOffset.changedelimiter) {
-				insideDelimiterChange = delimiterInOffset.position === "start";
-				cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
-				return;
-			}
 			parts.push(delimiterPart);
 			cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
 		});
@@ -361,10 +354,14 @@ function parseDelimiters(innerContentParts, delimiters) {
 	return { parsed, errors };
 }
 
+function isInsideContent(part) {
+	// Stryker disable all : because the part.position === "insidetag" would be enough but we want to make the API future proof
+	return part.type === "content" && part.position === "insidetag";
+	// Stryker restore all
+}
+
 function getContentParts(xmlparsed) {
-	return xmlparsed.filter(function (part) {
-		return part.type === "content" && part.position === "insidetag";
-	});
+	return xmlparsed.filter(isInsideContent);
 }
 
 function decodeContentParts(xmlparsed) {
@@ -374,7 +371,7 @@ function decodeContentParts(xmlparsed) {
 		if (part.type === "content") {
 			part.position = inTextTag ? "insidetag" : "outsidetag";
 		}
-		if (inTextTag && part.type === "content") {
+		if (isInsideContent(part)) {
 			part.value = part.value.replace(/>/g, "&gt;");
 			// if (inTextTag) {
 			// 	part.value = wordToUtf8(part.value);
@@ -396,7 +393,7 @@ module.exports = {
 		let index = 0;
 		let lIndex = 0;
 		xmlparsed.forEach(function (part) {
-			if (part.type === "content" && part.position === "insidetag") {
+			if (isInsideContent(part)) {
 				Array.prototype.push.apply(
 					lexed,
 					delimiterParsed[index].map(function (p) {

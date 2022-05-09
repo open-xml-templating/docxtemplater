@@ -61,9 +61,7 @@ class RawXmlModule {
 			errors.push(e);
 			return { errors };
 		}
-		if (!value) {
-			return { value: "" };
-		}
+		value = value ? value : "";
 		if (typeof value === "string") {
 			return { value };
 		}

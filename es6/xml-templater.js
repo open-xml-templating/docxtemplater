@@ -91,18 +91,16 @@ module.exports = class XmlTemplater {
 		return this;
 	}
 	errorChecker(errors) {
-		if (errors.length) {
-			errors.forEach((error) => {
-				// error properties might not be defined if some foreign
-				// (unhandled error not thrown by docxtemplater willingly) is
-				// thrown.
-				error.properties = error.properties || {};
-				error.properties.file = this.filePath;
-			});
-			this.modules.forEach(function (module) {
-				errors = module.errorsTransformer(errors);
-			});
-		}
+		errors.forEach((error) => {
+			// error properties might not be defined if some foreign
+			// (unhandled error not thrown by docxtemplater willingly) is
+			// thrown.
+			error.properties = error.properties || {};
+			error.properties.file = this.filePath;
+		});
+		this.modules.forEach(function (module) {
+			errors = module.errorsTransformer(errors);
+		});
 	}
 	baseNullGetter(part, sm) {
 		const value = this.modules.reduce((value, module) => {
@@ -139,9 +137,9 @@ module.exports = class XmlTemplater {
 		options.render = render;
 		options.joinUncorrupt = joinUncorrupt;
 		const { errors, parts } = render(options);
-		this.allErrors = errors;
-		this.errorChecker(errors);
 		if (errors.length > 0) {
+			this.allErrors = errors;
+			this.errorChecker(errors);
 			return this;
 		}
 

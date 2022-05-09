@@ -109,14 +109,11 @@ const defaults = {
 };
 
 function mergeObjects() {
-	const resObj = {};
+	let resObj = {};
 	let obj, keys;
 	for (let i = 0; i < arguments.length; i += 1) {
 		obj = arguments[i];
-		keys = Object.keys(obj);
-		for (let j = 0; j < keys.length; j += 1) {
-			resObj[keys[j]] = obj[keys[j]];
-		}
+		resObj = { ...resObj, ...obj};
 	}
 	return resObj;
 }

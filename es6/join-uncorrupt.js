@@ -35,12 +35,14 @@ function addEmptyParagraphAfterTable(parts) {
 // eslint-disable-next-line complexity
 function joinUncorrupt(parts, options) {
 	const contains = options.fileTypeConfig.tagShouldContain || [];
-	// Before doing this "uncorruption" method here, this was done with the `part.emptyValue` trick, however, there were some corruptions that were not handled, for example with a template like this :
-	//
-	// ------------------------------------------------
-	// | {-w:p falsy}My para{/falsy}   |              |
-	// | {-w:p falsy}My para{/falsy}   |              |
-	// ------------------------------------------------
+	/* Before doing this "uncorruption" method here, this was done with the
+	 * `part.emptyValue` trick, however, there were some corruptions that were
+	 * not handled, for example with a template like this :
+	 *
+	 * ------------------------------------------------
+	 * | {-w:p falsy}My para{/falsy}   |              |
+	 * | {-w:p falsy}My para{/falsy}   |              |
+	 */
 	let collecting = "";
 	let currentlyCollecting = -1;
 	if (filetypes.docx.indexOf(options.contentType) !== -1) {

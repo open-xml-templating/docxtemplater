@@ -1,5 +1,4 @@
 const {
-	mergeObjects,
 	chunkBy,
 	last,
 	isParagraphStart,
@@ -53,18 +52,10 @@ function getOffset(chunk) {
 }
 
 function addPageBreakAtEnd(subRendered) {
-	let found = false;
-	let i = subRendered.parts.length - 1;
-	for (let j = subRendered.parts.length - 1; i >= 0; i--) {
-		const p = subRendered.parts[j];
-		if (p === "</w:p>" && !found) {
-			found = true;
-			subRendered.parts.splice(j, 0, '<w:r><w:br w:type="page"/></w:r>');
-			break;
-		}
-	}
-
-	if (!found) {
+	const j = subRendered.parts.length - 1;
+	if (subRendered.parts[j] === "</w:p>") {
+		subRendered.parts.splice(j, 0, '<w:r><w:br w:type="page"/></w:r>');
+	} else {
 		subRendered.parts.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 	}
 }
@@ -419,13 +410,12 @@ class LoopModule {
 					pp.value = setSingleAttribute(pp.value, "val", val);
 				}
 			});
-			const subRendered = options.render(
-				mergeObjects({}, options, {
+			const subRendered = options.render({
+					...options,
 					compiled: part.subparsed,
 					tags: {},
 					scopeManager,
-				})
-			);
+				});
 			if (
 				part.hasPageBreak &&
 				i === length - 1 &&

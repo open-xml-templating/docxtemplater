@@ -94,21 +94,10 @@ function getPairs(traits) {
 	const levelTraits = {};
 	let errors = [];
 	let pairs = [];
-	let countOpen = 0;
 	let transformedTraits = [];
 
 	for (let i = 0; i < traits.length; i++) {
-		const currentTrait = traits[i];
-		const { part } = currentTrait;
-		const change = getOpenCountChange(currentTrait.part);
-		countOpen += change;
-		let level;
-		if (change === 1) {
-			level = countOpen - 1;
-		} else {
-			level = countOpen;
-		}
-		transformedTraits.push({ level, part });
+		transformedTraits.push(traits[i]);
 	}
 
 	while (transformedTraits.length > 0) {
@@ -117,10 +106,12 @@ function getPairs(traits) {
 		transformedTraits = result.traits;
 	}
 
+	// Stryker disable all : because this check makes the function return quicker
 	if (errors.length > 0) {
 		return { pairs, errors };
 	}
-	countOpen = 0;
+	// Stryker restore all
+	let countOpen = 0;
 
 	for (let i = 0; i < traits.length; i++) {
 		const currentTrait = traits[i];
@@ -196,9 +187,12 @@ const expandPairTrait = {
 			lastPair = pair;
 			return [left, right];
 		});
+
+		// Stryker disable all : because this check makes the function return quicker
 		if (errors.length > 0) {
 			return { postparsed, errors };
 		}
+		// Stryker restore all
 
 		let currentPairIndex = 0;
 		let innerParts;

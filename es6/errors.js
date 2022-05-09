@@ -315,10 +315,10 @@ function throwUnimplementedTagType(part, index) {
 	throw err;
 }
 
-function throwMalformedXml(part) {
+function throwMalformedXml() {
 	const err = new XTInternalError("Malformed xml");
 	err.properties = {
-		part,
+		explanation: "The template contains malformed xml",
 		id: "malformed_xml",
 	};
 	throw err;
