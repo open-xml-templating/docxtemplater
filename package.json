@@ -2,7 +2,7 @@
   "name": "docxtemplater",
   "version": "3.29.4",
   "author": "Edgar Hipp",
-  "description": "docx and pptx generator working with templates and data (like Mustache, for Word and Powerpoint documents)",
+  "description": "Generate docx, pptx, and xlsx from templates (Word, Powerpoint and Excel documents), from Node.js, the Browser and the command line",
   "contributors": [
     {
       "name": "Edgar Hipp"
@@ -13,10 +13,22 @@
     "docx",
     "pptx",
     "templates",
+    "template",
+    "templater",
+    "templating",
+    "report",
+    "xlsx",
     "generation",
+    "generate",
+    "generator",
+    "microsoft office",
     "microsoft word",
     "microsoft powerpoint",
-    "report"
+    "microsoft excel",
+    "create",
+    "make",
+    "Office Open XML",
+    "creator"
   ],
   "types": "./js/docxtemplater.d.ts",
   "repository": {
