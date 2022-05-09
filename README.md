@@ -4,6 +4,8 @@
 
 **docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, for example your clients.
 
+**docxtemplater** is very robust because of the many fixed issues over the years, and the high quality of tests and code.
+
 ## Features
 
 [Demo Site](https://docxtemplater.com/demo)
@@ -16,11 +18,8 @@
 
 ## Quickstart
 
-- [Installation in node](https://docxtemplater.com/docs/installation#node)
-- [Installation in the browser](https://docxtemplater.com/docs/installation#browser)
-- [Generate a document in node](https://docxtemplater.com/docs/generate#node)
-- [Generate a document in the browser](https://docxtemplater.com/docs/generate#browser)
-- [Generate a document in React, Angular or Vue](https://docxtemplater.com/docs/generate#react-angular-vue)
+- [Get started with docxtemplater on nodejs](https://docxtemplater.com/docs/get-started-node)
+- [Get started with docxtemplater in the browser (react, angular, vue, nextjs)](https://docxtemplater.com/docs/get-started-browser)
 
 ## Documentation
 
@@ -30,7 +29,7 @@ See [CHANGELOG.md](CHANGELOG.md) for information about how to migrate from older
 
 ## Modules
 
-Functionality can be added with paid modules.
+Functionality can be added with the following paid modules :
 
 - [Image module](https://docxtemplater.com/modules/image/) to add a given image with the syntax: `{%image}`;
 - [Html Module](https://docxtemplater.com/modules/html/) to insert formatted text in a docx document with the syntax `{~html}`;
@@ -50,13 +49,6 @@ Functionality can be added with paid modules.
 - [Footnotes Module](https://docxtemplater.com/modules/footnotes) to be able to add footnotes to a document using the syntax `{:footnotes foot}`
 - [Paragraph Placeholder Module](https://docxtemplater.com/modules/paragraph-placeholder) to simplify conditions that should show or hide a given paragraph using the syntax `{?tag}`
 
-## Similar libraries
+## About docxtemplater
 
-Docxtemplater is my main job, and has been maitained for over 8 years already. Expect to get great support if you buy any modules, and also good support on the open-source version.
-
-There are a few alternative libraries that work with Word/Powerpoint documents, here’s a list of those I know a bit about:
-
-- [docx4j](https://www.docx4java.org/trac/docx4j) : JAVA, this is probably the biggest docx library out there. There is no built in templating engine, but you can generate your docx yourself programmatically;
-- [docx](https://github.com/dolanmiu/docx) : Javascript in the browser, you can create your docx from scratch, but not with template syntax, you need to "code your document" in Javascript;
-- [redocx](https://github.com/nitin42/redocx) : Create Docx document from scratch, using JSX syntax, last commit on December 2018;
-- [officegen](https://github.com/Ziv-Barber/officegen) : works only server side for the moment, last commit on March 2021;
+Docxtemplater is my main job, and has been maintained for over 8 years. Expect to get great support if you buy any modules, and also good support on the open-source version.
