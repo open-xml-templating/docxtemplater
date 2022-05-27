@@ -11,6 +11,7 @@ const {
 	getSingleAttribute,
 	setSingleAttribute,
 } = require("../doc-utils.js");
+const filetypes = require("../filetypes.js");
 const wrapper = require("../module-wrapper.js");
 
 const moduleName = "loop";
@@ -197,10 +198,7 @@ class LoopModule {
 		return opts;
 	}
 	preparse(parsed, { contentType }) {
-		if (
-			contentType ===
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
-		) {
+		if (filetypes.main.indexOf(contentType) !== -1) {
 			this.sects = getSectPr(parsed);
 		}
 	}
@@ -411,11 +409,11 @@ class LoopModule {
 				}
 			});
 			const subRendered = options.render({
-					...options,
-					compiled: part.subparsed,
-					tags: {},
-					scopeManager,
-				});
+				...options,
+				compiled: part.subparsed,
+				tags: {},
+				scopeManager,
+			});
 			if (
 				part.hasPageBreak &&
 				i === length - 1 &&

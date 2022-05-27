@@ -20,15 +20,16 @@ const pptxSlideLayout =
 const pptxPresentationContentType =
 	"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
 
+const main = [
+	docxContentType,
+	docxmContentType,
+	dotxContentType,
+	dotmContentType,
+];
+
 const filetypes = {
-	docx: [
-		docxContentType,
-		docxmContentType,
-		dotxContentType,
-		dotmContentType,
-		headerContentType,
-		footerContentType,
-	],
+	main,
+	docx: [...main, headerContentType, footerContentType],
 	pptx: [
 		pptxContentType,
 		pptxSlideMaster,

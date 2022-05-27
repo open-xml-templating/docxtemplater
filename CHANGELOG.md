@@ -1,3 +1,9 @@
+### 3.29.5
+
+Bugfix to make loop module work well even on dotx files.
+
+Internal update of moduleApiVersion to 3.32.0
+
 ### 3.29.4
 
 Improve corruption handling of adding `<w:p/>` after some tables, even when the table is added inside a loop.

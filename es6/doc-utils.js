@@ -110,10 +110,10 @@ const defaults = {
 
 function mergeObjects() {
 	let resObj = {};
-	let obj, keys;
+	let obj;
 	for (let i = 0; i < arguments.length; i += 1) {
 		obj = arguments[i];
-		resObj = { ...resObj, ...obj};
+		resObj = { ...resObj, ...obj };
 	}
 	return resObj;
 }

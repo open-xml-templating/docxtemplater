@@ -215,13 +215,13 @@ const fixtures = [
 			modules: () => [
 				{
 					name: "MyModule",
-					nullGetter(tag) {
+					nullGetter() {
 						return "foo";
 					},
 				},
 				{
 					name: "MyModule2",
-					nullGetter(tag) {
+					nullGetter() {
 						return "bar";
 					},
 				},
