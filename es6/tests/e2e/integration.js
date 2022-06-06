@@ -300,6 +300,26 @@ describe("Spacing/Linebreaks", function () {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-regression-multiline.pptx" });
 	});
+
+	it("should drop empty lines found inside the tags", function () {
+		const doc = createDocV4("tag-spanning-multiple-lines.docx", {
+			parser: () => ({
+				get: () => "",
+			}),
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-no-multiline.docx" });
+	});
+
+	it("should drop empty lines found inside the tags", function () {
+		const doc = createDocV4("tag-spanning-multiple-lines.pptx", {
+			parser: () => ({
+				get: () => "",
+			}),
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-no-multiline.pptx" });
+	});
 });
 
 describe("Assignment", function () {

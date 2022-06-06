@@ -1,3 +1,24 @@
+### 3.30.0
+
+Make it possible to have a tag that contains multiple lines, like this :
+
+```txt
+Hello {
+    name = "John";
+	name;
+}, how are you ?
+```
+
+And remove the paragraphs correctly.
+
+Internal update of moduleApiVersion to 3.33.0
+
+After upgrading this, you will need to upgrade :
+
+- image-module to 3.14.2 or higher
+- xlsx-module to 3.10.2 or higher
+- styling-module to 3.6.14 or higher
+
 ### 3.29.5
 
 Bugfix to make loop module work well even on dotx files.

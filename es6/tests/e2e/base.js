@@ -110,7 +110,7 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 32, 0],
+					currentModuleApiVersion: [3, 33, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -125,14 +125,14 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 32, 0],
+					currentModuleApiVersion: [3, 33, 0],
 					neededVersion: [3, 44, 0],
 				},
 			}
 		);
 
 		expectToThrow(
-			doc.verifyApiVersion.bind(null, "3.32.100"),
+			doc.verifyApiVersion.bind(null, "3.33.100"),
 			Errors.XTAPIVersionError,
 			{
 				message:
@@ -140,8 +140,8 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 32, 0],
-					neededVersion: [3, 32, 100],
+					currentModuleApiVersion: [3, 33, 0],
+					neededVersion: [3, 33, 100],
 				},
 			}
 		);
@@ -268,8 +268,8 @@ describe("Inspect module", function () {
 						type: "placeholder",
 						value: "reference",
 						offset: 59,
-						endLindex: 71,
-						lIndex: 71,
+						endLindex: 72,
+						lIndex: 72,
 					},
 					{
 						type: "placeholder",
@@ -280,15 +280,15 @@ describe("Inspect module", function () {
 						offset: 70,
 						sectPrCount: 0,
 						lastParagrapSectPr: "",
-						endLindex: 89,
-						lIndex: 89,
+						endLindex: 90,
+						lIndex: 90,
 						subparsed: [
 							{
 								type: "placeholder",
 								value: "title",
 								offset: 82,
-								endLindex: 105,
-								lIndex: 105,
+								endLindex: 106,
+								lIndex: 106,
 							},
 							{
 								type: "placeholder",
@@ -299,15 +299,15 @@ describe("Inspect module", function () {
 								lastParagrapSectPr: "",
 								inverted: false,
 								offset: 117,
-								endLindex: 133,
-								lIndex: 133,
+								endLindex: 134,
+								lIndex: 134,
 								subparsed: [
 									{
 										type: "placeholder",
 										value: "reason",
 										offset: 143,
-										endLindex: 155,
-										lIndex: 155,
+										endLindex: 156,
+										lIndex: 156,
 									},
 								],
 							},

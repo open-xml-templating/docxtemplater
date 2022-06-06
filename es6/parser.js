@@ -111,6 +111,8 @@ const parser = {
 		let placeHolderContent = "";
 		let startOffset;
 		let tailParts = [];
+		const droppedTags =
+			options.fileTypeConfig.droppedTagsInsidePlaceholder || [];
 		return lexed.reduce(function lexedToParsed(parsed, token) {
 			if (token.type === "delimiter") {
 				inPlaceHolder = token.position === "start";
@@ -138,6 +140,9 @@ const parser = {
 				return parsed;
 			}
 			if (token.type !== "content" || token.position !== "insidetag") {
+				if (droppedTags.indexOf(token.tag) !== -1) {
+					return parsed;
+				}
 				tailParts.push(token);
 				return parsed;
 			}
