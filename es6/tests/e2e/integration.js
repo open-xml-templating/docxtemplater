@@ -345,7 +345,7 @@ describe("Unusual document extensions", function () {
 		};
 		const doc = createDoc("input.docm");
 		doc.render(tags);
-		shouldBeSame({ doc, expectedName: "expected-docm.docx" });
+		shouldBeSame({ doc, expectedName: "expected-docm.docm" });
 	});
 
 	it("should work with pptm", function () {
@@ -354,7 +354,7 @@ describe("Unusual document extensions", function () {
 		};
 		const doc = createDoc("input.pptm");
 		doc.render(tags);
-		shouldBeSame({ doc, expectedName: "expected-pptm.pptx" });
+		shouldBeSame({ doc, expectedName: "expected-pptm.pptm" });
 	});
 
 	it("should work with dotx", function () {
@@ -363,7 +363,7 @@ describe("Unusual document extensions", function () {
 		};
 		const doc = createDoc("input.dotx");
 		doc.render(tags);
-		shouldBeSame({ doc, expectedName: "expected-dotx.docx" });
+		shouldBeSame({ doc, expectedName: "expected-dotx.dotx" });
 	});
 
 	it("should work with dotm", function () {
@@ -372,7 +372,7 @@ describe("Unusual document extensions", function () {
 		};
 		const doc = createDoc("input.dotm");
 		doc.render(tags);
-		shouldBeSame({ doc, expectedName: "expected-dotm.docx" });
+		shouldBeSame({ doc, expectedName: "expected-dotm.dotm" });
 	});
 });
 
