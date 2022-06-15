@@ -6,7 +6,7 @@ function isPlaceholder(part) {
 
 function getTags(postParsed) {
 	return postParsed.filter(isPlaceholder).reduce(function (tags, part) {
-		// Stryker disable all : because this is an external function
+		// Stryker disable all : because this is for the xlsx module
 		if (part.cellParsed) {
 			part.cellParsed.forEach(function (cp) {
 				if (
