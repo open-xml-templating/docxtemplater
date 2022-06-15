@@ -48,8 +48,7 @@ describe("XML prettify", function () {
 		const str =
 			xmlprettify(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
       <w:lvlText w:val=">"/>`);
-		expect(str).to
-			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+		expect(str).to.equal(`<?xml version="1.0" standalone="yes"?>
 <w:lvlText w:val=">"/>
 `);
 	});
@@ -59,8 +58,7 @@ describe("XML prettify", function () {
 			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo zanc="bar" bar="foo"></foo><foo zak="foo" uk="bar"/>';
 
 		const prettified = xmlprettify(str);
-		expect(prettified).to
-			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+		expect(prettified).to.equal(`<?xml version="1.0" standalone="yes"?>
 <foo bar="foo" zanc="bar">
 </foo>
 <foo uk="bar" zak="foo"/>
@@ -96,8 +94,7 @@ describe("XML prettify", function () {
 		<si />
 	</sst>`;
 		const prettified = xmlprettify(str);
-		expect(prettified).to
-			.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+		expect(prettified).to.equal(`<?xml version="1.0" standalone="yes"?>
 <sst count="9" uniqueCount="9" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
     <si>
         <t xml:space="preserve">Property</t>

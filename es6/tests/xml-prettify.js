@@ -140,10 +140,14 @@ function miniparser(xml) {
 				state = "outside";
 				cursor = closing + 1;
 				if (isXMLDeclaration) {
-					const encodingRegex = /encoding="([^"]+)"/;
+					const encodingRegex = / encoding="([^"]+)"/;
 					if (encodingRegex.test(tag)) {
-						tag = tag.replace(encodingRegex, function (x, p0) {
-							return `encoding="${p0.toUpperCase()}"`;
+						tag = tag.replace(encodingRegex, function (x, encoding) {
+							encoding = encoding.toUpperCase();
+							if (encoding === "UTF-8") {
+								return "";
+							}
+							return ` encoding="${encoding}"`;
 						});
 					}
 					currentType = "declaration";
