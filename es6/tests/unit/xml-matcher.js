@@ -53,6 +53,24 @@ describe("XML prettify", function () {
 `);
 	});
 
+	it("should deduplicate xmlns:w", function () {
+		let str =
+			'<w:sectPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:t xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/></w:sectPr>';
+		str = xmlprettify(str);
+		expect(str).to
+			.equal(`<w:sectPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    <w:t />
+</w:sectPr>
+`);
+	});
+
+	it("should normalize &#100;", function () {
+		let str = '<w foo="Ry&#100;cy9Ry&#010;cy9"/>';
+		str = xmlprettify(str);
+		expect(str).to.equal(`<w foo="Ry&#x64;cy9Ry&#xA;cy9"/>
+`);
+	});
+
 	it("should sort attributes", function () {
 		const str =
 			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo zanc="bar" bar="foo"></foo><foo zak="foo" uk="bar"/>';

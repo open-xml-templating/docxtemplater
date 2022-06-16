@@ -7,7 +7,13 @@ function getIndent(indent) {
 
 const attributeRegex = /<[A-Za-z0-9:]+ (.*?)([/ ]*)>/;
 
-function attributeSorter(ln) {
+function normalizeValue(value) {
+	return value.replace(/&#([0-9]+);/g, function (_, int) {
+		return `&#x${parseInt(int, 10).toString(16).toUpperCase()};`;
+	});
+}
+
+function attributeSorter(ln, namespaces) {
 	let rest;
 	if (attributeRegex.test(ln)) {
 		rest = ln.replace(attributeRegex, "$1");
@@ -19,7 +25,24 @@ function attributeSorter(ln) {
 		// matched text: match[0]
 		// match start: match.index
 		// capturing group n: match[n]
-		attributes.push({ key: match[1], value: match[2] });
+		const key = match[1];
+		let value = match[2];
+
+		value = normalizeValue(value);
+
+		let found = false;
+		namespaces.forEach(function (ns) {
+			if (ns) {
+				ns.forEach(function (n) {
+					if (n.key === key && n.value === value) {
+						found = true;
+					}
+				});
+			}
+		});
+		if (!found) {
+			attributes.push({ key, value });
+		}
 		match = attrRegex.exec(rest);
 	}
 	attributes.sort(function (a1, a2) {
@@ -36,7 +59,7 @@ function attributeSorter(ln) {
 	if (rest != null) {
 		ln = ln.replace(rest, stringifiedAttrs).replace(/ +>/, ">");
 	}
-	return ln;
+	return { replacement: ln, attributes };
 }
 
 function xmlprettify(xml) {
@@ -96,12 +119,20 @@ function xmlprettify(xml) {
 	return result;
 }
 
+function getNamespaces(attributes) {
+	return attributes.filter(function ({ key }) {
+		return key.indexOf("xmlns") !== -1;
+	});
+}
+
 function miniparser(xml) {
 	let cursor = 0;
 	let state = "outside";
 	let currentType = "";
 	let content = "";
 	const renderedArray = [];
+	let level = 0;
+	const namespaces = [];
 	while (cursor < xml.length) {
 		if (state === "outside") {
 			const opening = xml.indexOf("<", cursor);
@@ -154,17 +185,23 @@ function miniparser(xml) {
 				} else if (isSingle) {
 					// drop whitespace at the end
 					tag = tag.replace(/\s*\/\s*>$/g, "/>");
-					tag = attributeSorter(tag);
+					const sorted = attributeSorter(tag, namespaces);
+					tag = sorted.replacement;
 					currentType = "single";
 				} else if (isClosing) {
 					// drop whitespace at the end
 					tag = tag.replace(/\s+>$/g, ">");
 					currentType = "closing";
+					namespaces.pop();
+					level--;
 				} else {
 					// drop whitespace at the end
 					tag = tag.replace(/\s+>$/g, ">");
-					tag = attributeSorter(tag);
+					const sorted = attributeSorter(tag, namespaces);
+					tag = sorted.replacement;
+					namespaces[level] = getNamespaces(sorted.attributes);
 					currentType = "opening";
+					level++;
 				}
 				renderedArray.push({ type: currentType, value: tag });
 			} else {
