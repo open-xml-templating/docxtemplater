@@ -240,7 +240,7 @@ describe("Compilation errors", function () {
 						position: "start",
 						text: true,
 						type: "tag",
-						value: "<w:t>",
+						value: '<w:t xml:space="preserve">',
 						tag: "w:t",
 					},
 					{
@@ -294,7 +294,7 @@ describe("Compilation errors", function () {
 						type: "tag",
 						position: "start",
 						text: true,
-						value: "<w:t>",
+						value: '<w:t xml:space="preserve">',
 						tag: "w:t",
 					},
 					{

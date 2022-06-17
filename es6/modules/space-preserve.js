@@ -36,12 +36,9 @@ const spacePreserve = {
 			inTextTag = false,
 			endLindex = 0,
 			lastTextTag = 0;
+
 		function isStartingPlaceHolder(part, chunk) {
-			return (
-				part.type === "placeholder" &&
-				(!part.module || part.module === "loop") &&
-				chunk.length > 1
-			);
+			return part.type === "placeholder" && chunk.length > 1;
 		}
 		const result = postparsed.reduce(function (postparsed, part) {
 			if (isWtStart(part)) {

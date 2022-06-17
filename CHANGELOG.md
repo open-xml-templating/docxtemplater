@@ -1,3 +1,8 @@
+### 3.30.1
+
+Bugfix to correctly add `xml:space="preserve"` for each type of placeholder, not just for the loop module.
+This fixes spacing issues that happened rarely in many modules that have an "inline mode" (word-run, image, html, styling, paragraph-placeholder).
+
 ### 3.30.0
 
 Make it possible to have a tag that contains multiple lines, like this :

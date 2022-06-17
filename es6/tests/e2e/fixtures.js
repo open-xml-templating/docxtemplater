@@ -2093,7 +2093,7 @@ const rawXmlTest = {
 			value: "rawxml",
 			module: "rawxml",
 			expanded: [
-				[startParagraph, startText],
+				[startParagraph, xmlSpacePreserveTag],
 				[endText, endParagraph],
 			],
 		},
