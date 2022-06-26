@@ -9,6 +9,9 @@ module.exports = {
 		if (options.zip) {
 			this.zip = options.zip;
 		}
+		if (options.xmlDocuments) {
+			this.xmlDocuments = options.xmlDocuments;
+		}
 	},
 	on(event) {
 		// Stryker disable all : because this is an optimisation that won't make any tests fail
@@ -22,7 +25,16 @@ module.exports = {
 		const zip = this.zip;
 		const Lexer = this.Lexer;
 		let prId = 1;
-		zip.file(/\.xml$/).forEach(function (f) {
+		zip.file(/\.xml$/).forEach((f) => {
+			const xmlDoc = this.xmlDocuments[f.name];
+			if (xmlDoc) {
+				const prs = xmlDoc.getElementsByTagName("wp:docPr");
+				for (let i = 0, len = prs.length; i < len; i++) {
+					const pr = prs[i];
+					pr.setAttribute("id", prId++);
+				}
+				return;
+			}
 			let text = f.asText();
 			const xmllexed = Lexer.xmlparse(text, {
 				text: [],

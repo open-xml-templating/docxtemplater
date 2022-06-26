@@ -1,3 +1,7 @@
+### 3.30.2
+
+Bugfix in fix-doc-pr-corruption module to work with xmlDocuments too.
+
 ### 3.30.1
 
 Bugfix to correctly add `xml:space="preserve"` for each type of placeholder, not just for the loop module.
