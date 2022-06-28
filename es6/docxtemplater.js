@@ -6,6 +6,7 @@ const {
 	throwMultiError,
 	throwResolveBeforeCompile,
 	throwRenderInvalidTemplate,
+	throwRenderTwice,
 } = require("./errors.js");
 
 const logErrors = require("./error-logger.js");
@@ -32,6 +33,7 @@ const Docxtemplater = class Docxtemplater {
 				"The modules argument of docxtemplater's constructor must be an array"
 			);
 		}
+		this.rendered = false;
 		this.scopeManagers = {};
 		this.compiled = {};
 		this.modules = [commonModule()];
@@ -367,6 +369,10 @@ const Docxtemplater = class Docxtemplater {
 		});
 	}
 	render(data) {
+		if (this.rendered) {
+			throwRenderTwice();
+		}
+		this.rendered = true;
 		this.compile();
 		if (this.errors.length > 0) {
 			throwRenderInvalidTemplate();

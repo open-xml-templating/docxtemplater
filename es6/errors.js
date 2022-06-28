@@ -347,6 +347,18 @@ function throwRenderInvalidTemplate() {
 	throw err;
 }
 
+function throwRenderTwice() {
+	const err = new XTInternalError(
+		"You should not call .render twice on the same docxtemplater instance"
+	);
+	err.properties = {
+		id: "render_twice",
+		explanation:
+			"You should not call .render twice on the same docxtemplater instance",
+	};
+	throw err;
+}
+
 function throwFileTypeNotIdentified() {
 	const err = new XTInternalError(
 		"The filetype for this file could not be identified, is this file corrupted ?"
@@ -417,4 +429,5 @@ module.exports = {
 	throwXmlInvalid,
 	throwResolveBeforeCompile,
 	throwRenderInvalidTemplate,
+	throwRenderTwice,
 };

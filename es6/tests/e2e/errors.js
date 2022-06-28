@@ -1368,6 +1368,27 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 });
 
 describe("Rendering error", function () {
+	it("should show an error when calling render twice", function () {
+		const content = "<w:t>{user}</w:t>";
+		const expectedError = {
+			name: "InternalError",
+			message:
+				"You should not call .render twice on the same docxtemplater instance",
+			properties: {
+				id: "render_twice",
+			},
+		};
+		const doc = createXmlTemplaterDocxNoRender(content);
+		doc.render();
+		expectToThrow(
+			() => {
+				doc.render();
+			},
+			Errors.XTInternalError,
+			expectedError
+		);
+	});
+
 	it("should show an error when using corrupt characters", function () {
 		const content = "<w:t> {user}</w:t>";
 		const expectedError = {

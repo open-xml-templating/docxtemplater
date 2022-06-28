@@ -1,3 +1,7 @@
+### 3.30.3
+
+Throw an error when calling `doc.render()` twice on the same instance.
+
 ### 3.30.2
 
 Bugfix in fix-doc-pr-corruption module to work with xmlDocuments too.
