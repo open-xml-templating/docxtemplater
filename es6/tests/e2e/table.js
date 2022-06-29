@@ -18,11 +18,10 @@ describe("Table", function () {
 				},
 			],
 		};
-		const doc = createDoc("loop-valid.docx");
-		doc.setData(tags);
-		doc.setOptions({ paragraphLoop: true });
-		doc.render();
-		shouldBeSame({ doc, expectedName: "expected-loop-valid.docx" });
+		shouldBeSame({
+			doc: createDocV4("loop-valid.docx", { paragraphLoop: true }).render(tags),
+			expectedName: "expected-loop-valid.docx",
+		});
 	});
 
 	it("should work with tables", function () {
@@ -227,6 +226,13 @@ describe("Table", function () {
 				paragraphLoop: true,
 			}).render(),
 			expectedName: "expected-table-in-table-corruption.docx",
+		});
+	});
+
+	it("should drop table if there are no <w:tr> childs", function () {
+		shouldBeSame({
+			doc: createDocV4("table-empty.docx").render(),
+			expectedName: "expected-table-empty.docx",
 		});
 	});
 });

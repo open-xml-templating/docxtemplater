@@ -32,7 +32,9 @@ function DocXFileTypeConfig() {
 			"w:proofState",
 			"w:tc",
 			"w:tr",
-			"w:table",
+			"w:tbl",
+			"w:body",
+			"w:document",
 			"w:p",
 			"w:r",
 			"w:br",
@@ -67,6 +69,7 @@ function DocXFileTypeConfig() {
 			render,
 		],
 		tagShouldContain: [
+			{ tag: "w:tbl", shouldContain: ["w:tr"], drop: true },
 			{ tag: "w:tc", shouldContain: ["w:p"], value: "<w:p></w:p>" },
 			{
 				tag: "w:sdtContent",
@@ -105,7 +108,7 @@ function PptXFileTypeConfig() {
 			"p:sp",
 			"a:tc",
 			"a:tr",
-			"a:table",
+			"a:tbl",
 			"a:p",
 			"a:r",
 			"a:rPr",
@@ -124,6 +127,7 @@ function PptXFileTypeConfig() {
 		tagRawXml: "p:sp",
 		baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
 		tagShouldContain: [
+			{ tag: "a:tbl", shouldContain: ["a:tr"], drop: true },
 			{ tag: "p:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 			{ tag: "a:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 		],

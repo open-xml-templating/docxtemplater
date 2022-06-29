@@ -242,34 +242,34 @@ describe("Inspect module", function () {
 				type: "placeholder",
 				value: "products",
 				raw: "#products",
-				lIndex: 15,
+				lIndex: 17,
 				sectPrCount: 0,
 				module: "loop",
 				inverted: false,
 				offset: 0,
 				lastParagrapSectPr: "",
-				endLindex: 15,
+				endLindex: 17,
 				subparsed: [
 					{
 						type: "placeholder",
 						value: "title",
 						offset: 11,
-						endLindex: 31,
-						lIndex: 31,
+						endLindex: 33,
+						lIndex: 33,
 					},
 					{
 						type: "placeholder",
 						value: "name",
 						offset: 33,
-						endLindex: 55,
-						lIndex: 55,
+						endLindex: 57,
+						lIndex: 57,
 					},
 					{
 						type: "placeholder",
 						value: "reference",
 						offset: 59,
-						endLindex: 72,
-						lIndex: 72,
+						endLindex: 74,
+						lIndex: 74,
 					},
 					{
 						type: "placeholder",
@@ -280,15 +280,15 @@ describe("Inspect module", function () {
 						offset: 70,
 						sectPrCount: 0,
 						lastParagrapSectPr: "",
-						endLindex: 90,
-						lIndex: 90,
+						endLindex: 92,
+						lIndex: 92,
 						subparsed: [
 							{
 								type: "placeholder",
 								value: "title",
 								offset: 82,
-								endLindex: 106,
-								lIndex: 106,
+								endLindex: 108,
+								lIndex: 108,
 							},
 							{
 								type: "placeholder",
@@ -299,15 +299,15 @@ describe("Inspect module", function () {
 								lastParagrapSectPr: "",
 								inverted: false,
 								offset: 117,
-								endLindex: 134,
-								lIndex: 134,
+								endLindex: 136,
+								lIndex: 136,
 								subparsed: [
 									{
 										type: "placeholder",
 										value: "reason",
 										offset: 143,
-										endLindex: 156,
-										lIndex: 156,
+										endLindex: 158,
+										lIndex: 158,
 									},
 								],
 							},
@@ -844,9 +844,9 @@ describe("Complex table example", function () {
 	it("should not do anything special when loop outside of table", function () {
 		[
 			`<w:p><w:t>{#tables}</w:t></w:p>
-<w:table><w:tr><w:tc>
+<w:tbl><w:tr><w:tc>
 <w:p><w:t>{user}</w:t></w:p>
-</w:tc></w:tr></w:table>
+</w:tc></w:tr></w:tbl>
 <w:p><w:t>{/tables}</w:t></w:p>`,
 		].forEach(function (content) {
 			const scope = {
@@ -856,13 +856,13 @@ describe("Complex table example", function () {
 			const c = getContent(doc);
 			expect(c).to.be.equal(
 				`<w:p><w:t/></w:p>
-<w:table><w:tr><w:tc>
+<w:tbl><w:tr><w:tc>
 <w:p><w:t xml:space="preserve">John</w:t></w:p>
-</w:tc></w:tr></w:table>
+</w:tc></w:tr></w:tbl>
 <w:p><w:t/></w:p>
-<w:table><w:tr><w:tc>
+<w:tbl><w:tr><w:tc>
 <w:p><w:t xml:space="preserve">Jane</w:t></w:p>
-</w:tc></w:tr></w:table>
+</w:tc></w:tr></w:tbl>
 <w:p><w:t/></w:p>`
 			);
 		});

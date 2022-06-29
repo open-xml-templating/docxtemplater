@@ -272,7 +272,7 @@ describe("Compilation errors", function () {
 	});
 
 	it("should fail when rawtag is in table without paragraph", function () {
-		const content = "<w:table><w:t>{@myrawtag}</w:t></w:p></w:table>";
+		const content = "<w:tbl><w:t>{@myrawtag}</w:t></w:p></w:tbl>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Raw tag not in paragraph",
@@ -287,8 +287,8 @@ describe("Compilation errors", function () {
 						type: "tag",
 						position: "start",
 						text: false,
-						value: "<w:table>",
-						tag: "w:table",
+						value: "<w:tbl>",
+						tag: "w:tbl",
 					},
 					{
 						type: "tag",
@@ -321,8 +321,8 @@ describe("Compilation errors", function () {
 						type: "tag",
 						position: "end",
 						text: false,
-						value: "</w:table>",
-						tag: "w:table",
+						value: "</w:tbl>",
+						tag: "w:tbl",
 					},
 				],
 				rootError: {

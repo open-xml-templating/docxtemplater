@@ -710,10 +710,10 @@ describe("ParagraphLoop", function () {
 			}),
 		});
 		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
 		expect(printedPostparsed["word/document.xml"]).to.be.equal(
 			expectedPrintedPostParsed
 		);
-		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
 	});
 
 	it("should work with spacing at the end", function () {
@@ -894,10 +894,10 @@ describe("ParagraphLoop", function () {
 							parsedLength: 4,
 							offset: 12,
 							part: {
-								endLindex: 17,
+								endLindex: 19,
 								expandTo: "w:p",
 								inverted: false,
-								lIndex: 17,
+								lIndex: 19,
 								location: "start",
 								module: "loop",
 								offset: 12,
@@ -918,8 +918,8 @@ describe("ParagraphLoop", function () {
 							parsedLength: 4,
 							offset: 26,
 							part: {
-								endLindex: 21,
-								lIndex: 21,
+								endLindex: 23,
+								lIndex: 23,
 								location: "end",
 								module: "loop",
 								offset: 26,

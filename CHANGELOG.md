@@ -1,3 +1,9 @@
+### 3.31.0
+
+When having a table, that after the generation, has no table rows (<w:tr> elements), the whole `<w:tbl>` element is dropped.
+
+This automatically fixes a corruption that would happen when using a loop within table rows.
+
 ### 3.30.3
 
 Throw an error when calling `doc.render()` twice on the same instance.

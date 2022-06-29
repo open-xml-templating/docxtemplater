@@ -48,15 +48,26 @@ function joinUncorrupt(parts, options) {
 	if (filetypes.docx.indexOf(options.contentType) !== -1) {
 		parts = addEmptyParagraphAfterTable(parts);
 	}
+	let startIndex = -1;
 
 	for (let i = 0, len = parts.length; i < len; i++) {
 		const part = parts[i];
 		for (let j = 0, len2 = contains.length; j < len2; j++) {
-			const { tag, shouldContain, value } = contains[j];
+			const { tag, shouldContain, value, drop } = contains[j];
 			if (currentlyCollecting === j) {
 				if (isEnding(part, tag)) {
 					currentlyCollecting = -1;
-					parts[i] = collecting + value + part;
+					if (drop) {
+						for (let k = startIndex; k <= i; k++) {
+							parts[k] = "";
+						}
+					}
+					else {
+						for (let k = startIndex; k < i; k++) {
+							parts[k] = "";
+						}
+						parts[i] = collecting + value + part;
+					}
 					break;
 				}
 				collecting += part;
@@ -64,12 +75,12 @@ function joinUncorrupt(parts, options) {
 					const sc = shouldContain[k];
 					if (isStarting(part, sc)) {
 						currentlyCollecting = -1;
-						parts[i] = collecting;
+						// parts[i] = collecting;
 						break;
 					}
 				}
 				if (currentlyCollecting > -1) {
-					parts[i] = "";
+					// parts[i] = "";
 				}
 				break;
 			}
@@ -85,9 +96,10 @@ function joinUncorrupt(parts, options) {
 					parts[i] = "";
 					break;
 				} else {
+					startIndex = i;
 					currentlyCollecting = j;
 					collecting = part;
-					parts[i] = "";
+					// parts[i] = "";
 					break;
 				}
 			}
