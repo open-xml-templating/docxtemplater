@@ -74,7 +74,7 @@ function xmlprettify(xml) {
 		}
 		const nextType = i < parsed.length - 1 ? parsed[i + 1].type : "";
 		const nnextType = i < parsed.length - 2 ? parsed[i + 2].type : "";
-		if (type === "declaration") {
+		if (type === "processing-instruction") {
 			result += value + "\n";
 		}
 		if (
@@ -166,11 +166,11 @@ function miniparser(xml) {
 				let tag = xml.substr(cursor, closing - cursor + 1);
 				const isSingle = Boolean(tag.match(/^<.+\/>/)); // is this line a single tag? ex. <br />
 				const isClosing = Boolean(tag.match(/^<\/.+>/)); // is this a closing tag? ex. </a>
-				const isXMLDeclaration = Boolean(tag.match(/^<\?xml/)); // is this an xml declaration tag? ex. <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+				const isProcessingInstruction = Boolean(tag.match(/^<\?.*\?>$/)); // is this an xml declaration tag? ex. <?xml version="1.0" encoding="UTF-8" standalone="yes"?> or <?mso-contentType?>
 
 				state = "outside";
 				cursor = closing + 1;
-				if (isXMLDeclaration) {
+				if (isProcessingInstruction) {
 					const encodingRegex = / encoding="([^"]+)"/;
 					if (encodingRegex.test(tag)) {
 						tag = tag.replace(encodingRegex, function (x, encoding) {
@@ -181,7 +181,7 @@ function miniparser(xml) {
 							return ` encoding="${encoding}"`;
 						});
 					}
-					currentType = "declaration";
+					currentType = "processing-instruction";
 				} else if (isSingle) {
 					// drop whitespace at the end
 					tag = tag.replace(/\s*\/\s*>$/g, "/>");

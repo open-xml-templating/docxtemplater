@@ -142,4 +142,22 @@ describe("XML prettify", function () {
 </sst>
 `);
 	});
+
+	it("should work with processing instruction : <?mso-contentType?>", function () {
+		const str = xmlprettify(`<?xml version="1.0"?>
+<?mso-contentType?>
+<FormTemplates xmlns="http://schemas.microsoft.com/sharepoint/v3/contenttype/forms">
+  <Display>DocumentLibraryForm</Display>
+  <Edit>DocumentLibraryForm</Edit>
+  <New>DocumentLibraryForm</New>
+</FormTemplates>`);
+		expect(str).to.equal(`<?xml version="1.0"?>
+<?mso-contentType?>
+<FormTemplates xmlns="http://schemas.microsoft.com/sharepoint/v3/contenttype/forms">
+    <Display>DocumentLibraryForm</Display>
+    <Edit>DocumentLibraryForm</Edit>
+    <New>DocumentLibraryForm</New>
+</FormTemplates>
+`);
+	});
 });

@@ -61,8 +61,7 @@ function joinUncorrupt(parts, options) {
 						for (let k = startIndex; k <= i; k++) {
 							parts[k] = "";
 						}
-					}
-					else {
+					} else {
 						for (let k = startIndex; k < i; k++) {
 							parts[k] = "";
 						}
