@@ -4,6 +4,8 @@ When having a table, that after the generation, has no table rows (<w:tr> elemen
 
 This automatically fixes a corruption that would happen when using a loop within table rows.
 
+If you are using the subtemplate module, you have to update to subtemplate module 3.11.3
+
 ### 3.30.3
 
 Throw an error when calling `doc.render()` twice on the same instance.
