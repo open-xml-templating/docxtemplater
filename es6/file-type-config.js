@@ -22,6 +22,7 @@ function DocXFileTypeConfig() {
 			"dc:description",
 			"dc:subject",
 			"dc:title",
+			"cp:contentStatus",
 
 			"w:t",
 			"m:t",

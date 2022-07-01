@@ -1,3 +1,7 @@
+### 3.31.1
+
+Add "cp:contentStatus" to templated tags
+
 ### 3.31.0
 
 When having a table, that after the generation, has no table rows (<w:tr> elements), the whole `<w:tbl>` element is dropped.
