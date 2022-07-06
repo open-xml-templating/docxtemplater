@@ -4,7 +4,17 @@
 *.sublime-workspace
 .idea
 /*.docx
+/*.docm
+/*.dotm
+/*.dotx
 /*.pptx
+/*.pptm
+/*.potm
+/*.potx
+/*.xlsm
+/*.xlsx
+/*.xltm
+/*.xltx
 /build
 /docs/build
 /js
