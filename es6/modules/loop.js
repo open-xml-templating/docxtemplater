@@ -73,6 +73,25 @@ function isContinuous(parts) {
 	});
 }
 
+function isNextPage(parts) {
+	return parts.some(function (part) {
+		return (
+			isTagStart("w:type", part) &&
+			part.value.indexOf('w:val="nextPage"') !== -1
+		);
+	});
+}
+
+function addSectionBefore(parts, sect) {
+	return [
+		`<w:p><w:pPr>${sect
+			.map(function ({ value }) {
+				return value;
+			})
+			.join("")}</w:pPr></w:p>`,
+	].concat(parts);
+}
+
 function addContinuousType(parts) {
 	let stop = false;
 	let inSectPr = false;
@@ -262,11 +281,20 @@ class LoopModule {
 			basePart.sectPrCount = getSectPrHeaderFooterChangeCount(parsed);
 			this.totalSectPr += basePart.sectPrCount;
 
-			const sects = this.sects;
+			const { sects } = this;
 			sects.some(function (sect, index) {
 				if (sect[0].lIndex > basePart.lIndex) {
 					if (index + 1 < sects.length && isContinuous(sects[index + 1])) {
 						basePart.addContinuousType = true;
+					}
+					return true;
+				}
+				if (
+					sect[0].lIndex > parsed[0].lIndex &&
+					basePart.lIndex > sect[0].lIndex
+				) {
+					if (isNextPage(sects[index])) {
+						basePart.addNextPage = { index };
 					}
 					return true;
 				}
@@ -385,6 +413,7 @@ class LoopModule {
 		const totalValue = [];
 		const errors = [];
 		let heightOffset = 0;
+		const self = this;
 		const firstTag = part.subparsed[0];
 		let tagHeight = 0;
 		if (firstTag?.tag === "a:tr") {
@@ -392,6 +421,9 @@ class LoopModule {
 		}
 		heightOffset -= tagHeight;
 		let a16RowIdOffset = 0;
+		const insideParagraphLoop = isInsideParagraphLoop(part);
+
+		// eslint-disable-next-line complexity
 		function loopOver(scope, i, length) {
 			heightOffset += tagHeight;
 			const scopeManager = options.scopeManager.createSubScopeManager(
@@ -414,11 +446,7 @@ class LoopModule {
 				tags: {},
 				scopeManager,
 			});
-			if (
-				part.hasPageBreak &&
-				i === length - 1 &&
-				isInsideParagraphLoop(part)
-			) {
+			if (part.hasPageBreak && i === length - 1 && insideParagraphLoop) {
 				addPageBreakAtEnd(subRendered);
 			}
 			const isNotFirst = scopeManager.scopePathItem.some(function (i) {
@@ -431,8 +459,16 @@ class LoopModule {
 				if (part.addContinuousType) {
 					subRendered.parts = addContinuousType(subRendered.parts);
 				}
+			} else if (part.addNextPage) {
+				subRendered.parts = addSectionBefore(
+					subRendered.parts,
+					self.sects[part.addNextPage.index]
+				);
 			}
-			if (part.hasPageBreakBeginning && isInsideParagraphLoop(part)) {
+			if (part.addNextPage) {
+				addPageBreakAtEnd(subRendered);
+			}
+			if (part.hasPageBreakBeginning && insideParagraphLoop) {
 				addPageBreakAtBeginning(subRendered);
 			}
 			for (let i = 0, len = subRendered.parts.length; i < len; i++) {

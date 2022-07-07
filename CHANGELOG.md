@@ -1,3 +1,7 @@
+### 3.31.2
+
+Correctly handle case when having a manual section break of type "nextPage", that is within a loop.
+
 ### 3.31.1
 
 Add "cp:contentStatus" to templated tags
