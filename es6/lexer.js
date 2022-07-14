@@ -257,7 +257,10 @@ function getAllDelimiterIndexes(fullText, delimiters) {
 				break;
 		}
 		// if tag starts with =, such as {=[ ]=}
-		if (DELIMITER_START && fullText[offset + start.length] === "=") {
+		if (
+			compareResult === DELIMITER_START &&
+			fullText[offset + start.length] === "="
+		) {
 			indexes.push({
 				offset: startOffset,
 				position: "start",

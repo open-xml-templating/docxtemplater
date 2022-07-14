@@ -421,6 +421,15 @@ const fixtures = [
 		postparsed: null,
 	},
 	{
+		it: "should work when having equal sign after closing tag",
+		content: "<w:r><w:t>{foo}====</w:t></w:r>",
+		scope: {
+			foo: "FOO",
+		},
+		...noInternals,
+		result: '<w:r><w:t xml:space="preserve">FOO====</w:t></w:r>',
+	},
+	{
 		it: "should fail when having two open text tags",
 		content: "<w:t><w:t>xxx",
 		...noInternals,

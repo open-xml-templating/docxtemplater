@@ -1,3 +1,21 @@
+### 3.31.3
+
+Bugfix to avoid throwing following error :
+
+```
+New Delimiters cannot be parsed
+```
+
+When the template contains an equal sign right after a closing tag.
+
+For example, the following template would throw that error in previous versions :
+
+```
+Hello {name}===
+```
+
+Now, no error is thrown.
+
 ### 3.31.2
 
 Correctly handle case when having a manual section break of type "nextPage", that is within a loop.
