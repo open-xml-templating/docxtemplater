@@ -255,7 +255,13 @@ function expandToOne(postparsed, options) {
 	const limits = [];
 	for (let i = 0, len = postparsed.length; i < len; i++) {
 		const part = postparsed[i];
-		if (part.type === "placeholder" && part.module === options.moduleName) {
+		if (
+			part.type === "placeholder" &&
+			part.module === options.moduleName &&
+			// The part.subparsed check is used to fix this github issue :
+			// https://github.com/open-xml-templating/docxtemplater/issues/671
+			!part.subparsed
+		) {
 			try {
 				const limit = getExpandLimit(part, i, postparsed, options);
 				if (!limit) {

@@ -1,3 +1,9 @@
+### 3.31.4
+
+Bugfix for table module : merge-cells-col did not work correctly when placed inside a loop.
+
+Fixes : https://github.com/open-xml-templating/docxtemplater/issues/671
+
 ### 3.31.3
 
 Bugfix to avoid throwing following error :
