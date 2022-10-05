@@ -1,3 +1,27 @@
+### 3.31.5
+
+Bugfix to correctly handle empty loops.
+
+Fixes https://github.com/open-xml-templating/docxtemplater/issues/680
+
+Previously the following stack trace would be shown :
+
+```txt
+TypeError: Cannot read properties of undefined (reading 'lIndex')
+    at .../docxtemplater/js/modules/loop.js:331:42
+    at Array.some (<anonymous>)
+    at LoopModule.postparse (.../docxtemplater/js/modules/loop.js:322:15)
+    at .../docxtemplater/js/parser.js:226:24
+    at Array.reduce (<anonymous>)
+    at _postparse (.../docxtemplater/js/parser.js:225:22)
+    at postparse (.../docxtemplater/js/parser.js:228:20)
+    at .../docxtemplater/js/modules/expand-pair-trait.js:268:30
+    at Array.reduce (<anonymous>)
+    at Object.postparse (.../docxtemplater/js/modules/expand-pair-trait.js:248:32)
+```
+
+Now the template is rendered correctly.
+
 ### 3.31.4
 
 Bugfix for table module : merge-cells-col did not work correctly when placed inside a loop.

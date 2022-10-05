@@ -277,21 +277,21 @@ class LoopModule {
 		}, []);
 	}
 	postparse(parsed, { basePart }) {
-		if (basePart && this.docxtemplater.fileType === "docx") {
+		if (basePart && this.docxtemplater.fileType === "docx" && parsed.length > 0) {
 			basePart.sectPrCount = getSectPrHeaderFooterChangeCount(parsed);
 			this.totalSectPr += basePart.sectPrCount;
 
 			const { sects } = this;
 			sects.some(function (sect, index) {
-				if (sect[0].lIndex > basePart.lIndex) {
+				if (basePart.lIndex < sect[0].lIndex) {
 					if (index + 1 < sects.length && isContinuous(sects[index + 1])) {
 						basePart.addContinuousType = true;
 					}
 					return true;
 				}
 				if (
-					sect[0].lIndex > parsed[0].lIndex &&
-					basePart.lIndex > sect[0].lIndex
+					parsed[0].lIndex < sect[0].lIndex &&
+					sect[0].lIndex < basePart.lIndex
 				) {
 					if (isNextPage(sects[index])) {
 						basePart.addNextPage = { index };

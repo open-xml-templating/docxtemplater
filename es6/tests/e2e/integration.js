@@ -984,3 +984,12 @@ describe("Load Office 365 file", function () {
 		shouldBeSame({ doc, expectedName: "expected-header-without-digit.docx" });
 	});
 });
+
+describe("Loops", function () {
+	it("should work with template", function () {
+		const tags = { ice: [1, 2, 3] };
+		const doc = createDocV4("empty-loop-regression.docx");
+		doc.render(tags);
+		shouldBeSame({ doc, expectedName: "expected-loop-regression.docx" });
+	});
+});
