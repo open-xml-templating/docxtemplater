@@ -50,7 +50,7 @@
     "angular-expressions": "^1.1.5",
     "babel-loader": "^8.2.5",
     "chai": "^4.3.6",
-    "chalk": "^5.0.1",
+    "chalk": "^5.1.0",
     "diff": "^5.1.0",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.8",
