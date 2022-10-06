@@ -1,4 +1,4 @@
-### 3.31.5
+### 3.31.4
 
 Bugfix to correctly handle empty loops.
 
@@ -22,13 +22,13 @@ TypeError: Cannot read properties of undefined (reading 'lIndex')
 
 Now the template is rendered correctly.
 
-### 3.31.4
+### 3.31.3
 
 Bugfix for table module : merge-cells-col did not work correctly when placed inside a loop.
 
 Fixes : https://github.com/open-xml-templating/docxtemplater/issues/671
 
-### 3.31.3
+### 3.31.2
 
 Bugfix to avoid throwing following error :
 
@@ -46,11 +46,9 @@ Hello {name}===
 
 Now, no error is thrown.
 
-### 3.31.2
+### 3.31.1
 
 Correctly handle case when having a manual section break of type "nextPage", that is within a loop.
-
-### 3.31.1
 
 Add "cp:contentStatus" to templated tags
 
