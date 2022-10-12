@@ -313,6 +313,15 @@ describe("Spacing/Linebreaks", function () {
 		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-no-multiline.pptx" });
 	});
+
+	it("should keep run props (font-size) for pptx file", function () {
+		const doc = createDocV4("run-props-linebreak.pptx", {
+			linebreaks: true,
+		}).render({
+			data: "blabla\nbloblo\nblublu",
+		});
+		shouldBeSame({ doc, expectedName: "expected-run-props-linebreak.pptx" });
+	});
 });
 
 describe("Assignment", function () {

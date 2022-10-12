@@ -277,7 +277,11 @@ class LoopModule {
 		}, []);
 	}
 	postparse(parsed, { basePart }) {
-		if (basePart && this.docxtemplater.fileType === "docx" && parsed.length > 0) {
+		if (
+			basePart &&
+			this.docxtemplater.fileType === "docx" &&
+			parsed.length > 0
+		) {
 			basePart.sectPrCount = getSectPrHeaderFooterChangeCount(parsed);
 			this.totalSectPr += basePart.sectPrCount;
 

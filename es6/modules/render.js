@@ -92,7 +92,7 @@ class Render {
 				this.recordRun = true;
 				this.recordedRun = [part.value];
 			}
-			if (part.position === "end") {
+			if (part.position === "end" || part.position === "selfclosing") {
 				this.recordedRun.push(part.value);
 				this.recordRun = false;
 			}

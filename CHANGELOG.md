@@ -1,3 +1,7 @@
+### 3.31.5
+
+Bugfix for pptx files not keeping correct font properties (font-size) when using `{linebreak: true}` option.
+
 ### 3.31.4
 
 Bugfix to correctly handle empty loops.
