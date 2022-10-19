@@ -36,7 +36,7 @@
     "url": "https://github.com/open-xml-templating/docxtemplater"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.8.2"
+    "@xmldom/xmldom": "^0.8.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
