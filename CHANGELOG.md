@@ -1,3 +1,7 @@
+### 3.31.6
+
+Add `replaceFirstSection` and `replaceLastSection` booleans types for typescript and the subsection module.
+
 ### 3.31.5
 
 Bugfix for pptx files not keeping correct font properties (font-size) when using `{linebreak: true}` option.

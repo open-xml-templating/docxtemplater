@@ -106,6 +106,8 @@ doc3.compile();
 doc3.resolveData({ a: "b" }).then(function () {
   doc3.render();
 });
+doc3.replaceFirstSection = true;
+doc3.replaceLastSection = true;
 const doc4 = new Docxtemplater(new PizZip("hello"));
 doc4.renderAsync({ a: "b" }).then(function () {
   console.log("end");

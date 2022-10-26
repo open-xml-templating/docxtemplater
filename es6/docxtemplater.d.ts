@@ -121,6 +121,8 @@ declare class Docxtemplater {
   attachModule(module: DXT.Module): this;
   compile(): this;
   getFullText(path?: string): string;
+  replaceFirstSection?: boolean; // used for the subsection module
+  replaceLastSection?: boolean; // used for the subsection module
 }
 
 export default Docxtemplater;
