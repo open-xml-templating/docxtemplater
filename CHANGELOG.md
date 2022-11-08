@@ -1,3 +1,9 @@
+### 3.32.1
+
+Add support to accented characters in tags when using the "docxtemplater/expressions.js" parser.
+
+Tags such as {être} will not throw an error.
+
 ### 3.32.0
 
 Expose "docxtemplater/expressions.js" to simplify the parser option for angular parser.

@@ -1478,6 +1478,44 @@ const fixtures = [
 		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
 	},
 	{
+		it: "should work when using accents or numbers in variable names, ...",
+		content: "<w:t>{êtreîöò12áeêëẽ}</w:t>",
+		...noInternals,
+		options: {
+			parser: angularParser,
+		},
+		scope: {},
+		resolved: null,
+		result: '<w:t xml:space="preserve">undefined</w:t>',
+	},
+	{
+		it: "should fail when using € sign",
+		content: "<w:t>{hello€}</w:t>",
+		...noInternals,
+		options: {
+			parser: angularParser,
+		},
+		scope: {},
+		error: wrapMultiError({
+			name: "ScopeParserError",
+			message: "Scope parser compilation failed",
+			properties: {
+				explanation: 'The scope parser for the tag "hello€" failed to compile',
+				rootError: {
+					message: `[$parse:lexerr] Lexer Error: Unexpected next character  at columns 5-5 [€] in expression [hello€].
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next%20character%20&p1=s%205-5%20%5B%E2%82%AC%5D&p2=hello%E2%82%AC`,
+				},
+				file: "word/document.xml",
+				id: "scopeparser_compilation_failed",
+				xtag: "hello€",
+				offset: 0,
+			},
+		}),
+		errorType: Errors.XTTemplateError,
+		resolved: null,
+		result: '<w:t xml:space="preserve">undefined</w:t>',
+	},
+	{
 		it: "should disallow access to internal property",
 		content: '<w:t>{"".split.toString()}</w:t>',
 		...noInternals,
