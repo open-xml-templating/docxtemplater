@@ -1,3 +1,21 @@
+### 3.32.3
+
+Bugfix of version 3.32.2, 3.32.1, 3.32.0
+
+When using this document :
+
+```txt
+Hello {name}!
+```
+
+if the data is `{ name: "" }` with the "docxtemplater/expresssions.js" option, the tag will render the following :
+
+```txt
+Hello !
+```
+
+In version 3.32.2, this would have rendered `Hello undefined!` which is incorrect.
+
 ### 3.32.2
 
 Bugfix of version 3.32.1 and 3.32.0.

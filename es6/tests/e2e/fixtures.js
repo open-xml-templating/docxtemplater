@@ -1353,6 +1353,19 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
+		it: "should work well with empty string as result",
+		content: "<w:t>{foo}</w:t>",
+		...noInternals,
+		options: {
+			parser: angularParser,
+		},
+		scope: {
+			foo: "",
+		},
+		resolved: null,
+		result: "<w:t/>",
+	},
+	{
 		it: "should work well with str value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",

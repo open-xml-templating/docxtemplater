@@ -44,7 +44,7 @@ function angularParser(tag) {
 						if (name === "$index") {
 							return index;
 						}
-						if (scope[name]) {
+						if (scope[name] != null) {
 							const property = scope[name];
 							return typeof property === "function"
 								? property.bind(scope)
@@ -52,7 +52,7 @@ function angularParser(tag) {
 						}
 						for (let i = scopeList.length - 1; i >= 0; i--) {
 							const s = scopeList[i];
-							if (s[name]) {
+							if (s[name] != null) {
 								const property = s[name];
 								return typeof property === "function"
 									? property.bind(s)
@@ -65,12 +65,12 @@ function angularParser(tag) {
 						if (name === "$index") {
 							return true;
 						}
-						if (scope[name]) {
+						if (scope[name] != null) {
 							return true;
 						}
 						for (let i = scopeList.length - 1; i >= 0; i--) {
 							const s = scopeList[i];
-							if (s[name]) {
+							if (s[name] != null) {
 								return true;
 							}
 						}
