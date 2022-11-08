@@ -1,8 +1,15 @@
 const { assign } = require("lodash");
-const angularParser = require("../angular-parser.js");
+const angularParser = require("../../expressions.js");
 const Errors = require("../../errors.js");
 const { wrapMultiError } = require("../utils.js");
 const nbsp = String.fromCharCode(160);
+
+angularParser.filters.upper = function (str) {
+	if (!str) {
+		return str;
+	}
+	return str.toUpperCase();
+};
 
 const noInternals = {
 	lexed: null,
@@ -1469,6 +1476,28 @@ const fixtures = [
 		scope: { a: [["first-part", "other-part"]] },
 		resolved: null,
 		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
+	},
+	{
+		it: "should disallow access to internal property",
+		content: '<w:t>{"".split.toString()}</w:t>',
+		...noInternals,
+		options: {
+			parser: angularParser,
+		},
+		scope: {},
+		resolved: null,
+		result: '<w:t xml:space="preserve">undefined</w:t>',
+	},
+	{
+		it: "should allow filters like | upper",
+		content: "<w:t>{name | upper}</w:t>",
+		...noInternals,
+		options: {
+			parser: angularParser,
+		},
+		scope: { name: "john" },
+		resolved: null,
+		result: '<w:t xml:space="preserve">JOHN</w:t>',
 	},
 	{
 		it: "should work when using angular assignment that is already in the scope",

@@ -1,3 +1,27 @@
+### 3.32.0
+
+Expose "docxtemplater/expressions.js" to simplify the parser option for angular parser.
+
+You now can replace your angularParser code with the following :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+new Docxtemplater(zip, { parser: expressionParser });
+```
+
+For IE11 or other runtimes that do not support "Proxy", you can use instead :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+new Docxtemplater(zip, { parser: expressionParser });
+```
+
+Both examples require the `angular-expressions` package which is an external dependency :
+
+```bash
+npm install --save angular-expressions
+```
+
 ### 3.31.6
 
 Add `replaceFirstSection` and `replaceLastSection` booleans types for typescript and the subsection module.

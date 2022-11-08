@@ -4,11 +4,11 @@ const last = require("lodash/last.js");
 
 function angularParser(tag) {
 	tag = tag
-		.replace(/^\.$/, "this")
-		.replace(/(’|‘)/g, "'")
-		.replace(/(“|”)/g, '"');
+		.replace(/^\s*\.\s*$/, "this")
+		.replace(/[’‘]/g, "'")
+		.replace(/[“”]/g, '"');
 	const expr = expressions.compile(tag);
-	// isAngularAssignment will be true if your tag contains a `=`, for example
+	// isAngularAssignment will be true if your tag contains an Assignment, for example
 	// when you write the following in your template :
 	// {full_name = first_name + last_name}
 	// In that case, it makes sense to return an empty string so
@@ -35,5 +35,6 @@ function angularParser(tag) {
 		},
 	};
 }
+angularParser.filters = expressions.filters;
 
 module.exports = angularParser;

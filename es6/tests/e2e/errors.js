@@ -8,7 +8,7 @@ const {
 	expectToThrowAsync,
 	captureLogs,
 } = require("../utils.js");
-const angularParser = require("../angular-parser.js");
+const angularParser = require("../../expressions.js");
 
 describe("Compilation errors", function () {
 	it("should fail when parsing invalid xml (1)", function () {

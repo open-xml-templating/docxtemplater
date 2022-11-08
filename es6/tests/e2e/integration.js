@@ -11,7 +11,7 @@ const {
 const printy = require("../printy.js");
 const expectedPrintedPostParsed = require("../data/printy-postparsed.js");
 
-const angularParser = require("../angular-parser.js");
+const angularParser = require("../../expressions.js");
 const Errors = require("../../errors.js");
 
 describe("Simple templating", function () {
@@ -522,6 +522,20 @@ describe("Section breaks inside loops", function () {
 		shouldBeSame({
 			doc,
 			expectedName: "expected-rendered-hello.docx",
+		});
+	});
+
+	it("should work with quotes in tag with angular parser", function () {
+		const doc = createDocV4("quotes-in-tag.docx", {
+			parser: angularParser,
+			paragraphLoop: true,
+		}).render({
+			user: "John",
+			hobbies: ["hiking", "reading"],
+		});
+		shouldBeSame({
+			doc,
+			expectedName: "expected-quotes-in-tag.docx",
 		});
 	});
 

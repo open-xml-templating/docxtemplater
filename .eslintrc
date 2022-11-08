@@ -8,6 +8,7 @@
     "Uint8Array": true,
     "saveAs": true,
     "Promise": true,
+    "Proxy": true,
     "PizZipUtils": true,
     "ArrayBuffer": true
   },

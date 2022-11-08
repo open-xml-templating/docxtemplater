@@ -1,7 +1,8 @@
 const PizZip = require("pizzip");
 const { assign } = require("lodash");
 
-const angularParser = require("../angular-parser.js");
+const angularParser = require("../../expressions.js");
+const angularParserIE11 = require("../../expressions-ie11.js");
 const Docxtemplater = require("../../docxtemplater.js");
 const Errors = require("../../errors.js");
 const { last } = require("../../utils.js");
@@ -564,6 +565,16 @@ describe("Changing the parser", function () {
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
 			parser: angularParser,
+		});
+		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
+	});
+
+	it("should work with loops with angularParser for ie 11", function () {
+		const content = "<w:t>Hello {#person.adult}you{/person.adult}</w:t>";
+		const scope = { person: { name: "Edgar", adult: true } };
+		const xmlTemplater = createXmlTemplaterDocx(content, {
+			tags: scope,
+			parser: angularParserIE11,
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 	});
