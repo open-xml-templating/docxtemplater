@@ -34,3 +34,5 @@ browser-demo/
 .nyc_output/
 .stryker-tmp
 reports
+expressions-ie11.js
+expressions.js

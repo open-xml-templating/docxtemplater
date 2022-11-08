@@ -1,3 +1,9 @@
+### 3.32.2
+
+Bugfix of version 3.32.1 and 3.32.0.
+
+Correctly expose `require("docxtemplater/expressions.js")`.
+
 ### 3.32.1
 
 Add support to accented characters in tags when using the "docxtemplater/expressions.js" parser.
