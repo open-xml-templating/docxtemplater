@@ -17,14 +17,12 @@ const Errors = require("../../errors.js");
 describe("Simple templating", function () {
 	describe("text templating", function () {
 		it("should change values with template data", function () {
-			const tags = {
+			const doc = createDocV4("tag-example.docx").render({
 				first_name: "Hipp",
 				last_name: "Edgar",
 				phone: "0652455478",
 				description: "New Website",
-			};
-			const doc = createDocV4("tag-example.docx");
-			doc.render(tags);
+			});
 			expect(doc.getFullText()).to.be.equal("Edgar Hipp");
 			expect(doc.getFullText("word/header1.xml")).to.be.equal(
 				"Edgar Hipp0652455478New Website"
@@ -217,37 +215,35 @@ describe("Special characters", function () {
 				},
 			],
 		};
-		const doc = createDocV4("loop-hebrew.docx");
-		doc.render(tags);
+		const doc = createDocV4("loop-hebrew.docx").render(tags);
 		shouldBeSame({ doc, expectedName: "expected-loop-hebrew.docx" });
 	});
 });
 
 describe("Spacing/Linebreaks", function () {
 	it("should show spaces with linebreak option", function () {
-		const doc = createDoc("tag-multiline.docx");
-		doc.setOptions({ linebreaks: true });
-		doc.render({
-			description: `hello there
+		const doc = createDoc("tag-multiline.docx")
+			.setOptions({ linebreaks: true })
+			.render({
+				description: `hello there
     deep indentation
        goes here
     end`,
-		});
+			});
 		shouldBeSame({ doc, expectedName: "expected-multiline-indent.docx" });
 	});
 
 	it("should be possible to have linebreaks if setting the option", function () {
-		const doc = createDoc("tag-multiline.docx");
-		doc.setOptions({ linebreaks: true });
-		doc.render({
-			description: "The description,\nmultiline",
-		});
+		const doc = createDoc("tag-multiline.docx")
+			.setOptions({ linebreaks: true })
+			.render({
+				description: "The description,\nmultiline",
+			});
 		shouldBeSame({ doc, expectedName: "expected-multiline.docx" });
 	});
 
 	it("should not remove section if having normal loop just before", function () {
-		const doc = createDoc("loop-with-section-break-after.docx");
-		doc.render();
+		const doc = createDoc("loop-with-section-break-after.docx").render();
 		shouldBeSame({
 			doc,
 			expectedName: "expected-loop-with-section-break-after.docx",
@@ -255,9 +251,9 @@ describe("Spacing/Linebreaks", function () {
 	});
 
 	it("should not remove section if having paragraph loop just before", function () {
-		const doc = createDoc("paragraph-loop-with-section-break-after.docx");
-		doc.setOptions({ paragraphLoop: true });
-		doc.render();
+		const doc = createDoc("paragraph-loop-with-section-break-after.docx")
+			.setOptions({ paragraphLoop: true })
+			.render();
 		shouldBeSame({
 			doc,
 			expectedName: "expected-paragraph-loop-with-section-break-after.docx",
@@ -277,20 +273,20 @@ describe("Spacing/Linebreaks", function () {
 	});
 
 	it("should work with linebreaks and copy the run style onto new lines in pptx", function () {
-		const doc = createDoc("tag-multiline.pptx");
-		doc.setOptions({ linebreaks: true });
-		doc.render({
-			description: "The description,\nmultiline",
-		});
+		const doc = createDoc("tag-multiline.pptx")
+			.setOptions({ linebreaks: true })
+			.render({
+				description: "The description,\nmultiline",
+			});
 		shouldBeSame({ doc, expectedName: "expected-multiline.pptx" });
 	});
 
 	it("should not fail when using linebreaks and tagvalue not a string", function () {
-		const doc = createDoc("tag-multiline.pptx");
-		doc.setOptions({ linebreaks: true });
-		doc.render({
-			description: true,
-		});
+		const doc = createDoc("tag-multiline.pptx")
+			.setOptions({ linebreaks: true })
+			.render({
+				description: true,
+			});
 		shouldBeSame({ doc, expectedName: "expected-regression-multiline.pptx" });
 	});
 
@@ -299,8 +295,7 @@ describe("Spacing/Linebreaks", function () {
 			parser: () => ({
 				get: () => "",
 			}),
-		});
-		doc.render();
+		}).render();
 		shouldBeSame({ doc, expectedName: "expected-no-multiline.docx" });
 	});
 
@@ -309,8 +304,7 @@ describe("Spacing/Linebreaks", function () {
 			parser: () => ({
 				get: () => "",
 			}),
-		});
-		doc.render();
+		}).render();
 		shouldBeSame({ doc, expectedName: "expected-no-multiline.pptx" });
 	});
 
@@ -326,110 +320,88 @@ describe("Spacing/Linebreaks", function () {
 
 describe("Assignment", function () {
 	it("should be possible to assign a value from the template", function () {
-		const doc = createDoc("assignment.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-			parser: angularParser,
-		});
-		doc.render({
-			first_name: "Jane",
-			last_name: "Doe",
-		});
+		const doc = createDoc("assignment.docx")
+			.setOptions({
+				paragraphLoop: true,
+				parser: angularParser,
+			})
+			.render({
+				first_name: "Jane",
+				last_name: "Doe",
+			});
 		shouldBeSame({ doc, expectedName: "expected-assignment.docx" });
 	});
 });
 
 describe("Unusual document extensions", function () {
 	it("should work with docm", function () {
-		const tags = {
-			user: "John",
-		};
-		const doc = createDoc("input.docm");
-		doc.render(tags);
+		const doc = createDoc("input.docm").render({ user: "John" });
 		shouldBeSame({ doc, expectedName: "expected-docm.docm" });
 	});
 
 	it("should work with pptm", function () {
-		const tags = {
-			user: "John",
-		};
-		const doc = createDoc("input.pptm");
-		doc.render(tags);
+		const doc = createDoc("input.pptm").render({ user: "John" });
 		shouldBeSame({ doc, expectedName: "expected-pptm.pptm" });
 	});
 
 	it("should work with dotx", function () {
-		const tags = {
-			user: "John",
-		};
-		const doc = createDoc("input.dotx");
-		doc.render(tags);
+		const doc = createDoc("input.dotx").render({ user: "John" });
 		shouldBeSame({ doc, expectedName: "expected-dotx.dotx" });
 	});
 
 	it("should work with dotm", function () {
-		const tags = {
-			user: "John",
-		};
-		const doc = createDoc("input.dotm");
-		doc.render(tags);
+		const doc = createDoc("input.dotm").render({ user: "John" });
 		shouldBeSame({ doc, expectedName: "expected-dotm.dotm" });
 	});
 });
 
 describe("Dash Loop", function () {
 	it("should work on simple table -> w:tr", function () {
-		const tags = {
+		const doc = createDoc("tag-dash-loop.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
 				{ type: "DOS", price: "500", reference: "Win7" },
 				{ type: "apple", price: "1200", reference: "MACOSX" },
 			],
-		};
-		const doc = createDoc("tag-dash-loop.docx");
-		doc.render(tags);
+		});
 		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
 		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
 	it("should work on simple table -> w:table", function () {
-		const tags = {
+		const doc = createDoc("tag-dash-loop-table.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
 				{ type: "DOS", price: "500", reference: "Win7" },
 				{ type: "apple", price: "1200", reference: "MACOSX" },
 			],
-		};
-		const doc = createDoc("tag-dash-loop-table.docx");
-		doc.render(tags);
+		});
 		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
 		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
 	it("should work on simple list -> w:p", function () {
-		const tags = {
+		const doc = createDoc("tag-dash-loop-list.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
 				{ type: "DOS", price: "500", reference: "Win7" },
 				{ type: "apple", price: "1200", reference: "MACOSX" },
 			],
-		};
-		const doc = createDoc("tag-dash-loop-list.docx");
-		doc.render(tags);
+		});
 		const expectedText = "linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ";
 		const text = doc.getFullText();
 		expect(text).to.be.equal(expectedText);
 	});
 
 	it("should not corrupt document if using empty {-a:p} inside table cell", function () {
-		const doc = createDoc("regression-dash-loop-in-table-cell.pptx");
-		doc.render();
+		const doc = createDoc("regression-dash-loop-in-table-cell.pptx").render();
 		shouldBeSame({ doc, expectedName: "expected-table-3-cells.pptx" });
 	});
 
 	it("should not corrupt document if using empty {-a:p} inside table cell", function () {
-		const doc = createDoc("regression-dash-loop-in-table-cell.pptx");
-		doc.render({ cond: [1, 2, 3] });
+		const doc = createDoc("regression-dash-loop-in-table-cell.pptx").render({
+			cond: [1, 2, 3],
+		});
 		shouldBeSame({ doc, expectedName: "expected-table-3-true-cells.pptx" });
 	});
 });
@@ -463,8 +435,9 @@ describe("Section breaks inside loops", function () {
 
 	it("should work at beginning of std loop with 3 elements", function () {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
-		const doc = createDoc("page-break-inside-condition.docx");
-		doc.render({ cond: [1, 2, 3] });
+		const doc = createDoc("page-break-inside-condition.docx").render({
+			cond: [1, 2, 3],
+		});
 		shouldBeSame({
 			doc,
 			expectedName: "expected-page-break-3-els-std-loop.docx",
@@ -493,8 +466,7 @@ describe("Section breaks inside loops", function () {
 	});
 
 	it("should work at end of std loop", function () {
-		const doc = createDoc("paragraph-loop-with-pagebreak.docx");
-		doc.render({
+		const doc = createDoc("paragraph-loop-with-pagebreak.docx").render({
 			users: [{ name: "Bar" }, { name: "John" }, { name: "Baz" }],
 		});
 		shouldBeSame({
@@ -575,29 +547,29 @@ describe("Section breaks inside loops", function () {
 
 describe("ParagraphLoop", function () {
 	it("should work with docx", function () {
-		const doc = createDoc("users.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.render({ users: ["John", "Jane", "Louis"] });
+		const doc = createDoc("users.docx")
+			.setOptions({
+				paragraphLoop: true,
+			})
+			.render({ users: ["John", "Jane", "Louis"] });
 		shouldBeSame({ doc, expectedName: "expected-users.docx" });
 	});
 
 	it("should not drop image with text", function () {
-		const doc = createDoc("cond-image.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.render({ cond: true });
+		const doc = createDoc("cond-image.docx")
+			.setOptions({
+				paragraphLoop: true,
+			})
+			.render({ cond: true });
 		shouldBeSame({ doc, expectedName: "expected-cond-image.docx" });
 	});
 
 	it("should not drop image without text", function () {
-		const doc = createDoc("cond-image-no-innertext.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.render({ cond: true });
+		const doc = createDoc("cond-image-no-innertext.docx")
+			.setOptions({
+				paragraphLoop: true,
+			})
+			.render({ cond: true });
 		shouldBeSame({
 			doc,
 			expectedName: "expected-cond-image-no-innertext.docx",
@@ -605,11 +577,11 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should not drop image without text at beginning", function () {
-		const doc = createDoc("cond-image-no-innertext-before.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.render({ cond: true });
+		const doc = createDoc("cond-image-no-innertext-before.docx")
+			.setOptions({
+				paragraphLoop: true,
+			})
+			.render({ cond: true });
 		shouldBeSame({
 			doc,
 			expectedName: "expected-cond-image-no-innertext-before.docx",
@@ -617,37 +589,37 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should work without removing extra text", function () {
-		const doc = createDoc("paragraph-loops.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.render({
-			condition: [1, 2],
-			l1: [
-				{
-					l2: ["a", "b", "c"],
-				},
-				{
-					l2: ["d", "e", "f"],
-				},
-			],
-			placeholder: "placeholder-value",
-		});
+		const doc = createDoc("paragraph-loops.docx")
+			.setOptions({
+				paragraphLoop: true,
+			})
+			.render({
+				condition: [1, 2],
+				l1: [
+					{
+						l2: ["a", "b", "c"],
+					},
+					{
+						l2: ["d", "e", "f"],
+					},
+				],
+				placeholder: "placeholder-value",
+			});
 		shouldBeSame({ doc, expectedName: "expected-paragraph-loop.docx" });
 	});
 
 	it("should work with pptx", function () {
-		const doc = createDoc("paragraph-loop.pptx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.render({
-			users: [
-				{ age: 10, name: "Bar" },
-				{ age: 18, name: "Bar" },
-				{ age: 22, name: "Bar" },
-			],
-		});
+		const doc = createDoc("paragraph-loop.pptx")
+			.setOptions({
+				paragraphLoop: true,
+			})
+			.render({
+				users: [
+					{ age: 10, name: "Bar" },
+					{ age: 18, name: "Bar" },
+					{ age: 22, name: "Bar" },
+				],
+			});
 		shouldBeSame({ doc, expectedName: "expected-paragraph-loop.pptx" });
 	});
 
@@ -672,30 +644,29 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should not fail when having paragraph in paragraph", function () {
-		const doc = createDoc("regression-par-in-par.docx");
 		const printedPostparsed = [];
 		let filePath = "";
-		doc.attachModule({
-			name: "MyModule",
-			set(obj) {
-				if (obj.inspect) {
-					if (obj.inspect.filePath) {
-						filePath = obj.inspect.filePath;
+		const doc = createDoc("regression-par-in-par.docx")
+			.attachModule({
+				name: "MyModule",
+				set(obj) {
+					if (obj.inspect) {
+						if (obj.inspect.filePath) {
+							filePath = obj.inspect.filePath;
+						}
+						if (obj.inspect.postparsed) {
+							printedPostparsed[filePath] = printy(obj.inspect.postparsed);
+						}
 					}
-					if (obj.inspect.postparsed) {
-						printedPostparsed[filePath] = printy(obj.inspect.postparsed);
-					}
-				}
-			},
-		});
-
-		doc.setOptions({
-			paragraphLoop: true,
-			parser: () => ({
-				get: () => "foo",
-			}),
-		});
-		doc.render();
+				},
+			})
+			.setOptions({
+				paragraphLoop: true,
+				parser: () => ({
+					get: () => "foo",
+				}),
+			})
+			.render();
 		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
 		expect(printedPostparsed["word/document.xml"]).to.be.equal(
 			expectedPrintedPostParsed
@@ -703,17 +674,16 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should work with spacing at the end", function () {
-		const doc = createDoc("spacing-end.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.render({ name: "John" });
+		const doc = createDoc("spacing-end.docx")
+			.setOptions({
+				paragraphLoop: true,
+			})
+			.render({ name: "John" });
 		shouldBeSame({ doc, expectedName: "expected-spacing-end.docx" });
 	});
 
 	it("should throw specific error if calling .render() on document with invalid tags", function () {
-		const doc = createDoc("errors-footer-and-header.docx");
-		doc.setOptions({
+		const doc = createDoc("errors-footer-and-header.docx").setOptions({
 			paragraphLoop: true,
 			parser: angularParser,
 		});
@@ -787,13 +757,11 @@ describe("ParagraphLoop", function () {
 				],
 			},
 		};
-		const create = doc.render.bind(doc);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(() => doc.render(), Errors.XTTemplateError, expectedError);
 	});
 
 	it("should fail properly when having lexed + postparsed errors", function () {
-		const doc = createDoc("multi-errors.docx");
-		doc.setOptions({
+		const doc = createDoc("multi-errors.docx").setOptions({
 			paragraphLoop: true,
 			parser: angularParser,
 		});
@@ -850,14 +818,7 @@ describe("ParagraphLoop", function () {
 				],
 			},
 		};
-		const create = doc.render.bind(doc, {
-			users: [
-				{ age: 10, name: "Bar" },
-				{ age: 18, name: "Bar" },
-				{ age: 22, name: "Bar" },
-			],
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(() => doc.compile(), Errors.XTTemplateError, expectedError);
 	});
 
 	it("should fail when placing paragraph loop inside normal loop", function () {
@@ -917,8 +878,7 @@ describe("ParagraphLoop", function () {
 				],
 			},
 		};
-		const create = doc.compile.bind(doc);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(() => doc.compile(), Errors.XTTemplateError, expectedError);
 	});
 });
 
@@ -973,11 +933,9 @@ describe("Prefixes", function () {
 
 describe("Load Office 365 file", function () {
 	it("should handle files with word/document2.xml", function () {
-		const doc = createDoc("office365.docx");
-		doc.setOptions({
+		const doc = createDocV4("office365.docx", {
 			paragraphLoop: true,
-		});
-		doc.render({
+		}).render({
 			test: "Value",
 			test2: "Value2",
 		});
@@ -986,8 +944,7 @@ describe("Load Office 365 file", function () {
 	});
 
 	it("should template header.xml (without digit like header1.xml)", function () {
-		const doc = createDoc("header-without-digit.docx");
-		doc.render({
+		const doc = createDoc("header-without-digit.docx").render({
 			name: "John",
 		});
 		shouldBeSame({ doc, expectedName: "expected-header-without-digit.docx" });
@@ -996,9 +953,9 @@ describe("Load Office 365 file", function () {
 
 describe("Loops", function () {
 	it("should work with template", function () {
-		const tags = { ice: [1, 2, 3] };
-		const doc = createDocV4("empty-loop-regression.docx");
-		doc.render(tags);
+		const doc = createDocV4("empty-loop-regression.docx").render({
+			ice: [1, 2, 3],
+		});
 		shouldBeSame({ doc, expectedName: "expected-loop-regression.docx" });
 	});
 });
