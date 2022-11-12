@@ -46,7 +46,7 @@
     "@babel/preset-env": "^7.20.2",
     "@stryker-mutator/core": "^6.3.0",
     "@stryker-mutator/mocha-runner": "^6.3.0",
-    "@wdio/cli": "^7.25.4",
+    "@wdio/cli": "^7.26.0",
     "angular-expressions": "^1.1.8",
     "babel-loader": "^9.1.0",
     "chai": "^4.3.7",
@@ -72,7 +72,7 @@
     "serve-static": "^1.15.0",
     "stryker-cli": "^1.0.2",
     "tsd": "^0.24.1",
-    "webdriverio": "^7.25.4",
+    "webdriverio": "^7.26.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^4.10.0"
   },
