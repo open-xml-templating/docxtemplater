@@ -1,3 +1,8 @@
+### 3.32.4
+
+Update resolveOffset algorithm to improve slides module compatibility.
+Internal update of moduleApiVersion to 3.34.0
+
 ### 3.32.3
 
 Bugfix of version 3.32.2, 3.32.1, 3.32.0

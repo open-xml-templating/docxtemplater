@@ -1133,26 +1133,26 @@ const fixtures = [
 		resolved: [
 			{
 				tag: "test",
-				value: true,
 				lIndex: 3,
-			},
-			{
-				tag: "test",
 				value: true,
-				lIndex: 15,
 			},
 			{
 				tag: "test",
+				lIndex: 15,
+				value: true,
+			},
+			{
+				tag: "test",
+				lIndex: 6,
 				value: [
 					[
 						{
 							tag: "label",
-							value: "T1",
 							lIndex: 9,
+							value: "T1",
 						},
 					],
 				],
-				lIndex: 6,
 			},
 		],
 		result: '<w:t xml:space="preserve">trueT1true</w:t>',
@@ -1167,8 +1167,8 @@ const fixtures = [
 		resolved: [
 			{
 				tag: "a",
-				value: [],
 				lIndex: 3,
+				value: [],
 			},
 		],
 		result: "<w:t/>",
@@ -1189,34 +1189,34 @@ const fixtures = [
 		resolved: [
 			{
 				tag: "frames",
+				lIndex: 3,
 				value: [
 					[
 						{
 							tag: "false",
-							value: [],
 							lIndex: 24,
+							value: [],
 						},
 						{
 							tag: "true",
+							lIndex: 6,
 							value: [
 								[
 									{
 										tag: "label",
-										value: "T1",
 										lIndex: 9,
+										value: "T1",
 									},
 									{
 										tag: "false",
-										value: [],
 										lIndex: 12,
+										value: [],
 									},
 								],
 							],
-							lIndex: 6,
 						},
 					],
 				],
-				lIndex: 3,
 			},
 		],
 		result: '<w:t xml:space="preserve">T1</w:t>',

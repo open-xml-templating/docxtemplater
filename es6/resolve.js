@@ -29,19 +29,19 @@ function resolve(options) {
 				let result;
 				if (moduleResolved) {
 					result = moduleResolved.then(function (value) {
-						resolved.push({ tag: part.value, value, lIndex: part.lIndex });
+						resolved.push({ tag: part.value, lIndex: part.lIndex, value });
 					});
 				} else if (part.type === "placeholder") {
 					result = scopeManager
 						.getValueAsync(part.value, { part })
 						.then(function (value) {
-							if (value == null) {
-								value = options.nullGetter(part);
-							}
+							return value == null ? options.nullGetter(part) : value;
+						})
+						.then(function (value) {
 							resolved.push({
 								tag: part.value,
-								value,
 								lIndex: part.lIndex,
+								value,
 							});
 							return value;
 						});

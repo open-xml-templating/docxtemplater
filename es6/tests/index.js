@@ -22,6 +22,7 @@ function startTest() {
 	require("./unit/xml-matcher.js");
 	require("./unit/doc-utils.js");
 	require("./unit/merge-sort.js");
+	require("./unit/scope-manager.js");
 }
 
 start();

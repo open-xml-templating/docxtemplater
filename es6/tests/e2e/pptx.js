@@ -44,6 +44,24 @@ describe("Pptx generation", function () {
 				],
 			})
 			.then(function () {
+				expect(
+					doc.scopeManagers["ppt/slides/slide1.xml"].resolved
+				).to.deep.equal([
+					{
+						tag: "products",
+						lIndex: 58,
+						value: [
+							[
+								{ tag: "name", lIndex: 61, value: "Acme" },
+								{ tag: "price", lIndex: 79, value: 10 },
+							],
+							[
+								{ tag: "name", lIndex: 61, value: "Ecma" },
+								{ tag: "price", lIndex: 79, value: 20 },
+							],
+						],
+					},
+				]);
 				shouldBeSame({
 					doc,
 					expectedName: "expected-loop-table.pptx",

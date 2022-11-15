@@ -19,13 +19,17 @@ function getValue(tag, meta, num) {
 	const scope = this.scopeList[num];
 	if (this.root.finishedResolving) {
 		let w = this.resolved;
-		this.scopePath.slice(this.resolveOffset).forEach((p, index) => {
-			const lIndex = this.scopeLindex[index];
+		for (
+			let i = this.resolveOffset, len = this.scopePath.length;
+			i < len;
+			i++
+		) {
+			const lIndex = this.scopeLindex[i];
 			w = find(w, function (r) {
 				return r.lIndex === lIndex;
 			});
-			w = w.value[this.scopePathItem[index]];
-		});
+			w = w.value[this.scopePathItem[i]];
+		}
 		return find(w, function (r) {
 			return meta.part.lIndex === r.lIndex;
 		}).value;

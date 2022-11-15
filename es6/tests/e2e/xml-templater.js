@@ -470,3 +470,56 @@ describe("getting parents context", function () {
 		expect(c).to.be.equal('<w:t xml:space="preserve">John Henry</w:t>');
 	});
 });
+
+describe("Using the resolveOffset property", function () {
+	it("should work", function () {
+		const content =
+			"<w:t>{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}</w:t>";
+		const xmlt = createXmlTemplaterDocxNoRender(content, {}).compile();
+		xmlt
+			.resolveData({
+				loop_first: [1],
+				loop_second: [{ name_inner: "John" }],
+				name_outer: "Henry",
+			})
+			.then(function () {
+				const sm = xmlt.scopeManagers["word/document.xml"];
+
+				expect(sm.finishedResolving).to.equal(true);
+
+				sm.scopePath.unshift("aaa");
+				sm.scopePathItem.unshift(122);
+				sm.scopePathLength.unshift(144);
+				sm.scopeLindex.unshift(555);
+				sm.resolveOffset = 1;
+
+				const part = {
+					value: "loop_first",
+					lIndex: 3,
+				};
+				const part2 = {
+					value: "loop_second",
+					lIndex: 6,
+				};
+				let val;
+
+				function loopOver(scope, i, length) {
+					const ssm = sm.createSubScopeManager(
+						scope,
+						part.value,
+						i,
+						part,
+						length
+					);
+
+					val = ssm.getValue("loop_second", { part: part2 });
+				}
+
+				sm.loopOver("loop_first", loopOver, false, {
+					part: { value: "loop_first", lIndex: 3 },
+				});
+				expect(val[0][0].tag).to.equal("name_inner");
+				expect(val[0][0].value).to.equal("John");
+			});
+	});
+});
