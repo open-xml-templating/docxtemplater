@@ -54,7 +54,7 @@
     "diff": "^5.1.0",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.8",
-    "eslint": "^8.27.0",
+    "eslint": "^8.28.0",
     "eslint_d": "^12.2.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-sort-class-members": "^1.15.2",
@@ -68,13 +68,13 @@
     "prettier": "^2.7.1",
     "request": "^2.88.2",
     "rimraf": "^3.0.2",
-    "selenium-standalone": "^8.2.3",
+    "selenium-standalone": "^8.2.4",
     "serve-static": "^1.15.0",
     "stryker-cli": "^1.0.2",
     "tsd": "^0.24.1",
     "webdriverio": "^7.26.0",
     "webpack": "^5.75.0",
-    "webpack-cli": "^4.10.0"
+    "webpack-cli": "^5.0.0"
   },
   "license": "MIT",
   "engines": {
