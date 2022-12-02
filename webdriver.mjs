@@ -21,7 +21,7 @@ function exit(message) {
 let fullBrowserName = null;
 import url from "url";
 import finalhandler from "finalhandler";
-import webdriverio from "webdriverio";
+import { remote } from "webdriverio";
 import { expect } from "chai";
 import request from "request";
 import serveStatic from "serve-static";
@@ -103,7 +103,7 @@ const minute = 60 * second;
 const commonOptions = {
 	automationProtocol: "webdriver",
 	logLevel: "warn",
-	connectionRetryTimeout: 5 * minute,
+	connectionRetryTimeout: 5 * second,
 };
 
 let options;
@@ -172,7 +172,7 @@ const startTime = +new Date();
 server.listen(port, async function () {
 	let client;
 	try {
-		client = await webdriverio.remote(options);
+		client = await remote(options);
 	} catch (e) {
 		exit(e);
 	}
