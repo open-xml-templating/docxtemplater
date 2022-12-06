@@ -657,6 +657,13 @@ describe("ParagraphLoop", function () {
 		);
 	});
 
+	it("should not produce corrupt document when having comment inside tag", function () {
+		shouldBeSame({
+			doc: createDocV4("tag-with-comment.docx").render(),
+			expectedName: "expected-tag-with-comment.docx",
+		});
+	});
+
 	it("should not fail when having paragraph in paragraph", function () {
 		const printedPostparsed = [];
 		let filePath = "";

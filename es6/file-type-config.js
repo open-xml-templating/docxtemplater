@@ -52,6 +52,9 @@ function DocXFileTypeConfig() {
 
 			"w:bookmarkStart",
 			"w:bookmarkEnd",
+			"w:commentRangeStart",
+			"w:commentRangeEnd",
+			"w:commentReference",
 		],
 		droppedTagsInsidePlaceholder: [
 			"w:p",
@@ -74,7 +77,7 @@ function DocXFileTypeConfig() {
 			{ tag: "w:tc", shouldContain: ["w:p"], value: "<w:p></w:p>" },
 			{
 				tag: "w:sdtContent",
-				shouldContain: ["w:p", "w:r"],
+				shouldContain: ["w:p", "w:r", "w:commentRangeStart"],
 				value: "<w:p></w:p>",
 			},
 		],

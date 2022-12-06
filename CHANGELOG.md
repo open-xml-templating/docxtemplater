@@ -1,3 +1,9 @@
+### 3.32.5
+
+When having a comment inside a placeholder, the document could get corrupt.
+
+This is now fixed.
+
 ### 3.32.4
 
 Update resolveOffset algorithm to improve slides module compatibility.
