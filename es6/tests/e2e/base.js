@@ -72,6 +72,7 @@ describe("Retrieving list of templated files", function () {
 			"docProps/core.xml",
 			"word/document.xml",
 			"word/footer1.xml",
+			"word/footnotes.xml",
 			"word/header1.xml",
 			"word/settings.xml",
 		]);

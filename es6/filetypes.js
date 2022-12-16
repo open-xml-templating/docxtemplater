@@ -8,6 +8,8 @@ const dotmContentType =
 	"application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
 const headerContentType =
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml";
+const footnotesContentType =
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml";
 const footerContentType =
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml";
 
@@ -29,7 +31,7 @@ const main = [
 
 const filetypes = {
 	main,
-	docx: [...main, headerContentType, footerContentType],
+	docx: [...main, headerContentType, footerContentType, footnotesContentType],
 	pptx: [
 		pptxContentType,
 		pptxSlideMaster,
