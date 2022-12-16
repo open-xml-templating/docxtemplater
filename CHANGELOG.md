@@ -1,3 +1,7 @@
+### 3.32.6
+
+Automatically template footnotes
+
 ### 3.32.5
 
 When having a comment inside a placeholder, the document could get corrupt.
