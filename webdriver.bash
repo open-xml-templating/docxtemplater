@@ -43,7 +43,10 @@ force_stop_selenium() {
 	fuser -k 4444/tcp || true
 }
 cleanup() {
+	exit_status=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)
+	echo "Exit status : $exit_status"
 	stop_selenium
+	exit "$exit_status"
 }
 trap "cleanup" EXIT INT
 
