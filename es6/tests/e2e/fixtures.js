@@ -1,10 +1,10 @@
 const { assign } = require("lodash");
-const angularParser = require("../../expressions.js");
+const expressionParser = require("../../expressions.js");
 const Errors = require("../../errors.js");
 const { wrapMultiError } = require("../utils.js");
 const nbsp = String.fromCharCode(160);
 
-angularParser.filters.upper = function (str) {
+expressionParser.filters.upper = function (str) {
 	if (!str) {
 		return str;
 	}
@@ -1324,7 +1324,7 @@ const fixtures = [
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {
 			cond: true,
@@ -1336,12 +1336,22 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
+		it: "should handle {.+.+.} tag",
+		scope: "Foo",
+		...noInternals,
+		content: "<w:t>Hi {this+this+this}</w:t>",
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi FooFooFoo</w:t>',
+	},
+	{
 		it: "should work well with int value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {
 			cond: 10,
@@ -1357,7 +1367,7 @@ const fixtures = [
 		content: "<w:t>{foo}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {
 			foo: "",
@@ -1371,7 +1381,7 @@ const fixtures = [
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {
 			cond: "cond",
@@ -1388,7 +1398,7 @@ const fixtures = [
 			"<w:t>{^cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {
 			cond: false,
@@ -1405,7 +1415,7 @@ const fixtures = [
 		content: "<w:t>{#users}{name} {date-age+ offset} {/}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {
 			date: 2019,
@@ -1440,7 +1450,7 @@ const fixtures = [
 		content: "<w:t>{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {
 			v: "0",
@@ -1462,7 +1472,7 @@ const fixtures = [
 		content: "<w:t>{#hello}{this}{/hello}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: { hello: ["world"] },
 		resolved: null,
@@ -1473,7 +1483,7 @@ const fixtures = [
 		content: "<w:t>{#c}{label}{/c}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: { c: { label: null }, label: "hello" },
 		resolved: null,
@@ -1484,7 +1494,7 @@ const fixtures = [
 		content: "<w:t>{#a}</w:t><w:t>{this}</w:t><w:t>{/}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: { a: [["first-part", "other-part"]] },
 		resolved: null,
@@ -1495,7 +1505,7 @@ const fixtures = [
 		content: "<w:t>{êtreîöò12áeêëẽ}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {},
 		resolved: null,
@@ -1506,7 +1516,7 @@ const fixtures = [
 		content: "<w:t>{hello€}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {},
 		error: wrapMultiError({
@@ -1533,7 +1543,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		content: '<w:t>{"".split.toString()}</w:t>',
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: {},
 		resolved: null,
@@ -1544,7 +1554,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		content: "<w:t>{name | upper}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: { name: "john" },
 		resolved: null,
@@ -1555,7 +1565,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		content: "<w:t>{b=a}{b}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: { a: 10, b: 5 },
 		resolved: null,
@@ -1567,7 +1577,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		...noInternals,
 		options: {
 			linebreaks: true,
-			parser: angularParser,
+			parser: expressionParser,
 		},
 		scope: { b: "Hello\n\nFoo\n\nBar\n\n" },
 		result:
