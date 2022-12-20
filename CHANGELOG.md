@@ -1,3 +1,18 @@
+### 3.33.0
+
+Add support for templating text files (or simple strings).
+
+Usage is like this :
+
+```js
+const TxtTemplater = require("docxtemplater/js/text.js");
+const doc = new TxtTemplater("Hello {user}, how are you ?");
+const result = doc.render({ user: "John" });
+console.log(result); // Shows : "Hello John, how are you ?"
+```
+
+This also works with loops and options can be set (parser for angular expressions)
+
 ### 3.32.6
 
 Automatically template footnotes

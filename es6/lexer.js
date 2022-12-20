@@ -376,9 +376,6 @@ function decodeContentParts(xmlparsed) {
 		}
 		if (isInsideContent(part)) {
 			part.value = part.value.replace(/>/g, "&gt;");
-			// if (inTextTag) {
-			// 	part.value = wordToUtf8(part.value);
-			// }
 		}
 	});
 }
