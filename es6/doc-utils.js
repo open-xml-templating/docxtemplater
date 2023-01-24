@@ -354,6 +354,12 @@ function invertMap(map) {
 		return invertedMap;
 	}, {});
 }
+function stableSort(arr, compare) {
+	return arr
+		.map((item, index) => ({ item, index }))
+		.sort((a, b) => compare(a.item, b.item) || a.index - b.index)
+		.map(({ item }) => item);
+}
 
 module.exports = {
 	endsWith,
@@ -392,4 +398,5 @@ module.exports = {
 	getSingleAttribute,
 	setSingleAttribute,
 	isWhiteSpace,
+	stableSort,
 };

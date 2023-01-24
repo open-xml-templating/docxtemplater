@@ -15,8 +15,15 @@ const ctXML = "[Content_Types].xml";
 const commonModule = require("./modules/common.js");
 
 const Lexer = require("./lexer.js");
-const { defaults, str2xml, xml2str, moduleWrapper, concatArrays, uniq } =
-	DocUtils;
+const {
+	defaults,
+	str2xml,
+	xml2str,
+	moduleWrapper,
+	concatArrays,
+	uniq,
+	stableSort,
+} = DocUtils;
 const {
 	XTInternalError,
 	throwFileTypeNotIdentified,
@@ -274,7 +281,14 @@ const Docxtemplater = class Docxtemplater {
 			});
 		});
 	}
+	reorderModules() {
+		this.modules = stableSort(
+			this.modules,
+			(m1, m2) => (m2.priority || 0) - (m1.priority || 0)
+		);
+	}
 	compile() {
+		this.reorderModules();
 		if (Object.keys(this.compiled).length) {
 			return this;
 		}
