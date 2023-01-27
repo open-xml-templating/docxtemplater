@@ -140,6 +140,8 @@ then
 			exit "$result"
 		fi
 	done
+	echo "Retried too many times, aborting"
+	exit 1
 else
 	bash webdriver-saucelabs.bash
 fi
