@@ -112,7 +112,7 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 34, 0],
+					currentModuleApiVersion: [3, 35, 0],
 					neededVersion: [5, 6, 0],
 				},
 			}
@@ -127,14 +127,14 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 34, 0],
+					currentModuleApiVersion: [3, 35, 0],
 					neededVersion: [3, 44, 0],
 				},
 			}
 		);
 
 		expectToThrow(
-			doc.verifyApiVersion.bind(null, "3.34.100"),
+			doc.verifyApiVersion.bind(null, "3.35.100"),
 			Errors.XTAPIVersionError,
 			{
 				message:
@@ -142,8 +142,8 @@ describe("Api versioning", function () {
 				name: "APIVersionError",
 				properties: {
 					id: "api_version_error",
-					currentModuleApiVersion: [3, 34, 0],
-					neededVersion: [3, 34, 100],
+					currentModuleApiVersion: [3, 35, 0],
+					neededVersion: [3, 35, 100],
 				},
 			}
 		);
