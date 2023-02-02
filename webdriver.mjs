@@ -103,7 +103,7 @@ const minute = 60 * second;
 const commonOptions = {
 	automationProtocol: "webdriver",
 	logLevel: "warn",
-	connectionRetryTimeout: 5 * second,
+	connectionRetryTimeout: 10 * second,
 };
 
 let options;
