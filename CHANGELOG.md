@@ -1,3 +1,11 @@
+### 3.34.0
+
+Add support to reorder modules automatically using module.priority.
+
+Fetch data from `_rels/.rels` and pass it to each module function using the `relType` attribute.
+
+Fixes issue in HTML module for some particular input that contains some `tp/document-orig.xml` file.
+
 ### 3.33.0
 
 Add support for templating text files (or simple strings).

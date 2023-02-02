@@ -122,6 +122,7 @@ module.exports = class XmlTemplater {
 			modules: this.modules,
 			parser: this.parser,
 			contentType: this.contentType,
+			relsType: this.relsType,
 			baseNullGetter: this.baseNullGetter.bind(this),
 			filePath: this.filePath,
 			fileTypeConfig: this.fileTypeConfig,

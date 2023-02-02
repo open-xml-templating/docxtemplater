@@ -33,8 +33,20 @@ class Common {
 			for (let j = 0, len2 = contentTypes.length; j < len2; j++) {
 				const ct = contentTypes[j];
 				if (invertedContentTypes[ct]) {
-					ftCandidate = keys[i];
-					Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
+					for (let k = 0, len = invertedContentTypes[ct].length; k < len; k++) {
+						const target = invertedContentTypes[ct][k];
+						if (
+							doc.relsTypes[target] &&
+							[
+								"http://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument",
+								"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+							].indexOf(doc.relsTypes[target]) === -1
+						) {
+							continue;
+						}
+						ftCandidate = keys[i];
+						doc.targets.push(target);
+					}
 				}
 			}
 		}

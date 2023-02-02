@@ -374,6 +374,7 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 	it("should pass filePath and contentType options", function () {
 		const doc = createDoc("tag-example.docx");
 		const filePaths = [];
+		const relsType = [];
 		let renderFP = "",
 			renderCT = "",
 			postrenderFP = "",
@@ -388,6 +389,7 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 			parse(a, options) {
 				filePaths.push(options.filePath);
 				ct.push(options.contentType);
+				relsType.push(options.relsType);
 			},
 			postparse(a, options) {
 				postparseFP = options.filePath;
@@ -445,6 +447,12 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+		]);
+
+		expect([relsType[0], relsType[1], relsType[2]]).to.deep.equal([
+			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+			undefined,
 		]);
 	});
 });

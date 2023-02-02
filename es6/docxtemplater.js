@@ -12,6 +12,7 @@ const {
 const logErrors = require("./error-logger.js");
 const collectContentTypes = require("./collect-content-types.js");
 const ctXML = "[Content_Types].xml";
+const relsFile = "_rels/.rels";
 const commonModule = require("./modules/common.js");
 
 const Lexer = require("./lexer.js");
@@ -40,6 +41,7 @@ const Docxtemplater = class Docxtemplater {
 				"The modules argument of docxtemplater's constructor must be an array"
 			);
 		}
+		this.targets = [];
 		this.rendered = false;
 		this.scopeManagers = {};
 		this.compiled = {};
@@ -325,13 +327,21 @@ const Docxtemplater = class Docxtemplater {
 		verifyErrors(this);
 		return this;
 	}
-	updateFileTypeConfig() {
-		let fileType;
-		if (this.zip.files.mimetype) {
-			fileType = "odt";
+	getRelsTypes() {
+		const rootRels = this.zip.files[relsFile];
+		const rootRelsXml = rootRels ? str2xml(rootRels.asText()) : null;
+		const rootRelationships = rootRelsXml
+			? rootRelsXml.getElementsByTagName("Relationship")
+			: [];
+		const relsTypes = {};
+		for (let i = 0, len = rootRelationships.length; i < len; i++) {
+			const r = rootRelationships[i];
+			relsTypes[r.getAttribute("Target")] = r.getAttribute("Type");
 		}
+		return relsTypes;
+	}
+	getContentTypes() {
 		const contentTypes = this.zip.files[ctXML];
-		this.targets = [];
 		const contentTypeXml = contentTypes ? str2xml(contentTypes.asText()) : null;
 		const overrides = contentTypeXml
 			? contentTypeXml.getElementsByTagName("Override")
@@ -339,6 +349,17 @@ const Docxtemplater = class Docxtemplater {
 		const defaults = contentTypeXml
 			? contentTypeXml.getElementsByTagName("Default")
 			: null;
+
+		return { overrides, defaults, contentTypes, contentTypeXml };
+	}
+	updateFileTypeConfig() {
+		let fileType;
+		if (this.zip.files.mimetype) {
+			fileType = "odt";
+		}
+		this.relsTypes = this.getRelsTypes();
+		const { overrides, defaults, contentTypes, contentTypeXml } =
+			this.getContentTypes();
 		if (contentTypeXml) {
 			this.filesContentTypes = collectContentTypes(
 				overrides,
@@ -351,6 +372,7 @@ const Docxtemplater = class Docxtemplater {
 				invertedContentTypes: this.invertedContentTypes,
 			});
 		}
+
 		this.modules.forEach((module) => {
 			fileType =
 				module.getFileType({
@@ -439,6 +461,7 @@ const Docxtemplater = class Docxtemplater {
 		const xmltOptions = {
 			filePath,
 			contentType: this.filesContentTypes[filePath],
+			relsType: this.relsTypes[filePath],
 		};
 		Object.keys(defaults)
 			.concat(["filesContentTypes", "fileTypeConfig", "fileType", "modules"])

@@ -669,16 +669,35 @@ const docxContentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
 </Types>`;
 
+const docxRelsContent = `<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties" Target="docProps/custom.xml"/>
+  <Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>
+`;
+
+const pptxRelsContent = `<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
+</Relationships>
+`;
+
 function makeDocx(name, content) {
 	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", docxContentTypeContent);
+	zip.file("_rels/.rels", docxRelsContent);
 	return load(name, zip.generate({ type: "string" }), documentCache);
 }
 function makeDocxV4(name, content, options = {}) {
 	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", docxContentTypeContent);
+	zip.file("_rels/.rels", docxRelsContent);
 	return new Docxtemplater(zip, options);
 }
 
@@ -693,6 +712,7 @@ function makePptx(name, content) {
 	const zip = new PizZip();
 	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", pptxContentTypeContent);
+	zip.file("_rels/.rels", pptxRelsContent);
 	return load(name, zip.generate({ type: "string" }), documentCache);
 }
 
@@ -700,6 +720,7 @@ function makePptxV4(name, content, options = {}) {
 	const zip = new PizZip();
 	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", pptxContentTypeContent);
+	zip.file("_rels/.rels", pptxRelsContent);
 	return new Docxtemplater(zip, options);
 }
 
