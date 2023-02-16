@@ -1,3 +1,17 @@
+### 3.34.1
+
+Bugfix in `require("docxtemplater/expressions.js")` :
+
+Avoid error const expressionParser = require("docxtemplater/expressions.js");
+
+```
+TypeError: 'set' on proxy: trap returned falsish for property 'x'
+```
+
+This will no more happen now, in the case where for example you wanted to set a property to any falsy value, like this :
+
+{x=0}
+
 ### 3.34.0
 
 Add support to reorder modules automatically using module.priority.

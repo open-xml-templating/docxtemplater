@@ -80,16 +80,16 @@ function angularParser(tag) {
 					set(target, name, value) {
 						if (typeof scope === "object" && scope) {
 							scope[name] = value;
-							return value;
+							return true;
 						}
 						for (let i = scopeList.length - 1; i >= 0; i--) {
 							const s = scopeList[i];
 							if (typeof s === "object" && s) {
 								s[name] = value;
-								return value;
+								return true;
 							}
 						}
-						return value;
+						return true;
 					},
 				}
 			);
