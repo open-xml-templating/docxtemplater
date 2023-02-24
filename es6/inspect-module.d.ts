@@ -23,7 +23,7 @@ export default class InspectModule implements DXT.Module {
   >;
 
   getStructuredTags(file: string): DXT.Part[];
-  getAllStructuredTags(file: string): DXT.Part[];
+  getAllStructuredTags(): DXT.Part[];
   getFileType(): string;
   getTemplatedFiles(): string[];
 }
