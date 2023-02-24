@@ -38,6 +38,7 @@ doc1.attachModule({
 });
 doc1.attachModule(iModule);
 const tags = iModule.getAllTags();
+const tags2 = iModule.getAllStructuredTags();
 const nullValues = iModule.fullInspected["word/document.xml"].nullValues;
 const firstTag = nullValues.detail[0].part.value;
 const scope = nullValues.detail[0].scopeManager.scopeList[0];

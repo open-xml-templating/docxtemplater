@@ -1,3 +1,9 @@
+### 3.34.2
+
+Fix typescript definition for `getAllStructuredTags` : remove file argument.
+
+Fixed in #702 thanks to @oleksandr-danylchenko
+
 ### 3.34.1
 
 Bugfix in `require("docxtemplater/expressions.js")` :
