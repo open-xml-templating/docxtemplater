@@ -97,14 +97,14 @@ export namespace DXT {
   }
 }
 
-declare class Docxtemplater {
+declare class Docxtemplater<TZip = any> {
   /**
    * Create Docxtemplater instance (and compile it on the fly)
    *
    * @param zip Serialized zip archive
-   * @param options modules and other other options
+   * @param options `modules` and other options
    */
-  constructor(zip: any, options?: DXT.ConstructorOptions);
+  constructor(zip: TZip, options?: DXT.ConstructorOptions);
   /**
    * Create Docxtemplater instance, without options
    */
@@ -114,9 +114,9 @@ declare class Docxtemplater {
   resolveData(data: any): Promise<any>;
   render(data?: any): this;
   renderAsync(data?: any): Promise<any>;
-  getZip(): any;
+  getZip(): TZip;
 
-  loadZip(zip: any): this;
+  loadZip(zip: TZip): this;
   setOptions(options: DXT.Options): this;
   attachModule(module: DXT.Module): this;
   compile(): this;
