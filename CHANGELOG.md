@@ -1,3 +1,11 @@
+### 3.34.3
+
+Fix typescript definition for constructor / zip instance.
+
+Allows to correctly autocomplete after doing `doc.getZip().generate()`
+
+Thanks to @oleksandr-danylchenko https://github.com/open-xml-templating/docxtemplater/pull/704
+
 ### 3.34.2
 
 Fix typescript definition for `getAllStructuredTags` : remove file argument.
