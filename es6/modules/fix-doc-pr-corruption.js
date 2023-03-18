@@ -1,7 +1,20 @@
 const { setSingleAttribute, isTagStart } = require("../doc-utils.js");
 
-module.exports = {
-	name: "FixDocPRCorruptionModule",
+// We use a class here because this object is storing "state" in this.Lexer,
+// this.zip, this.xmlDocuments
+//
+// In version 3.34.3 and before, the state could be overwritten if the module
+// was attached to two docxtemplater instances
+//
+// Now, since the module will be cloned if already attached, it should work
+// correctly even on multiple instances in parallel
+class FixDocPRCorruptionModule {
+	constructor() {
+		this.name = "FixDocPRCorruptionModule";
+	}
+	clone() {
+		return new FixDocPRCorruptionModule();
+	}
 	set(options) {
 		if (options.Lexer) {
 			this.Lexer = options.Lexer;
@@ -12,15 +25,13 @@ module.exports = {
 		if (options.xmlDocuments) {
 			this.xmlDocuments = options.xmlDocuments;
 		}
-	},
+	}
 	on(event) {
 		// Stryker disable all : because this is an optimisation that won't make any tests fail
-		if (event === "attached") {
-			this.attached = false;
-		}
 		if (event !== "syncing-zip") {
 			return;
 		}
+		this.attached = false;
 		// Stryker restore all
 		const zip = this.zip;
 		const Lexer = this.Lexer;
@@ -50,5 +61,7 @@ module.exports = {
 			}
 			zip.file(f.name, text);
 		});
-	},
-};
+	}
+}
+
+module.exports = new FixDocPRCorruptionModule();

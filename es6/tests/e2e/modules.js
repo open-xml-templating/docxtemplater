@@ -10,6 +10,7 @@ const {
 const inspectModule = require("../../inspect-module.js");
 const Errors = require("../../errors.js");
 const { xml2str, traits } = require("../../doc-utils.js");
+const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
 describe("Verify apiversion", function () {
 	it("should work with valid api version", function () {
@@ -574,5 +575,23 @@ describe("Module Matcher API", function () {
 				})
 				.getFullText()
 		).to.equal("name John");
+	});
+});
+
+describe("Fix doc pr corruption module", function () {
+	it("should work on multiple instances in parallel", function () {
+		const doc2 = createDocV4("loop-image-footer.docx", {
+			modules: [fixDocPrCorruption],
+		});
+		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
+		createDocV4("tag-example.docx", {
+			modules: [fixDocPrCorruption],
+		});
+		return doc2.renderAsync({ loop: [1, 2, 3, 4] }).then(function () {
+			shouldBeSame({
+				doc: doc2,
+				expectedName: "expected-loop-images-footer.docx",
+			});
+		});
 	});
 });
