@@ -32,7 +32,26 @@ const {
 	throwApiVersionError,
 } = require("./errors.js");
 
-const currentModuleApiVersion = [3, 35, 0];
+const currentModuleApiVersion = [3, 36, 0];
+
+function dropUnsupportedFileTypesModules(dx) {
+	dx.modules = dx.modules.filter((module) => {
+		if (module.supportedFileTypes) {
+			if (!Array.isArray(module.supportedFileTypes)) {
+				throw new Error(
+					"The supportedFileTypes field of the module must be an array"
+				);
+			}
+			const isSupportedModule =
+				module.supportedFileTypes.indexOf(dx.fileType) !== -1;
+			if (!isSupportedModule) {
+				module.on("detached");
+			}
+			return isSupportedModule;
+		}
+		return true;
+	});
+}
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
@@ -58,22 +77,7 @@ const Docxtemplater = class Docxtemplater {
 			}
 			this.loadZip(zip);
 			// remove the unsupported modules
-			this.modules = this.modules.filter((module) => {
-				if (module.supportedFileTypes) {
-					if (!Array.isArray(module.supportedFileTypes)) {
-						throw new Error(
-							"The supportedFileTypes field of the module must be an array"
-						);
-					}
-					const isSupportedModule =
-						module.supportedFileTypes.indexOf(this.fileType) !== -1;
-					if (!isSupportedModule) {
-						module.on("detached");
-					}
-					return isSupportedModule;
-				}
-				return true;
-			});
+			dropUnsupportedFileTypesModules(this);
 			this.compile();
 			this.v4Constructor = true;
 		}
@@ -170,6 +174,9 @@ const Docxtemplater = class Docxtemplater {
 		const wrappedModule = moduleWrapper(module);
 		this.modules.push(wrappedModule);
 		wrappedModule.on("attached");
+		if (this.fileType) {
+			dropUnsupportedFileTypesModules(this);
+		}
 		return this;
 	}
 	setOptions(options) {
@@ -216,6 +223,8 @@ const Docxtemplater = class Docxtemplater {
 			}),
 			this.modules,
 		]);
+
+		dropUnsupportedFileTypesModules(this);
 		return this;
 	}
 	precompileFile(fileName) {
@@ -392,6 +401,7 @@ const Docxtemplater = class Docxtemplater {
 		}
 
 		this.fileType = fileType;
+		dropUnsupportedFileTypesModules(this);
 
 		this.fileTypeConfig =
 			this.options.fileTypeConfig ||
