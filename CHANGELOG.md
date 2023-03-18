@@ -1,3 +1,26 @@
+### 3.35.0
+
+Update moduleApiVersion to version 3.36.0
+
+- Now the modules that define their `supportedFileTypes` will correctly be removed if the filetype does'nt match even when using the `attachModule` API.
+
+- Bugfix in FixDocPRCorruptionModule : when using the following code :
+
+  ```js
+  const fixDocPrCorruption = require("docxtemplater/js/modules/fix-doc-pr-corruption.js");
+  const doc = new Docxtemplater(zip, { modules: [fixDocPrCorruption] });
+  ```
+
+  The issue was that if you attached the same module to multiple docxtemplater instances in parallel, because of badly handled state, the state for the fixDocPrCorruption was overwritten
+
+  ```js
+  const doc1 = new Docxtemplater(zip, { modules: [fixDocPrCorruption] });
+  const doc2 = new Docxtemplater(zip, { modules: [fixDocPrCorruption] });
+  doc1.render(); // In this situation, the fixDocPrCorruption would use data from the doc2, which is incorrect, and could result in a corrupt document
+  ```
+
+  Now, the fixDocPrCorruption can be used on multiple docxtemplater instances without causing any issue.
+
 ### 3.34.3
 
 Fix typescript definition for constructor / zip instance.
