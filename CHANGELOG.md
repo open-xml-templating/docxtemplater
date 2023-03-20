@@ -1,4 +1,4 @@
-### 3.35.1
+### 3.36.0
 
 Bugfix issue #707 : Correctly handle usage of {#.}{.}{/} with angular parser
 
