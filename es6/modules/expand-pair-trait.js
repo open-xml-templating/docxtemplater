@@ -131,8 +131,13 @@ function getPairs(traits) {
 	return { pairs, errors };
 }
 
-const expandPairTrait = {
-	name: "ExpandPairTrait",
+class ExpandPairTrait {
+	constructor() {
+		this.name = "ExpandPairTrait";
+	}
+	clone() {
+		return new ExpandPairTrait();
+	}
 	optionsTransformer(options, docxtemplater) {
 		this.expandTags = docxtemplater.fileTypeConfig.expandTags.concat(
 			docxtemplater.options.paragraphLoop
@@ -140,7 +145,7 @@ const expandPairTrait = {
 				: []
 		);
 		return options;
-	},
+	}
 	postparse(postparsed, { getTraits, postparse }) {
 		let traits = getTraits(traitName, postparsed);
 		traits = traits.map(function (trait) {
@@ -226,7 +231,7 @@ const expandPairTrait = {
 		}, []);
 
 		return { postparsed: newParsed, errors };
-	},
-};
+	}
+}
 
-module.exports = () => wrapper(expandPairTrait);
+module.exports = () => wrapper(new ExpandPairTrait());

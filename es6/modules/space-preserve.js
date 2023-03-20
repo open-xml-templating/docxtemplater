@@ -29,8 +29,13 @@ function isInsideLoop(meta, chunk) {
 	return meta && meta.basePart && chunk.length > 1;
 }
 
-const spacePreserve = {
-	name: "SpacePreserveModule",
+class SpacePreserve {
+	constructor() {
+		this.name = "SpacePreserveModule";
+	}
+	clone() {
+		return new SpacePreserve();
+	}
 	postparse(postparsed, meta) {
 		let chunk = [],
 			inTextTag = false,
@@ -72,7 +77,7 @@ const spacePreserve = {
 		}, []);
 		Array.prototype.push.apply(result, chunk);
 		return result;
-	},
+	}
 	postrender(parts) {
 		let lastNonEmpty = "";
 		let lastNonEmptyIndex = 0;
@@ -96,6 +101,6 @@ const spacePreserve = {
 		}
 
 		return parts;
-	},
-};
-module.exports = () => wrapper(spacePreserve);
+	}
+}
+module.exports = () => wrapper(new SpacePreserve());
