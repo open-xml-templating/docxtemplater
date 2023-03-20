@@ -37,6 +37,9 @@ function angularParser(tag) {
 		get(scope, context) {
 			const scopeList = context.scopeList;
 			const index = context.scopePathItem[context.scopePathItem.length - 1];
+			if (tag === "this") {
+				return scope;
+			}
 
 			const px = new Proxy(
 				{},

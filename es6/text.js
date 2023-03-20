@@ -63,7 +63,7 @@ function TxtTemplater(text, options = {}) {
 
 	this.render = function (tags) {
 		xmlt.scopeManager = createScope({
-			tags: tags || {},
+			tags,
 			parser: xmlt.parser,
 		});
 		return utf8decode(xmlt.render().content);

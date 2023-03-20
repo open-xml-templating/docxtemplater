@@ -1,3 +1,7 @@
+### 3.35.1
+
+Bugfix issue #707 : Correctly handle usage of {#.}{.}{/} with angular parser
+
 ### 3.35.0
 
 Update moduleApiVersion to version 3.36.0

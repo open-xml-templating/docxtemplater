@@ -238,7 +238,7 @@ const Docxtemplater = class Docxtemplater {
 	getScopeManager(to, currentFile, tags) {
 		if (!this.scopeManagers[to]) {
 			this.scopeManagers[to] = createScope({
-				tags: tags || {},
+				tags,
 				parser: this.parser,
 				cachedParsers: currentFile.cachedParsers,
 			});

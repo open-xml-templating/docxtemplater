@@ -527,7 +527,6 @@ describe("Runtime errors", function () {
 						properties: {
 							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
-							scope: {},
 							xtag: "name|upper",
 							offset: 1,
 							rootError: { message: "foo bar" },
@@ -600,7 +599,6 @@ describe("Runtime errors", function () {
 						properties: {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
-							scope: {},
 							xtag: "raw|isfalse",
 							rootError: { message: "foo 1" },
 							offset: 0,
@@ -612,7 +610,6 @@ describe("Runtime errors", function () {
 						properties: {
 							file: "word/document.xml",
 							id: "scopeparser_execution_failed",
-							scope: {},
 							xtag: "raw|istrue",
 							rootError: { message: "foo 2" },
 							offset: 14,
@@ -1549,7 +1546,6 @@ describe("Async errors", function () {
 						properties: {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
-							scope: {},
 							xtag: "name|istrue",
 							rootError: { message: "foo 1" },
 							offset: 0,
@@ -1561,7 +1557,6 @@ describe("Async errors", function () {
 						properties: {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
-							scope: {},
 							xtag: "name|upper",
 							rootError: { message: "foo 2" },
 							offset: 22,
@@ -1573,7 +1568,6 @@ describe("Async errors", function () {
 						properties: {
 							id: "scopeparser_execution_failed",
 							file: "word/document.xml",
-							scope: {},
 							xtag: "othername|upper",
 							rootError: { message: "foo 3" },
 							offset: 35,

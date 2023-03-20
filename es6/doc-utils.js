@@ -12,7 +12,10 @@ function parser(tag) {
 			if (tag === ".") {
 				return scope;
 			}
-			return scope[tag];
+			if (scope) {
+				return scope[tag];
+			}
+			return scope;
 		},
 	};
 }

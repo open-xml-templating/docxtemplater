@@ -1346,6 +1346,41 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">Hi FooFooFoo</w:t>',
 	},
 	{
+		it: "should handle {(this+this+this)*this} tag",
+		scope: 1,
+		...noInternals,
+		content: "<w:t>Hi {(this+this+this)*(this+this)}</w:t>",
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi 6</w:t>',
+	},
+	{
+		it: "should handle {(this+this+this)*(this+this)}, this=0 tag",
+		scope: 0,
+		...noInternals,
+		content: "<w:t>Hi {(this+this+this)*(this+this)}</w:t>",
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi 0</w:t>',
+	},
+	{
+		it: "should handle {#products}{#.}{.}{/}{/}",
+		scope: {
+			products: [
+				[1, 2, 3, 4],
+				[4, 5, 6, 7],
+			],
+		},
+		...noInternals,
+		content: "<w:t>Hi {#products}{#.}-{.}-{/}{/}</w:t>",
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi -1--2--3--4--4--5--6--7-</w:t>',
+	},
+	{
 		it: "should work well with int value for condition",
 		content:
 			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
