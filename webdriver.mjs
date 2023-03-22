@@ -11,7 +11,6 @@ const {
 	SAUCE_ACCESS_KEY,
 } = process.env;
 
-import chalk from "chalk";
 function exit(message) {
 	console.log(message);
 	/* eslint-disable-next-line no-process-exit */
@@ -19,11 +18,11 @@ function exit(message) {
 }
 
 let fullBrowserName = null;
+import chalk from "chalk";
 import url from "url";
 import finalhandler from "finalhandler";
 import { remote } from "webdriverio";
 import { expect } from "chai";
-import request from "request";
 import serveStatic from "serve-static";
 const port = 9000;
 import http from "http";
@@ -98,7 +97,6 @@ if (!desiredCapabilities) {
 }
 
 const second = 1000;
-const minute = 60 * second;
 
 const commonOptions = {
 	automationProtocol: "webdriver",
@@ -133,28 +131,6 @@ const serve = serveStatic(__dirname);
 const server = http.createServer(function onRequest(req, res) {
 	serve(req, res, finalhandler(req, res));
 });
-
-function updateSaucelabsStatus(client, result, done) {
-	request(
-		{
-			headers: { "Content-Type": "text/json" },
-			url: `http://${SAUCE_USERNAME}:${SAUCE_ACCESS_KEY}@saucelabs.com/rest/v1/${SAUCE_USERNAME}/jobs/${client.sessionId}`,
-			method: "PUT",
-			body: JSON.stringify({
-				passed: result,
-				public: true,
-			}),
-		},
-		function (err) {
-			if (err) {
-				done(err);
-				return false;
-			}
-
-			done();
-		}
-	);
-}
 
 let logPostRequest = false;
 function logE(arg) {
@@ -356,16 +332,7 @@ server.listen(port, async function () {
 					`browser tests successful (${passes} passes) on ${fullBrowserName}`
 				)
 			);
-			if (BROWSER === "SAUCELABS") {
-				updateSaucelabsStatus(client, true, (e) => {
-					if (e) {
-						throw e;
-					}
-					server.close();
-				});
-			} else {
-				server.close();
-			}
+			server.close();
 			logPostRequest = true;
 			setTimeout(function () {
 				client.deleteSession();
@@ -377,16 +344,7 @@ server.listen(port, async function () {
 			if (e.message.indexOf("ECONNREFUSED") !== -1) {
 				return test();
 			}
-			if (BROWSER === "SAUCELABS") {
-				updateSaucelabsStatus(client, false, (err) => {
-					if (err) {
-						throw err;
-					}
-					exit(e);
-				});
-			} else {
-				exit(e);
-			}
+			exit(e);
 		}
 	}
 	test();
