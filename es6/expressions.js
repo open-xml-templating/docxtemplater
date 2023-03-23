@@ -50,6 +50,7 @@ function angularParser(tag) {
 						}
 						if (scope[name] != null) {
 							const property = scope[name];
+
 							return typeof property === "function"
 								? property.bind(scope)
 								: property;
@@ -93,6 +94,16 @@ function angularParser(tag) {
 							}
 						}
 						return true;
+					},
+					getOwnPropertyDescriptor(target, name) {
+						if (scope.hasOwnProperty(name)) {
+							return {
+								writable: true,
+								enumerable: true,
+								configurable: true,
+								value: scope[name],
+							};
+						}
 					},
 				}
 			);

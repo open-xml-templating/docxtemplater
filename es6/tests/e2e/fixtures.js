@@ -1346,6 +1346,48 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">Hi FooFooFoo</w:t>',
 	},
 	{
+		it: 'should handle {this["a b"]} tag',
+		scope: {
+			"a b": "John",
+		},
+		...noInternals,
+		content: '<w:t>Hi {this["a b"]}</w:t>',
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi John</w:t>',
+	},
+	{
+		it: 'should handle {this["length"]} tag',
+		scope: "John",
+		...noInternals,
+		content: '<w:t>Hi {this["length"]}</w:t>',
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi 4</w:t>',
+	},
+	{
+		it: 'should handle {this["split"]} tag',
+		scope: "John",
+		...noInternals,
+		content: '<w:t>Hi {this["split"]}</w:t>',
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi undefined</w:t>',
+	},
+	{
+		it: "should handle {this.split} tag",
+		scope: "John",
+		...noInternals,
+		content: "<w:t>Hi {this.split}</w:t>",
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi undefined</w:t>',
+	},
+	{
 		it: "should handle {(this+this+this)*this} tag",
 		scope: 1,
 		...noInternals,

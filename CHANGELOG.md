@@ -1,3 +1,27 @@
+### 3.36.1
+
+Bugfix when using following in the template :
+
+```txt
+{this["first name"]}
+```
+
+With following file :
+
+```js
+doc.render({
+  "first name": "John",
+});
+```
+
+This was incorrectly rendering undefined.
+
+The bug was present since version 3.32.0
+
+Version 3.31.6 and before were not affected by this bug.
+
+Now, the code will correctly render : "John" in this case
+
 ### 3.36.0
 
 Bugfix issue #707 : Correctly handle usage of {#.}{.}{/} with angular parser
