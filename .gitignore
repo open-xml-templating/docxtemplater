@@ -36,3 +36,4 @@ browser-demo/
 reports
 /expressions-ie11.js
 /expressions.js
+*.pdf
