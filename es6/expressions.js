@@ -13,6 +13,15 @@ function validStartChars(ch) {
 function validContinuationChars(ch) {
 	return middleRegex.test(ch);
 }
+function getIndex(scope, context) {
+	let index = null;
+	for (let i = context.scopePathItem.length - 1; i >= 0; i--) {
+		if (index == null && context.scopeTypes[i] === "array") {
+			index = context.scopePathItem[i];
+		}
+	}
+	return index;
+}
 
 function angularParser(tag) {
 	tag = tag
@@ -36,7 +45,6 @@ function angularParser(tag) {
 	return {
 		get(scope, context) {
 			const scopeList = context.scopeList;
-			const index = context.scopePathItem[context.scopePathItem.length - 1];
 			if (tag === "this") {
 				return scope;
 			}
@@ -46,7 +54,7 @@ function angularParser(tag) {
 				{
 					get(target, name) {
 						if (name === "$index") {
-							return index;
+							return getIndex(scope, context);
 						}
 						if (scope[name] != null) {
 							const property = scope[name];

@@ -1,6 +1,5 @@
 const expressions = require("angular-expressions");
 const assign = require("lodash/assign.js");
-const last = require("lodash/last.js");
 
 // Inspired by : https://stackoverflow.com/a/9337047
 const startRegex =
@@ -14,6 +13,16 @@ function validStartChars(ch) {
 }
 function validContinuationChars(ch) {
 	return middleRegex.test(ch);
+}
+
+function getIndex(scope, context) {
+	let index = null;
+	for (let i = context.scopePathItem.length - 1; i >= 0; i--) {
+		if (index == null && context.scopeTypes[i] === "array") {
+			index = context.scopePathItem[i];
+		}
+	}
+	return index;
 }
 
 function angularParser(tag) {
@@ -40,7 +49,7 @@ function angularParser(tag) {
 		get(scope, context) {
 			let obj = {};
 			const scopeList = context.scopeList;
-			const index = last(context.scopePathItem);
+			const index = getIndex(scope, context);
 			const num = context.num;
 			for (let i = 0, len = num + 1; i < len; i++) {
 				obj = assign(obj, scopeList[i]);

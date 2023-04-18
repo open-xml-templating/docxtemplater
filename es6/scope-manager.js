@@ -109,6 +109,8 @@ const ScopeManager = class ScopeManager {
 		this.scopePathItem = options.scopePathItem;
 		this.scopePathLength = options.scopePathLength;
 		this.scopeList = options.scopeList;
+		this.scopeType = "";
+		this.scopeTypes = options.scopeTypes;
 		this.scopeLindex = options.scopeLindex;
 		this.parser = options.parser;
 		this.resolved = options.resolved;
@@ -136,6 +138,7 @@ const ScopeManager = class ScopeManager {
 		}
 		const type = Object.prototype.toString.call(value);
 		if (this.isValueFalsy(value, type)) {
+			this.scopeType = false;
 			return this.functorIfInverted(
 				inverted,
 				functor,
@@ -145,12 +148,14 @@ const ScopeManager = class ScopeManager {
 			);
 		}
 		if (type === "[object Array]") {
+			this.scopeType = "array";
 			for (let i = 0; i < value.length; i++) {
 				this.functorIfInverted(!inverted, functor, value[i], i, value.length);
 			}
 			return true;
 		}
 		if (type === "[object Object]") {
+			this.scopeType = "object";
 			return this.functorIfInverted(!inverted, functor, value, 0, 1);
 		}
 		return this.functorIfInverted(
@@ -185,6 +190,7 @@ const ScopeManager = class ScopeManager {
 			scopeList: this.scopeList,
 			resolved: this.resolved,
 			scopePath: this.scopePath,
+			scopeTypes: this.scopeTypes,
 			scopePathItem: this.scopePathItem,
 			scopePathLength: this.scopePathLength,
 		};
@@ -196,6 +202,7 @@ const ScopeManager = class ScopeManager {
 			resolved: this.resolved,
 			parser: this.parser,
 			cachedParsers: this.cachedParsers,
+			scopeTypes: concatArrays([this.scopeTypes, [this.scopeType]]),
 			scopeList: concatArrays([this.scopeList, [scope]]),
 			scopePath: concatArrays([this.scopePath, [tag]]),
 			scopePathItem: concatArrays([this.scopePathItem, [i]]),
@@ -209,6 +216,7 @@ module.exports = function (options) {
 	options.scopePath = [];
 	options.scopePathItem = [];
 	options.scopePathLength = [];
+	options.scopeTypes = [];
 	options.scopeLindex = [];
 	options.scopeList = [options.tags];
 	return new ScopeManager(options);

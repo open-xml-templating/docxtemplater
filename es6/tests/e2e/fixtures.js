@@ -1,5 +1,6 @@
 const { assign } = require("lodash");
 const expressionParser = require("../../expressions.js");
+const angularParserIE11 = require("../../expressions-ie11.js");
 const Errors = require("../../errors.js");
 const { wrapMultiError } = require("../utils.js");
 const nbsp = String.fromCharCode(160);
@@ -1507,6 +1508,50 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">John 1976 Mary 1998 Walt 2079 </w:t>',
 	},
 	{
+		it: "should work well with $index angular parser",
+		content: "<w:t>{#todos}{#$index==0}FIRST {/}{text} {/todos}</w:t>",
+		...noInternals,
+		options: {
+			parser: expressionParser,
+		},
+		scope: { todos: [{ text: "Hello" }, { text: "Other todo" }] },
+		result: '<w:t xml:space="preserve">FIRST Hello Other todo </w:t>',
+	},
+	{
+		it: "should work well with $index inside condition angular parser",
+		content:
+			"<w:t>{#todos}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
+		...noInternals,
+		options: {
+			parser: expressionParser,
+		},
+		scope: {
+			todos: [
+				{ important: true, text: "Hello" },
+				{ text: "Other todo" },
+				{ important: true, text: "Bye" },
+			],
+		},
+		result: '<w:t xml:space="preserve">!!1Hello?2Other todo!!3Bye</w:t>',
+	},
+	{
+		it: "should work well with $index inside condition angular parser",
+		content:
+			"<w:t>{#todos}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
+		...noInternals,
+		options: {
+			parser: angularParserIE11,
+		},
+		scope: {
+			todos: [
+				{ important: true, text: "Hello" },
+				{ text: "Other todo" },
+				{ important: true, text: "Bye" },
+			],
+		},
+		result: '<w:t xml:space="preserve">!!1Hello?2Other todo!!3Bye</w:t>',
+	},
+	{
 		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
 		...noInternals,
 		content:
@@ -1554,6 +1599,13 @@ const fixtures = [
 		scope: { hello: ["world"] },
 		resolved: null,
 		result: '<w:t xml:space="preserve">world</w:t>',
+	},
+	{
+		it: "should be possible to close loops with {/}",
+		content: "<w:t>{#products}Product {name}{/}</w:t>",
+		...noInternals,
+		scope: { products: [{ name: "Bread" }] },
+		result: '<w:t xml:space="preserve">Product Bread</w:t>',
 	},
 	{
 		it: "should get parent prop if child is null",
