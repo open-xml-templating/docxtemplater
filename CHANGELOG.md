@@ -1,24 +1,32 @@
+### 3.37.1
+
+Add typescript typings to expressions.js
+
 ### 3.37.0
 
 Improve the way {$index} is handled with the expressions parser.
 
 Previously, if you wrote the following :
 
+```template
 {#todos}
 {#important}{$index}.! {text}{/}
 {^important}{$index}. ({text}){/}
 {/}
+```
 
-The $index value would always be equal to 0.
+The `$index` value would always be equal to `0`.
 
-This was because the $index would use the closest condition or loop.
+This was because the `$index` would use the closest condition or loop.
 
-Now, the library will look whether the {#important} was using an array or a boolean. Only for arrays will it calculate the {$index}
+Now, the library will look whether the `{#important}` is using an array or a boolean. Only for arrays will it calculate the `{$index}`, it will ignore any section that is a condition.
 
 This means that the output of the following will correctly be :
 
+```output
 0.! Do the dishes
 1.! Invite XYZ 2. (Other thing)
+```
 
 Previously, the same template would show just 0 for the index.
 

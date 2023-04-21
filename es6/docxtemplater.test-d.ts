@@ -1,5 +1,7 @@
 import Docxtemplater, { DXT } from "./docxtemplater";
 import InspectModule from "./inspect-module";
+import angularParser from "../expressions";
+import ieAngularParser from "../expressions-ie11";
 
 const PizZip: any = require("pizzip");
 import { expectType, expectError } from "tsd";
@@ -121,3 +123,11 @@ new Docxtemplater(new PizZip("hello"), { errorLogging: false });
 // Error because getFullText requires a string parameter
 expectError(doc3.getFullText(false));
 expectError(doc3.getFullText(10));
+
+const doc5 = new Docxtemplater(new PizZip("hello"), {
+  parser: angularParser,
+});
+
+const doc6 = new Docxtemplater(new PizZip("hello"), {
+  parser: ieAngularParser,
+});

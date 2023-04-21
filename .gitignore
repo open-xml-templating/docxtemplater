@@ -3,6 +3,7 @@
 *.sublime-project
 *.sublime-workspace
 .idea
+/*.ts
 /*.docx
 /*.docm
 /*.dotm
