@@ -1,3 +1,13 @@
+### 3.37.2
+
+Add support to get identifiers when using the `docxtemplater/expressions.js` package :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+const identifiers = expressionParser("x+0+users").getIdentifiers();
+// identifiers will be : ["x", "users"]
+```
+
 ### 3.37.1
 
 Add typescript typings to expressions.js

@@ -25,6 +25,50 @@ function getIndex(scope, context) {
 	return index;
 }
 
+function uniq(arr) {
+	const hash = {},
+		result = [];
+	for (let i = 0, l = arr.length; i < l; ++i) {
+		if (!hash[arr[i]]) {
+			hash[arr[i]] = true;
+			result.push(arr[i]);
+		}
+	}
+	return result;
+}
+
+function getIdentifiers(x) {
+	if (x.expression) {
+		return getIdentifiers(x.expression);
+	}
+	if (x.body) {
+		return x.body.reduce((result, y) => result.concat(getIdentifiers(y)), []);
+	}
+	if (x.type === "CallExpression") {
+		if (x.arguments) {
+			return x.arguments.reduce(
+				(result, y) => result.concat(getIdentifiers(y)),
+				[]
+			);
+		}
+	}
+	if (x.ast) {
+		return getIdentifiers(x.ast);
+	}
+
+	if (x.left) {
+		return getIdentifiers(x.left).concat(getIdentifiers(x.right));
+	}
+
+	if (x.type === "Identifier") {
+		return [x.name];
+	}
+	if (x.type === "MemberExpression") {
+		return getIdentifiers(x.object);
+	}
+	return [];
+}
+
 function angularParser(tag) {
 	tag = tag
 		.replace(/^\s*\.\s*$/, "this")
@@ -46,6 +90,9 @@ function angularParser(tag) {
 		expr.ast.body[0].expression.type === "AssignmentExpression";
 
 	return {
+		getIdentifiers() {
+			return uniq(getIdentifiers(expr));
+		},
 		get(scope, context) {
 			let obj = {};
 			const scopeList = context.scopeList;
