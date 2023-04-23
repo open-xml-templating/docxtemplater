@@ -65,7 +65,7 @@
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "pizzip": "^3.1.4",
-    "prettier": "^2.8.7",
+    "prettier": "^2.8.8",
     "rimraf": "^5.0.0",
     "selenium-standalone": "^8.3.0",
     "serve-static": "^1.15.0",
