@@ -1,3 +1,7 @@
+### 3.37.4
+
+Add typings definitions for `docxtemplater/js/text.js` (Fixes #715)
+
 ### 3.37.3
 
 Add better typings to expressions.js (including typings for filters).

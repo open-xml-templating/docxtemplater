@@ -2,6 +2,12 @@ import Docxtemplater, { DXT } from "./docxtemplater";
 import InspectModule from "./inspect-module";
 import angularParser from "../expressions";
 import ieAngularParser from "../expressions-ie11";
+import TxtTemplater from "./text";
+
+const tDoc = new TxtTemplater("Hello {#users}{name},{/users} how are you ?", {
+  parser: angularParser,
+});
+tDoc.render({ users: [{ name: "John" }, { name: "Baz" }] });
 
 angularParser.filters.map = function (input: any, key: any): any {
   if (!input) {
