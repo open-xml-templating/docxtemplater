@@ -1,3 +1,7 @@
+### 3.37.3
+
+Add better typings to expressions.js (including typings for filters).
+
 ### 3.37.2
 
 Add support to get identifiers when using the `docxtemplater/expressions.js` package :

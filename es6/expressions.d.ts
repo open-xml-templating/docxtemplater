@@ -1,2 +1,9 @@
 import { DXT } from "./js/docxtemplater";
-export default function (tag: string): DXT.Parser;
+
+type Parser = {
+  (tag: string): DXT.Parser;
+  filters: { [x: string]: (input: any, ...filters: any[]) => any };
+};
+
+declare var angularParser: Parser;
+export default angularParser;

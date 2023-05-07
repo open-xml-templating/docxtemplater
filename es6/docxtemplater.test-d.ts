@@ -3,6 +3,30 @@ import InspectModule from "./inspect-module";
 import angularParser from "../expressions";
 import ieAngularParser from "../expressions-ie11";
 
+angularParser.filters.map = function (input: any, key: any): any {
+  if (!input) {
+    return input;
+  }
+
+  if ("map" in input) {
+    return input.map(function (x: any) {
+      return x[key];
+    });
+  }
+};
+
+ieAngularParser.filters.map = function (input: any, key: any): any {
+  if (!input) {
+    return input;
+  }
+
+  if ("map" in input) {
+    return input.map(function (x: any) {
+      return x[key];
+    });
+  }
+};
+
 const PizZip: any = require("pizzip");
 import { expectType, expectError } from "tsd";
 const doc1 = new Docxtemplater(
