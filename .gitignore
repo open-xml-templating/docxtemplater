@@ -36,5 +36,6 @@ browser-demo/
 .stryker-tmp
 reports
 /expressions-ie11.js
+/text.js
 /expressions.js
 *.pdf
