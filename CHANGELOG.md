@@ -1,3 +1,16 @@
+### 3.37.5
+
+The TxtTemplater feature is now available using `require("docxtemplater/text")`
+
+```js
+const TxtTemplater = require("docxtemplater/text.js");
+const doc = new TxtTemplater("Hello {user}, how are you ?");
+const result = doc.render({ user: "John" });
+console.log(result); // Shows : "Hello John, how are you ?"
+```
+
+Previously this was only available at "docxtemplater/js/text.js", but now both are supported.
+
 ### 3.37.4
 
 Add typings definitions for `docxtemplater/js/text.js` (Fixes #715)
