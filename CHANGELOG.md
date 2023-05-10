@@ -1,3 +1,13 @@
+### 3.37.6
+
+With 3.37.5, require("docxtemplater/text") would throw the following error :
+
+```
+Cannot find module './lexer.js' from 'node_modules/docxtemplater/text.js'
+```
+
+This is now fixed.
+
 ### 3.37.5
 
 The TxtTemplater feature is now available using `require("docxtemplater/text")`

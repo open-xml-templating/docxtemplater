@@ -26,3 +26,4 @@ test/
 coverage/
 prof/
 .git
+/text.js
