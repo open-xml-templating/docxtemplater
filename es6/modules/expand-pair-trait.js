@@ -222,6 +222,7 @@ class ExpandPairTrait {
 			if (expandedPair[1] === i) {
 				const basePart = postparsed[pair[0].offset];
 				basePart.subparsed = postparse(innerParts, { basePart });
+				basePart.endLindex = pair[1].part.lIndex;
 				delete basePart.location;
 				delete basePart.expandTo;
 				newParsed.push(basePart);

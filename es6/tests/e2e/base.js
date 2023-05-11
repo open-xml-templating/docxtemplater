@@ -250,7 +250,7 @@ describe("Inspect module", function () {
 				inverted: false,
 				offset: 0,
 				lastParagrapSectPr: "",
-				endLindex: 17,
+				endLindex: 216,
 				subparsed: [
 					{
 						type: "placeholder",
@@ -282,7 +282,7 @@ describe("Inspect module", function () {
 						offset: 70,
 						sectPrCount: 0,
 						lastParagrapSectPr: "",
-						endLindex: 92,
+						endLindex: 192,
 						lIndex: 92,
 						subparsed: [
 							{
@@ -301,7 +301,7 @@ describe("Inspect module", function () {
 								lastParagrapSectPr: "",
 								inverted: false,
 								offset: 117,
-								endLindex: 136,
+								endLindex: 174,
 								lIndex: 136,
 								subparsed: [
 									{

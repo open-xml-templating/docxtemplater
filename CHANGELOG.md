@@ -1,3 +1,20 @@
+### 3.37.7
+
+Correctly calculate the endLindex for loop module.
+
+This fixes a bug of the Segmentmodule (part of the subtemplate module) where the segment would show wrongly an error of "Unclosed loop" when using the segment module with following template :
+
+```template
+{:segment s}
+{#loop}{#loop}{value} {/}{/}
+{:segment/}
+{#loop}
+{:includesegment s}
+{/}
+```
+
+This fix also needs the latest subtemplate module : version 3.12.3
+
 ### 3.37.6
 
 Template docProps/app.xml before word/document.xml.
