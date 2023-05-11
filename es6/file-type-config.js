@@ -10,7 +10,7 @@ function DocXFileTypeConfig() {
 			return [];
 		},
 		textPath(doc) {
-			return doc.targets[0];
+			return doc.textTarget;
 		},
 		tagsXmlTextArray: [
 			"Company",
@@ -90,7 +90,7 @@ function PptXFileTypeConfig() {
 			return [];
 		},
 		textPath(doc) {
-			return doc.targets[0];
+			return doc.textTarget;
 		},
 		tagsXmlTextArray: [
 			"Company",

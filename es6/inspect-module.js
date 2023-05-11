@@ -99,7 +99,7 @@ class InspectModule {
 	}
 
 	getTags(file) {
-		file = file || this.fileTypeConfig.textPath(this);
+		file = file || this.fileTypeConfig.textPath(this.docxtemplater);
 		return getTags(cloneDeep(this.fullInspected[file].postparsed));
 	}
 	getAllTags() {

@@ -1,12 +1,17 @@
 ### 3.37.6
 
+Template docProps/app.xml before word/document.xml.
+
+This way, users can write assignments in the word/settings.xml, and
+use the exposed variables in the word/document.xml
+
 With 3.37.5, require("docxtemplater/text") would throw the following error :
 
 ```
 Cannot find module './lexer.js' from 'node_modules/docxtemplater/text.js'
 ```
 
-This is now fixed.
+This is now fixed in version 3.37.6
 
 ### 3.37.5
 

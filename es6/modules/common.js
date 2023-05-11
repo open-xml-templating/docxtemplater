@@ -26,6 +26,12 @@ class Common {
 		if (!invertedContentTypes) {
 			return;
 		}
+		for (let j = 0, len2 = commonContentTypes.length; j < len2; j++) {
+			const ct = commonContentTypes[j];
+			if (invertedContentTypes[ct]) {
+				Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
+			}
+		}
 		const keys = Object.keys(filetypes);
 		let ftCandidate;
 		for (let i = 0, len = keys.length; i < len; i++) {
@@ -45,15 +51,10 @@ class Common {
 							continue;
 						}
 						ftCandidate = keys[i];
+						doc.textTarget ||= target;
 						doc.targets.push(target);
 					}
 				}
-			}
-		}
-		for (let j = 0, len2 = commonContentTypes.length; j < len2; j++) {
-			const ct = commonContentTypes[j];
-			if (invertedContentTypes[ct]) {
-				Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
 			}
 		}
 		return ftCandidate;

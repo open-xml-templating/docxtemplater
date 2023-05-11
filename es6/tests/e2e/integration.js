@@ -38,6 +38,17 @@ describe("Simple templating", function () {
 		const doc = createDoc("properties.docx");
 		let app = doc.getZip().files["docProps/app.xml"].asText();
 		let core = doc.getZip().files["docProps/core.xml"].asText();
+		const filePaths = [];
+		const module = {
+			name: "Test module",
+			requiredAPIVersion: "3.0.0",
+			render(a, options) {
+				if (filePaths.indexOf(options.filePath) === -1) {
+					filePaths.push(options.filePath);
+				}
+			},
+		};
+		doc.attachModule(module);
 		expect(app).to.contain("{tag1}");
 		expect(core).to.contain("{tag1}");
 		expect(core).to.contain("{tag2}");
@@ -59,6 +70,21 @@ describe("Simple templating", function () {
 			tag8: "resolvedvalue8",
 			tag9: "resolvedvalue9",
 		});
+		/* The order here is important !
+		 * We expect the word/settings.xml templating to happen before the
+		 * "word/document.xml"
+		 *
+		 * This way, users can write assignments in the word/settings.xml, and
+		 * use the exposed variables in the word/document.xml
+		 *
+		 * Fixed since 3.37.6
+		 */
+		expect(filePaths).to.deep.equal([
+			"word/settings.xml",
+			"docProps/core.xml",
+			"docProps/app.xml",
+			"word/document.xml",
+		]);
 		app = doc.getZip().files["docProps/app.xml"].asText();
 		core = doc.getZip().files["docProps/core.xml"].asText();
 		expect(app).to.contain("resolvedvalue1");
