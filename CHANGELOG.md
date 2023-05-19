@@ -1,3 +1,17 @@
+### 3.37.8
+
+When using the following code :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+const doc = new Docxtemplater(zip, { parser: expressionParser });
+doc.render();
+```
+
+This would always fail (when the scope was not set), but this should be allowed.
+
+This will now work correctly.
+
 ### 3.37.7
 
 Correctly calculate the endLindex for loop module.

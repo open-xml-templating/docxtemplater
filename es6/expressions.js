@@ -103,6 +103,9 @@ function angularParser(tag) {
 						if (name === "$index") {
 							return getIndex(scope, context);
 						}
+						if (scope == null) {
+							return;
+						}
 						if (scope[name] != null) {
 							const property = scope[name];
 
@@ -124,6 +127,9 @@ function angularParser(tag) {
 					has(target, name) {
 						if (name === "$index") {
 							return true;
+						}
+						if (scope == null) {
+							return false;
 						}
 						if (scope[name] != null) {
 							return true;

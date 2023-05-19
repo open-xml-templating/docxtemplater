@@ -1713,6 +1713,26 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			'<w:t xml:space="preserve">Hello</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Foo</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Bar</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t/>',
 	},
 	{
+		it: "should not fail with no scope on expressionParser",
+		content: "<w:t>{b}</w:t>",
+		...noInternals,
+		options: {
+			linebreaks: true,
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">undefined</w:t>',
+	},
+	{
+		it: "should not fail with no scope on ie11 parser",
+		content: "<w:t>{b}</w:t>",
+		...noInternals,
+		options: {
+			linebreaks: true,
+			parser: angularParserIE11,
+		},
+		result: '<w:t xml:space="preserve">undefined</w:t>',
+	},
+	{
 		it: "should work for table with nested loops",
 		content: `<w:tbl>
 		<w:tr><w:tc><w:p><w:r><w:t>{#c1}A</w:t></w:r></w:p></w:tc></w:tr>
