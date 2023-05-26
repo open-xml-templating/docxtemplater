@@ -1,3 +1,9 @@
+### 3.37.9
+
+Update to render parts of the documents in the most natural order :
+
+First all header parts, than the main document body, than the footer part.
+
 ### 3.37.8
 
 When using the following code :

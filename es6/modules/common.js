@@ -32,7 +32,7 @@ class Common {
 				Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
 			}
 		}
-		const keys = Object.keys(filetypes);
+		const keys = ["docx", "pptx"];
 		let ftCandidate;
 		for (let i = 0, len = keys.length; i < len; i++) {
 			const contentTypes = filetypes[keys[i]];
@@ -51,10 +51,15 @@ class Common {
 							continue;
 						}
 						ftCandidate = keys[i];
-						doc.textTarget ||= target;
+						if (filetypes.main.indexOf(ct) !== -1 || ct === filetypes.pptx[0]) {
+							doc.textTarget ||= target;
+						}
 						doc.targets.push(target);
 					}
 				}
+			}
+			if (ftCandidate) {
+				return ftCandidate;
 			}
 		}
 		return ftCandidate;

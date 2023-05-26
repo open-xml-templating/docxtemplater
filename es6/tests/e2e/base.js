@@ -67,14 +67,14 @@ describe("Retrieving list of templated files", function () {
 	it("should return 6 templatedFiles for a simple document", function () {
 		const doc = createDoc("tag-example.docx");
 		const templatedFiles = doc.getTemplatedFiles();
-		expect(templatedFiles.sort()).to.be.eql([
-			"docProps/app.xml",
+		expect(templatedFiles).to.be.eql([
+			"word/settings.xml",
 			"docProps/core.xml",
+			"docProps/app.xml",
+			"word/header1.xml",
 			"word/document.xml",
 			"word/footer1.xml",
 			"word/footnotes.xml",
-			"word/header1.xml",
-			"word/settings.xml",
 		]);
 	});
 });

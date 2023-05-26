@@ -31,7 +31,7 @@ const main = [
 
 const filetypes = {
 	main,
-	docx: [...main, headerContentType, footerContentType, footnotesContentType],
+	docx: [headerContentType, ...main, footerContentType, footnotesContentType],
 	pptx: [
 		pptxContentType,
 		pptxSlideMaster,

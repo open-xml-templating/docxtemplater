@@ -770,17 +770,6 @@ describe("ParagraphLoop", function () {
 				errors: [
 					{
 						name: "TemplateError",
-						message: "Closing tag does not match opening tag",
-						properties: {
-							closingtag: "bang",
-							openingtag: "users",
-							file: "word/document.xml",
-							id: "closing_tag_does_not_match_opening_tag",
-							offset: [8, 16],
-						},
-					},
-					{
-						name: "TemplateError",
 						message: "Duplicate close tag, expected one close tag",
 						properties: {
 							file: "word/header1.xml",
@@ -788,6 +777,17 @@ describe("ParagraphLoop", function () {
 							id: "duplicate_close_tag",
 							context: "itle}}",
 							offset: 15,
+						},
+					},
+					{
+						name: "TemplateError",
+						message: "Closing tag does not match opening tag",
+						properties: {
+							closingtag: "bang",
+							openingtag: "users",
+							file: "word/document.xml",
+							id: "closing_tag_does_not_match_opening_tag",
+							offset: [8, 16],
 						},
 					},
 					{

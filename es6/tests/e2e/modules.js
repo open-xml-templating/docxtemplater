@@ -335,11 +335,11 @@ describe("Module errors", function () {
 		expect(error.message).to.equal("Multi error");
 		expect(error.properties.errors.length).to.equal(9);
 
-		expect(error.properties.errors[0].properties.file).to.equal(
+		expect(error.properties.errors[4].properties.file).to.equal(
 			"word/document.xml"
 		);
-		expect(error.properties.errors[0].message).to.equal("foobar last_name");
-		expect(error.properties.errors[1].message).to.equal("foobar first_name");
+		expect(error.properties.errors[4].message).to.equal("foobar last_name");
+		expect(error.properties.errors[5].message).to.equal("foobar first_name");
 		// expect(error.properties.errors[2].message).to.equal("foobar phone");
 
 		const logs = capture.logs();
@@ -357,12 +357,12 @@ describe("Module errors", function () {
 		const parsedLog = JSON.parse(logs[0]);
 		expect(parsedLog.error.length).to.equal(9);
 
-		expect(error.properties.errors[2].properties.file).to.equal(
+		expect(error.properties.errors[0].properties.file).to.equal(
 			"word/header1.xml"
 		);
-		expect(error.properties.errors[2].message).to.equal("foobar last_name");
-		expect(error.properties.errors[3].message).to.equal("foobar first_name");
-		expect(error.properties.errors[4].message).to.equal("foobar phone");
+		expect(error.properties.errors[0].message).to.equal("foobar last_name");
+		expect(error.properties.errors[1].message).to.equal("foobar first_name");
+		expect(error.properties.errors[2].message).to.equal("foobar phone");
 
 		expect(error.properties.errors[6].properties.file).to.equal(
 			"word/footer1.xml"
@@ -423,15 +423,16 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"
 		);
 
+		// The order of the filePaths here is important, this has been fixed in version 3.37.8 : First headers are templated, than the document, than the footers.
 		expect(filePaths).to.deep.equal([
-			// Document appears 2 times because there are 2 tags in the header
-			"word/document.xml",
-			"word/document.xml",
 			// Header appears 4 times because there are 4 tags in the header
 			"word/header1.xml",
 			"word/header1.xml",
 			"word/header1.xml",
 			"word/header1.xml",
+			// Document appears 2 times because there are 2 tags in the header
+			"word/document.xml",
+			"word/document.xml",
 			// Footer appears 3 times because there are 3 tags in the header
 			"word/footer1.xml",
 			"word/footer1.xml",
@@ -439,21 +440,21 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 		]);
 
 		expect(ct).to.deep.equal([
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 		]);
 
-		expect([relsType[0], relsType[1], relsType[2]]).to.deep.equal([
-			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
-			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+		expect([relsType[3], relsType[4], relsType[5]]).to.deep.equal([
 			undefined,
+			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
 		]);
 	});
 });
