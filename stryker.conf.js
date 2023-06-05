@@ -11,6 +11,7 @@ module.exports = {
 		"es6/*.js",
 		"es6/modules/*.js",
 		"!es6/debugger-module.js",
+		"!es6/test-text.js",
 		"!es6/error-logger.js",
 		"!es6/memory-test.js",
 		"!es6/uintarray-to-string.js",
