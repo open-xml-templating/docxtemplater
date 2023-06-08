@@ -168,8 +168,12 @@ describe("Inspect module", function () {
 		const data = { offre: [{}], prenom: "John" };
 		doc.setData(data);
 		doc.render();
-		const { summary, detail } =
-			iModule.fullInspected["word/document.xml"].nullValues;
+		const fi = iModule.fullInspected["word/document.xml"];
+		const { summary, detail } = fi.nullValues;
+		const { postparsed, parsed, xmllexed } = fi;
+		expect(postparsed.length).to.equal(249);
+		expect(parsed.length).to.equal(385);
+		expect(xmllexed.length).to.equal(383);
 
 		expect(iModule.inspect.tags).to.be.deep.equal(data);
 		expect(detail).to.be.an("array");
