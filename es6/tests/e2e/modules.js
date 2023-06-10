@@ -9,7 +9,7 @@ const {
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 const Errors = require("../../errors.js");
-const { xml2str, traits } = require("../../doc-utils.js");
+const { xml2str, traits, uniq } = require("../../doc-utils.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
 describe("Verify apiversion", function () {
@@ -581,18 +581,167 @@ describe("Module Matcher API", function () {
 
 describe("Fix doc pr corruption module", function () {
 	it("should work on multiple instances in parallel", function () {
-		const doc2 = createDocV4("loop-image-footer.docx", {
+		const doc = createDocV4("loop-image-footer.docx", {
 			modules: [fixDocPrCorruption],
 		});
 		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
 		createDocV4("tag-example.docx", {
 			modules: [fixDocPrCorruption],
 		});
-		return doc2.renderAsync({ loop: [1, 2, 3, 4] }).then(function () {
+		return doc.renderAsync({ loop: [1, 2, 3, 4] }).then(function () {
 			shouldBeSame({
-				doc: doc2,
+				doc,
 				expectedName: "expected-loop-images-footer.docx",
 			});
 		});
+	});
+});
+
+describe("Module call order", function () {
+	const expectedCallOrder = [
+		"on",
+		"set",
+		"getFileType",
+		"optionsTransformer",
+		"preparse",
+		"getTraits",
+		"postparse",
+		"errorsTransformer",
+		"matchers",
+		"getRenderedMap",
+		"render",
+		"postrender",
+	];
+	it("should work with v4", function () {
+		const calls = [];
+		const mod = {
+			name: "TestModule",
+			set() {
+				calls.push("set");
+				return null;
+			},
+			matchers() {
+				calls.push("matchers");
+				return [];
+			},
+			render() {
+				calls.push("render");
+				return null;
+			},
+			optionsTransformer(options) {
+				calls.push("optionsTransformer");
+				return options;
+			},
+			preparse() {
+				calls.push("preparse");
+				return null;
+			},
+			parse() {
+				calls.push("parse");
+				return null;
+			},
+			postparse() {
+				calls.push("postparse");
+				return null;
+			},
+			getTraits() {
+				calls.push("getTraits");
+			},
+			getFileType() {
+				calls.push("getFileType");
+			},
+			nullGetter() {
+				calls.push("nullGetter");
+			},
+			postrender() {
+				calls.push("postrender");
+				return [];
+			},
+			errorsTransformer() {
+				calls.push("errorsTransformer");
+			},
+			getRenderedMap(obj) {
+				calls.push("getRenderedMap");
+				return obj;
+			},
+			on() {
+				calls.push("on");
+			},
+			resolve() {
+				calls.push("on");
+			},
+		};
+		const doc = createDocV4("loop-image-footer.docx", {
+			modules: [mod],
+		});
+		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
+		doc.render({ loop: [1, 2, 3, 4] });
+		expect(uniq(calls)).to.deep.equal(expectedCallOrder);
+	});
+
+	it("should work with v3", function () {
+		const calls = [];
+		const mod = {
+			name: "TestModule",
+			set() {
+				calls.push("set");
+				return null;
+			},
+			matchers() {
+				calls.push("matchers");
+				return [];
+			},
+			render() {
+				calls.push("render");
+				return null;
+			},
+			optionsTransformer(options) {
+				calls.push("optionsTransformer");
+				return options;
+			},
+			preparse() {
+				calls.push("preparse");
+				return null;
+			},
+			parse() {
+				calls.push("parse");
+				return null;
+			},
+			postparse() {
+				calls.push("postparse");
+				return null;
+			},
+			getTraits() {
+				calls.push("getTraits");
+			},
+			getFileType() {
+				calls.push("getFileType");
+			},
+			nullGetter() {
+				calls.push("nullGetter");
+			},
+			postrender() {
+				calls.push("postrender");
+				return [];
+			},
+			errorsTransformer() {
+				calls.push("errorsTransformer");
+			},
+			getRenderedMap(obj) {
+				calls.push("getRenderedMap");
+				return obj;
+			},
+			on() {
+				calls.push("on");
+			},
+			resolve() {
+				calls.push("on");
+			},
+		};
+		const doc = createDoc("loop-image-footer.docx");
+		doc.attachModule(mod);
+		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
+		doc.render({ loop: [1, 2, 3, 4] });
+		expect(uniq(calls)).to.deep.equal(expectedCallOrder);
 	});
 });

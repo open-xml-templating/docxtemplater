@@ -1,3 +1,15 @@
+### 3.37.10
+
+Important bugfix for modules, if you are still using the legacy constructor (eg if you still have "attachModule" somewhere in your code.
+
+For example, one issue that could happen is with the HTML module, you could have following stacktrace :
+
+```txt
+Cannot read property 'getElementsByTagName' of undefined` error
+```
+
+This would happen when adding lists, and only if you're using one of following methods : "attachModule", "setOptions", "loadZip".
+
 ### 3.37.9
 
 Update to render parts of the documents in the most natural order :

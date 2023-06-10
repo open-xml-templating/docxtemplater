@@ -198,9 +198,6 @@ const Docxtemplater = class Docxtemplater {
 		});
 		this.delimiters.start = DocUtils.utf8ToWord(this.delimiters.start);
 		this.delimiters.end = DocUtils.utf8ToWord(this.delimiters.end);
-		if (this.zip) {
-			this.updateFileTypeConfig();
-		}
 		return this;
 	}
 	loadZip(zip) {
@@ -299,6 +296,7 @@ const Docxtemplater = class Docxtemplater {
 		);
 	}
 	compile() {
+		this.updateFileTypeConfig();
 		this.reorderModules();
 		if (Object.keys(this.compiled).length) {
 			return this;
