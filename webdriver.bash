@@ -2,8 +2,7 @@
 
 set -euo pipefail
 
-if ! [ -f test/mocha.html ]
-then
+if ! [ -f test/mocha.html ]; then
 	echo "test/mocha.html does not exist" 1>&2
 	exit 1
 fi
@@ -14,8 +13,7 @@ install_selenium() {
 	rm node_modules/selenium-standalone/.selenium/*driver -rf
 	echo "Installing selenium"
 	selenium-standalone install 2>&1 | tee /tmp/selenium_install.log
-	if grep --quiet -E '(Error)|(Could not download)' </tmp/selenium_install.log
-	then
+	if grep --quiet -E '(Error)|(Could not download)' </tmp/selenium_install.log; then
 		echo "Error downloading selenium drivers"
 		exit 1
 	fi
@@ -26,14 +24,12 @@ export NORMAL='[m'
 
 selenium_pid=""
 start_selenium() {
-	{ selenium-standalone start 2>&1 | tee /tmp/webdriver.log | sed -E "s/^.*$/$GRAY\0$NORMAL/g" ; } &
+	{ selenium-standalone start 2>&1 | tee /tmp/webdriver.log | sed -E "s/^.*$/$GRAY\0$NORMAL/g"; } &
 	selenium_pid="$!"
 }
 stop_selenium() {
-	if [ "$selenium_pid" != "" ]
-	then
-		while true
-		do
+	if [ "$selenium_pid" != "" ]; then
+		while true; do
 			kill "$selenium_pid" 1>/dev/null 2>&1 || break
 			sleep 1
 		done
@@ -43,7 +39,7 @@ force_stop_selenium() {
 	fuser -k 4444/tcp || true
 }
 cleanup() {
-	exit_status=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)
+	exit_status=$? # Eg 130 for SIGINT, 128 + (2 == SIGINT)
 	echo "Exit status : $exit_status"
 	stop_selenium
 	exit "$exit_status"
@@ -54,20 +50,16 @@ BROWSER="${BROWSER:-CHROME|FIREFOX|}"
 PATH="$PATH:./node_modules/.bin/"
 selenium_cache_dir="$HOME/tmp/.selenium"
 selenium_dir="node_modules/selenium-standalone/.selenium"
-if grep '|' <<<"$BROWSER" >/dev/null
-then
+if grep '|' <<<"$BROWSER" >/dev/null; then
 	messages=""
-	while read -r -d '|' browser
-	do
+	while read -r -d '|' browser; do
 		result=0
 		BROWSER="$browser" ./webdriver.bash || result="$?"
-		if [ "$result" != "0" ]
-		then
+		if [ "$result" != "0" ]; then
 			messages="$messages"$'\n'"Fail for $browser"
 		fi
 	done <<<"$BROWSER"
-	if [ "$messages" != "" ]
-	then
+	if [ "$messages" != "" ]; then
 		echo "$messages"
 		exit 1
 	fi
@@ -80,22 +72,17 @@ isempty() {
 	[ ! "$(ls -A "$1")" ]
 }
 
-if [ "$BROWSER" != "SAUCELABS" ]
-then
+if [ "$BROWSER" != "SAUCELABS" ]; then
 	retries=2
-	while [ "$retries" -gt 0 ]
-	do
+	while [ "$retries" -gt 0 ]; do
 		retries="$((retries - 1))"
-		if port4444used
-		then
+		if port4444used; then
 			echo "Using existing selenium for $BROWSER"
 		else
-			if ! [ -d "$selenium_dir" ] || isempty "$selenium_dir"
-			then
+			if ! [ -d "$selenium_dir" ] || isempty "$selenium_dir"; then
 				rm -rf "$selenium_dir"
 				mkdir -p "$HOME/tmp/"
-				if [ -d "$selenium_cache_dir" ] && ! isempty "$selenium_cache_dir"
-				then
+				if [ -d "$selenium_cache_dir" ] && ! isempty "$selenium_cache_dir"; then
 					echo "Copying selenium from cache"
 					cp -r "$selenium_cache_dir" node_modules/selenium-standalone/.selenium
 				else
@@ -104,10 +91,8 @@ then
 			fi
 			echo "Starting selenium"
 			start_selenium
-			while ! port4444used;
-			do
-				if grep 'Missing.*driver' </tmp/webdriver.log
-				then
+			while ! port4444used; do
+				if grep 'Missing.*driver' </tmp/webdriver.log; then
 					echo "missing driver"
 					rm /tmp/webdriver.log
 					force_stop_selenium
@@ -119,19 +104,16 @@ then
 		fi
 		result=0
 		{ FORCE_COLOR=1 node webdriver.mjs | tee /tmp/test.log; } || result="$?"
-		if [ "$result" = "0" ]
-		then
+		if [ "$result" = "0" ]; then
 			exit 0
 		fi
 
-		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log
-		then
+		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log; then
 			exit 1
 		fi
 
 		if grep 'This version of ChromeDriver only supports Chrome version ' </tmp/test.log ||
-			grep 'Error: Failed to create session.' </tmp/test.log
-		then
+			grep 'Error: Failed to create session.' </tmp/test.log; then
 			echo "Retrying by restarting selenium: $retries"
 			force_stop_selenium
 			install_selenium
@@ -145,4 +127,3 @@ then
 else
 	bash webdriver-saucelabs.bash
 fi
-

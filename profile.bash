@@ -16,7 +16,7 @@ analyse() {
 	jqq='. | to_entries | sort_by(.value.ms) | .[].value | .filename + "@" + .name + ":" + (.calls|tostring) + ":" + (.ms|tostring) + "ms"'
 
 	jq <p.json --raw-output "$jqq" |
-	sed "s:$(pwd)/prof/::g"
+		sed "s:$(pwd)/prof/::g"
 }
 
 compile() {
@@ -24,8 +24,7 @@ compile() {
 }
 
 action=${1:-""}
-if [ "$action" = "" ]
-then
+if [ "$action" = "" ]; then
 	echo "compile"
 	compile
 	echo "profile"
@@ -35,5 +34,3 @@ then
 else
 	"$action"
 fi
-
-

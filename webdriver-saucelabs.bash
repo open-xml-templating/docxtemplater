@@ -6,8 +6,7 @@ declare -a failures=()
 test() {
 	fail=false
 	node webdriver.mjs || fail=true
-	if [ "$fail" = "true" ]
-	then
+	if [ "$fail" = "true" ]; then
 		result=1
 		failures+=("Fail for ${browserName} ${version}")
 	fi
@@ -46,8 +45,7 @@ browserName="chrome" platform="Windows 10" version="91" test
 browserName="internet explorer" platform="Windows 7" filter="Speed test" version="10.0" test
 browserName="internet explorer" platform="Windows 10" filter="Speed test" version="11" test
 
-if [ "$result" = "1" ]
-then
+if [ "$result" = "1" ]; then
 	echo "Failures for following browsers :"
 	printf "%s\n" "${failures[@]}"
 fi
