@@ -12,6 +12,10 @@ expressionParser.filters.upper = function (str) {
 	return str.toUpperCase();
 };
 
+expressionParser.filters.sum = function (num1, num2) {
+	return num1 + num2;
+};
+
 const noInternals = {
 	lexed: null,
 	parsed: null,
@@ -1337,7 +1341,7 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
-		it: "should handle {.+.+.} tag",
+		it: "should handle {this+this+this} tag",
 		scope: "Foo",
 		...noInternals,
 		content: "<w:t>Hi {this+this+this}</w:t>",
@@ -1345,6 +1349,34 @@ const fixtures = [
 			parser: expressionParser,
 		},
 		result: '<w:t xml:space="preserve">Hi FooFooFoo</w:t>',
+	},
+	{
+		it: "should handle {((.+.+.)*.*0.5)|sum:.} tag",
+		scope: 2,
+		...noInternals,
+		content: "<w:t>Hi {((((.+.+.)*.*0.5)|sum:.)-.)/.}</w:t>",
+		// = (((2 + 2 + 2)*2 * 0.5 | sum:2)-2)/2
+		// = (((6)*2 * 0.5 | sum:2)-2)/2
+		// = ((6 | sum:2)-2)/2
+		// = ((8)-2)/2
+		// = (6)/2
+		// = 3
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi 3</w:t>',
+	},
+	{
+		it: "should handle {.['user-name']} tag",
+		scope: {
+			"user-name": "John",
+		},
+		...noInternals,
+		content: "<w:t>Hi {.['user-name']}</w:t>",
+		options: {
+			parser: expressionParser,
+		},
+		result: '<w:t xml:space="preserve">Hi John</w:t>',
 	},
 	{
 		it: 'should handle {this["a b"]} tag',

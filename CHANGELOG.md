@@ -1,3 +1,25 @@
+### 3.37.11
+
+Update handling of "." in angular parser.
+
+Docxtemplater now supports the following expression :
+
+```template
+{ . | myFilter }
+```
+
+This is the same as :
+
+```template
+{ this | myFilter }
+```
+
+Also, the following will also work now to access the "user-name" property of the root object (synonym of `this["user-name"]` :
+
+```template
+{.["user-name"]}
+```
+
 ### 3.37.10
 
 Important bugfix for modules, if you are still using the legacy constructor (eg if you still have "attachModule" somewhere in your code.
