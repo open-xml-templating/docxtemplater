@@ -22,7 +22,7 @@ Also, the following will also work now to access the "user-name" property of the
 
 ### 3.37.10
 
-Important bugfix for modules, if you are still using the legacy constructor (eg if you still have "attachModule" somewhere in your code.
+Important bugfix for modules, if you are still using the legacy constructor (eg if you still have `attachModule` somewhere in your code.
 
 For example, one issue that could happen is with the HTML module, you could have following stacktrace :
 
@@ -30,7 +30,7 @@ For example, one issue that could happen is with the HTML module, you could have
 Cannot read property 'getElementsByTagName' of undefined` error
 ```
 
-This would happen when adding lists, and only if you're using one of following methods : "attachModule", "setOptions", "loadZip".
+This would happen when adding lists, and only if you're using one of following methods : `attachModule`, `setOptions`, or `loadZip`.
 
 ### 3.37.9
 
