@@ -7,14 +7,15 @@ const Docxtemplater = require("../../docxtemplater.js");
 const Errors = require("../../errors.js");
 const { last } = require("../../utils.js");
 const {
-	expect,
-	createXmlTemplaterDocx,
 	createDoc,
+	createDocV4,
+	createXmlTemplaterDocx,
+	expect,
 	expectToThrow,
 	getContent,
-	createDocV4,
-	getZip,
 	getLength,
+	getZip,
+	shouldBeSame,
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 
@@ -1023,6 +1024,22 @@ describe("Raw Xml Insertion", function () {
 		doc.setData(scope);
 		doc.render();
 		expect(doc.getFullText()).to.be.equal("asdfMy customXMLqwery");
+	});
+});
+
+describe("Multi line", function () {
+	it("should work when tag spans multiple lines (paragraphs)", function () {
+		const doc = createDoc("tag-spanning-multiline.docx");
+		doc.render({
+			first_name: "Hipp",
+			last_name: "Edgar",
+			phone: "0652455478",
+			description: "New Website",
+		});
+		shouldBeSame({
+			doc,
+			expectedName: "expected-tag-spanning-multiline.docx",
+		});
 	});
 });
 
