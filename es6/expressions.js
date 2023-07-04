@@ -94,7 +94,7 @@ function angularParser(tag) {
 		},
 		get(scope, context) {
 			const scopeList = context.scopeList;
-			if (tag === "this") {
+			if (tag.trim() === "this") {
 				return scope;
 			}
 

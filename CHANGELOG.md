@@ -1,3 +1,32 @@
+### 3.37.12
+
+For the following template
+
+```template
+Hi {#products}{# .  }-{ . }-{/}{/}
+```
+
+This did not work correctly with following data with expressions parser :
+
+```js
+doc.render({
+  products: [
+    [1, 2, 3, 4],
+    [4, 5, 6, 7],
+  ],
+});
+```
+
+It rendered :
+
+```
+Hi -1,2,3,4--4,5,6,7-
+```
+
+(which is incorrect)
+
+This is because the `docxtemplater/expressions.js` parser was returning an object instead of the array in this case.
+
 ### 3.37.11
 
 Update handling of "." in angular parser.

@@ -1394,7 +1394,7 @@ const fixtures = [
 		it: 'should handle {this["length"]} tag',
 		scope: "John",
 		...noInternals,
-		content: '<w:t>Hi {this["length"]}</w:t>',
+		content: '<w:t>Hi { this["length"]}</w:t>',
 		options: {
 			parser: expressionParser,
 		},
@@ -1434,14 +1434,14 @@ const fixtures = [
 		it: "should handle {(this+this+this)*(this+this)}, this=0 tag",
 		scope: 0,
 		...noInternals,
-		content: "<w:t>Hi {(this+this+this)*(this+this)}</w:t>",
+		content: "<w:t>Hi {(   this + this + this)*(this+this)}</w:t>",
 		options: {
 			parser: expressionParser,
 		},
 		result: '<w:t xml:space="preserve">Hi 0</w:t>',
 	},
 	{
-		it: "should handle {#products}{#.}{.}{/}{/}",
+		it: "should handle {#products}{# .  }-{ . }-{/}{/}",
 		scope: {
 			products: [
 				[1, 2, 3, 4],
@@ -1449,7 +1449,9 @@ const fixtures = [
 			],
 		},
 		...noInternals,
-		content: "<w:t>Hi {#products}{#.}-{.}-{/}{/}</w:t>",
+		// The space inside {# . } is important.
+		// It tests a regression that was fixed in version 3.37.12
+		content: "<w:t>Hi {#products}{# .  }-{ . }-{/}{/}</w:t>",
 		options: {
 			parser: expressionParser,
 		},
