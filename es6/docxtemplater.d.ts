@@ -46,7 +46,7 @@ export namespace DXT {
     matchers?(): [
       string,
       string,
-      { [x: string]: any } | ((part: SimplePart) => { [x: string]: any })
+      { [x: string]: any } | ((part: SimplePart) => { [x: string]: any }),
     ][];
     render?(part: Part): Rendered | null;
     getTraits?(traitName: string, parsed: any): any;
