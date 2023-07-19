@@ -79,14 +79,14 @@ function walk(dir) {
 }
 
 function createXmlTemplaterDocxNoRender(content, options = {}) {
-	const doc = makeDocx("temporary.docx", content);
+	const doc = makeDocx(content);
 	doc.setOptions(options);
 	doc.setData(options.tags);
 	return doc;
 }
 
 function createXmlTemplaterDocx(content, options = {}) {
-	const doc = makeDocx("temporary.docx", content, options);
+	const doc = makeDocx(content, options);
 	doc.setOptions(options);
 	doc.setData(options.tags);
 	doc.render();
@@ -686,14 +686,16 @@ const pptxRelsContent = `<?xml version="1.0" encoding="utf-8"?>
 </Relationships>
 `;
 
-function makeDocx(name, content) {
+function makeDocx(content) {
 	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", docxContentTypeContent);
 	zip.file("_rels/.rels", docxRelsContent);
-	return load(name, zip.generate({ type: "string" }), documentCache);
+	const doc = new Docxtemplater();
+	doc.loadZip(zip);
+	return doc;
 }
-function makeDocxV4(name, content, options = {}) {
+function makeDocxV4(content, options = {}) {
 	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", docxContentTypeContent);
@@ -716,7 +718,7 @@ function makePptx(name, content) {
 	return load(name, zip.generate({ type: "string" }), documentCache);
 }
 
-function makePptxV4(name, content, options = {}) {
+function makePptxV4(content, options = {}) {
 	const zip = new PizZip();
 	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", pptxContentTypeContent);

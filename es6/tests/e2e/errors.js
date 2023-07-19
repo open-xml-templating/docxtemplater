@@ -1,8 +1,8 @@
 const { loadFile, loadDocument, rejectSoon, expect } = require("../utils.js");
 const Errors = require("../../errors.js");
 const {
-	createXmlTemplaterDocx,
-	createXmlTemplaterDocxNoRender,
+	makeDocx,
+	makeDocxV4,
 	wrapMultiError,
 	expectToThrow,
 	expectToThrowAsync,
@@ -22,8 +22,11 @@ describe("Compilation errors", function () {
 				id: "file_has_invalid_xml",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when parsing invalid xml (2)", function () {
@@ -38,8 +41,11 @@ describe("Compilation errors", function () {
 				id: "file_has_invalid_xml",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when tag unclosed at end of document", function () {
@@ -55,9 +61,8 @@ describe("Compilation errors", function () {
 				offset: 0,
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -76,11 +81,11 @@ describe("Compilation errors", function () {
 				offset: 0,
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			errorLogging: false,
-		});
 		const capture = expectToThrow(
-			create,
+			() =>
+				makeDocxV4(content, {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -101,9 +106,8 @@ describe("Compilation errors", function () {
 				offset: 0,
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -122,9 +126,8 @@ describe("Compilation errors", function () {
 				xtag: "foobar",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -142,9 +145,8 @@ describe("Compilation errors", function () {
 				closingtag: "foo",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -162,9 +164,8 @@ describe("Compilation errors", function () {
 				offset: 0,
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -182,9 +183,8 @@ describe("Compilation errors", function () {
 				offset: 0,
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -220,8 +220,11 @@ describe("Compilation errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when rawtag is not in paragraph", function () {
@@ -263,9 +266,8 @@ describe("Compilation errors", function () {
 				},
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -332,9 +334,8 @@ describe("Compilation errors", function () {
 				index: 2,
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -353,9 +354,8 @@ describe("Compilation errors", function () {
 				paragraphPartsLength: 7,
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
 		expectToThrow(
-			create,
+			() => makeDocxV4(content),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -476,8 +476,11 @@ describe("Compilation errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when customparser fails to compile", function () {
@@ -495,11 +498,11 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				},
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
 		expectToThrow(
-			create,
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -536,10 +539,14 @@ describe("Runtime errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: errorParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: errorParser,
+				}).render(),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should be possible to log the error", function () {
@@ -563,7 +570,7 @@ describe("Runtime errors", function () {
 		}
 		const capture = captureLogs();
 		try {
-			createXmlTemplaterDocx(content, { parser: errorParser });
+			makeDocxV4(content, { parser: errorParser }).render();
 			capture.stop();
 		} catch (e) {
 			capture.stop();
@@ -619,10 +626,11 @@ describe("Runtime errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
+
+		const doc = makeDocxV4(content, {
 			parser: errorParser,
 		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(() => doc.render(), Errors.XTTemplateError, expectedError);
 	});
 });
 
@@ -637,10 +645,11 @@ describe("Internal errors", function () {
 			},
 		};
 		loadFile("test.odt", (e, name, buffer) => {
-			function create() {
-				loadDocument(name, buffer);
-			}
-			expectToThrow(create, Errors.XTInternalError, expectedError);
+			expectToThrow(
+				() => loadDocument(name, buffer),
+				Errors.XTInternalError,
+				expectedError
+			);
 			done();
 		});
 	});
@@ -655,10 +664,11 @@ describe("Internal errors", function () {
 			},
 		};
 		loadFile("simple-zip.zip", (e, name, buffer) => {
-			function create() {
-				loadDocument(name, buffer);
-			}
-			expectToThrow(create, Errors.XTInternalError, expectedError);
+			expectToThrow(
+				() => loadDocument(name, buffer),
+				Errors.XTInternalError,
+				expectedError
+			);
 			done();
 		});
 	});
@@ -699,8 +709,11 @@ describe("Multi errors", function () {
 			},
 		};
 
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with multiple errors complex", function () {
@@ -774,8 +787,11 @@ describe("Multi errors", function () {
 			},
 		};
 
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with wrongly nested loops", function () {
@@ -812,8 +828,11 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with loops", function () {
@@ -851,8 +870,11 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with loops unopened", function () {
@@ -921,8 +943,11 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when having multiple rawtags without a surrounding paragraph", function () {
@@ -963,8 +988,11 @@ describe("Multi errors", function () {
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 	it("should fail when customparser fails to compile", function () {
 		const content = "<w:t>{name++} {foo|||bang}</w:t>";
@@ -1005,10 +1033,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when customparser fails to compile 2", function () {
@@ -1048,10 +1080,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with lexer and customparser", function () {
@@ -1088,10 +1124,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				],
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with lexer and loop", function () {
@@ -1125,10 +1165,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				],
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with multiple errors", function () {
@@ -1179,10 +1223,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				],
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with multiple unclosed", function () {
@@ -1230,10 +1278,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should work with multiple unopened", function () {
@@ -1278,10 +1330,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should show an error when loop tag are badly used (xml open count !== xml close count)", function () {
@@ -1318,10 +1374,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 				id: "multi_error",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-		});
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				makeDocxV4(content, {
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should show clean error message when using {{ with single delimiter", function () {
@@ -1359,8 +1419,11 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			},
 		};
 
-		const create = createXmlTemplaterDocx.bind(null, content);
-		expectToThrow(create, Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => makeDocxV4(content),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 });
 
@@ -1375,7 +1438,7 @@ describe("Rendering error", function () {
 				id: "render_twice",
 			},
 		};
-		const doc = createXmlTemplaterDocxNoRender(content);
+		const doc = makeDocxV4(content);
 		doc.render();
 		expectToThrow(
 			() => {
@@ -1399,12 +1462,12 @@ describe("Rendering error", function () {
 				file: "word/document.xml",
 			},
 		};
-		const create = createXmlTemplaterDocx.bind(null, content, {
-			parser: angularParser,
-			tags: { user: String.fromCharCode(28) },
-		});
 		expectToThrow(
-			create,
+			() => {
+				makeDocxV4(content, { parser: angularParser }).render({
+					user: String.fromCharCode(28),
+				});
+			},
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -1429,10 +1492,9 @@ describe("Async errors", function () {
 				},
 			},
 		};
-		const doc = createXmlTemplaterDocxNoRender(content);
-		doc.compile();
+		const doc = makeDocxV4(content);
 		function create() {
-			return doc.resolveData({ user: rejectSoon(new Error("Foobar")) });
+			return doc.renderAsync({ user: rejectSoon(new Error("Foobar")) });
 		}
 		return expectToThrowAsync(
 			create,
@@ -1497,14 +1559,14 @@ describe("Async errors", function () {
 				},
 			};
 		}
-		const doc = createXmlTemplaterDocxNoRender(content, {
+		const doc = makeDocxV4(content, {
 			parser: errorParser,
 		});
-		doc.compile();
-		function create() {
-			return doc.resolveData({});
-		}
-		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
+		return expectToThrowAsync(
+			() => doc.resolveData({}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should show error when running resolveData before compile", function () {
@@ -1516,11 +1578,12 @@ describe("Async errors", function () {
 				id: "resolve_before_compile",
 			},
 		};
-		const doc = createXmlTemplaterDocxNoRender(content);
-		function create() {
-			return doc.resolveData({});
-		}
-		return expectToThrowAsync(create, Errors.XTInternalError, expectedError);
+		const doc = makeDocx(content);
+		return expectToThrowAsync(
+			() => doc.resolveData(),
+			Errors.XTInternalError,
+			expectedError
+		);
 	});
 
 	it("should fail when customparser fails to execute on multiple tags", function () {
@@ -1577,10 +1640,9 @@ describe("Async errors", function () {
 				id: "multi_error",
 			},
 		};
-		const doc = createXmlTemplaterDocxNoRender(content, {
+		const doc = makeDocxV4(content, {
 			parser: errorParser,
 		});
-		doc.compile();
 		function create() {
 			return doc.resolveData().then(function () {
 				return doc.render();
@@ -1637,15 +1699,15 @@ describe("Async errors", function () {
 				id: "multi_error",
 			},
 		};
-		const doc = createXmlTemplaterDocxNoRender(content, {
+		const doc = makeDocxV4(content, {
 			parser: errorParser,
 		});
-		doc.compile();
-		function create() {
-			return doc.resolveData({ abc: true }).then(function () {
-				return doc.render();
-			});
-		}
-		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
+		return expectToThrowAsync(
+			() => {
+				return doc.renderAsync({ abc: true });
+			},
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 });

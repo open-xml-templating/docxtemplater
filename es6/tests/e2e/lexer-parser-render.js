@@ -64,11 +64,11 @@ function runTest(fixture, async = false) {
 	const capture = captureLogs();
 	try {
 		doc = fixture.pptx
-			? makePptxV4("temp.docx", fixture.content, {
+			? makePptxV4(fixture.content, {
 					...fixture.options,
 					modules,
 			  })
-			: makeDocxV4("temp.docx", fixture.content, {
+			: makeDocxV4(fixture.content, {
 					...fixture.options,
 					modules,
 			  });

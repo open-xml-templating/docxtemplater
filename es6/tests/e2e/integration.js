@@ -4,7 +4,7 @@ const {
 	createDocV4,
 	shouldBeSame,
 	expect,
-	createXmlTemplaterDocxNoRender,
+	makeDocxV4,
 	captureLogs,
 } = require("../utils.js");
 
@@ -935,13 +935,21 @@ describe("Prefixes", function () {
 		const scope = {
 			tables: [{ user: "John" }, { user: "Jane" }],
 		};
-		const doc = createXmlTemplaterDocxNoRender(content, { tags: scope });
-		doc.modules.forEach(function (module) {
-			if (module.name === "LoopModule") {
-				module.prefix.start = "##";
-			}
+		const doc = makeDocxV4(content, {
+			modules: [
+				{
+					optionsTransformer(options, doc) {
+						doc.modules.forEach(function (module) {
+							if (module.name === "LoopModule") {
+								module.prefix.start = "##";
+							}
+						});
+						return options;
+					},
+				},
+			],
 		});
-		doc.render();
+		doc.render(scope);
 		expect(doc.getFullText()).to.be.equal("JohnJane");
 	});
 
@@ -951,13 +959,21 @@ describe("Prefixes", function () {
 		const scope = {
 			tables: [{ user: "A" }, { user: "B" }],
 		};
-		const doc = createXmlTemplaterDocxNoRender(content, { tags: scope });
-		doc.modules.forEach(function (module) {
-			if (module.name === "LoopModule") {
-				module.prefix.start = /^##?(.*)$/;
-			}
+		const doc = makeDocxV4(content, {
+			modules: [
+				{
+					optionsTransformer(options, doc) {
+						doc.modules.forEach(function (module) {
+							if (module.name === "LoopModule") {
+								module.prefix.start = /^##?(.*)$/;
+							}
+						});
+						return options;
+					},
+				},
+			],
 		});
-		doc.render();
+		doc.render(scope);
 		expect(doc.getFullText()).to.be.equal("ABAB");
 	});
 
@@ -966,13 +982,21 @@ describe("Prefixes", function () {
 		const scope = {
 			raw: "<w:p><w:t>HoHo</w:t></w:p>",
 		};
-		const doc = createXmlTemplaterDocxNoRender(content, { tags: scope });
-		doc.modules.forEach(function (module) {
-			if (module.name === "RawXmlModule") {
-				module.prefix = /^!!?(.*)$/;
-			}
+		const doc = makeDocxV4(content, {
+			modules: [
+				{
+					optionsTransformer(options, doc) {
+						doc.modules.forEach(function (module) {
+							if (module.name === "RawXmlModule") {
+								module.prefix = /^!!?(.*)$/;
+							}
+						});
+						return options;
+					},
+				},
+			],
 		});
-		doc.render();
+		doc.render(scope);
 
 		expect(doc.getFullText()).to.be.equal("HoHo");
 	});
