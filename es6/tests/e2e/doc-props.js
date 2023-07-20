@@ -1,6 +1,6 @@
-const { createDoc, shouldBeSame, expect } = require("../utils.js");
+const { createDoc, createDocV4, shouldBeSame, expect } = require("../utils.js");
 
-describe("Docx docprops", function () {
+describe("Docx document properties", function () {
 	it("should change values in doc-props", function () {
 		const tags = {
 			first_name: "Hipp",
@@ -35,5 +35,30 @@ describe("Docx docprops", function () {
 			description: "New Website",
 		});
 		shouldBeSame({ doc, expectedName: "expected-tag-docprops-in-doc.docx" });
+	});
+
+	it("should be possible to ignore files in docProps/core.xml", function () {
+		const avoidRenderingCoreXMLModule = {
+			name: "avoidRenderingCoreXMLModule",
+			getFileType({ doc }) {
+				doc.targets = doc.targets.filter(function (file) {
+					if (file === "docProps/core.xml" || file === "docProps/app.xml") {
+						return false;
+					}
+					return true;
+				});
+			},
+		};
+
+		const doc = createDocV4("core-xml-missing-close-tag.docx", {
+			modules: [avoidRenderingCoreXMLModule],
+		});
+		doc.render({
+			first_name: "Hipp",
+			last_name: "Edgar",
+			phone: "0652455478",
+			description: "New Website",
+		});
+		shouldBeSame({ doc, expectedName: "expected-core-xml.docx" });
 	});
 });
