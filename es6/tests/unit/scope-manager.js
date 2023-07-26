@@ -13,7 +13,7 @@ describe("ScopeManager", function () {
 		expect(val).to.equal("y");
 	});
 
-	it("should work with resolve asyncronously", async function () {
+	it("should work with resolve asynchronously", async function () {
 		const sm = createScope({
 			tags: {
 				list: resolveSoon([
