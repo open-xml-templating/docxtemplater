@@ -214,7 +214,7 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 }
 
 function getUnmatchedLoopException(part) {
-	const { location, offset } = part;
+	const { location, offset, square } = part;
 	const t = location === "start" ? "unclosed" : "unopened";
 	const T = location === "start" ? "Unclosed" : "Unopened";
 
@@ -226,6 +226,9 @@ function getUnmatchedLoopException(part) {
 		xtag: tag,
 		offset,
 	};
+	if (square) {
+		err.properties.square = square;
+	}
 	return err;
 }
 
