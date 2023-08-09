@@ -643,6 +643,48 @@ describe("Changing the parser", function () {
 		);
 	});
 
+	it("should be able to retrieve parent scope with .. syntax and ... syntax", function () {
+		const content =
+			"<w:t>{#loop}{#contractors}{...company} {..company} {company} {/}{/loop}</w:t>";
+		const tags = {
+			company: "Root company",
+			loop: [
+				{
+					company: "ACME Company",
+					contractors: [
+						{ company: "The other Company" },
+						{ company: "Foobar Company" },
+					],
+				},
+			],
+		};
+		const options = {
+			parser(tag) {
+				const matchesParent = /^(\.{2,})(.*)/g;
+				let parentCount = 0;
+				if (matchesParent.test(tag)) {
+					parentCount = tag.replace(matchesParent, "$1").length - 1;
+					tag = tag.replace(matchesParent, "$2");
+				}
+				return {
+					get(scope, context) {
+						if (context.scopePath.length - context.num < parentCount) {
+							return null;
+						}
+						return scope[tag];
+					},
+				};
+			},
+			tags,
+		};
+
+		const doc = createXmlTemplaterDocx(content, options);
+		const fullText = doc.getFullText();
+		expect(fullText).to.be.equal(
+			"Root company ACME Company The other Company Root company ACME Company Foobar Company "
+		);
+	});
+
 	it("should be able to have scopePathItem with different lengths when having conditions", function () {
 		const content = "<w:t>{#cond}{name}{/}</w:t>";
 		const scope = {
