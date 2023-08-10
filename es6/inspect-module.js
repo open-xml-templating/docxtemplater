@@ -4,6 +4,12 @@ function isPlaceholder(part) {
 	return part.type === "placeholder";
 }
 
+const slideNumRegex = /ppt\/slides\/slide([0-9]+).xml/;
+
+function getSlideIndex(path) {
+	return parseInt(path.replace(slideNumRegex, "$1"), 10) - 1;
+}
+
 function getTags(postParsed) {
 	return postParsed.filter(isPlaceholder).reduce(function (tags, part) {
 		// Stryker disable all : because this is for the xlsx module
@@ -58,6 +64,9 @@ class InspectModule {
 		if (obj.data) {
 			this.inspect.tags = obj.data;
 		}
+		if (obj.pptxCustomMap) {
+			this.pptxCustomMap = obj.pptxCustomMap;
+		}
 		if (obj.inspect) {
 			if (obj.inspect.filePath) {
 				this.filePath = obj.inspect.filePath;
@@ -98,9 +107,34 @@ class InspectModule {
 		);
 	}
 
+	getInspected(file) {
+		const si = getSlideIndex(file);
+		let inspected = cloneDeep(this.fullInspected[file].postparsed);
+		if (
+			si != null &&
+			!isNaN(si) &&
+			this.pptxCustomMap &&
+			this.pptxCustomMap[si]
+		) {
+			const map = this.pptxCustomMap[si];
+			if (map) {
+				inspected = [
+					{
+						...map,
+						type: "placeholder",
+						module: "pro-xml-templating/slides-module-repeat",
+						subparsed: inspected,
+					},
+				];
+			}
+		}
+		return inspected;
+	}
+
 	getTags(file) {
 		file = file || this.fileTypeConfig.textPath(this.docxtemplater);
-		return getTags(cloneDeep(this.fullInspected[file].postparsed));
+		const inspected = this.getInspected(file);
+		return getTags(inspected);
 	}
 	getAllTags() {
 		return Object.keys(this.fullInspected).reduce((result, file) => {
@@ -109,7 +143,8 @@ class InspectModule {
 	}
 	getStructuredTags(file) {
 		file = file || this.fileTypeConfig.textPath(this);
-		return getStructuredTags(cloneDeep(this.fullInspected[file].postparsed));
+		const inspected = this.getInspected(file);
+		return getStructuredTags(inspected);
 	}
 	getAllStructuredTags() {
 		return Object.keys(this.fullInspected).reduce((result, file) => {

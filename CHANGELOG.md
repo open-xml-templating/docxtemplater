@@ -1,3 +1,27 @@
+### 3.37.13
+
+In powerpoint, the inspect module will now return correctly for the getAllTags and getStructuredTags methods :
+
+For this to work, you need to install version 3.4.10 of slides module or above.
+
+For following template with the slides module attached :
+
+```
+{:loop}
+{$index}{name}
+```
+
+The output of `inspectModule.getAllTags()` will now be :
+
+```js
+{
+    loop: {
+        $index: {},
+        name: {},
+    },
+}
+```
+
 ### 3.37.12
 
 For the following template
