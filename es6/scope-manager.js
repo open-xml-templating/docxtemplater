@@ -38,7 +38,7 @@ function getValue(tag, meta, num) {
 	let result;
 
 	let parser;
-	if (!this.cachedParsers || !meta.part) {
+	if (!this.cachedParsers || !meta || !meta.part) {
 		parser = this.parser(tag, {
 			scopePath: this.scopePath,
 		});
