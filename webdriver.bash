@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+export TZ='Europe/Paris'
 
 if ! [ -f test/mocha.html ]; then
 	echo "test/mocha.html does not exist" 1>&2
