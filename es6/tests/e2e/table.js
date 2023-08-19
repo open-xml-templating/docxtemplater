@@ -178,9 +178,7 @@ describe("Table", function () {
 	});
 
 	it("should repeat section break if the section break is inside a loop", function () {
-		const doc = createDoc("loop-with-page-section-break.docx", {
-			paragraphLoop: true,
-		});
+		const doc = createDoc("loop-with-page-section-break.docx");
 		doc.setData({
 			loop: [1, 2, 3],
 		});

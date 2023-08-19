@@ -1,3 +1,13 @@
+### 3.37.14
+
+Bugfix following stacktrace, when calling "setOptions" and then "getFullText" :
+
+```
+Cannot read properties of null (reading 'tagsXmlTextArray')
+    at XmlTemplater.getFullText (es6/xml-templater.js:53:56)
+    at Docxtemplater.getFullText (es6/docxtemplater.js:484:5)
+```
+
 ### 3.37.13
 
 In powerpoint, the inspect module will now return correctly for the getAllTags and getStructuredTags methods :

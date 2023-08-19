@@ -8,7 +8,9 @@ describe("Docx document properties", function () {
 			phone: "0652455478",
 			description: "New Website",
 		};
-		const doc = createDoc("tag-docprops.docx");
+		const doc = createDoc("tag-docprops.docx", {
+			paragraphLoop: true,
+		});
 		doc.setData(tags);
 		expect(doc.getFullText("docProps/app.xml")).to.be.equal(
 			"TitleName: {first_name}"

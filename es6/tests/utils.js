@@ -726,9 +726,10 @@ function makePptxV4(content, options = {}) {
 	return new Docxtemplater(zip, options);
 }
 
-function createDoc(name) {
+function createDoc(name, options = {}) {
 	const doc = loadDocument(name, documentCache[name].loadedContent);
 	doc.attachModule(new AssertionModule());
+	doc.setOptions(options);
 	return doc;
 }
 

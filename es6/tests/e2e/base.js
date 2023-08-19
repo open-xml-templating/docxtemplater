@@ -1057,8 +1057,7 @@ describe("Raw Xml Insertion", function () {
 			xmlTag:
 				'<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>',
 		};
-		const doc = createDoc("one-raw-xml-tag.docx");
-		doc.setOptions({
+		const doc = createDoc("one-raw-xml-tag.docx", {
 			fileTypeConfig: assign({}, Docxtemplater.FileTypeConfig.docx(), {
 				tagRawXml: "w:r",
 			}),

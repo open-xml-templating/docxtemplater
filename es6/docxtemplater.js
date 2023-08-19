@@ -193,7 +193,8 @@ const Docxtemplater = class Docxtemplater {
 		this.options = {};
 		Object.keys(defaults).forEach((key) => {
 			const defaultValue = defaults[key];
-			this.options[key] = options[key] != null ? options[key] : defaultValue;
+			this.options[key] =
+				options[key] != null ? options[key] : this[key] || defaultValue;
 			this[key] = this.options[key];
 		});
 		this.delimiters.start = DocUtils.utf8ToWord(this.delimiters.start);
