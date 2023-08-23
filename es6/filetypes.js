@@ -10,6 +10,9 @@ const headerContentType =
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml";
 const footnotesContentType =
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml";
+const commentsContentType =
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml";
+
 const footerContentType =
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml";
 
@@ -31,7 +34,13 @@ const main = [
 
 const filetypes = {
 	main,
-	docx: [headerContentType, ...main, footerContentType, footnotesContentType],
+	docx: [
+		headerContentType,
+		...main,
+		footerContentType,
+		footnotesContentType,
+		commentsContentType,
+	],
 	pptx: [
 		pptxContentType,
 		pptxSlideMaster,

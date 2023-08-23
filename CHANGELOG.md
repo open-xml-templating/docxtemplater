@@ -1,6 +1,10 @@
+### 3.38.0
+
+Add support for templating content which is in comments.
+
 ### 3.37.14
 
-Bugfix following stacktrace, when calling "setOptions" and then "getFullText" :
+Bugfix following error, when calling "setOptions" and then "getFullText" :
 
 ```
 Cannot read properties of null (reading 'tagsXmlTextArray')

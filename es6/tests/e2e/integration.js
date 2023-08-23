@@ -344,6 +344,15 @@ describe("Spacing/Linebreaks", function () {
 	});
 });
 
+describe("Comments", function () {
+	it("should be possible to template values in comments", function () {
+		const doc = createDocV4("with-comments.docx").render({
+			name: "John",
+		});
+		shouldBeSame({ doc, expectedName: "expected-comments.docx" });
+	});
+});
+
 describe("Assignment", function () {
 	it("should be possible to assign a value from the template", function () {
 		const doc = createDoc("assignment.docx")
