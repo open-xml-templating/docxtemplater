@@ -2,6 +2,8 @@
 
 Add preResolve API for modules that allows to run some code before the calls to resolve.
 
+Update moduleApiVersion to version 3.37.0
+
 ### 3.38.0
 
 Add support for templating content which is in comments.
