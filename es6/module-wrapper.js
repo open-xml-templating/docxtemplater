@@ -21,6 +21,7 @@ module.exports = function (module) {
 		postparse: identity,
 		on: emptyFun,
 		resolve: emptyFun,
+		preResolve: emptyFun,
 	};
 	if (
 		Object.keys(defaults).every(function (key) {

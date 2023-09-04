@@ -30,22 +30,34 @@ module.exports = class XmlTemplater {
 		const filePath = this.filePath;
 		options.scopeManager = this.scopeManager;
 		options.resolve = resolve;
-		return resolve(options).then(({ resolved, errors }) => {
-			errors.forEach((error) => {
-				// error properties might not be defined if some foreign error
-				// (unhandled error not thrown by docxtemplater willingly) is
-				// thrown.
-				error.properties = error.properties || {};
-				error.properties.file = filePath;
-			});
+		const errors = [];
+		return Promise.all(
+			this.modules.map(function (module) {
+				return Promise.resolve(module.preResolve(options)).catch(function (e) {
+					errors.push(e);
+				});
+			})
+		).then(() => {
 			if (errors.length !== 0) {
 				throw errors;
 			}
-			return Promise.all(resolved).then((resolved) => {
-				options.scopeManager.root.finishedResolving = true;
-				options.scopeManager.resolved = resolved;
-				this.setModules({ inspect: { resolved, filePath } });
-				return resolved;
+			return resolve(options).then(({ resolved, errors }) => {
+				errors.forEach((error) => {
+					// error properties might not be defined if some foreign error
+					// (unhandled error not thrown by docxtemplater willingly) is
+					// thrown.
+					error.properties = error.properties || {};
+					error.properties.file = filePath;
+				});
+				if (errors.length !== 0) {
+					throw errors;
+				}
+				return Promise.all(resolved).then((resolved) => {
+					options.scopeManager.root.finishedResolving = true;
+					options.scopeManager.resolved = resolved;
+					this.setModules({ inspect: { resolved, filePath } });
+					return resolved;
+				});
 			});
 		});
 	}

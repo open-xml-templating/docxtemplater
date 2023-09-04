@@ -476,7 +476,7 @@ describe("Using the resolveOffset property", function () {
 		const content =
 			"<w:t>{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}</w:t>";
 		const xmlt = createXmlTemplaterDocxNoRender(content, {}).compile();
-		xmlt
+		return xmlt
 			.resolveData({
 				loop_first: [1],
 				loop_second: [{ name_inner: "John" }],
