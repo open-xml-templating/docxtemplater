@@ -1,3 +1,13 @@
+### 3.39.1
+
+Always add {tag} in second argument to parser, like this :
+
+```js
+parser(tag, options) {
+    console.log(options.tag.module); // for image tag, it will log "open-xml-templating/docxtemplater-image-module"
+}
+```
+
 ### 3.39.0
 
 Add preResolve API for modules that allows to run some code before the calls to resolve.

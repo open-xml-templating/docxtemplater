@@ -40,12 +40,14 @@ function getValue(tag, meta, num) {
 	let parser;
 	if (!this.cachedParsers || !meta.part) {
 		parser = this.parser(tag, {
+			tag: meta.part,
 			scopePath: this.scopePath,
 		});
 	} else if (this.cachedParsers[meta.part.lIndex]) {
 		parser = this.cachedParsers[meta.part.lIndex];
 	} else {
 		parser = this.cachedParsers[meta.part.lIndex] = this.parser(tag, {
+			tag: meta.part,
 			scopePath: this.scopePath,
 		});
 	}
@@ -71,12 +73,14 @@ function getValueAsync(tag, meta, num) {
 	let parser;
 	if (!this.cachedParsers || !meta.part) {
 		parser = this.parser(tag, {
+			tag: meta.part,
 			scopePath: this.scopePath,
 		});
 	} else if (this.cachedParsers[meta.part.lIndex]) {
 		parser = this.cachedParsers[meta.part.lIndex];
 	} else {
 		parser = this.cachedParsers[meta.part.lIndex] = this.parser(tag, {
+			tag: meta.part,
 			scopePath: this.scopePath,
 		});
 	}

@@ -9,7 +9,11 @@ describe("ScopeManager", function () {
 			tags: { x: "y" },
 			parser: expressionParser,
 		});
-		const val = sm.getValue("x");
+		const val = sm.getValue("x", {
+			part: {
+				value: "x",
+			},
+		});
 		expect(val).to.equal("y");
 	});
 
