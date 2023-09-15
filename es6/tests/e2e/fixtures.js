@@ -261,6 +261,23 @@ const fixtures = [
 	},
 
 	{
+		it: "should allow to call a function up one scope with angular expressions",
+		content: "<w:t>{#users}{hi(.)}{/}</w:t>",
+		...noInternals,
+		options: {
+			parser: expressionParser,
+		},
+		scope: {
+			hi(user) {
+				return `What's up, ${user} ?`;
+			},
+			users: ["John", "Jackie"],
+		},
+		result:
+			'<w:t xml:space="preserve">What&apos;s up, John ?What&apos;s up, Jackie ?</w:t>',
+	},
+
+	{
 		it: "should xmlparse strange tags",
 		content: "<w:t>{name} {</w:t>FOO<w:t>age</w:t>BAR<w:t>}</w:t>",
 		scope: {
