@@ -179,10 +179,17 @@ function convertSpaces(s) {
 }
 function pregMatchAll(regex, content) {
 	/* regex is a string, content is the content. It returns an array of all matches with their offset, for example:
-		 regex=la
-		 content=lolalolilala
-returns: [{array: {0: 'la'},offset: 2},{array: {0: 'la'},offset: 8},{array: {0: 'la'} ,offset: 10}]
-*/
+
+		regex=la
+		content=lolalolilala
+
+		returns:
+			[
+				{array: {0: 'la'}, offset: 2},
+				{array: {0: 'la'}, offset: 8},
+				{array: {0: 'la'}, offset: 10}
+			]
+	*/
 	const matchArray = [];
 	let match;
 	while ((match = regex.exec(content)) != null) {
@@ -348,10 +355,12 @@ function invertMap(map) {
 	}, {});
 }
 function stableSort(arr, compare) {
+	// Stryker disable all : in previous versions of Chrome, sort was not stable by itself, so we had to add this. This is to support older versions of JS runners.
 	return arr
 		.map((item, index) => ({ item, index }))
-		.sort((a, b) => compare(a.item, b.item) || a.index - b.index)
+		.sort((a, b) => compare(a.item, b.item) || a.index + b.index)
 		.map(({ item }) => item);
+	// Stryker restore all
 }
 
 module.exports = {

@@ -745,3 +745,54 @@ describe("Module call order", function () {
 		expect(uniq(calls)).to.deep.equal(expectedCallOrder);
 	});
 });
+
+describe("Module priority", function () {
+	it("should reorder modules", function () {
+		const m1 = {
+			priority: 4,
+			name: "M1",
+			parse: (parsed) => parsed,
+		};
+		const m2 = {
+			priority: -1,
+			name: "M2",
+			parse: (parsed) => parsed,
+		};
+		const m3 = {
+			priority: 5,
+			name: "M3",
+			parse: (parsed) => parsed,
+		};
+		const m4 = {
+			priority: 5,
+			name: "M4",
+			parse: (parsed) => parsed,
+		};
+		const m5 = {
+			priority: 5,
+			name: "M5",
+			parse: (parsed) => parsed,
+		};
+		const doc = createDocV4("loop-image-footer.docx", {
+			modules: [m1, m2, m3, m4, m5],
+		});
+
+		const orderedNames = doc.modules.map(function ({ name }) {
+			return name;
+		});
+		expect(orderedNames).to.deep.equal([
+			"M3",
+			"M4",
+			"M5",
+			"M1",
+			"LoopModule",
+			"SpacePreserveModule",
+			"ExpandPairTrait",
+			"RawXmlModule",
+			"Render",
+			"Common",
+			"AssertionModule",
+			"M2",
+		]);
+	});
+});
