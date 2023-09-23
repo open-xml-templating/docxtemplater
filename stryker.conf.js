@@ -4,6 +4,7 @@
 module.exports = {
 	packageManager: "npm",
 	reporters: ["html", "clear-text", "progress"],
+	disableTypeChecks: false,
 	testRunner: "mocha",
 	coverageAnalysis: "perTest",
 	ignorePatterns: [],
