@@ -111,16 +111,6 @@ const defaults = {
 	},
 };
 
-function mergeObjects() {
-	let resObj = {};
-	let obj;
-	for (let i = 0; i < arguments.length; i += 1) {
-		obj = arguments[i];
-		resObj = { ...resObj, ...obj };
-	}
-	return resObj;
-}
-
 function xml2str(xmlNode) {
 	const a = new XMLSerializer();
 	return a.serializeToString(xmlNode).replace(/xmlns(:[a-z0-9]+)?="" ?/g, "");
@@ -381,7 +371,6 @@ module.exports = {
 	chunkBy,
 	last,
 	first,
-	mergeObjects,
 	xml2str,
 	str2xml,
 	getRightOrNull,

@@ -1,3 +1,7 @@
+### Unreleased
+
+Remove mergeObjects from doc-utils.js
+
 ### 3.39.1
 
 Always add {tag} in second argument to parser, like this :
