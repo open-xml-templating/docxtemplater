@@ -76,8 +76,6 @@ const Docxtemplater = class Docxtemplater {
 				);
 			}
 			this.loadZip(zip);
-			// remove the unsupported modules
-			dropUnsupportedFileTypesModules(this);
 			this.compile();
 			this.v4Constructor = true;
 		}
