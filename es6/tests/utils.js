@@ -1,6 +1,10 @@
+if (typeof process === "undefined") {
+	global.process = {};
+}
 const path = require("path");
 const chai = require("chai");
 const { expect } = chai;
+const Errors = require("../errors.js");
 const PizZip = require("pizzip");
 const fs = require("fs");
 const { get, unset, omit, uniq, cloneDeep } = require("lodash");
@@ -14,6 +18,7 @@ const xmlPrettify = require("./xml-prettify.js");
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;
+let snapshotFile;
 const documentCache = {};
 const imageData = {};
 const emptyNamespace = /xmlns:[a-z0-9]+=""/;
@@ -48,15 +53,6 @@ function unifiedDiff(actual, expected) {
 		"- actual" +
 		"\n\n" +
 		lines.map(cleanUp).filter(notBlank).join("\n")
-	);
-}
-
-function isNode14() {
-	return (
-		typeof process !== "undefined" &&
-		process &&
-		process.version &&
-		process.version.indexOf("v14") === 0
 	);
 }
 
@@ -451,6 +447,25 @@ function errorVerifier(e, type, expectedError) {
 	expect(realError).to.be.deep.equal(expectedError);
 }
 
+function expectToThrow(fn, type, expectedError) {
+	let err = null;
+	const capture = captureLogs();
+	try {
+		fn();
+	} catch (e) {
+		err = e;
+	}
+	capture.stop();
+	if (!type) {
+		expect(err).to.satisfy(function (err) {
+			return !!err;
+		});
+		return;
+	}
+	errorVerifier(err, type, expectedError);
+	return capture;
+}
+
 function expectToThrowAsync(fn, type, expectedError) {
 	const capture = captureLogs();
 	return Promise.resolve(null)
@@ -477,7 +492,7 @@ function expectToThrowAsync(fn, type, expectedError) {
 		});
 }
 
-function expectToThrow(fn, type, expectedError) {
+function expectToThrowSnapshot(fn, update) {
 	let err = null;
 	const capture = captureLogs();
 	try {
@@ -486,14 +501,73 @@ function expectToThrow(fn, type, expectedError) {
 		err = e;
 	}
 	capture.stop();
-	if (!type) {
-		expect(err).to.satisfy(function (err) {
-			return !!err;
-		});
-		return;
-	}
-	errorVerifier(err, type, expectedError);
+	expect(errToObject(err)).to.matchSnapshot(update);
 	return capture;
+}
+
+function expectToThrowAsyncSnapshot(fn, update) {
+	const capture = captureLogs();
+	return Promise.resolve(null)
+		.then(function () {
+			const r = fn();
+			return r.then(function () {
+				capture.stop();
+				return null;
+			});
+		})
+		.catch(function (error) {
+			capture.stop();
+			return error;
+		})
+		.then(function (err) {
+			expect(err).to.matchSnapshot(update);
+			return capture;
+		});
+}
+
+function errToObject(err) {
+	const obj = {};
+	if (err instanceof Errors.XTTemplateError) {
+		obj._type = "XTTemplateError";
+	} else if (err instanceof Errors.XTAPIVersionError) {
+		obj._type = "XTAPIVersionError";
+	} else if (err instanceof Errors.XTRenderingError) {
+		obj._type = "XTRenderingError";
+	} else if (err instanceof Errors.XTScopeParserError) {
+		obj._type = "XTScopeParserError";
+	} else if (err instanceof Errors.XTInternalError) {
+		obj._type = "XTInternalError";
+	} else if (err instanceof Errors.XTAPIVersionError) {
+		obj._type = "XTAPIVersionError";
+	}
+
+	if (err.name) {
+		obj.name = err.name;
+	}
+	if (err.message) {
+		obj.message = err.message;
+	}
+	if (err.properties) {
+		obj.properties = {};
+		Object.keys(err.properties).forEach(function (key) {
+			const value = err.properties[key];
+			if (value instanceof Error) {
+				obj.properties[key] = errToObject(value);
+				return;
+			}
+			if (value instanceof Array) {
+				obj.properties[key] = value.map(function (value) {
+					if (value instanceof Error) {
+						return errToObject(value);
+					}
+					return value;
+				});
+				return;
+			}
+			obj.properties[key] = value;
+		});
+	}
+	return obj;
 }
 
 function load(name, content, cache) {
@@ -544,10 +618,74 @@ function unhandledRejectionHandler(reason) {
 }
 
 let startFunction;
-function setStartFunction(sf) {
+function setStartFunction(sf, snapshots = {}) {
 	allStarted = false;
 	countFiles = 1;
 	startFunction = sf;
+
+	const runnedSnapshots = {};
+	let fullTestName = "";
+	function matchSnapshot() {
+		let ftn = fullTestName;
+		let i = 0;
+		while (runnedSnapshots[ftn]) {
+			i++;
+			ftn = fullTestName + "-" + i;
+		}
+		runnedSnapshots[ftn] = true;
+		const obj = this.__flags.object;
+		if (!snapshots[ftn]) {
+			snapshots[ftn] = obj;
+			return;
+		}
+
+		try {
+			expect(obj).to.deep.equal(snapshots[ftn]);
+		} catch (e) {
+			if (
+				typeof process !== "undefined" &&
+				// eslint-disable-next-line no-process-env
+				process.env &&
+				// eslint-disable-next-line no-process-env
+				process.env.WRITE_SNAPSHOTS === "true"
+			) {
+				snapshots[ftn] = obj;
+				return;
+			}
+			throw e;
+		}
+	}
+	beforeEach(function () {
+		function getParentsTitle(a) {
+			if (a.parent) {
+				return `${a.parent.title} ${getParentsTitle(a.parent)}`;
+			}
+			return "";
+		}
+		fullTestName = getParentsTitle(this.currentTest) + this.currentTest.title;
+	});
+	after(function () {
+		if (
+			typeof process !== "undefined" &&
+			// eslint-disable-next-line no-process-env
+			process.env &&
+			// eslint-disable-next-line no-process-env
+			process.env.WRITE_SNAPSHOTS === "true"
+		) {
+			const sortedKeys = Object.keys(snapshots).sort();
+			const output =
+				sortedKeys
+					.map(function (key) {
+						const snap = snapshots[key];
+						return "exports[`" + key + "`] = " + JSON.stringify(snap, null, 2);
+					})
+					.join("\n\n") + "\n\n";
+			fs.writeFileSync(snapshotFile, output);
+		}
+	});
+	chai.use(function () {
+		chai.Assertion.addMethod("matchSnapshot", matchSnapshot);
+	});
 
 	if (typeof window !== "undefined" && window.addEventListener) {
 		window.addEventListener("unhandledrejection", unhandledRejectionHandler);
@@ -656,6 +794,10 @@ function setExamplesDirectory(ed) {
 		);
 		global.fileNames = fileNames;
 	}
+}
+
+function setSnapshotFile(file) {
+	snapshotFile = file;
 }
 
 function removeSpaces(text) {
@@ -830,7 +972,9 @@ module.exports = {
 	createXmlTemplaterDocxNoRender,
 	expect,
 	expectToThrow,
+	expectToThrowSnapshot,
 	expectToThrowAsync,
+	expectToThrowAsyncSnapshot,
 	getContent,
 	imageData,
 	loadDocument,
@@ -842,13 +986,13 @@ module.exports = {
 	makePptxV4,
 	removeSpaces,
 	setExamplesDirectory,
+	setSnapshotFile,
 	setStartFunction,
 	shouldBeSame,
 	resolveSoon,
 	rejectSoon,
 	start,
 	wrapMultiError,
-	isNode14,
 	createDocV4,
 	getZip,
 	getParameterByName,

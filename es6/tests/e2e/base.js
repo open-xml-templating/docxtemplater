@@ -4,14 +4,13 @@ const { assign } = require("lodash");
 const angularParser = require("../../expressions.js");
 const angularParserIE11 = require("../../expressions-ie11.js");
 const Docxtemplater = require("../../docxtemplater.js");
-const Errors = require("../../errors.js");
 const { last } = require("../../utils.js");
 const {
 	createDoc,
 	createDocV4,
 	createXmlTemplaterDocx,
 	expect,
-	expectToThrow,
+	expectToThrowSnapshot,
 	getContent,
 	getLength,
 	getZip,
@@ -91,63 +90,10 @@ describe("Api versioning", function () {
 
 	it("should fail with invalid versions", function () {
 		const doc = createDoc("tag-example.docx");
-		expectToThrow(
-			doc.verifyApiVersion.bind(null, "5.0"),
-			Errors.XTAPIVersionError,
-			{
-				message: "neededVersion is not a valid version",
-				name: "APIVersionError",
-				properties: {
-					id: "api_version_error",
-					neededVersion: [5, 0],
-				},
-			}
-		);
-
-		expectToThrow(
-			doc.verifyApiVersion.bind(null, "5.6.0"),
-			Errors.XTAPIVersionError,
-			{
-				message:
-					"The major api version do not match, you probably have to update docxtemplater with npm install --save docxtemplater",
-				name: "APIVersionError",
-				properties: {
-					id: "api_version_error",
-					currentModuleApiVersion: [3, 37, 0],
-					neededVersion: [5, 6, 0],
-				},
-			}
-		);
-
-		expectToThrow(
-			doc.verifyApiVersion.bind(null, "3.44.0"),
-			Errors.XTAPIVersionError,
-			{
-				message:
-					"The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
-				name: "APIVersionError",
-				properties: {
-					id: "api_version_error",
-					currentModuleApiVersion: [3, 37, 0],
-					neededVersion: [3, 44, 0],
-				},
-			}
-		);
-
-		expectToThrow(
-			doc.verifyApiVersion.bind(null, "3.37.100"),
-			Errors.XTAPIVersionError,
-			{
-				message:
-					"The patch api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
-				name: "APIVersionError",
-				properties: {
-					id: "api_version_error",
-					currentModuleApiVersion: [3, 37, 0],
-					neededVersion: [3, 37, 100],
-				},
-			}
-		);
+		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.0"));
+		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.6.0"));
+		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.44.0"));
+		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.37.100"));
 	});
 });
 

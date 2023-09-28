@@ -1,10 +1,16 @@
 require("es6-promise").polyfill();
-const { setExamplesDirectory, setStartFunction, start } = require("./utils.js");
+const {
+	setExamplesDirectory,
+	setSnapshotFile,
+	setStartFunction,
+	start,
+} = require("./utils.js");
 const path = require("path");
 if (path.resolve) {
 	setExamplesDirectory(path.resolve(__dirname, "..", "..", "examples"));
+	setSnapshotFile(path.resolve(__dirname, "__snapshots.js"));
 }
-setStartFunction(startTest);
+setStartFunction(startTest, require("./__snapshots.js"));
 
 function startTest() {
 	require("./e2e/text.js");

@@ -2,6 +2,7 @@
 *.log
 *.sublime-project
 *.sublime-workspace
+es6/tests/__snapshots.js
 .idea
 /*.ts
 /*.docx

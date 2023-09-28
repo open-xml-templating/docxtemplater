@@ -2,14 +2,13 @@ const {
 	expectToThrow,
 	createDoc,
 	shouldBeSame,
-	isNode14,
 	createDocV4,
 	captureLogs,
 	expect,
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 const Errors = require("../../errors.js");
-const { xml2str, traits, uniq } = require("../../doc-utils.js");
+const { traits, uniq } = require("../../doc-utils.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
 describe("Verify apiversion", function () {
@@ -164,15 +163,9 @@ describe("Module xml parse", function () {
 			);
 		expect(rels.length).to.equal(10);
 
-		const str = xml2str(xmlDocuments["word/_rels/document.xml.rels"]);
-		if (isNode14()) {
-			expect(str).to
-				.equal(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/><Relationship Id="rId2" Type="http://schemas.microsoft.com/office/2007/relationships/stylesWithEffects" Target="stylesWithEffects.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes" Target="endnotes.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes" Target="footnotes.xml"/><Relationship Id="rId10" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/></Relationships>`);
-			rels[5].setAttribute("Foobar", "Baz");
-			doc.render();
-			shouldBeSame({ doc, expectedName: "expected-module-change-rels.docx" });
-		}
+		rels[5].setAttribute("Foobar", "Baz");
+		doc.render();
+		shouldBeSame({ doc, expectedName: "expected-module-change-rels.docx" });
 	});
 });
 

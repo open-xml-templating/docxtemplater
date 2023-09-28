@@ -5,6 +5,7 @@ const {
 	makeDocxV4,
 	wrapMultiError,
 	expectToThrow,
+	expectToThrowSnapshot,
 	expectToThrowAsync,
 	captureLogs,
 } = require("../utils.js");
@@ -193,84 +194,12 @@ describe("Compilation errors", function () {
 	it("should fail early when a loop closes the wrong loop", function () {
 		const content =
 			"<w:t>{#loop1}{#loop2}{/loop3}{/loop3}{/loop2}{/loop1}</w:t>";
-		const expectedError = {
-			name: "TemplateError",
-			message: "Multi error",
-			properties: {
-				errors: [
-					{
-						name: "TemplateError",
-						message: "Unopened loop",
-						properties: {
-							file: "word/document.xml",
-							xtag: "loop3",
-							id: "unopened_loop",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unopened loop",
-						properties: {
-							file: "word/document.xml",
-							xtag: "loop3",
-							id: "unopened_loop",
-						},
-					},
-				],
-				id: "multi_error",
-			},
-		};
-		expectToThrow(
-			() => makeDocxV4(content),
-			Errors.XTTemplateError,
-			expectedError
-		);
+		expectToThrowSnapshot(() => makeDocxV4(content));
 	});
 
 	it("should fail when rawtag is not in paragraph", function () {
 		const content = "<w:t>{@myrawtag}</w:t>";
-		const expectedError = {
-			name: "TemplateError",
-			message: "Raw tag not in paragraph",
-			properties: {
-				expandTo: "w:p",
-				id: "raw_tag_outerxml_invalid",
-				offset: 0,
-				index: 1,
-				file: "word/document.xml",
-				postparsed: [
-					{
-						position: "start",
-						text: true,
-						type: "tag",
-						value: '<w:t xml:space="preserve">',
-						tag: "w:t",
-					},
-					{
-						module: "rawxml",
-						type: "placeholder",
-						value: "myrawtag",
-						raw: "@myrawtag",
-					},
-					{
-						position: "end",
-						text: true,
-						type: "tag",
-						value: "</w:t>",
-						tag: "w:t",
-					},
-				],
-				xtag: "myrawtag",
-				rootError: {
-					message: 'No tag "w:p" was found at the left',
-				},
-			},
-		};
-		expectToThrow(
-			() => makeDocxV4(content),
-			Errors.XTTemplateError,
-			wrapMultiError(expectedError)
-		);
+		expectToThrowSnapshot(() => makeDocxV4(content));
 	});
 
 	it("should fail when rawtag is in table without paragraph", function () {

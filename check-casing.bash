@@ -9,7 +9,7 @@ tgrep() {
 	sort -u |
 	(xargs -d '\n' -- stat -c%n 2>/dev/null || :) >trackedfiles.log
 
-files="$(grep -vE '(Makefile)' <trackedfiles.log | tgrep -v '^docs/' | tgrep -v '\.md$' | tgrep '[A-Z_]')"
+files="$(grep -vE '(Makefile|__snapshots)' <trackedfiles.log | tgrep -v '^docs/' | tgrep -v '\.md$' | tgrep '[A-Z_]')"
 
 if [ "$files" = "" ]; then
 	exit 0
