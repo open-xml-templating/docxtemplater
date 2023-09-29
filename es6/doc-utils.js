@@ -354,11 +354,14 @@ function invertMap(map) {
 		return invertedMap;
 	}, {});
 }
+// This ensures that the sort is stable. The default Array.sort of the browser
+// is not stable in firefox, as the JS spec does not enforce the sort to be
+// stable.
 function stableSort(arr, compare) {
 	// Stryker disable all : in previous versions of Chrome, sort was not stable by itself, so we had to add this. This is to support older versions of JS runners.
 	return arr
 		.map((item, index) => ({ item, index }))
-		.sort((a, b) => compare(a.item, b.item) || a.index + b.index)
+		.sort((a, b) => compare(a.item, b.item) || a.index - b.index)
 		.map(({ item }) => item);
 	// Stryker restore all
 }
