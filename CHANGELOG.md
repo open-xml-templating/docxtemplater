@@ -1,6 +1,8 @@
-### Unreleased
+### 3.39.2
 
-Remove mergeObjects from doc-utils.js
+- Remove mergeObjects from doc-utils.js
+- Small refactoring in regex
+- Avoid calling dropUnsupportedFileTypesModules too many times
 
 ### 3.39.1
 
