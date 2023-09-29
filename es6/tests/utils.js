@@ -617,6 +617,13 @@ function unhandledRejectionHandler(reason) {
 	throw reason;
 }
 
+const writeSnapshots =
+	typeof process !== "undefined" &&
+	// eslint-disable-next-line no-process-env
+	process.env &&
+	// eslint-disable-next-line no-process-env
+	process.env.WRITE_SNAPSHOTS === "true";
+
 let startFunction;
 function setStartFunction(sf, snapshots = {}) {
 	allStarted = false;
@@ -636,19 +643,16 @@ function setStartFunction(sf, snapshots = {}) {
 		const obj = this.__flags.object;
 		if (!snapshots[ftn]) {
 			snapshots[ftn] = obj;
+			if (!writeSnapshots) {
+				throw new Error(`Snapshot not found for '${ftn}'`);
+			}
 			return;
 		}
 
 		try {
 			expect(obj).to.deep.equal(snapshots[ftn]);
 		} catch (e) {
-			if (
-				typeof process !== "undefined" &&
-				// eslint-disable-next-line no-process-env
-				process.env &&
-				// eslint-disable-next-line no-process-env
-				process.env.WRITE_SNAPSHOTS === "true"
-			) {
+			if (writeSnapshots) {
 				snapshots[ftn] = obj;
 				return;
 			}
@@ -665,13 +669,7 @@ function setStartFunction(sf, snapshots = {}) {
 		fullTestName = getParentsTitle(this.currentTest) + this.currentTest.title;
 	});
 	after(function () {
-		if (
-			typeof process !== "undefined" &&
-			// eslint-disable-next-line no-process-env
-			process.env &&
-			// eslint-disable-next-line no-process-env
-			process.env.WRITE_SNAPSHOTS === "true"
-		) {
+		if (writeSnapshots) {
 			const sortedKeys = Object.keys(snapshots).sort();
 			const output =
 				sortedKeys
