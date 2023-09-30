@@ -12,7 +12,7 @@ tags
 *.log
 /js
 /es6/tests/filenames.js
-/es6/__snapshots.js
+es6/tests/__snapshots.js
 /build
 /browser
 /browser-demo
