@@ -1943,9 +1943,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				allowUnopenedTag: true,
 			},
 		},
+		scope: { firstName: "John", lastName: "Doe" },
 		result: `<w:p>
       <w:r>
-        <w:t xml:space="preserve">Hello firstName} undefined</w:t>
+        <w:t xml:space="preserve">Hello firstName} Doe</w:t>
       </w:r>
       <w:r>
         <w:t></w:t>
@@ -1974,9 +1975,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				allowUnopenedTag: true,
 			},
 		},
+		scope: { firstName: "John", lastName: "Doe" },
 		result: `<w:p>
       <w:r>
-        <w:t xml:space="preserve">Hello firstName} undefined</w:t>
+        <w:t xml:space="preserve">Hello firstName} Doe</w:t>
       </w:r>
       <w:r>
         <w:t></w:t>

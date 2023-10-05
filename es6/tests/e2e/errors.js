@@ -1648,8 +1648,8 @@ describe("Async errors", function () {
 	});
 });
 
-describe("allowed errors options", () => {
-	it("should not fail on unopened tag if allowUnopenedTag is true", function () {
+describe("Syntax option", () => {
+	it("should be possible to allow unopened tag if syntax.allowUnopenedTag is true", function () {
 		shouldBeSame({
 			doc: createDocV4("bug-closing-placeholder-orphan.docx", {
 				delimiters: {
