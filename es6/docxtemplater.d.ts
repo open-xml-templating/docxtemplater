@@ -82,8 +82,7 @@ export namespace DXT {
     allowUnopenedTag?: boolean;
   }
 
-  interface ConstructorOptions {
-    modules?: Module[];
+  interface Options {
     delimiters?: { start: string; end: string };
     paragraphLoop?: boolean;
     parser?(tag: string): Parser;
@@ -93,13 +92,8 @@ export namespace DXT {
     syntax?: Syntax;
   }
 
-  interface Options {
-    delimiters?: { start: string; end: string };
-    paragraphLoop?: boolean;
-    parser?(tag: string): Parser;
-    linebreaks?: boolean;
-    nullGetter?(part: Part): any;
-    syntax?: Syntax;
+  interface ConstructorOptions extends Options {
+    modules?: Module[];
   }
 }
 
