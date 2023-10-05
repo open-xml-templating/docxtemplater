@@ -1,6 +1,6 @@
 ### 3.40.0
 
-- In the previous versions the following code will throw an error:
+- In previous versions the following code will throw an error:
 
   ```js
   new Docxtemplater(zip, {
@@ -22,7 +22,16 @@
 
   ```
 
-  From now some template syntax errors can be explicitly excluded from being detected. How to use this new property:
+  ```js
+  MultiError
+    {
+    name: "TemplateError",
+    id: "unopened_tag",
+    explanation: "The tag beginning with \") Some text\" is unopened"
+    }
+  ```
+
+  The syntax can now be made more lenient to permit closing tags even when there are no corresponding opening tags. In your code, write :
 
   ```js
   new Docxtemplater(zip, {
@@ -35,9 +44,9 @@
   });
   ```
 
-  For now, the only available property for `syntax` object is `allowUnopenedTag` (it makes possible to use the end delimiter tag as a text and not to parse it as a closing tag and cause syntax error). This resolves [the github issue #726](https://github.com/open-xml-templating/docxtemplater/issues/726).
+  For now, the only available property for `syntax` object is `allowUnopenedTag` (it makes possible to use the end delimiter tag as a text and not to parse it as a closing tag and cause syntax error). Fixes https://github.com/open-xml-templating/docxtemplater/issues/726.
 
-  **This doesn't alter the default parser behavior**, so this property has to be included to be activated.
+  The default behavior for the parser without setting the syntax option is the same as in 3.39.2, meaning without the `syntax.allowUnopenedTag: true` option, placeholders that are closed but not opened will throw an error.
 
 - Internal: Refactor `getDelimiterErrors` function to be cleaner and more performant
 - Internal: Add tests for new functionality
