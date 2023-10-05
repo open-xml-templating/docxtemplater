@@ -78,6 +78,10 @@ export namespace DXT {
     get(scope: any, context: ParserContext): any;
   }
 
+  interface Syntax {
+    allowUnopenedTag?: boolean;
+  }
+
   interface ConstructorOptions {
     modules?: Module[];
     delimiters?: { start: string; end: string };
@@ -86,6 +90,7 @@ export namespace DXT {
     errorLogging?: boolean | string;
     linebreaks?: boolean;
     nullGetter?(part: Part): any;
+    syntax?: Syntax;
   }
 
   interface Options {
@@ -94,6 +99,7 @@ export namespace DXT {
     parser?(tag: string): Parser;
     linebreaks?: boolean;
     nullGetter?(part: Part): any;
+    syntax?: Syntax;
   }
 }
 

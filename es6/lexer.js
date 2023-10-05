@@ -103,7 +103,7 @@ function tagMatcher(content, textMatchArray, othersMatchArray) {
 	return totalMatches;
 }
 
-function getDelimiterErrors(delimiterMatches, fullText) {
+function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 	const errors = [];
 	let inDelimiter = false;
 	let lastDelimiterMatch = { offset: 0 };
@@ -115,10 +115,10 @@ function getDelimiterErrors(delimiterMatches, fullText) {
 			const delimiterOffset = currDelimiterMatch.offset;
 			const lastDelimiterOffset = lastDelimiterMatch.offset;
 			const lastDelimiterLength = lastDelimiterMatch.length;
-		xtag = fullText.substr(
+			xtag = fullText.substr(
 				lastDelimiterOffset,
 				delimiterOffset - lastDelimiterOffset
-		);
+			);
 
 			if (inDelimiter && position === "start") {
 				if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
@@ -136,29 +136,30 @@ function getDelimiterErrors(delimiterMatches, fullText) {
 					delimiterAcc.push({ ...currDelimiterMatch, error: true });
 					return delimiterAcc;
 				}
-					errors.push(
-						getUnclosedTagException({
-							xtag: wordToUtf8(xtag),
+				errors.push(
+					getUnclosedTagException({
+						xtag: wordToUtf8(xtag),
 						offset: lastDelimiterOffset,
-						})
-					);
+					})
+				);
 				lastDelimiterMatch = currDelimiterMatch;
 				delimiterAcc.push({ ...currDelimiterMatch, error: true });
 				return delimiterAcc;
 			}
 
 			if (!inDelimiter && position === "end") {
+				if (!syntaxOptions.allowUnopenedTag) {
 					if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
-					xtag = fullText.substr(
+						xtag = fullText.substr(
 							lastDelimiterOffset - 4,
 							delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
-					);
-					errors.push(
-						getDuplicateCloseTagException({
-							xtag,
+						);
+						errors.push(
+							getDuplicateCloseTagException({
+								xtag,
 								offset: lastDelimiterOffset,
-						})
-					);
+							})
+						);
 						lastDelimiterMatch = currDelimiterMatch;
 						delimiterAcc.push({ ...currDelimiterMatch, error: true });
 						return delimiterAcc;
@@ -173,6 +174,9 @@ function getDelimiterErrors(delimiterMatches, fullText) {
 					delimiterAcc.push({ ...currDelimiterMatch, error: true });
 					return delimiterAcc;
 				}
+				lastDelimiterMatch = currDelimiterMatch;
+				return delimiterAcc;
+			}
 
 			inDelimiter = !inDelimiter;
 			lastDelimiterMatch = currDelimiterMatch;
@@ -299,7 +303,7 @@ function getAllDelimiterIndexes(fullText, delimiters) {
 	}
 }
 
-function parseDelimiters(innerContentParts, delimiters) {
+function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 	const full = innerContentParts.map((p) => p.value).join("");
 	const delimiterMatches = getAllDelimiterIndexes(full, delimiters);
 
@@ -310,7 +314,8 @@ function parseDelimiters(innerContentParts, delimiters) {
 	});
 	const { delimiterWithErrors, errors } = getDelimiterErrors(
 		delimiterMatches,
-		full
+		full,
+		syntaxOptions
 	);
 	let cutNext = 0;
 	let delimiterIndex = 0;
@@ -395,11 +400,12 @@ function decodeContentParts(xmlparsed) {
 
 module.exports = {
 	parseDelimiters,
-	parse(xmlparsed, delimiters) {
+	parse(xmlparsed, delimiters, syntaxOptions) {
 		decodeContentParts(xmlparsed);
 		const { parsed: delimiterParsed, errors } = parseDelimiters(
 			getContentParts(xmlparsed),
-			delimiters
+			delimiters,
+			syntaxOptions
 		);
 
 		const lexed = [];

@@ -53,7 +53,8 @@ function TxtTemplater(text, options = {}) {
 	xmlt.setModules({ inspect: { xmllexed: xmlt.xmllexed } });
 	const { lexed, errors: lexerErrors } = Lexer.parse(
 		xmlt.xmllexed,
-		xmlt.delimiters
+		xmlt.delimiters,
+		xmlt.syntax
 	);
 	xmlt.allErrors = xmlt.allErrors.concat(lexerErrors);
 	xmlt.lexed = lexed;

@@ -1,4 +1,11 @@
-const { loadFile, loadDocument, rejectSoon, expect } = require("../utils.js");
+const {
+	loadFile,
+	loadDocument,
+	rejectSoon,
+	expect,
+	shouldBeSame,
+	createDocV4,
+} = require("../utils.js");
 const Errors = require("../../errors.js");
 const {
 	makeDocx,
@@ -1638,5 +1645,25 @@ describe("Async errors", function () {
 			Errors.XTTemplateError,
 			expectedError
 		);
+	});
+});
+
+describe("allowed errors options", () => {
+	it("should not fail on unopened tag if allowUnopenedTag is true", function () {
+		shouldBeSame({
+			doc: createDocV4("bug-closing-placeholder-orphan.docx", {
+				delimiters: {
+					start: "$(",
+					end: ")",
+				},
+				syntax: {
+					allowUnopenedTag: true,
+				},
+			}).render({
+				first_name: "John",
+				last_name: "Doe",
+			}),
+			expectedName: "expected-bug-closing-placeholder-orphan.docx",
+		});
 	});
 });

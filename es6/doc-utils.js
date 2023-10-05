@@ -109,6 +109,7 @@ const defaults = {
 		start: "{",
 		end: "}",
 	},
+	syntax: {},
 };
 
 function xml2str(xmlNode) {

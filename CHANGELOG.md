@@ -1,8 +1,52 @@
+### 3.40.0
+
+- In the previous versions the following code will throw an error:
+
+  ```js
+  new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+    delimiters: {
+      start: "$(",
+      end: ")",
+    },
+  });
+  ```
+
+  ```txt
+  $(last_name) $(first_name)
+
+  Some text (Some text)  Some text
+
+  $(last_name) $(first_name)
+
+  ```
+
+  From now some template syntax errors can be explicitly excluded from being detected. How to use this new property:
+
+  ```js
+  new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+
+    syntax: {
+      allowUnopenedTag: true,
+    },
+  });
+  ```
+
+  For now, the only available property for `syntax` object is `allowUnopenedTag` (it makes possible to use the end delimiter tag as a text and not to parse it as a closing tag and cause syntax error). This resolves [the github issue #726](https://github.com/open-xml-templating/docxtemplater/issues/726).
+
+  **This doesn't alter the default parser behavior**, so this property has to be included to be activated.
+
+- Internal: Refactor `getDelimiterErrors` function to be cleaner and more performant
+- Internal: Add tests for new functionality
+
 ### 3.39.2
 
-- Remove mergeObjects from doc-utils.js
-- Small refactoring in regex
-- Avoid calling dropUnsupportedFileTypesModules too many times
+- Internal: Remove mergeObjects from doc-utils.js
+- Internal: Small refactoring in regex
+- Internal: Avoid calling dropUnsupportedFileTypesModules too many times
 
 ### 3.39.1
 
