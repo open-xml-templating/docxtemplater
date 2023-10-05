@@ -108,87 +108,98 @@ function getDelimiterErrors(delimiterMatches, fullText) {
 	let inDelimiter = false;
 	let lastDelimiterMatch = { offset: 0 };
 	let xtag;
-	delimiterMatches.forEach(function (delimiterMatch) {
+
+	const delimiterWithErrors = delimiterMatches.reduce(
+		(delimiterAcc, currDelimiterMatch) => {
+			const position = currDelimiterMatch.position;
+			const delimiterOffset = currDelimiterMatch.offset;
+			const lastDelimiterOffset = lastDelimiterMatch.offset;
+			const lastDelimiterLength = lastDelimiterMatch.length;
 		xtag = fullText.substr(
-			lastDelimiterMatch.offset,
-			delimiterMatch.offset - lastDelimiterMatch.offset
+				lastDelimiterOffset,
+				delimiterOffset - lastDelimiterOffset
 		);
-		if (
-			(delimiterMatch.position === "start" && inDelimiter) ||
-			(delimiterMatch.position === "end" && !inDelimiter)
-		) {
-			if (delimiterMatch.position === "start") {
-				if (
-					lastDelimiterMatch.offset + lastDelimiterMatch.length ===
-					delimiterMatch.offset
-				) {
+
+			if (inDelimiter && position === "start") {
+				if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
 					xtag = fullText.substr(
-						lastDelimiterMatch.offset,
-						delimiterMatch.offset -
-							lastDelimiterMatch.offset +
-							lastDelimiterMatch.length +
-							4
+						lastDelimiterOffset,
+						delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
 					);
 					errors.push(
 						getDuplicateOpenTagException({
 							xtag,
-							offset: lastDelimiterMatch.offset,
+							offset: lastDelimiterOffset,
 						})
 					);
-				} else {
+					lastDelimiterMatch = currDelimiterMatch;
+					delimiterAcc.push({ ...currDelimiterMatch, error: true });
+					return delimiterAcc;
+				}
 					errors.push(
 						getUnclosedTagException({
 							xtag: wordToUtf8(xtag),
-							offset: lastDelimiterMatch.offset,
+						offset: lastDelimiterOffset,
 						})
 					);
-				}
-				delimiterMatch.error = true;
-			} else {
-				if (
-					lastDelimiterMatch.offset + lastDelimiterMatch.length ===
-					delimiterMatch.offset
-				) {
+				lastDelimiterMatch = currDelimiterMatch;
+				delimiterAcc.push({ ...currDelimiterMatch, error: true });
+				return delimiterAcc;
+			}
+
+			if (!inDelimiter && position === "end") {
+					if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
 					xtag = fullText.substr(
-						lastDelimiterMatch.offset - 4,
-						delimiterMatch.offset -
-							lastDelimiterMatch.offset +
-							4 +
-							lastDelimiterMatch.length
+							lastDelimiterOffset - 4,
+							delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
 					);
 					errors.push(
 						getDuplicateCloseTagException({
 							xtag,
-							offset: lastDelimiterMatch.offset,
+								offset: lastDelimiterOffset,
 						})
 					);
-				} else {
+						lastDelimiterMatch = currDelimiterMatch;
+						delimiterAcc.push({ ...currDelimiterMatch, error: true });
+						return delimiterAcc;
+					}
 					errors.push(
-						getUnopenedTagException({ xtag, offset: delimiterMatch.offset })
+						getUnopenedTagException({
+							xtag,
+							offset: delimiterOffset,
+						})
 					);
+					lastDelimiterMatch = currDelimiterMatch;
+					delimiterAcc.push({ ...currDelimiterMatch, error: true });
+					return delimiterAcc;
 				}
-				delimiterMatch.error = true;
-			}
-		} else {
+
 			inDelimiter = !inDelimiter;
-		}
-		lastDelimiterMatch = delimiterMatch;
-	});
-	const delimiterMatch = { offset: fullText.length };
-	xtag = fullText.substr(
-		lastDelimiterMatch.offset,
-		delimiterMatch.offset - lastDelimiterMatch.offset
+			lastDelimiterMatch = currDelimiterMatch;
+			delimiterAcc.push(currDelimiterMatch);
+			return delimiterAcc;
+		},
+		[]
 	);
+
 	if (inDelimiter) {
+		const lastDelimiterOffset = lastDelimiterMatch.offset;
+		xtag = fullText.substr(
+			lastDelimiterOffset,
+			fullText.length - lastDelimiterOffset
+		);
 		errors.push(
 			getUnclosedTagException({
 				xtag: wordToUtf8(xtag),
-				offset: lastDelimiterMatch.offset,
+				offset: lastDelimiterOffset,
 			})
 		);
-		delimiterMatch.error = true;
 	}
-	return errors;
+
+	return {
+		delimiterWithErrors,
+		errors,
+	};
 }
 
 function compareOffsets(startOffset, endOffset) {
@@ -297,8 +308,10 @@ function parseDelimiters(innerContentParts, delimiters) {
 		offset += part.value.length;
 		return { offset: offset - part.value.length, lIndex: part.lIndex };
 	});
-
-	const errors = getDelimiterErrors(delimiterMatches, full, ranges);
+	const { delimiterWithErrors, errors } = getDelimiterErrors(
+		delimiterMatches,
+		full
+	);
 	let cutNext = 0;
 	let delimiterIndex = 0;
 
@@ -308,10 +321,10 @@ function parseDelimiters(innerContentParts, delimiters) {
 		const partContent = innerContentParts[i].value;
 		const delimitersInOffset = [];
 		while (
-			delimiterIndex < delimiterMatches.length &&
-			inRange(range, delimiterMatches[delimiterIndex])
+			delimiterIndex < delimiterWithErrors.length &&
+			inRange(range, delimiterWithErrors[delimiterIndex])
 		) {
-			delimitersInOffset.push(delimiterMatches[delimiterIndex]);
+			delimitersInOffset.push(delimiterWithErrors[delimiterIndex]);
 			delimiterIndex++;
 		}
 		const parts = [];
