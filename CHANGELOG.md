@@ -1,8 +1,61 @@
+### 3.40.0
+
+- In previous versions the following code will throw an error:
+
+  ```js
+  new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+    delimiters: {
+      start: "$(",
+      end: ")",
+    },
+  });
+  ```
+
+  ```txt
+  $(last_name) $(first_name)
+
+  Some text (Some text)  Some text
+
+  $(last_name) $(first_name)
+
+  ```
+
+  ```js
+  MultiError
+    {
+    name: "TemplateError",
+    id: "unopened_tag",
+    explanation: "The tag beginning with \") Some text\" is unopened"
+    }
+  ```
+
+  The syntax can now be made more lenient to permit closing tags even when there are no corresponding opening tags. In your code, write :
+
+  ```js
+  new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+
+    syntax: {
+      allowUnopenedTag: true,
+    },
+  });
+  ```
+
+  For now, the only available property for `syntax` object is `allowUnopenedTag` (it makes possible to use the end delimiter tag as a text and not to parse it as a closing tag and cause syntax error). Fixes https://github.com/open-xml-templating/docxtemplater/issues/726.
+
+  The default behavior for the parser without setting the syntax option is the same as in 3.39.2, meaning without the `syntax.allowUnopenedTag: true` option, placeholders that are closed but not opened will throw an error.
+
+- Internal: Refactor `getDelimiterErrors` function to be cleaner and more performant
+- Internal: Add tests for new functionality
+
 ### 3.39.2
 
-- Remove mergeObjects from doc-utils.js
-- Small refactoring in regex
-- Avoid calling dropUnsupportedFileTypesModules too many times
+- Internal: Remove mergeObjects from doc-utils.js
+- Internal: Small refactoring in regex
+- Internal: Avoid calling dropUnsupportedFileTypesModules too many times
 
 ### 3.39.1
 

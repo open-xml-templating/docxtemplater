@@ -1925,6 +1925,70 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
+		it: "should not fail on SPACED unopened tag if allowUnopenedTag is true",
+		...noInternals,
+		content: `<w:p>
+      <w:r>
+        <w:t>Hello firstName} {</w:t>
+      </w:r>
+      <w:r>
+        <w:t>lastName</w:t>
+      </w:r>
+      <w:r>
+        <w:t>} } world} } }</w:t>
+      </w:r>
+    </w:p>`,
+		options: {
+			syntax: {
+				allowUnopenedTag: true,
+			},
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: `<w:p>
+      <w:r>
+        <w:t xml:space="preserve">Hello firstName} Doe</w:t>
+      </w:r>
+      <w:r>
+        <w:t></w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> } world} } }</w:t>
+      </w:r>
+    </w:p>`,
+	},
+	{
+		it: "should not fail on unopened tag if allowUnopenedTag is true",
+		...noInternals,
+		content: `<w:p>
+      <w:r>
+        <w:t>Hello firstName} {</w:t>
+      </w:r>
+      <w:r>
+        <w:t>lastName</w:t>
+      </w:r>
+      <w:r>
+        <w:t>}} world}}}</w:t>
+      </w:r>
+    </w:p>}`,
+		options: {
+			syntax: {
+				allowUnopenedTag: true,
+			},
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: `<w:p>
+      <w:r>
+        <w:t xml:space="preserve">Hello firstName} Doe</w:t>
+      </w:r>
+      <w:r>
+        <w:t></w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">} world}}}</w:t>
+      </w:r>
+    </w:p>}`,
+	},
+	{
 		it: "should add space=preserve to last tag when having middle tag",
 		...noInternals,
 		content: `<w:p>

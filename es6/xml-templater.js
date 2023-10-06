@@ -78,7 +78,8 @@ module.exports = class XmlTemplater {
 		this.setModules({ inspect: { xmllexed: this.xmllexed } });
 		const { lexed, errors: lexerErrors } = Lexer.parse(
 			this.xmllexed,
-			this.delimiters
+			this.delimiters,
+			this.syntax
 		);
 		this.allErrors = this.allErrors.concat(lexerErrors);
 		this.lexed = lexed;

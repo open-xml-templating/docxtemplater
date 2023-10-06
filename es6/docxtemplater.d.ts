@@ -78,22 +78,22 @@ export namespace DXT {
     get(scope: any, context: ParserContext): any;
   }
 
-  interface ConstructorOptions {
-    modules?: Module[];
-    delimiters?: { start: string; end: string };
-    paragraphLoop?: boolean;
-    parser?(tag: string): Parser;
-    errorLogging?: boolean | string;
-    linebreaks?: boolean;
-    nullGetter?(part: Part): any;
+  interface Syntax {
+    allowUnopenedTag?: boolean;
   }
 
   interface Options {
     delimiters?: { start: string; end: string };
     paragraphLoop?: boolean;
     parser?(tag: string): Parser;
+    errorLogging?: boolean | string;
     linebreaks?: boolean;
     nullGetter?(part: Part): any;
+    syntax?: Syntax;
+  }
+
+  interface ConstructorOptions extends Options {
+    modules?: Module[];
   }
 }
 
