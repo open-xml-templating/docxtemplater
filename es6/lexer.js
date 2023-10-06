@@ -148,33 +148,32 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 			}
 
 			if (!inDelimiter && position === "end") {
-				if (!syntaxOptions.allowUnopenedTag) {
-					if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
-						xtag = fullText.substr(
-							lastDelimiterOffset - 4,
-							delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
-						);
-						errors.push(
-							getDuplicateCloseTagException({
-								xtag,
-								offset: lastDelimiterOffset,
-							})
-						);
-						lastDelimiterMatch = currDelimiterMatch;
-						delimiterAcc.push({ ...currDelimiterMatch, error: true });
-						return delimiterAcc;
-					}
+				if (syntaxOptions.allowUnopenedTag) {
+					return delimiterAcc;
+				}
+				if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
+					xtag = fullText.substr(
+						lastDelimiterOffset - 4,
+						delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
+					);
 					errors.push(
-						getUnopenedTagException({
+						getDuplicateCloseTagException({
 							xtag,
-							offset: delimiterOffset,
+							offset: lastDelimiterOffset,
 						})
 					);
 					lastDelimiterMatch = currDelimiterMatch;
 					delimiterAcc.push({ ...currDelimiterMatch, error: true });
 					return delimiterAcc;
 				}
+				errors.push(
+					getUnopenedTagException({
+						xtag,
+						offset: delimiterOffset,
+					})
+				);
 				lastDelimiterMatch = currDelimiterMatch;
+				delimiterAcc.push({ ...currDelimiterMatch, error: true });
 				return delimiterAcc;
 			}
 
