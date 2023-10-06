@@ -13,7 +13,7 @@
   });
   ```
 
-  ```txt
+  ```template
   $(last_name) $(first_name)
 
   Some text (Some text)  Some text
@@ -69,7 +69,7 @@ parser(tag, options) {
 
 ### 3.39.0
 
-Add preResolve API for modules that allows to run some code before the calls to resolve.
+Add `preResolve` API for modules that allows to run some code before the calls to resolve.
 
 Update moduleApiVersion to version 3.37.0
 
@@ -79,7 +79,7 @@ Add support for templating content which is in comments.
 
 ### 3.37.14
 
-Bugfix following error, when calling "setOptions" and then "getFullText" :
+Bugfix following error, when calling `setOptions` and then `getFullText` :
 
 ```
 Cannot read properties of null (reading 'tagsXmlTextArray')
@@ -89,7 +89,7 @@ Cannot read properties of null (reading 'tagsXmlTextArray')
 
 ### 3.37.13
 
-In powerpoint, the inspect module will now return correctly for the getAllTags and getStructuredTags methods :
+In powerpoint, the inspect module will now return correctly for the `getAllTags` and `getStructuredTags` methods :
 
 For this to work, you need to install version 3.4.10 of slides module or above.
 
