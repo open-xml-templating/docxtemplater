@@ -204,70 +204,8 @@ describe("Compilation errors", function () {
 
 	it("should fail when rawtag is in table without paragraph", function () {
 		const content = "<w:tbl><w:t>{@myrawtag}</w:t></w:p></w:tbl>";
-		const expectedError = {
-			name: "TemplateError",
-			message: "Raw tag not in paragraph",
-			properties: {
-				file: "word/document.xml",
-				id: "raw_tag_outerxml_invalid",
-				explanation:
-					'The tag "myrawtag" is not inside a paragraph, putting raw tags inside an inline loop is disallowed.',
-				xtag: "myrawtag",
-				postparsed: [
-					{
-						type: "tag",
-						position: "start",
-						text: false,
-						value: "<w:tbl>",
-						tag: "w:tbl",
-					},
-					{
-						type: "tag",
-						position: "start",
-						text: true,
-						value: '<w:t xml:space="preserve">',
-						tag: "w:t",
-					},
-					{
-						type: "placeholder",
-						value: "myrawtag",
-						raw: "@myrawtag",
-						module: "rawxml",
-					},
-					{
-						type: "tag",
-						position: "end",
-						text: true,
-						value: "</w:t>",
-						tag: "w:t",
-					},
-					{
-						type: "tag",
-						position: "end",
-						text: false,
-						value: "</w:p>",
-						tag: "w:p",
-					},
-					{
-						type: "tag",
-						position: "end",
-						text: false,
-						value: "</w:tbl>",
-						tag: "w:tbl",
-					},
-				],
-				rootError: {
-					message: 'No tag "w:p" was found at the left',
-				},
-				expandTo: "w:p",
-				index: 2,
-			},
-		};
-		expectToThrow(
-			() => makeDocxV4(content),
-			Errors.XTTemplateError,
-			wrapMultiError(expectedError)
-		);
+
+		expectToThrowSnapshot(() => makeDocxV4(content));
 	});
 
 	it("should fail when rawtag is not only text in paragraph", function () {
@@ -293,123 +231,7 @@ describe("Compilation errors", function () {
 	it("should count 3 errors when having rawxml and two other errors", function () {
 		const content = "<w:p><w:r><w:t>foo} {@bang} bar}</w:t></w:r></w:p>";
 
-		const expectedError = {
-			name: "TemplateError",
-			message: "Multi error",
-			properties: {
-				errors: [
-					{
-						name: "TemplateError",
-						message: "Unopened tag",
-						properties: {
-							file: "word/document.xml",
-							xtag: "foo",
-							id: "unopened_tag",
-							context: "foo",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unopened tag",
-						properties: {
-							file: "word/document.xml",
-							xtag: "bar",
-							id: "unopened_tag",
-							context: "} bar",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Raw tag should be the only text in paragraph",
-						properties: {
-							file: "word/document.xml",
-							id: "raw_xml_tag_should_be_only_text_in_paragraph",
-							xtag: "bang",
-							paragraphParts: [
-								{
-									type: "tag",
-									position: "start",
-									text: false,
-									value: "<w:r>",
-									tag: "w:r",
-									lIndex: 1,
-								},
-								{
-									type: "tag",
-									position: "start",
-									text: true,
-									value: '<w:t xml:space="preserve">',
-									tag: "w:t",
-									lIndex: 2,
-								},
-								{
-									type: "content",
-									value: "foo",
-									position: "insidetag",
-									lIndex: 3,
-								},
-								{
-									type: "placeholder",
-									value: "",
-									endLindex: 4,
-									lIndex: 4,
-								},
-								{
-									type: "content",
-									value: " ",
-									position: "insidetag",
-									lIndex: 5,
-								},
-								{
-									type: "placeholder",
-									value: "bang",
-									module: "rawxml",
-									offset: 5,
-									endLindex: 8,
-									lIndex: 8,
-									raw: "@bang",
-								},
-								{
-									type: "content",
-									value: " bar",
-									position: "insidetag",
-									lIndex: 9,
-								},
-								{
-									type: "placeholder",
-									value: "",
-									offset: 5,
-									endLindex: 10,
-									lIndex: 10,
-								},
-								{
-									type: "tag",
-									position: "end",
-									text: true,
-									value: "</w:t>",
-									tag: "w:t",
-									lIndex: 11,
-								},
-								{
-									type: "tag",
-									position: "end",
-									text: false,
-									value: "</w:r>",
-									tag: "w:r",
-									lIndex: 12,
-								},
-							],
-						},
-					},
-				],
-				id: "multi_error",
-			},
-		};
-		expectToThrow(
-			() => makeDocxV4(content),
-			Errors.XTTemplateError,
-			expectedError
-		);
+		expectToThrowSnapshot(() => makeDocxV4(content));
 	});
 
 	it("should fail when customparser fails to compile", function () {
@@ -656,71 +478,8 @@ describe("Multi errors", function () {
 			.replace(/\t/g, "")
 			.split("\n")
 			.join("!");
-		const expectedError = {
-			name: "TemplateError",
-			message: "Multi error",
-			properties: {
-				id: "multi_error",
-				errors: [
-					{
-						name: "TemplateError",
-						message: "Unopened tag",
-						properties: {
-							xtag: "foo",
-							id: "unopened_tag",
-							context: "foo",
-							file: "word/document.xml",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unclosed tag",
-						properties: {
-							xtag: "user,",
-							id: "unclosed_tag",
-							context: "{user, my age is ",
-							file: "word/document.xml",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unopened tag",
-						properties: {
-							xtag: "bang",
-							id: "unopened_tag",
-							context: "}!Hi bang",
-							file: "word/document.xml",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unclosed tag",
-						properties: {
-							xtag: "user,",
-							id: "unclosed_tag",
-							context: "{user, my age is ",
-							file: "word/document.xml",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unclosed tag",
-						properties: {
-							xtag: "bar!",
-							id: "unclosed_tag",
-							context: "{bar!",
-							file: "word/document.xml",
-						},
-					},
-				],
-			},
-		};
 
-		expectToThrow(
-			() => makeDocxV4(content),
-			Errors.XTTemplateError,
-			expectedError
-		);
+		expectToThrowSnapshot(() => makeDocxV4(content));
 	});
 
 	it("should work with wrongly nested loops", function () {
@@ -814,69 +573,8 @@ describe("Multi errors", function () {
 		{#yum}
 		</w:t>
 		`;
-		const expectedError = {
-			name: "TemplateError",
-			message: "Multi error",
-			properties: {
-				errors: [
-					{
-						name: "TemplateError",
-						message: "Unopened loop",
-						properties: {
-							file: "word/document.xml",
-							id: "unopened_loop",
-							xtag: "loop",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Closing tag does not match opening tag",
-						properties: {
-							id: "closing_tag_does_not_match_opening_tag",
-							openingtag: "users",
-							closingtag: "foo",
-							file: "word/document.xml",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Closing tag does not match opening tag",
-						properties: {
-							id: "closing_tag_does_not_match_opening_tag",
-							openingtag: "bang",
-							closingtag: "baz",
-							file: "word/document.xml",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unopened loop",
-						properties: {
-							id: "unopened_loop",
-							xtag: "fff",
-							file: "word/document.xml",
-						},
-					},
-					{
-						name: "TemplateError",
-						message: "Unclosed loop",
-						properties: {
-							id: "unclosed_loop",
-							xtag: "yum",
-							file: "word/document.xml",
-							// To test that the offset is present and well calculated
-							offset: 68,
-						},
-					},
-				],
-				id: "multi_error",
-			},
-		};
-		expectToThrow(
-			() => makeDocxV4(content),
-			Errors.XTTemplateError,
-			expectedError
-		);
+
+		expectToThrowSnapshot(() => makeDocxV4(content));
 	});
 
 	it("should fail when having multiple rawtags without a surrounding paragraph", function () {
