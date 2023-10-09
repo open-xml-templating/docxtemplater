@@ -1,3 +1,13 @@
+### 3.40.1
+
+Bugfix when using docxtemplater asynchronously, and having some module inside a loop.
+
+The "contentType" and some other properties were not transfered correctly to the elements inside the loop.
+
+This specifically caused an issue in the HTML module to return the correct pageHeight inside the `getSize` and `getImage` function.
+
+This could also lead to some other bugs that were happening only when having some specific tag present in the loop.
+
 ### 3.40.0
 
 - In previous versions the following code will throw an error:

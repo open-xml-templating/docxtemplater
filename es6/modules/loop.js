@@ -366,10 +366,7 @@ class LoopModule {
 			);
 			promises.push(
 				options.resolve({
-					filePath: options.filePath,
-					modules: options.modules,
-					baseNullGetter: options.baseNullGetter,
-					resolve: options.resolve,
+					...options,
 					compiled: part.subparsed,
 					tags: {},
 					scopeManager,
