@@ -1,13 +1,11 @@
-const {
-	loadFile,
-	loadDocument,
-	rejectSoon,
-	expect,
-	shouldBeSame,
-	createDocV4,
-} = require("../utils.js");
+const { expect } = require("chai");
 const Errors = require("../../errors.js");
 const {
+	loadDocumentFromCache,
+	rejectSoon,
+	createDocV4,
+	shouldBeSame,
+	loadFile,
 	makeDocx,
 	makeDocxV4,
 	wrapMultiError,
@@ -15,7 +13,7 @@ const {
 	expectToThrowSnapshot,
 	expectToThrowAsync,
 	captureLogs,
-} = require("../utils.js");
+} = require("../utils/index.js");
 const angularParser = require("../../expressions.js");
 
 describe("Compilation errors", function () {
@@ -404,7 +402,7 @@ describe("Internal errors", function () {
 		};
 		loadFile("test.odt", (e, name, buffer) => {
 			expectToThrow(
-				() => loadDocument(name, buffer),
+				() => loadDocumentFromCache(name, buffer),
 				Errors.XTInternalError,
 				expectedError
 			);
@@ -423,7 +421,7 @@ describe("Internal errors", function () {
 		};
 		loadFile("simple-zip.zip", (e, name, buffer) => {
 			expectToThrow(
-				() => loadDocument(name, buffer),
+				() => loadDocumentFromCache(name, buffer),
 				Errors.XTInternalError,
 				expectedError
 			);

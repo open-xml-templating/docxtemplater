@@ -1,6 +1,6 @@
 const angularParser = require("../../expressions.js");
 const angularParserIE11 = require("../../expressions-ie11.js");
-const { expect } = require("../utils.js");
+const { expect } = require("chai");
 
 describe("Angular parser", function () {
 	it("should work", function () {

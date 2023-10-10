@@ -4,7 +4,7 @@ const {
 	getSingleAttribute,
 	chunkBy,
 } = require("../../doc-utils.js");
-const { expect } = require("../utils.js");
+const { expect } = require("chai");
 
 describe("Uniq", function () {
 	it("should work", function () {

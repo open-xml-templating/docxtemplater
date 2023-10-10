@@ -2,9 +2,9 @@ const {
 	createDoc,
 	createDocV4,
 	shouldBeSame,
-	expect,
 	resolveSoon,
-} = require("../utils.js");
+} = require("../utils/index.js");
+const { expect } = require("chai");
 const rawXMLValue = require("../data/raw-xml-pptx.js");
 
 describe("Pptx generation", function () {

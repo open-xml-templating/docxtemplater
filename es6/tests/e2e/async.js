@@ -1,13 +1,13 @@
 const { cloneDeep } = require("lodash");
+const { expect } = require("chai");
 
 const {
 	createDoc,
 	createDocV4,
 	shouldBeSame,
-	expect,
 	resolveSoon,
 	cleanRecursive,
-} = require("../utils.js");
+} = require("../utils/index.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
 describe("Resolver", function () {

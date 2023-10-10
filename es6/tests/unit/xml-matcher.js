@@ -1,5 +1,5 @@
 const xmlMatcher = require("../../xml-matcher.js");
-const { expect } = require("../utils.js");
+const { expect } = require("chai");
 const xmlprettify = require("../xml-prettify.js");
 
 describe("XmlMatcher", function () {

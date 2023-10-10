@@ -3,10 +3,10 @@ const {
 	createDoc,
 	createDocV4,
 	shouldBeSame,
-	expect,
 	makeDocxV4,
 	captureLogs,
-} = require("../utils.js");
+} = require("../utils/index.js");
+const { expect } = require("chai");
 
 const printy = require("../printy.js");
 const expectedPrintedPostParsed = require("../data/printy-postparsed.js");

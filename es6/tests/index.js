@@ -4,7 +4,7 @@ const {
 	setSnapshotFile,
 	setStartFunction,
 	start,
-} = require("./utils.js");
+} = require("./utils/index.js");
 const path = require("path");
 if (path.resolve) {
 	setExamplesDirectory(path.resolve(__dirname, "..", "..", "examples"));

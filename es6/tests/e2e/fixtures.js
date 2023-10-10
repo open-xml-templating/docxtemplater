@@ -2,7 +2,7 @@ const { assign } = require("lodash");
 const expressionParser = require("../../expressions.js");
 const angularParserIE11 = require("../../expressions-ie11.js");
 const Errors = require("../../errors.js");
-const { wrapMultiError } = require("../utils.js");
+const { wrapMultiError } = require("../utils/index.js");
 const nbsp = String.fromCharCode(160);
 
 expressionParser.filters.upper = function (str) {

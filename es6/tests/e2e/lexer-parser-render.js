@@ -1,11 +1,11 @@
 const {
-	expect,
 	makeDocxV4,
 	makePptxV4,
 	cleanRecursive,
 	errorVerifier,
 	captureLogs,
-} = require("../utils.js");
+} = require("../utils/index.js");
+const { expect } = require("chai");
 
 const fixtures = require("./fixtures.js");
 const inspectModule = require("../../inspect-module.js");

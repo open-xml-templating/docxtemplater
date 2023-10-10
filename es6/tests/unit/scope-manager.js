@@ -1,7 +1,7 @@
 const createScope = require("../../scope-manager.js");
 const expressionParser = require("../../expressions.js");
-const { expect } = require("../utils.js");
-const { resolveSoon } = require("../utils.js");
+const { expect } = require("chai");
+const { resolveSoon } = require("../utils/index.js");
 
 describe("ScopeManager", function () {
 	it("should work with simple tag", function () {

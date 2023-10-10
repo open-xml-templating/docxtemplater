@@ -1,5 +1,6 @@
 const PizZip = require("pizzip");
 const { assign } = require("lodash");
+const { expect } = require("chai");
 
 const angularParser = require("../../expressions.js");
 const angularParserIE11 = require("../../expressions-ie11.js");
@@ -9,13 +10,12 @@ const {
 	createDoc,
 	createDocV4,
 	createXmlTemplaterDocx,
-	expect,
 	expectToThrowSnapshot,
 	getContent,
 	getLength,
-	getZip,
+	getZipFromCache,
 	shouldBeSame,
-} = require("../utils.js");
+} = require("../utils/index.js");
 const inspectModule = require("../../inspect-module.js");
 
 describe("Loading", function () {
@@ -1062,7 +1062,7 @@ describe("Constructor v4", function () {
 	});
 
 	it("should throw an error when an invalid zip is passed", function () {
-		const zip = getZip("tag-example.docx");
+		const zip = getZipFromCache("tag-example.docx");
 		zip.files = null;
 
 		expect(() => new Docxtemplater(zip)).to.throw(
@@ -1189,7 +1189,7 @@ describe("Constructor v4", function () {
 	});
 
 	it("should render correctly", () => {
-		const doc = new Docxtemplater(getZip("tag-example.docx"));
+		const doc = new Docxtemplater(getZipFromCache("tag-example.docx"));
 		const tags = {
 			first_name: "John",
 			last_name: "Doe",
@@ -1214,7 +1214,7 @@ describe("Constructor v4", function () {
 	});
 
 	it("should throw an error when supportedFieldType property in passed module is not an Array", function () {
-		const zip = getZip("tag-example.docx");
+		const zip = getZipFromCache("tag-example.docx");
 		const module = {
 			optionsTransformer(options) {
 				return options;

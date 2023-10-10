@@ -1,4 +1,4 @@
-const { expect } = require("../utils.js");
+const { expect } = require("chai");
 const expressionParser = require("../../expressions.js");
 const TxtTemplater = require("../../text.js");
 

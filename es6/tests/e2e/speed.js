@@ -2,10 +2,10 @@ const { times } = require("lodash");
 
 const {
 	createDoc,
-	expect,
 	createXmlTemplaterDocxNoRender,
 	browserMatches,
-} = require("../utils.js");
+} = require("../utils/index.js");
+const { expect } = require("chai");
 const inspectModule = require("../../inspect-module.js");
 
 /* eslint-disable-next-line no-process-env */

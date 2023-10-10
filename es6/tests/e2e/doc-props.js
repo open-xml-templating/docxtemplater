@@ -1,4 +1,5 @@
-const { createDoc, createDocV4, shouldBeSame, expect } = require("../utils.js");
+const { createDoc, createDocV4, shouldBeSame } = require("../utils/index.js");
+const { expect } = require("chai");
 
 describe("Docx document properties", function () {
 	it("should change values in doc-props", function () {

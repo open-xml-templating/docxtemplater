@@ -1,9 +1,9 @@
 const {
 	createXmlTemplaterDocx,
-	expect,
 	getContent,
 	createXmlTemplaterDocxNoRender,
-} = require("../utils.js");
+} = require("../utils/index.js");
+const { expect } = require("chai");
 
 describe("XmlTemplater", function () {
 	it("should work with simpleContent", function () {

@@ -1,4 +1,5 @@
-const { createDoc, createDocV4, shouldBeSame, expect } = require("../utils.js");
+const { createDoc, createDocV4, shouldBeSame } = require("../utils/index.js");
+const { expect } = require("chai");
 
 describe("Table", function () {
 	it("should work with selfclosing tag inside table with paragraphLoop", function () {

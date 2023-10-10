@@ -4,8 +4,8 @@ const {
 	shouldBeSame,
 	createDocV4,
 	captureLogs,
-	expect,
-} = require("../utils.js");
+} = require("../utils/index.js");
+const { expect } = require("chai");
 const inspectModule = require("../../inspect-module.js");
 const Errors = require("../../errors.js");
 const { traits, uniq } = require("../../doc-utils.js");

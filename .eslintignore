@@ -11,7 +11,7 @@ tags
 *.spec.map
 *.log
 /js
-/es6/tests/filenames.js
+es6/tests/utils/filenames.js
 es6/tests/__snapshots.js
 /build
 /browser
