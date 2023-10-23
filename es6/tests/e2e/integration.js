@@ -9,7 +9,6 @@ const {
 } = require("../utils.js");
 
 const printy = require("../printy.js");
-const expectedPrintedPostParsed = require("../data/printy-postparsed.js");
 
 const angularParser = require("../../expressions.js");
 const Errors = require("../../errors.js");
@@ -243,6 +242,15 @@ describe("Special characters", function () {
 		};
 		const doc = createDocV4("loop-hebrew.docx").render(tags);
 		shouldBeSame({ doc, expectedName: "expected-loop-hebrew.docx" });
+	});
+});
+
+describe("Regression", function () {
+	it("should not corrupt when having sdt content", function () {
+		const tags = {};
+		const doc = createDocV4("sdt-content.docx");
+		doc.render(tags);
+		shouldBeSame({ doc, expectedName: "expected-sdt-content.docx" });
 	});
 });
 
@@ -724,9 +732,7 @@ describe("ParagraphLoop", function () {
 			})
 			.render();
 		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
-		expect(printedPostparsed["word/document.xml"]).to.be.equal(
-			expectedPrintedPostParsed
-		);
+		expect(printedPostparsed["word/document.xml"]).to.matchSnapshot();
 	});
 
 	it("should work with spacing at the end", function () {

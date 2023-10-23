@@ -679,6 +679,9 @@ function setStartFunction(sf, snapshots = {}) {
 				sortedKeys
 					.map(function (key) {
 						const snap = snapshots[key];
+						if (typeof snap === "string") {
+							return "exports[`" + key + "`] = `" + snap + "`";
+						}
 						return "exports[`" + key + "`] = " + JSON.stringify(snap, null, 2);
 					})
 					.join("\n\n") +

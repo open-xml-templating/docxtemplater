@@ -1,3 +1,9 @@
+### 3.40.2
+
+Bugfix to not add "w:sdt" inside "w:sdtContent".
+
+Fixes a corruption on a particular type of document.
+
 ### 3.40.1
 
 Bugfix when using docxtemplater asynchronously, and having some module inside a loop.

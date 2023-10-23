@@ -43,6 +43,7 @@ function DocXFileTypeConfig() {
 			"w:pPr",
 			"w:spacing",
 			"w:sdtContent",
+			"w:sdt",
 			"w:drawing",
 
 			"w:sectPr",
@@ -77,7 +78,7 @@ function DocXFileTypeConfig() {
 			{ tag: "w:tc", shouldContain: ["w:p"], value: "<w:p></w:p>" },
 			{
 				tag: "w:sdtContent",
-				shouldContain: ["w:p", "w:r", "w:commentRangeStart"],
+				shouldContain: ["w:p", "w:r", "w:commentRangeStart", "w:sdt"],
 				value: "<w:p></w:p>",
 			},
 		],
