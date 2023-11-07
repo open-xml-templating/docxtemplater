@@ -55,7 +55,7 @@
     "diff": "^5.1.0",
     "envify": "^4.1.0",
     "es6-promise": "^4.2.8",
-    "eslint": "^8.52.0",
+    "eslint": "^8.53.0",
     "eslint_d": "^13.0.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-sort-class-members": "^1.18.0",
