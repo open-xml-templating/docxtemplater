@@ -3,6 +3,13 @@ const { getScopeCompilationError } = require("../errors.js");
 const { utf8ToWord, hasCorruptCharacters } = require("../doc-utils.js");
 const { getCorruptCharactersException } = require("../errors.js");
 
+const {
+	settingsContentType,
+	coreContentType,
+	appContentType,
+	customContentType,
+} = require("../content-types.js");
+
 const ftprefix = {
 	docx: "w",
 	pptx: "a",
@@ -50,7 +57,19 @@ class Render {
 		});
 		return { postparsed, errors };
 	}
-	render(part, { scopeManager, linebreaks, nullGetter }) {
+	render(part, { contentType, scopeManager, linebreaks, nullGetter }) {
+		if (
+			linebreaks &&
+			[
+				settingsContentType,
+				coreContentType,
+				appContentType,
+				customContentType,
+			].indexOf(contentType) !== -1
+		) {
+			// Fixes issue tested in #docprops-linebreak
+			linebreaks = false;
+		}
 		if (linebreaks) {
 			this.recordRuns(part);
 		}

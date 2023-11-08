@@ -252,6 +252,21 @@ describe("Regression", function () {
 		doc.render(tags);
 		shouldBeSame({ doc, expectedName: "expected-sdt-content.docx" });
 	});
+
+	it("should not corrupt document with tag inside title with linebreaks #docprops-linebreak", function () {
+		// Fixed in version 3.40.3
+		const tags = {
+			title: "Foo\nBar\nBaz",
+			creator: "Foo\nBar\nBaz",
+			lmb: "Foo\nBar\nBaz",
+		};
+		const doc = createDocV4("tag-in-title.pptx", {
+			paragraphLoop: true,
+			linebreaks: true,
+		});
+		doc.render(tags);
+		shouldBeSame({ doc, expectedName: "expected-tag-in-title.pptx" });
+	});
 });
 
 describe("Spacing/Linebreaks", function () {

@@ -1,3 +1,7 @@
+### 3.40.3
+
+Fix issue when having {tag} inside title in pptx (or docx) and using the linebreak option.
+
 ### 3.40.2
 
 Bugfix to not add "w:sdt" inside "w:sdtContent".
