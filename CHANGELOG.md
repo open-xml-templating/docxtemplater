@@ -1,3 +1,35 @@
+### 3.41.0
+
+Correctly show error in a multi error if the scope parser execution fails inside the render function
+
+Previously, following error was thrown :
+
+```error
+Error: Scope parser execution failed
+   at new XTScopeParserError (....)
+```
+
+with following template :
+
+```txt
+{#users | sortBy:'foo'}
+Foo
+{/}
+```
+
+```
+expressionParser.filters.sortBy = function (input, ...fields) {
+    if (!input) return input;
+    return sortBy(input, fields);
+};
+```
+
+(when sortBy is not imported correctly).
+
+Now, the error will show a multierror with the list of errors that are happening + the tags that are causing the error.
+
+Add support for angularExpressions.compile(), angularExpressions.Parser, and angularParser.Lexer
+
 ### 3.40.3
 
 Fix issue when having {tag} inside title in pptx (or docx) and using the linebreak option.
