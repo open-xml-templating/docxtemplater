@@ -1,4 +1,5 @@
 const { throwUnimplementedTagType } = require("./errors.js");
+const { XTScopeParserError } = require("./errors.js");
 
 function moduleRender(part, options) {
 	let moduleRendered;
@@ -22,7 +23,16 @@ function render(options) {
 	const parts = compiled
 		.map(function (part, i) {
 			options.index = i;
-			const moduleRendered = moduleRender(part, options);
+			let moduleRendered;
+			try {
+				moduleRendered = moduleRender(part, options);
+			} catch (e) {
+				if (e instanceof XTScopeParserError) {
+					errors.push(e);
+					return part;
+				}
+				throw e;
+			}
 			if (moduleRendered) {
 				if (moduleRendered.errors) {
 					Array.prototype.push.apply(errors, moduleRendered.errors);

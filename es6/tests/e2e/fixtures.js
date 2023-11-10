@@ -491,6 +491,35 @@ const fixtures = [
 		content: "<w:t>{#a}{b}{/a}</w:t>",
 		...noInternals,
 		options: {
+			parser() {
+				return {
+					get() {
+						throw new Error("Foobar");
+					},
+				};
+			},
+		},
+		error: wrapMultiError({
+			name: "ScopeParserError",
+			message: "Scope parser execution failed",
+			properties: {
+				explanation: "The scope parser for the tag a failed to execute",
+				rootError: {
+					message: "Foobar",
+				},
+				file: "word/document.xml",
+				id: "scopeparser_execution_failed",
+				xtag: "a",
+				offset: 0,
+			},
+		}),
+		errorType: Errors.XTTemplateError,
+	},
+	{
+		it: "should show multierror with loops",
+		content: "<w:t>{#a}{b}{/a}</w:t>",
+		...noInternals,
+		options: {
 			parser(tag) {
 				return {
 					get(scope) {
