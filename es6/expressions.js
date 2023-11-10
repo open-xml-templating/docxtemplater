@@ -179,6 +179,10 @@ function angularParser(tag) {
 		},
 	};
 }
+
 angularParser.filters = expressions.filters;
+angularParser.compile = expressions.compile;
+angularParser.Parser = expressions.Parser;
+angularParser.Lexer = expressions.Lexer;
 
 module.exports = angularParser;
