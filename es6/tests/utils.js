@@ -520,7 +520,7 @@ function expectToThrowAsyncSnapshot(fn, update) {
 			return error;
 		})
 		.then(function (err) {
-			expect(err).to.matchSnapshot(update);
+			expect(errToObject(err)).to.matchSnapshot(update);
 			return capture;
 		});
 }
