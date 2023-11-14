@@ -1,3 +1,12 @@
+### 3.42.0
+
+[Internal] Add filePath to each "inspect" call, which fixes a bug with the chart module when used together with the "getTags" feature of the inspect module.
+
+If you update to this version, it is important that you also upgrade following modules if you use them :
+
+- slides module to version 3.5.3
+- pptx-sub module to version 3.1.4
+
 ### 3.41.0
 
 Correctly show error in a multi error if the scope parser execution fails inside the render function
