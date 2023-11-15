@@ -12,6 +12,7 @@ const expandPairTrait = require("./modules/expand-pair-trait.js");
 const XmlTemplater = require("./xml-templater.js");
 
 function TxtTemplater(text, options = {}) {
+	const filePath = "text";
 	const xmlt = new XmlTemplater(text, { modules: [] });
 	xmlt.fileTypeConfig = options.fileTypeConfig = {
 		droppedTagsInsidePlaceholder: [],
@@ -50,7 +51,7 @@ function TxtTemplater(text, options = {}) {
 			value: "",
 		},
 	];
-	xmlt.setModules({ inspect: { xmllexed: xmlt.xmllexed } });
+	xmlt.setModules({ inspect: { filePath, xmllexed: xmlt.xmllexed } });
 	const { lexed, errors: lexerErrors } = Lexer.parse(
 		xmlt.xmllexed,
 		xmlt.delimiters,
@@ -58,7 +59,7 @@ function TxtTemplater(text, options = {}) {
 	);
 	xmlt.allErrors = xmlt.allErrors.concat(lexerErrors);
 	xmlt.lexed = lexed;
-	xmlt.setModules({ inspect: { lexed: xmlt.lexed } });
+	xmlt.setModules({ inspect: { filePath, lexed: xmlt.lexed } });
 	Parser.preparse(xmlt.lexed, xmlt.modules, xmlt.getOptions());
 	xmlt.parse();
 

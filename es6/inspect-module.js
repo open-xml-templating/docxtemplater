@@ -24,6 +24,13 @@ function getTags(postParsed) {
 			});
 			return tags;
 		}
+		// Stryker disable all : because this is for the table,chart,image, xlsx module
+		if (part.dataBound === false) {
+			if (part.subparsed) {
+				tags = merge(tags, getTags(part.subparsed));
+			}
+			return tags;
+		}
 		tags[part.value] = tags[part.value] || {};
 		// Stryker restore all
 

@@ -1,3 +1,18 @@
+### 3.42.1
+
+Bugfix for inspect module when used together with qrcode/xlsx or table module, in some specific cases, the getTags function would return values correctly, but also return a key named "undefined", like this :
+
+```js
+const tags = iModule.getAllTags();
+console.log(tags); // would return : { name: {}, undefined: {}}
+```
+
+In order to apply the fix, you have to update the following modules (if you use them) :
+
+- qrcode module to 3.4.7
+- table module to 3.19.9
+- xlsx module to 3.14.2
+
 ### 3.42.0
 
 [Internal] Add filePath to each "inspect" call, which fixes a bug with the chart module when used together with the "getTags" feature of the inspect module.
