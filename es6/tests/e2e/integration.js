@@ -310,24 +310,25 @@ describe("Spacing/Linebreaks", function () {
 	});
 
 	it("should work with linebreaks and copy the run style onto new lines in docx", function () {
-		const doc = createDocV4("multi-tags.docx", { linebreaks: true });
-		return doc
-			.renderAsync({
-				test: "The tag1,\nmultiline\nfoobaz",
-				test2: "The tag2,\nmultiline\nfoobar",
-			})
-			.then(function () {
-				shouldBeSame({ doc, expectedName: "expected-two-multiline.docx" });
-			});
+		this.name = "multi-tags.docx";
+		this.options = { linebreaks: true };
+		this.data = {
+			test: "The tag1,\nmultiline\nfoobaz",
+			test2: "The tag2,\nmultiline\nfoobar",
+		};
+		this.async = true;
+		this.expectedName = "expected-two-multiline.docx";
+		return this.renderV4();
 	});
 
 	it("should work with linebreaks and copy the run style onto new lines in pptx", function () {
-		const doc = createDoc("tag-multiline.pptx")
-			.setOptions({ linebreaks: true })
-			.render({
-				description: "The description,\nmultiline",
-			});
-		shouldBeSame({ doc, expectedName: "expected-multiline.pptx" });
+		this.name = "tag-multiline.pptx";
+		this.options = { linebreaks: true };
+		this.data = {
+			description: "The description,\nmultiline",
+		};
+		this.expectedName = "expected-multiline.pptx";
+		return this.render();
 	});
 
 	it("should not fail when using linebreaks and tagvalue not a string", function () {

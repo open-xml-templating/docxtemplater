@@ -3,7 +3,10 @@ const {
 	setExamplesDirectory,
 	setSnapshotFile,
 	setStartFunction,
+	shouldBeSame,
 	start,
+	createDocV4,
+	createDoc,
 } = require("./utils.js");
 const path = require("path");
 if (path.resolve) {
@@ -13,6 +16,40 @@ if (path.resolve) {
 setStartFunction(startTest, require("./__snapshots.js"));
 
 function startTest() {
+	beforeEach(function () {
+		this.async = false;
+		this.name = "";
+		this.options = {};
+		this.expectedName = "";
+		this.data = {};
+		this.renderV4 = function () {
+			const doc = createDocV4(this.name, this.options);
+			if (this.async) {
+				return doc.renderAsync(this.data).then(() => {
+					if (this.expectedName) {
+						shouldBeSame({
+							doc,
+							expectedName: this.expectedName,
+						});
+					}
+					return doc;
+				});
+			}
+			doc.render(this.data);
+			if (this.expectedName) {
+				shouldBeSame({
+					doc,
+					expectedName: this.expectedName,
+				});
+			}
+			return doc;
+		};
+		this.render = function () {
+			const doc = createDoc(this.name, this.options);
+			doc.render(this.data);
+			return doc;
+		};
+	});
 	describe("", function () {
 		require("./e2e/text.js");
 		require("./e2e/base.js");

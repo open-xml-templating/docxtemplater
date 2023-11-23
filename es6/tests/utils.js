@@ -878,6 +878,11 @@ function makePptxV4(content, options = {}) {
 function createDoc(name, options = {}) {
 	const doc = loadDocument(name, documentCache[name].loadedContent);
 	doc.attachModule(new AssertionModule());
+	if (options.modules) {
+		options.modules.forEach(function (module) {
+			doc.attachModule(module);
+		});
+	}
 	doc.setOptions(options);
 	return doc;
 }

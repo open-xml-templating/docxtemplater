@@ -322,14 +322,13 @@ describe("Resolver", function () {
 	});
 
 	it("should work with fix doc pr corruption", function () {
-		const doc = createDocV4("loop-image.docx", {
+		this.name = "loop-image.docx";
+		this.options = {
 			modules: [fixDocPrCorruption],
-		});
-		return doc.renderAsync({ loop: [1, 2, 3, 4] }).then(function () {
-			shouldBeSame({
-				doc,
-				expectedName: "expected-loop-images.docx",
-			});
-		});
+		};
+		this.data = { loop: [1, 2, 3, 4] };
+		this.expectedName = "expected-loop-images.docx";
+		this.async = true;
+		return this.renderV4();
 	});
 });

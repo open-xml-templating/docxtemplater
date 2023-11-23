@@ -36,6 +36,7 @@ describe("Pptx generation", function () {
 
 	it("should work with loop table", function () {
 		const doc = createDocV4("loop-table.pptx");
+
 		return doc
 			.renderAsync({
 				products: [
