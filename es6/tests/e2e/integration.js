@@ -760,7 +760,7 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should throw specific error if calling .render() on document with invalid tags", function () {
-		const doc = createDoc("errors-footer-and-header.docx").setOptions({
+		const doc = createDoc("errors-footer-and-header.docx", {
 			paragraphLoop: true,
 			parser: angularParser,
 		});
@@ -781,7 +781,6 @@ describe("ParagraphLoop", function () {
 			};
 			capture.stop();
 			expectToThrow(() => doc.render(), Errors.XTInternalError, expectedError);
-			/* handle error */
 		}
 		expect(catched).to.equal(true);
 	});
@@ -838,7 +837,7 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should fail properly when having lexed + postparsed errors", function () {
-		const doc = createDoc("multi-errors.docx").setOptions({
+		const doc = createDoc("multi-errors.docx", {
 			paragraphLoop: true,
 			parser: angularParser,
 		});

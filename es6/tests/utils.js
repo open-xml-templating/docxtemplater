@@ -667,6 +667,7 @@ function setStartFunction(sf, snapshots = {}) {
 			return "";
 		}
 		fullTestName = getParentsTitle(this.currentTest) + this.currentTest.title;
+		fullTestName = fullTestName.trim().replace(/\s+/g, " ");
 	});
 	after(function () {
 		if (writeSnapshots) {
