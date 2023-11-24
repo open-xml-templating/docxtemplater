@@ -58,6 +58,9 @@ class InspectModule {
 		this.fullInspected = {};
 		this.filePath = null;
 	}
+	clone() {
+		return new InspectModule();
+	}
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		this.zip = docxtemplater.zip;
@@ -96,15 +99,6 @@ class InspectModule {
 			this.fullInspected[this.filePath] = this.inspect;
 		}
 	}
-	on(eventName) {
-		if (eventName === "attached") {
-			this.attached = false;
-			this.inspect = {};
-			this.fullInspected = {};
-			this.filePath = null;
-		}
-	}
-
 	nullGetter(part, scopeManager, xt) {
 		const inspected = this.fullInspected[xt.filePath];
 		inspected.nullValues = inspected.nullValues || { summary: [], detail: [] };

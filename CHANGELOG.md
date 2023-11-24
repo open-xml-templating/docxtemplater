@@ -1,3 +1,7 @@
+### 3.42.2
+
+Bugfix to add clone method to the assertion module and to the inspect module
+
 ### 3.42.1
 
 Bugfix for inspect module when used together with qrcode/xlsx or table module, in some specific cases, the getTags function would return values correctly, but also return a key named "undefined", like this :

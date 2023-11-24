@@ -60,6 +60,9 @@ class AssertionModule {
 		});
 		return options;
 	}
+	clone() {
+		return new AssertionModule();
+	}
 	preparse(parsed) {
 		if (!isArray(parsed)) {
 			throw new Error("Parsed should be an array");
