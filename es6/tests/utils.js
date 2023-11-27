@@ -902,7 +902,7 @@ function getZip(name) {
 		documentCache[name] === undefined ||
 		documentCache[name].loadedContent === undefined
 	) {
-		throw new Error("the file examples/" + name + " doesn't exist");
+		throw new Error("The file examples/" + name + " doesn't exist");
 	}
 	return new PizZip(documentCache[name].loadedContent);
 }
