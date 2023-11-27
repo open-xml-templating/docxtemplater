@@ -898,6 +898,12 @@ function createDocV4(name, options) {
 }
 
 function getZip(name) {
+	if (
+		documentCache[name] === undefined ||
+		documentCache[name].loadedContent === undefined
+	) {
+		throw new Error("the file examples/" + name + " doesn't exist");
+	}
 	return new PizZip(documentCache[name].loadedContent);
 }
 
