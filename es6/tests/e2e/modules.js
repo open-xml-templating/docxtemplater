@@ -345,7 +345,9 @@ describe("Module errors", function () {
 				// for chrome
 				log.indexOf(".render") !== -1 ||
 				// for firefox
-				log.indexOf("render@") !== -1
+				log.indexOf("render@") !== -1 ||
+				// for bun (https://bun.sh/)
+				log.indexOf("render (") !== -1
 		);
 		const parsedLog = JSON.parse(logs[0]);
 		expect(parsedLog.error.length).to.equal(9);

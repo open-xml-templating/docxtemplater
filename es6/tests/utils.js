@@ -596,10 +596,7 @@ function loadImage(name, content) {
 function loadFile(name, callback) {
 	if (fs.readFileSync) {
 		const path = require("path");
-		const buffer = fs.readFileSync(
-			path.join(examplesDirectory, name),
-			"binary"
-		);
+		const buffer = fs.readFileSync(path.join(examplesDirectory, name));
 		return callback(null, name, buffer);
 	}
 	return PizZipUtils.getBinaryContent(
