@@ -143,7 +143,7 @@ class InspectModule {
 		}, {});
 	}
 	getStructuredTags(file) {
-		file = file || this.fileTypeConfig.textPath(this);
+		file = file || this.fileTypeConfig.textPath(this.docxtemplater);
 		const inspected = this.getInspected(file);
 		return getStructuredTags(inspected);
 	}

@@ -8,7 +8,7 @@ import { DXT } from "./docxtemplater";
 export default class InspectModule implements DXT.Module {
   constructor();
   getAllTags(): Record<string, unknown>;
-  getTags(file: string): Record<string, unknown>;
+  getTags(file?: string): Record<string, unknown>;
   fullInspected: Record<
     string,
     {
@@ -22,7 +22,7 @@ export default class InspectModule implements DXT.Module {
     }
   >;
 
-  getStructuredTags(file: string): DXT.Part[];
+  getStructuredTags(file?: string): DXT.Part[];
   getAllStructuredTags(): DXT.Part[];
   getFileType(): string;
   getTemplatedFiles(): string[];

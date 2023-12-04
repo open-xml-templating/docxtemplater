@@ -103,6 +103,7 @@ describe("Inspect module", function () {
 		const iModule = inspectModule();
 		doc.attachModule(iModule);
 		doc.compile();
+		expect(iModule.getStructuredTags()).to.matchSnapshot();
 		expect(iModule.getTags()).to.be.deep.equal({
 			offre: {
 				nom: {},
@@ -134,11 +135,10 @@ describe("Inspect module", function () {
 		]);
 	});
 
-	it("should get all tags", function () {
-		const doc = createDoc("multi-page.pptx");
+	it("should get all tags (pptx file)", function () {
 		const iModule = inspectModule();
-		doc.attachModule(iModule);
-		doc.compile();
+		createDoc("multi-page.pptx").attachModule(iModule).compile();
+		expect(iModule.getStructuredTags()).to.matchSnapshot();
 		expect(iModule.getFileType()).to.be.deep.equal("pptx");
 		expect(iModule.getAllTags()).to.be.deep.equal({
 			tag: {},

@@ -490,6 +490,68 @@ exports[`Compilation errors should fail when rawtag is not in paragraph`] = {
   }
 }
 
+exports[`Inspect module should get all tags (pptx file)`] = [
+  {
+    "type": "placeholder",
+    "value": "tag",
+    "offset": 0,
+    "endLindex": 36,
+    "lIndex": 36
+  }
+]
+
+exports[`Inspect module should get main tags`] = [
+  {
+    "type": "placeholder",
+    "module": "loop",
+    "inverted": false,
+    "value": "offre",
+    "offset": 29,
+    "endLindex": 332,
+    "lIndex": 188,
+    "raw": "#offre",
+    "sectPrCount": 0,
+    "lastParagrapSectPr": "",
+    "subparsed": [
+      {
+        "type": "placeholder",
+        "value": "nom",
+        "offset": 37,
+        "endLindex": 214,
+        "lIndex": 214
+      },
+      {
+        "type": "placeholder",
+        "value": "prix",
+        "offset": 48,
+        "endLindex": 241,
+        "lIndex": 241
+      },
+      {
+        "type": "placeholder",
+        "value": "titre",
+        "offset": 60,
+        "endLindex": 268,
+        "lIndex": 268
+      }
+    ]
+  },
+  {
+    "type": "placeholder",
+    "value": "nom",
+    "offset": 75,
+    "endLindex": 354,
+    "lIndex": 354
+  },
+  {
+    "type": "placeholder",
+    "value": "prenom",
+    "offset": 80,
+    "endLindex": 378,
+    "lIndex": 378
+  }
+]
+
 exports[`Multi errors should work with loops unopened`] = {
   "_type": "XTTemplateError",
   "name": "TemplateError",
