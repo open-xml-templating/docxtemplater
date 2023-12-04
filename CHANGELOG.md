@@ -1,3 +1,13 @@
+### 3.42.3
+
+Bugfix to avoid following error when runnig `iModule.getStructuredTags()` :
+
+```
+TypeError: Cannot read properties of undefined (reading 'replace')
+```
+
+Now, the tags are correctly returned.
+
 ### 3.42.2
 
 Bugfix to add clone method to the assertion module and to the inspect module
