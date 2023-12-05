@@ -42,12 +42,17 @@ module.exports = class XmlTemplater {
 				throw errors;
 			}
 			return resolve(options).then(({ resolved, errors }) => {
-				errors.forEach((error) => {
+				errors = errors.map((error) => {
+					// If a string is thrown, convert it to a real Error
+					if (!(error instanceof Error)) {
+						error = new Error(error);
+					}
 					// error properties might not be defined if some foreign error
 					// (unhandled error not thrown by docxtemplater willingly) is
 					// thrown.
 					error.properties = error.properties || {};
 					error.properties.file = filePath;
+					return error;
 				});
 				if (errors.length !== 0) {
 					throw errors;

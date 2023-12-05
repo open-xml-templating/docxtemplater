@@ -1,3 +1,9 @@
+### 3.42.4
+
+Avoid issue `Cannot read properties of undefined (reading 'length')` when using `renderAsync`.
+
+Now, the correct error message should be shown.
+
 ### 3.42.3
 
 Bugfix to avoid following error when runnig `iModule.getStructuredTags()` :
