@@ -1,5 +1,6 @@
 require("es6-promise").polyfill();
 const {
+	expect,
 	setExamplesDirectory,
 	setSnapshotFile,
 	setStartFunction,
@@ -17,39 +18,80 @@ setStartFunction(startTest, require("./__snapshots.js"));
 
 function startTest() {
 	beforeEach(function () {
-		this.async = false;
-		this.name = "";
-		this.options = {};
-		this.expectedName = "";
-		this.data = {};
-		this.renderV4 = function () {
-			const doc = createDocV4(this.name, this.options);
-			if (this.async) {
-				return doc.renderAsync(this.data).then(() => {
-					if (this.expectedName) {
+		this.renderV4 = function ({
+			async = false,
+			name = "",
+			options = {},
+			expectedName = "",
+			expectedText = "",
+			data = {},
+		}) {
+			const doc = createDocV4(name, options);
+			if (async) {
+				return doc.renderAsync(data).then(() => {
+					if (expectedText) {
+						expect(doc.getFullText()).to.be.equal(expectedText);
+					}
+					if (expectedName) {
 						shouldBeSame({
 							doc,
-							expectedName: this.expectedName,
+							expectedName,
 						});
 					}
 					return doc;
 				});
 			}
-			doc.render(this.data);
-			if (this.expectedName) {
+			doc.render(data);
+			if (expectedText) {
+				expect(doc.getFullText()).to.be.equal(expectedText);
+			}
+			if (expectedName) {
 				shouldBeSame({
 					doc,
-					expectedName: this.expectedName,
+					expectedName,
 				});
 			}
 			return doc;
 		};
-		this.render = function () {
-			const doc = createDoc(this.name, this.options);
-			doc.render(this.data);
+		this.render = function ({
+			async = false,
+			name = "",
+			options = {},
+			expectedName = "",
+			expectedText = "",
+			data = {},
+		}) {
+			const doc = createDoc(name, options);
+			if (async) {
+				doc.compile();
+				return doc.renderAsync(data).then(() => {
+					if (expectedText) {
+						expect(doc.getFullText()).to.be.equal(expectedText);
+					}
+					if (expectedName) {
+						shouldBeSame({
+							doc,
+							expectedName,
+						});
+					}
+					return doc;
+				});
+			}
+			doc.render(data);
+			if (expectedText) {
+				expect(doc.getFullText()).to.be.equal(expectedText);
+			}
+			if (expectedName) {
+				shouldBeSame({
+					doc,
+					expectedName,
+				});
+			}
+
 			return doc;
 		};
 	});
+
 	describe("", function () {
 		require("./e2e/text.js");
 		require("./e2e/base.js");

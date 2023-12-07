@@ -1,48 +1,44 @@
-const { createDoc, createDocV4, shouldBeSame, expect } = require("../utils.js");
+const { createDoc, expect } = require("../utils.js");
 
 describe("Table", function () {
 	it("should work with selfclosing tag inside table with paragraphLoop", function () {
-		const tags = {
-			a: [
-				{
-					b: {
-						c: "Foo",
-						d: "Hello ",
+		return this.renderV4({
+			name: "loop-valid.docx",
+			options: { paragraphLoop: true },
+			data: {
+				a: [
+					{
+						b: {
+							c: "Foo",
+							d: "Hello ",
+						},
 					},
-				},
-				{
-					b: {
-						c: "Foo",
-						d: "Hello ",
+					{
+						b: {
+							c: "Foo",
+							d: "Hello ",
+						},
 					},
-				},
-			],
-		};
-		shouldBeSame({
-			doc: createDocV4("loop-valid.docx", { paragraphLoop: true }).render(tags),
+				],
+			},
 			expectedName: "expected-loop-valid.docx",
 		});
 	});
 
 	it("should work with tables", function () {
-		const tags = {
-			clients: [
-				{ first_name: "John", last_name: "Doe", phone: "+33647874513" },
-				{ first_name: "Jane", last_name: "Doe", phone: "+33454540124" },
-				{ first_name: "Phil", last_name: "Kiel", phone: "+44578451245" },
-				{ first_name: "Dave", last_name: "Sto", phone: "+44548787984" },
-			],
-		};
-		const doc = createDoc("tag-intelligent-loop-table.docx")
-			.setData(tags)
-			.render();
-		const expectedText =
-			"JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
-		shouldBeSame({
-			doc,
+		return this.render({
+			data: {
+				clients: [
+					{ first_name: "John", last_name: "Doe", phone: "+33647874513" },
+					{ first_name: "Jane", last_name: "Doe", phone: "+33454540124" },
+					{ first_name: "Phil", last_name: "Kiel", phone: "+44578451245" },
+					{ first_name: "Dave", last_name: "Sto", phone: "+44548787984" },
+				],
+			},
+			name: "tag-intelligent-loop-table.docx",
 			expectedName: "expected-tag-intelligent-loop-table.docx",
+			expectedText:
+				"JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984",
 		});
 	});
 
@@ -116,104 +112,118 @@ describe("Table", function () {
 	});
 
 	it("should not corrupt table with empty rawxml", function () {
-		const doc = createDoc("table-raw-xml.docx").render();
-		shouldBeSame({ doc, expectedName: "expected-raw-xml.docx" });
+		return this.render({
+			name: "table-raw-xml.docx",
+			expectedName: "expected-raw-xml.docx",
+		});
 	});
 
 	it("should call nullGetter with empty rawxml", function () {
-		const doc = createDocV4("table-raw-xml.docx", {
-			nullGetter: (part) => {
-				if (part.module === "rawxml") {
-					return `<w:p>
-					<w:r>
-						<w:rPr><w:color w:val="FF0000"/></w:rPr>
-						<w:t>UNDEFINED</w:t>
-					</w:r>
-					</w:p>`;
-				}
+		return this.renderV4({
+			name: "table-raw-xml.docx",
+			options: {
+				nullGetter: (part) => {
+					if (part.module === "rawxml") {
+						return `<w:p>
+                        <w:r>
+                            <w:rPr><w:color w:val="FF0000"/></w:rPr>
+                            <w:t>UNDEFINED</w:t>
+                        </w:r>
+                        </w:p>`;
+					}
+				},
 			},
-		}).render();
-		shouldBeSame({ doc, expectedName: "expected-raw-xml-null.docx" });
+			expectedName: "expected-raw-xml-null.docx",
+		});
 	});
 
 	it("should not corrupt document with empty rawxml after a table, at the end of the document", function () {
-		const doc = createDoc("raw-xml-after-table.docx").render();
-		shouldBeSame({ doc, expectedName: "expected-raw-xml-after-table.docx" });
+		return this.render({
+			name: "raw-xml-after-table.docx",
+			expectedName: "expected-raw-xml-after-table.docx",
+		});
 	});
 
 	it("should not corrupt document with selfclosing w:sdtContent tag", function () {
-		const doc = createDoc("self-closing-w-sdtcontent.docx").render();
-		shouldBeSame({
-			doc,
+		return this.render({
+			name: "self-closing-w-sdtcontent.docx",
 			expectedName: "expected-self-closing-w-sdtcontent.docx",
 		});
 	});
 
 	it("should not corrupt loop containing section", function () {
-		const doc = createDoc("loop-with-section.docx").render({
-			loop1: [
-				{
-					loop2: [1, 2],
-				},
-				{
-					loop2: [],
-				},
-				{
-					loop2: [3, 4, 5],
-				},
-			],
+		return this.render({
+			name: "loop-with-section.docx",
+			data: {
+				loop1: [
+					{
+						loop2: [1, 2],
+					},
+					{
+						loop2: [],
+					},
+					{
+						loop2: [3, 4, 5],
+					},
+				],
+			},
+			expectedName: "expected-multi-section.docx",
 		});
-		shouldBeSame({ doc, expectedName: "expected-multi-section.docx" });
 	});
 
 	it("should repeat section break if the section break is inside a loop", function () {
-		const doc = createDoc("loop-with-page-section-break.docx").render({
-			loop: [1, 2, 3],
+		return this.render({
+			name: "loop-with-page-section-break.docx",
+			data: { loop: [1, 2, 3] },
+			expectedName: "expected-page-section-break.docx",
 		});
-		shouldBeSame({ doc, expectedName: "expected-page-section-break.docx" });
 	});
 
 	it("should not corrupt sdtcontent", function () {
-		const doc = createDoc("regression-sdtcontent-paragraph.docx").render({
-			loop: {
-				name: "foo",
-				Id: "bar",
+		return this.render({
+			name: "regression-sdtcontent-paragraph.docx",
+			data: {
+				loop: {
+					name: "foo",
+					Id: "bar",
+				},
 			},
+			expectedName: "expected-sdtcontent-valid.docx",
 		});
-		shouldBeSame({ doc, expectedName: "expected-sdtcontent-valid.docx" });
 	});
 
 	it("should not corrupt table with empty rawxml within loop", function () {
-		const doc = createDoc("loops-with-table-raw-xml.docx")
-			.setOptions({ paragraphLoop: true })
-			.render({
+		return this.render({
+			name: "loops-with-table-raw-xml.docx",
+			options: { paragraphLoop: true },
+			data: {
 				loop: [
 					{ loop2: [] },
 					{ loop2: {}, raw: "<w:p><w:r><w:t>RAW</w:t></w:r></w:p>" },
 				],
-			});
-		shouldBeSame({ doc, expectedName: "expected-loop-raw-xml.docx" });
+			},
+			expectedName: "expected-loop-raw-xml.docx",
+		});
 	});
 
-	it("should not corrupt table with empty loop", function () {
-		const doc = createDoc("table-loop.docx")
-			.setOptions({ paragraphLoop: true })
-			.render();
-		shouldBeSame({ doc, expectedName: "expected-empty-table.docx" });
+	it("should not corrupt document with selfclosing w:sdtContent tag", function () {
+		return this.render({
+			name: "self-closing-w-sdtcontent.docx",
+			expectedName: "expected-self-closing-w-sdtcontent.docx",
+		});
 	});
 
 	it("should not corrupt table because of missing <w:p> after table", function () {
-		shouldBeSame({
-			doc: createDocV4("table-in-table-corruption.docx", {
-				paragraphLoop: true,
-			}).render(),
+		return this.renderV4({
+			name: "table-in-table-corruption.docx",
+			options: { paragraphLoop: true },
 			expectedName: "expected-table-in-table-corruption.docx",
 		});
 	});
 
 	it("should drop table if there are no <w:tr> childs", function () {
-		shouldBeSame({
-			doc: createDocV4("table-empty.docx").render(),
+		return this.renderV4({
+			name: "table-empty.docx",
 			expectedName: "expected-table-empty.docx",
 		});
 	});

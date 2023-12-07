@@ -502,13 +502,18 @@ describe("Module Matcher API", function () {
 				},
 			};
 		}
-		this.name = "tag-example.docx";
-		this.options = {
-			modules: [module1()],
-		};
-		this.data = { first_name: "John" };
-		expect(this.renderV4().getFullText()).to.equal("l28!! John");
+		expect(
+			this.renderV4({
+				name: "tag-example.docx",
+				options: {
+					modules: [module1()],
+				},
+				data: { first_name: "John" },
+				expectedText: "l28!! John",
+			})
+		);
 	});
+
 	it("should automatically choose module with longest value", function () {
 		function module1() {
 			return {
@@ -730,13 +735,15 @@ describe("Module call order", function () {
 				calls.push("on");
 			},
 		};
-		this.name = "loop-image-footer.docx";
-		this.options = {
-			modules: [mod],
-		};
-		this.data = { loop: [1, 2, 3, 4] };
+
 		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
-		this.render();
+		this.render({
+			name: "loop-image-footer.docx",
+			options: {
+				modules: [mod],
+			},
+			data: { loop: [1, 2, 3, 4] },
+		});
 		expect(uniq(calls)).to.deep.equal(expectedCallOrder);
 	});
 });
