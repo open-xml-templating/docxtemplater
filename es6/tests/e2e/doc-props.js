@@ -28,17 +28,18 @@ describe("Docx document properties", function () {
 	});
 
 	it("should change custom values inside '<vt:lpwstr>' in file docProps/custom.xml", function () {
-		const doc = createDoc("tag-docprops-in-doc.docx");
-		doc.render({
-			first_name: "Hipp",
-			email: "john@acme.com",
-			last_name: "Edgar",
-			phone: "0652455478",
-			description: "New Website",
+		return this.render({
+			name: "tag-docprops-in-doc.docx",
+			data: {
+				first_name: "Hipp",
+				email: "john@acme.com",
+				last_name: "Edgar",
+				phone: "0652455478",
+				description: "New Website",
+			},
+			expectedName: "expected-tag-docprops-in-doc.docx",
 		});
-		shouldBeSame({ doc, expectedName: "expected-tag-docprops-in-doc.docx" });
 	});
-
 	it("should be possible to ignore files in docProps/core.xml", function () {
 		const avoidRenderingCoreXMLModule = {
 			name: "avoidRenderingCoreXMLModule",

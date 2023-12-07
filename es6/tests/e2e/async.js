@@ -1,9 +1,7 @@
 const { cloneDeep } = require("lodash");
 
 const {
-	createDoc,
 	createDocV4,
-	shouldBeSame,
 	expect,
 	resolveSoon,
 	cleanRecursive,
@@ -12,51 +10,41 @@ const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
 describe("Resolver", function () {
 	it("should render the document correctly in async mode", function () {
-		const doc = createDoc("office365.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.compile();
-		return doc
-			.resolveData({
+		return this.render({
+			async: true,
+			name: "office365.docx",
+			data: {
 				test: resolveSoon("Value"),
 				test2: "Value2",
-			})
-			.then(function () {
-				doc.render();
-				expect(doc.getFullText()).to.be.equal("Value Value2");
-				shouldBeSame({ doc, expectedName: "expected-office365.docx" });
-			});
+			},
+			options: {
+				paragraphLoop: true,
+			},
+			expectedName: "expected-office365.docx",
+			expectedText: "Value Value2",
+		});
 	});
 
 	it("should work at parent level", function () {
-		const doc = createDoc("office365.docx");
-		doc.setOptions({
-			paragraphLoop: true,
+		return this.render({
+			name: "office365.docx",
+			data: resolveSoon({
+				test: resolveSoon("Value"),
+				test2: "Value2",
+			}),
+			options: {
+				paragraphLoop: true,
+			},
+			expectedName: "expected-office365.docx",
+			async: true,
+			expectedText: "Value Value2",
 		});
-		doc.compile();
-		return doc
-			.resolveData(
-				resolveSoon({
-					test: resolveSoon("Value"),
-					test2: "Value2",
-				})
-			)
-			.then(function () {
-				doc.render();
-				expect(doc.getFullText()).to.be.equal("Value Value2");
-				shouldBeSame({ doc, expectedName: "expected-office365.docx" });
-			});
 	});
 
 	it("should resolve loops", function () {
-		const doc = createDoc("multi-loop.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-		});
-		doc.compile();
-		return doc
-			.resolveData({
+		return this.render({
+			name: "multi-loop.docx",
+			data: {
 				companies: resolveSoon([
 					{
 						name: "Acme",
@@ -88,11 +76,13 @@ describe("Resolver", function () {
 					),
 				]),
 				test2: "Value2",
-			})
-			.then(function () {
-				doc.render();
-				shouldBeSame({ doc, expectedName: "expected-multi-loop.docx" });
-			});
+			},
+			options: {
+				paragraphLoop: true,
+			},
+			expectedName: "expected-multi-loop.docx",
+			async: true,
+		});
 	});
 
 	it("should resolve with simple table", function () {
@@ -210,31 +200,26 @@ describe("Resolver", function () {
 	const dataNestedLoops = { a: [{ d: "Hello world" }] };
 
 	it("should not regress with nested loops sync", function () {
-		const doc = createDoc("regression-complex-loops.docx");
-		doc.compile();
-		doc.render(dataNestedLoops);
-		shouldBeSame({
-			doc,
+		return this.render({
+			name: "regression-complex-loops.docx",
+			data: dataNestedLoops,
 			expectedName: "expected-regression-complex-loops.docx",
 		});
 	});
 
 	it("should not regress when having [Content_Types.xml] contain Default instead of Override", function () {
-		const doc = createDoc("with-default-contenttype.docx");
-		doc.render();
-		shouldBeSame({
-			doc,
+		return this.render({
+			name: "with-default-contenttype.docx",
 			expectedName: "expected-with-default-contenttype.docx",
 		});
 	});
 
 	it("should not regress with nested loops async", function () {
-		const doc = createDocV4("regression-complex-loops.docx");
-		return doc.renderAsync(dataNestedLoops).then(function () {
-			shouldBeSame({
-				doc,
-				expectedName: "expected-regression-complex-loops.docx",
-			});
+		return this.renderV4({
+			name: "regression-complex-loops.docx",
+			data: dataNestedLoops,
+			expectedName: "expected-regression-complex-loops.docx",
+			async: true,
 		});
 	});
 
@@ -252,30 +237,25 @@ describe("Resolver", function () {
 	};
 
 	it("should not regress with multiple loops sync", function () {
-		const doc = createDocV4("regression-loops-resolve.docx");
-		doc.render(regressData);
-		shouldBeSame({
-			doc,
+		return this.renderV4({
+			name: "regression-loops-resolve.docx",
+			data: regressData,
 			expectedName: "expected-regression-loops-resolve.docx",
 		});
 	});
 
 	it("should not regress with multiple loops async", function () {
-		const doc = createDocV4("regression-loops-resolve.docx");
-		return doc.renderAsync(regressData).then(function () {
-			shouldBeSame({
-				doc,
-				expectedName: "expected-regression-loops-resolve.docx",
-			});
+		return this.renderV4({
+			name: "regression-loops-resolve.docx",
+			data: regressData,
+			expectedName: "expected-regression-loops-resolve.docx",
 		});
 	});
 
 	it("should not regress with long file (hit maxCompact value of 65536)", function () {
-		const doc = createDocV4("regression-loops-resolve.docx", {
-			paragraphLoop: true,
-		});
-		return doc
-			.renderAsync({
+		return this.renderV4({
+			name: "regression-loops-resolve.docx",
+			data: {
 				amount_wheels_car_1: "4",
 				amount_wheels_motorcycle_1: "2",
 				amount_wheels_car_2: "6",
@@ -298,37 +278,33 @@ describe("Resolver", function () {
 						motorcycle: "5",
 					},
 				],
-			})
-			.then(function () {
-				shouldBeSame({
-					doc,
-					expectedName: "expected-regression-loops-resolve-long.docx",
-				});
-			});
+			},
+			options: {
+				paragraphLoop: true,
+			},
+			expectedName: "expected-regression-loops-resolve-long.docx",
+			async: true,
+		});
 	});
 
 	it("should deduplicate a16:rowId tag", function () {
-		const doc = createDocV4("a16-row-id.pptx");
-		return doc
-			.renderAsync({
-				loop: [1, 2, 3, 4],
-			})
-			.then(function () {
-				shouldBeSame({
-					doc,
-					expectedName: "expected-a16-row-id.pptx",
-				});
-			});
+		return this.renderV4({
+			name: "a16-row-id.pptx",
+			data: { loop: [1, 2, 3, 4] },
+			expectedName: "expected-a16-row-id.pptx",
+			async: true,
+		});
 	});
 
 	it("should work with fix doc pr corruption", function () {
-		this.name = "loop-image.docx";
-		this.options = {
-			modules: [fixDocPrCorruption],
-		};
-		this.data = { loop: [1, 2, 3, 4] };
-		this.expectedName = "expected-loop-images.docx";
-		this.async = true;
-		return this.renderV4();
+		return this.renderV4({
+			name: "loop-image.docx",
+			options: {
+				modules: [fixDocPrCorruption],
+			},
+			data: { loop: [1, 2, 3, 4] },
+			expectedName: "expected-loop-images.docx",
+			async: true,
+		});
 	});
 });

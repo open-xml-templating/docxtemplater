@@ -14,7 +14,6 @@ const {
 	getContent,
 	getLength,
 	getZip,
-	shouldBeSame,
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 
@@ -1016,15 +1015,14 @@ describe("Raw Xml Insertion", function () {
 
 describe("Multi line", function () {
 	it("should work when tag spans multiple lines (paragraphs)", function () {
-		const doc = createDoc("tag-spanning-multiline.docx");
-		doc.render({
-			first_name: "Hipp",
-			last_name: "Edgar",
-			phone: "0652455478",
-			description: "New Website",
-		});
-		shouldBeSame({
-			doc,
+		return this.render({
+			name: "tag-spanning-multiline.docx",
+			data: {
+				first_name: "Hipp",
+				last_name: "Edgar",
+				phone: "0652455478",
+				description: "New Website",
+			},
 			expectedName: "expected-tag-spanning-multiline.docx",
 		});
 	});

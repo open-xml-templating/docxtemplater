@@ -21,17 +21,18 @@ describe("Pptx generation", function () {
 		doc.render({ name: "Edgar" });
 		expect(doc.getFullText()).to.be.equal("Hello Edgar");
 	});
+
 	it("should work with table pptx", function () {
-		const doc = createDoc("table-example.pptx");
-		doc
-			.setData({
+		return this.render({
+			name: "table-example.pptx",
+			data: {
 				users: [
 					{ msg: "hello", name: "mary" },
 					{ msg: "hello", name: "john" },
 				],
-			})
-			.render();
-		shouldBeSame({ doc, expectedName: "expected-table-example.pptx" });
+			},
+			expectedName: "expected-table-example.pptx",
+		});
 	});
 
 	it("should work with loop table", function () {
@@ -71,10 +72,12 @@ describe("Pptx generation", function () {
 	});
 
 	it("should work with loop pptx", function () {
-		const doc = createDoc("loop-example.pptx");
-		doc.setData({ users: [{ name: "Doe" }, { name: "John" }] }).render();
-		expect(doc.getFullText()).to.be.equal(" Doe  John ");
-		shouldBeSame({ doc, expectedName: "expected-loop-example.pptx" });
+		return this.render({
+			name: "loop-example.pptx",
+			data: { users: [{ name: "Doe" }, { name: "John" }] },
+			expectedName: "expected-loop-example.pptx",
+			expectedText: " Doe  John ",
+		});
 	});
 
 	it("should work with simple raw pptx", function () {
