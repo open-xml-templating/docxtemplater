@@ -67,11 +67,11 @@ function runTest(fixture, async = false) {
 			? makePptxV4(fixture.content, {
 					...fixture.options,
 					modules,
-			  })
+				})
 			: makeDocxV4(fixture.content, {
 					...fixture.options,
 					modules,
-			  });
+				});
 		doc.setData(fixture.scope);
 		capture.stop();
 	} catch (error) {

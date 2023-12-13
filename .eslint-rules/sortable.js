@@ -245,8 +245,8 @@ const moveProperty = (thisNode, toNode, fixer, src) => {
 		const b = prevComments.length
 			? prevComments[prevComments.length - 1].range[1]
 			: prev
-			  ? prev.range[1]
-			  : commentsBefore[0].range[0];
+				? prev.range[1]
+				: commentsBefore[0].range[0];
 		const e = commentsBefore[commentsBefore.length - 1].range[1];
 		fixes.push(fixer.replaceTextRange([b, e], ""));
 		const toPrev = src.getTokenBefore(toNode, { includeComments: true });

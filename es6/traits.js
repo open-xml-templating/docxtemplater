@@ -178,8 +178,8 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 					return isTagStart(contains, p)
 						? "start"
 						: isTagEnd(contains, p)
-						  ? "end"
-						  : null;
+							? "end"
+							: null;
 				});
 
 				const firstChunk = first(chunks);
