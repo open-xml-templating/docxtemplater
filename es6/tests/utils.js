@@ -132,6 +132,7 @@ function getText(file) {
 function isBinaryFile(file1, file2) {
 	return (
 		file1.name.indexOf(".xml") === -1 &&
+		file1.name.indexOf(".vml") === -1 &&
 		file1.name.indexOf(".rels") === -1 &&
 		(file1.options.binary || file2.options.binary)
 	);
