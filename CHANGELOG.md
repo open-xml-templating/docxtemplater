@@ -1,3 +1,7 @@
+### 3.42.6
+
+Bugfix of internal API change, which was published in v3.42.5
+
 ### 3.42.5
 
 Bugfix for TxtTemplating :

@@ -399,7 +399,7 @@ function decodeContentParts(xmlparsed, fileType) {
 
 module.exports = {
 	parseDelimiters,
-	parse({ xmllexed, delimiters, syntax, fileType }) {
+	parse(xmllexed, delimiters, syntax, fileType) {
 		decodeContentParts(xmllexed, fileType);
 		const { parsed: delimiterParsed, errors } = parseDelimiters(
 			getContentParts(xmllexed),

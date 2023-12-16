@@ -56,7 +56,12 @@ function TxtTemplater(text, options = {}) {
 		},
 	];
 	xmlt.setModules({ inspect: { filePath, xmllexed: xmlt.xmllexed } });
-	const { lexed, errors: lexerErrors } = Lexer.parse(xmlt);
+	const { lexed, errors: lexerErrors } = Lexer.parse(
+		xmlt.xmllexed,
+		xmlt.delimiters,
+		xmlt.syntax,
+		xmlt.fileType
+	);
 	xmlt.allErrors = xmlt.allErrors.concat(lexerErrors);
 	xmlt.lexed = lexed;
 	xmlt.setModules({ inspect: { filePath, lexed: xmlt.lexed } });
