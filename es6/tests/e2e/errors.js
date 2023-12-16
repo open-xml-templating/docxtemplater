@@ -63,7 +63,7 @@ describe("Compilation errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -82,7 +82,8 @@ describe("Compilation errors", function () {
 				offset: 0,
 			},
 		};
-		const capture = expectToThrow(
+		const capture = captureLogs();
+		expectToThrow(
 			() =>
 				makeDocxV4(content, {
 					errorLogging: false,
@@ -90,6 +91,7 @@ describe("Compilation errors", function () {
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
+		capture.stop();
 		const logs = capture.logs();
 		expect(logs.length).to.equal(0);
 	});
@@ -108,7 +110,7 @@ describe("Compilation errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -128,7 +130,7 @@ describe("Compilation errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -147,7 +149,7 @@ describe("Compilation errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -166,7 +168,7 @@ describe("Compilation errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -185,7 +187,7 @@ describe("Compilation errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -194,18 +196,18 @@ describe("Compilation errors", function () {
 	it("should fail early when a loop closes the wrong loop", function () {
 		const content =
 			"<w:t>{#loop1}{#loop2}{/loop3}{/loop3}{/loop2}{/loop1}</w:t>";
-		expectToThrowSnapshot(() => makeDocxV4(content));
+		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
 	});
 
 	it("should fail when rawtag is not in paragraph", function () {
 		const content = "<w:t>{@myrawtag}</w:t>";
-		expectToThrowSnapshot(() => makeDocxV4(content));
+		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
 	});
 
 	it("should fail when rawtag is in table without paragraph", function () {
 		const content = "<w:tbl><w:t>{@myrawtag}</w:t></w:p></w:tbl>";
 
-		expectToThrowSnapshot(() => makeDocxV4(content));
+		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
 	});
 
 	it("should fail when rawtag is not only text in paragraph", function () {
@@ -222,7 +224,7 @@ describe("Compilation errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -231,7 +233,7 @@ describe("Compilation errors", function () {
 	it("should count 3 errors when having rawxml and two other errors", function () {
 		const content = "<w:p><w:r><w:t>foo} {@bang} bar}</w:t></w:r></w:p>";
 
-		expectToThrowSnapshot(() => makeDocxV4(content));
+		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
 	});
 
 	it("should fail when customparser fails to compile", function () {
@@ -253,6 +255,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
@@ -294,6 +297,7 @@ describe("Runtime errors", function () {
 			() =>
 				makeDocxV4(content, {
 					parser: errorParser,
+					errorLogging: false,
 				}).render(),
 			Errors.XTTemplateError,
 			expectedError
@@ -380,6 +384,7 @@ describe("Runtime errors", function () {
 
 		const doc = makeDocxV4(content, {
 			parser: errorParser,
+			errorLogging: false,
 		});
 		expectToThrow(() => doc.render(), Errors.XTTemplateError, expectedError);
 	});
@@ -461,7 +466,7 @@ describe("Multi errors", function () {
 		};
 
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -479,7 +484,7 @@ describe("Multi errors", function () {
 			.split("\n")
 			.join("!");
 
-		expectToThrowSnapshot(() => makeDocxV4(content));
+		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
 	});
 
 	it("should work with wrongly nested loops", function () {
@@ -517,7 +522,7 @@ describe("Multi errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -559,7 +564,7 @@ describe("Multi errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -574,7 +579,7 @@ describe("Multi errors", function () {
 		</w:t>
 		`;
 
-		expectToThrowSnapshot(() => makeDocxV4(content));
+		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
 	});
 
 	it("should fail when having multiple rawtags without a surrounding paragraph", function () {
@@ -616,7 +621,7 @@ describe("Multi errors", function () {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -664,6 +669,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -711,6 +717,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -755,6 +762,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -796,6 +804,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -854,6 +863,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -909,6 +919,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -961,6 +972,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -1005,6 +1017,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			() =>
 				makeDocxV4(content, {
 					parser: angularParser,
+					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -1047,7 +1060,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 
 		expectToThrow(
-			() => makeDocxV4(content),
+			() => makeDocxV4(content, { errorLogging: false }),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -1091,7 +1104,10 @@ describe("Rendering error", function () {
 		};
 		expectToThrow(
 			() => {
-				makeDocxV4(content, { parser: angularParser }).render({
+				makeDocxV4(content, {
+					parser: angularParser,
+					errorLogging: false,
+				}).render({
 					user: String.fromCharCode(28),
 				});
 			},
@@ -1119,7 +1135,9 @@ describe("Async errors", function () {
 				},
 			},
 		};
-		const doc = makeDocxV4(content);
+		const doc = makeDocxV4(content, {
+			errorLogging: false,
+		});
 		function create() {
 			return doc.renderAsync({ user: rejectSoon(new Error("Foobar")) });
 		}
@@ -1188,6 +1206,7 @@ describe("Async errors", function () {
 		}
 		const doc = makeDocxV4(content, {
 			parser: errorParser,
+			errorLogging: false,
 		});
 		return expectToThrowAsync(
 			() => doc.resolveData({}),
@@ -1269,6 +1288,7 @@ describe("Async errors", function () {
 		};
 		const doc = makeDocxV4(content, {
 			parser: errorParser,
+			errorLogging: false,
 		});
 		function create() {
 			return doc.resolveData().then(function () {
@@ -1328,6 +1348,7 @@ describe("Async errors", function () {
 		};
 		const doc = makeDocxV4(content, {
 			parser: errorParser,
+			errorLogging: false,
 		});
 		return expectToThrowAsync(
 			() => {

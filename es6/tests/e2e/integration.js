@@ -857,6 +857,7 @@ describe("ParagraphLoop", function () {
 		const doc = createDoc("errors-footer-and-header.docx");
 		doc.setOptions({
 			paragraphLoop: true,
+			errorLogging: false,
 			parser: angularParser,
 		});
 		const expectedError = {
@@ -907,6 +908,7 @@ describe("ParagraphLoop", function () {
 	it("should fail properly when having lexed + postparsed errors", function () {
 		const doc = createDoc("multi-errors.docx", {
 			paragraphLoop: true,
+			errorLogging: false,
 			parser: angularParser,
 		});
 		const expectedError = {
@@ -966,7 +968,7 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should fail when placing paragraph loop inside normal loop", function () {
-		const doc = createDoc("paragraph-loop-error.docx");
+		const doc = createDoc("paragraph-loop-error.docx", { errorLogging: false });
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",

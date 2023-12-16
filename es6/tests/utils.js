@@ -398,10 +398,8 @@ function jsonifyError(e) {
 }
 
 function errorVerifier(e, type, expectedError) {
-	e = cloneDeep(e);
-	expectedError = cloneDeep(expectedError);
-	expect(e, "No error has been thrown").not.to.be.equal(null);
 	const toShowOnFail = e.stack;
+	expect(e, "No error has been thrown").not.to.be.equal(null);
 	expect(e, toShowOnFail).to.be.instanceOf(
 		Error,
 		"error is not a Javascript error"
@@ -410,6 +408,8 @@ function errorVerifier(e, type, expectedError) {
 		type,
 		"error doesn't have the correct type"
 	);
+	e = cloneDeep(e);
+	expectedError = cloneDeep(expectedError);
 	expect(e, toShowOnFail).to.be.an("object");
 	expect(e, toShowOnFail).to.have.property("properties");
 	expect(e.properties, toShowOnFail).to.be.an("object");
@@ -450,13 +450,11 @@ function errorVerifier(e, type, expectedError) {
 
 function expectToThrow(fn, type, expectedError) {
 	let err = null;
-	const capture = captureLogs();
 	try {
 		fn();
 	} catch (e) {
 		err = e;
 	}
-	capture.stop();
 	if (!type) {
 		expect(err).to.satisfy(function (err) {
 			return !!err;
@@ -464,21 +462,17 @@ function expectToThrow(fn, type, expectedError) {
 		return;
 	}
 	errorVerifier(err, type, expectedError);
-	return capture;
 }
 
 function expectToThrowAsync(fn, type, expectedError) {
-	const capture = captureLogs();
 	return Promise.resolve(null)
 		.then(function () {
 			const r = fn();
 			return r.then(function () {
-				capture.stop();
 				return null;
 			});
 		})
 		.catch(function (error) {
-			capture.stop();
 			return error;
 		})
 		.then(function (err) {
@@ -489,40 +483,32 @@ function expectToThrowAsync(fn, type, expectedError) {
 				return;
 			}
 			errorVerifier(err, type, expectedError);
-			return capture;
 		});
 }
 
 function expectToThrowSnapshot(fn, update) {
 	let err = null;
-	const capture = captureLogs();
 	try {
 		fn();
 	} catch (e) {
 		err = e;
 	}
-	capture.stop();
 	expect(errToObject(err)).to.matchSnapshot(update);
-	return capture;
 }
 
 function expectToThrowAsyncSnapshot(fn, update) {
-	const capture = captureLogs();
 	return Promise.resolve(null)
 		.then(function () {
 			const r = fn();
 			return r.then(function () {
-				capture.stop();
 				return null;
 			});
 		})
 		.catch(function (error) {
-			capture.stop();
 			return error;
 		})
 		.then(function (err) {
 			expect(errToObject(err)).to.matchSnapshot(update);
-			return capture;
 		});
 }
 
