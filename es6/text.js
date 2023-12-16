@@ -5,6 +5,8 @@ const createScope = require("./scope-manager.js");
 const utf8decode = require("./uintarray-to-string.js");
 const { defaults } = DocUtils;
 
+const { throwMultiError } = require("./errors.js");
+
 const renderModule = require("./modules/render.js");
 const loopModule = require("./modules/loop.js");
 const expandPairTrait = require("./modules/expand-pair-trait.js");
@@ -14,6 +16,7 @@ const XmlTemplater = require("./xml-templater.js");
 function TxtTemplater(text, options = {}) {
 	const filePath = "text";
 	const xmlt = new XmlTemplater(text, { modules: [] });
+	xmlt.fileType = "text";
 	xmlt.fileTypeConfig = options.fileTypeConfig = {
 		droppedTagsInsidePlaceholder: [],
 		expandTags: [],
@@ -28,6 +31,7 @@ function TxtTemplater(text, options = {}) {
 	xmlt.modules.forEach((module) => {
 		module.optionsTransformer(options, {
 			fileTypeConfig: xmlt.fileTypeConfig,
+			parser: xmlt.parser,
 			options: xmlt,
 		});
 	});
@@ -52,16 +56,15 @@ function TxtTemplater(text, options = {}) {
 		},
 	];
 	xmlt.setModules({ inspect: { filePath, xmllexed: xmlt.xmllexed } });
-	const { lexed, errors: lexerErrors } = Lexer.parse(
-		xmlt.xmllexed,
-		xmlt.delimiters,
-		xmlt.syntax
-	);
+	const { lexed, errors: lexerErrors } = Lexer.parse(xmlt);
 	xmlt.allErrors = xmlt.allErrors.concat(lexerErrors);
 	xmlt.lexed = lexed;
 	xmlt.setModules({ inspect: { filePath, lexed: xmlt.lexed } });
 	Parser.preparse(xmlt.lexed, xmlt.modules, xmlt.getOptions());
 	xmlt.parse();
+	if (xmlt.allErrors.length > 0) {
+		throwMultiError(xmlt.allErrors);
+	}
 
 	this.render = function (tags) {
 		xmlt.scopeManager = createScope({

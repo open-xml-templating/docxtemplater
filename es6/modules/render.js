@@ -57,7 +57,10 @@ class Render {
 		});
 		return { postparsed, errors };
 	}
-	render(part, { contentType, scopeManager, linebreaks, nullGetter }) {
+	render(
+		part,
+		{ contentType, scopeManager, linebreaks, nullGetter, fileType }
+	) {
 		if (
 			linebreaks &&
 			[
@@ -95,6 +98,9 @@ class Render {
 					}),
 				],
 			};
+		}
+		if (fileType === "text") {
+			return { value };
 		}
 		return {
 			value:

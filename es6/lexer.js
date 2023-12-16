@@ -384,14 +384,14 @@ function getContentParts(xmlparsed) {
 	return xmlparsed.filter(isInsideContent);
 }
 
-function decodeContentParts(xmlparsed) {
+function decodeContentParts(xmlparsed, fileType) {
 	let inTextTag = false;
 	xmlparsed.forEach(function (part) {
 		inTextTag = updateInTextTag(part, inTextTag);
 		if (part.type === "content") {
 			part.position = inTextTag ? "insidetag" : "outsidetag";
 		}
-		if (isInsideContent(part)) {
+		if (fileType !== "text" && isInsideContent(part)) {
 			part.value = part.value.replace(/>/g, "&gt;");
 		}
 	});
@@ -399,18 +399,18 @@ function decodeContentParts(xmlparsed) {
 
 module.exports = {
 	parseDelimiters,
-	parse(xmlparsed, delimiters, syntaxOptions) {
-		decodeContentParts(xmlparsed);
+	parse({ xmllexed, delimiters, syntax, fileType }) {
+		decodeContentParts(xmllexed, fileType);
 		const { parsed: delimiterParsed, errors } = parseDelimiters(
-			getContentParts(xmlparsed),
+			getContentParts(xmllexed),
 			delimiters,
-			syntaxOptions
+			syntax
 		);
 
 		const lexed = [];
 		let index = 0;
 		let lIndex = 0;
-		xmlparsed.forEach(function (part) {
+		xmllexed.forEach(function (part) {
 			if (isInsideContent(part)) {
 				Array.prototype.push.apply(
 					lexed,

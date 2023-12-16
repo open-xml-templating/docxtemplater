@@ -1,3 +1,33 @@
+### 3.42.5
+
+Bugfix for TxtTemplating :
+
+```js
+const TxtTemplater = require("docxtemplater/text.js");
+```
+
+The following template :
+
+```
+<p>Foobar</p>
+```
+
+Would be rendered as :
+
+```
+<p&gt;Foobar</p&gt;
+```
+
+Also, errors such as unclosed loops, like in :
+
+```
+{#users}Foo
+```
+
+would produce an internal stacktrace.
+
+Now, a MultiError is thrown which contains the list of all errors inside `error.properties.errors`
+
 ### 3.42.4
 
 Avoid issue `Cannot read properties of undefined (reading 'length')` when using `renderAsync`.
