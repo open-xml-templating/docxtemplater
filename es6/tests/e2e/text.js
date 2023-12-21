@@ -68,4 +68,34 @@ describe("Text templating", function () {
 			'<?xml version="1.0" encoding="UTF-8”?> Hello John'
 		);
 	});
+
+	it("should not regress with paragraphLoop: true or linebreaks: true", function () {
+		const doc = new TxtTemplater("Text {#users}{name}{/}", {
+			paragraphLoop: true,
+			linebreaks: true,
+		});
+		expect(doc.render({ users: [{ name: "John\nFoo" }] })).to.be.equal(
+			"Text John\nFoo"
+		);
+	});
+
+	it("should be possible to render special characters in the output", function () {
+		const doc = new TxtTemplater("Text {name}", {
+			paragraphLoop: true,
+			linebreaks: true,
+		});
+		expect(doc.render({ name: "&& <n>Baz</n> &nbsp;" })).to.be.equal(
+			"Text && <n>Baz</n> &nbsp;"
+		);
+	});
+
+	it("should be possible to use < and > as delimiters", function () {
+		const doc = new TxtTemplater("Hello <name>", {
+			delimiters: {
+				start: "<",
+				end: ">",
+			},
+		});
+		expect(doc.render({ name: "John" })).to.be.equal("Hello John");
+	});
 });

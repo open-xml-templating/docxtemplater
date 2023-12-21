@@ -146,7 +146,7 @@ class ExpandPairTrait {
 		);
 		return options;
 	}
-	postparse(postparsed, { getTraits, postparse }) {
+	postparse(postparsed, { getTraits, postparse, fileType }) {
 		let traits = getTraits(traitName, postparsed);
 		traits = traits.map(function (trait) {
 			return trait || [];
@@ -157,14 +157,14 @@ class ExpandPairTrait {
 		let lastPair = null;
 		const expandedPairs = pairs.map((pair) => {
 			let { expandTo } = pair[0].part;
-			if (expandTo === "auto") {
+			if (expandTo === "auto" && fileType !== "text") {
 				const result = getExpandToDefault(postparsed, pair, this.expandTags);
 				if (result.error) {
 					errors.push(result.error);
 				}
 				expandTo = result.value;
 			}
-			if (!expandTo) {
+			if (!expandTo || fileType === "text") {
 				const left = pair[0].offset;
 				const right = pair[1].offset;
 				if (left < lastRight) {
