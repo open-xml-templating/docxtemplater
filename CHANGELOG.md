@@ -1,3 +1,9 @@
+### 3.42.7
+
+Throw specific error if two modules with the same name are attached.
+
+Bugfix issue on TxtTemplater when using `{paragraphLoop: true}`.
+
 ### 3.42.6
 
 Bugfix of internal API change, which was published in v3.42.5
