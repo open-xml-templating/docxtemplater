@@ -135,9 +135,6 @@ class ExpandPairTrait {
 	constructor() {
 		this.name = "ExpandPairTrait";
 	}
-	clone() {
-		return new ExpandPairTrait();
-	}
 	optionsTransformer(options, docxtemplater) {
 		this.expandTags = docxtemplater.fileTypeConfig.expandTags.concat(
 			docxtemplater.options.paragraphLoop

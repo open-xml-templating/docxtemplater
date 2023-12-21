@@ -23,6 +23,7 @@ const {
 	moduleWrapper,
 	concatArrays,
 	uniq,
+	getDuplicates,
 	stableSort,
 } = DocUtils;
 const {
@@ -294,8 +295,15 @@ const Docxtemplater = class Docxtemplater {
 			(m1, m2) => (m2.priority || 0) - (m1.priority || 0)
 		);
 	}
+	throwIfDuplicateModules() {
+		const duplicates = getDuplicates(this.modules.map(({ name }) => name));
+		if (duplicates.length > 0) {
+			throw new XTInternalError(`Detected duplicate module "${duplicates[0]}"`);
+		}
+	}
 	compile() {
 		this.updateFileTypeConfig();
+		this.throwIfDuplicateModules();
 		this.reorderModules();
 		if (Object.keys(this.compiled).length) {
 			return this;

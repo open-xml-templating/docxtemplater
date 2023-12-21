@@ -364,6 +364,32 @@ describe("Module errors", function () {
 		);
 		expect(error.properties.errors[6].message).to.equal("foobar last_name");
 	});
+
+	it("should throw specific error if adding same module twice", function () {
+		const mod1 = {
+			name: "TestModule",
+			set() {
+				return null;
+			},
+		};
+		const mod2 = {
+			name: "TestModule",
+			set() {
+				return null;
+			},
+		};
+
+		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
+		expectToThrow(
+			() => createDocV4("loop-image-footer.docx", { modules: [mod1, mod2] }),
+			Error,
+			{
+				message: 'Detected duplicate module "TestModule"',
+				name: "InternalError",
+				properties: {},
+			}
+		);
+	});
 });
 
 describe("Module should pass options to module.parse, module.postparse, module.render, module.postrender", function () {

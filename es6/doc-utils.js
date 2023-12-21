@@ -60,6 +60,21 @@ function startsWith(str, prefix) {
 	return str.substring(0, prefix.length) === prefix;
 }
 
+function getDuplicates(arr) {
+	const duplicates = [];
+	const hash = {},
+		result = [];
+	for (let i = 0, l = arr.length; i < l; ++i) {
+		if (!hash[arr[i]]) {
+			hash[arr[i]] = true;
+			result.push(arr[i]);
+		} else {
+			duplicates.push(arr[i]);
+		}
+	}
+	return duplicates;
+}
+
 function uniq(arr) {
 	const hash = {},
 		result = [];
@@ -381,6 +396,7 @@ module.exports = {
 	isEnding,
 	isModule,
 	uniq,
+	getDuplicates,
 	chunkBy,
 	last,
 	first,

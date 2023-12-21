@@ -33,9 +33,6 @@ class SpacePreserve {
 	constructor() {
 		this.name = "SpacePreserveModule";
 	}
-	clone() {
-		return new SpacePreserve();
-	}
 	postparse(postparsed, meta) {
 		let chunk = [],
 			inTextTag = false,
