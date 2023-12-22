@@ -1053,7 +1053,7 @@ describe("Constructor v4", function () {
 
 	it("should throw an error when modules passed is not an array", function () {
 		expect(
-			createDocV4.bind(this, "tag-example.docx", { modules: {} })
+			() => new Docxtemplater(getZip("tag-example.docx"), { modules: {} })
 		).to.throw(
 			"The modules argument of docxtemplater's constructor must be an array"
 		);

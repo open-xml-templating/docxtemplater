@@ -873,8 +873,12 @@ function createDoc(name, options = {}) {
 function createDocV4(name, options) {
 	const zip = getZip(name);
 	options = options || {};
-	if (!options.modules || options.modules instanceof Array) {
-		options.modules = options.modules || [];
+	options.modules = options.modules || [];
+	const moduleNames = options.modules.map(function ({ name }) {
+		return name;
+	});
+
+	if (moduleNames.indexOf("AssertionModule") === -1) {
 		options.modules.push(new AssertionModule());
 	}
 	return new Docxtemplater(zip, options);
