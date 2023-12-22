@@ -5,7 +5,11 @@ const {
 	createDocV4,
 	captureLogs,
 	expect,
+	getZip,
 } = require("../utils.js");
+
+const Docxtemplater = require("../../docxtemplater.js");
+
 const inspectModule = require("../../inspect-module.js");
 const Errors = require("../../errors.js");
 const { traits, uniq } = require("../../doc-utils.js");
@@ -46,7 +50,7 @@ describe("Verify apiversion", function () {
 
 	it("should fail when trying to attach null module", function () {
 		expectToThrow(
-			() => createDocV4("loop-valid.docx", { modules: [null] }),
+			() => new Docxtemplater(getZip("loop-valid.docx"), { modules: [null] }),
 			Error,
 			{
 				message: "Cannot attachModule with a falsy value",
