@@ -1,3 +1,5 @@
+const getResolvedId = require("./get-resolved-id.js");
+
 function moduleResolve(part, options) {
 	let moduleResolved;
 	for (let i = 0, l = options.modules.length; i < l; i++) {
@@ -9,7 +11,6 @@ function moduleResolve(part, options) {
 	}
 	return false;
 }
-
 function resolve(options) {
 	const resolved = [];
 	const baseNullGetter = options.baseNullGetter;
@@ -19,13 +20,18 @@ function resolve(options) {
 	};
 	options.resolved = resolved;
 	const errors = [];
+
 	return Promise.all(
 		compiled
 			.filter(function (part) {
 				return ["content", "tag"].indexOf(part.type) === -1;
 			})
 			.reduce(function (promises, part) {
-				const moduleResolved = moduleResolve(part, options);
+				options.resolvedId = getResolvedId(part, options);
+				const moduleResolved = moduleResolve(part, {
+					...options,
+					resolvedId: getResolvedId(part, options),
+				});
 				let result;
 				if (moduleResolved) {
 					result = moduleResolved.then(function (value) {
