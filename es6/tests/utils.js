@@ -493,6 +493,9 @@ function expectToThrowSnapshot(fn, update) {
 	} catch (e) {
 		err = e;
 	}
+	if (!err) {
+		throw new Error("no error was thrown by this function");
+	}
 	expect(errToObject(err)).to.matchSnapshot(update);
 }
 
@@ -527,7 +530,6 @@ function errToObject(err) {
 	} else if (err instanceof Errors.XTAPIVersionError) {
 		obj._type = "XTAPIVersionError";
 	}
-
 	if (err.name) {
 		obj.name = err.name;
 	}
