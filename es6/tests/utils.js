@@ -861,7 +861,9 @@ function makePptxV4(content, options = {}) {
 
 function createDoc(name, options = {}) {
 	if (!documentCache[name]) {
-		throw new Error(`File "examples/${name}" does not exist, please create the file`);
+		throw new Error(
+			`File "examples/${name}" does not exist, please create the file`
+		);
 	}
 	const doc = loadDocument(name, documentCache[name].loadedContent);
 	if (options.modules) {

@@ -1,6 +1,8 @@
-const { throwUnimplementedTagType } = require("./errors.js");
+const {
+	throwUnimplementedTagType,
+	XTScopeParserError,
+} = require("./errors.js");
 const getResolvedId = require("./get-resolved-id.js");
-const { XTScopeParserError } = require("./errors.js");
 
 function moduleRender(part, options) {
 	let moduleRendered;
@@ -26,7 +28,10 @@ function render(options) {
 			options.index = i;
 			let moduleRendered;
 			try {
-				moduleRendered = moduleRender(part, {...options, resolvedId: getResolvedId(part, options)});
+				moduleRendered = moduleRender(part, {
+					...options,
+					resolvedId: getResolvedId(part, options),
+				});
 			} catch (e) {
 				if (e instanceof XTScopeParserError) {
 					errors.push(e);
