@@ -494,12 +494,13 @@ function expectToThrowSnapshot(fn, update) {
 		err = e;
 	}
 	if (!err) {
-		throw new Error("no error was thrown by this function");
+		throw new Error("No error was thrown in this expectToThrowSnapshot");
 	}
 	expect(errToObject(err)).to.matchSnapshot(update);
 }
 
 function expectToThrowAsyncSnapshot(fn, update) {
+	let myErr = null;
 	return Promise.resolve(null)
 		.then(function () {
 			const r = fn();
@@ -508,10 +509,13 @@ function expectToThrowAsyncSnapshot(fn, update) {
 			});
 		})
 		.catch(function (error) {
-			return error;
+			myErr = error;
 		})
-		.then(function (err) {
-			expect(errToObject(err)).to.matchSnapshot(update);
+		.then(function () {
+			if (!myErr) {
+				throw new Error("No error was thrown in this expectToThrowSnapshot");
+			}
+			expect(errToObject(myErr)).to.matchSnapshot(update);
 		});
 }
 
