@@ -522,3 +522,4 @@ Docxtemplater.XmlTemplater = require("./xml-templater.js");
 Docxtemplater.FileTypeConfig = require("./file-type-config.js");
 Docxtemplater.XmlMatcher = require("./xml-matcher.js");
 module.exports = Docxtemplater;
+module.exports.default = Docxtemplater;
