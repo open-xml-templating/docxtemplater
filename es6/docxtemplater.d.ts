@@ -127,8 +127,7 @@ declare class Docxtemplater<TZip = any> {
 }
 
 declare namespace Docxtemplater {
-  export { DXT }
+  export { DXT };
 }
 
 export = Docxtemplater;
-
