@@ -1,4 +1,4 @@
-export namespace DXT {
+declare namespace DXT {
   type integer = number;
 
   interface SimplePart {
@@ -98,6 +98,7 @@ export namespace DXT {
 }
 
 declare class Docxtemplater<TZip = any> {
+  static default: typeof Docxtemplater;
   /**
    * Create Docxtemplater instance (and compile it on the fly)
    *
@@ -125,4 +126,9 @@ declare class Docxtemplater<TZip = any> {
   replaceLastSection?: boolean; // used for the subsection module
 }
 
-export default Docxtemplater;
+declare namespace Docxtemplater {
+  export { DXT }
+}
+
+export = Docxtemplater;
+
