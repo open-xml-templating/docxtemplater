@@ -1,10 +1,17 @@
-### 3.42.8
+### 3.43.1
 
 Improve Typescript support to use the NodeNext moduleResolution setting.
 
 See [the explanation here](https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/MissingExportEquals.md).
 
 Fixed in [this pull request](https://github.com/open-xml-templating/docxtemplater/pull/742) thanks to @benasher44.
+
+### 3.43.0
+
+Add getResolvedId calculation in docxtemplater to all template parts so that
+all modules can store a value for each templated part. This value is guaranteed
+to be the same for a given {placeholder} and data attribute between `resolve`
+and `render`.
 
 ### 3.42.7
 
