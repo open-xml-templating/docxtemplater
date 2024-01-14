@@ -1,3 +1,11 @@
+### 3.42.8
+
+Improve Typescript support to use the NodeNext moduleResolution setting.
+
+See [the explanation here](https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/MissingExportEquals.md).
+
+Fixed in [this pull request](https://github.com/open-xml-templating/docxtemplater/pull/742) thanks to @benasher44.
+
 ### 3.42.7
 
 Throw specific error if two modules with the same name are attached.
