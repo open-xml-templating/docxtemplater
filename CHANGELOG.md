@@ -21,8 +21,6 @@ new Docxtemplater(zip, {
     },
   }),
 });
-
-const doc = new Docxtemplater(zip, {});
 ```
 
 ### 3.43.1
