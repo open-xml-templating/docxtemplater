@@ -1,3 +1,30 @@
+### 3.44.0
+
+Make it possible to configure the angular parser for just one docxtemplater instance.
+
+(This needs angular-expressions version 1.2.0)
+
+Use following code :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+new Docxtemplater(zip, {
+  parser: expressionParser.configure({
+    csp: true, // this disables the use of "new Function", useful for Vercel, Deno, ...
+    filters: {
+      uppercase: (input) => {
+        if (typeof input === "string") {
+          return input.toUpperCase();
+        }
+        return input;
+      },
+    },
+  }),
+});
+
+const doc = new Docxtemplater(zip, {});
+```
+
 ### 3.43.1
 
 Improve Typescript support to use the NodeNext moduleResolution setting.

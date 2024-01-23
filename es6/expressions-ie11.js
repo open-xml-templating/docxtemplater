@@ -71,52 +71,57 @@ function getIdentifiers(x) {
 	return [];
 }
 
-function angularParser(tag) {
-	tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
+function configuredParser(config = {}) {
+	return function angularParser(tag) {
+		tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
 
-	while (dotRegex.test(tag)) {
-		tag = tag.replace(dotRegex, "$1this$2");
-	}
+		while (dotRegex.test(tag)) {
+			tag = tag.replace(dotRegex, "$1this$2");
+		}
 
-	const expr = expressions.compile(tag, {
-		isIdentifierStart: validStartChars,
-		isIdentifierContinue: validContinuationChars,
-	});
+		const expr = expressions.compile(tag, {
+			isIdentifierStart: validStartChars,
+			isIdentifierContinue: validContinuationChars,
+			...config,
+		});
 
-	// isAngularAssignment will be true if your tag contains an Assignment, for example
-	// when you write the following in your template :
-	// {full_name = first_name + last_name}
-	// In that case, it makes sense to return an empty string so
-	// that the tag does not write something to the generated document.
-	const isAngularAssignment =
-		expr.ast.body[0] &&
-		expr.ast.body[0].expression.type === "AssignmentExpression";
+		// isAngularAssignment will be true if your tag contains an Assignment, for example
+		// when you write the following in your template :
+		// {full_name = first_name + last_name}
+		// In that case, it makes sense to return an empty string so
+		// that the tag does not write something to the generated document.
+		const isAngularAssignment =
+			expr.ast.body[0] &&
+			expr.ast.body[0].expression.type === "AssignmentExpression";
 
-	return {
-		getIdentifiers() {
-			return uniq(getIdentifiers(expr));
-		},
-		get(scope, context) {
-			let obj = {};
-			const scopeList = context.scopeList;
-			const index = getIndex(scope, context);
-			const num = context.num;
-			for (let i = 0, len = num + 1; i < len; i++) {
-				obj = assign(obj, scopeList[i]);
-			}
-			obj = assign(obj, { $index: index });
-			const result = expr(scope, obj);
-			if (isAngularAssignment) {
-				return "";
-			}
-			return result;
-		},
+		return {
+			getIdentifiers() {
+				return uniq(getIdentifiers(expr));
+			},
+			get(scope, context) {
+				let obj = {};
+				const scopeList = context.scopeList;
+				const index = getIndex(scope, context);
+				const num = context.num;
+				for (let i = 0, len = num + 1; i < len; i++) {
+					obj = assign(obj, scopeList[i]);
+				}
+				obj = assign(obj, { $index: index });
+				const result = expr(scope, obj);
+				if (isAngularAssignment) {
+					return "";
+				}
+				return result;
+			},
+		};
 	};
 }
 
-angularParser.filters = expressions.filters;
-angularParser.compile = expressions.compile;
-angularParser.Parser = expressions.Parser;
-angularParser.Lexer = expressions.Lexer;
+const exportedValue = configuredParser({});
+exportedValue.configure = (config) => configuredParser(config);
+exportedValue.filters = expressions.filters;
+exportedValue.compile = expressions.compile;
+exportedValue.Parser = expressions.Parser;
+exportedValue.Lexer = expressions.Lexer;
 
-module.exports = angularParser;
+module.exports = exportedValue;

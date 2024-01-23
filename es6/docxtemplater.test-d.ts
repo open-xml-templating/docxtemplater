@@ -161,3 +161,27 @@ const doc5 = new Docxtemplater(new PizZip("hello"), {
 const doc6 = new Docxtemplater(new PizZip("hello"), {
   parser: ieAngularParser,
 });
+
+const doc7 = new Docxtemplater(new PizZip("hello"), {
+  parser: angularParser.configure({
+    filters: {
+      foo: (a: any) => a,
+      bar: (a: any) => a,
+    },
+    csp: true,
+    cache: {},
+    literals: { true: true },
+  }),
+});
+
+const doc8 = new Docxtemplater(new PizZip("hello"), {
+  parser: ieAngularParser.configure({
+    filters: {
+      foo: (a: any) => a,
+      bar: (a: any) => a,
+    },
+    csp: true,
+    cache: {},
+    literals: { true: true },
+  }),
+});

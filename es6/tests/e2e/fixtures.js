@@ -1803,6 +1803,39 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:t xml:space="preserve">undefined</w:t>',
 	},
 	{
+		it: "should be possible to add filter for one instance of the expressionParser",
+		content: "<w:t>{b|foo}</w:t>",
+		...noInternals,
+		options: {
+			linebreaks: true,
+			parser: expressionParser.configure({
+				filters: {
+					foo() {
+						return "FOO";
+					},
+				},
+			}),
+		},
+		result: '<w:t xml:space="preserve">FOO</w:t>',
+	},
+	{
+		it: "should be possible to add filter for one instance of the ie11 parser",
+		content: "<w:t>{b|foo}</w:t>",
+		...noInternals,
+		options: {
+			linebreaks: true,
+			parser: angularParserIE11.configure({
+				csp: true,
+				filters: {
+					foo() {
+						return "FOO";
+					},
+				},
+			}),
+		},
+		result: '<w:t xml:space="preserve">FOO</w:t>',
+	},
+	{
 		it: "should not fail with no scope on ie11 parser",
 		content: "<w:t>{b}</w:t>",
 		...noInternals,

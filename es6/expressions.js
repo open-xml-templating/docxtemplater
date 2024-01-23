@@ -68,121 +68,131 @@ function getIdentifiers(x) {
 	return [];
 }
 
-function angularParser(tag) {
-	tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
+function configuredParser(config = {}) {
+	return function parser(tag) {
+		if (typeof tag !== "string") {
+			throw new Error(
+				"The angular parser was used incorrectly, please refer to the docxtemplater documentation."
+			);
+		}
+		tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
 
-	while (dotRegex.test(tag)) {
-		tag = tag.replace(dotRegex, "$1this$2");
-	}
+		while (dotRegex.test(tag)) {
+			tag = tag.replace(dotRegex, "$1this$2");
+		}
 
-	const expr = expressions.compile(tag, {
-		isIdentifierStart: validStartChars,
-		isIdentifierContinue: validContinuationChars,
-	});
-	// isAngularAssignment will be true if your tag contains an Assignment, for example
-	// when you write the following in your template :
-	// {full_name = first_name + last_name}
-	// In that case, it makes sense to return an empty string so
-	// that the tag does not write something to the generated document.
-	const isAngularAssignment =
-		expr.ast.body[0] &&
-		expr.ast.body[0].expression.type === "AssignmentExpression";
+		const expr = expressions.compile(tag, {
+			isIdentifierStart: validStartChars,
+			isIdentifierContinue: validContinuationChars,
+			...config,
+		});
+		// isAngularAssignment will be true if your tag contains an Assignment, for example
+		// when you write the following in your template :
+		// {full_name = first_name + last_name}
+		// In that case, it makes sense to return an empty string so
+		// that the tag does not write something to the generated document.
+		const isAngularAssignment =
+			expr.ast.body[0] &&
+			expr.ast.body[0].expression.type === "AssignmentExpression";
 
-	return {
-		getIdentifiers() {
-			return uniq(getIdentifiers(expr));
-		},
-		get(scope, context) {
-			const scopeList = context.scopeList;
-			if (tag.trim() === "this") {
-				return scope;
-			}
+		return {
+			getIdentifiers() {
+				return uniq(getIdentifiers(expr));
+			},
+			get(scope, context) {
+				const scopeList = context.scopeList;
+				if (tag.trim() === "this") {
+					return scope;
+				}
 
-			const px = new Proxy(
-				{},
-				{
-					get(target, name) {
-						if (name === "$index") {
-							return getIndex(scope, context);
-						}
-						if (scope == null) {
-							return;
-						}
-						if (scope[name] != null) {
-							const property = scope[name];
+				const px = new Proxy(
+					{},
+					{
+						get(target, name) {
+							if (name === "$index") {
+								return getIndex(scope, context);
+							}
+							if (scope == null) {
+								return;
+							}
+							if (scope[name] != null) {
+								const property = scope[name];
 
-							return typeof property === "function"
-								? property.bind(scope)
-								: property;
-						}
-						for (let i = scopeList.length - 1; i >= 0; i--) {
-							const s = scopeList[i];
-							if (s[name] != null) {
-								const property = s[name];
 								return typeof property === "function"
-									? property.bind(s)
+									? property.bind(scope)
 									: property;
 							}
-						}
-						return null;
-					},
-					has(target, name) {
-						if (name === "$index") {
-							return true;
-						}
-						if (scope == null) {
+							for (let i = scopeList.length - 1; i >= 0; i--) {
+								const s = scopeList[i];
+								if (s[name] != null) {
+									const property = s[name];
+									return typeof property === "function"
+										? property.bind(s)
+										: property;
+								}
+							}
+							return null;
+						},
+						has(target, name) {
+							if (name === "$index") {
+								return true;
+							}
+							if (scope == null) {
+								return false;
+							}
+							if (scope[name] != null) {
+								return true;
+							}
+							for (let i = scopeList.length - 1; i >= 0; i--) {
+								const s = scopeList[i];
+								if (s[name] != null) {
+									return true;
+								}
+							}
 							return false;
-						}
-						if (scope[name] != null) {
-							return true;
-						}
-						for (let i = scopeList.length - 1; i >= 0; i--) {
-							const s = scopeList[i];
-							if (s[name] != null) {
+						},
+						set(target, name, value) {
+							if (typeof scope === "object" && scope) {
+								scope[name] = value;
 								return true;
 							}
-						}
-						return false;
-					},
-					set(target, name, value) {
-						if (typeof scope === "object" && scope) {
-							scope[name] = value;
-							return true;
-						}
-						for (let i = scopeList.length - 1; i >= 0; i--) {
-							const s = scopeList[i];
-							if (typeof s === "object" && s) {
-								s[name] = value;
-								return true;
+							for (let i = scopeList.length - 1; i >= 0; i--) {
+								const s = scopeList[i];
+								if (typeof s === "object" && s) {
+									s[name] = value;
+									return true;
+								}
 							}
-						}
-						return true;
-					},
-					getOwnPropertyDescriptor(target, name) {
-						if (scope.hasOwnProperty(name)) {
-							return {
-								writable: true,
-								enumerable: true,
-								configurable: true,
-								value: scope[name],
-							};
-						}
-					},
-				}
-			);
+							return true;
+						},
+						getOwnPropertyDescriptor(target, name) {
+							if (scope.hasOwnProperty(name)) {
+								return {
+									writable: true,
+									enumerable: true,
+									configurable: true,
+									value: scope[name],
+								};
+							}
+						},
+					}
+				);
 
-			const result = expr(px, px);
-			if (isAngularAssignment) {
-				return "";
-			}
-			return result;
-		},
+				const result = expr(px, px);
+				if (isAngularAssignment) {
+					return "";
+				}
+				return result;
+			},
+		};
 	};
 }
 
-angularParser.filters = expressions.filters;
-angularParser.compile = expressions.compile;
-angularParser.Parser = expressions.Parser;
-angularParser.Lexer = expressions.Lexer;
+const exportedValue = configuredParser({});
+exportedValue.configure = (config) => configuredParser(config);
+exportedValue.filters = expressions.filters;
+exportedValue.compile = expressions.compile;
+exportedValue.Parser = expressions.Parser;
+exportedValue.Lexer = expressions.Lexer;
 
-module.exports = angularParser;
+module.exports = exportedValue;
