@@ -65,7 +65,7 @@
     "mkdirp": "^3.0.1",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "pizzip": "^3.1.5",
+    "pizzip": "^3.1.6",
     "prettier": "^3.2.4",
     "rimraf": "^5.0.5",
     "selenium-standalone": "^9.3.1",
