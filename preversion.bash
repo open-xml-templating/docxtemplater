@@ -5,6 +5,7 @@ set -euo pipefail
 npm run test:es6
 npm run lint
 FAST= npm test
+./node_modules/.bin/attw . --pack
 rimraf build
 mkdirp build
 npm run browserify

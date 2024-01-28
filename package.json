@@ -39,6 +39,7 @@
     "@xmldom/xmldom": "^0.8.10"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.13.6",
     "@babel/cli": "^7.23.4",
     "@babel/core": "^7.23.7",
     "@babel/eslint-parser": "^7.23.3",
