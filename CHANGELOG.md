@@ -1,3 +1,11 @@
+### 3.44.1
+
+Bugfix for proofstate module : Following error was thrown when using this module :
+
+`Unnamed module`
+
+Now the module should work correctly
+
 ### 3.44.0
 
 Make it possible to configure the angular parser for just one docxtemplater instance.

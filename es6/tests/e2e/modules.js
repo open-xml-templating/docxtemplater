@@ -7,10 +7,11 @@ const {
 	expect,
 	getZip,
 } = require("../utils.js");
+const angularParser = require("../../expressions.js");
+const proofStateModule = require("../../proof-state-module.js");
+const inspectModule = require("../../inspect-module.js");
 
 const Docxtemplater = require("../../docxtemplater.js");
-
-const inspectModule = require("../../inspect-module.js");
 const Errors = require("../../errors.js");
 const { traits, uniq } = require("../../doc-utils.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
@@ -624,6 +625,26 @@ describe("Fix doc pr corruption module", function () {
 	});
 });
 
+describe("Proofstate module", function () {
+	it("should work with angular parser with proofstate module", function () {
+		shouldBeSame({
+			doc: createDoc("angular-example.docx")
+				.setOptions({
+					parser: angularParser,
+				})
+				.attachModule(proofStateModule)
+				.render({
+					person: {
+						first_name: "Hipp",
+						last_name: "Edgar",
+						birth_year: 1955,
+						age: 59,
+					},
+				}),
+			expectedName: "expected-proofstate-removed.docx",
+		});
+	});
+});
 describe("Module call order", function () {
 	const expectedCallOrder = [
 		"on",

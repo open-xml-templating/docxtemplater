@@ -1,11 +1,14 @@
+const { settingsContentType } = require("./content-types.js");
+
 module.exports = {
+	name: "ProofStateModule",
 	on(eventName) {
 		if (eventName === "attached") {
 			this.attached = false;
 		}
 	},
-	postparse(postparsed, { filePath }) {
-		if (filePath !== "word/settings.xml") {
+	postparse(postparsed, { contentType }) {
+		if (contentType !== settingsContentType) {
 			return null;
 		}
 		return postparsed.map(function (part) {
