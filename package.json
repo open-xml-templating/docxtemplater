@@ -39,7 +39,7 @@
     "@xmldom/xmldom": "^0.8.10"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.13.6",
+    "@arethetypeswrong/cli": "^0.13.8",
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.9",
     "@babel/eslint-parser": "^7.23.10",
@@ -64,7 +64,7 @@
     "finalhandler": "^1.2.0",
     "lodash": "^4.17.21",
     "mkdirp": "^3.0.1",
-    "mocha": "^10.2.0",
+    "mocha": "^10.3.0",
     "nyc": "^15.1.0",
     "pizzip": "^3.1.6",
     "prettier": "^3.2.5",
