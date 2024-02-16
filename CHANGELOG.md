@@ -1,4 +1,14 @@
-### 3.44.1
+### 3.45.1
+
+Add getObjectIdentifiers to expressionParser, which can be used like this :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+expressionParser("a.b.c").getObjectIdentifiers();
+// returns { a: { b: { c: {} } } }
+```
+
+### 3.45.0
 
 Bugfix for proofstate module : Following error was thrown when using this module :
 

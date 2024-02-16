@@ -36,6 +36,42 @@ function uniq(arr) {
 	return result;
 }
 
+function getObjectIdentifiers(x, scope = {}) {
+	if (x.expression) {
+		getObjectIdentifiers(x.expression, scope);
+		return scope;
+	}
+	if (x.body) {
+		x.body.forEach((y) => getObjectIdentifiers(y, scope));
+		return scope;
+	}
+	if (x.type === "CallExpression") {
+		getObjectIdentifiers(x.callee, scope);
+		if (x.arguments) {
+			x.arguments.forEach((y) => getObjectIdentifiers(y, scope));
+		}
+	}
+	if (x.ast) {
+		return getObjectIdentifiers(x.ast);
+	}
+
+	if (x.left) {
+		getObjectIdentifiers(x.left, scope);
+		getObjectIdentifiers(x.right, scope);
+	}
+
+	if (x.type === "Identifier") {
+		const subscope = scope[x.name] || {};
+		scope[x.name] = subscope;
+		return subscope;
+	}
+	if (x.type === "MemberExpression") {
+		const subscope = getObjectIdentifiers(x.object, scope);
+		return getObjectIdentifiers(x.property, subscope);
+	}
+	return scope;
+}
+
 function getIdentifiers(x) {
 	if (x.expression) {
 		return getIdentifiers(x.expression);
@@ -98,6 +134,9 @@ function configuredParser(config = {}) {
 		return {
 			getIdentifiers() {
 				return uniq(getIdentifiers(expr));
+			},
+			getObjectIdentifiers() {
+				return getObjectIdentifiers(expr);
 			},
 			get(scope, context) {
 				const scopeList = context.scopeList;
