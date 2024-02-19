@@ -828,3 +828,36 @@ exports[`ParagraphLoop should not fail when having paragraph in paragraph`] = `
 (1)   </w:body>
 (0)</w:document>`
 
+exports[`Pptx generation should work with loop table`] = [
+  {
+    "tag": "products",
+    "lIndex": 59,
+    "value": [
+      [
+        {
+          "tag": "name",
+          "lIndex": 62,
+          "value": "Acme"
+        },
+        {
+          "tag": "price",
+          "lIndex": 80,
+          "value": 10
+        }
+      ],
+      [
+        {
+          "tag": "name",
+          "lIndex": 62,
+          "value": "Ecma"
+        },
+        {
+          "tag": "price",
+          "lIndex": 80,
+          "value": 20
+        }
+      ]
+    ]
+  }
+]
+

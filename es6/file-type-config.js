@@ -114,6 +114,7 @@ function PptXFileTypeConfig() {
 			"a:tc",
 			"a:tr",
 			"a:tbl",
+			"a:graphicData",
 			"a:p",
 			"a:r",
 			"a:rPr",
@@ -132,7 +133,7 @@ function PptXFileTypeConfig() {
 		tagRawXml: "p:sp",
 		baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
 		tagShouldContain: [
-			{ tag: "a:tbl", shouldContain: ["a:tr"], drop: true },
+			{ tag: "a:tbl", shouldContain: ["a:tr"], dropParent: "p:graphicFrame" },
 			{ tag: "p:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 			{ tag: "a:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 		],

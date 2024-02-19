@@ -48,27 +48,19 @@ describe("Pptx generation", function () {
 			.then(function () {
 				expect(
 					doc.scopeManagers["ppt/slides/slide1.xml"].resolved
-				).to.deep.equal([
-					{
-						tag: "products",
-						lIndex: 58,
-						value: [
-							[
-								{ tag: "name", lIndex: 61, value: "Acme" },
-								{ tag: "price", lIndex: 79, value: 10 },
-							],
-							[
-								{ tag: "name", lIndex: 61, value: "Ecma" },
-								{ tag: "price", lIndex: 79, value: 20 },
-							],
-						],
-					},
-				]);
+				).to.matchSnapshot();
 				shouldBeSame({
 					doc,
 					expectedName: "expected-loop-table.pptx",
 				});
 			});
+	});
+
+	it("should be possible to totally remove a table if data is empty", function () {
+		shouldBeSame({
+			doc: createDocV4("loop-table-no-header.pptx").render(),
+			expectedName: "expected-empty.pptx",
+		});
 	});
 
 	it("should work with loop pptx", function () {

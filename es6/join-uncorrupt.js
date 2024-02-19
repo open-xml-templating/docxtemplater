@@ -53,11 +53,28 @@ function joinUncorrupt(parts, options) {
 	for (let i = 0, len = parts.length; i < len; i++) {
 		const part = parts[i];
 		for (let j = 0, len2 = contains.length; j < len2; j++) {
-			const { tag, shouldContain, value, drop } = contains[j];
+			const { tag, shouldContain, value, drop, dropParent } = contains[j];
 			if (currentlyCollecting === j) {
 				if (isEnding(part, tag)) {
 					currentlyCollecting = -1;
-					if (drop) {
+					if (dropParent) {
+						let start, end;
+						for (let k = startIndex; k > 0; k--) {
+							if (isStarting(parts[k], dropParent)) {
+								start = k;
+								break;
+							}
+						}
+						for (let k = i; k < parts.length; k++) {
+							if (isEnding(parts[k], dropParent)) {
+								end = k;
+								break;
+							}
+						}
+						for (let k = start; k <= end; k++) {
+							parts[k] = "";
+						}
+					} else if (drop) {
 						for (let k = startIndex; k <= i; k++) {
 							parts[k] = "";
 						}

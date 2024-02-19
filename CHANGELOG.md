@@ -1,3 +1,7 @@
+### 3.46.0
+
+When using a loop inside a powerpoint table, if the result is an empty table, correctly drop the table from the presentation.
+
 ### 3.45.1
 
 Add getObjectIdentifiers to expressionParser, which can be used like this :
