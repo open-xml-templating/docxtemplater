@@ -1,6 +1,7 @@
 import { DXT } from "./docxtemplater";
 
 declare class TxtTemplater {
+  static default: typeof TxtTemplater;
   /**
    * Create TxtTemplater instance (and compile it on the fly)
    *
@@ -12,4 +13,4 @@ declare class TxtTemplater {
   render(data?: any): string;
 }
 
-export default TxtTemplater;
+export = TxtTemplater;

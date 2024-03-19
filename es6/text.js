@@ -83,3 +83,4 @@ function TxtTemplater(text, options = {}) {
 }
 
 module.exports = TxtTemplater;
+module.exports.default = TxtTemplater;

@@ -1,3 +1,7 @@
+### 3.46.1
+
+Fix typescript issue with TxtTemplater
+
 ### 3.46.0
 
 When using a loop inside a powerpoint table, if the result is an empty table, correctly drop the table from the presentation.
