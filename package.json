@@ -39,12 +39,12 @@
     "@xmldom/xmldom": "^0.8.10"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.15.1",
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/eslint-parser": "^7.23.10",
+    "@arethetypeswrong/cli": "^0.15.2",
+    "@babel/cli": "^7.24.1",
+    "@babel/core": "^7.24.1",
+    "@babel/eslint-parser": "^7.24.1",
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
-    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-env": "^7.24.1",
     "@stryker-mutator/core": "^8.2.6",
     "@stryker-mutator/mocha-runner": "^8.2.6",
     "@wdio/cli": "8.12.2",
