@@ -1,3 +1,9 @@
+### 3.46.2
+
+Add "synced-zip" event that is run right after the zip is prepared.
+
+Update moduleApiVersion to version 3.39.0, which is used by the latest subtemplate module.
+
 ### 3.46.1
 
 Fix typescript issue with TxtTemplater

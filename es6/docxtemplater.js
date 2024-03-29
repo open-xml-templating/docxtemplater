@@ -452,6 +452,8 @@ const Docxtemplater = class Docxtemplater {
 		verifyErrors(this);
 		this.sendEvent("syncing-zip");
 		this.syncZip();
+		// The synced-zip event is used in the subtemplate module for example
+		this.sendEvent("synced-zip");
 		return this;
 	}
 	syncZip() {
