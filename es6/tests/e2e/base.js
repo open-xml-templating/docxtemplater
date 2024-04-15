@@ -679,7 +679,7 @@ describe("Changing the parser", function () {
 		expect(calls).to.equal(1);
 	});
 
-	it("should be able to access meta to get the type of tag", function () {
+	it("should be able to access meta and context to get the type of tag", function () {
 		const content = `<w:p><w:t>Hello {#users}{name}{/users}</w:t></w:p>
 		<w:p><w:t>{@rrr}</w:t></w:p>
 		`;
@@ -688,9 +688,11 @@ describe("Changing the parser", function () {
 			rrr: "",
 		};
 		const contexts = [];
+		const pX = [];
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
-			parser: function parser(tag) {
+			parser: function parser(tag, x) {
+				pX.push(x);
 				return {
 					get(scope, context) {
 						contexts.push(context);
@@ -720,6 +722,28 @@ describe("Changing the parser", function () {
 				type: "placeholder",
 				value: "name",
 				module: undefined,
+			},
+			{
+				type: "placeholder",
+				value: "rrr",
+				module: "rawxml",
+			},
+		]);
+
+		expect(
+			pX.map(function ({ tag: { type, value, module } }) {
+				return { type, value, module };
+			})
+		).to.be.deep.equal([
+			{
+				type: "placeholder",
+				value: "name",
+				module: undefined,
+			},
+			{
+				type: "placeholder",
+				value: "users",
+				module: "loop",
 			},
 			{
 				type: "placeholder",
