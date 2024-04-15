@@ -566,7 +566,7 @@ function errToObject(err) {
 function load(name, content, cache) {
 	const zip = new PizZip(content);
 	const doc = new Docxtemplater();
-	doc.attachModule(new AssertionModule());
+
 	doc.loadZip(zip);
 	doc.loadedName = name;
 	doc.loadedContent = content;
@@ -872,6 +872,10 @@ function createDoc(name, options = {}) {
 		);
 	}
 	const doc = loadDocument(name, documentCache[name].loadedContent);
+	if (options.assertModule == null) {
+		doc.attachModule(new AssertionModule());
+	}
+	delete options.assertModule;
 	if (options.modules) {
 		options.modules.forEach(function (module) {
 			doc.attachModule(module);
@@ -881,17 +885,20 @@ function createDoc(name, options = {}) {
 	return doc;
 }
 
-function createDocV4(name, options) {
+function createDocV4(name, options = {}) {
 	const zip = getZip(name);
-	options = options || {};
-	options.modules = options.modules || [];
+	options.modules ||= [];
 	const moduleNames = options.modules.map(function ({ name }) {
 		return name;
 	});
 
-	if (moduleNames.indexOf("AssertionModule") === -1) {
+	if (
+		options.assertModule == null &&
+		moduleNames.indexOf("AssertionModule") === -1
+	) {
 		options.modules.push(new AssertionModule());
 	}
+	delete options.assertModule;
 	return new Docxtemplater(zip, options);
 }
 
