@@ -27,7 +27,6 @@ function resolve(options) {
 				return ["content", "tag"].indexOf(part.type) === -1;
 			})
 			.reduce(function (promises, part) {
-				options.resolvedId = getResolvedId(part, options);
 				const moduleResolved = moduleResolve(part, {
 					...options,
 					resolvedId: getResolvedId(part, options),

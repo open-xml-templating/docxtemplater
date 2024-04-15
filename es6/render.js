@@ -26,12 +26,10 @@ function render(options) {
 	const parts = compiled
 		.map(function (part, i) {
 			options.index = i;
+			options.resolvedId = getResolvedId(part, options);
 			let moduleRendered;
 			try {
-				moduleRendered = moduleRender(part, {
-					...options,
-					resolvedId: getResolvedId(part, options),
-				});
+				moduleRendered = moduleRender(part, options);
 			} catch (e) {
 				if (e instanceof XTScopeParserError) {
 					errors.push(e);
