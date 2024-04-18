@@ -1,3 +1,35 @@
+### 3.47.0
+
+Make it possible to dynamically allow to use a given tag for a module.
+
+For example, you can write :
+
+```js
+const doc = new Docxtemplater(zip, {
+  modules: [
+    {
+      optionsTransformer(options, doc) {
+        doc.modules.forEach(function (module) {
+          if (module.name === "RawXmlModule") {
+            module.prefix = function (placeholderContent) {
+              if (placeholderContent === "raw") {
+                return "raw";
+              }
+              if (placeholderContent[0] === "@") {
+                return placeholderContent.substr(1);
+              }
+            };
+          }
+        });
+        return options;
+      },
+    },
+  ],
+});
+```
+
+This code means that if you write : {raw} in your document (without the "@" prefix), that tag will be used as a rawxml tag.
+
 ### 3.46.2
 
 Add "synced-zip" event that is run right after the zip is prepared.

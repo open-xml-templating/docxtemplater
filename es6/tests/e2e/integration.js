@@ -1099,6 +1099,37 @@ describe("Prefixes", function () {
 
 		expect(doc.getFullText()).to.be.equal("HoHo");
 	});
+
+	it("should be possible to change the prefix of the raw xml module to a function", function () {
+		const content = "<w:p><w:t>{raw}</w:t></w:p><w:p><w:t> {text}</w:t></w:p>";
+		const scope = {
+			raw: "<w:p><w:t>HoHo</w:t></w:p>",
+			text: "Huhu",
+		};
+		const doc = makeDocxV4(content, {
+			modules: [
+				{
+					optionsTransformer(options, doc) {
+						doc.modules.forEach(function (module) {
+							if (module.name === "RawXmlModule") {
+								module.prefix = function (placeholderContent) {
+									if (placeholderContent === "raw") {
+										return "raw";
+									}
+								};
+							}
+						});
+						return options;
+					},
+				},
+			],
+		});
+		doc.render(scope);
+
+		expect(doc.zip.file("word/document.xml").asText()).to.be.equal(
+			'<w:p><w:t>HoHo</w:t></w:p><w:p><w:t xml:space="preserve"> Huhu</w:t></w:p>'
+		);
+	});
 });
 describe("Load Office 365 file", function () {
 	it("should handle files with word/document2.xml", function () {
