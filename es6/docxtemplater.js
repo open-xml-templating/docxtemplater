@@ -402,7 +402,7 @@ const Docxtemplater = class Docxtemplater {
 			throwFileTypeNotHandled(fileType);
 		}
 		if (!fileType) {
-			throwFileTypeNotIdentified();
+			throwFileTypeNotIdentified(this.zip);
 		}
 
 		this.fileType = fileType;

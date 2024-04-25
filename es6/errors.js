@@ -362,14 +362,21 @@ function throwRenderTwice() {
 	throw err;
 }
 
-function throwFileTypeNotIdentified() {
+function throwFileTypeNotIdentified(zip) {
+	const files = Object.keys(zip.files).slice(0, 10);
+	let msg = "";
+	if (files.length === 0) {
+		msg = "Empty zip file";
+	} else {
+		msg = `Zip file contains : ${files.join(",")}`;
+	}
+
 	const err = new XTInternalError(
-		"The filetype for this file could not be identified, is this file corrupted ?"
+		`The filetype for this file could not be identified, is this file corrupted ? ${msg}`
 	);
 	err.properties = {
 		id: "filetype_not_identified",
-		explanation:
-			"The filetype for this file could not be identified, is this file corrupted ?",
+		explanation: `The filetype for this file could not be identified, is this file corrupted ? ${msg}`,
 	};
 	throw err;
 }

@@ -410,16 +410,35 @@ describe("Internal errors", function () {
 		});
 	});
 
-	it("should fail if using zip file", function (done) {
+	it("should fail if using zip file and show list of files", function (done) {
 		const expectedError = {
 			name: "InternalError",
 			message:
-				"The filetype for this file could not be identified, is this file corrupted ?",
+				"The filetype for this file could not be identified, is this file corrupted ? Zip file contains : world.txt,xxx.log",
 			properties: {
 				id: "filetype_not_identified",
 			},
 		};
 		loadFile("simple-zip.zip", (e, name, buffer) => {
+			expectToThrow(
+				() => loadDocument(name, buffer),
+				Errors.XTInternalError,
+				expectedError
+			);
+			done();
+		});
+	});
+
+	it("should fail if using empty zip file and show it", function (done) {
+		const expectedError = {
+			name: "InternalError",
+			message:
+				"The filetype for this file could not be identified, is this file corrupted ? Empty zip file",
+			properties: {
+				id: "filetype_not_identified",
+			},
+		};
+		loadFile("empty.zip", (e, name, buffer) => {
 			expectToThrow(
 				() => loadDocument(name, buffer),
 				Errors.XTInternalError,

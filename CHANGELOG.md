@@ -1,3 +1,13 @@
+### 3.47.1
+
+If zip file is not a docx file, show the following error message now :
+
+`The filetype for this file could not be identified, is this file corrupted ? Zip file contains : world.txt,xxx.log`
+
+In previous versions, the following message was shown :
+
+`The filetype for this file could not be identified, is this file corrupted ?`
+
 ### 3.47.0
 
 Make it possible to dynamically allow to use a given tag for a module.
