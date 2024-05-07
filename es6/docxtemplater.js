@@ -33,7 +33,7 @@ const {
 	throwApiVersionError,
 } = require("./errors.js");
 
-const currentModuleApiVersion = [3, 39, 0];
+const currentModuleApiVersion = [3, 40, 0];
 
 function dropUnsupportedFileTypesModules(dx) {
 	dx.modules = dx.modules.filter((module) => {

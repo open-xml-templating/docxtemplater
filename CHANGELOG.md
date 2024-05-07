@@ -1,3 +1,13 @@
+### 3.47.2
+
+Bugfix internal api mechanism :
+
+It internally allows to have multiple traits.expandToOne().
+
+Fixes bugs with the subtemplate and subsection module.
+
+Update moduleApiVersion to 3.40.0.
+
 ### 3.47.1
 
 If zip file is not a docx file, show the following error message now :

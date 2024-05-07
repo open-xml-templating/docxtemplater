@@ -260,7 +260,8 @@ function expandToOne(postparsed, options) {
 			part.module === options.moduleName &&
 			// The part.subparsed check is used to fix this github issue :
 			// https://github.com/open-xml-templating/docxtemplater/issues/671
-			!part.subparsed
+			!part.subparsed &&
+			!part.expanded
 		) {
 			try {
 				const limit = getExpandLimit(part, i, postparsed, options);
