@@ -24,6 +24,12 @@ function getTags(postParsed) {
 			});
 			return tags;
 		}
+		if (part.attrParsed) {
+			Object.keys(part.attrParsed).forEach(function (key) {
+				merge(tags, getTags(part.attrParsed[key]));
+			});
+			return tags;
+		}
 		// Stryker disable all : because this is for the table,chart,image, xlsx module
 		if (part.dataBound === false) {
 			if (part.subparsed) {
@@ -46,6 +52,17 @@ function getStructuredTags(postParsed) {
 	return postParsed.filter(isPlaceholder).map(function (part) {
 		if (part.subparsed) {
 			part.subparsed = getStructuredTags(part.subparsed);
+		}
+		if (part.attrParsed) {
+			part.subparsed = [];
+
+			if (part.attrParsed) {
+				part.subparsed = [];
+				Object.keys(part.attrParsed).forEach(function (key) {
+					part.subparsed = part.subparsed.concat(part.attrParsed[key]);
+				});
+				return part;
+			}
 		}
 		return part;
 	}, {});

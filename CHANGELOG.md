@@ -1,3 +1,9 @@
+### 3.47.3
+
+Improve getStructuredTags and getTags of the inspectModule to allow to get tags present in image attributes.
+
+(This is to work together with the image-module 3.28.0)
+
 ### 3.47.2
 
 Bugfix internal api mechanism :
