@@ -1,3 +1,7 @@
+### 3.47.4
+
+Add correct typescript typings for `isIdentifierStart` and `isIdentifierContinue`.
+
 ### 3.47.3
 
 Improve getStructuredTags and getTags of the inspectModule to allow to get tags present in image attributes.

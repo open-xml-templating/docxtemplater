@@ -185,3 +185,18 @@ const doc8 = new Docxtemplater(new PizZip("hello"), {
     literals: { true: true },
   }),
 });
+
+function validStartChars(ch: string): boolean {
+  return /[a-z]/.test(ch);
+}
+function validContinuationChars(ch: string): boolean {
+  return /[a-z]/.test(ch);
+}
+angularParser.configure({
+  isIdentifierStart: validStartChars,
+  isIdentifierContinue: validContinuationChars,
+});
+ieAngularParser.configure({
+  isIdentifierStart: validStartChars,
+  isIdentifierContinue: validContinuationChars,
+});

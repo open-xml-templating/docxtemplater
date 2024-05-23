@@ -5,6 +5,8 @@ interface ParserOptions {
   csp?: boolean;
   cache?: any;
   literals?: { [x: string]: any };
+  isIdentifierStart?: (char: string) => boolean;
+  isIdentifierContinue?: (char: string) => boolean;
 }
 
 type Parser = {
