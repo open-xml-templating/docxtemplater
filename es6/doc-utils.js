@@ -124,7 +124,9 @@ const defaults = {
 		start: "{",
 		end: "}",
 	},
-	syntax: {},
+	syntax: {
+		changeDelimiterPrefix: "=",
+	},
 };
 
 function xml2str(xmlNode) {

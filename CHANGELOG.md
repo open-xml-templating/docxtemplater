@@ -1,3 +1,42 @@
+### 3.48.0
+
+Allow to configure the behavior of the "change delimiter syntax".
+
+As documented here :
+
+https://docxtemplater.com/docs/tag-types/#set-delimiter
+
+You can for example use :
+
+```
+{=[[ ]]=}
+[[name]]
+```
+
+It is possible to change the special behavior that will catch tags that start with a "=".
+
+It is either possible to set the `syntax.changeDelimiterPrefix` to null so that it won't be possible to change the delimiters inside the template, or you can change the char that is used.
+
+For example :
+
+```js
+const doc = new Docxtemplater(zip, {
+  syntax: {
+    changeDelimiterPrefix: null,
+  },
+});
+```
+
+or
+
+```js
+const doc = new Docxtemplater(zip, {
+  syntax: {
+    changeDelimiterPrefix: "$",
+  },
+});
+```
+
 ### 3.47.4
 
 Add correct typescript typings for `isIdentifierStart` and `isIdentifierContinue`.

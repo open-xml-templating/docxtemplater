@@ -2051,6 +2051,31 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>}`,
 	},
 	{
+		it: "should be possible to set another change delimiter prefix (use $)",
+		...noInternals,
+		content: "<w:p><w:r><w:t>{$[[ ]]$}[[name]]</w:t></w:r></w:p>",
+		options: {
+			syntax: {
+				changeDelimiterPrefix: "$",
+			},
+		},
+		scope: { name: "John" },
+		result: '<w:p><w:r><w:t xml:space="preserve">John</w:t></w:r></w:p>',
+	},
+	{
+		it: "should be possible to set change delimiter prefix to null",
+		...noInternals,
+		content: "<w:p><w:r><w:t>{$[[ ]]$}[[name]]</w:t></w:r></w:p>",
+		options: {
+			syntax: {
+				changeDelimiterPrefix: null,
+			},
+		},
+		scope: { name: "John", "$[[ ]]$": "Match ! " },
+		result:
+			'<w:p><w:r><w:t xml:space="preserve">Match ! [[name]]</w:t></w:r></w:p>',
+	},
+	{
 		it: "should add space=preserve to last tag when having middle tag",
 		...noInternals,
 		content: `<w:p>

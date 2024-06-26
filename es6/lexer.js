@@ -240,7 +240,7 @@ function splitDelimiters(inside) {
 	return [start, end];
 }
 
-function getAllDelimiterIndexes(fullText, delimiters) {
+function getAllDelimiterIndexes(fullText, delimiters, syntaxOptions) {
 	const indexes = [];
 	let { start, end } = delimiters;
 	let offset = -1;
@@ -270,10 +270,22 @@ function getAllDelimiterIndexes(fullText, delimiters) {
 				len = start.length;
 				break;
 		}
-		// if tag starts with =, such as {=[ ]=}
+		/*
+		 * If tag starts with =, such as {=[ ]=}
+		 * then the delimiters will change right after that tag.
+		 *
+		 * For example, with the following template :
+		 *
+		 * Hello {foo}, {=[ ]=}what's up with [name] ?
+		 *
+		 * The "foo" tag is a normal tag, the "=[ ]=" is a tag to change the
+		 * delimiters to "[" and "]", and the last "name" is a tag with the new
+		 * delimiters
+		 */
 		if (
+			syntaxOptions.changeDelimiterPrefix &&
 			compareResult === DELIMITER_START &&
-			fullText[offset + start.length] === "="
+			fullText[offset + start.length] === syntaxOptions.changeDelimiterPrefix
 		) {
 			indexes.push({
 				offset: startOffset,
@@ -281,7 +293,10 @@ function getAllDelimiterIndexes(fullText, delimiters) {
 				length: start.length,
 				changedelimiter: true,
 			});
-			const nextEqual = fullText.indexOf("=", offset + start.length + 1);
+			const nextEqual = fullText.indexOf(
+				syntaxOptions.changeDelimiterPrefix,
+				offset + start.length + 1
+			);
 			const nextEndOffset = fullText.indexOf(end, nextEqual + 1);
 
 			indexes.push({
@@ -304,7 +319,11 @@ function getAllDelimiterIndexes(fullText, delimiters) {
 
 function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 	const full = innerContentParts.map((p) => p.value).join("");
-	const delimiterMatches = getAllDelimiterIndexes(full, delimiters);
+	const delimiterMatches = getAllDelimiterIndexes(
+		full,
+		delimiters,
+		syntaxOptions
+	);
 
 	let offset = 0;
 	const ranges = innerContentParts.map(function (part) {

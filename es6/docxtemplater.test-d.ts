@@ -186,6 +186,20 @@ const doc8 = new Docxtemplater(new PizZip("hello"), {
   }),
 });
 
+const doc9 = new Docxtemplater(new PizZip("hello"), {
+  syntax: {
+    allowUnopenedTag: true,
+    changeDelimiterPrefix: null,
+  },
+});
+
+const doc10 = new Docxtemplater(new PizZip("hello"), {
+  syntax: {
+    allowUnopenedTag: true,
+    changeDelimiterPrefix: "",
+  },
+});
+
 function validStartChars(ch: string): boolean {
   return /[a-z]/.test(ch);
 }
