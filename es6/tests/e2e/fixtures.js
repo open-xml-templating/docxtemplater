@@ -1286,7 +1286,6 @@ const fixtures = [
 				},
 			],
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">Linner</w:t>',
 	},
 	{
@@ -1315,7 +1314,6 @@ const fixtures = [
 				},
 			],
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">LinnerLinnerLinnerLouterouter</w:t>',
 	},
 	{
@@ -1335,7 +1333,6 @@ const fixtures = [
 				},
 			],
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">innerouterouter</w:t>',
 	},
 	{
@@ -1346,7 +1343,6 @@ const fixtures = [
 			b: false,
 			label: "hi",
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">hi</w:t>',
 	},
 	{
@@ -1356,7 +1352,6 @@ const fixtures = [
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">hi</w:t>',
 	},
 	{
@@ -1366,7 +1361,6 @@ const fixtures = [
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">hi</w:t>',
 	},
 	{
@@ -1383,7 +1377,6 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
@@ -1517,7 +1510,6 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
@@ -1530,7 +1522,6 @@ const fixtures = [
 		scope: {
 			foo: "",
 		},
-		resolved: null,
 		result: "<w:t/>",
 	},
 	{
@@ -1547,7 +1538,6 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
@@ -1564,7 +1554,6 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
@@ -1584,7 +1573,6 @@ const fixtures = [
 				{ date: 2100, age: 22, name: "Walt" },
 			],
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">John 1976 Mary 1998 Walt 2079 </w:t>',
 	},
 	{
@@ -1632,6 +1620,21 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">!!1Hello?2Other todo!!3Bye</w:t>',
 	},
 	{
+		it: "should work well with nested conditions inside table",
+		...noInternals,
+		content:
+			"<w:tbl><w:tr><w:tc><w:p><w:r><w:t>{#cond}{#cond2}{name}</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>{/}{/}</w:t></w:r></w:p></w:tc></w:tr></w:tbl>",
+		options: {
+			paragraphLoop: true,
+		},
+		scope: {
+			cond: true,
+			cond2: false,
+		},
+		result:
+			'',
+	},
+	{
 		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
 		...noInternals,
 		content:
@@ -1643,7 +1646,6 @@ const fixtures = [
 			cond: true,
 			val: "yep",
 		},
-		resolved: null,
 		result:
 			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
 	},
@@ -1666,7 +1668,6 @@ const fixtures = [
 				},
 			},
 		},
-		resolved: null,
 		result: '<w:t xml:space="preserve">0123</w:t>',
 	},
 	{
@@ -1677,7 +1678,6 @@ const fixtures = [
 			parser: expressionParser,
 		},
 		scope: { hello: ["world"] },
-		resolved: null,
 		result: '<w:t xml:space="preserve">world</w:t>',
 	},
 	{
@@ -1695,7 +1695,6 @@ const fixtures = [
 			parser: expressionParser,
 		},
 		scope: { c: { label: null }, label: "hello" },
-		resolved: null,
 		result: '<w:t xml:space="preserve">hello</w:t>',
 	},
 	{
@@ -1706,7 +1705,6 @@ const fixtures = [
 			parser: expressionParser,
 		},
 		scope: { a: [["first-part", "other-part"]] },
-		resolved: null,
 		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
 	},
 	{
@@ -1716,8 +1714,6 @@ const fixtures = [
 		options: {
 			parser: expressionParser,
 		},
-		scope: {},
-		resolved: null,
 		result: '<w:t xml:space="preserve">undefined</w:t>',
 	},
 	{
@@ -1727,7 +1723,6 @@ const fixtures = [
 		options: {
 			parser: expressionParser,
 		},
-		scope: {},
 		error: wrapMultiError({
 			name: "ScopeParserError",
 			message: "Scope parser compilation failed",
@@ -1744,7 +1739,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			},
 		}),
 		errorType: Errors.XTTemplateError,
-		resolved: null,
 		result: '<w:t xml:space="preserve">undefined</w:t>',
 	},
 	{
@@ -1754,8 +1748,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		options: {
 			parser: expressionParser,
 		},
-		scope: {},
-		resolved: null,
 		result: '<w:t xml:space="preserve">undefined</w:t>',
 	},
 	{
@@ -1766,7 +1758,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			parser: expressionParser,
 		},
 		scope: { name: "john" },
-		resolved: null,
 		result: '<w:t xml:space="preserve">JOHN</w:t>',
 	},
 	{
@@ -1777,7 +1768,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			parser: expressionParser,
 		},
 		scope: { a: 10, b: 5 },
-		resolved: null,
 		result: '<w:t xml:space="preserve">10</w:t>',
 	},
 	{
@@ -1846,7 +1836,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:t xml:space="preserve">undefined</w:t>',
 	},
 	{
-		it: "should work for table with nested loops",
+		it: "should show error when having table with nested loops",
 		content: `<w:tbl>
 		<w:tr><w:tc><w:p><w:r><w:t>{#c1}A</w:t></w:r></w:p></w:tc></w:tr>
 		<w:tr><w:tc><w:p><w:r><w:t>{/}{#c2}B</w:t></w:r><w:r><w:t>{/}</w:t></w:r></w:p></w:tc></w:tr>
