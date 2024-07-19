@@ -1631,8 +1631,7 @@ const fixtures = [
 			cond: true,
 			cond2: false,
 		},
-		result:
-			'',
+		result: "",
 	},
 	{
 		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
