@@ -214,3 +214,10 @@ ieAngularParser.configure({
   isIdentifierStart: validStartChars,
   isIdentifierContinue: validContinuationChars,
 });
+
+angularParser.configure({
+  evaluateIdentifier(tag: string, scope: any, scopeList: any[], context: any) {
+    let res = context.num + context.num;
+    return res;
+  },
+});

@@ -1,3 +1,52 @@
+### 3.49.0
+
+Add possibility, when using the angular parser, to use "magic" keys to return some specific values. (This feature cannot be implemented if you use the `"docxtemplater/expressions-ie11.js"` package).
+
+In your template, if you write :
+
+```docx
+{#loop}
+{__val}
+{/}
+```
+
+This will retrieve the "val" value from the scope that is above the current scope (it retrieves the value of "val" in the scope outside of the loop).
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+const doc = new Docxtemplater(zip, {
+  parser: expressionParser.configure({
+    evaluateIdentifier(tag, scope, scopeList, context) {
+      const matchesParent = /^(_{2,})(.*)/g;
+      if (matchesParent.test(tag)) {
+        const parentCount = tag.replace(matchesParent, "$1").length - 1;
+        tag = tag.replace(matchesParent, "$2");
+        if (parentCount >= 1) {
+          for (let i = scopeList.length - 1 - parentCount; i >= 0; i--) {
+            const s = scopeList[i];
+            if (s[tag] != null) {
+              const property = s[tag];
+              return typeof property === "function"
+                ? property.bind(s)
+                : property;
+            }
+          }
+        }
+      }
+    },
+  }),
+});
+
+doc.render({
+  loop: [
+    {
+      val: "This value",
+    },
+  ],
+  val: "Other value", // <= This value will be retrieved
+});
+```
+
 ### 3.48.0
 
 Allow to configure the behavior of the "change delimiter syntax".

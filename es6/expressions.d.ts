@@ -7,6 +7,12 @@ interface ParserOptions {
   literals?: { [x: string]: any };
   isIdentifierStart?: (char: string) => boolean;
   isIdentifierContinue?: (char: string) => boolean;
+  evaluateIdentifier?: (
+    tag: string,
+    scope: any,
+    scopeList: any[],
+    context: DXT.ParserContext
+  ) => any;
 }
 
 type Parser = {

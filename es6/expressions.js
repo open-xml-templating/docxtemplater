@@ -148,6 +148,17 @@ function configuredParser(config = {}) {
 					{},
 					{
 						get(target, name) {
+							if (config.evaluateIdentifier) {
+								const fnResult = config.evaluateIdentifier(
+									name,
+									scope,
+									scopeList,
+									context
+								);
+								if (fnResult != null) {
+									return fnResult;
+								}
+							}
 							if (name === "$index") {
 								return getIndex(scope, context);
 							}
@@ -173,6 +184,17 @@ function configuredParser(config = {}) {
 							return null;
 						},
 						has(target, name) {
+							if (config.evaluateIdentifier) {
+								const fnResult = config.evaluateIdentifier(
+									name,
+									scope,
+									scopeList,
+									context
+								);
+								if (fnResult != null) {
+									return true;
+								}
+							}
 							if (name === "$index") {
 								return true;
 							}

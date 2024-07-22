@@ -4,6 +4,7 @@ const angularParserIE11 = require("../../expressions-ie11.js");
 const Errors = require("../../errors.js");
 const { wrapMultiError } = require("../utils.js");
 const nbsp = String.fromCharCode(160);
+const { expect } = require("../utils.js");
 
 expressionParser.filters.upper = function (str) {
 	if (!str) {
@@ -1806,6 +1807,53 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			}),
 		},
 		result: '<w:t xml:space="preserve">FOO</w:t>',
+	},
+	{
+		it: "should be possible to use parent scope together with expressionParser",
+		content: "<w:t>{#loop}{__b|twice}{b|twice}{/loop}</w:t>",
+		// $b means in this context "b" but from the rootscope
+		scope: {
+			loop: [
+				{
+					b: 2,
+				},
+				{
+					b: 3,
+				},
+			],
+			b: 1,
+		},
+		...noInternals,
+		options: {
+			linebreaks: true,
+			parser: expressionParser.configure({
+				evaluateIdentifier(tag, scope, scopeList, context) {
+					const matchesParent = /^(_{2,})(.*)/g;
+					expect(context.num).to.be.a("number");
+					if (matchesParent.test(tag)) {
+						const parentCount = tag.replace(matchesParent, "$1").length - 1;
+						tag = tag.replace(matchesParent, "$2");
+						if (parentCount >= 1) {
+							for (let i = scopeList.length - 1 - parentCount; i >= 0; i--) {
+								const s = scopeList[i];
+								if (s[tag] != null) {
+									const property = s[tag];
+									return typeof property === "function"
+										? property.bind(s)
+										: property;
+								}
+							}
+						}
+					}
+				},
+				filters: {
+					twice(input) {
+						return 2 * input;
+					},
+				},
+			}),
+		},
+		result: '<w:t xml:space="preserve">2426</w:t>',
 	},
 	{
 		it: "should be possible to add filter for one instance of the ie11 parser",
