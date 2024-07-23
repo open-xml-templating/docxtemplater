@@ -125,6 +125,8 @@ declare class Docxtemplater<TZip = any> {
   getFullText(path?: string): string;
   replaceFirstSection?: boolean; // used for the subsection module
   replaceLastSection?: boolean; // used for the subsection module
+  includeSections?: boolean; // used for the subsection module
+  keepStyles?: boolean; // used for the subtemplate module
 }
 
 declare namespace Docxtemplater {

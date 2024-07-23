@@ -1,3 +1,7 @@
+### 3.49.1
+
+Add `doc.keepStyles` and `doc.includeSections` to Typescript definition.
+
 ### 3.49.0
 
 Add possibility, when using the angular parser, to use "magic" keys to return some specific values. (This feature cannot be implemented if you use the `"docxtemplater/expressions-ie11.js"` package).
