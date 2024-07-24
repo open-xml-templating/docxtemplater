@@ -1,8 +1,5 @@
 # docxtemplater
 
-> **Note**
-> If you love docxtemplater, please help us spread your trust in docxtemplater by <a href="https://testimonial.to/docxtemplater">leaving us a video or text testimonial</a>
-
 [![Download count](https://img.shields.io/npm/dm/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![Current tag](https://img.shields.io/npm/v/docxtemplater.svg?style=flat)](https://www.npmjs.org/package/docxtemplater) [![CDNJS version](https://img.shields.io/cdnjs/v/docxtemplater.svg)](https://cdnjs.com/libraries/docxtemplater) [![size](http://img.badgesize.io/https://raw.githubusercontent.com/open-xml-templating/docxtemplater-build/master/build/docxtemplater-latest.min.js?label=size&style=flat-square)](https://raw.githubusercontent.com/open-xml-templating/docxtemplater-build/master/build/docxtemplater-latest.min.js) [![gzip size](http://img.badgesize.io/https://raw.githubusercontent.com/open-xml-templating/docxtemplater-build/master/build/docxtemplater-latest.min.js?compression=gzip&label=gzip%20size&style=flat-square)](https://raw.githubusercontent.com/open-xml-templating/docxtemplater-build/master/build/docxtemplater-latest.min.js)
 
 **docxtemplater** is a library to generate docx/pptx documents from a docx/pptx template. It can replace {placeholders} with data and also supports loops and conditions. The templates can be edited by non-programmers, for example your clients.
