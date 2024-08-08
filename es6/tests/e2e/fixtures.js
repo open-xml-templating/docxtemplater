@@ -73,6 +73,21 @@ const tableRowEnd = {
 	tag: "w:tr",
 };
 
+const tableColStart = {
+	type: "tag",
+	position: "start",
+	text: false,
+	value: "<w:tc>",
+	tag: "w:tc",
+};
+const tableColEnd = {
+	type: "tag",
+	value: "</w:tc>",
+	text: false,
+	position: "end",
+	tag: "w:tc",
+};
+
 const delimiters = {
 	start: { type: "delimiter", position: "start" },
 	end: { type: "delimiter", position: "end" },
@@ -706,6 +721,7 @@ const fixtures = [
 	},
 	{
 		it: "should work with paragraph loops and selfclosing paragraphs",
+		...noInternals,
 		content:
 			"<w:p><w:t>{#foo}</w:t></w:p><w:p/><w:xxx></w:xxx><w:p><w:t>{/}</w:t></w:p>",
 		options: {
@@ -715,9 +731,6 @@ const fixtures = [
 			foo: true,
 		},
 		result: "<w:p/><w:xxx></w:xxx>",
-		lexed: null,
-		parsed: null,
-		postparsed: null,
 	},
 	{
 		it: "should not fail with nested loops if using paragraphLoop",
@@ -887,9 +900,17 @@ const fixtures = [
 		],
 	},
 	{
+		it: "should drop table if it has no tc",
+		...noInternals,
+		content:
+			"<w:tbl><w:tr><w:tc><w:p><w:t>{-w:tr columns} Hello {-w:p users}{name}, {/users}</w:t><w:t>{/columns}</w:t></w:p></w:tc></w:tr></w:tbl>Other",
+		scope: {},
+		result: "<w:p/>Other",
+	},
+	{
 		it: "should work with dashloops nested",
 		content:
-			"<w:tr><w:p><w:t>{-w:tr columns} Hello {-w:p users}{name}, {/users}</w:t><w:t>{/columns}</w:t></w:p></w:tr>",
+			"<w:tr><w:tc><w:p><w:t>{-w:tr columns} Hello {-w:p users}{name}, {/users}</w:t><w:t>{/columns}</w:t></w:p></w:tc></w:tr>",
 		scope: {
 			columns: [
 				{
@@ -902,9 +923,10 @@ const fixtures = [
 			],
 		},
 		result:
-			'<w:tr><w:p><w:t xml:space="preserve"> Hello John Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Jane Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Wane Doe, </w:t><w:t/></w:p></w:tr>',
+			'<w:tr><w:tc><w:p><w:t xml:space="preserve"> Hello John Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Jane Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Wane Doe, </w:t><w:t/></w:p></w:tc></w:tr>',
 		lexed: [
 			tableRowStart,
+			tableColStart,
 			startParagraph,
 			startText,
 			delimiters.start,
@@ -928,10 +950,12 @@ const fixtures = [
 			delimiters.end,
 			endText,
 			endParagraph,
+			tableColEnd,
 			tableRowEnd,
 		],
 		parsed: [
 			tableRowStart,
+			tableColStart,
 			startParagraph,
 			startText,
 			{
@@ -964,6 +988,7 @@ const fixtures = [
 			},
 			endText,
 			endParagraph,
+			tableColEnd,
 			tableRowEnd,
 		],
 		postparsed: null,

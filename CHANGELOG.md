@@ -1,3 +1,26 @@
+### 3.49.2
+
+Bugfix corruption that could appear when using the vertical loop module.
+
+Previously, the vertical loop module could sometimes produce empty tables that would not be cleaned.
+
+For example, with following template :
+
+```docx
+--------------
+| {:vt#loop} |
+--------------
+| XXX        |
+| {:vt/}     |
+--------------
+```
+
+If the loop was an empty array, the output would produce a corrupt document.
+
+The table is now correctly removed in this case.
+
+The table will
+
 ### 3.49.1
 
 Add `doc.keepStyles` and `doc.includeSections` to Typescript definition.

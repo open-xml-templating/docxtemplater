@@ -74,13 +74,14 @@ function DocXFileTypeConfig() {
 			render,
 		],
 		tagShouldContain: [
-			{ tag: "w:tbl", shouldContain: ["w:tr"], drop: true },
-			{ tag: "w:tc", shouldContain: ["w:p"], value: "<w:p></w:p>" },
 			{
 				tag: "w:sdtContent",
 				shouldContain: ["w:p", "w:r", "w:commentRangeStart", "w:sdt"],
 				value: "<w:p></w:p>",
 			},
+			{ tag: "w:tc", shouldContain: ["w:p"], value: "<w:p></w:p>" },
+			{ tag: "w:tr", shouldContain: ["w:tc"], drop: true },
+			{ tag: "w:tbl", shouldContain: ["w:tr"], drop: true },
 		],
 	};
 }
