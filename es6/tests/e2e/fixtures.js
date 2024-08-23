@@ -1833,6 +1833,43 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 		result: '<w:t xml:space="preserve">FOO</w:t>',
 	},
+	(() => {
+		const globalData = { val: 0 };
+		return {
+			it: "should be possible to configure expressionParser with set command",
+			content:
+				"<w:t>{#loop}{$$val = (cond ? 0 : $$val + 1); $$val}{/loop}</w:t>",
+			...noInternals,
+			options: {
+				linebreaks: true,
+				parser: expressionParser.configure({
+					setIdentifier(tag, value) {
+						const matchGlobal = /^\$\$/g;
+						if (matchGlobal.test(tag)) {
+							globalData[tag] = value;
+							return true;
+						}
+					},
+					evaluateIdentifier(tag) {
+						const matchGlobal = /^\$\$/g;
+						if (matchGlobal.test(tag)) {
+							return globalData[tag];
+						}
+					},
+				}),
+			},
+			scope: {
+				loop: [
+					{ cond: true, x: "foo" },
+					{ cond: false, x: "foo" },
+					{ cond: false, x: "foo" },
+					{ cond: true, x: "foo" },
+					{ cond: false, x: "foo" },
+				],
+			},
+			result: '<w:t xml:space="preserve">01201</w:t>',
+		};
+	})(),
 	{
 		it: "should be possible to use parent scope together with expressionParser",
 		content: "<w:t>{#loop}{__b|twice}{b|twice}{/loop}</w:t>",

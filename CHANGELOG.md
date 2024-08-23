@@ -1,3 +1,50 @@
+### 3.50.0
+
+In the continuity of the "evaluateIdentifier" feature added in 3.49.0, we added the `setIdentifier` option for the expressions.js file :
+
+This is useful if you want to do assignments in your template, like this :
+
+```docx
+{$$globalVar = 3}
+```
+
+You can then write :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+
+const globalData = {};
+const doc = new Docxtemplater(zip, {
+  parser: expressionParser.configure({
+    setIdentifier(tag, value) {
+      const matchGlobal = /^\$\$/g;
+      if (matchGlobal.test(tag)) {
+        globalData[tag] = value;
+        return true;
+      }
+    },
+    evaluateIdentifier(tag) {
+      const matchGlobal = /^\$\$/g;
+      if (matchGlobal.test(tag)) {
+        return globalData[tag];
+      }
+    },
+  }),
+});
+
+doc.render(/* data */);
+```
+
+In this case, all of your assignments to variable that start with "$$" will be assigned to the "globalData" object.
+
+Also tags that contain one assignment and then a statement will now return the statement.
+
+So for example, you can write :
+
+Hello { $$admin=user; $$admin }
+
+In this case, it will render "Hello John" (if the data is `{user: "John"}`)
+
 ### 3.49.2
 
 Bugfix corruption that could appear when using the vertical loop module.

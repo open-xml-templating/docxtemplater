@@ -127,9 +127,9 @@ function configuredParser(config = {}) {
 		// {full_name = first_name + last_name}
 		// In that case, it makes sense to return an empty string so
 		// that the tag does not write something to the generated document.
+		const lastBody = expr.ast.body[expr.ast.body.length - 1];
 		const isAngularAssignment =
-			expr.ast.body[0] &&
-			expr.ast.body[0].expression.type === "AssignmentExpression";
+			lastBody && lastBody.expression.type === "AssignmentExpression";
 
 		return {
 			getIdentifiers() {
@@ -213,6 +213,19 @@ function configuredParser(config = {}) {
 							return false;
 						},
 						set(target, name, value) {
+							if (config.setIdentifier) {
+								const fnResult = config.setIdentifier(
+									name,
+									value,
+									scope,
+									scopeList,
+									context
+								);
+								if (fnResult != null) {
+									return true;
+								}
+							}
+
 							if (typeof scope === "object" && scope) {
 								scope[name] = value;
 								return true;
@@ -227,6 +240,22 @@ function configuredParser(config = {}) {
 							return true;
 						},
 						getOwnPropertyDescriptor(target, name) {
+							if (config.evaluateIdentifier) {
+								const fnResult = config.evaluateIdentifier(
+									name,
+									scope,
+									scopeList,
+									context
+								);
+								if (fnResult != null) {
+									return {
+										writable: true,
+										enumerable: true,
+										configurable: true,
+										value: scope[name],
+									};
+								}
+							}
 							if (scope.hasOwnProperty(name)) {
 								return {
 									writable: true,
