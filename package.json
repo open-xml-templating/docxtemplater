@@ -33,7 +33,7 @@
   "types": "./js/docxtemplater.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/open-xml-templating/docxtemplater"
+    "url": "git+https://github.com/open-xml-templating/docxtemplater.git"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.8.10"
