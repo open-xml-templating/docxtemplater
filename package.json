@@ -44,7 +44,7 @@
     "@babel/core": "^7.25.2",
     "@babel/eslint-parser": "^7.25.1",
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
-    "@babel/preset-env": "^7.25.3",
+    "@babel/preset-env": "^7.25.4",
     "@stryker-mutator/core": "^8.5.0",
     "@stryker-mutator/mocha-runner": "^8.5.0",
     "@wdio/cli": "8.12.2",
@@ -75,7 +75,7 @@
     "tsd": "^0.31.1",
     "updtr": "^4.1.0",
     "webdriverio": "8.12.1",
-    "webpack": "^5.93.0",
+    "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
   },
   "license": "MIT",
