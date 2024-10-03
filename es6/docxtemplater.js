@@ -2,20 +2,23 @@ const DocUtils = require("./doc-utils.js");
 DocUtils.traits = require("./traits.js");
 DocUtils.moduleWrapper = require("./module-wrapper.js");
 const createScope = require("./scope-manager.js");
+const Lexer = require("./lexer.js");
+const commonModule = require("./modules/common.js");
+
 const {
 	throwMultiError,
 	throwResolveBeforeCompile,
 	throwRenderInvalidTemplate,
 	throwRenderTwice,
+	XTInternalError,
+	throwFileTypeNotIdentified,
+	throwFileTypeNotHandled,
+	throwApiVersionError,
 } = require("./errors.js");
 
 const logErrors = require("./error-logger.js");
 const collectContentTypes = require("./collect-content-types.js");
-const ctXML = "[Content_Types].xml";
-const relsFile = "_rels/.rels";
-const commonModule = require("./modules/common.js");
 
-const Lexer = require("./lexer.js");
 const {
 	defaults,
 	str2xml,
@@ -26,56 +29,71 @@ const {
 	getDuplicates,
 	stableSort,
 } = DocUtils;
-const {
-	XTInternalError,
-	throwFileTypeNotIdentified,
-	throwFileTypeNotHandled,
-	throwApiVersionError,
-} = require("./errors.js");
 
+const ctXML = "[Content_Types].xml";
+const relsFile = "_rels/.rels";
 const currentModuleApiVersion = [3, 40, 0];
 
-function dropUnsupportedFileTypesModules(dx) {
-	dx.modules = dx.modules.filter((module) => {
-		if (module.supportedFileTypes) {
-			if (!Array.isArray(module.supportedFileTypes)) {
-				throw new Error(
-					"The supportedFileTypes field of the module must be an array"
-				);
-			}
-			const isSupportedModule =
-				module.supportedFileTypes.indexOf(dx.fileType) !== -1;
-			if (!isSupportedModule) {
-				module.on("detached");
-			}
-			return isSupportedModule;
+function dropUnsupportedFileTypesModules(doc) {
+	doc.modules = doc.modules.filter((module) => {
+		if (!module.supportedFileTypes) {
+			return true;
 		}
-		return true;
+
+		if (!Array.isArray(module.supportedFileTypes)) {
+			throw new Error(
+				"The supportedFileTypes field of the module must be an array"
+			);
+		}
+
+		const isSupportedModule = module.supportedFileTypes.includes(doc.fileType);
+
+		if (!isSupportedModule) {
+			module.on("detached");
+		}
+
+		return isSupportedModule;
 	});
+}
+
+function verifyErrors(doc) {
+	const compiled = doc.compiled;
+	doc.errors = concatArrays(
+		Object.keys(compiled).map((name) => {
+			return compiled[name].allErrors;
+		})
+	);
+
+	if (doc.errors.length !== 0) {
+		if (doc.options.errorLogging) {
+			logErrors(doc.errors, doc.options.errorLogging);
+		}
+		throwMultiError(doc.errors);
+	}
 }
 
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
-		if (!Array.isArray(modules)) {
-			throw new Error(
-				"The modules argument of docxtemplater's constructor must be an array"
-			);
-		}
 		this.targets = [];
 		this.rendered = false;
 		this.scopeManagers = {};
 		this.compiled = {};
 		this.modules = [commonModule()];
 		this.setOptions(options);
-		modules.forEach((module) => {
-			this.attachModule(module);
-		});
 		if (arguments.length > 0) {
 			if (!zip || !zip.files || typeof zip.file !== "function") {
 				throw new Error(
 					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 				);
 			}
+			if (!Array.isArray(modules)) {
+				throw new Error(
+					"The modules argument of docxtemplater's constructor must be an array"
+				);
+			}
+			modules.forEach((module) => {
+				this.attachModule(module);
+			});
 			this.loadZip(zip);
 			this.compile();
 			this.v4Constructor = true;
@@ -501,22 +519,6 @@ const Docxtemplater = class Docxtemplater {
 		return this.templatedFiles;
 	}
 };
-
-function verifyErrors(doc) {
-	const compiled = doc.compiled;
-	doc.errors = concatArrays(
-		Object.keys(compiled).map((name) => {
-			return compiled[name].allErrors;
-		})
-	);
-
-	if (doc.errors.length !== 0) {
-		if (doc.options.errorLogging) {
-			logErrors(doc.errors, doc.options.errorLogging);
-		}
-		throwMultiError(doc.errors);
-	}
-}
 
 Docxtemplater.DocUtils = DocUtils;
 Docxtemplater.Errors = require("./errors.js");
