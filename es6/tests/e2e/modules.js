@@ -43,7 +43,7 @@ describe("Verify apiversion", function () {
 			name: "APIVersionError",
 			properties: {
 				id: "api_version_error",
-				currentModuleApiVersion: [3, 40, 0],
+				currentModuleApiVersion: [3, 41, 0],
 				neededVersion: [3, 92, 0],
 			},
 		});

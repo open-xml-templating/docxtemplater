@@ -32,7 +32,7 @@ const {
 
 const ctXML = "[Content_Types].xml";
 const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 40, 0];
+const currentModuleApiVersion = [3, 41, 0];
 
 function dropUnsupportedFileTypesModules(doc) {
 	doc.modules = doc.modules.filter((module) => {
@@ -433,9 +433,7 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	renderAsync(data) {
-		return this.resolveData(data).then(() => {
-			return this.render();
-		});
+		return this.resolveData(data).then(() => this.render());
 	}
 	render(data) {
 		if (this.rendered) {
@@ -459,12 +457,28 @@ const Docxtemplater = class Docxtemplater {
 				return module.getRenderedMap(value);
 			}, {});
 
+		const output = [];
 		Object.keys(this.mapper).forEach((to) => {
 			const { from, data } = this.mapper[to];
 			const currentFile = this.compiled[from];
 			currentFile.scopeManager = this.getScopeManager(to, currentFile, data);
 			currentFile.render(to);
-			this.zip.file(to, currentFile.content, { createFolders: true });
+			output.push([to, currentFile.content, currentFile]);
+			delete currentFile.content;
+		});
+		output.forEach((outputPart) => {
+			const [, content, currentFile] = outputPart;
+			this.modules.forEach(function (module) {
+				if (module.preZip) {
+					const result = module.preZip(content, currentFile);
+					if (typeof result === "string") {
+						outputPart[1] = result;
+					}
+				}
+			});
+		});
+		output.forEach(([to, content]) => {
+			this.zip.file(to, content, { createFolders: true });
 		});
 
 		verifyErrors(this);

@@ -1,3 +1,15 @@
+### 3.51.0
+
+Add support for `module.preZip` function, which is useful for the subtemplate and the meta module.
+
+After upgrading to 3.51.0, if you use any of the paid modules, please also run the upgrade for all your modules with this command :
+
+```sh
+npm install docxtemplater && npx -y update-docxtemplater && npm install
+```
+
+Update moduleApiVersion to 3.41.0.
+
 ### 3.50.0
 
 In the continuity of the "evaluateIdentifier" feature added in 3.49.0, we added the `setIdentifier` option for the expressions.js file :

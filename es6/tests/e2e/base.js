@@ -92,7 +92,7 @@ describe("Api versioning", function () {
 		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.0"));
 		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.6.0"));
 		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.44.0"));
-		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.40.100"));
+		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.41.100"));
 	});
 });
 
