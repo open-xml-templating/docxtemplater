@@ -1444,6 +1444,26 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">Hi John</w:t>',
 	},
 	{
+		it: "should handle {#loop}{. | myFilter}{/loop} tag",
+		scope: {
+			loop: [3],
+		},
+		...noInternals,
+		content: "<w:t>Hi {#loop}{. | myFilter}{/loop}</w:t>",
+		options: {
+			parser: expressionParser.configure({
+				filters: {
+					myFilter(input) {
+						expect(typeof input).to.equal("number");
+						expect(input).to.equal(3);
+						return input + input;
+					},
+				},
+			}),
+		},
+		result: '<w:t xml:space="preserve">Hi 6</w:t>',
+	},
+	{
 		it: 'should handle {this["a b"]} tag',
 		scope: {
 			"a b": "John",

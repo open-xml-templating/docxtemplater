@@ -120,6 +120,7 @@ function configuredParser(config = {}) {
 		const expr = expressions.compile(tag, {
 			isIdentifierStart: validStartChars,
 			isIdentifierContinue: validContinuationChars,
+			handleThis: false,
 			...config,
 		});
 		// isAngularAssignment will be true if your tag contains an Assignment, for example
@@ -159,6 +160,9 @@ function configuredParser(config = {}) {
 									return fnResult;
 								}
 							}
+							if (name === "this") {
+								return scope;
+							}
 							if (name === "$index") {
 								return getIndex(scope, context);
 							}
@@ -195,7 +199,7 @@ function configuredParser(config = {}) {
 									return true;
 								}
 							}
-							if (name === "$index") {
+							if (["$index", "this"].indexOf(name) !== -1) {
 								return true;
 							}
 							if (scope == null) {

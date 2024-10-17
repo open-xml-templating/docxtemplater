@@ -1,3 +1,12 @@
+### 3.51.1
+
+Update to be able to write `{#loop}{. | filter}{/}` so that the variable passed
+to filter is not of type Proxy.
+
+Previously, the variable passed to the filter would be of type Proxy.
+
+This requires `angular-expressions@1.4.0`
+
 ### 3.51.0
 
 Add support for `module.preZip` function, which is useful for the subtemplate and the meta module.
