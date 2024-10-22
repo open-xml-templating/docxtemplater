@@ -1,3 +1,11 @@
+### 3.51.2
+
+Improve typescript typings :
+
+- Add position and tag to `DXT.Part`
+- Add void return value to `getFileType?(opts: any): string | void;`
+- Add `targets` to Docxtemplater instance
+
 ### 3.51.1
 
 Update to be able to write `{#loop}{. | filter}{/}` so that the variable passed

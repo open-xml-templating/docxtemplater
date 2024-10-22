@@ -20,6 +20,8 @@ declare namespace DXT {
     endLindex?: integer;
     expanded?: Part[];
     subparsed?: Part[];
+    position?: string;
+    tag?: string;
   }
 
   interface ScopeManager {
@@ -50,7 +52,7 @@ declare namespace DXT {
     ][];
     render?(part: Part): Rendered | null;
     getTraits?(traitName: string, parsed: any): any;
-    getFileType?(opts: any): string;
+    getFileType?(opts: any): string | void;
     nullGetter?(part: Part, scopeManager: any): any;
     optionsTransformer?(options: Options): Options;
     postrender?(parts: string[], options: any): string[];
@@ -123,6 +125,7 @@ declare class Docxtemplater<TZip = any> {
   attachModule(module: DXT.Module): this;
   compile(): this;
   getFullText(path?: string): string;
+  targets: string[]; // used to know which files are templated
   replaceFirstSection?: boolean; // used for the subsection module
   replaceLastSection?: boolean; // used for the subsection module
   includeSections?: boolean; // used for the subsection module

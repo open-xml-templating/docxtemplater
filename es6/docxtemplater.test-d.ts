@@ -221,3 +221,97 @@ angularParser.configure({
     return res;
   },
 });
+
+// Define the parameter type for getFileType
+interface FileTypeParams {
+  doc: Docxtemplater;
+}
+
+const avoidRenderingCoreXMLModule = {
+  name: "avoidRenderingCoreXMLModule",
+  getFileType({ doc }: FileTypeParams): void {
+    doc.targets = doc.targets.filter(function (file: string) {
+      if (
+        file === "docProps/core.xml" ||
+        file === "docProps/app.xml" ||
+        file === "docProps/custom.xml"
+      ) {
+        return false;
+      }
+      return true;
+    });
+  },
+};
+new Docxtemplater(new PizZip("hello"), {
+  modules: [avoidRenderingCoreXMLModule],
+  paragraphLoop: true,
+  linebreaks: true,
+});
+
+interface SetOptions {
+  Lexer: any;
+  zip: any;
+}
+const fixDocPrCorruptionModule: DXT.Module = {
+  set(options: SetOptions) {
+    if (options.Lexer) {
+      this.Lexer = options.Lexer;
+    }
+    if (options.zip) {
+      this.zip = options.zip;
+    }
+  },
+  on(event) {
+    if (event === "attached") {
+      this.attached = false;
+    }
+    if (event !== "syncing-zip") {
+      return;
+    }
+    const zip = this.zip;
+    const Lexer = this.Lexer;
+    let prId = 1;
+    function setSingleAttribute(
+      partValue: string,
+      attr: string,
+      attrValue: string | number
+    ) {
+      const regex = new RegExp(`(<.* ${attr}=")([^"]+)(".*)$`);
+      if (regex.test(partValue)) {
+        return partValue.replace(regex, `$1${attrValue}$3`);
+      }
+      let end = partValue.lastIndexOf("/>");
+      if (end === -1) {
+        end = partValue.lastIndexOf(">");
+      }
+      return (
+        partValue.substr(0, end) +
+        ` ${attr}="${attrValue}"` +
+        partValue.substr(end)
+      );
+    }
+    zip.file(/\.xml$/).forEach(function (f: any) {
+      let text = f.asText();
+      const xmllexed = Lexer.xmlparse(text, {
+        text: [],
+        other: ["wp:docPr"],
+      });
+      if (xmllexed.length > 1) {
+        text = xmllexed.reduce(function (fullText: string, part: DXT.Part) {
+          if (
+            part.tag === "wp:docPr" &&
+            part.position &&
+            ["start", "selfclosing"].indexOf(part.position) !== -1
+          ) {
+            return fullText + setSingleAttribute(part.value, "id", prId++);
+          }
+          return fullText + part.value;
+        }, "");
+      }
+      zip.file(f.name, text);
+    });
+  },
+};
+new Docxtemplater(new PizZip("hello"), {
+  modules: [fixDocPrCorruptionModule],
+});
