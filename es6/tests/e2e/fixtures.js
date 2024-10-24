@@ -235,6 +235,39 @@ const fixtures = [
 		},
 	},
 	{
+		it: "should be possible to implement a parser that loads nested data using {user.name}",
+		result:
+			'<w:t xml:space="preserve">Hello John, your age is 33. Date : 17/01/2000</w:t>',
+		...noInternals,
+		content:
+			"<w:t>Hello {user.name}, your age is {user.age}. Date : {date}</w:t>",
+		options: {
+			parser(tag) {
+				const splitted = tag.split(".");
+				return {
+					get(scope) {
+						if (tag === ".") {
+							return scope;
+						}
+						let s = scope;
+						for (let i = 0, len = splitted.length; i < len; i++) {
+							const key = splitted[i];
+							s = s[key];
+						}
+						return s;
+					},
+				};
+			},
+		},
+		scope: {
+			user: {
+				name: "John",
+				age: 33,
+			},
+			date: "17/01/2000",
+		},
+	},
+	{
 		it: "should be possible to add nullGetter to module",
 		result: '<w:t xml:space="preserve">foo</w:t>',
 		...noInternals,
