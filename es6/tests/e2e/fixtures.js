@@ -1656,47 +1656,47 @@ const fixtures = [
 	},
 	{
 		it: "should work well with $index angular parser",
-		content: "<w:t>{#todos}{#$index==0}FIRST {/}{text} {/todos}</w:t>",
+		content: "<w:t>{#list}{#$index==0}FIRST {/}{text} {/list}</w:t>",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
-		scope: { todos: [{ text: "Hello" }, { text: "Other todo" }] },
-		result: '<w:t xml:space="preserve">FIRST Hello Other todo </w:t>',
+		scope: { list: [{ text: "Hello" }, { text: "Other item" }] },
+		result: '<w:t xml:space="preserve">FIRST Hello Other item </w:t>',
 	},
 	{
 		it: "should work well with $index inside condition angular parser",
 		content:
-			"<w:t>{#todos}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
+			"<w:t>{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
 		scope: {
-			todos: [
+			list: [
 				{ important: true, text: "Hello" },
-				{ text: "Other todo" },
+				{ text: "Other item" },
 				{ important: true, text: "Bye" },
 			],
 		},
-		result: '<w:t xml:space="preserve">!!1Hello?2Other todo!!3Bye</w:t>',
+		result: '<w:t xml:space="preserve">!!1Hello?2Other item!!3Bye</w:t>',
 	},
 	{
 		it: "should work well with $index inside condition angular parser",
 		content:
-			"<w:t>{#todos}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
+			"<w:t>{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
 		...noInternals,
 		options: {
 			parser: angularParserIE11,
 		},
 		scope: {
-			todos: [
+			list: [
 				{ important: true, text: "Hello" },
-				{ text: "Other todo" },
+				{ text: "Other item" },
 				{ important: true, text: "Bye" },
 			],
 		},
-		result: '<w:t xml:space="preserve">!!1Hello?2Other todo!!3Bye</w:t>',
+		result: '<w:t xml:space="preserve">!!1Hello?2Other item!!3Bye</w:t>',
 	},
 	{
 		it: "should work well with nested conditions inside table",
@@ -2139,6 +2139,70 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
+		it: "should not fail on triple open tag if allowUnclosedTag is true",
+		...noInternals,
+		content: `<w:p>
+      <w:r>
+        <w:t>Hello {{{</w:t>
+      </w:r>
+      <w:r>
+        <w:t>lastName</w:t>
+      </w:r>
+      <w:r>
+        <w:t>} world</w:t>
+      </w:r>
+    </w:p>`,
+		options: {
+			syntax: {
+				allowUnclosedTag: true,
+			},
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: `<w:p>
+      <w:r>
+        <w:t xml:space="preserve">Hello {{Doe</w:t>
+      </w:r>
+      <w:r>
+        <w:t></w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> world</w:t>
+      </w:r>
+    </w:p>`,
+	},
+	{
+		it: "should not fail on SPACED unclosed tag if allowUnclosedTag is true",
+		...noInternals,
+		content: `<w:p>
+      <w:r>
+        <w:t>Hello {firstName {</w:t>
+      </w:r>
+      <w:r>
+        <w:t>lastName</w:t>
+      </w:r>
+      <w:r>
+        <w:t>} world</w:t>
+      </w:r>
+    </w:p>`,
+		options: {
+			syntax: {
+				allowUnclosedTag: true,
+			},
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: `<w:p>
+      <w:r>
+        <w:t xml:space="preserve">Hello {firstName Doe</w:t>
+      </w:r>
+      <w:r>
+        <w:t></w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> world</w:t>
+      </w:r>
+    </w:p>`,
+	},
+	{
 		it: "should not fail on SPACED unopened tag if allowUnopenedTag is true",
 		...noInternals,
 		content: `<w:p>
@@ -2167,6 +2231,65 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
       </w:r>
       <w:r>
         <w:t xml:space="preserve"> } world} } }</w:t>
+      </w:r>
+    </w:p>`,
+	},
+	{
+		it: "should not fail if allowUnclosedTag on 'Hello {' string",
+		...noInternals,
+		content: "<w:p><w:r><w:t>Hello {</w:t></w:r></w:p>",
+		options: {
+			syntax: {
+				allowUnclosedTag: true,
+				allowUnopenedTag: true,
+			},
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: "<w:p><w:r><w:t>Hello {</w:t></w:r></w:p>",
+	},
+	{
+		it: "should not fail if allowUnclosedTag on 'Hello }' string",
+		...noInternals,
+		content: "<w:p><w:r><w:t>Hello }</w:t></w:r></w:p>",
+		options: {
+			syntax: {
+				allowUnclosedTag: true,
+				allowUnopenedTag: true,
+			},
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: "<w:p><w:r><w:t>Hello }</w:t></w:r></w:p>",
+	},
+	{
+		it: "should not fail on double delimiters if allowUnclosedTag and allowUnopenedTag is true",
+		...noInternals,
+		content: `<w:p>
+      <w:r>
+        <w:t>Hello {{</w:t>
+      </w:r>
+      <w:r>
+        <w:t>lastName</w:t>
+      </w:r>
+      <w:r>
+        <w:t>}}</w:t>
+      </w:r>
+    </w:p>`,
+		options: {
+			syntax: {
+				allowUnclosedTag: true,
+				allowUnopenedTag: true,
+			},
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: `<w:p>
+      <w:r>
+        <w:t xml:space="preserve">Hello {Doe</w:t>
+      </w:r>
+      <w:r>
+        <w:t></w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">}</w:t>
       </w:r>
     </w:p>`,
 	},

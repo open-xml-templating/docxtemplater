@@ -126,9 +126,22 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 						lastDelimiterOffset,
 						delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
 					);
+					if (!syntaxOptions.allowUnclosedTag) {
+						errors.push(
+							getDuplicateOpenTagException({
+								xtag,
+								offset: lastDelimiterOffset,
+							})
+						);
+						lastDelimiterMatch = currDelimiterMatch;
+						delimiterAcc.push({ ...currDelimiterMatch, error: true });
+						return delimiterAcc;
+					}
+				}
+				if (!syntaxOptions.allowUnclosedTag) {
 					errors.push(
-						getDuplicateOpenTagException({
-							xtag,
+						getUnclosedTagException({
+							xtag: wordToUtf8(xtag),
 							offset: lastDelimiterOffset,
 						})
 					);
@@ -136,15 +149,7 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 					delimiterAcc.push({ ...currDelimiterMatch, error: true });
 					return delimiterAcc;
 				}
-				errors.push(
-					getUnclosedTagException({
-						xtag: wordToUtf8(xtag),
-						offset: lastDelimiterOffset,
-					})
-				);
-				lastDelimiterMatch = currDelimiterMatch;
-				delimiterAcc.push({ ...currDelimiterMatch, error: true });
-				return delimiterAcc;
+				delimiterAcc.pop();
 			}
 
 			if (!inDelimiter && position === "end") {
@@ -177,7 +182,7 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 				return delimiterAcc;
 			}
 
-			inDelimiter = !inDelimiter;
+			inDelimiter = position === "start";
 			lastDelimiterMatch = currDelimiterMatch;
 			delimiterAcc.push(currDelimiterMatch);
 			return delimiterAcc;
@@ -191,12 +196,16 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 			lastDelimiterOffset,
 			fullText.length - lastDelimiterOffset
 		);
-		errors.push(
-			getUnclosedTagException({
-				xtag: wordToUtf8(xtag),
-				offset: lastDelimiterOffset,
-			})
-		);
+		if (!syntaxOptions.allowUnclosedTag) {
+			errors.push(
+				getUnclosedTagException({
+					xtag: wordToUtf8(xtag),
+					offset: lastDelimiterOffset,
+				})
+			);
+		} else {
+			delimiterWithErrors.pop();
+		}
 	}
 
 	return {

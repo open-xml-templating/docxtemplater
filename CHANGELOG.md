@@ -1,3 +1,9 @@
+### 3.52.0
+
+Add `syntax.allowUnclosedTag` option.
+
+This allows to write : `Hello {user` and not have an error in your template.
+
 ### 3.51.2
 
 Improve typescript typings :

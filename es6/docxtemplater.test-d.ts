@@ -189,6 +189,7 @@ const doc8 = new Docxtemplater(new PizZip("hello"), {
 const doc9 = new Docxtemplater(new PizZip("hello"), {
   syntax: {
     allowUnopenedTag: true,
+    allowUnclosedTag: true,
     changeDelimiterPrefix: null,
   },
 });

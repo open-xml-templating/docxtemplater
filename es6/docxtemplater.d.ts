@@ -82,6 +82,7 @@ declare namespace DXT {
 
   interface Syntax {
     allowUnopenedTag?: boolean;
+    allowUnclosedTag?: boolean;
     changeDelimiterPrefix?: string | null;
   }
 
