@@ -1,5 +1,4 @@
 const {
-	createDoc,
 	createDocV4,
 	shouldBeSame,
 	expect,
@@ -9,7 +8,7 @@ const rawXMLValue = require("../data/raw-xml-pptx.js");
 
 describe("Pptx generation", function () {
 	it("should work with title", function () {
-		const doc = createDoc("title-example.pptx");
+		const doc = createDocV4("title-example.pptx");
 		let con = doc.getZip().files["docProps/app.xml"].asText();
 		expect(con).not.to.contain("Edgar");
 		doc.setData({ name: "Edgar" }).render();
@@ -17,7 +16,7 @@ describe("Pptx generation", function () {
 		expect(con).to.contain("Edgar");
 	});
 	it("should work with simple pptx", function () {
-		const doc = createDoc("simple-example.pptx");
+		const doc = createDocV4("simple-example.pptx");
 		doc.render({ name: "Edgar" });
 		expect(doc.getFullText()).to.be.equal("Hello Edgar");
 	});
@@ -73,10 +72,9 @@ describe("Pptx generation", function () {
 	});
 
 	it("should work with simple raw pptx", function () {
-		const doc = createDoc("raw-xml-example.pptx");
 		let scope, meta, tag;
 		let calls = 0;
-		doc.setOptions({
+		const doc = createDocV4("raw-xml-example.pptx", {
 			parser: (t) => {
 				tag = t;
 				return {
@@ -89,7 +87,7 @@ describe("Pptx generation", function () {
 				};
 			},
 		});
-		doc.setData({ raw: rawXMLValue }).render();
+		doc.render({ raw: rawXMLValue });
 		expect(calls).to.equal(1);
 		expect(scope.raw).to.be.a("string");
 		expect(meta).to.be.an("object");
@@ -100,10 +98,9 @@ describe("Pptx generation", function () {
 	});
 
 	it("should work with simple raw pptx async", function () {
-		const doc = createDoc("raw-xml-example.pptx");
 		let scope, meta, tag;
 		let calls = 0;
-		doc.setOptions({
+		const doc = createDocV4("raw-xml-example.pptx", {
 			parser: (t) => {
 				tag = t;
 				return {
@@ -116,9 +113,7 @@ describe("Pptx generation", function () {
 				};
 			},
 		});
-		doc.compile();
-		return doc.resolveData({ raw: resolveSoon(rawXMLValue) }).then(function () {
-			doc.render();
+		return doc.renderAsync({ raw: resolveSoon(rawXMLValue) }).then(function () {
 			expect(calls).to.equal(1);
 			expect(meta).to.be.an("object");
 			expect(meta.part).to.be.an("object");

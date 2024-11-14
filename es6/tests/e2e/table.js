@@ -1,4 +1,4 @@
-const { createDoc, expect } = require("../utils.js");
+const { createDocV4, expect } = require("../utils.js");
 
 describe("Table", function () {
 	it("should work with selfclosing tag inside table with paragraphLoop", function () {
@@ -43,7 +43,7 @@ describe("Table", function () {
 	});
 
 	it("should work with simple table", function () {
-		const doc = createDoc("table-complex2-example.docx").render({
+		const doc = createDocV4("table-complex2-example.docx").render({
 			table1: [
 				{
 					t1data1: "t1-1row-data1",
@@ -75,7 +75,7 @@ describe("Table", function () {
 	});
 
 	it("should work with more complex table", function () {
-		const doc = createDoc("table-complex-example.docx").render({
+		const doc = createDocV4("table-complex-example.docx").render({
 			table2: [
 				{
 					t2data1: "t2-1row-data1",
@@ -104,7 +104,7 @@ describe("Table", function () {
 	});
 
 	it("should work when looping around tables", function () {
-		const doc = createDoc("table-repeat.docx").render({
+		const doc = createDocV4("table-repeat.docx").render({
 			table: [1, 2, 3, 4],
 		});
 		const fullText = doc.getFullText();

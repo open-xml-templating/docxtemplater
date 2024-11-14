@@ -1,7 +1,7 @@
 const { times } = require("lodash");
 
 const {
-	createDoc,
+	createDocV4,
 	expect,
 	createXmlTemplaterDocxNoRender,
 	browserMatches,
@@ -184,9 +184,10 @@ if (!process.env.SPEED_TEST) {
 					let duration = 0;
 					const iModule = inspectModule();
 					for (let i = 0; i < 10; i++) {
-						const doc = createDoc("tag-product-loop.docx");
+						const doc = createDocV4("tag-product-loop.docx", {
+							modules: [iModule],
+						});
 						const startTime = new Date();
-						doc.attachModule(iModule);
 						const data = {
 							nom: "Doe",
 							prenom: "John",
@@ -199,9 +200,7 @@ if (!process.env.SPEED_TEST) {
 								};
 							}),
 						};
-						doc.setData(data);
-						doc.compile();
-						doc.render();
+						doc.render(data);
 						duration += new Date() - startTime;
 					}
 					let maxInspectDuration = 750;
@@ -233,8 +232,8 @@ if (!process.env.SPEED_TEST) {
 					allCount++;
 					return OldPromise.all(arg1);
 				};
-				const doc = createDoc("multi-level.docx");
-				doc.setOptions({
+				let start = +new Date();
+				const doc = createDocV4("multi-level.docx", {
 					paragraphLoop: true,
 					parser: (tag) => {
 						parserCount++;
@@ -246,8 +245,6 @@ if (!process.env.SPEED_TEST) {
 						};
 					},
 				});
-				let start = +new Date();
-				doc.compile();
 				const stepCompile = +new Date() - start;
 				start = +new Date();
 				const multiplier = 20;

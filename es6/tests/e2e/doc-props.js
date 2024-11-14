@@ -1,4 +1,4 @@
-const { createDoc, createDocV4, shouldBeSame, expect } = require("../utils.js");
+const { createDocV4, shouldBeSame, expect } = require("../utils.js");
 
 describe("Docx document properties", function () {
 	it("should change values in doc-props", function () {
@@ -8,7 +8,7 @@ describe("Docx document properties", function () {
 			phone: "0652455478",
 			description: "New Website",
 		};
-		const doc = createDoc("tag-docprops.docx", {
+		const doc = createDocV4("tag-docprops.docx", {
 			paragraphLoop: true,
 		});
 		doc.setData(tags);

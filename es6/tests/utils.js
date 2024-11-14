@@ -1,20 +1,22 @@
 if (typeof process === "undefined") {
 	global.process = {};
 }
+
 const path = require("path");
 const chai = require("chai");
 const { expect } = chai;
-const Errors = require("../errors.js");
 const PizZip = require("pizzip");
 const fs = require("fs");
 const { get, unset, omit, uniq, cloneDeep } = require("lodash");
-const errorLogger = require("../error-logger.js");
 const diff = require("diff");
-const AssertionModule = require("./assertion-module.js");
 
+const Errors = require("../errors.js");
+const errorLogger = require("../error-logger.js");
+const AssertionModule = require("./assertion-module.js");
 const Docxtemplater = require("../docxtemplater.js");
 const { first } = require("../utils.js");
 const xmlPrettify = require("./xml-prettify.js");
+
 let countFiles = 1;
 let allStarted = false;
 let examplesDirectory;
@@ -865,7 +867,7 @@ function makePptxV4(content, options = {}) {
 	return new Docxtemplater(zip, options);
 }
 
-function createDoc(name, options = {}) {
+function createDocV3(name, options = {}) {
 	if (!documentCache[name]) {
 		throw new Error(
 			`File "examples/${name}" does not exist, please create the file`
@@ -989,7 +991,7 @@ module.exports = {
 	chai,
 	cleanError,
 	cleanRecursive,
-	createDoc,
+	createDocV3,
 	getLoadedContent,
 	createXmlTemplaterDocx,
 	createXmlTemplaterDocxNoRender,

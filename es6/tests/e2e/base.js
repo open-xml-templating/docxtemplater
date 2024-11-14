@@ -1,44 +1,35 @@
-const PizZip = require("pizzip");
 const { assign } = require("lodash");
-
 const angularParser = require("../../expressions.js");
 const angularParserIE11 = require("../../expressions-ie11.js");
 const Docxtemplater = require("../../docxtemplater.js");
 const { last } = require("../../utils.js");
 const {
-	createDoc,
 	createDocV4,
 	createXmlTemplaterDocx,
 	expect,
 	expectToThrowSnapshot,
 	getContent,
-	getLength,
 	getZip,
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 
 describe("Loading", function () {
 	describe("ajax done correctly", function () {
-		it("doc and img Data should have the expected length", function () {
-			const doc = createDoc("tag-example.docx");
-			expect(getLength(doc.loadedContent)).to.be.equal(19424);
-		});
 		it("should have the right number of files (the docx unzipped)", function () {
-			const doc = createDoc("tag-example.docx");
+			const doc = createDocV4("tag-example.docx");
 			expect(Object.keys(doc.zip.files).length).to.be.equal(16);
 		});
 	});
 	describe("basic loading", function () {
 		it("should load file tag-example.docx", function () {
-			const doc = createDoc("tag-example.docx");
+			const doc = createDocV4("tag-example.docx");
 			expect(typeof doc).to.be.equal("object");
 		});
 	});
 
 	describe("output and input", function () {
 		it("should be the same", function () {
-			const zip = new PizZip(createDoc("tag-example.docx").loadedContent);
-			const doc = new Docxtemplater().loadZip(zip);
+			const doc = createDocV4("tag-example.docx");
 			const output = doc.getZip().generate({ type: "base64" });
 			expect(output.length).to.be.equal(90732);
 			expect(output.substr(0, 50)).to.be.equal(
@@ -50,13 +41,13 @@ describe("Loading", function () {
 
 describe("Retrieving text content", function () {
 	it("should work for the footer", function () {
-		const doc = createDoc("tag-example.docx");
+		const doc = createDocV4("tag-example.docx");
 		const fullText = doc.getFullText("word/footer1.xml");
 		expect(fullText.length).not.to.be.equal(0);
 		expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 	});
 	it("should work for the document", function () {
-		const doc = createDoc("tag-example.docx");
+		const doc = createDocV4("tag-example.docx");
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("{last_name} {first_name}");
 	});
@@ -64,7 +55,7 @@ describe("Retrieving text content", function () {
 
 describe("Retrieving list of templated files", function () {
 	it("should return 6 templatedFiles for a simple document", function () {
-		const doc = createDoc("tag-example.docx");
+		const doc = createDocV4("tag-example.docx");
 		const templatedFiles = doc.getTemplatedFiles();
 		expect(templatedFiles).to.be.eql([
 			"word/settings.xml",
@@ -80,7 +71,7 @@ describe("Retrieving list of templated files", function () {
 
 describe("Api versioning", function () {
 	it("should work with valid numbers", function () {
-		const doc = createDoc("tag-example.docx");
+		const doc = createDocV4("tag-example.docx");
 		expect(doc.verifyApiVersion("3.6.0")).to.be.equal(true);
 		expect(doc.verifyApiVersion("3.5.0")).to.be.equal(true);
 		expect(doc.verifyApiVersion("3.4.2")).to.be.equal(true);
@@ -88,7 +79,7 @@ describe("Api versioning", function () {
 	});
 
 	it("should fail with invalid versions", function () {
-		const doc = createDoc("tag-example.docx");
+		const doc = createDocV4("tag-example.docx");
 		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.0"));
 		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.6.0"));
 		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.44.0"));
@@ -98,10 +89,10 @@ describe("Api versioning", function () {
 
 describe("Inspect module", function () {
 	it("should get main tags", function () {
-		const doc = createDoc("tag-loop-example.docx");
 		const iModule = inspectModule();
-		doc.attachModule(iModule);
-		doc.compile();
+		const doc = createDocV4("tag-loop-example.docx", {
+			modules: [iModule],
+		});
 		expect(iModule.getStructuredTags()).to.matchSnapshot();
 		expect(iModule.getTags()).to.be.deep.equal({
 			offre: {
@@ -136,7 +127,7 @@ describe("Inspect module", function () {
 
 	it("should get all tags (pptx file)", function () {
 		const iModule = inspectModule();
-		createDoc("multi-page.pptx").attachModule(iModule).compile();
+		createDocV4("multi-page.pptx", { modules: [iModule] });
 		expect(iModule.getStructuredTags()).to.matchSnapshot();
 		expect(iModule.getFileType()).to.be.deep.equal("pptx");
 		expect(iModule.getAllTags()).to.be.deep.equal({
@@ -170,10 +161,10 @@ describe("Inspect module", function () {
 	});
 
 	it("should get all tags and merge them", function () {
-		const doc = createDoc("multi-page-to-merge.pptx");
 		const iModule = inspectModule();
-		doc.attachModule(iModule);
-		doc.compile();
+		createDocV4("multi-page-to-merge.pptx", {
+			modules: [iModule],
+		});
 		expect(iModule.getAllTags()).to.be.deep.equal({
 			tag: {},
 			users: {
@@ -185,10 +176,10 @@ describe("Inspect module", function () {
 	});
 
 	it("should get all tags with additional data", function () {
-		const doc = createDoc("tag-product-loop.docx");
 		const iModule = inspectModule();
-		doc.attachModule(iModule);
-		doc.compile();
+		createDocV4("tag-product-loop.docx", {
+			modules: [iModule],
+		});
 		expect(iModule.getAllStructuredTags()).to.be.deep.equal([
 			{
 				type: "placeholder",
@@ -284,7 +275,7 @@ describe("Docxtemplater loops", function () {
 				{ titre: "titre3", prix: "1400", nom: "Offre" },
 			],
 		};
-		const doc = createDoc("tag-loop-example.docx");
+		const doc = createDocV4("tag-loop-example.docx");
 		doc.setData(tags);
 		doc.render();
 		expect(doc.getFullText()).to.be.equal(
@@ -340,7 +331,7 @@ describe("Docxtemplater loops", function () {
 				},
 			],
 		};
-		const doc = createDoc("tag-product-loop.docx");
+		const doc = createDocV4("tag-product-loop.docx");
 		doc.setData(tags);
 		doc.render();
 		const text = doc.getFullText();
@@ -452,30 +443,28 @@ describe("Changing the parser", function () {
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello EDGAR");
 	});
+
 	it("should work when setting from the Docxtemplater interface", function () {
-		const doc = createDoc("tag-example.docx");
-		const zip = new PizZip(doc.loadedContent);
-		const d = new Docxtemplater().loadZip(zip);
-		const tags = {
+		const doc = createDocV4("tag-example.docx", {
+			parser(tag) {
+				return {
+					["get"](scope) {
+						return scope[tag].toUpperCase();
+					},
+				};
+			},
+		});
+		doc.render({
 			first_name: "Hipp",
 			last_name: "Edgar",
 			phone: "0652455478",
 			description: "New Website",
-		};
-		d.setData(tags);
-		d.parser = function (tag) {
-			return {
-				["get"](scope) {
-					return scope[tag].toUpperCase();
-				},
-			};
-		};
-		d.render();
-		expect(d.getFullText()).to.be.equal("EDGAR HIPP");
-		expect(d.getFullText("word/header1.xml")).to.be.equal(
+		});
+		expect(doc.getFullText()).to.be.equal("EDGAR HIPP");
+		expect(doc.getFullText("word/header1.xml")).to.be.equal(
 			"EDGAR HIPP0652455478NEW WEBSITE"
 		);
-		expect(d.getFullText("word/footer1.xml")).to.be.equal(
+		expect(doc.getFullText("word/footer1.xml")).to.be.equal(
 			"EDGARHIPP0652455478"
 		);
 	});
@@ -489,10 +478,8 @@ describe("Changing the parser", function () {
 				age: 59,
 			},
 		};
-		const doc = createDoc("angular-example.docx");
-		doc.setData(tags);
-		doc.setOptions({ parser: angularParser });
-		doc.render();
+		const doc = createDocV4("angular-example.docx", { parser: angularParser });
+		doc.render(tags);
 		expect(doc.getFullText()).to.be.equal("Hipp Edgar 2014");
 	});
 
@@ -756,8 +743,7 @@ describe("Changing the parser", function () {
 
 describe("Change the delimiters", function () {
 	it("should work with lt and gt delimiter < and >", function () {
-		const doc = createDoc("delimiter-gt.docx");
-		doc.setOptions({
+		const doc = createDocV4("delimiter-gt.docx", {
 			delimiters: {
 				start: "<",
 				end: ">",
@@ -771,18 +757,16 @@ describe("Change the delimiters", function () {
 	});
 
 	it("should work with delimiter % both sides", function () {
-		const doc = createDoc("delimiter-pct.docx");
-		doc.setOptions({
+		const doc = createDocV4("delimiter-pct.docx", {
 			delimiters: {
 				start: "%",
 				end: "%",
 			},
 		});
-		doc.setData({
+		doc.render({
 			user: "John",
 			company: "PCorp",
 		});
-		doc.render();
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("Hello John from PCorp");
 	});
@@ -816,7 +800,7 @@ describe("Special characters", function () {
 	});
 
 	it("should read full text correctly", function () {
-		const doc = createDoc("cyrillic.docx");
+		const doc = createDocV4("cyrillic.docx");
 		const fullText = doc.getFullText();
 		expect(fullText.charCodeAt(0)).to.be.equal(1024);
 		expect(fullText.charCodeAt(1)).to.be.equal(1050);
@@ -828,9 +812,8 @@ describe("Special characters", function () {
 		expect(fullText.charCodeAt(7)).to.be.equal(1040);
 	});
 	it("should still read full text after applying tags", function () {
-		const doc = createDoc("cyrillic.docx");
-		doc.setData({ name: "Edgar" });
-		doc.render();
+		const doc = createDocV4("cyrillic.docx");
+		doc.render({ name: "Edgar" });
 		const fullText = doc.getFullText();
 		expect(fullText.charCodeAt(0)).to.be.equal(1024);
 		expect(fullText.charCodeAt(1)).to.be.equal(1050);
@@ -844,12 +827,9 @@ describe("Special characters", function () {
 	});
 	it("should insert russian characters", function () {
 		const russian = "Пупкина";
-		const doc = createDoc("tag-example.docx");
-		const zip = new PizZip(doc.loadedContent);
-		const d = new Docxtemplater().loadZip(zip);
-		d.setData({ last_name: russian });
-		d.render();
-		const outputText = d.getFullText();
+		const doc = createDocV4("tag-example.docx");
+		doc.render({ last_name: russian });
+		const outputText = doc.getFullText();
 		expect(outputText.substr(0, 7)).to.be.equal(russian);
 	});
 });
@@ -1026,7 +1006,7 @@ describe("Raw Xml Insertion", function () {
 			xmlTag:
 				'<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>',
 		};
-		const doc = createDoc("one-raw-xml-tag.docx", {
+		const doc = createDocV4("one-raw-xml-tag.docx", {
 			fileTypeConfig: assign({}, Docxtemplater.FileTypeConfig.docx(), {
 				tagRawXml: "w:r",
 			}),
@@ -1049,13 +1029,6 @@ describe("Multi line", function () {
 			},
 			expectedName: "expected-tag-spanning-multiline.docx",
 		});
-	});
-});
-
-describe("Serialization", function () {
-	it("should be serialiazable (useful for logging)", function () {
-		const doc = createDoc("tag-example.docx");
-		JSON.stringify(doc);
 	});
 });
 
@@ -1104,13 +1077,6 @@ describe("Constructor v4", function () {
 				"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 			);
 		}
-	});
-
-	it("should fail if using setOptions without options", function () {
-		const doc = createDoc("tag-multiline.docx");
-		expect(() => doc.setOptions()).to.throw(
-			"setOptions should be called with an object as first parameter"
-		);
 	});
 
 	it("should work when the delimiters are passed", function () {

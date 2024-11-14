@@ -1,6 +1,5 @@
 const {
 	expectToThrow,
-	createDoc,
 	shouldBeSame,
 	createDocV4,
 	captureLogs,
@@ -19,34 +18,38 @@ const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 describe("Verify apiversion", function () {
 	it("should work with valid api version", function () {
 		const module = {
+			name: "Mymod",
 			requiredAPIVersion: "3.23.0",
 			render(part) {
 				return part.value;
 			},
 		};
-		const doc = createDoc("loop-valid.docx");
-		doc.attachModule(module);
+		createDocV4("tag-example.docx", { modules: [module] });
 	});
 
 	it("should fail with invalid api version", function () {
 		const module = {
+			name: "Mymod",
 			requiredAPIVersion: "3.92.0",
 			render(part) {
 				return part.value;
 			},
 		};
-		const doc = createDoc("loop-valid.docx");
 
-		expectToThrow(() => doc.attachModule(module), Errors.XTAPIVersionError, {
-			message:
-				"The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
-			name: "APIVersionError",
-			properties: {
-				id: "api_version_error",
-				currentModuleApiVersion: [3, 41, 0],
-				neededVersion: [3, 92, 0],
-			},
-		});
+		expectToThrow(
+			() => createDocV4("loop-valid.docx", { modules: [module] }),
+			Errors.XTAPIVersionError,
+			{
+				message:
+					"The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
+				name: "APIVersionError",
+				properties: {
+					id: "api_version_error",
+					currentModuleApiVersion: [3, 41, 0],
+					neededVersion: [3, 92, 0],
+				},
+			}
+		);
 	});
 
 	it("should fail when trying to attach null module", function () {
@@ -71,13 +74,11 @@ describe("Module attachment", function () {
 				return part.value;
 			},
 		};
-		const doc1 = createDoc("loop-valid.docx");
-		doc1.attachModule(module);
-		const doc2 = createDoc("tag-example.docx");
+		createDocV4("loop-valid.docx", { modules: [module] });
 
 		let errMessage = null;
 		try {
-			doc2.attachModule(module);
+			createDocV4("tag-example.docx", { modules: [module] });
 		} catch (e) {
 			errMessage = e.message;
 		}
@@ -97,12 +98,9 @@ describe("Module attachment", function () {
 				return this;
 			},
 		};
-		const doc1 = createDoc("loop-valid.docx");
-		doc1.attachModule(module);
-		const doc2 = createDoc("tag-example.docx");
-		doc2.attachModule(module);
-		const doc3 = createDoc("tag-example.docx");
-		doc3.attachModule(module);
+		createDocV4("loop-valid.docx", { modules: [module] });
+		createDocV4("tag-example.docx", { modules: [module] });
+		createDocV4("tag-example.docx", { modules: [module] });
 	});
 
 	it("should automatically detach inspect module", function () {
@@ -125,11 +123,9 @@ describe("Module xml parse", function () {
 				return options;
 			},
 		};
-		const doc = createDoc("tag-example.docx");
-		const opts = {};
-		doc.setOptions(opts);
-		doc.attachModule(module);
-		doc.compile();
+		const opts = { modules: [module] };
+		createDocV4("tag-example.docx", opts);
+		delete opts.modules;
 		expect(opts).to.deep.equal({});
 	});
 
@@ -153,9 +149,7 @@ describe("Module xml parse", function () {
 			},
 		};
 
-		const doc = createDoc("tag-example.docx");
-		doc.attachModule(module);
-		doc.compile();
+		const doc = createDocV4("tag-example.docx", { modules: [module] });
 
 		const xmlKeys = Object.keys(xmlDocuments);
 		expect(xmlKeys).to.deep.equal([
@@ -189,16 +183,13 @@ describe("Module unique tags xml", function () {
 			},
 		};
 
-		const doc = createDoc("tag-example.docx");
-		doc.attachModule(module);
-		doc.setData({
+		const doc = createDocV4("tag-example.docx", { modules: [module] });
+		doc.render({
 			first_name: "Hipp",
 			last_name: "Edgar",
 			phone: "0652455478",
 			description: "New Website",
 		});
-		doc.compile();
-		doc.render();
 		shouldBeSame({ doc, expectedName: "expected-tag-example.docx" });
 	});
 });
@@ -243,9 +234,8 @@ describe("Module traits", function () {
 			},
 		};
 
-		const doc = createDoc("comment-with-loop.docx");
-		doc.attachModule(module);
-		doc.setData({}).compile().render();
+		const doc = createDocV4("comment-with-loop.docx", { modules: [module] });
+		doc.render({});
 		shouldBeSame({ doc, expectedName: "expected-comment-example.docx" });
 	});
 });
@@ -318,9 +308,7 @@ describe("Module errors", function () {
 		};
 
 		let error = null;
-		const doc = createDoc("tag-example.docx");
-		doc.attachModule(module);
-		doc.setData({}).compile();
+		const doc = createDocV4("tag-example.docx", { modules: [module] });
 		const capture = captureLogs();
 		try {
 			doc.render();
@@ -399,7 +387,6 @@ describe("Module errors", function () {
 
 describe("Module should pass options to module.parse, module.postparse, module.render, module.postrender", function () {
 	it("should pass filePath and contentType options", function () {
-		const doc = createDoc("tag-example.docx");
 		const filePaths = [];
 		const relsType = [];
 		let renderFP = "",
@@ -433,9 +420,8 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 				return a;
 			},
 		};
-		doc.attachModule(module);
-		doc.setData({}).compile();
-		doc.render();
+		const doc = createDocV4("tag-example.docx", { modules: [module] });
+		doc.render({});
 		expect(renderFP).to.equal("word/footnotes.xml");
 		expect(renderCT).to.equal(
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"
@@ -628,19 +614,17 @@ describe("Fix doc pr corruption module", function () {
 describe("Proofstate module", function () {
 	it("should work with angular parser with proofstate module", function () {
 		shouldBeSame({
-			doc: createDoc("angular-example.docx")
-				.setOptions({
-					parser: angularParser,
-				})
-				.attachModule(proofStateModule)
-				.render({
-					person: {
-						first_name: "Hipp",
-						last_name: "Edgar",
-						birth_year: 1955,
-						age: 59,
-					},
-				}),
+			doc: createDocV4("angular-example.docx", {
+				parser: angularParser,
+				modules: [proofStateModule],
+			}).render({
+				person: {
+					first_name: "Hipp",
+					last_name: "Edgar",
+					birth_year: 1955,
+					age: 59,
+				},
+			}),
 			expectedName: "expected-proofstate-removed.docx",
 		});
 	});

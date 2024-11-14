@@ -7,7 +7,6 @@ const {
 	shouldBeSame,
 	start,
 	createDocV4,
-	createDoc,
 } = require("./utils.js");
 const path = require("path");
 if (path.resolve) {
@@ -61,9 +60,8 @@ function startTest() {
 			expectedText = "",
 			data = {},
 		}) {
-			const doc = createDoc(name, options);
+			const doc = createDocV4(name, options);
 			if (async) {
-				doc.compile();
 				return doc.renderAsync(data).then(() => {
 					if (expectedText) {
 						expect(doc.getFullText()).to.be.equal(expectedText);
@@ -96,6 +94,7 @@ function startTest() {
 		require("./e2e/text.js");
 		require("./e2e/base.js");
 		require("./e2e/xml-templater.js");
+		require("./e2e/v3.js");
 		require("./e2e/errors.js");
 		require("./e2e/speed.js");
 		require("./e2e/lexer-parser-render.js");

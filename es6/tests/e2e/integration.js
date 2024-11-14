@@ -1,6 +1,5 @@
 const {
 	expectToThrow,
-	createDoc,
 	createDocV4,
 	shouldBeSame,
 	expect,
@@ -34,9 +33,6 @@ describe("Simple templating", function () {
 	});
 
 	it("should replace custom properties text", function () {
-		const doc = createDoc("properties.docx");
-		let app = doc.getZip().files["docProps/app.xml"].asText();
-		let core = doc.getZip().files["docProps/core.xml"].asText();
 		const filePaths = [];
 		const module = {
 			name: "Test module",
@@ -47,7 +43,9 @@ describe("Simple templating", function () {
 				}
 			},
 		};
-		doc.attachModule(module);
+		const doc = createDocV4("properties.docx", { modules: [module] });
+		let app = doc.getZip().files["docProps/app.xml"].asText();
+		let core = doc.getZip().files["docProps/core.xml"].asText();
 		expect(app).to.contain("{tag1}");
 		expect(core).to.contain("{tag1}");
 		expect(core).to.contain("{tag2}");
@@ -276,14 +274,12 @@ describe("Regression", function () {
 
 describe("Spacing/Linebreaks", function () {
 	it("should show spaces with linebreak option", function () {
-		const doc = createDoc("tag-multiline.docx")
-			.setOptions({ linebreaks: true })
-			.render({
-				description: `hello there
+		const doc = createDocV4("tag-multiline.docx", { linebreaks: true }).render({
+			description: `hello there
     deep indentation
        goes here
     end`,
-			});
+		});
 		shouldBeSame({ doc, expectedName: "expected-multiline-indent.docx" });
 	});
 
@@ -300,14 +296,17 @@ describe("Spacing/Linebreaks", function () {
 		return this.render({
 			name: "loop-with-section-break-after.docx",
 			expectedName: "expected-loop-with-section-break-after.docx",
+			options: {
+				paragraphLoop: true,
+			},
 		});
 	});
 
 	it("should not remove section if having paragraph loop just before", function () {
 		return this.render({
 			name: "paragraph-loop-with-section-break-after.docx",
-			options: { paragraphLoop: true },
-			expectedName: "paragraph-loop-with-section-break-after.docx",
+			options: { paragraphLoop: true, linebreaks: true },
+			expectedName: "expected-paragraph-loop-kept-section.docx",
 		});
 	});
 
@@ -449,7 +448,7 @@ describe("Unusual document extensions", function () {
 
 describe("Dash Loop", function () {
 	it("should work on simple table -> w:tr", function () {
-		const doc = createDoc("tag-dash-loop.docx").render({
+		const doc = createDocV4("tag-dash-loop.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
 				{ type: "DOS", price: "500", reference: "Win7" },
@@ -462,7 +461,7 @@ describe("Dash Loop", function () {
 	});
 
 	it("should work on simple table -> w:table", function () {
-		const doc = createDoc("tag-dash-loop-table.docx").render({
+		const doc = createDocV4("tag-dash-loop-table.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
 				{ type: "DOS", price: "500", reference: "Win7" },
@@ -475,7 +474,7 @@ describe("Dash Loop", function () {
 	});
 
 	it("should work on simple list -> w:p", function () {
-		const doc = createDoc("tag-dash-loop-list.docx").render({
+		const doc = createDocV4("tag-dash-loop-list.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
 				{ type: "DOS", price: "500", reference: "Win7" },
@@ -791,27 +790,27 @@ describe("ParagraphLoop", function () {
 	it("should not fail when having paragraph in paragraph", function () {
 		const printedPostparsed = [];
 		let filePath = "";
-		const doc = createDoc("regression-par-in-par.docx")
-			.attachModule({
-				name: "MyModule",
-				set(obj) {
-					if (obj.inspect) {
-						if (obj.inspect.filePath) {
-							filePath = obj.inspect.filePath;
+		const doc = createDocV4("regression-par-in-par.docx", {
+			modules: [
+				{
+					name: "MyModule",
+					set(obj) {
+						if (obj.inspect) {
+							if (obj.inspect.filePath) {
+								filePath = obj.inspect.filePath;
+							}
+							if (obj.inspect.postparsed) {
+								printedPostparsed[filePath] = printy(obj.inspect.postparsed);
+							}
 						}
-						if (obj.inspect.postparsed) {
-							printedPostparsed[filePath] = printy(obj.inspect.postparsed);
-						}
-					}
+					},
 				},
-			})
-			.setOptions({
-				paragraphLoop: true,
-				parser: () => ({
-					get: () => "foo",
-				}),
-			})
-			.render();
+			],
+			paragraphLoop: true,
+			parser: () => ({
+				get: () => "foo",
+			}),
+		}).render();
 		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
 		expect(printedPostparsed["word/document.xml"]).to.matchSnapshot();
 	});
@@ -828,38 +827,22 @@ describe("ParagraphLoop", function () {
 	});
 
 	it("should throw specific error if calling .render() on document with invalid tags", function () {
-		const doc = createDoc("errors-footer-and-header.docx", {
-			paragraphLoop: true,
-			parser: angularParser,
-		});
 		let catched = false;
 		const capture = captureLogs();
 
 		try {
-			doc.compile();
+			createDocV4("errors-footer-and-header.docx", {
+				paragraphLoop: true,
+				parser: angularParser,
+			});
 		} catch (e) {
 			catched = true;
-			const expectedError = {
-				name: "InternalError",
-				message:
-					"You should not call .render on a document that had compilation errors",
-				properties: {
-					id: "render_on_invalid_template",
-				},
-			};
 			capture.stop();
-			expectToThrow(() => doc.render(), Errors.XTInternalError, expectedError);
 		}
 		expect(catched).to.equal(true);
 	});
 
 	it("should fail with errors from header and footer", function () {
-		const doc = createDoc("errors-footer-and-header.docx");
-		doc.setOptions({
-			paragraphLoop: true,
-			errorLogging: false,
-			parser: angularParser,
-		});
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -902,15 +885,20 @@ describe("ParagraphLoop", function () {
 				],
 			},
 		};
-		expectToThrow(() => doc.render(), Errors.XTTemplateError, expectedError);
+
+		expectToThrow(
+			() =>
+				createDocV4("errors-footer-and-header.docx", {
+					paragraphLoop: true,
+					errorLogging: false,
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail properly when having lexed + postparsed errors", function () {
-		const doc = createDoc("multi-errors.docx", {
-			paragraphLoop: true,
-			errorLogging: false,
-			parser: angularParser,
-		});
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -964,11 +952,19 @@ describe("ParagraphLoop", function () {
 				],
 			},
 		};
-		expectToThrow(() => doc.compile(), Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() =>
+				createDocV4("multi-errors.docx", {
+					paragraphLoop: true,
+					errorLogging: false,
+					parser: angularParser,
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when placing paragraph loop inside normal loop", function () {
-		const doc = createDoc("paragraph-loop-error.docx", { errorLogging: false });
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -1024,7 +1020,11 @@ describe("ParagraphLoop", function () {
 				],
 			},
 		};
-		expectToThrow(() => doc.compile(), Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => createDocV4("paragraph-loop-error.docx", { errorLogging: false }),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 });
 
