@@ -25,6 +25,8 @@ const pptxSlideLayout =
 const pptxPresentationContentType =
 	"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
 
+// This is used for the main part of the document, ie usually that would be the
+// type of word/document.xml
 const main = [
 	docxContentType,
 	docxmContentType,

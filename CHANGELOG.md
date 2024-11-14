@@ -1,3 +1,7 @@
+### 3.53.0
+
+Add support for replacing placeholders such as `{name}` in Smart art shapes.
+
 ### 3.52.0
 
 Add `syntax.allowUnclosedTag` option.

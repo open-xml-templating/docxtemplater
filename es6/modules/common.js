@@ -6,6 +6,8 @@ const {
 	coreContentType,
 	appContentType,
 	customContentType,
+	diagramDataContentType,
+	diagramDrawingContentType,
 } = require("../content-types.js");
 
 const commonContentTypes = [
@@ -13,6 +15,8 @@ const commonContentTypes = [
 	coreContentType,
 	appContentType,
 	customContentType,
+	diagramDataContentType,
+	diagramDrawingContentType,
 ];
 
 class Common {

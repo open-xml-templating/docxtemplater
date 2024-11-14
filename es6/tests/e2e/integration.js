@@ -1169,3 +1169,17 @@ describe("Loops", function () {
 		});
 	});
 });
+
+describe("Smart arts", function () {
+	it("should work with smart-art on pptx files", function () {
+		const doc = createDocV4("smart-art.pptx");
+		doc.render({ user: "John", i: 33, j: "J" });
+		shouldBeSame({ doc, expectedName: "expected-smart-art.pptx" });
+	});
+
+	it("should work with smart-art on docx files", function () {
+		const doc = createDocV4("smart-art.docx");
+		doc.render({ name: "Jack", user: "John", i: 33, j: "J" });
+		shouldBeSame({ doc, expectedName: "expected-smart-art.docx" });
+	});
+});

@@ -25,6 +25,7 @@ function DocXFileTypeConfig() {
 			"cp:contentStatus",
 
 			"w:t",
+			"a:t",
 			"m:t",
 			"vt:lpstr",
 			"vt:lpwstr",
