@@ -160,4 +160,10 @@ describe("XML prettify", function () {
 </FormTemplates>
 `);
 	});
+
+	it("should remove space in processing instruction <?space in xml   ?>", function () {
+		const str = xmlprettify(`<?xml version="1.0"   ?>
+<a></a>`);
+		expect(str.replace(/\n/g, "")).to.equal('<?xml version="1.0"?><a></a>');
+	});
 });
