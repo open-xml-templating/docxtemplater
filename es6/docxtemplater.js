@@ -5,6 +5,24 @@ const createScope = require("./scope-manager.js");
 const Lexer = require("./lexer.js");
 const commonModule = require("./modules/common.js");
 
+function deprecatedMessage(obj, message) {
+	if (obj.hideDeprecations === true) {
+		return;
+	}
+	// eslint-disable-next-line no-console
+	console.warn(message);
+}
+
+function deprecatedMethod(obj, method) {
+	if (obj.hideDeprecations === true) {
+		return;
+	}
+	return deprecatedMessage(
+		obj,
+		`Deprecated method ".${method}", view upgrade guide : https://docxtemplater.com/docs/api/#upgrade-guide, stack : ${new Error().stack}`
+	);
+}
+
 const {
 	throwMultiError,
 	throwResolveBeforeCompile,
@@ -79,8 +97,18 @@ const Docxtemplater = class Docxtemplater {
 		this.scopeManagers = {};
 		this.compiled = {};
 		this.modules = [commonModule()];
-		this.setOptions(options);
-		if (arguments.length > 0) {
+
+		if (arguments.length === 0) {
+			deprecatedMessage(
+				this,
+				`Deprecated docxtemplater constructor with no arguments, view upgrade guide : https://docxtemplater.com/docs/api/#upgrade-guide, stack : ${new Error().stack}`
+			);
+
+			this.hideDeprecations = true;
+			this.setOptions(options);
+		} else {
+			this.hideDeprecations = true;
+			this.setOptions(options);
 			if (!zip || !zip.files || typeof zip.file !== "function") {
 				throw new Error(
 					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
@@ -98,6 +126,7 @@ const Docxtemplater = class Docxtemplater {
 			this.compile();
 			this.v4Constructor = true;
 		}
+		this.hideDeprecations = false;
 	}
 	verifyApiVersion(neededVersion) {
 		neededVersion = neededVersion.split(".").map(function (i) {
@@ -166,6 +195,7 @@ const Docxtemplater = class Docxtemplater {
 				"attachModule() should not be called manually when using the v4 constructor"
 			);
 		}
+		deprecatedMethod(this, "attachModule");
 		const moduleType = typeof module;
 		if (moduleType === "function") {
 			throw new XTInternalError(
@@ -202,6 +232,7 @@ const Docxtemplater = class Docxtemplater {
 				"setOptions() should not be called manually when using the v4 constructor"
 			);
 		}
+		deprecatedMethod(this, "setOptions");
 		if (!options) {
 			throw new Error(
 				"setOptions should be called with an object as first parameter"
@@ -224,6 +255,7 @@ const Docxtemplater = class Docxtemplater {
 				"loadZip() should not be called manually when using the v4 constructor"
 			);
 		}
+		deprecatedMethod(this, "loadZip");
 		if (zip.loadAsync) {
 			throw new XTInternalError(
 				"Docxtemplater doesn't handle JSZip version >=3, please use pizzip"
@@ -261,12 +293,13 @@ const Docxtemplater = class Docxtemplater {
 		return this.scopeManagers[to];
 	}
 	resolveData(data) {
+		deprecatedMethod(this, "resolveData");
 		const errors = [];
 		if (!Object.keys(this.compiled).length) {
 			throwResolveBeforeCompile();
 		}
 		return Promise.resolve(data).then((data) => {
-			this.setData(data);
+			this.data = data;
 			this.setModules({
 				data: this.data,
 				Lexer,
@@ -320,6 +353,7 @@ const Docxtemplater = class Docxtemplater {
 		}
 	}
 	compile() {
+		deprecatedMethod(this, "compile");
 		this.updateFileTypeConfig();
 		this.throwIfDuplicateModules();
 		this.reorderModules();
@@ -433,19 +467,24 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	renderAsync(data) {
-		return this.resolveData(data).then(() => this.render());
+		this.hideDeprecations = true;
+		const promise = this.resolveData(data);
+		this.hideDeprecations = false;
+		return promise.then(() => this.render());
 	}
 	render(data) {
 		if (this.rendered) {
 			throwRenderTwice();
 		}
 		this.rendered = true;
-		this.compile();
+		if (Object.keys(this.compiled).length === 0) {
+			this.compile();
+		}
 		if (this.errors.length > 0) {
 			throwRenderInvalidTemplate();
 		}
 		if (data) {
-			this.setData(data);
+			this.data = data;
 		}
 		this.setModules({
 			data: this.data,
@@ -496,6 +535,7 @@ const Docxtemplater = class Docxtemplater {
 		});
 	}
 	setData(data) {
+		deprecatedMethod(this, "setData");
 		this.data = data;
 		return this;
 	}

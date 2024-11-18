@@ -1,3 +1,11 @@
+### 3.54.0
+
+Add console.warn messages when using deprecated methods :
+
+compile, attachModule, setData, resolveData, loadZip
+
+[Read more about the migration here](https://docxtemplater.com/docs/api/#upgrade-guide)
+
 ### 3.53.0
 
 Add support for replacing placeholders such as `{name}` in Smart art shapes.

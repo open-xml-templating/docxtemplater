@@ -104,8 +104,7 @@ describe("Inspect module", function () {
 			prenom: {},
 		});
 		const data = { offre: [{}], prenom: "John" };
-		doc.setData(data);
-		doc.render();
+		doc.render(data);
 		const fi = iModule.fullInspected["word/document.xml"];
 		const { summary, detail } = fi.nullValues;
 		const { postparsed, parsed, xmllexed } = fi;
@@ -264,7 +263,8 @@ describe("Inspect module", function () {
 
 describe("Docxtemplater loops", function () {
 	it("should replace all the tags", function () {
-		const tags = {
+		const doc = createDocV4("tag-loop-example.docx");
+		doc.render({
 			nom: "Hipp",
 			prenom: "Edgar",
 			telephone: "0652455478",
@@ -274,10 +274,7 @@ describe("Docxtemplater loops", function () {
 				{ titre: "titre2", prix: "2000" },
 				{ titre: "titre3", prix: "1400", nom: "Offre" },
 			],
-		};
-		const doc = createDocV4("tag-loop-example.docx");
-		doc.setData(tags);
-		doc.render();
+		});
 		expect(doc.getFullText()).to.be.equal(
 			"Votre proposition commercialeHippPrix: 1260Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar"
 		);
@@ -332,8 +329,7 @@ describe("Docxtemplater loops", function () {
 			],
 		};
 		const doc = createDocV4("tag-product-loop.docx");
-		doc.setData(tags);
-		doc.render();
+		doc.render(tags);
 		const text = doc.getFullText();
 		const expectedText =
 			"MicrosoftProduct name : DOSProduct reference : Win7Everyone uses itProof that it works nicely : It works because it is quite cheap It works because it is quit simple It works because it works on a lot of different HardwareLinuxProduct name : UbuntuProduct reference : Ubuntu10It's very powerfulProof that it works nicely : It works because the terminal is your friend It works because Hello world It works because it's freeAppleProduct name : MacProduct reference : OSXIt's very easyProof that it works nicely : It works because you can do a lot just with the mouse It works because It's nicely designed";
@@ -1002,17 +998,15 @@ describe("Raw Xml Insertion", function () {
 		expect(c).not.to.contain("</w:t></w:t>");
 	});
 	it("should work with simple example and given options", function () {
-		const scope = {
-			xmlTag:
-				'<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>',
-		};
 		const doc = createDocV4("one-raw-xml-tag.docx", {
 			fileTypeConfig: assign({}, Docxtemplater.FileTypeConfig.docx(), {
 				tagRawXml: "w:r",
 			}),
 		});
-		doc.setData(scope);
-		doc.render();
+		doc.render({
+			xmlTag:
+				'<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>',
+		});
 		expect(doc.getFullText()).to.be.equal("asdfMy customXMLqwery");
 	});
 });
@@ -1114,18 +1108,16 @@ describe("Constructor v4", function () {
 			],
 		};
 		const doc = createDocV4("delimiter-pct.docx", options);
-		doc.setData({
-			user: "John",
-			company: "Acme",
-		});
-
 		expect(isModuleCalled).to.be.equal(true);
 		expect(optionsPassedToModule.delimiters.start).to.be.equal("%");
 		expect(optionsPassedToModule.delimiters.end).to.be.equal("%");
 		// Verify that default options are passed to the modules
 		expect(optionsPassedToModule.linebreaks).to.be.equal(false);
 
-		doc.render();
+		doc.render({
+			user: "John",
+			company: "Acme",
+		});
 
 		const fullText = doc.getFullText();
 		expect(fullText).to.be.equal("Hello John from Acme");
@@ -1161,9 +1153,6 @@ describe("Constructor v4", function () {
 
 	it("should throw if using v4 constructor and attachModule", function () {
 		const doc = createDocV4("tag-multiline.docx");
-		doc.setData({
-			description: "a\nb\nc",
-		});
 		expect(() => doc.attachModule({ render() {} })).to.throw(
 			"attachModule() should not be called manually when using the v4 constructor"
 		);
@@ -1178,12 +1167,10 @@ describe("Constructor v4", function () {
 
 	it("should render correctly", () => {
 		const doc = new Docxtemplater(getZip("tag-example.docx"));
-		const tags = {
+		doc.render({
 			first_name: "John",
 			last_name: "Doe",
-		};
-		doc.setData(tags);
-		doc.render();
+		});
 		expect(doc.getFullText()).to.be.equal("Doe John");
 	});
 

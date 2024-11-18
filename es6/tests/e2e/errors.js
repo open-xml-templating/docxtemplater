@@ -1,7 +1,9 @@
-const { loadFile, loadDocument, rejectSoon, expect } = require("../utils.js");
 const Errors = require("../../errors.js");
 const {
-	makeDocx,
+	loadFile,
+	rejectSoon,
+	expect,
+	loadDocumentV4,
 	makeDocxV4,
 	wrapMultiError,
 	expectToThrow,
@@ -402,7 +404,7 @@ describe("Internal errors", function () {
 		};
 		loadFile("test.odt", (e, name, buffer) => {
 			expectToThrow(
-				() => loadDocument(name, buffer),
+				() => loadDocumentV4(name, buffer),
 				Errors.XTInternalError,
 				expectedError
 			);
@@ -421,7 +423,7 @@ describe("Internal errors", function () {
 		};
 		loadFile("simple-zip.zip", (e, name, buffer) => {
 			expectToThrow(
-				() => loadDocument(name, buffer),
+				() => loadDocumentV4(name, buffer),
 				Errors.XTInternalError,
 				expectedError
 			);
@@ -440,7 +442,7 @@ describe("Internal errors", function () {
 		};
 		loadFile("empty.zip", (e, name, buffer) => {
 			expectToThrow(
-				() => loadDocument(name, buffer),
+				() => loadDocumentV4(name, buffer),
 				Errors.XTInternalError,
 				expectedError
 			);
@@ -1228,25 +1230,8 @@ describe("Async errors", function () {
 			errorLogging: false,
 		});
 		return expectToThrowAsync(
-			() => doc.resolveData({}),
+			() => doc.renderAsync({}),
 			Errors.XTTemplateError,
-			expectedError
-		);
-	});
-
-	it("should show error when running resolveData before compile", function () {
-		const content = "<w:t>{#users}{user}{/}</w:t>";
-		const expectedError = {
-			name: "InternalError",
-			message: "You must run `.compile()` before running `.resolveData()`",
-			properties: {
-				id: "resolve_before_compile",
-			},
-		};
-		const doc = makeDocx(content);
-		return expectToThrowAsync(
-			() => doc.resolveData(),
-			Errors.XTInternalError,
 			expectedError
 		);
 	});
@@ -1310,7 +1295,7 @@ describe("Async errors", function () {
 			errorLogging: false,
 		});
 		function create() {
-			return doc.resolveData().then(function () {
+			return doc.renderAsync().then(function () {
 				return doc.render();
 			});
 		}

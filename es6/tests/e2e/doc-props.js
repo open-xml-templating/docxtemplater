@@ -2,20 +2,18 @@ const { createDocV4, shouldBeSame, expect } = require("../utils.js");
 
 describe("Docx document properties", function () {
 	it("should change values in doc-props", function () {
-		const tags = {
+		const doc = createDocV4("tag-docprops.docx", {
+			paragraphLoop: true,
+		});
+		expect(doc.getFullText("docProps/app.xml")).to.be.equal(
+			"TitleName: {first_name}"
+		);
+		doc.render({
 			first_name: "Hipp",
 			last_name: "Edgar",
 			phone: "0652455478",
 			description: "New Website",
-		};
-		const doc = createDocV4("tag-docprops.docx", {
-			paragraphLoop: true,
 		});
-		doc.setData(tags);
-		expect(doc.getFullText("docProps/app.xml")).to.be.equal(
-			"TitleName: {first_name}"
-		);
-		doc.render();
 		expect(doc.getFullText()).to.be.equal("Edgar Hipp");
 		expect(doc.getFullText("word/header1.xml")).to.be.equal(
 			"Edgar Hipp0652455478New Website"

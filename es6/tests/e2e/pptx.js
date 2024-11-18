@@ -11,7 +11,7 @@ describe("Pptx generation", function () {
 		const doc = createDocV4("title-example.pptx");
 		let con = doc.getZip().files["docProps/app.xml"].asText();
 		expect(con).not.to.contain("Edgar");
-		doc.setData({ name: "Edgar" }).render();
+		doc.render({ name: "Edgar" });
 		con = doc.getZip().files["docProps/app.xml"].asText();
 		expect(con).to.contain("Edgar");
 	});

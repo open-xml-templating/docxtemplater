@@ -77,17 +77,14 @@ function walk(dir) {
 }
 
 function createXmlTemplaterDocxNoRender(content, options = {}) {
-	const doc = makeDocx(content);
-	doc.setOptions(options);
-	doc.setData(options.tags);
+	const doc = makeDocxV4(content, options);
 	return doc;
 }
 
 function createXmlTemplaterDocx(content, options = {}) {
-	const doc = makeDocx(content, options);
-	doc.setOptions(options);
-	doc.setData(options.tags);
-	doc.render();
+	const { tags, ...otherOptions } = options;
+	const doc = makeDocxV4(content, otherOptions);
+	doc.render(tags);
 	return doc;
 }
 
@@ -578,6 +575,13 @@ function load(name, content, cache) {
 function loadDocument(name, content) {
 	return load(name, content, documentCache);
 }
+function loadDocumentV4(name, content) {
+	const zip = new PizZip(content);
+	const doc = new Docxtemplater(zip);
+	doc.loadedName = name;
+	doc.loadedContent = content;
+	return doc;
+}
 
 function cacheDocument(name, content) {
 	const zip = new PizZip(content);
@@ -827,7 +831,7 @@ const pptxRelsContent = `<?xml version="1.0" encoding="utf-8"?>
 </Relationships>
 `;
 
-function makeDocx(content) {
+function makeDocxV3(content) {
 	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
 	zip.file("[Content_Types].xml", docxContentTypeContent);
@@ -836,6 +840,7 @@ function makeDocx(content) {
 	doc.loadZip(zip);
 	return doc;
 }
+
 function makeDocxV4(content, options = {}) {
 	const zip = new PizZip();
 	zip.file("word/document.xml", content, { createFolders: true });
@@ -977,6 +982,14 @@ function captureLogs() {
 		// oldLog(a);
 		collected.push(a);
 	};
+	console.warn = function (a) {
+		// oldLog(a);
+		collected.push(a);
+	};
+	console.error = function (a) {
+		// oldLog(a);
+		collected.push(a);
+	};
 	return {
 		logs() {
 			return collected;
@@ -1003,9 +1016,10 @@ module.exports = {
 	getContent,
 	imageData,
 	loadDocument,
+	loadDocumentV4,
 	loadFile,
 	loadImage,
-	makeDocx,
+	makeDocxV3,
 	makeDocxV4,
 	makePptx,
 	makePptxV4,
