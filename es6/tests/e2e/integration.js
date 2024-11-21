@@ -1183,3 +1183,84 @@ describe("Smart arts", function () {
 		shouldBeSame({ doc, expectedName: "expected-smart-art.docx" });
 	});
 });
+
+describe("Add module to change justify alignment", function () {
+	it("should be possible to add w:doNotExpandShiftReturn to word/settings.xml", function () {
+		const doc = createDocV4("justify.docx", {
+			linebreaks: true,
+			paragraphLoop: true,
+			modules: [
+				{
+					name: "AddDoNotExpandShiftReturn",
+					optionsTransformer(options, docxtemplater) {
+						docxtemplater.fileTypeConfig.tagsXmlLexedArray.push(
+							"w:compat",
+							"w:settings",
+							"w:doNotExpandShiftReturn"
+						);
+						return options;
+					},
+					preparse(xml, options) {
+						const { filePath } = options;
+						if (filePath === "word/settings.xml") {
+							let addedDoNotExpandShiftReturn = false;
+							const added = [];
+							let addIndex = -1;
+							xml.forEach(function (part, i) {
+								if (part.tag === "w:doNotExpandShiftReturn") {
+									addedDoNotExpandShiftReturn = true;
+								}
+								if (part.tag === "w:compat") {
+									if (part.position === "end") {
+										added.push({
+											type: "tag",
+											value: "<w:doNotExpandShiftReturn />",
+											position: "selfclosing",
+											tag: "w:doNotExpandShiftReturn",
+										});
+										addIndex = i;
+										addedDoNotExpandShiftReturn = true;
+									}
+								}
+								if (part.tag === "w:settings") {
+									if (part.position === "end") {
+										if (!addedDoNotExpandShiftReturn) {
+											added.push(
+												{
+													type: "tag",
+													value: "<w:compat>",
+													position: "start",
+													tag: "w:compat",
+												},
+												{
+													type: "tag",
+													value: "<w:doNotExpandShiftReturn />",
+													position: "selfclosing",
+													tag: "w:doNotExpandShiftReturn",
+												},
+												{
+													type: "tag",
+													value: "</w:compat>",
+													position: "end",
+													tag: "w:compat",
+												}
+											);
+											addIndex = i;
+										}
+									}
+								}
+							});
+							if (addIndex !== -1) {
+								xml.splice(addIndex, 0, ...added);
+							}
+						}
+						return xml;
+					},
+				},
+			],
+		}).render({
+			text: "Lorem ipsum dolor sit amet\n, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore\n magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+		});
+		shouldBeSame({ doc, expectedName: "expected-tag-justified.docx" });
+	});
+});
