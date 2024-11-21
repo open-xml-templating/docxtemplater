@@ -9,7 +9,7 @@ const {
 
 const printy = require("../printy.js");
 
-const angularParser = require("../../expressions.js");
+const expressionParser = require("../../expressions.js");
 const Errors = require("../../errors.js");
 
 describe("Simple templating", function () {
@@ -405,7 +405,7 @@ describe("Assignment", function () {
 			},
 			options: {
 				paragraphLoop: true,
-				parser: angularParser,
+				parser: expressionParser,
 			},
 			expectedName: "expected-assignment.docx",
 		});
@@ -616,7 +616,7 @@ describe("Section breaks inside loops", function () {
 			},
 			options: {
 				paragraphLoop: true,
-				parser: angularParser,
+				parser: expressionParser,
 			},
 			expectedName: "expected-loop-with-continuous-section-break.docx",
 		});
@@ -629,7 +629,7 @@ describe("Section breaks inside loops", function () {
 				my_tag: "Hello John",
 			},
 			options: {
-				parser: angularParser,
+				parser: expressionParser,
 				delimiters: { start: "<<", end: ">>" },
 			},
 			expectedName: "expected-rendered-hello.docx",
@@ -644,7 +644,7 @@ describe("Section breaks inside loops", function () {
 				hobbies: ["hiking", "reading"],
 			},
 			options: {
-				parser: angularParser,
+				parser: expressionParser,
 				paragraphLoop: true,
 			},
 			expectedName: "expected-quotes-in-tag.docx",
@@ -658,7 +658,7 @@ describe("Section breaks inside loops", function () {
 				loop: [1, 2, 3],
 			},
 			options: {
-				parser: angularParser,
+				parser: expressionParser,
 			},
 			expectedName: "expected-loop-with-continuous-section-break-2.docx",
 		});
@@ -833,7 +833,7 @@ describe("ParagraphLoop", function () {
 		try {
 			createDocV4("errors-footer-and-header.docx", {
 				paragraphLoop: true,
-				parser: angularParser,
+				parser: expressionParser,
 			});
 		} catch (e) {
 			catched = true;
@@ -891,7 +891,7 @@ describe("ParagraphLoop", function () {
 				createDocV4("errors-footer-and-header.docx", {
 					paragraphLoop: true,
 					errorLogging: false,
-					parser: angularParser,
+					parser: expressionParser,
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -957,7 +957,7 @@ describe("ParagraphLoop", function () {
 				createDocV4("multi-errors.docx", {
 					paragraphLoop: true,
 					errorLogging: false,
-					parser: angularParser,
+					parser: expressionParser,
 				}),
 			Errors.XTTemplateError,
 			expectedError

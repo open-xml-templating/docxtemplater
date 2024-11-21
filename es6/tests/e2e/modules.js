@@ -6,7 +6,7 @@ const {
 	expect,
 	getZip,
 } = require("../utils.js");
-const angularParser = require("../../expressions.js");
+const expressionParser = require("../../expressions.js");
 const proofStateModule = require("../../proof-state-module.js");
 const inspectModule = require("../../inspect-module.js");
 
@@ -615,7 +615,7 @@ describe("Proofstate module", function () {
 	it("should work with angular parser with proofstate module", function () {
 		shouldBeSame({
 			doc: createDocV4("angular-example.docx", {
-				parser: angularParser,
+				parser: expressionParser,
 				modules: [proofStateModule],
 			}).render({
 				person: {

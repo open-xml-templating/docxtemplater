@@ -1,11 +1,11 @@
-const angularParser = require("../../expressions.js");
-const angularParserIE11 = require("../../expressions-ie11.js");
+const expressionParser = require("../../expressions.js");
+const expressionParserIE11 = require("../../expressions-ie11.js");
 const { expect } = require("../utils.js");
 
 describe("Angular parser", function () {
 	it("should work", function () {
 		expect(
-			angularParser("x+x", {
+			expressionParser("x+x", {
 				tag: {
 					value: "x+x",
 				},
@@ -14,7 +14,7 @@ describe("Angular parser", function () {
 		).to.equal(2);
 
 		expect(
-			angularParser("x(y)", {
+			expressionParser("x(y)", {
 				scopePath: [],
 			}).get(
 				{
@@ -29,7 +29,7 @@ describe("Angular parser", function () {
 	});
 
 	it("should work with ie 11", function () {
-		const result = angularParserIE11("x+x", {
+		const result = expressionParserIE11("x+x", {
 			tag: {
 				value: "x+x",
 			},
@@ -40,10 +40,10 @@ describe("Angular parser", function () {
 
 	it("should be able to get object identifiers", function () {
 		expect(
-			angularParser("(x.y.z + x.m) / a").getObjectIdentifiers()
+			expressionParser("(x.y.z + x.m) / a").getObjectIdentifiers()
 		).to.deep.equal({ a: {}, x: { m: {}, y: { z: {} } } });
 
-		expect(angularParser("x(a.b.c)").getObjectIdentifiers()).to.deep.equal({
+		expect(expressionParser("x(a.b.c)").getObjectIdentifiers()).to.deep.equal({
 			x: {},
 			a: { b: { c: {} } },
 		});
@@ -51,20 +51,22 @@ describe("Angular parser", function () {
 
 	it("should be able to get object identifiers ie11", function () {
 		expect(
-			angularParserIE11("(x.y.z + x.m) / a").getObjectIdentifiers()
+			expressionParserIE11("(x.y.z + x.m) / a").getObjectIdentifiers()
 		).to.deep.equal({ a: {}, x: { m: {}, y: { z: {} } } });
 
-		expect(angularParserIE11("x(a.b.c)").getObjectIdentifiers()).to.deep.equal({
+		expect(
+			expressionParserIE11("x(a.b.c)").getObjectIdentifiers()
+		).to.deep.equal({
 			x: {},
 			a: { b: { c: {} } },
 		});
 	});
 
 	it("should be able to getIdentifiers", function () {
-		angularParser.filters.getimg = () => 0;
+		expressionParser.filters.getimg = () => 0;
 
 		expect(
-			angularParser("x+x", {
+			expressionParser("x+x", {
 				scopePath: [],
 				tag: {
 					value: "x+x",
@@ -72,7 +74,7 @@ describe("Angular parser", function () {
 			}).getIdentifiers()
 		).to.deep.equal(["x"]);
 		expect(
-			angularParser("x+users", {
+			expressionParser("x+users", {
 				scopePath: [],
 				tag: {
 					value: "x+users",
@@ -80,7 +82,7 @@ describe("Angular parser", function () {
 			}).getIdentifiers()
 		).to.deep.equal(["x", "users"]);
 		expect(
-			angularParser("users<= 3 && users!= 0 | getimg:foo", {
+			expressionParser("users<= 3 && users!= 0 | getimg:foo", {
 				scopePath: [],
 				tag: {
 					value: "users<= 3 && users!= 0 | getimg:foo",
@@ -90,25 +92,25 @@ describe("Angular parser", function () {
 	});
 
 	it("should be able to getIdentifiers with ie 11", function () {
-		angularParserIE11.filters.getimg = function name() {
+		expressionParserIE11.filters.getimg = function name() {
 			return 0;
 		};
 		expect(
-			angularParserIE11("x+x", {
+			expressionParserIE11("x+x", {
 				tag: {
 					value: "x+x",
 				},
 			}).getIdentifiers()
 		).to.deep.equal(["x"]);
 		expect(
-			angularParserIE11("x+users", {
+			expressionParserIE11("x+users", {
 				tag: {
 					value: "x+users",
 				},
 			}).getIdentifiers()
 		).to.deep.equal(["x", "users"]);
 		expect(
-			angularParserIE11("users<= 3 && users!= 0 | getimg:foo", {
+			expressionParserIE11("users<= 3 && users!= 0 | getimg:foo", {
 				tag: {
 					value: "x+x",
 				},

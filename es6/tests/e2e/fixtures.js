@@ -1,6 +1,6 @@
 const { assign } = require("lodash");
 const expressionParser = require("../../expressions.js");
-const angularParserIE11 = require("../../expressions-ie11.js");
+const expressionParserIE11 = require("../../expressions-ie11.js");
 const Errors = require("../../errors.js");
 const { wrapMultiError } = require("../utils.js");
 const nbsp = String.fromCharCode(160);
@@ -310,7 +310,7 @@ const fixtures = [
 	},
 
 	{
-		it: "should allow to call a function up one scope with angular expressions",
+		it: "should allow to call a function up one scope with expressions parser",
 		content: "<w:t>{#users}{hi(.)}{/}</w:t>",
 		...noInternals,
 		options: {
@@ -1636,7 +1636,7 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">low</w:t>',
 	},
 	{
-		it: "should work well with multi level angular parser",
+		it: "should work well with multi level expression parser",
 		// This tag was designed to match /-([^\s]+)\s(.+)$/ which is the prefix of the dash loop
 		content: "<w:t>{#users}{name} {date-age+ offset} {/}</w:t>",
 		...noInternals,
@@ -1655,7 +1655,7 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">John 1976 Mary 1998 Walt 2079 </w:t>',
 	},
 	{
-		it: "should work well with $index angular parser",
+		it: "should work well with $index expression parser",
 		content: "<w:t>{#list}{#$index==0}FIRST {/}{text} {/list}</w:t>",
 		...noInternals,
 		options: {
@@ -1665,7 +1665,7 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">FIRST Hello Other item </w:t>',
 	},
 	{
-		it: "should work well with $index inside condition angular parser",
+		it: "should work well with $index inside condition expression parser",
 		content:
 			"<w:t>{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
 		...noInternals,
@@ -1682,12 +1682,12 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">!!1Hello?2Other item!!3Bye</w:t>',
 	},
 	{
-		it: "should work well with $index inside condition angular parser",
+		it: "should work well with $index inside condition expression parser",
 		content:
 			"<w:t>{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
 		...noInternals,
 		options: {
-			parser: angularParserIE11,
+			parser: expressionParserIE11,
 		},
 		scope: {
 			list: [
@@ -1728,7 +1728,7 @@ const fixtures = [
 			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
 	},
 	{
-		it: "should work well with nested angular expressions",
+		it: "should work well with nested expressions parser",
 		content: "<w:t>{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}</w:t>",
 		...noInternals,
 		options: {
@@ -1749,7 +1749,7 @@ const fixtures = [
 		result: '<w:t xml:space="preserve">0123</w:t>',
 	},
 	{
-		it: "should work with this with angular expressions",
+		it: "should work with this with expressions parser",
 		content: "<w:t>{#hello}{this}{/hello}</w:t>",
 		...noInternals,
 		options: {
@@ -1839,7 +1839,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:t xml:space="preserve">JOHN</w:t>',
 	},
 	{
-		it: "should work when using angular assignment that is already in the scope",
+		it: "should work when using assignment that is already in the scope",
 		content: "<w:t>{b=a}{b}</w:t>",
 		...noInternals,
 		options: {
@@ -1976,7 +1976,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		...noInternals,
 		options: {
 			linebreaks: true,
-			parser: angularParserIE11.configure({
+			parser: expressionParserIE11.configure({
 				csp: true,
 				filters: {
 					foo() {
@@ -1993,7 +1993,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		...noInternals,
 		options: {
 			linebreaks: true,
-			parser: angularParserIE11,
+			parser: expressionParserIE11,
 		},
 		result: '<w:t xml:space="preserve">undefined</w:t>',
 	},

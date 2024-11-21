@@ -1,15 +1,15 @@
 import Docxtemplater, { DXT } from "./docxtemplater";
 import InspectModule from "./inspect-module";
-import angularParser from "../expressions";
-import ieAngularParser from "../expressions-ie11";
+import expressionParser from "../expressions";
+import ieExpressionParser from "../expressions-ie11";
 import TxtTemplater from "./text";
 
 const tDoc = new TxtTemplater("Hello {#users}{name},{/users} how are you ?", {
-  parser: angularParser,
+  parser: expressionParser,
 });
 tDoc.render({ users: [{ name: "John" }, { name: "Baz" }] });
 
-angularParser.filters.map = function (input: any, key: any): any {
+expressionParser.filters.map = function (input: any, key: any): any {
   if (!input) {
     return input;
   }
@@ -21,7 +21,7 @@ angularParser.filters.map = function (input: any, key: any): any {
   }
 };
 
-ieAngularParser.filters.map = function (input: any, key: any): any {
+ieExpressionParser.filters.map = function (input: any, key: any): any {
   if (!input) {
     return input;
   }
@@ -155,15 +155,15 @@ expectError(doc3.getFullText(false));
 expectError(doc3.getFullText(10));
 
 const doc5 = new Docxtemplater(new PizZip("hello"), {
-  parser: angularParser,
+  parser: expressionParser,
 });
 
 const doc6 = new Docxtemplater(new PizZip("hello"), {
-  parser: ieAngularParser,
+  parser: ieExpressionParser,
 });
 
 const doc7 = new Docxtemplater(new PizZip("hello"), {
-  parser: angularParser.configure({
+  parser: expressionParser.configure({
     filters: {
       foo: (a: any) => a,
       bar: (a: any) => a,
@@ -175,7 +175,7 @@ const doc7 = new Docxtemplater(new PizZip("hello"), {
 });
 
 const doc8 = new Docxtemplater(new PizZip("hello"), {
-  parser: ieAngularParser.configure({
+  parser: ieExpressionParser.configure({
     filters: {
       foo: (a: any) => a,
       bar: (a: any) => a,
@@ -207,16 +207,16 @@ function validStartChars(ch: string): boolean {
 function validContinuationChars(ch: string): boolean {
   return /[a-z]/.test(ch);
 }
-angularParser.configure({
+expressionParser.configure({
   isIdentifierStart: validStartChars,
   isIdentifierContinue: validContinuationChars,
 });
-ieAngularParser.configure({
+ieExpressionParser.configure({
   isIdentifierStart: validStartChars,
   isIdentifierContinue: validContinuationChars,
 });
 
-angularParser.configure({
+expressionParser.configure({
   evaluateIdentifier(tag: string, scope: any, scopeList: any[], context: any) {
     let res = context.num + context.num;
     return res;

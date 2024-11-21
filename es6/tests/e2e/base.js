@@ -1,6 +1,6 @@
 const { assign } = require("lodash");
-const angularParser = require("../../expressions.js");
-const angularParserIE11 = require("../../expressions-ie11.js");
+const expressionParser = require("../../expressions.js");
+const expressionParserIE11 = require("../../expressions-ie11.js");
 const Docxtemplater = require("../../docxtemplater.js");
 const { last } = require("../../utils.js");
 const {
@@ -465,7 +465,7 @@ describe("Changing the parser", function () {
 		);
 	});
 
-	it("should work with angular parser", function () {
+	it("should work with expression parser", function () {
 		const tags = {
 			person: {
 				first_name: "Hipp",
@@ -474,7 +474,9 @@ describe("Changing the parser", function () {
 				age: 59,
 			},
 		};
-		const doc = createDocV4("angular-example.docx", { parser: angularParser });
+		const doc = createDocV4("angular-example.docx", {
+			parser: expressionParser,
+		});
 		doc.render(tags);
 		expect(doc.getFullText()).to.be.equal("Hipp Edgar 2014");
 	});
@@ -484,17 +486,17 @@ describe("Changing the parser", function () {
 		const scope = { person: { name: "Edgar", adult: true } };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
-			parser: angularParser,
+			parser: expressionParser,
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 	});
 
-	it("should work with loops with angularParser for ie 11", function () {
+	it("should work with loops with expressionParser for ie 11", function () {
 		const content = "<w:t>Hello {#person.adult}you{/person.adult}</w:t>";
 		const scope = { person: { name: "Edgar", adult: true } };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
-			parser: angularParserIE11,
+			parser: expressionParserIE11,
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 	});

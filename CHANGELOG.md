@@ -455,7 +455,7 @@ expressionParser.filters.sortBy = function (input, ...fields) {
 
 Now, the error will show a multierror with the list of errors that are happening + the tags that are causing the error.
 
-Add support for angularExpressions.compile(), angularExpressions.Parser, and angularParser.Lexer
+Add support for angularExpressions.compile(), angularExpressions.Parser, and expressionParser.Lexer
 
 ### 3.40.3
 
@@ -919,7 +919,7 @@ Tags such as {être} will not throw an error.
 
 Expose "docxtemplater/expressions.js" to simplify the parser option for angular parser.
 
-You now can replace your angularParser code with the following :
+You now can replace your expressionParser code with the following :
 
 ```js
 const expressionParser = require("docxtemplater/expressions.js");
@@ -1321,7 +1321,7 @@ try {
 } catch (error) {
   // Catch rendering errors
   // (errors relating to the rendering of the template:
-  // for example when the angularParser throws an error)
+  // for example when the expressionParser throws an error)
   errorHandler(error);
 }
 ```

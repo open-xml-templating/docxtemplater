@@ -11,7 +11,7 @@ const {
 	expectToThrowAsync,
 	captureLogs,
 } = require("../utils.js");
-const angularParser = require("../../expressions.js");
+const expressionParser = require("../../expressions.js");
 
 describe("Compilation errors", function () {
 	it("should fail when parsing invalid xml (1)", function () {
@@ -256,7 +256,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -689,7 +689,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -737,7 +737,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -782,7 +782,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -824,7 +824,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -883,7 +883,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -939,7 +939,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -992,7 +992,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -1037,7 +1037,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		expectToThrow(
 			() =>
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -1126,7 +1126,7 @@ describe("Rendering error", function () {
 		expectToThrow(
 			() => {
 				makeDocxV4(content, {
-					parser: angularParser,
+					parser: expressionParser,
 					errorLogging: false,
 				}).render({
 					user: String.fromCharCode(28),

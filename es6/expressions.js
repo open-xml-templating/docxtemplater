@@ -123,13 +123,13 @@ function configuredParser(config = {}) {
 			handleThis: false,
 			...config,
 		});
-		// isAngularAssignment will be true if your tag contains an Assignment, for example
+		// isAssignment will be true if your tag contains an Assignment, for example
 		// when you write the following in your template :
 		// {full_name = first_name + last_name}
 		// In that case, it makes sense to return an empty string so
 		// that the tag does not write something to the generated document.
 		const lastBody = expr.ast.body[expr.ast.body.length - 1];
-		const isAngularAssignment =
+		const isAssignment =
 			lastBody && lastBody.expression.type === "AssignmentExpression";
 
 		return {
@@ -273,7 +273,7 @@ function configuredParser(config = {}) {
 				);
 
 				const result = expr(px, px);
-				if (isAngularAssignment) {
+				if (isAssignment) {
 					return "";
 				}
 				return result;

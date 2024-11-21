@@ -15,5 +15,5 @@ type Parser = {
   configure: (options: ParserOptions) => (tag: string) => DXT.Parser;
 };
 
-declare var angularParser: Parser;
-export default angularParser;
+declare var expressionParser: Parser;
+export default expressionParser;

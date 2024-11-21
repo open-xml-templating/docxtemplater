@@ -181,7 +181,7 @@ function miniparser(xml) {
 							return ` encoding="${encoding}"`;
 						});
 					}
-					tag = tag.replace((/^(<\?.*?) *(\?>$)/), "$1$2"); // Drop all spaces before ?>
+					tag = tag.replace(/^(<\?.*?) *(\?>$)/, "$1$2"); // Drop all spaces before ?>
 					currentType = "processing-instruction";
 				} else if (isSingle) {
 					// drop whitespace at the end

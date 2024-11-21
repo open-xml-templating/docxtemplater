@@ -108,7 +108,7 @@ function getIdentifiers(x) {
 }
 
 function configuredParser(config = {}) {
-	return function angularParser(tag) {
+	return function expressionParser(tag) {
 		tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
 
 		while (dotRegex.test(tag)) {
@@ -121,12 +121,12 @@ function configuredParser(config = {}) {
 			...config,
 		});
 
-		// isAngularAssignment will be true if your tag contains an Assignment, for example
+		// isAssignment will be true if your tag contains an Assignment, for example
 		// when you write the following in your template :
 		// {full_name = first_name + last_name}
 		// In that case, it makes sense to return an empty string so
 		// that the tag does not write something to the generated document.
-		const isAngularAssignment =
+		const isAssignment =
 			expr.ast.body[0] &&
 			expr.ast.body[0].expression.type === "AssignmentExpression";
 
@@ -147,7 +147,7 @@ function configuredParser(config = {}) {
 				}
 				obj = assign(obj, { $index: index });
 				const result = expr(scope, obj);
-				if (isAngularAssignment) {
+				if (isAssignment) {
 					return "";
 				}
 				return result;
