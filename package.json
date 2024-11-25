@@ -47,7 +47,6 @@
     "@babel/preset-env": "^7.26.0",
     "@stryker-mutator/core": "^8.6.0",
     "@stryker-mutator/mocha-runner": "^8.6.0",
-    "@wdio/cli": "8.12.2",
     "angular-expressions": "^1.4.0",
     "babel-loader": "^9.2.1",
     "chai": "^4.5.0",
@@ -67,6 +66,7 @@
     "mocha": "^10.8.2",
     "nyc": "^17.1.0",
     "pizzip": "^3.1.7",
+    "playwright": "^1.49.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "selenium-standalone": "^10.0.0",
@@ -74,7 +74,6 @@
     "stryker-cli": "^1.0.2",
     "tsd": "^0.31.2",
     "updtr": "^4.1.0",
-    "webdriverio": "8.12.1",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4"
   },

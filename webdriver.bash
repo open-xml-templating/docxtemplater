@@ -73,6 +73,8 @@ isempty() {
 	[ ! "$(ls -A "$1")" ]
 }
 
+npx playwright install
+
 if [ "$BROWSER" != "SAUCELABS" ]; then
 	retries=2
 	while [ "$retries" -gt 0 ]; do
