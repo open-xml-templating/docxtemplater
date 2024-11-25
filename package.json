@@ -50,7 +50,7 @@
     "@wdio/cli": "8.12.2",
     "angular-expressions": "^1.4.0",
     "babel-loader": "^9.2.1",
-    "chai": "^4.3.10",
+    "chai": "^4.5.0",
     "chalk": "^5.3.0",
     "cross-env": "^7.0.3",
     "diff": "^7.0.0",
