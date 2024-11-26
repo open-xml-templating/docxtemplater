@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+/* eslint-disable no-process-env,no-process-exit,no-console */
+
 import chalk from "chalk";
 import url from "url";
 import finalhandler from "finalhandler";
@@ -12,13 +13,7 @@ import { expect } from "chai";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Environment variables
-const {
-	BROWSER = "CHROME",
-	SAUCE_USERNAME,
-	SAUCE_ACCESS_KEY,
-	TRAVIS_BUILD_NUMBER,
-	TRAVIS_JOB_NUMBER,
-} = process.env;
+const { BROWSER = "CHROME" } = process.env;
 
 const port = 9000;
 const second = 1000;

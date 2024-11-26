@@ -86,7 +86,6 @@ class InspectModule {
 		this.docxtemplater = docxtemplater;
 		return options;
 	}
-	// eslint-disable-next-line complexity
 	set(obj) {
 		if (obj.data) {
 			this.inspect.tags = obj.data;

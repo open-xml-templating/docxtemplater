@@ -1,9 +1,9 @@
 const naturalCompare = require("natural-compare");
 
 function intersectSafe(a, b) {
-	var ai = 0,
+	let ai = 0,
 		bi = 0;
-	var result = [];
+	const result = [];
 
 	while (ai < a.length && bi < b.length) {
 		if (a[ai] < b[bi]) {

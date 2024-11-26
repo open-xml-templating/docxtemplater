@@ -298,7 +298,6 @@ function cleanRecursive(arr) {
 	});
 }
 
-// eslint-disable-next-line complexity
 function cleanError(e, expectedError) {
 	const message = e.message;
 	e = omit(e, ["line", "sourceURL", "stack"]);
@@ -741,8 +740,6 @@ function start() {
 	} else {
 		fileNames = require("./filenames.js");
 	}
-	/* eslint-disable import/no-unresolved */
-	/* eslint-enable import/no-unresolved */
 	fileNames.forEach(function (fullFileName) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
 		let callback;

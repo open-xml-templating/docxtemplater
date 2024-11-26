@@ -399,7 +399,6 @@ class LoopModule {
 			});
 		});
 	}
-	// eslint-disable-next-line complexity
 	render(part, options) {
 		if (part.tag === "p:xfrm") {
 			this.inXfrm = part.position === "start";
@@ -424,7 +423,6 @@ class LoopModule {
 		let a16RowIdOffset = 0;
 		const insideParagraphLoop = isInsideParagraphLoop(part);
 
-		// eslint-disable-next-line complexity
 		function loopOver(scope, i, length) {
 			heightOffset += tagHeight;
 			const scopeManager = options.scopeManager.createSubScopeManager(

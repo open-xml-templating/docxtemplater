@@ -835,7 +835,7 @@ describe("ParagraphLoop", function () {
 				paragraphLoop: true,
 				parser: expressionParser,
 			});
-		} catch (e) {
+		} catch {
 			catched = true;
 			capture.stop();
 		}

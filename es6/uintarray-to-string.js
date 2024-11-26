@@ -18,7 +18,6 @@ for (let i = 0; i < 256; i++) {
 }
 _utf8len[254] = _utf8len[254] = 1; // Invalid sequence start
 
-// eslint-disable-next-line complexity
 function buf2string(buf) {
 	let i, out, c, cLen;
 	const len = buf.length;
@@ -80,7 +79,6 @@ function buf2string(buf) {
 	return applyFromCharCode(utf16buf);
 }
 
-// eslint-disable-next-line complexity
 function applyFromCharCode(array) {
 	// Performances notes :
 	// --------------------
@@ -106,7 +104,7 @@ function applyFromCharCode(array) {
 				)
 			);
 			k += chunk;
-		} catch (e) {
+		} catch {
 			chunk = Math.floor(chunk / 2);
 		}
 	}

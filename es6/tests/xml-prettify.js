@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 const repeat = require("./string-repeat.js");
 
 function getIndent(indent) {

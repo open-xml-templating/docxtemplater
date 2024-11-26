@@ -11,7 +11,6 @@ function collectContentTypes(overrides, defaults, zip) {
 		const def = defaults[i];
 		const contentType = def.getAttribute("ContentType");
 		const extension = def.getAttribute("Extension");
-		// eslint-disable-next-line no-loop-func
 		zip.file(/./).map(({ name }) => {
 			if (
 				name.slice(name.length - extension.length) === extension &&

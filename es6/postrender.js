@@ -2,7 +2,6 @@
 // Stryker disable all : because this is a utility function that was copied
 // from
 // https://github.com/open-xml-templating/pizzip/blob/34a840553c604980859dc6d0dcd1f89b6e5527b3/es6/utf8.js#L33
-// eslint-disable-next-line complexity
 function string2buf(str) {
 	let c,
 		c2,
