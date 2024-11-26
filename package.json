@@ -67,7 +67,7 @@
     "nyc": "^17.1.0",
     "pizzip": "^3.1.7",
     "playwright": "^1.49.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.1",
     "rimraf": "^6.0.1",
     "selenium-standalone": "^10.0.0",
     "serve-static": "^1.15.0",
