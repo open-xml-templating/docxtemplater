@@ -41,29 +41,34 @@ module.exports = class XmlTemplater {
 			if (errors.length !== 0) {
 				throw errors;
 			}
-			return resolve(options).then(({ resolved, errors }) => {
-				errors = errors.map((error) => {
-					// If a string is thrown, convert it to a real Error
-					if (!(error instanceof Error)) {
-						error = new Error(error);
+			return resolve(options)
+				.then(({ resolved, errors }) => {
+					errors = errors.map((error) => {
+						// If a string is thrown, convert it to a real Error
+						if (!(error instanceof Error)) {
+							error = new Error(error);
+						}
+						// error properties might not be defined if some foreign error
+						// (unhandled error not thrown by docxtemplater willingly) is
+						// thrown.
+						error.properties = error.properties || {};
+						error.properties.file = filePath;
+						return error;
+					});
+					if (errors.length !== 0) {
+						throw errors;
 					}
-					// error properties might not be defined if some foreign error
-					// (unhandled error not thrown by docxtemplater willingly) is
-					// thrown.
-					error.properties = error.properties || {};
-					error.properties.file = filePath;
-					return error;
+					return Promise.all(resolved).then((resolved) => {
+						options.scopeManager.root.finishedResolving = true;
+						options.scopeManager.resolved = resolved;
+						this.setModules({ inspect: { resolved, filePath } });
+						return resolved;
+					});
+				})
+				.catch((error) => {
+					this.errorChecker(error);
+					throw error;
 				});
-				if (errors.length !== 0) {
-					throw errors;
-				}
-				return Promise.all(resolved).then((resolved) => {
-					options.scopeManager.root.finishedResolving = true;
-					options.scopeManager.resolved = resolved;
-					this.setModules({ inspect: { resolved, filePath } });
-					return resolved;
-				});
-			});
 		});
 	}
 	getFullText() {

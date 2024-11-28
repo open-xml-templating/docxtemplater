@@ -1,3 +1,9 @@
+### 3.54.1
+
+Bugfix so that "errorChecker" is called when resolveTags fails (and not later in render).
+
+This fixes a bug when using the xlsx + error location module in async mode, so that errors are correctly shown.
+
 ### 3.54.0
 
 Add console.warn messages when using deprecated methods :
