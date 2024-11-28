@@ -102,11 +102,11 @@ function externalContent(value) {
 const fixtures = [
 	{
 		it: "should handle {user} with tag",
-		content: "<w:t>Hi {user}</w:t>",
+		contentText: "Hi {user}",
 		scope: {
 			user: "Foo",
 		},
-		result: '<w:t xml:space="preserve">Hi Foo</w:t>',
+		resultText: "Hi Foo",
 		xmllexed: [
 			{
 				position: "start",
@@ -150,9 +150,9 @@ const fixtures = [
 	},
 	{
 		it: "should handle {.} with tag",
-		content: "<w:t>Hi {.}</w:t>",
+		contentText: "Hi {.}",
 		scope: "Foo",
-		result: '<w:t xml:space="preserve">Hi Foo</w:t>',
+		resultText: "Hi Foo",
 		lexed: [
 			startText,
 			content("Hi "),
@@ -176,7 +176,8 @@ const fixtures = [
 	},
 	{
 		it: "should handle {userGreeting} with lambda function",
-		content: "<w:t>{#users}{userGreeting}{/}</w:t>",
+		contentText: "{#users}{userGreeting}{/}",
+		resultText: "How is it going, John ? 1How is it going, Mary ? 1",
 		...noInternals,
 		scope: {
 			userGreeting: (scope, sm) => {
@@ -191,14 +192,12 @@ const fixtures = [
 				},
 			],
 		},
-		result:
-			'<w:t xml:space="preserve">How is it going, John ? 1How is it going, Mary ? 1</w:t>',
 	},
 	{
 		it: "should handle non breaking space in tag",
-		result: '<w:t xml:space="preserve">Hey Ho</w:t>',
 		...noInternals,
-		content: `<w:t>{:foo${nbsp}${nbsp}bar${nbsp}bar} {:zing${nbsp}${nbsp}${nbsp}bang}</w:t>`,
+		contentText: `{:foo${nbsp}${nbsp}bar${nbsp}bar} {:zing${nbsp}${nbsp}${nbsp}bang}`,
+		resultText: "Hey Ho",
 		options: {
 			modules: () => [
 				{
@@ -236,11 +235,9 @@ const fixtures = [
 	},
 	{
 		it: "should be possible to implement a parser that loads nested data using {user.name}",
-		result:
-			'<w:t xml:space="preserve">Hello John, your age is 33. Date : 17/01/2000</w:t>',
+		resultText: "Hello John, your age is 33. Date : 17/01/2000",
 		...noInternals,
-		content:
-			"<w:t>Hello {user.name}, your age is {user.age}. Date : {date}</w:t>",
+		contentText: "Hello {user.name}, your age is {user.age}. Date : {date}",
 		options: {
 			parser(tag) {
 				const splitted = tag.split(".");
@@ -268,10 +265,10 @@ const fixtures = [
 		},
 	},
 	{
-		it: "should be possible to add nullGetter to module",
-		result: '<w:t xml:space="preserve">foo</w:t>',
+		it: "should be possible to add nullGetter to module (and use the first nullGetter result)",
 		...noInternals,
-		content: "<w:t>{foo}</w:t>",
+		contentText: "{foo}",
+		resultText: "foo",
 		options: {
 			modules: () => [
 				{
@@ -292,7 +289,8 @@ const fixtures = [
 
 	{
 		it: "should handle {#userGet} with lambda function",
-		content: "<w:t>{#userGet}- {name}{/}</w:t>",
+		contentText: "{#userGet}- {name}{/}",
+		resultText: "- John- Mary",
 		...noInternals,
 		scope: {
 			userGet: () => {
@@ -306,12 +304,12 @@ const fixtures = [
 				];
 			},
 		},
-		result: '<w:t xml:space="preserve">- John- Mary</w:t>',
 	},
 
 	{
 		it: "should allow to call a function up one scope with expressions parser",
-		content: "<w:t>{#users}{hi(.)}{/}</w:t>",
+		contentText: "{#users}{hi(.)}{/}",
+		resultText: "What&apos;s up, John ?What&apos;s up, Jackie ?",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -322,8 +320,6 @@ const fixtures = [
 			},
 			users: ["John", "Jackie"],
 		},
-		result:
-			'<w:t xml:space="preserve">What&apos;s up, John ?What&apos;s up, Jackie ?</w:t>',
 	},
 
 	{
@@ -382,11 +378,11 @@ const fixtures = [
 	},
 	{
 		it: "should work with custom delimiters",
-		content: "<w:t>Hello [[[name]]</w:t>",
+		contentText: "Hello [[[name]]",
 		scope: {
 			name: "John Doe",
 		},
-		result: '<w:t xml:space="preserve">Hello John Doe</w:t>',
+		resultText: "Hello John Doe",
 		delimiters: {
 			start: "[[[",
 			end: "]]",
@@ -537,7 +533,7 @@ const fixtures = [
 	},
 	{
 		it: "should show multierror with loops",
-		content: "<w:t>{#a}{b}{/a}</w:t>",
+		contentText: "{#a}{b}{/a}",
 		...noInternals,
 		options: {
 			parser() {
@@ -566,7 +562,7 @@ const fixtures = [
 	},
 	{
 		it: "should show multierror with loops",
-		content: "<w:t>{#a}{b}{/a}</w:t>",
+		contentText: "{#a}{b}{/a}",
 		...noInternals,
 		options: {
 			parser(tag) {
@@ -604,12 +600,11 @@ const fixtures = [
 
 	{
 		it: "should work with loops",
-		content: "<w:t>Hello {#users}{name}, {/users}</w:t>",
+		contentText: "Hello {#users}{name}, {/users}",
 		scope: {
 			users: [{ name: "John Doe" }, { name: "Jane Doe" }, { name: "Wane Doe" }],
 		},
-		result:
-			'<w:t xml:space="preserve">Hello John Doe, Jane Doe, Wane Doe, </w:t>',
+		resultText: "Hello John Doe, Jane Doe, Wane Doe, ",
 		lexed: [
 			startText,
 			content("Hello "),
@@ -837,20 +832,20 @@ const fixtures = [
 	{
 		it: "should work with spacing loops 2",
 		...noInternals,
-		content: "<w:t>{#condition}{text}{/condition}</w:t>",
+		contentText: "{#condition}{text}{/condition}",
+		resultText: " hello ",
 		scope: {
 			condition: [{ text: " hello " }],
 		},
-		result: '<w:t xml:space="preserve"> hello </w:t>',
 	},
 	{
 		it: "should work with empty condition",
 		...noInternals,
-		content: "<w:t>{#a}A{/a}{^b}{/b}</w:t>",
+		contentText: "{#a}A{/a}{^b}{/b}",
+		resultText: "A",
 		scope: {
 			a: true,
 		},
-		result: '<w:t xml:space="preserve">A</w:t>',
 	},
 	{
 		it: "should work with spacing loops 3",
@@ -864,7 +859,7 @@ const fixtures = [
 	{
 		it: "should work with spacing loops 4",
 		...noInternals,
-		content: "<w:t>{#condition}foo{/condition}</w:t>",
+		contentText: "{#condition}foo{/condition}",
 		scope: {
 			condition: false,
 		},
@@ -1112,12 +1107,12 @@ const fixtures = [
 	},
 	{
 		it: "should be possible to change the delimiters",
-		content: "<w:t>Hi {=[[ ]]=}[[user]][[={ }=]] and {user2}</w:t>",
+		contentText: "Hi {=[[ ]]=}[[user]][[={ }=]] and {user2}",
 		scope: {
 			user: "John",
 			user2: "Jane",
 		},
-		result: '<w:t xml:space="preserve">Hi John and Jane</w:t>',
+		resultText: "Hi John and Jane",
 		lexed: [
 			startText,
 			content("Hi "),
@@ -1149,7 +1144,7 @@ const fixtures = [
 	},
 	{
 		it: "should be possible to change the delimiters",
-		content: "<w:t>Hi {=a b c=}</w:t>",
+		contentText: "Hi {=a b c=}",
 		error: {
 			name: "TemplateError",
 			message: "New Delimiters cannot be parsed",
@@ -1161,7 +1156,7 @@ const fixtures = [
 	},
 	{
 		it: "should throw error if delimiters invalid",
-		content: "<w:t>Hi {= =}</w:t>",
+		contentText: "Hi {= =}",
 		error: {
 			name: "TemplateError",
 			message: "New Delimiters cannot be parsed",
@@ -1173,7 +1168,7 @@ const fixtures = [
 	},
 	{
 		it: "should throw error if delimiters invalid (2)",
-		content: "<w:t>Hi {=[ =}</w:t>",
+		contentText: "Hi {=[ =}",
 		error: {
 			name: "TemplateError",
 			message: "New Delimiters cannot be parsed",
@@ -1185,7 +1180,7 @@ const fixtures = [
 	},
 	{
 		it: "should throw error if delimiters invalid (3)",
-		content: "<w:t>Hi {= ]=}</w:t>",
+		contentText: "Hi {= ]=}",
 		error: {
 			name: "TemplateError",
 			message: "New Delimiters cannot be parsed",
@@ -1197,12 +1192,12 @@ const fixtures = [
 	},
 	{
 		it: "should be possible to change the delimiters with complex example",
-		content: "<w:t>Hi {={{[ ]}}=}{{[user]}}{{[={{ ]=]}} and {{user2]</w:t>",
+		contentText: "Hi {={{[ ]}}=}{{[user]}}{{[={{ ]=]}} and {{user2]",
 		scope: {
 			user: "John",
 			user2: "Jane",
 		},
-		result: '<w:t xml:space="preserve">Hi John and Jane</w:t>',
+		resultText: "Hi John and Jane",
 		lexed: [
 			startText,
 			content("Hi "),
@@ -1235,7 +1230,7 @@ const fixtures = [
 	{
 		it: "should resolve the data correctly",
 		...noInternals,
-		content: "<w:t>{test}{#test}{label}{/test}{test}</w:t>",
+		contentText: "{test}{#test}{label}{/test}{test}",
 		scope: {
 			label: "T1",
 			test: true,
@@ -1265,12 +1260,12 @@ const fixtures = [
 				],
 			},
 		],
-		result: '<w:t xml:space="preserve">trueT1true</w:t>',
+		resultText: "trueT1true",
 	},
 	{
 		it: "should resolve 2 the data correctly",
 		...noInternals,
-		content: "<w:t>{^a}{label}{/a}</w:t>",
+		contentText: "{^a}{label}{/a}",
 		scope: {
 			a: true,
 		},
@@ -1286,8 +1281,9 @@ const fixtures = [
 	{
 		it: "should resolve 3 the data correctly",
 		...noInternals,
-		content:
-			"<w:t>{#frames}{#true}{label}{#false}{label}{/false}{/true}{#false}{label}{/false}{/frames}</w:t>",
+		contentText:
+			"{#frames}{#true}{label}{#false}{label}{/false}{/true}{#false}{label}{/false}{/frames}",
+		resultText: "T1",
 		scope: {
 			frames: [
 				{
@@ -1329,12 +1325,12 @@ const fixtures = [
 				],
 			},
 		],
-		result: '<w:t xml:space="preserve">T1</w:t>',
 	},
 	{
 		it: "should resolve truthy data correctly",
-		content:
-			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
+		contentText:
+			"{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}",
+		resultText: "Linner",
 		...noInternals,
 		scope: {
 			label: "outer",
@@ -1345,12 +1341,11 @@ const fixtures = [
 				},
 			],
 		},
-		result: '<w:t xml:space="preserve">Linner</w:t>',
 	},
 	{
 		it: "should resolve truthy multi data correctly",
-		content:
-			"<w:t>{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}</w:t>",
+		contentText:
+			"{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}",
 		...noInternals,
 		scope: {
 			label: "outer",
@@ -1373,11 +1368,11 @@ const fixtures = [
 				},
 			],
 		},
-		result: '<w:t xml:space="preserve">LinnerLinnerLinnerLouterouter</w:t>',
+		resultText: "LinnerLinnerLinnerLouterouter",
 	},
 	{
 		it: "should resolve async loop",
-		content: "<w:t>{#loop}{#cond1}{label}{/}{#cond2}{label}{/}{/loop}</w:t>",
+		contentText: "{#loop}{#cond1}{label}{/}{#cond2}{label}{/}{/loop}",
 		...noInternals,
 		scope: {
 			label: "outer",
@@ -1392,40 +1387,40 @@ const fixtures = [
 				},
 			],
 		},
-		result: '<w:t xml:space="preserve">innerouterouter</w:t>',
+		resultText: "innerouterouter",
 	},
 	{
 		it: "should work well with inversed loop simple",
-		content: "<w:t>{^b}{label}{/}</w:t>",
+		contentText: "{^b}{label}{/}",
 		...noInternals,
 		scope: {
 			b: false,
 			label: "hi",
 		},
-		result: '<w:t xml:space="preserve">hi</w:t>',
+		resultText: "hi",
 	},
 	{
 		it: "should work well with nested inversed loop",
-		content: "<w:t>{#a}{^b}{label}{/}{/}</w:t>",
+		contentText: "{#a}{^b}{label}{/}{/}",
 		...noInternals,
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
-		result: '<w:t xml:space="preserve">hi</w:t>',
+		resultText: "hi",
 	},
 	{
 		it: "should work well with deeply nested inversed loop nested",
-		content: "<w:t>{#a}{^b}{^c}{label}{/}{/}{/}</w:t>",
+		contentText: "{#a}{^b}{^c}{label}{/}{/}{/}",
 		...noInternals,
 		scope: {
 			a: [{ b: false, label: "hi" }],
 		},
-		result: '<w:t xml:space="preserve">hi</w:t>',
+		resultText: "hi",
 	},
 	{
 		it: "should work well with true value for condition",
-		content:
-			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		contentText:
+			"{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1436,23 +1431,23 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		result: '<w:t xml:space="preserve">low</w:t>',
+		resultText: "low",
 	},
 	{
 		it: "should handle {this+this+this} tag",
 		scope: "Foo",
 		...noInternals,
-		content: "<w:t>Hi {this+this+this}</w:t>",
+		contentText: "Hi {this+this+this}",
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi FooFooFoo</w:t>',
+		resultText: "Hi FooFooFoo",
 	},
 	{
 		it: "should handle {((.+.+.)*.*0.5)|sum:.} tag",
 		scope: 2,
 		...noInternals,
-		content: "<w:t>Hi {((((.+.+.)*.*0.5)|sum:.)-.)/.}</w:t>",
+		contentText: "Hi {((((.+.+.)*.*0.5)|sum:.)-.)/.}",
 		// = (((2 + 2 + 2)*2 * 0.5 | sum:2)-2)/2
 		// = (((6)*2 * 0.5 | sum:2)-2)/2
 		// = ((6 | sum:2)-2)/2
@@ -1462,7 +1457,7 @@ const fixtures = [
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi 3</w:t>',
+		resultText: "Hi 3",
 	},
 	{
 		it: "should handle {.['user-name']} tag",
@@ -1470,11 +1465,11 @@ const fixtures = [
 			"user-name": "John",
 		},
 		...noInternals,
-		content: "<w:t>Hi {.['user-name']}</w:t>",
+		contentText: "Hi {.['user-name']}",
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi John</w:t>',
+		resultText: "Hi John",
 	},
 	{
 		it: "should handle {#loop}{. | myFilter}{/loop} tag",
@@ -1482,7 +1477,7 @@ const fixtures = [
 			loop: [3],
 		},
 		...noInternals,
-		content: "<w:t>Hi {#loop}{. | myFilter}{/loop}</w:t>",
+		contentText: "Hi {#loop}{. | myFilter}{/loop}",
 		options: {
 			parser: expressionParser.configure({
 				filters: {
@@ -1494,7 +1489,7 @@ const fixtures = [
 				},
 			}),
 		},
-		result: '<w:t xml:space="preserve">Hi 6</w:t>',
+		resultText: "Hi 6",
 	},
 	{
 		it: 'should handle {this["a b"]} tag',
@@ -1502,61 +1497,61 @@ const fixtures = [
 			"a b": "John",
 		},
 		...noInternals,
-		content: '<w:t>Hi {this["a b"]}</w:t>',
+		contentText: 'Hi {this["a b"]}',
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi John</w:t>',
+		resultText: "Hi John",
 	},
 	{
 		it: 'should handle {this["length"]} tag',
 		scope: "John",
 		...noInternals,
-		content: '<w:t>Hi { this["length"]}</w:t>',
+		contentText: 'Hi { this["length"]}',
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi 4</w:t>',
+		resultText: "Hi 4",
 	},
 	{
 		it: 'should handle {this["split"]} tag',
 		scope: "John",
 		...noInternals,
-		content: '<w:t>Hi {this["split"]}</w:t>',
+		contentText: 'Hi {this["split"]}',
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi undefined</w:t>',
+		resultText: "Hi undefined",
 	},
 	{
 		it: "should handle {this.split} tag",
 		scope: "John",
 		...noInternals,
-		content: "<w:t>Hi {this.split}</w:t>",
+		contentText: "Hi {this.split}",
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi undefined</w:t>',
+		resultText: "Hi undefined",
 	},
 	{
 		it: "should handle {(this+this+this)*this} tag",
 		scope: 1,
 		...noInternals,
-		content: "<w:t>Hi {(this+this+this)*(this+this)}</w:t>",
+		contentText: "Hi {(this+this+this)*(this+this)}",
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi 6</w:t>',
+		resultText: "Hi 6",
 	},
 	{
 		it: "should handle {(this+this+this)*(this+this)}, this=0 tag",
 		scope: 0,
 		...noInternals,
-		content: "<w:t>Hi {(   this + this + this)*(this+this)}</w:t>",
+		contentText: "Hi {(   this + this + this)*(this+this)}",
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi 0</w:t>',
+		resultText: "Hi 0",
 	},
 	{
 		it: "should handle {#products}{# .  }-{ . }-{/}{/}",
@@ -1569,16 +1564,16 @@ const fixtures = [
 		...noInternals,
 		// The space inside {# . } is important.
 		// It tests a regression that was fixed in version 3.37.12
-		content: "<w:t>Hi {#products}{# .  }-{ . }-{/}{/}</w:t>",
+		contentText: "Hi {#products}{# .  }-{ . }-{/}{/}",
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">Hi -1--2--3--4--4--5--6--7-</w:t>',
+		resultText: "Hi -1--2--3--4--4--5--6--7-",
 	},
 	{
 		it: "should work well with int value for condition",
-		content:
-			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		contentText:
+			"{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1589,11 +1584,11 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		result: '<w:t xml:space="preserve">low</w:t>',
+		resultText: "low",
 	},
 	{
 		it: "should work well with empty string as result",
-		content: "<w:t>{foo}</w:t>",
+		contentText: "{foo}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1605,8 +1600,8 @@ const fixtures = [
 	},
 	{
 		it: "should work well with str value for condition",
-		content:
-			"<w:t>{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		contentText:
+			"{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1617,12 +1612,12 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		result: '<w:t xml:space="preserve">low</w:t>',
+		resultText: "low",
 	},
 	{
 		it: "should work well with false value for condition",
-		content:
-			"<w:t>{^cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}</w:t>",
+		contentText:
+			"{^cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1633,12 +1628,12 @@ const fixtures = [
 				price: 2,
 			},
 		},
-		result: '<w:t xml:space="preserve">low</w:t>',
+		resultText: "low",
 	},
 	{
 		it: "should work well with multi level expression parser",
 		// This tag was designed to match /-([^\s]+)\s(.+)$/ which is the prefix of the dash loop
-		content: "<w:t>{#users}{name} {date-age+ offset} {/}</w:t>",
+		contentText: "{#users}{name} {date-age+ offset} {/}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1652,22 +1647,22 @@ const fixtures = [
 				{ date: 2100, age: 22, name: "Walt" },
 			],
 		},
-		result: '<w:t xml:space="preserve">John 1976 Mary 1998 Walt 2079 </w:t>',
+		resultText: "John 1976 Mary 1998 Walt 2079 ",
 	},
 	{
 		it: "should work well with $index expression parser",
-		content: "<w:t>{#list}{#$index==0}FIRST {/}{text} {/list}</w:t>",
+		contentText: "{#list}{#$index==0}FIRST {/}{text} {/list}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
 		scope: { list: [{ text: "Hello" }, { text: "Other item" }] },
-		result: '<w:t xml:space="preserve">FIRST Hello Other item </w:t>',
+		resultText: "FIRST Hello Other item ",
 	},
 	{
 		it: "should work well with $index inside condition expression parser",
-		content:
-			"<w:t>{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
+		contentText:
+			"{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1679,12 +1674,12 @@ const fixtures = [
 				{ important: true, text: "Bye" },
 			],
 		},
-		result: '<w:t xml:space="preserve">!!1Hello?2Other item!!3Bye</w:t>',
+		resultText: "!!1Hello?2Other item!!3Bye",
 	},
 	{
 		it: "should work well with $index inside condition expression parser",
-		content:
-			"<w:t>{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}</w:t>",
+		contentText:
+			"{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}",
 		...noInternals,
 		options: {
 			parser: expressionParserIE11,
@@ -1696,7 +1691,7 @@ const fixtures = [
 				{ important: true, text: "Bye" },
 			],
 		},
-		result: '<w:t xml:space="preserve">!!1Hello?2Other item!!3Bye</w:t>',
+		resultText: "!!1Hello?2Other item!!3Bye",
 	},
 	{
 		it: "should work well with nested conditions inside table",
@@ -1729,7 +1724,7 @@ const fixtures = [
 	},
 	{
 		it: "should work well with nested expressions parser",
-		content: "<w:t>{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}</w:t>",
+		contentText: "{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1746,34 +1741,34 @@ const fixtures = [
 				},
 			},
 		},
-		result: '<w:t xml:space="preserve">0123</w:t>',
+		resultText: "0123",
 	},
 	{
 		it: "should work with this with expressions parser",
-		content: "<w:t>{#hello}{this}{/hello}</w:t>",
+		contentText: "{#hello}{this}{/hello}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
 		scope: { hello: ["world"] },
-		result: '<w:t xml:space="preserve">world</w:t>',
+		resultText: "world",
 	},
 	{
 		it: "should be possible to close loops with {/}",
-		content: "<w:t>{#products}Product {name}{/}</w:t>",
+		contentText: "{#products}Product {name}{/}",
 		...noInternals,
 		scope: { products: [{ name: "Bread" }] },
-		result: '<w:t xml:space="preserve">Product Bread</w:t>',
+		resultText: "Product Bread",
 	},
 	{
 		it: "should get parent prop if child is null",
-		content: "<w:t>{#c}{label}{/c}</w:t>",
+		contentText: "{#c}{label}{/c}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
 		scope: { c: { label: null }, label: "hello" },
-		result: '<w:t xml:space="preserve">hello</w:t>',
+		resultText: "hello",
 	},
 	{
 		it: "should work when using double nested arrays",
@@ -1787,16 +1782,16 @@ const fixtures = [
 	},
 	{
 		it: "should work when using accents or numbers in variable names, ...",
-		content: "<w:t>{êtreîöò12áeêëẽ}</w:t>",
+		contentText: "{êtreîöò12áeêëẽ}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">undefined</w:t>',
+		resultText: "undefined",
 	},
 	{
 		it: "should fail when using € sign",
-		content: "<w:t>{hello€}</w:t>",
+		contentText: "{hello€}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
@@ -1817,40 +1812,40 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			},
 		}),
 		errorType: Errors.XTTemplateError,
-		result: '<w:t xml:space="preserve">undefined</w:t>',
+		resultText: "undefined",
 	},
 	{
 		it: "should disallow access to internal property",
-		content: '<w:t>{"".split.toString()}</w:t>',
+		contentText: '{"".split.toString()}',
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">undefined</w:t>',
+		resultText: "undefined",
 	},
 	{
 		it: "should allow filters like | upper",
-		content: "<w:t>{name | upper}</w:t>",
+		contentText: "{name | upper}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
 		scope: { name: "john" },
-		result: '<w:t xml:space="preserve">JOHN</w:t>',
+		resultText: "JOHN",
 	},
 	{
 		it: "should work when using assignment that is already in the scope",
-		content: "<w:t>{b=a}{b}</w:t>",
+		contentText: "{b=a}{b}",
 		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
 		scope: { a: 10, b: 5 },
-		result: '<w:t xml:space="preserve">10</w:t>',
+		resultText: "10",
 	},
 	{
 		it: "should work with linebreaks",
-		content: "<w:t>{b}</w:t>",
+		contentText: "{b}",
 		...noInternals,
 		options: {
 			linebreaks: true,
@@ -1862,20 +1857,18 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		it: "should not fail with no scope on expressionParser",
-		content: "<w:t>{b}</w:t>",
+		contentText: "{b}",
 		...noInternals,
 		options: {
-			linebreaks: true,
 			parser: expressionParser,
 		},
-		result: '<w:t xml:space="preserve">undefined</w:t>',
+		resultText: "undefined",
 	},
 	{
 		it: "should be possible to add filter for one instance of the expressionParser",
-		content: "<w:t>{b|foo}</w:t>",
+		contentText: "{b|foo}",
 		...noInternals,
 		options: {
-			linebreaks: true,
 			parser: expressionParser.configure({
 				filters: {
 					foo() {
@@ -1884,17 +1877,15 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				},
 			}),
 		},
-		result: '<w:t xml:space="preserve">FOO</w:t>',
+		resultText: "FOO",
 	},
 	(() => {
 		const globalData = { val: 0 };
 		return {
 			it: "should be possible to configure expressionParser with set command",
-			content:
-				"<w:t>{#loop}{$$val = (cond ? 0 : $$val + 1); $$val}{/loop}</w:t>",
+			contentText: "{#loop}{$$val = (cond ? 0 : $$val + 1); $$val}{/loop}",
 			...noInternals,
 			options: {
-				linebreaks: true,
 				parser: expressionParser.configure({
 					setIdentifier(tag, value) {
 						const matchGlobal = /^\$\$/g;
@@ -1920,13 +1911,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 					{ cond: false, x: "foo" },
 				],
 			},
-			result: '<w:t xml:space="preserve">01201</w:t>',
+			resultText: "01201",
 		};
 	})(),
 	{
 		it: "should be possible to use parent scope together with expressionParser",
-		content: "<w:t>{#loop}{__b|twice}{b|twice}{/loop}</w:t>",
-		// $b means in this context "b" but from the rootscope
+		contentText: "{#loop}{__b|twice}{b|twice}{/loop}",
+		resultText: "2426",
+		// __b means in this context "b" but from the rootscope
 		scope: {
 			loop: [
 				{
@@ -1940,7 +1932,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 		...noInternals,
 		options: {
-			linebreaks: true,
 			parser: expressionParser.configure({
 				evaluateIdentifier(tag, scope, scopeList, context) {
 					const matchesParent = /^(_{2,})(.*)/g;
@@ -1968,14 +1959,13 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				},
 			}),
 		},
-		result: '<w:t xml:space="preserve">2426</w:t>',
 	},
 	{
 		it: "should be possible to add filter for one instance of the ie11 parser",
-		content: "<w:t>{b|foo}</w:t>",
+		contentText: "{b|foo}",
+		resultText: "FOO",
 		...noInternals,
 		options: {
-			linebreaks: true,
 			parser: expressionParserIE11.configure({
 				csp: true,
 				filters: {
@@ -1985,17 +1975,15 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				},
 			}),
 		},
-		result: '<w:t xml:space="preserve">FOO</w:t>',
 	},
 	{
 		it: "should not fail with no scope on ie11 parser",
-		content: "<w:t>{b}</w:t>",
+		contentText: "{b}",
+		resultText: "undefined",
 		...noInternals,
 		options: {
-			linebreaks: true,
 			parser: expressionParserIE11,
 		},
-		result: '<w:t xml:space="preserve">undefined</w:t>',
 	},
 	{
 		it: "should show error when having table with nested loops",
@@ -2025,7 +2013,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		it: "should not escape explanation for unclosed tag with &&",
-		content: "<w:t>Unclosed tag : {Hi&amp;&amp;Ho</w:t>",
+		contentText: "Unclosed tag : {Hi&amp;&amp;Ho",
 		error: wrapMultiError({
 			name: "TemplateError",
 			message: "Unclosed tag",
@@ -2042,7 +2030,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		it: "should not escape explanation for unopened tag with &&",
-		content: "<w:t>&&foo}</w:t>",
+		contentText: "&&foo}",
 		error: wrapMultiError({
 			name: "TemplateError",
 			message: "Unopened tag",
@@ -2059,7 +2047,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		it: "should not escape explanation for unclosed loop with &&",
-		content: "<w:t>Unclosed tag : {#Hi&amp;&amp;Ho}{/%%>&lt;&&bar}</w:t>",
+		contentText: "Unclosed tag : {#Hi&amp;&amp;Ho}{/%%>&lt;&&bar}",
 		error: wrapMultiError({
 			name: "TemplateError",
 			message: "Closing tag does not match opening tag",
@@ -2076,7 +2064,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		it: "should not escape explanation for duplicate opening with &&",
-		content: "<w:t>Unclosed tag : {Hi&amp;&amp;{foo</w:t>",
+		contentText: "Unclosed tag : {Hi&amp;&amp;{foo",
 		error: {
 			message: "Multi error",
 			name: "TemplateError",

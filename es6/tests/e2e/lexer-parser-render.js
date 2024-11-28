@@ -17,7 +17,16 @@ function expectations(iModule, fixture) {
 	if (fixture.error) {
 		throw new Error("Fixture should have failed but did not fail");
 	}
-	if (fixture.result !== null) {
+	if (fixture.resultText != null) {
+		let content = iModule.inspect.content;
+		if (iModule.inspect.content instanceof Uint8Array) {
+			content = utf8decode(content);
+		}
+		content = content
+			.replace(/^<w:t xml:space="preserve">/, "")
+			.replace(/<\/w:t>$/, "");
+		expect(content).to.be.deep.equal(fixture.resultText, "Content incorrect");
+	} else if (fixture.result !== null) {
 		let content = iModule.inspect.content;
 		if (iModule.inspect.content instanceof Uint8Array) {
 			content = utf8decode(content);
@@ -62,6 +71,9 @@ function runTest(fixture, async = false) {
 	}
 	let doc;
 	const capture = captureLogs();
+	if (fixture.contentText) {
+		fixture.content = `<w:t>${fixture.contentText}</w:t>`;
+	}
 	try {
 		doc = fixture.pptx
 			? makePptxV4(fixture.content, {
