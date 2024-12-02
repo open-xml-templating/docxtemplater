@@ -110,24 +110,26 @@ function chunkBy(parsed, f) {
 		});
 }
 
-const defaults = {
-	errorLogging: "json",
-	paragraphLoop: false,
-	nullGetter(part) {
-		return part.module ? "" : "undefined";
-	},
-	xmlFileNames: ["[Content_Types].xml"],
-	parser,
-	linebreaks: false,
-	fileTypeConfig: null,
-	delimiters: {
-		start: "{",
-		end: "}",
-	},
-	syntax: {
-		changeDelimiterPrefix: "=",
-	},
-};
+function getDefaults() {
+	return {
+		errorLogging: "json",
+		paragraphLoop: false,
+		nullGetter(part) {
+			return part.module ? "" : "undefined";
+		},
+		xmlFileNames: ["[Content_Types].xml"],
+		parser,
+		linebreaks: false,
+		fileTypeConfig: null,
+		delimiters: {
+			start: "{",
+			end: "}",
+		},
+		syntax: {
+			changeDelimiterPrefix: "=",
+		},
+	};
+}
 
 function xml2str(xmlNode) {
 	const a = new XMLSerializer();
@@ -189,6 +191,16 @@ function concatArrays(arrays) {
 		}
 	}
 	return result;
+}
+
+function pushArray(array1, array2) {
+	if (!array2) {
+		return array1;
+	}
+	for (let i = 0, len = array2.length; i < len; i++) {
+		array1.push(array2[i]);
+	}
+	return array1;
 }
 
 const spaceRegexp = new RegExp(String.fromCharCode(160), "g");
@@ -412,10 +424,11 @@ module.exports = {
 	convertSpaces,
 	charMapRegexes,
 	hasCorruptCharacters,
-	defaults,
+	getDefaults,
 	wordToUtf8,
 	utf8ToWord,
 	concatArrays,
+	pushArray,
 	invertMap,
 	charMap,
 	getSingleAttribute,

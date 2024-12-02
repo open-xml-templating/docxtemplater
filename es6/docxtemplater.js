@@ -38,7 +38,7 @@ const logErrors = require("./error-logger.js");
 const collectContentTypes = require("./collect-content-types.js");
 
 const {
-	defaults,
+	getDefaults,
 	str2xml,
 	xml2str,
 	moduleWrapper,
@@ -46,6 +46,7 @@ const {
 	uniq,
 	getDuplicates,
 	stableSort,
+	pushArray,
 } = DocUtils;
 
 const ctXML = "[Content_Types].xml";
@@ -239,12 +240,13 @@ const Docxtemplater = class Docxtemplater {
 			);
 		}
 		this.options = {};
-		Object.keys(defaults).forEach((key) => {
+		const defaults = getDefaults();
+		for (const key of Object.keys(defaults)) {
 			const defaultValue = defaults[key];
 			this.options[key] =
 				options[key] != null ? options[key] : this[key] || defaultValue;
 			this[key] = this.options[key];
-		});
+		}
 		this.delimiters.start = DocUtils.utf8ToWord(this.delimiters.start);
 		this.delimiters.end = DocUtils.utf8ToWord(this.delimiters.end);
 		return this;
@@ -552,11 +554,17 @@ const Docxtemplater = class Docxtemplater {
 			contentType: this.filesContentTypes[filePath],
 			relsType: this.relsTypes[filePath],
 		};
-		Object.keys(defaults)
-			.concat(["filesContentTypes", "fileTypeConfig", "fileType", "modules"])
-			.forEach((key) => {
-				xmltOptions[key] = this[key];
-			});
+		const defaults = getDefaults();
+		const defaultKeys = pushArray(Object.keys(defaults), [
+			"filesContentTypes",
+			"fileTypeConfig",
+			"fileType",
+			"modules",
+		]);
+		for (const key of defaultKeys) {
+			xmltOptions[key] = this[key];
+		}
+
 		return new Docxtemplater.XmlTemplater(content, xmltOptions);
 	}
 	getFullText(path) {

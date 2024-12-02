@@ -1264,3 +1264,42 @@ describe("Add module to change justify alignment", function () {
 		shouldBeSame({ doc, expectedName: "expected-tag-justified.docx" });
 	});
 });
+
+describe("OptionsTransformer", () => {
+	it("should be possible to change delimiter without side effects", () => {
+		/*
+		 * This was fixed since v3.55.0
+		 * Previously, changing options in optionsTransformer would change the default for everyone.
+		 */
+		const sideEffectDoc = createDocV4("gt-delimiters.docx", {
+			modules: [
+				{
+					name: "TestModule",
+					optionsTransformer(options) {
+						options.delimiters.start = "<<";
+						options.delimiters.end = ">>";
+						return options;
+					},
+				},
+			],
+			linebreaks: true,
+		});
+
+		const doc = createDocV4("tag-example.docx").render({
+			first_name: "Hipp",
+			last_name: "Edgar",
+			phone: "0652455478",
+			description: "New Website",
+		});
+		expect(sideEffectDoc.options.delimiters.start).to.equal("<<");
+		expect(doc.options.delimiters.start).to.equal("{");
+		expect(doc.getFullText()).to.be.equal("Edgar Hipp");
+		expect(doc.getFullText("word/header1.xml")).to.be.equal(
+			"Edgar Hipp0652455478New Website"
+		);
+		expect(doc.getFullText("word/footer1.xml")).to.be.equal(
+			"EdgarHipp0652455478"
+		);
+	});
+});
+
