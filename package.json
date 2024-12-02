@@ -115,7 +115,7 @@
     "test:es5": "npm test",
     "test:typings": "cp es6/*.ts js && cp es6/*.ts . && tsd .",
     "test:mutations": "cross-env SPEED_TEST=no stryker run",
-    "memorytest": "node --max-old-space-size=8000 es6/memory-test.js",
+    "memorytest": "npm run compile && node --max-old-space-size=8000 js/memory-test.js",
     "verifypublishsize": "bash ./verifypublishsize.bash"
   },
   "tsd": {
