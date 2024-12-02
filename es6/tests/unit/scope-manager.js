@@ -3,8 +3,8 @@ const expressionParser = require("../../expressions.js");
 const { expect } = require("../utils.js");
 const { resolveSoon } = require("../utils.js");
 
-describe("ScopeManager", function () {
-	it("should work with simple tag", function () {
+describe("ScopeManager", () => {
+	it("should work with simple tag", () => {
 		const sm = createScope({
 			tags: { x: "y" },
 			parser: expressionParser,
@@ -17,7 +17,7 @@ describe("ScopeManager", function () {
 		expect(val).to.equal("y");
 	});
 
-	it("should work with resolve asynchronously", async function () {
+	it("should work with resolve asynchronously", async () => {
 		const sm = createScope({
 			tags: {
 				list: resolveSoon([

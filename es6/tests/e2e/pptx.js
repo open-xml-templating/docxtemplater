@@ -6,8 +6,8 @@ const {
 } = require("../utils.js");
 const rawXMLValue = require("../data/raw-xml-pptx.js");
 
-describe("Pptx generation", function () {
-	it("should work with title", function () {
+describe("Pptx generation", () => {
+	it("should work with title", () => {
 		const doc = createDocV4("title-example.pptx");
 		let con = doc.getZip().files["docProps/app.xml"].asText();
 		expect(con).not.to.contain("Edgar");
@@ -15,7 +15,7 @@ describe("Pptx generation", function () {
 		con = doc.getZip().files["docProps/app.xml"].asText();
 		expect(con).to.contain("Edgar");
 	});
-	it("should work with simple pptx", function () {
+	it("should work with simple pptx", () => {
 		const doc = createDocV4("simple-example.pptx");
 		doc.render({ name: "Edgar" });
 		expect(doc.getFullText()).to.be.equal("Hello Edgar");
@@ -34,7 +34,7 @@ describe("Pptx generation", function () {
 		});
 	});
 
-	it("should work with loop table", function () {
+	it("should work with loop table", () => {
 		const doc = createDocV4("loop-table.pptx");
 
 		return doc
@@ -44,7 +44,7 @@ describe("Pptx generation", function () {
 					{ name: "Ecma", price: 20 },
 				],
 			})
-			.then(function () {
+			.then(() => {
 				expect(
 					doc.scopeManagers["ppt/slides/slide1.xml"].resolved
 				).to.matchSnapshot();
@@ -55,7 +55,7 @@ describe("Pptx generation", function () {
 			});
 	});
 
-	it("should be possible to totally remove a table if data is empty", function () {
+	it("should be possible to totally remove a table if data is empty", () => {
 		shouldBeSame({
 			doc: createDocV4("loop-table-no-header.pptx").render(),
 			expectedName: "expected-empty.pptx",
@@ -71,7 +71,7 @@ describe("Pptx generation", function () {
 		});
 	});
 
-	it("should work with simple raw pptx", function () {
+	it("should work with simple raw pptx", () => {
 		let scope, meta, tag;
 		let calls = 0;
 		const doc = createDocV4("raw-xml-example.pptx", {
@@ -97,7 +97,7 @@ describe("Pptx generation", function () {
 		shouldBeSame({ doc, expectedName: "expected-raw-xml-example.pptx" });
 	});
 
-	it("should work with simple raw pptx async", function () {
+	it("should work with simple raw pptx async", () => {
 		let scope, meta, tag;
 		let calls = 0;
 		const doc = createDocV4("raw-xml-example.pptx", {
@@ -113,7 +113,7 @@ describe("Pptx generation", function () {
 				};
 			},
 		});
-		return doc.renderAsync({ raw: resolveSoon(rawXMLValue) }).then(function () {
+		return doc.renderAsync({ raw: resolveSoon(rawXMLValue) }).then(() => {
 			expect(calls).to.equal(1);
 			expect(meta).to.be.an("object");
 			expect(meta.part).to.be.an("object");

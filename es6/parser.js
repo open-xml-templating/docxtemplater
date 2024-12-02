@@ -58,12 +58,12 @@ function moduleParse(placeHolderContent, options) {
 	const matches = getMatches(matchers, placeHolderContent, options);
 	if (matches.length > 0) {
 		let bestMatch = null;
-		matches.forEach(function (match) {
-			match.priority = match.priority || -match.value.length;
+		for (const match of matches) {
+			match.priority ||= -match.value.length;
 			if (!bestMatch || match.priority > bestMatch.priority) {
 				bestMatch = match;
 			}
-		});
+		}
 		bestMatch.offset = startOffset;
 		delete bestMatch.priority;
 		bestMatch.endLindex = endLindex;
@@ -100,9 +100,9 @@ function moduleParse(placeHolderContent, options) {
 const parser = {
 	preparse(parsed, modules, options) {
 		function preparse(parsed, options) {
-			return modules.forEach(function (module) {
+			for (const module of modules) {
 				module.preparse(parsed, options);
-			});
+			}
 		}
 		return { preparsed: preparse(parsed, options) };
 	},
@@ -113,7 +113,7 @@ const parser = {
 		let tailParts = [];
 		const droppedTags =
 			options.fileTypeConfig.droppedTagsInsidePlaceholder || [];
-		return lexed.reduce(function lexedToParsed(parsed, token) {
+		return lexed.reduce((parsed, token) => {
 			if (token.type === "delimiter") {
 				inPlaceHolder = token.position === "start";
 				if (token.position === "end") {
@@ -153,18 +153,15 @@ const parser = {
 
 	postparse(postparsed, modules, options) {
 		function getTraits(traitName, postparsed) {
-			return modules.map(function (module) {
-				return module.getTraits(traitName, postparsed);
-			});
+			return modules.map((module) => module.getTraits(traitName, postparsed));
 		}
 		const errors = [];
 		function postparse(postparsed, options) {
-			return modules.reduce(function (postparsed, module) {
+			return modules.reduce((postparsed, module) => {
 				const r = module.postparse(postparsed, {
 					...options,
-					postparse: (parsed, opts) => {
-						return postparse(parsed, { ...options, ...opts });
-					},
+					postparse: (parsed, opts) =>
+						postparse(parsed, { ...options, ...opts }),
 					getTraits,
 				});
 				if (r == null) {

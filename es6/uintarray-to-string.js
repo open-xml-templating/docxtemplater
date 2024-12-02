@@ -114,7 +114,7 @@ function applyFromCharCode(array) {
 function utf8border(buf, max) {
 	let pos;
 
-	max = max || buf.length;
+	max ||= buf.length;
 	if (max > buf.length) {
 		max = buf.length;
 	}

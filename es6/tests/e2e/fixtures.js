@@ -180,9 +180,8 @@ const fixtures = [
 		resultText: "How is it going, John ? 1How is it going, Mary ? 1",
 		...noInternals,
 		scope: {
-			userGreeting: (scope, sm) => {
-				return "How is it going, " + scope.name + " ? " + sm.scopeLindex.length;
-			},
+			userGreeting: (scope, sm) =>
+				"How is it going, " + scope.name + " ? " + sm.scopeLindex.length,
 			users: [
 				{
 					name: "John",
@@ -293,16 +292,14 @@ const fixtures = [
 		resultText: "- John- Mary",
 		...noInternals,
 		scope: {
-			userGet: () => {
-				return [
-					{
-						name: "John",
-					},
-					{
-						name: "Mary",
-					},
-				];
-			},
+			userGet: () => [
+				{
+					name: "John",
+				},
+				{
+					name: "Mary",
+				},
+			],
 		},
 	},
 
@@ -2840,7 +2837,7 @@ fixtures.push({
 	errorType: Errors.XTTemplateError,
 });
 
-fixtures.forEach(function (fixture) {
+for (const fixture of fixtures) {
 	const delimiters = {
 		delimiters: fixture.delimiters || {
 			start: "{",
@@ -2848,6 +2845,6 @@ fixtures.forEach(function (fixture) {
 		},
 	};
 	fixture.options = assign({}, fixture.options, delimiters);
-});
+}
 
 module.exports = fixtures;

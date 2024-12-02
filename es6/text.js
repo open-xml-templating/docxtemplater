@@ -1,9 +1,8 @@
 const Lexer = require("./lexer.js");
 const Parser = require("./parser.js");
-const DocUtils = require("./doc-utils.js");
 const createScope = require("./scope-manager.js");
 const utf8decode = require("./uintarray-to-string.js");
-const { defaults } = DocUtils;
+const { getDefaults, pushArray } = require("./doc-utils.js");
 
 const { throwMultiError } = require("./errors.js");
 
@@ -17,24 +16,27 @@ function TxtTemplater(text, options = {}) {
 	const filePath = "text";
 	const xmlt = new XmlTemplater(text, { modules: [] });
 	xmlt.fileType = "text";
-	xmlt.fileTypeConfig = options.fileTypeConfig = {
-		droppedTagsInsidePlaceholder: [],
-		expandTags: [],
-	};
-	this.fileTypeConfig = options.fileTypeConfig;
-	Object.keys(defaults).forEach((key) => {
+	this.fileTypeConfig =
+		xmlt.fileTypeConfig =
+		options.fileTypeConfig =
+			{
+				droppedTagsInsidePlaceholder: [],
+				expandTags: [],
+			};
+	const defaults = getDefaults();
+	for (const key in defaults) {
 		const defaultValue = defaults[key];
 		xmlt[key] = options[key] =
 			options[key] != null ? options[key] : defaultValue;
-	});
+	}
 	xmlt.modules = [loopModule(), expandPairTrait(), renderModule()];
-	xmlt.modules.forEach((module) => {
+	for (const module of xmlt.modules) {
 		module.optionsTransformer(options, {
 			fileTypeConfig: xmlt.fileTypeConfig,
 			parser: xmlt.parser,
 			options: xmlt,
 		});
-	});
+	}
 
 	xmlt.allErrors = [];
 	// Fake XML parsing : surround the text with an empty tag of type text: true
@@ -62,7 +64,7 @@ function TxtTemplater(text, options = {}) {
 		xmlt.syntax,
 		xmlt.fileType
 	);
-	xmlt.allErrors = xmlt.allErrors.concat(lexerErrors);
+	pushArray(xmlt.allErrors, lexerErrors);
 	xmlt.lexed = lexed;
 	xmlt.setModules({ inspect: { filePath, lexed: xmlt.lexed } });
 	Parser.preparse(xmlt.lexed, xmlt.modules, xmlt.getOptions());

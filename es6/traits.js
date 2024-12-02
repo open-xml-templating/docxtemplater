@@ -150,12 +150,10 @@ function has(name, xmlElements) {
 function getExpandToDefault(postparsed, pair, expandTags) {
 	const parts = postparsed.slice(pair[0].offset, pair[1].offset);
 	const xmlElements = getListXmlElements(parts);
-	const closingTagCount = xmlElements.filter(function (tag) {
-		return tag[1] === "/";
-	}).length;
-	const startingTagCount = xmlElements.filter(function (tag) {
-		return tag[1] !== "/" && tag[tag.length - 2] !== "/";
-	}).length;
+	const closingTagCount = xmlElements.filter((tag) => tag[1] === "/").length;
+	const startingTagCount = xmlElements.filter(
+		(tag) => tag[1] !== "/" && tag[tag.length - 2] !== "/"
+	).length;
 	if (closingTagCount !== startingTagCount) {
 		return {
 			error: getLoopPositionProducesInvalidXMLError({
@@ -174,13 +172,13 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 					continue;
 				}
 
-				const chunks = chunkBy(postparsed.slice(left, right), function (p) {
-					return isTagStart(contains, p)
+				const chunks = chunkBy(postparsed.slice(left, right), (p) =>
+					isTagStart(contains, p)
 						? "start"
 						: isTagEnd(contains, p)
 							? "end"
-							: null;
-				});
+							: null
+				);
 
 				const firstChunk = first(chunks);
 				const lastChunk = last(chunks);
@@ -246,6 +244,7 @@ function expandOne([left, right], part, postparsed, options) {
 	return { left, right, inner };
 }
 
+/* eslint-disable-next-line complexity */
 function expandToOne(postparsed, options) {
 	let errors = [];
 	if (postparsed.errors) {
@@ -286,7 +285,7 @@ function expandToOne(postparsed, options) {
 			}
 		}
 	}
-	limits.sort(function (l1, l2) {
+	limits.sort((l1, l2) => {
 		if (l1.left === l2.left) {
 			return l2.part.lIndex < l1.part.lIndex ? 1 : -1;
 		}
@@ -295,10 +294,11 @@ function expandToOne(postparsed, options) {
 	let maxRight = -1;
 	let offset = 0;
 
-	limits.forEach(function (limit, i) {
+	for (let i = 0, len = limits.length; i < len; i++) {
+		const limit = limits[i];
 		maxRight = Math.max(maxRight, i > 0 ? limits[i - 1].right : 0);
 		if (limit.left < maxRight) {
-			return;
+			continue;
 		}
 		let result;
 		try {
@@ -316,7 +316,7 @@ function expandToOne(postparsed, options) {
 			}
 		}
 		if (!result) {
-			return;
+			continue;
 		}
 		offset += result.inner.length - (result.right + 1 - result.left);
 		postparsed.splice(
@@ -324,7 +324,7 @@ function expandToOne(postparsed, options) {
 			result.right + 1 - result.left,
 			...result.inner
 		);
-	});
+	}
 	return { postparsed, errors };
 }
 

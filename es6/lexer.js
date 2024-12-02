@@ -9,9 +9,10 @@ const {
 } = require("./errors.js");
 const { isTextStart, isTextEnd, wordToUtf8 } = require("./doc-utils.js");
 
-const [DELIMITER_NONE, DELIMITER_EQUAL, DELIMITER_START, DELIMITER_END] = [
-	0, 1, 2, 3,
-];
+const DELIMITER_NONE = 0,
+	DELIMITER_EQUAL = 1,
+	DELIMITER_START = 2,
+	DELIMITER_END = 3;
 
 function inRange(range, match) {
 	return range[0] <= match.offset && match.offset < range[1];
@@ -335,7 +336,7 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 	);
 
 	let offset = 0;
-	const ranges = innerContentParts.map(function (part) {
+	const ranges = innerContentParts.map((part) => {
 		offset += part.value.length;
 		return { offset: offset - part.value.length, lIndex: part.lIndex };
 	});
@@ -347,7 +348,7 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 	let cutNext = 0;
 	let delimiterIndex = 0;
 
-	const parsed = ranges.map(function (p, i) {
+	const parsed = ranges.map((p, i) => {
 		const { offset } = p;
 		const range = [offset, offset + innerContentParts[i].value.length];
 		const partContent = innerContentParts[i].value;
@@ -365,7 +366,7 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 			cursor = cutNext;
 			cutNext = 0;
 		}
-		delimitersInOffset.forEach(function (delimiterInOffset) {
+		for (const delimiterInOffset of delimitersInOffset) {
 			const value = partContent.substr(
 				cursor,
 				delimiterInOffset.offset - offset - cursor
@@ -378,7 +379,7 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 				} else {
 					cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
 				}
-				return;
+				continue;
 			}
 			if (value.length > 0) {
 				parts.push({ type: "content", value });
@@ -391,7 +392,7 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 			};
 			parts.push(delimiterPart);
 			cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
-		});
+		}
 		cutNext = cursor - partContent.length;
 		const value = partContent.substr(cursor);
 		if (value.length > 0) {
@@ -414,7 +415,7 @@ function getContentParts(xmlparsed) {
 
 function decodeContentParts(xmlparsed, fileType) {
 	let inTextTag = false;
-	xmlparsed.forEach(function (part) {
+	for (const part of xmlparsed) {
 		inTextTag = updateInTextTag(part, inTextTag);
 		if (part.type === "content") {
 			part.position = inTextTag ? "insidetag" : "outsidetag";
@@ -422,7 +423,7 @@ function decodeContentParts(xmlparsed, fileType) {
 		if (fileType !== "text" && isInsideContent(part)) {
 			part.value = part.value.replace(/>/g, "&gt;");
 		}
-	});
+	}
 }
 
 module.exports = {
@@ -438,42 +439,43 @@ module.exports = {
 		const lexed = [];
 		let index = 0;
 		let lIndex = 0;
-		xmllexed.forEach(function (part) {
+		for (const part of xmllexed) {
 			if (isInsideContent(part)) {
-				Array.prototype.push.apply(
-					lexed,
-					delimiterParsed[index].map(function (p) {
-						if (p.type === "content") {
-							p.position = "insidetag";
-						}
-						p.lIndex = lIndex++;
-						return p;
-					})
-				);
+				for (const p of delimiterParsed[index]) {
+					if (p.type === "content") {
+						p.position = "insidetag";
+					}
+					p.lIndex = lIndex++;
+				}
+				Array.prototype.push.apply(lexed, delimiterParsed[index]);
 				index++;
 			} else {
 				part.lIndex = lIndex++;
 				lexed.push(part);
 			}
-		});
+		}
 		return { errors, lexed };
 	},
 	xmlparse(content, xmltags) {
 		const matches = tagMatcher(content, xmltags.text, xmltags.other);
 		let cursor = 0;
-		const parsed = matches.reduce(function (parsed, match) {
-			const value = content.substr(cursor, match.offset - cursor);
-			if (value.length > 0) {
-				parsed.push({ type: "content", value });
+		const parsed = matches.reduce((parsed, match) => {
+			if (content.length > cursor && match.offset - cursor > 0) {
+				parsed.push({
+					type: "content",
+					value: content.substr(cursor, match.offset - cursor),
+				});
 			}
 			cursor = match.offset + match.value.length;
 			delete match.offset;
 			parsed.push(match);
 			return parsed;
 		}, []);
-		const value = content.substr(cursor);
-		if (value.length > 0) {
-			parsed.push({ type: "content", value });
+		if (content.length > cursor) {
+			parsed.push({
+				type: "content",
+				value: content.substr(cursor),
+			});
 		}
 		return parsed;
 	},

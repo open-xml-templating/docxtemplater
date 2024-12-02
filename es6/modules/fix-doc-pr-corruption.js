@@ -36,7 +36,7 @@ class FixDocPRCorruptionModule {
 		const zip = this.zip;
 		const Lexer = this.Lexer;
 		let prId = 1;
-		zip.file(/\.xml$/).forEach((f) => {
+		for (const f of zip.file(/.xml$/)) {
 			const xmlDoc = this.xmlDocuments[f.name];
 			if (xmlDoc) {
 				const prs = xmlDoc.getElementsByTagName("wp:docPr");
@@ -44,7 +44,7 @@ class FixDocPRCorruptionModule {
 					const pr = prs[i];
 					pr.setAttribute("id", prId++);
 				}
-				return;
+				continue;
 			}
 			let text = f.asText();
 			const xmllexed = Lexer.xmlparse(text, {
@@ -52,7 +52,8 @@ class FixDocPRCorruptionModule {
 				other: ["wp:docPr"],
 			});
 			if (xmllexed.length > 1) {
-				text = xmllexed.reduce(function (fullText, part) {
+				/* eslint-disable-next-line no-loop-func */
+				text = xmllexed.reduce((fullText, part) => {
 					if (isTagStart("wp:docPr", part)) {
 						return fullText + setSingleAttribute(part.value, "id", prId++);
 					}
@@ -60,7 +61,7 @@ class FixDocPRCorruptionModule {
 				}, "");
 			}
 			zip.file(f.name, text);
-		});
+		}
 	}
 }
 

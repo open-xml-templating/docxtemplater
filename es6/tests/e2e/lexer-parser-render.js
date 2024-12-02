@@ -60,14 +60,14 @@ function expectations(iModule, fixture) {
 }
 
 function runTest(fixture, async = false) {
-	fixture.options = fixture.options || {};
+	fixture.options ||= {};
 	const modules = [];
 	const iModule = inspectModule();
 	modules.push(iModule, new AssertionModule());
 	if (fixture.options.modules) {
-		fixture.options.modules().forEach(function (mod) {
+		for (const mod of fixture.options.modules()) {
 			modules.push(mod);
-		});
+		}
 	}
 	let doc;
 	const capture = captureLogs();
@@ -111,7 +111,7 @@ function runTest(fixture, async = false) {
 		expectations(iModule, fixture);
 	} else {
 		return doc.renderAsync(fixture.scope).then(
-			function () {
+			() => {
 				capture2.stop();
 				expectations(iModule, fixture);
 				if (fixture.resolved) {
@@ -121,7 +121,7 @@ function runTest(fixture, async = false) {
 					);
 				}
 			},
-			function (error) {
+			(error) => {
 				capture2.stop();
 				if (!fixture.error) {
 					throw error;
@@ -132,14 +132,14 @@ function runTest(fixture, async = false) {
 	}
 }
 
-describe("Algorithm", function () {
-	fixtures.forEach(function (fixture) {
-		(fixture.onlySync ? it.only : it)(fixture.it, function () {
-			return runTest(fixture, false);
-		});
-		(fixture.only ? it.only : it)(`Async ${fixture.it}`, function () {
+describe("Algorithm", () => {
+	for (const fixture of fixtures) {
+		(fixture.onlySync ? it.only : it)(fixture.it, () =>
+			runTest(fixture, false)
+		);
+		(fixture.only ? it.only : it)(`Async ${fixture.it}`, () =>
 			// Return is important to make the test fail if there is an async error
-			return runTest(fixture, true);
-		});
-	});
+			runTest(fixture, true)
+		);
+	}
 });

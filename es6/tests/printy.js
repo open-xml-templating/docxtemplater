@@ -3,7 +3,7 @@ const repeat = require("./string-repeat.js");
 module.exports = function printy(parsed, indent = 0) {
 	let indentWasNegative = false;
 	const result = parsed
-		.reduce(function (output, p) {
+		.reduce((output, p) => {
 			const splitted = p.value.split(/(?:\n|\r|\t)(?: |\r|\t)*/g);
 			const value = splitted.join("");
 			if (value === "") {
@@ -35,9 +35,7 @@ module.exports = function printy(parsed, indent = 0) {
 			return output;
 		}, "")
 		.split("\n")
-		.map(function (line) {
-			return line.replace(/[\s\uFEFF\xA0]+$/g, "");
-		})
+		.map((line) => line.replace(/[\s\uFEFF\xA0]+$/g, ""))
 		.join("\n");
 	if (indentWasNegative) {
 		const err = new Error("Indent negative");

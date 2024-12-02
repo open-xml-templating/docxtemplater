@@ -93,6 +93,7 @@ export default [
 			"array-bracket-spacing": [2, "never"],
 			"arrow-parens": 0,
 			"arrow-spacing": [2, { before: true, after: true }],
+			"arrow-body-style": [2, "as-needed"],
 			"block-scoped-var": 2,
 			"block-spacing": [2, "always"],
 			"brace-style": 0,
@@ -128,7 +129,7 @@ export default [
 			"func-style": [2, "declaration"],
 			"generator-star-spacing": [2, { before: false, after: true }],
 			"global-require": 0,
-			"guard-for-in": 2,
+			"guard-for-in": 0,
 			"handle-callback-err": 2,
 			"id-length": 0,
 			"id-match": 0,
@@ -258,7 +259,7 @@ export default [
 			"operator-assignment": [2, "always"],
 			"operator-linebreak": 0,
 			"padded-blocks": [2, "never"],
-			"prefer-arrow-callback": 0,
+			"prefer-arrow-callback": 2,
 			"prefer-const": 2,
 			"prefer-destructuring": [
 				2,
@@ -287,6 +288,13 @@ export default [
 			"wrap-iife": [2, "inside"],
 			"wrap-regex": 0,
 			yoda: [2, "never"],
+			"logical-assignment-operators": [
+				"error",
+				"always",
+				{
+					enforceForIfStatements: true,
+				},
+			],
 		},
 	},
 ];

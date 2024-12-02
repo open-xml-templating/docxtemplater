@@ -4,15 +4,15 @@ const Errors = require("../../errors.js");
 const expressionParser = require("../../expressions.js");
 const TxtTemplater = require("../../text.js");
 
-describe("Text templating", function () {
-	it("should be possible to template text files", function () {
+describe("Text templating", () => {
+	it("should be possible to template text files", () => {
 		const doc = new TxtTemplater("Hello {user}, how are you ?");
 		expect(doc.render({ user: "John" })).to.be.equal(
 			"Hello John, how are you ?"
 		);
 	});
 
-	it("should be possible to template text files with expressionParser", function () {
+	it("should be possible to template text files with expressionParser", () => {
 		const doc = new TxtTemplater("Hello {user + age}, how are you ?", {
 			parser: expressionParser,
 		});
@@ -21,7 +21,7 @@ describe("Text templating", function () {
 		);
 	});
 
-	it("should be possible to template xml files with expressionParser", function () {
+	it("should be possible to template xml files with expressionParser", () => {
 		const doc = new TxtTemplater("<t>&gt;  {user}</t>", {
 			parser: expressionParser,
 		});
@@ -30,7 +30,7 @@ describe("Text templating", function () {
 		);
 	});
 
-	it("should be possible to use loops", function () {
+	it("should be possible to use loops", () => {
 		const doc = new TxtTemplater(
 			"Hello {#users}{name},{/users} how are you ?",
 			{
@@ -42,7 +42,7 @@ describe("Text templating", function () {
 		).to.be.equal("Hello John,Baz, how are you ?");
 	});
 
-	it("should throw specific error if loop not closed", function () {
+	it("should throw specific error if loop not closed", () => {
 		const expectedError = wrapMultiError({
 			name: "TemplateError",
 			message: "Unclosed loop",
@@ -60,7 +60,7 @@ describe("Text templating", function () {
 		);
 	});
 
-	it("should work with xml-namespace", function () {
+	it("should work with xml-namespace", () => {
 		const doc = new TxtTemplater(
 			'<?xml version="1.0" encoding="UTF-8”?> Hello {name}'
 		);
@@ -69,7 +69,7 @@ describe("Text templating", function () {
 		);
 	});
 
-	it("should not regress with paragraphLoop: true or linebreaks: true", function () {
+	it("should not regress with paragraphLoop: true or linebreaks: true", () => {
 		const doc = new TxtTemplater("Text {#users}{name}{/}", {
 			paragraphLoop: true,
 			linebreaks: true,
@@ -79,7 +79,7 @@ describe("Text templating", function () {
 		);
 	});
 
-	it("should be possible to render special characters in the output", function () {
+	it("should be possible to render special characters in the output", () => {
 		const doc = new TxtTemplater("Text {name}", {
 			paragraphLoop: true,
 			linebreaks: true,
@@ -89,7 +89,7 @@ describe("Text templating", function () {
 		);
 	});
 
-	it("should be possible to use < and > as delimiters", function () {
+	it("should be possible to use < and > as delimiters", () => {
 		const doc = new TxtTemplater("Hello <name>", {
 			delimiters: {
 				start: "<",

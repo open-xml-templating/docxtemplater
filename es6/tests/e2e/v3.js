@@ -15,7 +15,7 @@ const {
 const Errors = require("../../errors.js");
 const rawXMLValue = require("../data/raw-xml-pptx.js");
 
-describe("V3 API", function () {
+describe("V3 API", () => {
 	beforeEach(function () {
 		this.deprecations = null;
 		this.capture = captureLogs();
@@ -24,8 +24,8 @@ describe("V3 API", function () {
 		this.capture.stop();
 		if (this.deprecations != null) {
 			const logs = this.capture.logs();
-			this.deprecations.forEach(function (deprecation) {
-				const found = logs.some(function (log) {
+			for (const deprecation of this.deprecations) {
+				const found = logs.some((log) => {
 					if (log.indexOf(deprecation) !== -1) {
 						return true;
 					}
@@ -33,7 +33,7 @@ describe("V3 API", function () {
 				if (!found) {
 					throw new Error(`Expected to get deprecation '${deprecation}'`);
 				}
-			});
+			}
 		}
 	});
 	it("should work with setOptions", function () {
@@ -63,7 +63,7 @@ describe("V3 API", function () {
 		expect(fullText).to.be.equal("Hello John");
 	});
 
-	it("should work when setting from the Docxtemplater interface", function () {
+	it("should work when setting from the Docxtemplater interface", () => {
 		const doc = createDocV3("tag-example.docx", {
 			parser(tag) {
 				return {
@@ -110,7 +110,7 @@ describe("V3 API", function () {
 			},
 		});
 		doc.compile();
-		return doc.resolveData({ raw: resolveSoon(rawXMLValue) }).then(function () {
+		return doc.resolveData({ raw: resolveSoon(rawXMLValue) }).then(() => {
 			doc.render();
 			expect(calls).to.equal(1);
 			expect(meta).to.be.an("object");
@@ -121,7 +121,7 @@ describe("V3 API", function () {
 		});
 	});
 
-	it("should fail when tag unclosed", function () {
+	it("should fail when tag unclosed", () => {
 		const content = "<w:t>{user {name}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
@@ -142,7 +142,7 @@ describe("V3 API", function () {
 		);
 	});
 
-	it("should show error when running resolveData before compile", function () {
+	it("should show error when running resolveData before compile", () => {
 		const content = "<w:t>{#users}{user}{/}</w:t>";
 		const expectedError = {
 			name: "InternalError",
@@ -159,7 +159,7 @@ describe("V3 API", function () {
 		);
 	});
 
-	it("should resolve with simple table", function () {
+	it("should resolve with simple table", () => {
 		const doc = createDocV3("table-complex2-example.docx");
 		doc.compile();
 		return doc
@@ -188,7 +188,7 @@ describe("V3 API", function () {
 				t1total2: "t1total2-data",
 				t1total3: "t1total3-data",
 			})
-			.then(function (resolved) {
+			.then((resolved) => {
 				const myresolved = cloneDeep(resolved);
 				cleanRecursive(myresolved);
 				expect(myresolved).to.be.deep.equal([
@@ -272,8 +272,8 @@ describe("V3 API", function () {
 			});
 	});
 
-	describe("Using the resolveOffset property", function () {
-		it("should work", function () {
+	describe("Using the resolveOffset property", () => {
+		it("should work", () => {
 			const content =
 				"<w:t>{#loop_first}{#loop_second}{name_inner} {name_outer}{/loop_second}{/loop_first}</w:t>";
 			const xmlt = createXmlTemplaterDocxNoRender(content, {}).compile();
@@ -283,7 +283,7 @@ describe("V3 API", function () {
 					loop_second: [{ name_inner: "John" }],
 					name_outer: "Henry",
 				})
-				.then(function () {
+				.then(() => {
 					const sm = xmlt.scopeManagers["word/document.xml"];
 
 					expect(sm.finishedResolving).to.equal(true);

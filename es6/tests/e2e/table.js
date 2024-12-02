@@ -1,6 +1,6 @@
 const { createDocV4, expect } = require("../utils.js");
 
-describe("Table", function () {
+describe("Table", () => {
 	it("should work with selfclosing tag inside table with paragraphLoop", function () {
 		return this.renderV4({
 			name: "loop-valid.docx",
@@ -42,7 +42,7 @@ describe("Table", function () {
 		});
 	});
 
-	it("should work with simple table", function () {
+	it("should work with simple table", () => {
 		const doc = createDocV4("table-complex2-example.docx").render({
 			table1: [
 				{
@@ -74,7 +74,7 @@ describe("Table", function () {
 		);
 	});
 
-	it("should work with more complex table", function () {
+	it("should work with more complex table", () => {
 		const doc = createDocV4("table-complex-example.docx").render({
 			table2: [
 				{
@@ -103,7 +103,7 @@ describe("Table", function () {
 		);
 	});
 
-	it("should work when looping around tables", function () {
+	it("should work when looping around tables", () => {
 		const doc = createDocV4("table-repeat.docx").render({
 			table: [1, 2, 3, 4],
 		});

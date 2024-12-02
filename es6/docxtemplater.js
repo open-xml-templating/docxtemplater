@@ -78,9 +78,7 @@ function dropUnsupportedFileTypesModules(doc) {
 function verifyErrors(doc) {
 	const compiled = doc.compiled;
 	doc.errors = concatArrays(
-		Object.keys(compiled).map((name) => {
-			return compiled[name].allErrors;
-		})
+		Object.keys(compiled).map((name) => compiled[name].allErrors)
 	);
 
 	if (doc.errors.length !== 0) {
@@ -98,6 +96,7 @@ const Docxtemplater = class Docxtemplater {
 		this.scopeManagers = {};
 		this.compiled = {};
 		this.modules = [commonModule()];
+		this.xmlDocuments = {};
 
 		if (arguments.length === 0) {
 			deprecatedMessage(
@@ -120,9 +119,9 @@ const Docxtemplater = class Docxtemplater {
 					"The modules argument of docxtemplater's constructor must be an array"
 				);
 			}
-			modules.forEach((module) => {
+			for (const module of modules) {
 				this.attachModule(module);
-			});
+			}
 			this.loadZip(zip);
 			this.compile();
 			this.v4Constructor = true;
@@ -130,9 +129,7 @@ const Docxtemplater = class Docxtemplater {
 		this.hideDeprecations = false;
 	}
 	verifyApiVersion(neededVersion) {
-		neededVersion = neededVersion.split(".").map(function (i) {
-			return parseInt(i, 10);
-		});
+		neededVersion = neededVersion.split(".").map((i) => parseInt(i, 10));
 		if (neededVersion.length !== 3) {
 			throwApiVersionError("neededVersion is not a valid version", {
 				neededVersion,
@@ -181,14 +178,14 @@ const Docxtemplater = class Docxtemplater {
 		return true;
 	}
 	setModules(obj) {
-		this.modules.forEach((module) => {
+		for (const module of this.modules) {
 			module.set(obj);
-		});
+		}
 	}
 	sendEvent(eventName) {
-		this.modules.forEach((module) => {
+		for (const module of this.modules) {
 			module.on(eventName);
-		});
+		}
 	}
 	attachModule(module) {
 		if (this.v4Constructor) {
@@ -241,7 +238,7 @@ const Docxtemplater = class Docxtemplater {
 		}
 		this.options = {};
 		const defaults = getDefaults();
-		for (const key of Object.keys(defaults)) {
+		for (const key in defaults) {
 			const defaultValue = defaults[key];
 			this.options[key] =
 				options[key] != null ? options[key] : this[key] || defaultValue;
@@ -267,11 +264,13 @@ const Docxtemplater = class Docxtemplater {
 		this.updateFileTypeConfig();
 
 		this.modules = concatArrays([
-			this.fileTypeConfig.baseModules.map(function (moduleFunction) {
-				return moduleFunction();
-			}),
+			this.fileTypeConfig.baseModules.map((moduleFunction) => moduleFunction()),
 			this.modules,
 		]);
+		for (const module of this.modules) {
+			module.zip = this.zip;
+			module.docxtemplater = this;
+		}
 
 		dropUnsupportedFileTypesModules(this);
 		return this;
@@ -285,13 +284,11 @@ const Docxtemplater = class Docxtemplater {
 		this.compiled[fileName].parse();
 	}
 	getScopeManager(to, currentFile, tags) {
-		if (!this.scopeManagers[to]) {
-			this.scopeManagers[to] = createScope({
-				tags,
-				parser: this.parser,
-				cachedParsers: currentFile.cachedParsers,
-			});
-		}
+		this.scopeManagers[to] ||= createScope({
+			tags,
+			parser: this.parser,
+			cachedParsers: currentFile.cachedParsers,
+		});
 		return this.scopeManagers[to];
 	}
 	resolveData(data) {
@@ -306,9 +303,10 @@ const Docxtemplater = class Docxtemplater {
 				data: this.data,
 				Lexer,
 			});
-			this.mapper = this.modules.reduce(function (value, module) {
-				return module.getRenderedMap(value);
-			}, {});
+			this.mapper = this.modules.reduce(
+				(value, module) => module.getRenderedMap(value),
+				{}
+			);
 			return Promise.all(
 				Object.keys(this.mapper).map((to) => {
 					const { from, data } = this.mapper[to];
@@ -321,11 +319,11 @@ const Docxtemplater = class Docxtemplater {
 							data
 						);
 						return currentFile.resolveTags(data).then(
-							function (result) {
+							(result) => {
 								currentFile.scopeManager.finishedResolving = true;
 								return result;
 							},
-							function (errs) {
+							(errs) => {
 								Array.prototype.push.apply(errors, errs);
 							}
 						);
@@ -362,18 +360,15 @@ const Docxtemplater = class Docxtemplater {
 		if (Object.keys(this.compiled).length) {
 			return this;
 		}
-		this.options = this.modules.reduce((options, module) => {
-			return module.optionsTransformer(options, this);
-		}, this.options);
-		this.options.xmlFileNames = uniq(this.options.xmlFileNames);
-		this.xmlDocuments = this.options.xmlFileNames.reduce(
-			(xmlDocuments, fileName) => {
-				const content = this.zip.files[fileName].asText();
-				xmlDocuments[fileName] = str2xml(content);
-				return xmlDocuments;
-			},
-			{}
+		this.options = this.modules.reduce(
+			(options, module) => module.optionsTransformer(options, this),
+			this.options
 		);
+		this.options.xmlFileNames = uniq(this.options.xmlFileNames);
+		for (const fileName of this.options.xmlFileNames) {
+			const content = this.zip.files[fileName].asText();
+			this.xmlDocuments[fileName] = str2xml(content);
+		}
 		this.setModules({
 			zip: this.zip,
 			xmlDocuments: this.xmlDocuments,
@@ -381,16 +376,16 @@ const Docxtemplater = class Docxtemplater {
 		this.getTemplatedFiles();
 		// Loop inside all templatedFiles (ie xml files with content).
 		// Sometimes they don't exist (footer.xml for example)
-		this.templatedFiles.forEach((fileName) => {
+		for (const fileName of this.templatedFiles) {
 			if (this.zip.files[fileName] != null) {
 				this.precompileFile(fileName);
 			}
-		});
-		this.templatedFiles.forEach((fileName) => {
+		}
+		for (const fileName of this.templatedFiles) {
 			if (this.zip.files[fileName] != null) {
 				this.compileFile(fileName);
 			}
-		});
+		}
 		this.setModules({ compiled: this.compiled });
 		verifyErrors(this);
 		return this;
@@ -403,8 +398,9 @@ const Docxtemplater = class Docxtemplater {
 			: [];
 		const relsTypes = {};
 		for (let i = 0, len = rootRelationships.length; i < len; i++) {
-			const r = rootRelationships[i];
-			relsTypes[r.getAttribute("Target")] = r.getAttribute("Type");
+			const relation = rootRelationships[i];
+			relsTypes[relation.getAttribute("Target")] =
+				relation.getAttribute("Type");
 		}
 		return relsTypes;
 	}
@@ -441,7 +437,7 @@ const Docxtemplater = class Docxtemplater {
 			});
 		}
 
-		this.modules.forEach((module) => {
+		for (const module of this.modules) {
 			fileType =
 				module.getFileType({
 					zip: this.zip,
@@ -451,7 +447,7 @@ const Docxtemplater = class Docxtemplater {
 					defaults,
 					doc: this,
 				}) || fileType;
-		});
+		}
 		if (fileType === "odt") {
 			throwFileTypeNotHandled(fileType);
 		}
@@ -492,35 +488,34 @@ const Docxtemplater = class Docxtemplater {
 			data: this.data,
 			Lexer,
 		});
-		this.mapper =
-			this.mapper ||
-			this.modules.reduce(function (value, module) {
-				return module.getRenderedMap(value);
-			}, {});
+		this.mapper ||= this.modules.reduce(
+			(value, module) => module.getRenderedMap(value),
+			{}
+		);
 
 		const output = [];
-		Object.keys(this.mapper).forEach((to) => {
+		for (const to in this.mapper) {
 			const { from, data } = this.mapper[to];
 			const currentFile = this.compiled[from];
 			currentFile.scopeManager = this.getScopeManager(to, currentFile, data);
 			currentFile.render(to);
 			output.push([to, currentFile.content, currentFile]);
 			delete currentFile.content;
-		});
-		output.forEach((outputPart) => {
+		}
+		for (const outputPart of output) {
 			const [, content, currentFile] = outputPart;
-			this.modules.forEach(function (module) {
+			for (const module of this.modules) {
 				if (module.preZip) {
 					const result = module.preZip(content, currentFile);
 					if (typeof result === "string") {
 						outputPart[1] = result;
 					}
 				}
-			});
-		});
-		output.forEach(([to, content]) => {
+			}
+		}
+		for (const [to, content] of output) {
 			this.zip.file(to, content, { createFolders: true });
-		});
+		}
 
 		verifyErrors(this);
 		this.sendEvent("syncing-zip");
@@ -530,11 +525,11 @@ const Docxtemplater = class Docxtemplater {
 		return this;
 	}
 	syncZip() {
-		Object.keys(this.xmlDocuments).forEach((fileName) => {
+		for (const fileName in this.xmlDocuments) {
 			this.zip.remove(fileName);
 			const content = xml2str(this.xmlDocuments[fileName]);
-			return this.zip.file(fileName, content, { createFolders: true });
-		});
+			this.zip.file(fileName, content, { createFolders: true });
+		}
 	}
 	setData(data) {
 		deprecatedMethod(this, "setData");
@@ -574,9 +569,7 @@ const Docxtemplater = class Docxtemplater {
 	}
 	getTemplatedFiles() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
-		this.targets.forEach((target) => {
-			this.templatedFiles.push(target);
-		});
+		pushArray(this.templatedFiles, this.targets);
 		this.templatedFiles = uniq(this.templatedFiles);
 		return this.templatedFiles;
 	}

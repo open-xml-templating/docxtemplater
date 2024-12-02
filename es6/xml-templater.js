@@ -1,4 +1,4 @@
-const { wordToUtf8, convertSpaces } = require("./doc-utils.js");
+const { pushArray, wordToUtf8, convertSpaces } = require("./doc-utils.js");
 const xmlMatcher = require("./xml-matcher.js");
 const Lexer = require("./lexer.js");
 const Parser = require("./parser.js");
@@ -9,9 +9,7 @@ const joinUncorrupt = require("./join-uncorrupt.js");
 
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);
-	const result = matcher.matches.map(function (match) {
-		return match.array[2];
-	});
+	const result = matcher.matches.map((match) => match.array[2]);
 	return wordToUtf8(convertSpaces(result.join("")));
 }
 
@@ -19,9 +17,9 @@ module.exports = class XmlTemplater {
 	constructor(content, options) {
 		this.cachedParsers = {};
 		this.content = content;
-		Object.keys(options).forEach((key) => {
+		for (const key in options) {
 			this[key] = options[key];
-		});
+		}
 		this.setModules({ inspect: { filePath: options.filePath } });
 	}
 	resolveTags(tags) {
@@ -32,11 +30,11 @@ module.exports = class XmlTemplater {
 		options.resolve = resolve;
 		const errors = [];
 		return Promise.all(
-			this.modules.map(function (module) {
-				return Promise.resolve(module.preResolve(options)).catch(function (e) {
+			this.modules.map((module) =>
+				Promise.resolve(module.preResolve(options)).catch((e) => {
 					errors.push(e);
-				});
-			})
+				})
+			)
 		).then(() => {
 			if (errors.length !== 0) {
 				throw errors;
@@ -51,7 +49,7 @@ module.exports = class XmlTemplater {
 						// error properties might not be defined if some foreign error
 						// (unhandled error not thrown by docxtemplater willingly) is
 						// thrown.
-						error.properties = error.properties || {};
+						error.properties ||= {};
 						error.properties.file = filePath;
 						return error;
 					});
@@ -75,9 +73,9 @@ module.exports = class XmlTemplater {
 		return getFullText(this.content, this.fileTypeConfig.tagsXmlTextArray);
 	}
 	setModules(obj) {
-		this.modules.forEach((module) => {
+		for (const module of this.modules) {
 			module.set(obj);
-		});
+		}
 	}
 	preparse() {
 		this.allErrors = [];
@@ -94,7 +92,7 @@ module.exports = class XmlTemplater {
 			this.syntax,
 			this.fileType
 		);
-		this.allErrors = this.allErrors.concat(lexerErrors);
+		pushArray(this.allErrors, lexerErrors);
 		this.lexed = lexed;
 		this.setModules({
 			inspect: { filePath: this.filePath, lexed: this.lexed },
@@ -118,21 +116,21 @@ module.exports = class XmlTemplater {
 		this.setModules({
 			inspect: { filePath: this.filePath, postparsed: this.postparsed },
 		});
-		this.allErrors = this.allErrors.concat(postparsedErrors);
+		pushArray(this.allErrors, postparsedErrors);
 		this.errorChecker(this.allErrors);
 		return this;
 	}
 	errorChecker(errors) {
-		errors.forEach((error) => {
+		for (const error of errors) {
 			// error properties might not be defined if some foreign
 			// (unhandled error not thrown by docxtemplater willingly) is
 			// thrown.
-			error.properties = error.properties || {};
+			error.properties ||= {};
 			error.properties.file = this.filePath;
-		});
-		this.modules.forEach(function (module) {
+		}
+		for (const module of this.modules) {
 			errors = module.errorsTransformer(errors);
-		});
+		}
 	}
 	baseNullGetter(part, sm) {
 		const value = this.modules.reduce((value, module) => {

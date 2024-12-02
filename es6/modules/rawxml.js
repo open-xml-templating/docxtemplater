@@ -10,14 +10,15 @@ const wrapper = require("../module-wrapper.js");
 
 function getInner({ part, left, right, postparsed, index }) {
 	const paragraphParts = postparsed.slice(left + 1, right);
-	paragraphParts.forEach(function (p, i) {
+	for (let i = 0, len = paragraphParts.length; i < len; i++) {
 		if (i === index - left - 1) {
-			return;
+			continue;
 		}
+		const p = paragraphParts[i];
 		if (isContent(p)) {
 			throwRawTagShouldBeOnlyTextInParagraph({ paragraphParts, part });
 		}
-	});
+	}
 	return part;
 }
 
@@ -54,9 +55,7 @@ class RawXmlModule {
 		const errors = [];
 		try {
 			value = options.scopeManager.getValue(part.value, { part });
-			if (value == null) {
-				value = options.nullGetter(part);
-			}
+			value ??= options.nullGetter(part);
 		} catch (e) {
 			errors.push(e);
 			return { errors };

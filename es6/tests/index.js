@@ -90,7 +90,7 @@ function startTest() {
 		};
 	});
 
-	describe("", function () {
+	describe("", () => {
 		require("./e2e/text.js");
 		require("./e2e/base.js");
 		require("./e2e/xml-templater.js");

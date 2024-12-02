@@ -23,11 +23,7 @@ module.exports = function (module) {
 		resolve: emptyFun,
 		preResolve: emptyFun,
 	};
-	if (
-		Object.keys(defaults).every(function (key) {
-			return !module[key];
-		})
-	) {
+	if (Object.keys(defaults).every((key) => !module[key])) {
 		const err = new XTInternalError(
 			"This module cannot be wrapped, because it doesn't define any of the necessary functions"
 		);
@@ -38,8 +34,8 @@ module.exports = function (module) {
 		};
 		throw err;
 	}
-	Object.keys(defaults).forEach(function (key) {
-		module[key] = module[key] || defaults[key];
-	});
+	for (const key in defaults) {
+		module[key] ||= defaults[key];
+	}
 	return module;
 };

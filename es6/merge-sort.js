@@ -15,18 +15,11 @@ function getMinFromArrays(arrays, state) {
 }
 
 module.exports = function (arrays) {
-	const totalLength = arrays.reduce(function (sum, array) {
-		return sum + array.length;
-	}, 0);
-	arrays = arrays.filter(function (array) {
-		return array.length > 0;
-	});
+	const totalLength = arrays.reduce((sum, array) => sum + array.length, 0);
+	arrays = arrays.filter((array) => array.length > 0);
 
 	const resultArray = new Array(totalLength);
-
-	const state = arrays.map(function () {
-		return 0;
-	});
+	const state = arrays.map(() => 0);
 
 	for (let i = 0; i < totalLength; i++) {
 		const arrayIndex = getMinFromArrays(arrays, state);

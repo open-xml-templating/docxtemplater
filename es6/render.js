@@ -2,6 +2,7 @@ const {
 	throwUnimplementedTagType,
 	XTScopeParserError,
 } = require("./errors.js");
+const { pushArray } = require("./doc-utils.js");
 const getResolvedId = require("./get-resolved-id.js");
 
 function moduleRender(part, options) {
@@ -19,12 +20,10 @@ function moduleRender(part, options) {
 function render(options) {
 	const baseNullGetter = options.baseNullGetter;
 	const { compiled, scopeManager } = options;
-	options.nullGetter = (part, sm) => {
-		return baseNullGetter(part, sm || scopeManager);
-	};
+	options.nullGetter = (part, sm) => baseNullGetter(part, sm || scopeManager);
 	const errors = [];
 	const parts = compiled
-		.map(function (part, i) {
+		.map((part, i) => {
 			options.index = i;
 			options.resolvedId = getResolvedId(part, options);
 			let moduleRendered;
@@ -48,11 +47,9 @@ function render(options) {
 			}
 			throwUnimplementedTagType(part, i);
 		})
-		.reduce(function (parts, { value }) {
+		.reduce((parts, { value }) => {
 			if (value instanceof Array) {
-				for (let i = 0, len = value.length; i < len; i++) {
-					parts.push(value[i]);
-				}
+				pushArray(parts, value);
 			} else if (value) {
 				parts.push(value);
 			}

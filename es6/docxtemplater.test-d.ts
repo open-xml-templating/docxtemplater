@@ -291,7 +291,7 @@ const fixDocPrCorruptionModule: DXT.Module = {
         partValue.substr(end)
       );
     }
-    zip.file(/\.xml$/).forEach(function (f: any) {
+    for (const f of zip.file(/\.xml$/)) {
       let text = f.asText();
       const xmllexed = Lexer.xmlparse(text, {
         text: [],
@@ -310,7 +310,7 @@ const fixDocPrCorruptionModule: DXT.Module = {
         }, "");
       }
       zip.file(f.name, text);
-    });
+    }
   },
 };
 new Docxtemplater(new PizZip("hello"), {

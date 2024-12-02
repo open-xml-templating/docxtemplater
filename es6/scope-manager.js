@@ -25,14 +25,10 @@ function getValue(tag, meta, num) {
 			i++
 		) {
 			const lIndex = this.scopeLindex[i];
-			w = find(w, function (r) {
-				return r.lIndex === lIndex;
-			});
+			w = find(w, (r) => r.lIndex === lIndex);
 			w = w.value[this.scopePathItem[i]];
 		}
-		return find(w, function (r) {
-			return meta.part.lIndex === r.lIndex;
-		}).value;
+		return find(w, (r) => meta.part.lIndex === r.lIndex).value;
 	}
 	// search in the scopes (in reverse order) and keep the first defined value
 	let result;
@@ -86,10 +82,8 @@ function getValueAsync(tag, meta, num) {
 	}
 
 	return Promise.resolve()
-		.then(() => {
-			return parser.get(scope, this.getContext(meta, num));
-		})
-		.catch(function (error) {
+		.then(() => parser.get(scope, this.getContext(meta, num)))
+		.catch((error) => {
 			throw getScopeParserExecutionError({
 				tag,
 				scope,

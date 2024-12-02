@@ -12,9 +12,9 @@ const printy = require("../printy.js");
 const expressionParser = require("../../expressions.js");
 const Errors = require("../../errors.js");
 
-describe("Simple templating", function () {
-	describe("text templating", function () {
-		it("should change values with template data", function () {
+describe("Simple templating", () => {
+	describe("text templating", () => {
+		it("should change values with template data", () => {
 			const doc = createDocV4("tag-example.docx").render({
 				first_name: "Hipp",
 				last_name: "Edgar",
@@ -32,7 +32,7 @@ describe("Simple templating", function () {
 		});
 	});
 
-	it("should replace custom properties text", function () {
+	it("should replace custom properties text", () => {
 		const filePaths = [];
 		const module = {
 			name: "Test module",
@@ -97,8 +97,8 @@ describe("Simple templating", function () {
 	});
 });
 
-describe("Docxtemplater internal properties", function () {
-	it("should calculate filesContentTypes and invertedContentTypes", function () {
+describe("Docxtemplater internal properties", () => {
+	it("should calculate filesContentTypes and invertedContentTypes", () => {
 		const doc = createDocV4("tag-example.docx");
 		expect(doc.filesContentTypes).to.deep.equal({
 			"_rels/.rels": "application/vnd.openxmlformats-package.relationships+xml",
@@ -170,7 +170,7 @@ describe("Docxtemplater internal properties", function () {
 		});
 	});
 
-	it("should calculate filesContentTypes and invertedContentTypes", function () {
+	it("should calculate filesContentTypes and invertedContentTypes", () => {
 		const doc = createDocV4("cond-image.docx");
 
 		const jpegImages = doc.invertedContentTypes["image/jpeg"];
@@ -182,7 +182,7 @@ describe("Docxtemplater internal properties", function () {
 		).to.deep.equal(["_rels/.rels", "word/_rels/document.xml.rels"]);
 	});
 
-	it("should load relationships with xmlDocuments", function () {
+	it("should load relationships with xmlDocuments", () => {
 		let xmlDocs = null;
 		const mod = {
 			name: "XmlDocumentsModule",
@@ -204,7 +204,7 @@ describe("Docxtemplater internal properties", function () {
 	});
 });
 
-describe("Special characters", function () {
+describe("Special characters", () => {
 	it("should not escape tab character", function () {
 		return this.renderV4({
 			name: "tab-character.pptx",
@@ -245,7 +245,7 @@ describe("Special characters", function () {
 	});
 });
 
-describe("Regression", function () {
+describe("Regression", () => {
 	it("should not corrupt when having sdt content", function () {
 		return this.renderV4({
 			name: "sdt-content.docx",
@@ -272,8 +272,8 @@ describe("Regression", function () {
 	});
 });
 
-describe("Spacing/Linebreaks", function () {
-	it("should show spaces with linebreak option", function () {
+describe("Spacing/Linebreaks", () => {
+	it("should show spaces with linebreak option", () => {
 		const doc = createDocV4("tag-multiline.docx", { linebreaks: true }).render({
 			description: `hello there
     deep indentation
@@ -383,7 +383,7 @@ describe("Spacing/Linebreaks", function () {
 	});
 });
 
-describe("Comments", function () {
+describe("Comments", () => {
 	it("should be possible to template values in comments", function () {
 		return this.renderV4({
 			name: "with-comments.docx",
@@ -395,7 +395,7 @@ describe("Comments", function () {
 	});
 });
 
-describe("Assignment", function () {
+describe("Assignment", () => {
 	it("should be possible to assign a value from the template", function () {
 		return this.render({
 			name: "assignment.docx",
@@ -412,7 +412,7 @@ describe("Assignment", function () {
 	});
 });
 
-describe("Unusual document extensions", function () {
+describe("Unusual document extensions", () => {
 	it("should work with docm", function () {
 		return this.render({
 			name: "input.docm",
@@ -446,8 +446,8 @@ describe("Unusual document extensions", function () {
 	});
 });
 
-describe("Dash Loop", function () {
-	it("should work on simple table -> w:tr", function () {
+describe("Dash Loop", () => {
+	it("should work on simple table -> w:tr", () => {
 		const doc = createDocV4("tag-dash-loop.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
@@ -460,7 +460,7 @@ describe("Dash Loop", function () {
 		expect(text).to.be.equal(expectedText);
 	});
 
-	it("should work on simple table -> w:table", function () {
+	it("should work on simple table -> w:table", () => {
 		const doc = createDocV4("tag-dash-loop-table.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
@@ -473,7 +473,7 @@ describe("Dash Loop", function () {
 		expect(text).to.be.equal(expectedText);
 	});
 
-	it("should work on simple list -> w:p", function () {
+	it("should work on simple list -> w:p", () => {
 		const doc = createDocV4("tag-dash-loop-list.docx").render({
 			os: [
 				{ type: "linux", price: "0", reference: "Ubuntu10" },
@@ -504,7 +504,7 @@ describe("Dash Loop", function () {
 	});
 });
 
-describe("Section breaks inside loops", function () {
+describe("Section breaks inside loops", () => {
 	it("should work at beginning of paragraph loop with 3 elements", function () {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		return this.renderV4({
@@ -676,7 +676,7 @@ describe("Section breaks inside loops", function () {
 	});
 });
 
-describe("ParagraphLoop", function () {
+describe("ParagraphLoop", () => {
 	it("should work with docx", function () {
 		return this.render({
 			name: "users.docx",
@@ -760,7 +760,7 @@ describe("ParagraphLoop", function () {
 		});
 	});
 
-	it("should fail if trying to attach a module that has none of the properties", function () {
+	it("should fail if trying to attach a module that has none of the properties", () => {
 		const expectedError = {
 			name: "InternalError",
 			message:
@@ -787,7 +787,7 @@ describe("ParagraphLoop", function () {
 		});
 	});
 
-	it("should not fail when having paragraph in paragraph", function () {
+	it("should not fail when having paragraph in paragraph", () => {
 		const printedPostparsed = [];
 		let filePath = "";
 		const doc = createDocV4("regression-par-in-par.docx", {
@@ -826,7 +826,7 @@ describe("ParagraphLoop", function () {
 		});
 	});
 
-	it("should throw specific error if calling .render() on document with invalid tags", function () {
+	it("should throw specific error if calling .render() on document with invalid tags", () => {
 		let catched = false;
 		const capture = captureLogs();
 
@@ -842,7 +842,7 @@ describe("ParagraphLoop", function () {
 		expect(catched).to.equal(true);
 	});
 
-	it("should fail with errors from header and footer", function () {
+	it("should fail with errors from header and footer", () => {
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -898,7 +898,7 @@ describe("ParagraphLoop", function () {
 		);
 	});
 
-	it("should fail properly when having lexed + postparsed errors", function () {
+	it("should fail properly when having lexed + postparsed errors", () => {
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -964,7 +964,7 @@ describe("ParagraphLoop", function () {
 		);
 	});
 
-	it("should fail when placing paragraph loop inside normal loop", function () {
+	it("should fail when placing paragraph loop inside normal loop", () => {
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -1028,8 +1028,8 @@ describe("ParagraphLoop", function () {
 	});
 });
 
-describe("Prefixes", function () {
-	it("should be possible to change the prefix of the loop module", function () {
+describe("Prefixes", () => {
+	it("should be possible to change the prefix of the loop module", () => {
 		const content = "<w:t>{##tables}{user}{/tables}</w:t>";
 		const scope = {
 			tables: [{ user: "John" }, { user: "Jane" }],
@@ -1038,11 +1038,11 @@ describe("Prefixes", function () {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
-						doc.modules.forEach(function (module) {
+						for (const module of doc.modules) {
 							if (module.name === "LoopModule") {
 								module.prefix.start = "##";
 							}
-						});
+						}
 						return options;
 					},
 				},
@@ -1052,7 +1052,7 @@ describe("Prefixes", function () {
 		expect(doc.getFullText()).to.be.equal("JohnJane");
 	});
 
-	it("should be possible to change the prefix of the loop module to a regexp", function () {
+	it("should be possible to change the prefix of the loop module to a regexp", () => {
 		const content =
 			"<w:t>{##tables}{user}{/tables}{#tables}{user}{/tables}</w:t>";
 		const scope = {
@@ -1062,11 +1062,11 @@ describe("Prefixes", function () {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
-						doc.modules.forEach(function (module) {
+						for (const module of doc.modules) {
 							if (module.name === "LoopModule") {
 								module.prefix.start = /^##?(.*)$/;
 							}
-						});
+						}
 						return options;
 					},
 				},
@@ -1076,7 +1076,7 @@ describe("Prefixes", function () {
 		expect(doc.getFullText()).to.be.equal("ABAB");
 	});
 
-	it("should be possible to change the prefix of the raw xml module to a regexp", function () {
+	it("should be possible to change the prefix of the raw xml module to a regexp", () => {
 		const content = "<w:p><w:t>{!!raw}</w:t></w:p>";
 		const scope = {
 			raw: "<w:p><w:t>HoHo</w:t></w:p>",
@@ -1085,11 +1085,11 @@ describe("Prefixes", function () {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
-						doc.modules.forEach(function (module) {
+						for (const module of doc.modules) {
 							if (module.name === "RawXmlModule") {
 								module.prefix = /^!!?(.*)$/;
 							}
-						});
+						}
 						return options;
 					},
 				},
@@ -1100,7 +1100,7 @@ describe("Prefixes", function () {
 		expect(doc.getFullText()).to.be.equal("HoHo");
 	});
 
-	it("should be possible to change the prefix of the raw xml module to a function", function () {
+	it("should be possible to change the prefix of the raw xml module to a function", () => {
 		const content = "<w:p><w:t>{raw}</w:t></w:p><w:p><w:t> {text}</w:t></w:p>";
 		const scope = {
 			raw: "<w:p><w:t>HoHo</w:t></w:p>",
@@ -1110,7 +1110,7 @@ describe("Prefixes", function () {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
-						doc.modules.forEach(function (module) {
+						for (const module of doc.modules) {
 							if (module.name === "RawXmlModule") {
 								module.prefix = function (placeholderContent) {
 									if (placeholderContent === "raw") {
@@ -1118,7 +1118,7 @@ describe("Prefixes", function () {
 									}
 								};
 							}
-						});
+						}
 						return options;
 					},
 				},
@@ -1131,7 +1131,7 @@ describe("Prefixes", function () {
 		);
 	});
 });
-describe("Load Office 365 file", function () {
+describe("Load Office 365 file", () => {
 	it("should handle files with word/document2.xml", function () {
 		return this.renderV4({
 			name: "office365.docx",
@@ -1158,7 +1158,7 @@ describe("Load Office 365 file", function () {
 	});
 });
 
-describe("Loops", function () {
+describe("Loops", () => {
 	it("should work with template", function () {
 		return this.renderV4({
 			name: "empty-loop-regression.docx",
@@ -1170,22 +1170,22 @@ describe("Loops", function () {
 	});
 });
 
-describe("Smart arts", function () {
-	it("should work with smart-art on pptx files", function () {
+describe("Smart arts", () => {
+	it("should work with smart-art on pptx files", () => {
 		const doc = createDocV4("smart-art.pptx");
 		doc.render({ user: "John", i: 33, j: "J" });
 		shouldBeSame({ doc, expectedName: "expected-smart-art.pptx" });
 	});
 
-	it("should work with smart-art on docx files", function () {
+	it("should work with smart-art on docx files", () => {
 		const doc = createDocV4("smart-art.docx");
 		doc.render({ name: "Jack", user: "John", i: 33, j: "J" });
 		shouldBeSame({ doc, expectedName: "expected-smart-art.docx" });
 	});
 });
 
-describe("Add module to change justify alignment", function () {
-	it("should be possible to add w:doNotExpandShiftReturn to word/settings.xml", function () {
+describe("Add module to change justify alignment", () => {
+	it("should be possible to add w:doNotExpandShiftReturn to word/settings.xml", () => {
 		const doc = createDocV4("justify.docx", {
 			linebreaks: true,
 			paragraphLoop: true,
@@ -1206,7 +1206,8 @@ describe("Add module to change justify alignment", function () {
 							let addedDoNotExpandShiftReturn = false;
 							const added = [];
 							let addIndex = -1;
-							xml.forEach(function (part, i) {
+							for (let i = 0, len = xml.length; i < len; i++) {
+								const part = xml[i];
 								if (part.tag === "w:doNotExpandShiftReturn") {
 									addedDoNotExpandShiftReturn = true;
 								}
@@ -1249,7 +1250,7 @@ describe("Add module to change justify alignment", function () {
 										}
 									}
 								}
-							});
+							}
 							if (addIndex !== -1) {
 								xml.splice(addIndex, 0, ...added);
 							}
@@ -1302,4 +1303,3 @@ describe("OptionsTransformer", () => {
 		);
 	});
 });
-

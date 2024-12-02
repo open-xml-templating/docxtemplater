@@ -1,7 +1,7 @@
 const { resolveSoon } = require("../utils.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
-describe("Resolver", function () {
+describe("Resolver", () => {
 	it("should render the document correctly in async mode", function () {
 		return this.render({
 			async: true,

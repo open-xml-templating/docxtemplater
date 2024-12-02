@@ -11,7 +11,7 @@ module.exports = {
 		if (contentType !== settingsContentType) {
 			return null;
 		}
-		return postparsed.map(function (part) {
+		return postparsed.map((part) => {
 			if (part.type === "tag" && part.tag === "w:proofState") {
 				return { type: "content", value: "" };
 			}

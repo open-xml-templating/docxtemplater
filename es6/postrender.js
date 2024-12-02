@@ -103,12 +103,12 @@ function postrender(parts, options) {
 	let j = 0;
 
 	// Stryker disable all : because this is an optimisation that won't make any tests fail
-	uintArrays.forEach(function (buf) {
+	for (const buf of uintArrays) {
 		for (let i = 0; i < buf.length; ++i) {
 			array[i + j] = buf[i];
 		}
 		j += buf.length;
-	});
+	}
 	// Stryker restore all
 	return array;
 }

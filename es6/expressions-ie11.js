@@ -45,13 +45,17 @@ function getObjectIdentifiers(x, scope = {}) {
 		return scope;
 	}
 	if (x.body) {
-		x.body.forEach((y) => getObjectIdentifiers(y, scope));
+		for (const y of x.body) {
+			getObjectIdentifiers(y, scope);
+		}
 		return scope;
 	}
 	if (x.type === "CallExpression") {
 		getObjectIdentifiers(x.callee, scope);
 		if (x.arguments) {
-			x.arguments.forEach((y) => getObjectIdentifiers(y, scope));
+			for (const y of x.arguments) {
+				getObjectIdentifiers(y, scope);
+			}
 		}
 	}
 	if (x.ast) {

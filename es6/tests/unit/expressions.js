@@ -2,8 +2,8 @@ const expressionParser = require("../../expressions.js");
 const expressionParserIE11 = require("../../expressions-ie11.js");
 const { expect } = require("../utils.js");
 
-describe("Angular parser", function () {
-	it("should work", function () {
+describe("Angular parser", () => {
+	it("should work", () => {
 		expect(
 			expressionParser("x+x", {
 				tag: {
@@ -28,7 +28,7 @@ describe("Angular parser", function () {
 		).to.equal(6);
 	});
 
-	it("should work with ie 11", function () {
+	it("should work with ie 11", () => {
 		const result = expressionParserIE11("x+x", {
 			tag: {
 				value: "x+x",
@@ -38,7 +38,7 @@ describe("Angular parser", function () {
 		expect(result).to.equal(2);
 	});
 
-	it("should be able to get object identifiers", function () {
+	it("should be able to get object identifiers", () => {
 		expect(
 			expressionParser("(x.y.z + x.m) / a").getObjectIdentifiers()
 		).to.deep.equal({ a: {}, x: { m: {}, y: { z: {} } } });
@@ -49,7 +49,7 @@ describe("Angular parser", function () {
 		});
 	});
 
-	it("should be able to get object identifiers ie11", function () {
+	it("should be able to get object identifiers ie11", () => {
 		expect(
 			expressionParserIE11("(x.y.z + x.m) / a").getObjectIdentifiers()
 		).to.deep.equal({ a: {}, x: { m: {}, y: { z: {} } } });
@@ -62,7 +62,7 @@ describe("Angular parser", function () {
 		});
 	});
 
-	it("should be able to getIdentifiers", function () {
+	it("should be able to getIdentifiers", () => {
 		expressionParser.filters.getimg = () => 0;
 
 		expect(
@@ -91,7 +91,7 @@ describe("Angular parser", function () {
 		).to.deep.equal(["users", "foo"]);
 	});
 
-	it("should be able to getIdentifiers with ie 11", function () {
+	it("should be able to getIdentifiers with ie 11", () => {
 		expressionParserIE11.filters.getimg = function name() {
 			return 0;
 		};

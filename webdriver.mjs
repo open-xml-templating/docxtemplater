@@ -106,13 +106,13 @@ server.listen(port, async () => {
 						elements.map((el) => el.textContent)
 					);
 
-					texts.forEach((text) => {
+					for (const text of texts) {
 						console.log(
 							text
 								.replace(/^(.*)\n(.*)$/g, "$2 $1")
 								.replace(/^(.*[^0-9])([0-9]+ms)$/g, "$1 $2")
 						);
-					});
+					}
 				}, 100);
 
 				// Wait for tests to complete
@@ -139,13 +139,13 @@ server.listen(port, async () => {
 						}))
 					);
 
-					failedTests.forEach(({ title, error }) => {
+					for (const { title, error } of failedTests) {
 						console.log(title.replace(/./g, "="));
 						console.log(title);
 						console.log(title.replace(/./g, "="));
 						console.log(error);
 						console.log();
-					});
+					}
 
 					throw new Error(
 						`${failures} failures happened on ${browserConfig[BROWSER].name}`

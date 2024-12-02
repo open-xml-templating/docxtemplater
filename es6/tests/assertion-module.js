@@ -53,11 +53,11 @@ class AssertionModule {
 		this.name = "AssertionModule";
 	}
 	optionsTransformer(options, docxtemplater) {
-		docxtemplater.modules.forEach(function (module) {
+		for (const module of docxtemplater.modules) {
 			if (!module.name) {
 				throw new Error("Unnamed module");
 			}
-		});
+		}
 		return options;
 	}
 	clone() {
@@ -105,14 +105,15 @@ class AssertionModule {
 		if (!isArray(parsed)) {
 			throw new Error("Parsed should be an array");
 		}
-		parsed.forEach(function (part, i) {
+		for (let i = 0, len = parsed.length; i < len; i++) {
+			const part = parsed[i];
 			try {
 				verifyPart(part);
 			} catch (e) {
 				logContext(parsed, i);
 				throw e;
 			}
-		});
+		}
 	}
 	resolve(part, options) {
 		verifyOptions(options);

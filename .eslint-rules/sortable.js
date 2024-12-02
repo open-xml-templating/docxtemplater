@@ -100,11 +100,11 @@ module.exports = {
 				function getNames(node) {
 					const { properties } = node;
 					const names = [];
-					properties.forEach(function (prop) {
+					for (const prop of properties) {
 						if (prop.key && prop.key.name) {
 							names.push(prop.key.name);
 						}
-					});
+					}
 					return names;
 				}
 				const names = getNames(node.parent);
@@ -125,10 +125,10 @@ module.exports = {
 					],
 					["preparse", "parse", "postparse", "constructor"],
 				];
-				sortedVars.forEach(function (vars) {
+				for (const vars of sortedVars) {
 					const intersect = intersectSafe(names, vars);
 					if (intersect.length <= 1) {
-						return;
+						continue;
 					}
 
 					const prevName = stack.prevName;
@@ -141,7 +141,7 @@ module.exports = {
 					}
 
 					if (prevName === null || thisName === null) {
-						return;
+						continue;
 					}
 
 					const isValidOrder = function (prevName, thisName) {
@@ -184,17 +184,17 @@ module.exports = {
 								// Split into parts on each spread operator (empty key)
 								const parts = [];
 								let part = [];
-								props.forEach((p) => {
+								for (const p of props) {
 									if (!p.key) {
 										parts.push(part);
 										part = [];
 									} else {
 										part.push(p);
 									}
-								});
+								}
 								parts.push(part);
 								// Sort all parts
-								parts.forEach((part) => {
+								for (const part of parts) {
 									part.sort((p1, p2) => {
 										const n1 = getPropertyName(p1);
 										const n2 = getPropertyName(p2);
@@ -203,24 +203,29 @@ module.exports = {
 										}
 										return isValidOrder(n1, n2) ? -1 : 1;
 									});
-								});
+								}
 								// Perform fixes
 								const fixes = [];
 								let newIndex = 0;
-								parts.forEach((part) => {
-									part.forEach((p) => {
-										moveProperty(p, props[newIndex], fixer, src).forEach((f) =>
-											fixes.push(f)
-										);
+								for (const part of parts) {
+									for (const p of part) {
+										for (const f of moveProperty(
+											p,
+											props[newIndex],
+											fixer,
+											src
+										)) {
+											fixes.push(f);
+										}
 										newIndex++;
-									});
+									}
 									newIndex++;
-								});
+								}
 								return fixes;
 							},
 						});
 					}
-				});
+				}
 			},
 		};
 	},

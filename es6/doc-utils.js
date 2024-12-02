@@ -88,26 +88,31 @@ function uniq(arr) {
 }
 
 function chunkBy(parsed, f) {
-	return parsed
-		.reduce(
-			function (chunks, p) {
-				const currentChunk = last(chunks);
-				const res = f(p);
-				if (res === "start") {
-					chunks.push([p]);
-				} else if (res === "end") {
-					currentChunk.push(p);
-					chunks.push([]);
-				} else {
-					currentChunk.push(p);
-				}
-				return chunks;
-			},
-			[[]]
-		)
-		.filter(function (p) {
-			return p.length > 0;
-		});
+	const chunks = [[]];
+
+	for (const p of parsed) {
+		const currentChunk = chunks[chunks.length - 1];
+		const res = f(p);
+
+		if (res === "start") {
+			chunks.push([p]);
+		} else if (res === "end") {
+			currentChunk.push(p);
+			chunks.push([]);
+		} else {
+			currentChunk.push(p);
+		}
+	}
+
+	// Remove empty chunks
+	const result = [];
+	for (const chunk of chunks) {
+		if (chunk.length > 0) {
+			result.push(chunk);
+		}
+	}
+
+	return result;
 }
 
 function getDefaults() {
@@ -132,8 +137,9 @@ function getDefaults() {
 }
 
 function xml2str(xmlNode) {
-	const a = new XMLSerializer();
-	return a.serializeToString(xmlNode).replace(/xmlns(:[a-z0-9]+)?="" ?/g, "");
+	return new XMLSerializer()
+		.serializeToString(xmlNode)
+		.replace(/xmlns(:[a-z0-9]+)?="" ?/g, "");
 }
 
 function str2xml(str) {
@@ -152,14 +158,12 @@ const charMap = [
 	["'", "&apos;"],
 ];
 
-const charMapRegexes = charMap.map(function ([endChar, startChar]) {
-	return {
-		rstart: new RegExp(startChar, "g"),
-		rend: new RegExp(endChar, "g"),
-		start: startChar,
-		end: endChar,
-	};
-});
+const charMapRegexes = charMap.map(([endChar, startChar]) => ({
+	rstart: new RegExp(startChar, "g"),
+	rend: new RegExp(endChar, "g"),
+	start: startChar,
+	end: endChar,
+}));
 
 function wordToUtf8(string) {
 	let r;
@@ -311,23 +315,24 @@ function isTagStart(tagType, { type, tag, position }) {
 		(position === "start" || position === "selfclosing")
 	);
 }
-function isTagStartStrict(tagType, { type, tag, position }) {
-	return type === "tag" && tag === tagType && position === "start";
-}
 function isTagEnd(tagType, { type, tag, position }) {
 	return type === "tag" && tag === tagType && position === "end";
 }
-function isParagraphStart(part) {
-	return isTagStartStrict("w:p", part) || isTagStartStrict("a:p", part);
+function isParagraphStart({ type, tag, position }) {
+	return (
+		["w:p", "a:p"].indexOf(tag) !== -1 && type === "tag" && position === "start"
+	);
 }
-function isParagraphEnd(part) {
-	return isTagEnd("w:p", part) || isTagEnd("a:p", part);
+function isParagraphEnd({ type, tag, position }) {
+	return (
+		["w:p", "a:p"].indexOf(tag) !== -1 && type === "tag" && position === "end"
+	);
 }
 function isTextStart({ type, position, text }) {
-	return type === "tag" && position === "start" && text;
+	return text && type === "tag" && position === "start";
 }
 function isTextEnd({ type, position, text }) {
-	return type === "tag" && position === "end" && text;
+	return text && type === "tag" && position === "end";
 }
 function isContent({ type, position }) {
 	return (
@@ -377,12 +382,13 @@ function hasCorruptCharacters(string) {
 }
 
 function invertMap(map) {
-	return Object.keys(map).reduce(function (invertedMap, key) {
+	const invertedMap = {};
+	for (const key in map) {
 		const value = map[key];
-		invertedMap[value] = invertedMap[value] || [];
+		invertedMap[value] ||= [];
 		invertedMap[value].push(key);
-		return invertedMap;
-	}, {});
+	}
+	return invertedMap;
 }
 // This ensures that the sort is stable. The default Array.sort of the browser
 // is not stable in firefox, as the JS spec does not enforce the sort to be

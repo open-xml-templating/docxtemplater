@@ -15,34 +15,28 @@ function resolve(options) {
 	const resolved = [];
 	const baseNullGetter = options.baseNullGetter;
 	const { compiled, scopeManager } = options;
-	options.nullGetter = (part, sm) => {
-		return baseNullGetter(part, sm || scopeManager);
-	};
+	options.nullGetter = (part, sm) => baseNullGetter(part, sm || scopeManager);
 	options.resolved = resolved;
 	const errors = [];
 
 	return Promise.all(
 		compiled
-			.filter(function (part) {
-				return ["content", "tag"].indexOf(part.type) === -1;
-			})
-			.reduce(function (promises, part) {
+			.filter((part) => ["content", "tag"].indexOf(part.type) === -1)
+			.reduce((promises, part) => {
 				const moduleResolved = moduleResolve(part, {
 					...options,
 					resolvedId: getResolvedId(part, options),
 				});
 				let result;
 				if (moduleResolved) {
-					result = moduleResolved.then(function (value) {
+					result = moduleResolved.then((value) => {
 						resolved.push({ tag: part.value, lIndex: part.lIndex, value });
 					});
 				} else if (part.type === "placeholder") {
 					result = scopeManager
 						.getValueAsync(part.value, { part })
-						.then(function (value) {
-							return value == null ? options.nullGetter(part) : value;
-						})
-						.then(function (value) {
+						.then((value) => (value == null ? options.nullGetter(part) : value))
+						.then((value) => {
 							resolved.push({
 								tag: part.value,
 								lIndex: part.lIndex,
@@ -54,7 +48,7 @@ function resolve(options) {
 					return;
 				}
 				promises.push(
-					result.catch(function (e) {
+					result.catch((e) => {
 						if (e instanceof Array) {
 							errors.push(...e);
 						} else {
@@ -64,9 +58,7 @@ function resolve(options) {
 				);
 				return promises;
 			}, [])
-	).then(function () {
-		return { errors, resolved };
-	});
+	).then(() => ({ errors, resolved }));
 }
 
 module.exports = resolve;

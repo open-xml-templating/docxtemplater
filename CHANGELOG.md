@@ -254,7 +254,7 @@ const doc = new Docxtemplater(zip, {
   modules: [
     {
       optionsTransformer(options, doc) {
-        doc.modules.forEach(function (module) {
+        for (module of doc.modules) {
           if (module.name === "RawXmlModule") {
             module.prefix = function (placeholderContent) {
               if (placeholderContent === "raw") {
@@ -265,7 +265,7 @@ const doc = new Docxtemplater(zip, {
               }
             };
           }
-        });
+        }
         return options;
       },
     },

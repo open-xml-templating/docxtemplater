@@ -7,9 +7,10 @@ function getIndent(indent) {
 const attributeRegex = /<[A-Za-z0-9:]+ (.*?)([/ ]*)>/;
 
 function normalizeValue(value) {
-	return value.replace(/&#([0-9]+);/g, function (_, int) {
-		return `&#x${parseInt(int, 10).toString(16).toUpperCase()};`;
-	});
+	return value.replace(
+		/&#([0-9]+);/g,
+		(_, int) => `&#x${parseInt(int, 10).toString(16).toUpperCase()};`
+	);
 }
 
 function attributeSorter(ln, namespaces) {
@@ -30,30 +31,28 @@ function attributeSorter(ln, namespaces) {
 		value = normalizeValue(value);
 
 		let found = false;
-		namespaces.forEach(function (ns) {
+		for (const ns of namespaces) {
 			if (ns) {
-				ns.forEach(function (n) {
+				for (const n of ns) {
 					if (n.key === key && n.value === value) {
 						found = true;
 					}
-				});
+				}
 			}
-		});
+		}
 		if (!found) {
 			attributes.push({ key, value });
 		}
 		match = attrRegex.exec(rest);
 	}
-	attributes.sort(function (a1, a2) {
+	attributes.sort((a1, a2) => {
 		if (a1.key === a2.key) {
 			return 0;
 		}
 		return a1.key > a2.key ? 1 : -1;
 	});
 	const stringifiedAttrs = attributes
-		.map(function (attribute) {
-			return `${attribute.key}="${attribute.value}"`;
-		})
+		.map((attribute) => `${attribute.key}="${attribute.value}"`)
 		.join(" ");
 	if (rest != null) {
 		ln = ln.replace(rest, stringifiedAttrs).replace(/ +>/, ">");
@@ -61,15 +60,17 @@ function attributeSorter(ln, namespaces) {
 	return { replacement: ln, attributes };
 }
 
+/* eslint-disable-next-line complexity */
 function xmlprettify(xml) {
 	let result = "",
 		skip = 0,
 		indent = 0;
 	const parsed = miniparser(xml);
-	parsed.forEach(function ({ type, value }, i) {
+	for (let i = 0, len = parsed.length; i < len; i++) {
+		const { type, value } = parsed[i];
 		if (skip > 0) {
 			skip--;
-			return;
+			continue;
 		}
 		const nextType = i < parsed.length - 1 ? parsed[i + 1].type : "";
 		const nnextType = i < parsed.length - 2 ? parsed[i + 2].type : "";
@@ -88,7 +89,7 @@ function xmlprettify(xml) {
 				parsed[i + 2].value +
 				"\n";
 			skip = 2;
-			return;
+			continue;
 		}
 		if (type === "opening") {
 			result += getIndent(indent) + value + "\n";
@@ -111,7 +112,7 @@ function xmlprettify(xml) {
 		if (type === "content" && !/^[ \n\r\t]+$/.test(value)) {
 			result += getIndent(indent) + value.trim() + "\n";
 		}
-	});
+	}
 	if (indent !== 0) {
 		throw new Error(`Malformed xml indent at the end : ${indent} : ${xml}`);
 	}
@@ -119,9 +120,7 @@ function xmlprettify(xml) {
 }
 
 function getNamespaces(attributes) {
-	return attributes.filter(function ({ key }) {
-		return key.indexOf("xmlns") !== -1;
-	});
+	return attributes.filter(({ key }) => key.indexOf("xmlns") !== -1);
 }
 
 function miniparser(xml) {
@@ -172,7 +171,7 @@ function miniparser(xml) {
 				if (isProcessingInstruction) {
 					const encodingRegex = / encoding="([^"]+)"/;
 					if (encodingRegex.test(tag)) {
-						tag = tag.replace(encodingRegex, function (x, encoding) {
+						tag = tag.replace(encodingRegex, (x, encoding) => {
 							encoding = encoding.toUpperCase();
 							if (encoding === "UTF-8") {
 								return "";

@@ -3,6 +3,7 @@ const {
 	last,
 	isParagraphStart,
 	isModule,
+	pushArray,
 	isParagraphEnd,
 	isContent,
 	startsWith,
@@ -17,9 +18,7 @@ const wrapper = require("../module-wrapper.js");
 const moduleName = "loop";
 
 function hasContent(parts) {
-	return parts.some(function (part) {
-		return isContent(part);
-	});
+	return parts.some((part) => isContent(part));
 }
 
 function getFirstMeaningFulPart(parsed) {
@@ -66,36 +65,31 @@ function addPageBreakAtBeginning(subRendered) {
 }
 
 function isContinuous(parts) {
-	return parts.some(function (part) {
-		return (
+	return parts.some(
+		(part) =>
 			isTagStart("w:type", part) && part.value.indexOf("continuous") !== -1
-		);
-	});
+	);
 }
 
 function isNextPage(parts) {
-	return parts.some(function (part) {
-		return (
+	return parts.some(
+		(part) =>
 			isTagStart("w:type", part) &&
 			part.value.indexOf('w:val="nextPage"') !== -1
-		);
-	});
+	);
 }
 
 function addSectionBefore(parts, sect) {
-	return [
-		`<w:p><w:pPr>${sect
-			.map(function ({ value }) {
-				return value;
-			})
-			.join("")}</w:pPr></w:p>`,
-	].concat(parts);
+	return pushArray(
+		[`<w:p><w:pPr>${sect.map(({ value }) => value).join("")}</w:pPr></w:p>`],
+		parts
+	);
 }
 
 function addContinuousType(parts) {
 	let stop = false;
 	let inSectPr = false;
-	return parts.reduce(function (result, part) {
+	return parts.reduce((result, part) => {
 		if (stop === false && startsWith(part, "<w:sectPr")) {
 			inSectPr = true;
 		}
@@ -113,30 +107,27 @@ function addContinuousType(parts) {
 }
 
 function dropHeaderFooterRefs(parts) {
-	return parts.filter(function (text) {
-		return (
+	return parts.filter(
+		(text) =>
 			!startsWith(text, "<w:headerReference") &&
 			!startsWith(text, "<w:footerReference")
-		);
-	});
+	);
 }
 
 function hasPageBreak(chunk) {
-	return chunk.some(function (part) {
-		return part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1;
-	});
+	return chunk.some(
+		(part) => part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1
+	);
 }
 
 function hasImage(chunk) {
-	return chunk.some(function ({ tag }) {
-		return tag === "w:drawing";
-	});
+	return chunk.some(({ tag }) => tag === "w:drawing");
 }
 
 function getSectPr(chunks) {
 	let collectSectPr = false;
 	const sectPrs = [];
-	chunks.forEach(function (part) {
+	for (const part of chunks) {
 		if (isTagStart("w:sectPr", part)) {
 			sectPrs.push([]);
 			collectSectPr = true;
@@ -147,14 +138,14 @@ function getSectPr(chunks) {
 		if (isTagEnd("w:sectPr", part)) {
 			collectSectPr = false;
 		}
-	});
+	}
 	return sectPrs;
 }
 
 function getSectPrHeaderFooterChangeCount(chunks) {
 	let collectSectPr = false;
 	let sectPrCount = 0;
-	chunks.forEach(function (part) {
+	for (const part of chunks) {
 		if (isTagStart("w:sectPr", part)) {
 			collectSectPr = true;
 		}
@@ -170,7 +161,7 @@ function getSectPrHeaderFooterChangeCount(chunks) {
 		if (isTagEnd("w:sectPr", part)) {
 			collectSectPr = false;
 		}
-	});
+	}
 	return sectPrCount;
 }
 
@@ -269,7 +260,7 @@ class LoopModule {
 		}
 		// Stryker restore all
 
-		return parsed.reduce(function (tags, part, offset) {
+		return parsed.reduce((tags, part, offset) => {
 			if (isModule(part, moduleName) && part.subparsed == null) {
 				tags.push({ part, offset });
 			}
@@ -286,7 +277,7 @@ class LoopModule {
 			this.totalSectPr += basePart.sectPrCount;
 
 			const { sects } = this;
-			sects.some(function (sect, index) {
+			sects.some((sect, index) => {
 				if (basePart.lIndex < sect[0].lIndex) {
 					if (index + 1 < sects.length && isContinuous(sects[index + 1])) {
 						basePart.addContinuousType = true;
@@ -316,7 +307,7 @@ class LoopModule {
 		basePart.paragraphLoop = true;
 
 		let level = 0;
-		const chunks = chunkBy(parsed, function (p) {
+		const chunks = chunkBy(parsed, (p) => {
 			if (isParagraphStart(p)) {
 				level++;
 				if (level === 1) {
@@ -374,30 +365,30 @@ class LoopModule {
 			);
 		}
 		const errorList = [];
-		return promisedValue.then(function (values) {
-			return new Promise(function (resolve) {
+		return promisedValue.then((values) =>
+			new Promise((resolve) => {
 				if (values instanceof Array) {
 					Promise.all(values).then(resolve);
 				} else {
 					resolve(values);
 				}
-			}).then(function (values) {
+			}).then((values) => {
 				sm.loopOverValue(values, loopOver, part.inverted);
 				return Promise.all(promises)
-					.then(function (r) {
-						return r.map(function ({ resolved, errors }) {
+					.then((r) =>
+						r.map(({ resolved, errors }) => {
 							errorList.push(...errors);
 							return resolved;
-						});
-					})
-					.then(function (value) {
+						})
+					)
+					.then((value) => {
 						if (errorList.length > 0) {
 							throw errorList;
 						}
 						return value;
 					});
-			});
-		});
+			})
+		);
 	}
 	render(part, options) {
 		if (part.tag === "p:xfrm") {
@@ -432,13 +423,13 @@ class LoopModule {
 				part,
 				length
 			);
-			part.subparsed.forEach(function (pp) {
+			for (const pp of part.subparsed) {
 				if (isTagStart("a16:rowId", pp)) {
 					const val = +getSingleAttribute(pp.value, "val") + a16RowIdOffset;
 					a16RowIdOffset = 1;
 					pp.value = setSingleAttribute(pp.value, "val", val);
 				}
-			});
+			}
 			const subRendered = options.render({
 				...options,
 				compiled: part.subparsed,
@@ -448,9 +439,7 @@ class LoopModule {
 			if (part.hasPageBreak && i === length - 1 && insideParagraphLoop) {
 				addPageBreakAtEnd(subRendered);
 			}
-			const isNotFirst = scopeManager.scopePathItem.some(function (i) {
-				return i !== 0;
-			});
+			const isNotFirst = scopeManager.scopePathItem.some((i) => i !== 0);
 			if (isNotFirst) {
 				if (part.sectPrCount === 1) {
 					subRendered.parts = dropHeaderFooterRefs(subRendered.parts);

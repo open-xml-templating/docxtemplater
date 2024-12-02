@@ -1,6 +1,6 @@
 const traitName = "expandPair";
 const mergeSort = require("../merge-sort.js");
-const { getLeft, getRight } = require("../doc-utils.js");
+const { getLeft, getRight, pushArray } = require("../doc-utils.js");
 
 const wrapper = require("../module-wrapper.js");
 const { getExpandToDefault } = require("../traits.js");
@@ -81,9 +81,9 @@ function transformer(traits) {
 		}
 		i++;
 	}
-	traits.forEach(function ({ part }) {
+	for (const { part } of traits) {
 		errors.push(getUnmatchedLoopException(part));
-	});
+	}
 	return {
 		traits: [],
 		errors,
@@ -92,8 +92,8 @@ function transformer(traits) {
 
 function getPairs(traits) {
 	const levelTraits = {};
-	let errors = [];
-	let pairs = [];
+	const errors = [];
+	const pairs = [];
 	let transformedTraits = [];
 
 	for (let i = 0; i < traits.length; i++) {
@@ -102,7 +102,7 @@ function getPairs(traits) {
 
 	while (transformedTraits.length > 0) {
 		const result = transformer(transformedTraits);
-		errors = errors.concat(result.errors);
+		pushArray(errors, result.errors);
 		transformedTraits = result.traits;
 	}
 
@@ -123,7 +123,7 @@ function getPairs(traits) {
 		} else {
 			const startTrait = levelTraits[countOpen + 1];
 			if (countOpen === 0) {
-				pairs = pairs.concat([[startTrait, currentTrait]]);
+				pairs.push([startTrait, currentTrait]);
 			}
 		}
 		countOpen = countOpen >= 0 ? countOpen : 0;
@@ -136,18 +136,18 @@ class ExpandPairTrait {
 		this.name = "ExpandPairTrait";
 	}
 	optionsTransformer(options, docxtemplater) {
-		this.expandTags = docxtemplater.fileTypeConfig.expandTags.concat(
-			docxtemplater.options.paragraphLoop
-				? docxtemplater.fileTypeConfig.onParagraphLoop
-				: []
-		);
+		if (docxtemplater.options.paragraphLoop) {
+			pushArray(
+				docxtemplater.fileTypeConfig.expandTags,
+				docxtemplater.fileTypeConfig.onParagraphLoop
+			);
+		}
+		this.expandTags = docxtemplater.fileTypeConfig.expandTags;
 		return options;
 	}
 	postparse(postparsed, { getTraits, postparse, fileType }) {
 		let traits = getTraits(traitName, postparsed);
-		traits = traits.map(function (trait) {
-			return trait || [];
-		});
+		traits = traits.map((trait) => trait || []);
 		traits = mergeSort(traits);
 		const { pairs, errors } = getPairs(traits);
 		let lastRight = 0;
@@ -199,7 +199,7 @@ class ExpandPairTrait {
 		let currentPairIndex = 0;
 		let innerParts;
 
-		const newParsed = postparsed.reduce(function (newParsed, part, i) {
+		const newParsed = postparsed.reduce((newParsed, part, i) => {
 			const inPair =
 				currentPairIndex < pairs.length &&
 				expandedPairs[currentPairIndex][0] <= i &&

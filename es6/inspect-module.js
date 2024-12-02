@@ -1,4 +1,5 @@
 const { merge, cloneDeep } = require("lodash");
+const { pushArray } = require("./doc-utils.js");
 
 function isPlaceholder(part) {
 	return part.type === "placeholder";
@@ -11,23 +12,23 @@ function getSlideIndex(path) {
 }
 
 function getTags(postParsed) {
-	return postParsed.filter(isPlaceholder).reduce(function (tags, part) {
+	return postParsed.filter(isPlaceholder).reduce((tags, part) => {
 		// Stryker disable all : because this is for the xlsx module
 		if (part.cellParsed) {
-			part.cellParsed.forEach(function (cp) {
+			for (const cp of part.cellParsed) {
 				if (
 					cp.type === "placeholder" &&
 					cp.module !== "pro-xml-templating/xls-module-loop"
 				) {
-					tags[cp.value] = tags[cp.value] || {};
+					tags[cp.value] ||= {};
 				}
-			});
+			}
 			return tags;
 		}
 		if (part.attrParsed) {
-			Object.keys(part.attrParsed).forEach(function (key) {
+			for (const key in part.attrParsed) {
 				merge(tags, getTags(part.attrParsed[key]));
-			});
+			}
 			return tags;
 		}
 		// Stryker disable all : because this is for the table,chart,image, xlsx module
@@ -37,7 +38,7 @@ function getTags(postParsed) {
 			}
 			return tags;
 		}
-		tags[part.value] = tags[part.value] || {};
+		tags[part.value] ||= {};
 		// Stryker restore all
 
 		if (part.subparsed) {
@@ -49,18 +50,16 @@ function getTags(postParsed) {
 }
 
 function getStructuredTags(postParsed) {
-	return postParsed.filter(isPlaceholder).map(function (part) {
-		if (part.subparsed) {
-			part.subparsed = getStructuredTags(part.subparsed);
-		}
+	return postParsed.filter(isPlaceholder).map((part) => {
+		part.subparsed &&= getStructuredTags(part.subparsed);
 		if (part.attrParsed) {
 			part.subparsed = [];
 
 			if (part.attrParsed) {
 				part.subparsed = [];
-				Object.keys(part.attrParsed).forEach(function (key) {
+				for (const key in part.attrParsed) {
 					part.subparsed = part.subparsed.concat(part.attrParsed[key]);
-				});
+				}
 				return part;
 			}
 		}
@@ -117,7 +116,7 @@ class InspectModule {
 	}
 	nullGetter(part, scopeManager, xt) {
 		const inspected = this.fullInspected[xt.filePath];
-		inspected.nullValues = inspected.nullValues || { summary: [], detail: [] };
+		inspected.nullValues ||= { summary: [], detail: [] };
 		inspected.nullValues.detail.push({ part, scopeManager });
 		inspected.nullValues.summary.push(
 			scopeManager.scopePath.concat(part.value)
@@ -149,24 +148,26 @@ class InspectModule {
 	}
 
 	getTags(file) {
-		file = file || this.fileTypeConfig.textPath(this.docxtemplater);
+		file ||= this.fileTypeConfig.textPath(this.docxtemplater);
 		const inspected = this.getInspected(file);
 		return getTags(inspected);
 	}
 	getAllTags() {
-		return Object.keys(this.fullInspected).reduce((result, file) => {
-			return merge(result, this.getTags(file));
-		}, {});
+		return Object.keys(this.fullInspected).reduce(
+			(result, file) => merge(result, this.getTags(file)),
+			{}
+		);
 	}
 	getStructuredTags(file) {
-		file = file || this.fileTypeConfig.textPath(this.docxtemplater);
+		file ||= this.fileTypeConfig.textPath(this.docxtemplater);
 		const inspected = this.getInspected(file);
 		return getStructuredTags(inspected);
 	}
 	getAllStructuredTags() {
-		return Object.keys(this.fullInspected).reduce((result, file) => {
-			return result.concat(this.getStructuredTags(file));
-		}, []);
+		return Object.keys(this.fullInspected).reduce(
+			(result, file) => pushArray(result, this.getStructuredTags(file)),
+			[]
+		);
 	}
 	getFileType() {
 		return this.fileType;

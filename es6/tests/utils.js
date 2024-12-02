@@ -10,6 +10,7 @@ const fs = require("fs");
 const { get, unset, omit, uniq, cloneDeep } = require("lodash");
 const diff = require("diff");
 
+const { pushArray } = require("../doc-utils.js");
 const Errors = require("../errors.js");
 const errorLogger = require("../error-logger.js");
 const AssertionModule = require("./assertion-module.js");
@@ -61,9 +62,9 @@ function unifiedDiff(actual, expected) {
 function walk(dir) {
 	const results = [];
 	const list = fs.readdirSync(dir);
-	list.forEach(function (file) {
+	for (let file of list) {
 		if (file.indexOf(".") === 0) {
-			return;
+			continue;
 		}
 		file = dir + "/" + file;
 		const stat = fs.statSync(file);
@@ -72,7 +73,7 @@ function walk(dir) {
 		} else {
 			results.push(file);
 		}
-	});
+	}
 	return results;
 }
 
@@ -144,8 +145,8 @@ function isZip(text) {
 }
 
 function zipCompare(zip, expectedZip, expectedName) {
-	uniq(Object.keys(zip.files).concat(Object.keys(expectedZip.files))).map(
-		function (filePath) {
+	uniq(pushArray(Object.keys(zip.files), Object.keys(expectedZip.files))).map(
+		(filePath) => {
 			const suffix = `for "${filePath}"`;
 			const file = zip.files[filePath];
 			const expectedFile = expectedZip.files[filePath];
@@ -278,7 +279,7 @@ function cleanRecursive(arr) {
 		cleanRecursive(arr.postparsed);
 		return;
 	}
-	arr.forEach(function (p) {
+	for (const p of arr) {
 		delete p.lIndex;
 		delete p.endLindex;
 		delete p.offset;
@@ -289,13 +290,17 @@ function cleanRecursive(arr) {
 		if (p.subparsed) {
 			cleanRecursive(p.subparsed);
 		}
-		if (p.value && p.value.forEach) {
-			p.value.forEach(cleanRecursive);
+		if (p.value instanceof Array) {
+			for (const part of p.value) {
+				cleanRecursive(part);
+			}
 		}
-		if (p.expanded) {
-			p.expanded.forEach(cleanRecursive);
+		if (p.expanded instanceof Array) {
+			for (const part of p.expanded) {
+				cleanRecursive(part);
+			}
 		}
-	});
+	}
 }
 
 function cleanError(e, expectedError) {
@@ -319,11 +324,11 @@ function cleanError(e, expectedError) {
 		delete e.properties.explanation;
 		delete expectedError.properties.explanation;
 		if (e.properties.postparsed) {
-			e.properties.postparsed.forEach(function (p) {
+			for (const p of e.properties.postparsed) {
 				delete p.lIndex;
 				delete p.endLindex;
 				delete p.offset;
-			});
+			}
 		}
 		if (e.properties.rootError) {
 			expect(
@@ -386,7 +391,7 @@ function wrapMultiError(error) {
 
 function jsonifyError(e) {
 	return JSON.parse(
-		JSON.stringify(e, function (key, value) {
+		JSON.stringify(e, (key, value) => {
 			if (value instanceof Promise) {
 				return {};
 			}
@@ -435,7 +440,7 @@ function errorVerifier(e, type, expectedError) {
 			`Expected to have the same amount of e.properties.errors ${l1} !== ${l2} ` +
 				msg
 		);
-		e.properties.errors = e.properties.errors.map(function (suberror, i) {
+		e.properties.errors = e.properties.errors.map((suberror, i) => {
 			const cleaned = cleanError(suberror, expectedError.properties.errors[i]);
 			const jsonified = jsonifyError(cleaned);
 			return jsonified;
@@ -454,9 +459,7 @@ function expectToThrow(fn, type, expectedError) {
 		err = e;
 	}
 	if (!type) {
-		expect(err).to.satisfy(function (err) {
-			return !!err;
-		});
+		expect(err).to.satisfy((err) => !!err);
 		return;
 	}
 	errorVerifier(err, type, expectedError);
@@ -464,20 +467,14 @@ function expectToThrow(fn, type, expectedError) {
 
 function expectToThrowAsync(fn, type, expectedError) {
 	return Promise.resolve(null)
-		.then(function () {
+		.then(() => {
 			const r = fn();
-			return r.then(function () {
-				return null;
-			});
+			return r.then(() => null);
 		})
-		.catch(function (error) {
-			return error;
-		})
-		.then(function (err) {
+		.catch((error) => error)
+		.then((err) => {
 			if (!type) {
-				expect(err).to.satisfy(function (err) {
-					return !!err;
-				});
+				expect(err).to.satisfy((err) => !!err);
 				return;
 			}
 			errorVerifier(err, type, expectedError);
@@ -500,16 +497,14 @@ function expectToThrowSnapshot(fn, update) {
 function expectToThrowAsyncSnapshot(fn, update) {
 	let myErr = null;
 	return Promise.resolve(null)
-		.then(function () {
+		.then(() => {
 			const r = fn();
-			return r.then(function () {
-				return null;
-			});
+			return r.then(() => null);
 		})
-		.catch(function (error) {
+		.catch((error) => {
 			myErr = error;
 		})
-		.then(function () {
+		.then(() => {
 			if (!myErr) {
 				throw new Error("No error was thrown in this expectToThrowSnapshot");
 			}
@@ -540,23 +535,23 @@ function errToObject(err) {
 	}
 	if (err.properties) {
 		obj.properties = {};
-		Object.keys(err.properties).forEach(function (key) {
+		for (const key in err.properties) {
 			const value = err.properties[key];
 			if (value instanceof Error) {
 				obj.properties[key] = errToObject(value);
-				return;
+				continue;
 			}
 			if (value instanceof Array) {
-				obj.properties[key] = value.map(function (value) {
+				obj.properties[key] = value.map((value) => {
 					if (value instanceof Error) {
 						return errToObject(value);
 					}
 					return value;
 				});
-				return;
+				continue;
 			}
 			obj.properties[key] = value;
-		});
+		}
 	}
 	return obj;
 }
@@ -597,15 +592,12 @@ function loadFile(name, callback) {
 		const buffer = fs.readFileSync(path.join(examplesDirectory, name));
 		return callback(null, name, buffer);
 	}
-	return PizZipUtils.getBinaryContent(
-		"../examples/" + name,
-		function (err, data) {
-			if (err) {
-				return callback(err);
-			}
-			return callback(null, name, data);
+	return PizZipUtils.getBinaryContent("../examples/" + name, (err, data) => {
+		if (err) {
+			return callback(err);
 		}
-	);
+		return callback(null, name, data);
+	});
 }
 
 function unhandledRejectionHandler(reason) {
@@ -664,7 +656,7 @@ function setStartFunction(sf, snapshots = {}) {
 		fullTestName = getParentsTitle(this.currentTest) + this.currentTest.title;
 		fullTestName = fullTestName.trim().replace(/\s+/g, " ");
 	});
-	after(function () {
+	after(() => {
 		if (writeSnapshots) {
 			const sortedKeys = Object.keys(snapshots).sort();
 			const output =
@@ -673,7 +665,7 @@ function setStartFunction(sf, snapshots = {}) {
 				"   Instead, to update the file, run :\n\n" +
 				"   npm run test:es6:update-snapshots\n*/\n\n" +
 				sortedKeys
-					.map(function (key) {
+					.map((key) => {
 						const snap = snapshots[key];
 						if (typeof snap === "string") {
 							return "exports[`" + key + "`] = `" + snap + "`";
@@ -685,7 +677,7 @@ function setStartFunction(sf, snapshots = {}) {
 			fs.writeFileSync(snapshotFile, output);
 		}
 	});
-	chai.use(function () {
+	chai.use(() => {
 		chai.Assertion.addMethod("matchSnapshot", matchSnapshot);
 	});
 
@@ -697,7 +689,7 @@ function setStartFunction(sf, snapshots = {}) {
 }
 
 function endLoadFile(change) {
-	change = change || 0;
+	change ||= 0;
 	countFiles += change;
 	if (countFiles === 0 && allStarted === true) {
 		const result = startFunction();
@@ -716,9 +708,7 @@ function endsWith(str, suffix) {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 function endsWithOne(str, suffixes) {
-	return suffixes.some(function (suffix) {
-		return endsWith(str, suffix);
-	});
+	return suffixes.some((suffix) => endsWith(str, suffix));
 }
 function startsWith(str, prefix) {
 	return str.indexOf(prefix) === 0;
@@ -740,11 +730,11 @@ function start() {
 	} else {
 		fileNames = require("./filenames.js");
 	}
-	fileNames.forEach(function (fullFileName) {
+	for (const fullFileName of fileNames) {
 		const fileName = fullFileName.replace(examplesDirectory + "/", "");
 		let callback;
 		if (startsWith(fileName, ".") || startsWith(fileName, "~")) {
-			return;
+			continue;
 		}
 		if (
 			endsWithOne(fileName, [
@@ -764,9 +754,7 @@ function start() {
 		) {
 			callback = cacheDocument;
 		}
-		if (!callback) {
-			callback = loadImage;
-		}
+		callback ||= loadImage;
 		countFiles++;
 		loadFile(fileName, (e, name, buffer) => {
 			if (e) {
@@ -776,7 +764,7 @@ function start() {
 			endLoadFile(-1);
 			callback(name, buffer);
 		});
-	});
+	}
 	allStarted = true;
 	endLoadFile(-1);
 }
@@ -785,9 +773,9 @@ function start() {
 function setExamplesDirectory(ed) {
 	examplesDirectory = ed;
 	if (fs && fs.writeFileSync) {
-		const fileNames = walk(examplesDirectory).map(function (f) {
-			return f.replace(examplesDirectory + "/", "");
-		});
+		const fileNames = walk(examplesDirectory).map((f) =>
+			f.replace(examplesDirectory + "/", "")
+		);
 		fs.writeFileSync(
 			path.resolve(__dirname, "filenames.js"),
 			"module.exports=" + JSON.stringify(fileNames)
@@ -881,9 +869,9 @@ function createDocV3(name, options = {}) {
 	}
 	delete options.assertModule;
 	if (options.modules) {
-		options.modules.forEach(function (module) {
+		for (const module of options.modules) {
 			doc.attachModule(module);
-		});
+		}
 	}
 	doc.setOptions(options);
 	return doc;
@@ -892,9 +880,7 @@ function createDocV3(name, options = {}) {
 function createDocV4(name, options = {}) {
 	const zip = getZip(name);
 	options.modules ||= [];
-	const moduleNames = options.modules.map(function ({ name }) {
-		return name;
-	});
+	const moduleNames = options.modules.map(({ name }) => name);
 
 	if (
 		options.assertModule == null &&
@@ -925,16 +911,16 @@ function getContent(doc) {
 }
 
 function resolveSoon(data, time = 1) {
-	return new Promise(function (resolve) {
-		setTimeout(function () {
+	return new Promise((resolve) => {
+		setTimeout(() => {
 			resolve(data);
 		}, time);
 	});
 }
 
 function rejectSoon(data, time = 1) {
-	return new Promise(function (resolve, reject) {
-		setTimeout(function () {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
 			reject(data);
 		}, time);
 	});

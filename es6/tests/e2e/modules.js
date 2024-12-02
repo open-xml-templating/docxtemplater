@@ -15,8 +15,8 @@ const Errors = require("../../errors.js");
 const { traits, uniq } = require("../../doc-utils.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
-describe("Verify apiversion", function () {
-	it("should work with valid api version", function () {
+describe("Verify apiversion", () => {
+	it("should work with valid api version", () => {
 		const module = {
 			name: "Mymod",
 			requiredAPIVersion: "3.23.0",
@@ -27,7 +27,7 @@ describe("Verify apiversion", function () {
 		createDocV4("tag-example.docx", { modules: [module] });
 	});
 
-	it("should fail with invalid api version", function () {
+	it("should fail with invalid api version", () => {
 		const module = {
 			name: "Mymod",
 			requiredAPIVersion: "3.92.0",
@@ -52,7 +52,7 @@ describe("Verify apiversion", function () {
 		);
 	});
 
-	it("should fail when trying to attach null module", function () {
+	it("should fail when trying to attach null module", () => {
 		expectToThrow(
 			() => new Docxtemplater(getZip("loop-valid.docx"), { modules: [null] }),
 			Error,
@@ -65,8 +65,8 @@ describe("Verify apiversion", function () {
 	});
 });
 
-describe("Module attachment", function () {
-	it("should not allow to attach the same module twice", function () {
+describe("Module attachment", () => {
+	it("should not allow to attach the same module twice", () => {
 		const module = {
 			name: "TestModule",
 			requiredAPIVersion: "3.0.0",
@@ -87,7 +87,7 @@ describe("Module attachment", function () {
 		);
 	});
 
-	it("should allow to attach the same module twice if it has a clone method", function () {
+	it("should allow to attach the same module twice if it has a clone method", () => {
 		const module = {
 			name: "TestModule",
 			requiredAPIVersion: "3.0.0",
@@ -103,15 +103,15 @@ describe("Module attachment", function () {
 		createDocV4("tag-example.docx", { modules: [module] });
 	});
 
-	it("should automatically detach inspect module", function () {
+	it("should automatically detach inspect module", () => {
 		const imodule = inspectModule();
 		createDocV4("loop-valid.docx", { modules: [imodule] }).render();
 		createDocV4("loop-valid.docx", { modules: [imodule] }).render();
 	});
 });
 
-describe("Module xml parse", function () {
-	it("should not mutate options (regression for issue #526)", function () {
+describe("Module xml parse", () => {
+	it("should not mutate options (regression for issue #526)", () => {
 		const module = {
 			name: "FooModule",
 			requiredAPIVersion: "3.0.0",
@@ -119,7 +119,7 @@ describe("Module xml parse", function () {
 				const relsFiles = docxtemplater.zip
 					.file(/document.xml.rels/)
 					.map((file) => file.name);
-				options.xmlFileNames = options.xmlFileNames.concat(relsFiles);
+				options.xmlFileNames.push(...relsFiles);
 				return options;
 			},
 		};
@@ -129,7 +129,7 @@ describe("Module xml parse", function () {
 		expect(opts).to.deep.equal({});
 	});
 
-	it("should be possible to parse xml files", function () {
+	it("should be possible to parse xml files : xmlFileNames.push() without side effect fixed since v3.55.0", () => {
 		let xmlDocuments;
 
 		const module = {
@@ -138,8 +138,12 @@ describe("Module xml parse", function () {
 			optionsTransformer(options, docxtemplater) {
 				const relsFiles = docxtemplater.zip
 					.file(/document.xml.rels/)
-					.map((file) => file.name);
-				options.xmlFileNames = options.xmlFileNames.concat(relsFiles);
+					.map(({ name }) => name);
+
+				// This part tests that you can mutate the options here without
+				// mutating it for future documents
+				// Fixed since 3.55.0
+				options.xmlFileNames.push(...relsFiles);
 				return options;
 			},
 			set(options) {
@@ -168,8 +172,8 @@ describe("Module xml parse", function () {
 	});
 });
 
-describe("Module unique tags xml", function () {
-	it("should not cause an issue if tagsXmlLexedArray contains duplicates", function () {
+describe("Module unique tags xml", () => {
+	it("should not cause an issue if tagsXmlLexedArray contains duplicates", () => {
 		const module = {
 			name: "FooModule",
 			requiredAPIVersion: "3.0.0",
@@ -194,8 +198,8 @@ describe("Module unique tags xml", function () {
 	});
 });
 
-describe("Module traits", function () {
-	it("should not cause an issue if using traits.expandTo containing loop", function () {
+describe("Module traits", () => {
+	it("should not cause an issue if using traits.expandTo containing loop", () => {
 		const moduleName = "comment-module";
 		function getInner({ part, leftParts, rightParts, postparse }) {
 			part.subparsed = postparse([].concat(leftParts).concat(rightParts), {
@@ -240,8 +244,8 @@ describe("Module traits", function () {
 	});
 });
 
-describe("Module errors", function () {
-	it("should pass the errors to errorsTransformer", function () {
+describe("Module errors", () => {
+	it("should pass the errors to errorsTransformer", () => {
 		const moduleName = "ErrorModule";
 		let catched = null;
 		const myErrors = [];
@@ -265,7 +269,7 @@ describe("Module errors", function () {
 			},
 			errorsTransformer(errors) {
 				myErrors.push(...errors);
-				return errors.map(function (e) {
+				return errors.map((e) => {
 					e.xyz = "xxx";
 					return e;
 				});
@@ -285,7 +289,7 @@ describe("Module errors", function () {
 		expect(myErrors[0].message).to.equal("foobar last_name");
 	});
 
-	it("should log the error that is returned from render", function () {
+	it("should log the error that is returned from render", () => {
 		const moduleName = "ErrorModule";
 		const module = {
 			name: "Error module",
@@ -358,7 +362,7 @@ describe("Module errors", function () {
 		expect(error.properties.errors[6].message).to.equal("foobar last_name");
 	});
 
-	it("should throw specific error if adding same module twice", function () {
+	it("should throw specific error if adding same module twice", () => {
 		const mod1 = {
 			name: "TestModule",
 			set() {
@@ -385,8 +389,8 @@ describe("Module errors", function () {
 	});
 });
 
-describe("Module should pass options to module.parse, module.postparse, module.render, module.postrender", function () {
-	it("should pass filePath and contentType options", function () {
+describe("Module should pass options to module.parse, module.postparse, module.render, module.postrender", () => {
+	it("should pass filePath and contentType options", () => {
 		const filePaths = [];
 		const relsType = [];
 		let renderFP = "",
@@ -471,8 +475,8 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 	});
 });
 
-describe("Module detachment", function () {
-	it("should detach the module when the module does not support the document filetype", function () {
+describe("Module detachment", () => {
+	it("should detach the module when the module does not support the document filetype", () => {
 		let isModuleCalled = false;
 		let isDetachedCalled = false;
 		const module = {
@@ -493,7 +497,7 @@ describe("Module detachment", function () {
 	});
 });
 
-describe("Module Matcher API", function () {
+describe("Module Matcher API", () => {
 	it("should call onMatch function", function () {
 		function module1() {
 			let myVal = "";
@@ -531,7 +535,7 @@ describe("Module Matcher API", function () {
 		);
 	});
 
-	it("should automatically choose module with longest value", function () {
+	it("should automatically choose module with longest value", () => {
 		function module1() {
 			return {
 				name: "module1",
@@ -593,8 +597,8 @@ describe("Module Matcher API", function () {
 	});
 });
 
-describe("Fix doc pr corruption module", function () {
-	it("should work on multiple instances in parallel", function () {
+describe("Fix doc pr corruption module", () => {
+	it("should work on multiple instances in parallel", () => {
 		const doc = createDocV4("loop-image-footer.docx", {
 			modules: [fixDocPrCorruption],
 		});
@@ -602,7 +606,7 @@ describe("Fix doc pr corruption module", function () {
 		createDocV4("tag-example.docx", {
 			modules: [fixDocPrCorruption],
 		});
-		return doc.renderAsync({ loop: [1, 2, 3, 4] }).then(function () {
+		return doc.renderAsync({ loop: [1, 2, 3, 4] }).then(() => {
 			shouldBeSame({
 				doc,
 				expectedName: "expected-loop-images-footer.docx",
@@ -611,8 +615,8 @@ describe("Fix doc pr corruption module", function () {
 	});
 });
 
-describe("Proofstate module", function () {
-	it("should work with angular parser with proofstate module", function () {
+describe("Proofstate module", () => {
+	it("should work with angular parser with proofstate module", () => {
 		shouldBeSame({
 			doc: createDocV4("angular-example.docx", {
 				parser: expressionParser,
@@ -629,7 +633,7 @@ describe("Proofstate module", function () {
 		});
 	});
 });
-describe("Module call order", function () {
+describe("Module call order", () => {
 	const expectedCallOrder = [
 		"on",
 		"set",
@@ -644,7 +648,7 @@ describe("Module call order", function () {
 		"render",
 		"postrender",
 	];
-	it("should work with v4", function () {
+	it("should work with v4", () => {
 		const calls = [];
 		const mod = {
 			name: "TestModule",
@@ -783,8 +787,8 @@ describe("Module call order", function () {
 	});
 });
 
-describe("Module priority", function () {
-	it("should reorder modules", function () {
+describe("Module priority", () => {
+	it("should reorder modules", () => {
 		const m1 = {
 			priority: 4,
 			name: "M1",
@@ -814,9 +818,7 @@ describe("Module priority", function () {
 			modules: [m1, m2, m3, m4, m5],
 		});
 
-		const orderedNames = doc.modules.map(function ({ name }) {
-			return name;
-		});
+		const orderedNames = doc.modules.map(({ name }) => name);
 		expect(orderedNames).to.deep.equal([
 			"M3",
 			"M4",

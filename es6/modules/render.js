@@ -43,7 +43,7 @@ class Render {
 
 	postparse(postparsed, options) {
 		const errors = [];
-		postparsed.forEach((p) => {
+		for (const p of postparsed) {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {
@@ -54,7 +54,7 @@ class Render {
 					);
 				}
 			}
-		});
+		}
 		return { postparsed, errors };
 	}
 	render(
@@ -85,9 +85,7 @@ class Render {
 		} catch (e) {
 			return { errors: [e] };
 		}
-		if (value == null) {
-			value = nullGetter(part);
-		}
+		value ??= nullGetter(part);
 		if (hasCorruptCharacters(value)) {
 			return {
 				errors: [
@@ -131,9 +129,7 @@ class Render {
 		const lines = value.split("\n");
 		const runprops = this.recordedRun.join("");
 		return lines
-			.map(function (line) {
-				return utf8ToWord(line);
-			})
+			.map((line) => utf8ToWord(line))
 			.reduce((result, line, i) => {
 				result.push(line);
 				if (i < lines.length - 1) {

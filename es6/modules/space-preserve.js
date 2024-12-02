@@ -42,7 +42,7 @@ class SpacePreserve {
 		function isStartingPlaceHolder(part, chunk) {
 			return part.type === "placeholder" && chunk.length > 1;
 		}
-		const result = postparsed.reduce(function (postparsed, part) {
+		const result = postparsed.reduce((postparsed, part) => {
 			if (isWtStart(part)) {
 				inTextTag = true;
 				lastTextTag = chunk.length;

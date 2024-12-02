@@ -2,8 +2,8 @@ const xmlMatcher = require("../../xml-matcher.js");
 const { expect } = require("../utils.js");
 const xmlprettify = require("../xml-prettify.js");
 
-describe("XmlMatcher", function () {
-	it("should work with simple tag", function () {
+describe("XmlMatcher", () => {
+	it("should work with simple tag", () => {
 		const matcher = xmlMatcher("<w:t>Text</w:t>", ["w:t"]);
 		expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text</w:t>");
 		expect(matcher.matches[0].array[1]).to.be.equal("<w:t>");
@@ -11,7 +11,7 @@ describe("XmlMatcher", function () {
 		expect(matcher.matches[0].offset).to.be.equal(0);
 	});
 
-	it("should work with multiple tags", function () {
+	it("should work with multiple tags", () => {
 		const matcher = xmlMatcher("<w:t>Text</w:t> TAG <w:t>Text2</w:t>", ["w:t"]);
 		expect(matcher.matches[1].array[0]).to.be.equal("<w:t>Text2</w:t>");
 		expect(matcher.matches[1].array[1]).to.be.equal("<w:t>");
@@ -19,7 +19,7 @@ describe("XmlMatcher", function () {
 		expect(matcher.matches[1].offset).to.be.equal(20);
 	});
 
-	it("should work with selfclosing tag", function () {
+	it("should work with selfclosing tag", () => {
 		const matcher = xmlMatcher(' <w:spacing w:before="0" w:after="200"/> ', [
 			"w:spacing",
 		]);
@@ -29,7 +29,7 @@ describe("XmlMatcher", function () {
 		);
 	});
 
-	it("should not match with no </w:t> starter", function () {
+	it("should not match with no </w:t> starter", () => {
 		const matcher = xmlMatcher("TAG<w:t>Text1</w:t>", ["w:t"]);
 		expect(matcher.matches[0].array[0]).to.be.equal("<w:t>Text1</w:t>");
 		expect(matcher.matches[0].array[1]).to.be.equal("<w:t>");
@@ -37,14 +37,14 @@ describe("XmlMatcher", function () {
 		expect(matcher.matches[0].offset).to.be.equal(3);
 	});
 
-	it("should not match with no <w:t> ender", function () {
+	it("should not match with no <w:t> ender", () => {
 		const matcher = xmlMatcher("<w:t>Text1</w:t>TAG", ["w:t"]);
 		expect(matcher.matches.length).to.be.equal(1);
 	});
 });
 
-describe("XML prettify", function () {
-	it("should work with > inside attribute", function () {
+describe("XML prettify", () => {
+	it("should work with > inside attribute", () => {
 		const str =
 			xmlprettify(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
       <w:lvlText w:val=">"/>`);
@@ -53,7 +53,7 @@ describe("XML prettify", function () {
 `);
 	});
 
-	it("should deduplicate xmlns:w", function () {
+	it("should deduplicate xmlns:w", () => {
 		let str =
 			'<w:sectPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:t xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/></w:sectPr>';
 		str = xmlprettify(str);
@@ -64,14 +64,14 @@ describe("XML prettify", function () {
 `);
 	});
 
-	it("should normalize &#100;", function () {
+	it("should normalize &#100;", () => {
 		let str = '<w foo="Ry&#100;cy9Ry&#010;cy9"/>';
 		str = xmlprettify(str);
 		expect(str).to.equal(`<w foo="Ry&#x64;cy9Ry&#xA;cy9"/>
 `);
 	});
 
-	it("should sort attributes", function () {
+	it("should sort attributes", () => {
 		const str =
 			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><foo zanc="bar" bar="foo"></foo><foo zak="foo" uk="bar"/>';
 
@@ -82,7 +82,7 @@ describe("XML prettify", function () {
 <foo uk="bar" zak="foo"/>
 `);
 	});
-	it("should remove space inside tags", function () {
+	it("should remove space inside tags", () => {
 		const str = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	<sst count="9" uniqueCount="9" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 		<si >
@@ -143,7 +143,7 @@ describe("XML prettify", function () {
 `);
 	});
 
-	it("should work with processing instruction : <?mso-contentType?>", function () {
+	it("should work with processing instruction : <?mso-contentType?>", () => {
 		const str = xmlprettify(`<?xml version="1.0"?>
 <?mso-contentType?>
 <FormTemplates xmlns="http://schemas.microsoft.com/sharepoint/v3/contenttype/forms">
@@ -161,7 +161,7 @@ describe("XML prettify", function () {
 `);
 	});
 
-	it("should remove space in processing instruction <?space in xml   ?>", function () {
+	it("should remove space in processing instruction <?space in xml   ?>", () => {
 		const str = xmlprettify(`<?xml version="1.0"   ?>
 <a></a>`);
 		expect(str.replace(/\n/g, "")).to.equal('<?xml version="1.0"?><a></a>');
