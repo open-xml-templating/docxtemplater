@@ -1,3 +1,19 @@
+### 3.55.0
+
+- Performance improvements : docxtemplater now uses for of loops instead of forEach to avoid creating many anonymous functions.
+
+- Options immutability : in previous versions, when changing the delimiters.start from the optionsTransformer for one instance, it would change the options for all future doc instances.
+
+  If for some reason, you were changing the DocUtils.defaults, like this, this is no longer possible : (This was not documented anywhere so it is very unlikely that you're doing this).
+
+  ```js
+  require("docxtemplater").DocUtils.defaults.paragraphLoop = true;
+  ```
+
+  This code will not have any effect starting from 3.55.0, you have to pass the options in the constructor.
+
+- Refactor InspectModule.getAllTags() to work correctly on xlsx files to properly show nesting of data.
+
 ### 3.54.1
 
 Bugfix so that "errorChecker" is called when resolveTags fails (and not later in render).
