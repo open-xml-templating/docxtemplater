@@ -12,41 +12,86 @@ function getSlideIndex(path) {
 }
 
 function getTags(postParsed) {
-	return postParsed.filter(isPlaceholder).reduce((tags, part) => {
-		// Stryker disable all : because this is for the xlsx module
-		if (part.cellParsed) {
-			for (const cp of part.cellParsed) {
-				if (
-					cp.type === "placeholder" &&
-					cp.module !== "pro-xml-templating/xls-module-loop"
-				) {
-					tags[cp.value] ||= {};
+	const tags = {};
+	const stack = [
+		{
+			items: postParsed.filter(isPlaceholder),
+			parents: [],
+			path: [],
+		},
+	];
+
+	function processFiltered(part, current, filtered) {
+		if (filtered.length) {
+			stack.push({
+				items: filtered,
+				parents: [...current.parents, part],
+				path: part.value ? [...current.path, part.value] : [...current.path],
+			});
+		}
+	}
+
+	function getLocalTags(tags, path, sizeScope = path.length) {
+		let localTags = tags;
+		for (let i = 0; i < sizeScope; i++) {
+			localTags = localTags[path[i]];
+		}
+		return localTags;
+	}
+
+	function getScopeSize(part, parents) {
+		return parents.reduce((size, parent) => {
+			const lIndexLoop =
+				typeof parent.lIndex === "number"
+					? parent.lIndex
+					: parseInt(parent.lIndex.split("-")[0], 10);
+			return lIndexLoop > part.lIndex ? size - 1 : size;
+		}, parents.length);
+	}
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+		let localTags = getLocalTags(tags, current.path);
+
+		for (const part of current.items) {
+			if (part.cellParsed) {
+				for (const cp of part.cellParsed) {
+					if (
+						cp.type === "placeholder" &&
+						cp.module !== "pro-xml-templating/xls-module-loop"
+					) {
+						const sizeScope = getScopeSize(part, current.parents);
+						localTags = getLocalTags(tags, current.path, sizeScope);
+						localTags[cp.value] ||= {};
+					}
 				}
+				continue;
 			}
-			return tags;
-		}
-		if (part.attrParsed) {
-			for (const key in part.attrParsed) {
-				merge(tags, getTags(part.attrParsed[key]));
+
+			if (part.attrParsed) {
+				for (const key in part.attrParsed) {
+					processFiltered(
+						part,
+						current,
+						part.attrParsed[key].filter(isPlaceholder)
+					);
+				}
+				continue;
 			}
-			return tags;
-		}
-		// Stryker disable all : because this is for the table,chart,image, xlsx module
-		if (part.dataBound === false) {
+
+			if (part.dataBound === false && part.subparsed) {
+				processFiltered(part, current, part.subparsed.filter(isPlaceholder));
+				continue;
+			}
+
+			localTags[part.value] ||= {};
+
 			if (part.subparsed) {
-				tags = merge(tags, getTags(part.subparsed));
+				processFiltered(part, current, part.subparsed.filter(isPlaceholder));
 			}
-			return tags;
 		}
-		tags[part.value] ||= {};
-		// Stryker restore all
-
-		if (part.subparsed) {
-			tags[part.value] = merge(tags[part.value], getTags(part.subparsed));
-		}
-
-		return tags;
-	}, {});
+	}
+	return tags;
 }
 
 function getStructuredTags(postParsed) {
