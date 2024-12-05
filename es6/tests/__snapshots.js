@@ -33,10 +33,10 @@ exports[`Api versioning should fail with invalid versions-1`] = {
     ],
     "currentModuleApiVersion": [
       3,
-      41,
+      42,
       0
     ],
-    "explanation": "moduleAPIVersionMismatch : needed=5.6.0, current=3.41.0"
+    "explanation": "moduleAPIVersionMismatch : needed=5.6.0, current=3.42.0"
   }
 }
 
@@ -53,10 +53,10 @@ exports[`Api versioning should fail with invalid versions-2`] = {
     ],
     "currentModuleApiVersion": [
       3,
-      41,
+      42,
       0
     ],
-    "explanation": "moduleAPIVersionMismatch : needed=3.44.0, current=3.41.0"
+    "explanation": "moduleAPIVersionMismatch : needed=3.44.0, current=3.42.0"
   }
 }
 
@@ -68,15 +68,15 @@ exports[`Api versioning should fail with invalid versions-3`] = {
     "id": "api_version_error",
     "neededVersion": [
       3,
-      41,
+      42,
       100
     ],
     "currentModuleApiVersion": [
       3,
-      41,
+      42,
       0
     ],
-    "explanation": "moduleAPIVersionMismatch : needed=3.41.100, current=3.41.0"
+    "explanation": "moduleAPIVersionMismatch : needed=3.42.100, current=3.42.0"
   }
 }
 

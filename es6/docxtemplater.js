@@ -51,7 +51,7 @@ const {
 
 const ctXML = "[Content_Types].xml";
 const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 41, 0];
+const currentModuleApiVersion = [3, 42, 0];
 
 function dropUnsupportedFileTypesModules(doc) {
 	doc.modules = doc.modules.filter((module) => {
@@ -447,6 +447,13 @@ const Docxtemplater = class Docxtemplater {
 					defaults,
 					doc: this,
 				}) || fileType;
+
+			for (const contentType of module.xmlContentTypes || []) {
+				pushArray(
+					this.options.xmlFileNames,
+					this.invertedContentTypes[contentType] || []
+				);
+			}
 		}
 		if (fileType === "odt") {
 			throwFileTypeNotHandled(fileType);

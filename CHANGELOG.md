@@ -1,3 +1,7 @@
+### 3.55.1
+
+Add internal xmlContentTypes API for setting xmlFileNames easily from modules.
+
 ### 3.55.0
 
 - Performance improvements : docxtemplater now uses for of loops instead of forEach to avoid creating many anonymous functions.
