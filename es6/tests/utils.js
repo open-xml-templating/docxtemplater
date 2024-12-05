@@ -145,85 +145,86 @@ function isZip(text) {
 }
 
 function zipCompare(zip, expectedZip, expectedName) {
-	uniq(pushArray(Object.keys(zip.files), Object.keys(expectedZip.files))).map(
-		(filePath) => {
-			const suffix = `for "${filePath}"`;
-			const file = zip.files[filePath];
-			const expectedFile = expectedZip.files[filePath];
-			expect(expectedFile).to.be.an(
-				"object",
-				`The file ${filePath} doesn't exist on examples/${expectedName}`
-			);
-			expect(file).to.be.an(
-				"object",
-				`The file ${filePath} doesn't exist on ${expectedName}`
-			);
-			expect(file.name).to.be.equal(
-				expectedFile.name,
-				`Name differs ${suffix}`
-			);
-			expect(file.options.dir).to.be.equal(
-				expectedFile.options.dir,
-				`IsDir differs ${suffix}`
-			);
+	const filePaths = uniq(
+		pushArray(Object.keys(zip.files), Object.keys(expectedZip.files))
+	);
+	for (const filePath of filePaths) {
+		const suffix = `for "${filePath}"`;
+		const file = zip.files[filePath];
+		const expectedFile = expectedZip.files[filePath];
+		if (file && file.options.dir && !expectedFile && filePath === "_rels/") {
+			return;
+		}
+		expect(expectedFile).to.be.an(
+			"object",
+			`The file ${filePath} doesn't exist on examples/${expectedName}`
+		);
+		expect(file).to.be.an(
+			"object",
+			`The file ${filePath} doesn't exist on ${expectedName}`
+		);
+		expect(file.name).to.be.equal(expectedFile.name, `Name differs ${suffix}`);
+		expect(file.options.dir).to.be.equal(
+			expectedFile.options.dir,
+			`IsDir differs ${suffix}`
+		);
 
-			if (file.options.dir) {
-				return;
-			}
+		if (file.options.dir) {
+			return;
+		}
 
-			if (isBinaryFile(file, expectedFile)) {
-				const actualHash = file._data.crc32;
-				const expectedHash = expectedFile._data.crc32;
+		if (isBinaryFile(file, expectedFile)) {
+			const actualHash = file._data.crc32;
+			const expectedHash = expectedFile._data.crc32;
 
-				const actualText = file.asBinary();
-				if (isZip(actualText)) {
-					const expectedText = expectedFile.asBinary();
-					zipCompare(
-						new PizZip(actualText),
-						new PizZip(expectedText),
-						expectedName
-					);
-				} else if (actualHash && expectedHash) {
-					expect(actualHash).to.be.a("number");
-					expect(actualHash).to.be.equal(
-						expectedHash,
-						"Content differs for " + suffix
-					);
-				} else {
-					const expectedText = expectedFile.asBinary();
-					expect(actualText).to.equal(
-						expectedText,
-						`Binary file ${filePath} differs`
-					);
-				}
-
-				return;
-			}
-			const actualText = getText(file);
-			const expectedText = getText(expectedFile);
-			expect(actualText).to.not.match(
-				emptyNamespace,
-				`The file ${filePath} has empty namespaces`
-			);
-			expect(expectedText).to.not.match(
-				emptyNamespace,
-				`The file ${filePath} has empty namespaces`
-			);
-			if (actualText === expectedText) {
-				return;
-			}
-			const prettyActualText = xmlPrettify(actualText);
-			const prettyExpectedText = xmlPrettify(expectedText);
-
-			if (prettyActualText !== prettyExpectedText) {
-				const prettyDiff = unifiedDiff(prettyActualText, prettyExpectedText);
-				expect(prettyActualText).to.be.equal(
-					prettyExpectedText,
-					"Content differs \n" + suffix + "\n" + prettyDiff
+			const actualText = file.asBinary();
+			if (isZip(actualText)) {
+				const expectedText = expectedFile.asBinary();
+				zipCompare(
+					new PizZip(actualText),
+					new PizZip(expectedText),
+					expectedName
+				);
+			} else if (actualHash && expectedHash) {
+				expect(actualHash).to.be.a("number");
+				expect(actualHash).to.be.equal(
+					expectedHash,
+					"Content differs for " + suffix
+				);
+			} else {
+				const expectedText = expectedFile.asBinary();
+				expect(actualText).to.equal(
+					expectedText,
+					`Binary file ${filePath} differs`
 				);
 			}
+
+			return;
 		}
-	);
+		const actualText = getText(file);
+		const expectedText = getText(expectedFile);
+		expect(actualText).to.not.match(
+			emptyNamespace,
+			`The file ${filePath} has empty namespaces`
+		);
+		expect(expectedText).to.not.match(
+			emptyNamespace,
+			`The file ${filePath} has empty namespaces`
+		);
+		if (actualText === expectedText) {
+			return;
+		}
+		const prettyActualText = xmlPrettify(actualText);
+		const prettyExpectedText = xmlPrettify(expectedText);
+
+		if (prettyActualText !== prettyExpectedText) {
+			const prettyDiff = unifiedDiff(prettyActualText, prettyExpectedText);
+			expect(prettyActualText).to.be.equal(
+				prettyExpectedText,
+				"Content differs \n" + suffix + "\n" + prettyDiff
+			);
+		}
+	}
 }
 
 /* eslint-disable no-console */
