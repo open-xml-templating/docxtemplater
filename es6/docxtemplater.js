@@ -447,19 +447,19 @@ const Docxtemplater = class Docxtemplater {
 					defaults,
 					doc: this,
 				}) || fileType;
-
-			for (const contentType of module.xmlContentTypes || []) {
-				pushArray(
-					this.options.xmlFileNames,
-					this.invertedContentTypes[contentType] || []
-				);
-			}
 		}
 		if (fileType === "odt") {
 			throwFileTypeNotHandled(fileType);
 		}
 		if (!fileType) {
 			throwFileTypeNotIdentified(this.zip);
+		}
+
+		for (const contentType of module.xmlContentTypes || []) {
+			pushArray(
+				this.options.xmlFileNames,
+				this.invertedContentTypes[contentType] || []
+			);
 		}
 
 		this.fileType = fileType;

@@ -1,3 +1,7 @@
+### 3.55.2
+
+Bugfix issue introduced in 3.55.1 when using the XlsxModule and trying to load an odt file, an unexpected error was thrown instead of an error explaining that odt files are not supported.
+
 ### 3.55.1
 
 Add internal xmlContentTypes API for setting xmlFileNames easily from modules.
