@@ -455,11 +455,13 @@ const Docxtemplater = class Docxtemplater {
 			throwFileTypeNotIdentified(this.zip);
 		}
 
-		for (const contentType of module.xmlContentTypes || []) {
-			pushArray(
-				this.options.xmlFileNames,
-				this.invertedContentTypes[contentType] || []
-			);
+		for (const module of this.modules) {
+			for (const contentType of module.xmlContentTypes || []) {
+				pushArray(
+					this.options.xmlFileNames,
+					this.invertedContentTypes[contentType] || []
+				);
+			}
 		}
 
 		this.fileType = fileType;
