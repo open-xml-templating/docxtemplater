@@ -7,6 +7,7 @@ import sortClassMembers from "eslint-plugin-sort-class-members";
 export default [
 	{
 		ignores: [
+			"**/.edb-*",
 			"*.sublime-project",
 			"*.sublime-workspace",
 			"npm-debug.log",
