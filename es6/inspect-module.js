@@ -11,6 +11,7 @@ function getSlideIndex(path) {
 	return parseInt(path.replace(slideNumRegex, "$1"), 10) - 1;
 }
 
+/* eslint-disable-next-line complexity */
 function getTags(postParsed) {
 	const tags = {};
 	const stack = [
@@ -55,14 +56,16 @@ function getTags(postParsed) {
 
 		for (const part of current.items) {
 			if (part.cellParsed) {
-				for (const cp of part.cellParsed) {
-					if (
-						cp.type === "placeholder" &&
-						cp.module !== "pro-xml-templating/xls-module-loop"
-					) {
-						const sizeScope = getScopeSize(part, current.parents);
-						localTags = getLocalTags(tags, current.path, sizeScope);
-						localTags[cp.value] ||= {};
+				for (const cp of part.cellPostParsed) {
+					if (cp.type === "placeholder") {
+						if (cp.module === "pro-xml-templating/xls-module-innerloop") {
+							localTags[cp.value] ||= {};
+							processFiltered(cp, current, cp.subparsed.filter(isPlaceholder));
+						} else if (!cp.module) {
+							const sizeScope = getScopeSize(part, current.parents);
+							localTags = getLocalTags(tags, current.path, sizeScope);
+							localTags[cp.value] ||= {};
+						}
 					}
 				}
 				continue;

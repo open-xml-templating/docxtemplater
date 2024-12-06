@@ -1,3 +1,17 @@
+### 3.55.4
+
+Improve handling of XLSX files for the inspectModule.getTags() function.
+
+It now works correctly with innerloops, like this :
+
+```xlsx
+{#l1}    | {#l2}
+{name}   | {otherName}
+         | {/}{/}
+```
+
+Previously, the "otherName" key would appear as a direct child of l1 (instead of inside l2).
+
 ### 3.55.3
 
 Hotfix, 3.55.2 was published and did not contain the full fix, 3.55.3 now really fixes the issue with the XlsxModule and odt files.
