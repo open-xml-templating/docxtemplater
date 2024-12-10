@@ -1894,7 +1894,9 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 					evaluateIdentifier(tag) {
 						const matchGlobal = /^\$\$/g;
 						if (matchGlobal.test(tag)) {
-							return globalData[tag];
+							if (globalData.hasOwnProperty(tag) && globalData[tag] != null) {
+								return globalData[tag];
+							}
 						}
 					},
 				}),
@@ -1973,6 +1975,49 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			}),
 		},
 	},
+	{
+		it: "should not be possible to access __proto__ with expressionParser",
+		contentText: "{__proto__}",
+		resultText: "undefined",
+		...noInternals,
+		options: {
+			parser: expressionParser,
+		},
+	},
+	{
+		it: "should not be possible to run arbitrary code with expressionParser",
+		contentText:
+			"{__proto__.constructor.getPrototypeOf(toString).constructor('return process')()}",
+		scope: {},
+		resultText: "undefined",
+		...noInternals,
+		options: {
+			parser: expressionParser,
+		},
+	},
+
+	{
+		it: "should not be possible to access __proto__ with expressionParserIE11",
+		contentText: "{__proto__}",
+		resultText: "undefined",
+		scope: {},
+		...noInternals,
+		options: {
+			parser: expressionParserIE11,
+		},
+	},
+	{
+		it: "should not be possible to run arbitrary code with expressionParserIE11",
+		contentText:
+			"{__proto__.constructor.getPrototypeOf(toString).constructor('return process')()}",
+		scope: {},
+		resultText: "undefined",
+		...noInternals,
+		options: {
+			parser: expressionParserIE11,
+		},
+	},
+
 	{
 		it: "should not fail with no scope on ie11 parser",
 		contentText: "{b}",

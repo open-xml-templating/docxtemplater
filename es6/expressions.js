@@ -153,6 +153,7 @@ function configuredParser(config = {}) {
 					{},
 					{
 						get(target, name) {
+							// get(obj, "key") is called when running `obj["key"]` or `obj.key`
 							if (config.evaluateIdentifier) {
 								const fnResult = config.evaluateIdentifier(
 									name,
@@ -192,6 +193,7 @@ function configuredParser(config = {}) {
 							return null;
 						},
 						has(target, name) {
+							// has(obj, "key") is called when running ("key" in obj)
 							if (config.evaluateIdentifier) {
 								const fnResult = config.evaluateIdentifier(
 									name,
@@ -221,6 +223,7 @@ function configuredParser(config = {}) {
 							return false;
 						},
 						set(target, name, value) {
+							// set(obj, "key", value) is called when running `obj.key = value` or `obj["key"] = value;`
 							if (config.setIdentifier) {
 								const fnResult = config.setIdentifier(
 									name,
@@ -248,6 +251,7 @@ function configuredParser(config = {}) {
 							return true;
 						},
 						getOwnPropertyDescriptor(target, name) {
+							// getOwnPropertyDescriptor(obj, "key") is called when running `obj.hasOwnProperty("key")`
 							if (config.evaluateIdentifier) {
 								const fnResult = config.evaluateIdentifier(
 									name,
@@ -264,6 +268,14 @@ function configuredParser(config = {}) {
 									};
 								}
 							}
+							if (["$index", "this"].indexOf(name) !== -1) {
+								return {
+									writable: true,
+									enumerable: true,
+									configurable: true,
+									value: scope,
+								};
+							}
 							if (scope.hasOwnProperty(name)) {
 								return {
 									writable: true,
@@ -272,11 +284,23 @@ function configuredParser(config = {}) {
 									value: scope[name],
 								};
 							}
+							for (let i = scopeList.length - 1; i >= 0; i--) {
+								const s = scopeList[i];
+								if (s.hasOwnProperty(name)) {
+									const property = s[name];
+									return {
+										writable: true,
+										enumerable: true,
+										configurable: true,
+										value: property,
+									};
+								}
+							}
 						},
 					}
 				);
 
-				const result = expr(px, px);
+				const result = expr(px);
 				if (isAssignment) {
 					return "";
 				}

@@ -1,3 +1,34 @@
+### 3.55.5
+
+Angular-expressions had a vulnerability (CVE-2024-54152), and was patched at
+the same time of the release of docxtemplater@3.55.5.
+
+The new version is angular-expressions@1.4.3.
+
+All users of docxtemplater that use `angular-expressions` should upgrade as soon as possible.
+
+With version angular-expressions@1.4.3 and version<=3.55.4 of docxtemplater, the
+following template using `this` with a computation would not return the correct value
+
+```
+// If the scope is `2`
+{this + this} // ✕ Will return undefined with angular-expressions@1.4.3 and docxtemplater@3.55.4
+{this + this} // ✓ Will return 4 with angular-expressions@1.4.3 and docxtemplater@3.55.5
+
+// Behavior with older angular-expressions
+{this + this} // ✓ Will return 4 with angular-expressions@1.4.2 and docxtemplater@3.55.5
+{this + this} // ✓ Will return 4 with angular-expressions@1.4.2 and docxtemplater@3.55.4
+```
+
+Similarly, the following templates would also produce a non correct value :
+
+```
+{this|square}
+{. + .}
+```
+
+With version 3.55.5, the correct behavior is restored.
+
 ### 3.55.4
 
 Improve handling of XLSX files for the inspectModule.getTags() function.
