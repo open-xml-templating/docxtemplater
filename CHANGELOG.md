@@ -5,7 +5,7 @@ the same time of the release of docxtemplater@3.55.5.
 
 The new version is angular-expressions@1.4.3.
 
-All users of docxtemplater that use `angular-expressions` should upgrade as soon as possible.
+All users of docxtemplater that use `angular-expressions` should upgrade to `angular-expressions@1.4.3` as soon as possible..
 
 With version angular-expressions@1.4.3 and version<=3.55.4 of docxtemplater, the
 following template using `this` with a computation would not return the correct value
@@ -27,7 +27,9 @@ Similarly, the following templates would also produce a non correct value :
 {. + .}
 ```
 
-With version 3.55.5, the correct behavior is restored.
+Most expressions (Probably 99.5%) are not affected and continued to work without an upgrade in docxtemplater, such as {users | filter}, {age > 18}, {company.address}, ...
+
+With version 3.55.5, the correct behavior is restored for the 0.5% cases using this with computations.
 
 ### 3.55.4
 
