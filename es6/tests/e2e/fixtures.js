@@ -193,6 +193,65 @@ const fixtures = [
 		},
 	},
 	{
+		it: "should not add a new paragraph after a table if there is a bookmarkEnd after the table",
+		...noInternals,
+		content: `
+    <w:tbl>
+      <w:tr>
+        <w:tc>
+          <w:p>
+            <w:r>
+              <w:t>{#users}{name}</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:p w14:paraId="618916E2" w14:textId="77777777" w:rsidR="00FB7E94" w:rsidRPr="00F32895" w:rsidRDefault="00FB7E94" w:rsidP="00A141BC">
+            <w:r>
+			  <w:t>{/}</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:bookmarkEnd w:id="0"/>
+    <w:p>
+      <w:r>
+        <w:t>After Text </w:t>
+      </w:r>
+    </w:p>
+		`,
+		scope: {
+			users: [{ name: "John" }],
+		},
+		result: `
+    <w:tbl>
+      <w:tr>
+        <w:tc>
+          <w:p>
+            <w:r>
+              <w:t xml:space="preserve">John</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:p w14:paraId="618916E2" w14:textId="77777777" w:rsidR="00FB7E94" w:rsidRPr="00F32895" w:rsidRDefault="00FB7E94" w:rsidP="00A141BC">
+            <w:r>
+			  <w:t/>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:bookmarkEnd w:id="0"/>
+    <w:p>
+      <w:r>
+        <w:t>After Text </w:t>
+      </w:r>
+    </w:p>
+		`,
+	},
+	{
 		it: "should handle non breaking space in tag",
 		...noInternals,
 		contentText: `{:foo${nbsp}${nbsp}bar${nbsp}bar} {:zing${nbsp}${nbsp}${nbsp}bang}`,

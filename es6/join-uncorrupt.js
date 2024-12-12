@@ -12,7 +12,7 @@ function addEmptyParagraphAfterTable(parts) {
 
 	for (let i = 0, len = parts.length; i < len; i++) {
 		let p = parts[i];
-		if (isWhiteSpace(p)) {
+		if (isWhiteSpace(p) || startsWith(p, "<w:bookmarkEnd")) {
 			continue;
 		}
 

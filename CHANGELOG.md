@@ -1,3 +1,9 @@
+### 3.55.6
+
+When using a loop inside a table, if there is a bookmark right after the table, a new empty paragraph would be added.
+
+Now an empty paragraph will not be added in this specific case (an empty paragraph is added between two tables for example, this is mandatory to generate a valid docx document).
+
 ### 3.55.5
 
 Angular-expressions had a vulnerability (CVE-2024-54152), and was patched at
