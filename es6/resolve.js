@@ -1,10 +1,8 @@
 const getResolvedId = require("./get-resolved-id.js");
 
 function moduleResolve(part, options) {
-	let moduleResolved;
-	for (let i = 0, l = options.modules.length; i < l; i++) {
-		const module = options.modules[i];
-		moduleResolved = module.resolve(part, options);
+	for (const module of options.modules) {
+		const moduleResolved = module.resolve(part, options);
 		if (moduleResolved) {
 			return moduleResolved;
 		}

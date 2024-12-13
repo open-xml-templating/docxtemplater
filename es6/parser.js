@@ -3,8 +3,7 @@ const { match, getValue, getValues } = require("./prefix-matcher.js");
 
 function getMatchers(modules, options) {
 	const matchers = [];
-	for (let i = 0, l = modules.length; i < l; i++) {
-		const module = modules[i];
+	for (const module of modules) {
 		if (module.matchers) {
 			const mmm = module.matchers(options);
 			if (!(mmm instanceof Array)) {
@@ -18,8 +17,7 @@ function getMatchers(modules, options) {
 
 function getMatches(matchers, placeHolderContent, options) {
 	const matches = [];
-	for (let i = 0, len = matchers.length; i < len; i++) {
-		const matcher = matchers[i];
+	for (const matcher of matchers) {
 		const [prefix, module] = matcher;
 		let properties = matcher[2] || {};
 		if (options.match(prefix, placeHolderContent)) {
@@ -77,8 +75,7 @@ function moduleParse(placeHolderContent, options) {
 		return bestMatch;
 	}
 
-	for (let i = 0, l = modules.length; i < l; i++) {
-		const module = modules[i];
+	for (const module of modules) {
 		moduleParsed = module.parse(placeHolderContent, options);
 		if (moduleParsed) {
 			moduleParsed.offset = startOffset;

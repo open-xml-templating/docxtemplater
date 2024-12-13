@@ -66,11 +66,11 @@ function tagMatcher(content, textMatchArray, othersMatchArray) {
 	const contentLength = content.length;
 
 	const allMatches = {};
-	for (let i = 0, len = textMatchArray.length; i < len; i++) {
-		allMatches[textMatchArray[i]] = true;
+	for (const m of textMatchArray) {
+		allMatches[m] = true;
 	}
-	for (let i = 0, len = othersMatchArray.length; i < len; i++) {
-		allMatches[othersMatchArray[i]] = false;
+	for (const m of othersMatchArray) {
+		allMatches[m] = false;
 	}
 	const totalMatches = [];
 

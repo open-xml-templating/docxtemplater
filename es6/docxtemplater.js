@@ -397,8 +397,7 @@ const Docxtemplater = class Docxtemplater {
 			? rootRelsXml.getElementsByTagName("Relationship")
 			: [];
 		const relsTypes = {};
-		for (let i = 0, len = rootRelationships.length; i < len; i++) {
-			const relation = rootRelationships[i];
+		for (const relation of rootRelationships) {
 			relsTypes[relation.getAttribute("Target")] =
 				relation.getAttribute("Type");
 		}

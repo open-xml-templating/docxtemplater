@@ -166,9 +166,8 @@ const charMapRegexes = charMap.map(([endChar, startChar]) => ({
 }));
 
 function wordToUtf8(string) {
-	let r;
 	for (let i = charMapRegexes.length - 1; i >= 0; i--) {
-		r = charMapRegexes[i];
+		const r = charMapRegexes[i];
 		string = string.replace(r.rstart, r.end);
 	}
 	return string;
@@ -188,10 +187,9 @@ function utf8ToWord(string) {
 // This function is written with for loops for performance
 function concatArrays(arrays) {
 	const result = [];
-	for (let i = 0; i < arrays.length; i++) {
-		const array = arrays[i];
-		for (let j = 0, len = array.length; j < len; j++) {
-			result.push(array[j]);
+	for (const array of arrays) {
+		for (const el of array) {
+			result.push(el);
 		}
 	}
 	return result;
@@ -258,8 +256,7 @@ function getRightOrNull(parsed, elements, index) {
 	let level = 1;
 	for (let i = index, l = parsed.length; i < l; i++) {
 		const part = parsed[i];
-		for (let j = 0, len = elements.length; j < len; j++) {
-			const element = elements[j];
+		for (const element of elements) {
 			if (isEnding(part.value, element)) {
 				level--;
 			}
@@ -289,8 +286,7 @@ function getLeftOrNull(parsed, elements, index) {
 	let level = 1;
 	for (let i = index; i >= 0; i--) {
 		const part = parsed[i];
-		for (let j = 0, len = elements.length; j < len; j++) {
-			const element = elements[j];
+		for (const element of elements) {
 			if (isStarting(part.value, element)) {
 				level--;
 			}

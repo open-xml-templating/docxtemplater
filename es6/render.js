@@ -6,10 +6,8 @@ const { pushArray } = require("./doc-utils.js");
 const getResolvedId = require("./get-resolved-id.js");
 
 function moduleRender(part, options) {
-	let moduleRendered;
-	for (let i = 0, l = options.modules.length; i < l; i++) {
-		const module = options.modules[i];
-		moduleRendered = module.render(part, options);
+	for (const module of options.modules) {
+		const moduleRendered = module.render(part, options);
 		if (moduleRendered) {
 			return moduleRendered;
 		}

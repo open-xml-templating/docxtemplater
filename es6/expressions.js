@@ -27,10 +27,11 @@ function getIndex(scope, context) {
 function uniq(arr) {
 	const hash = {},
 		result = [];
-	for (let i = 0, l = arr.length; i < l; ++i) {
-		if (!hash[arr[i]]) {
-			hash[arr[i]] = true;
-			result.push(arr[i]);
+
+	for (const el of arr) {
+		if (!hash[el]) {
+			hash[el] = true;
+			result.push(el);
 		}
 	}
 	return result;

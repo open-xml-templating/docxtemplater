@@ -22,9 +22,9 @@ function hasContent(parts) {
 }
 
 function getFirstMeaningFulPart(parsed) {
-	for (let i = 0, len = parsed.length; i < len; i++) {
-		if (parsed[i].type !== "content") {
-			return parsed[i];
+	for (const part of parsed) {
+		if (part.type !== "content") {
+			return part;
 		}
 	}
 	return null;
@@ -459,8 +459,8 @@ class LoopModule {
 			if (part.hasPageBreakBeginning && insideParagraphLoop) {
 				addPageBreakAtBeginning(subRendered);
 			}
-			for (let i = 0, len = subRendered.parts.length; i < len; i++) {
-				totalValue.push(subRendered.parts[i]);
+			for (const val of subRendered.parts) {
+				totalValue.push(val);
 			}
 			Array.prototype.push.apply(errors, subRendered.errors);
 		}

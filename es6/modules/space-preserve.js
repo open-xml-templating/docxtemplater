@@ -80,7 +80,6 @@ class SpacePreserve {
 		let lastNonEmptyIndex = 0;
 
 		for (let i = 0, len = parts.length; i < len; i++) {
-			const index = i;
 			let p = parts[i];
 			if (p === "") {
 				continue;
@@ -93,7 +92,7 @@ class SpacePreserve {
 			}
 
 			lastNonEmpty = p;
-			lastNonEmptyIndex = index;
+			lastNonEmptyIndex = i;
 			parts[i] = p;
 		}
 

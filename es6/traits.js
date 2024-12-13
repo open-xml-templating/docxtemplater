@@ -116,8 +116,7 @@ function getListXmlElements(parts) {
 
 	const result = [];
 
-	for (let i = 0; i < parts.length; i++) {
-		const { position, value, tag } = parts[i];
+	for (const { position, value, tag } of parts) {
 		// Stryker disable all : because removing this condition would also work but we want to make the API future proof
 		if (!tag) {
 			continue;
@@ -138,8 +137,7 @@ function getListXmlElements(parts) {
 }
 
 function has(name, xmlElements) {
-	for (let i = 0; i < xmlElements.length; i++) {
-		const xmlElement = xmlElements[i];
+	for (const xmlElement of xmlElements) {
 		if (xmlElement.indexOf(`<${name}`) === 0) {
 			return true;
 		}
@@ -162,8 +160,7 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 			}),
 		};
 	}
-	for (let i = 0, len = expandTags.length; i < len; i++) {
-		const { contains, expand, onlyTextInTag } = expandTags[i];
+	for (const { contains, expand, onlyTextInTag } of expandTags) {
 		if (has(contains, xmlElements)) {
 			if (onlyTextInTag) {
 				const left = getLeftOrNull(postparsed, contains, pair[0].offset);

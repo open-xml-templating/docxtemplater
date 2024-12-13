@@ -39,9 +39,7 @@ class FixDocPRCorruptionModule {
 		for (const f of zip.file(/.xml$/)) {
 			const xmlDoc = this.xmlDocuments[f.name];
 			if (xmlDoc) {
-				const prs = xmlDoc.getElementsByTagName("wp:docPr");
-				for (let i = 0, len = prs.length; i < len; i++) {
-					const pr = prs[i];
+				for (const pr of xmlDoc.getElementsByTagName("wp:docPr")) {
 					pr.setAttribute("id", prId++);
 				}
 				continue;

@@ -305,9 +305,8 @@ const fixtures = [
 							return scope;
 						}
 						let s = scope;
-						for (let i = 0, len = splitted.length; i < len; i++) {
-							const key = splitted[i];
-							s = s[key];
+						for (const item of splitted) {
+							s = s[item];
 						}
 						return s;
 					},

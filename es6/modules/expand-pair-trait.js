@@ -96,9 +96,7 @@ function getPairs(traits) {
 	const pairs = [];
 	let transformedTraits = [];
 
-	for (let i = 0; i < traits.length; i++) {
-		transformedTraits.push(traits[i]);
-	}
+	pushArray(transformedTraits, traits);
 
 	while (transformedTraits.length > 0) {
 		const result = transformer(transformedTraits);
@@ -113,8 +111,7 @@ function getPairs(traits) {
 	// Stryker restore all
 	let countOpen = 0;
 
-	for (let i = 0; i < traits.length; i++) {
-		const currentTrait = traits[i];
+	for (const currentTrait of traits) {
 		const { part } = currentTrait;
 		const change = getOpenCountChange(part);
 		countOpen += change;

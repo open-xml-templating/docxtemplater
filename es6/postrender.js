@@ -63,8 +63,7 @@ function string2buf(str) {
 // Stryker restore all
 
 function postrender(parts, options) {
-	for (let i = 0, l = options.modules.length; i < l; i++) {
-		const module = options.modules[i];
+	for (const module of options.modules) {
 		parts = module.postrender(parts, options);
 	}
 	let fullLength = 0;

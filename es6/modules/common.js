@@ -28,21 +28,18 @@ class Common {
 		if (!invertedContentTypes) {
 			return;
 		}
-		for (let j = 0, len2 = commonContentTypes.length; j < len2; j++) {
-			const ct = commonContentTypes[j];
+		for (const ct of commonContentTypes) {
 			if (invertedContentTypes[ct]) {
 				Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
 			}
 		}
 		const keys = ["docx", "pptx"];
 		let ftCandidate;
-		for (let i = 0, len = keys.length; i < len; i++) {
-			const contentTypes = filetypes[keys[i]];
-			for (let j = 0, len2 = contentTypes.length; j < len2; j++) {
-				const ct = contentTypes[j];
+		for (const key of keys) {
+			const contentTypes = filetypes[key];
+			for (const ct of contentTypes) {
 				if (invertedContentTypes[ct]) {
-					for (let k = 0, len = invertedContentTypes[ct].length; k < len; k++) {
-						const target = invertedContentTypes[ct][k];
+					for (const target of invertedContentTypes[ct]) {
 						if (
 							doc.relsTypes[target] &&
 							[
@@ -52,7 +49,7 @@ class Common {
 						) {
 							continue;
 						}
-						ftCandidate = keys[i];
+						ftCandidate = key;
 						if (filetypes.main.indexOf(ct) !== -1 || ct === filetypes.pptx[0]) {
 							doc.textTarget ||= target;
 						}
