@@ -1,12 +1,12 @@
 /* eslint-disable no-process-env,no-process-exit,no-console */
 
+import http from "http";
+import url, { fileURLToPath } from "url";
+import { dirname } from "path";
+
 import chalk from "chalk";
-import url from "url";
 import finalhandler from "finalhandler";
 import serveStatic from "serve-static";
-import http from "http";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { chromium, firefox } from "playwright";
 import { expect } from "chai";
 
@@ -102,16 +102,23 @@ server.listen(port, async () => {
 
 				// Monitor test progress
 				const progressInterval = setInterval(async () => {
-					const texts = await page.$$eval("li h1, li h2", (elements) =>
-						elements.map((el) => el.textContent)
+					const results = await page.$$eval("li h1, li h2", (elements) =>
+						elements.map((el) => ({
+							prefix: el.tagName.toLowerCase() === "h1" ? "# " : "    ",
+							title:
+								el.tagName.toLowerCase() === "h1"
+									? el.querySelector("a")?.textContent || el.textContent
+									: Array.from(el.childNodes)
+											.filter((node) => node.nodeType === Node.TEXT_NODE)
+											.map((node) => node.textContent.trim())
+											.join(""),
+							duration: el.querySelector(".duration")?.textContent || "",
+						}))
 					);
 
-					for (const text of texts) {
-						console.log(
-							text
-								.replace(/^(.*)\n(.*)$/g, "$2 $1")
-								.replace(/^(.*[^0-9])([0-9]+ms)$/g, "$1 $2")
-						);
+					for (const { prefix, title, duration } of results) {
+						const line = `${prefix}${title} ${duration}`.replace(/\s+‣$/, ""); // Remove the replay arrow if present
+						console.log(line);
 					}
 				}, 100);
 
