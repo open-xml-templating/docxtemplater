@@ -12,6 +12,8 @@ const inspectModule = require("../../inspect-module.js");
 const AssertionModule = require("../assertion-module.js");
 const utf8decode = require("../../uintarray-to-string.js");
 
+let doc;
+
 function expectations(iModule, fixture) {
 	cleanRecursive(iModule.inspect);
 	if (fixture.error) {
@@ -59,6 +61,10 @@ function expectations(iModule, fixture) {
 	}
 }
 
+function getDoc() {
+	return doc;
+}
+
 function runTest(fixture, async = false) {
 	fixture.options ||= {};
 	const modules = [];
@@ -69,7 +75,6 @@ function runTest(fixture, async = false) {
 			modules.push(mod);
 		}
 	}
-	let doc;
 	const capture = captureLogs();
 	if (fixture.contentText) {
 		fixture.content = `<w:t>${fixture.contentText}</w:t>`;
@@ -84,7 +89,6 @@ function runTest(fixture, async = false) {
 					...fixture.options,
 					modules,
 				});
-		doc.setData(fixture.scope);
 		capture.stop();
 	} catch (error) {
 		capture.stop();
@@ -97,7 +101,7 @@ function runTest(fixture, async = false) {
 	const capture2 = captureLogs();
 	if (async === false) {
 		try {
-			doc.render();
+			doc.render(fixture.scope);
 			capture2.stop();
 		} catch (error) {
 			capture2.stop();
@@ -133,7 +137,11 @@ function runTest(fixture, async = false) {
 }
 
 describe("Algorithm", () => {
-	for (const fixture of fixtures) {
+	for (let fixture of fixtures) {
+		if (typeof fixture === "function") {
+			fixture = fixture({ getDoc });
+		}
+
 		(fixture.onlySync ? it.only : it)(fixture.it, () =>
 			runTest(fixture, false)
 		);

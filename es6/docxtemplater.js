@@ -489,7 +489,7 @@ const Docxtemplater = class Docxtemplater {
 		if (this.errors.length > 0) {
 			throwRenderInvalidTemplate();
 		}
-		if (data) {
+		if (arguments.length > 0) {
 			this.data = data;
 		}
 		this.setModules({

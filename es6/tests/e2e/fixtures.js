@@ -2512,6 +2512,40 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		...noInternals,
 		result: '<w:p><w:r><w:t xml:space="preserve">A</w:t></w:r></w:p>',
 	},
+	({ getDoc }) => ({
+		it: "should be possible to use nullgetter inside the evaluateIdentifier configuration",
+		content: "<w:p><w:r><w:t>{#loop}{val}{/loop}</w:t></w:r></w:p>",
+		...noInternals,
+		options: {
+			nullGetter: () => "gotnull",
+			parser: expressionParser.configure({
+				evaluateIdentifier(name, scope, scopeList, context) {
+					if (!Object.prototype.hasOwnProperty.call(scope, name)) {
+						return null;
+					}
+					const res = scope[name];
+					if (res === null) {
+						return getDoc().options.nullGetter(context.meta.part);
+					}
+					if (scope[name] !== undefined) {
+						return scope[name];
+					}
+				},
+			}),
+		},
+		scope: {
+			val: "PARENT",
+			loop: [
+				{
+					val: "xx",
+				},
+				{
+					val: null,
+				},
+			],
+		},
+		result: '<w:p><w:r><w:t xml:space="preserve">xxgotnull</w:t></w:r></w:p>',
+	}),
 	{
 		// The specificity of this input is that it contains : <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
 		// So in the algorithm that updates the height of the table, those tags should be ignored
