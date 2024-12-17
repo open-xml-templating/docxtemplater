@@ -91,7 +91,7 @@
     "browserify:test": "cross-env FILE=test webpack",
     "browserify:lib": "webpack",
     "browserify:min": "cross-env MIN=true webpack",
-    "updtr": "updtr --exclude webdriverio @wdio/cli",
+    "updtr": "updtr --exclude chai mocha",
     "browserify": "npm run browserify:test && npm run browserify:lib && npm run browserify:min",
     "convertto:es5": "rimraf js -rf && mkdirp js && npm run babel && cp es6/*.ts js",
     "convertto:es5:watch": "npm run babel -- --watch",
