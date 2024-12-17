@@ -27,7 +27,10 @@ function getTags(postParsed) {
 			stack.push({
 				items: filtered,
 				parents: [...current.parents, part],
-				path: part.value ? [...current.path, part.value] : [...current.path],
+				path:
+					part.dataBound !== false && !part.attrParsed && part.value
+						? [...current.path, part.value]
+						: [...current.path],
 			});
 		}
 	}

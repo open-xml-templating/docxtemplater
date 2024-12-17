@@ -1,3 +1,9 @@
+### 3.55.7
+
+Bugfix to fix inspectModule.getAllTags() when using image module ({%image} tag inside alt text) or table merge cell module.
+
+In case when you were using the features of the module, the getAllTags would fail with a stacktrace.
+
 ### 3.55.6
 
 When using a loop inside a table, if there is a bookmark right after the table, a new empty paragraph would be added.
