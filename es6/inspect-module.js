@@ -28,7 +28,10 @@ function getTags(postParsed) {
 				items: filtered,
 				parents: [...current.parents, part],
 				path:
-					part.dataBound !== false && !part.attrParsed && part.value
+					part.dataBound !== false &&
+					!part.attrParsed &&
+					part.value &&
+					!part.attrParsed
 						? [...current.path, part.value]
 						: [...current.path],
 			});
@@ -58,6 +61,24 @@ function getTags(postParsed) {
 		let localTags = getLocalTags(tags, current.path);
 
 		for (const part of current.items) {
+			if (part.attrParsed) {
+				for (const key in part.attrParsed) {
+					processFiltered(
+						part,
+						current,
+						part.attrParsed[key].filter(isPlaceholder)
+					);
+				}
+				continue;
+			}
+			if (part.subparsed) {
+				if (part.dataBound !== false) {
+					localTags[part.value] ||= {};
+				}
+				processFiltered(part, current, part.subparsed.filter(isPlaceholder));
+				continue;
+			}
+
 			if (part.cellParsed) {
 				for (const cp of part.cellPostParsed) {
 					if (cp.type === "placeholder") {
@@ -74,27 +95,11 @@ function getTags(postParsed) {
 				continue;
 			}
 
-			if (part.attrParsed) {
-				for (const key in part.attrParsed) {
-					processFiltered(
-						part,
-						current,
-						part.attrParsed[key].filter(isPlaceholder)
-					);
-				}
-				continue;
-			}
-
-			if (part.dataBound === false && part.subparsed) {
-				processFiltered(part, current, part.subparsed.filter(isPlaceholder));
+			if (part.dataBound === false) {
 				continue;
 			}
 
 			localTags[part.value] ||= {};
-
-			if (part.subparsed) {
-				processFiltered(part, current, part.subparsed.filter(isPlaceholder));
-			}
 		}
 	}
 	return tags;
