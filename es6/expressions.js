@@ -1,5 +1,6 @@
 const expressions = require("angular-expressions");
 
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 const dotRegex = /([\][\s+()*|:/-]+|^)\.([\][\s+()*|:/-]+|$)/g;
 // Inspired by : https://stackoverflow.com/a/9337047
 const startRegex =
@@ -277,7 +278,7 @@ function configuredParser(config = {}) {
 									value: scope,
 								};
 							}
-							if (scope.hasOwnProperty(name)) {
+							if (scope && hasOwnProperty.call(scope, name)) {
 								return {
 									writable: true,
 									enumerable: true,
@@ -287,7 +288,7 @@ function configuredParser(config = {}) {
 							}
 							for (let i = scopeList.length - 1; i >= 0; i--) {
 								const s = scopeList[i];
-								if (s.hasOwnProperty(name)) {
+								if (s && hasOwnProperty.call(s, name)) {
 									const property = s[name];
 									return {
 										writable: true,
