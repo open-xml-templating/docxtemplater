@@ -1,3 +1,9 @@
+### 3.55.8
+
+Update to fix inspectModule.getAllTags() for all less used modules (qrcode, expand-loop for xlsx).
+
+Use hasOwnProperty.call() for better compatibility.
+
 ### 3.55.7
 
 Bugfix to fix inspectModule.getAllTags() when using image module ({%image} tag inside alt text) or table merge cell module.
