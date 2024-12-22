@@ -113,6 +113,11 @@ function getIdentifiers(x) {
 
 function configuredParser(config = {}) {
 	return function expressionParser(tag) {
+		if (typeof tag !== "string") {
+			throw new Error(
+				"The angular parser was used incorrectly, please refer to the documentation of docxtemplater."
+			);
+		}
 		tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
 
 		while (dotRegex.test(tag)) {

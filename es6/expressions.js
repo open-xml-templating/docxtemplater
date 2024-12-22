@@ -114,7 +114,7 @@ function configuredParser(config = {}) {
 	return function parser(tag) {
 		if (typeof tag !== "string") {
 			throw new Error(
-				"The angular parser was used incorrectly, please refer to the docxtemplater documentation."
+				"The angular parser was used incorrectly, please refer to the documentation of docxtemplater."
 			);
 		}
 		tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
