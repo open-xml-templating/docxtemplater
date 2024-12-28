@@ -139,12 +139,6 @@ function configuredParser(config = {}) {
 			lastBody && lastBody.expression.type === "AssignmentExpression";
 
 		return {
-			getIdentifiers() {
-				return uniq(getIdentifiers(expr));
-			},
-			getObjectIdentifiers() {
-				return getObjectIdentifiers(expr);
-			},
 			get(scope, context) {
 				const scopeList = context.scopeList;
 				if (tag.trim() === "this") {
@@ -176,7 +170,8 @@ function configuredParser(config = {}) {
 							if (scope == null) {
 								return;
 							}
-							if (scope[name] != null) {
+
+							if (hasOwnProperty.call(scope, name) && scope[name] != null) {
 								const property = scope[name];
 
 								return typeof property === "function"
@@ -185,7 +180,11 @@ function configuredParser(config = {}) {
 							}
 							for (let i = scopeList.length - 1; i >= 0; i--) {
 								const s = scopeList[i];
-								if (s[name] != null) {
+								if (
+									s != null &&
+									hasOwnProperty.call(s, name) &&
+									s[name] != null
+								) {
 									const property = s[name];
 									return typeof property === "function"
 										? property.bind(s)
@@ -213,12 +212,13 @@ function configuredParser(config = {}) {
 							if (scope == null) {
 								return false;
 							}
-							if (scope[name] != null) {
+
+							if (hasOwnProperty.call(scope, name) && scope[name] != null) {
 								return true;
 							}
 							for (let i = scopeList.length - 1; i >= 0; i--) {
 								const s = scopeList[i];
-								if (s[name] != null) {
+								if (hasOwnProperty.call(s, name) && s[name] != null) {
 									return true;
 								}
 							}
@@ -266,7 +266,7 @@ function configuredParser(config = {}) {
 										writable: true,
 										enumerable: true,
 										configurable: true,
-										value: scope[name],
+										value: true,
 									};
 								}
 							}
@@ -283,18 +283,17 @@ function configuredParser(config = {}) {
 									writable: true,
 									enumerable: true,
 									configurable: true,
-									value: scope[name],
+									value: true,
 								};
 							}
 							for (let i = scopeList.length - 1; i >= 0; i--) {
 								const s = scopeList[i];
 								if (s && hasOwnProperty.call(s, name)) {
-									const property = s[name];
 									return {
 										writable: true,
 										enumerable: true,
 										configurable: true,
-										value: property,
+										value: true,
 									};
 								}
 							}
@@ -308,6 +307,13 @@ function configuredParser(config = {}) {
 				}
 				return result;
 			},
+			getIdentifiers() {
+				return uniq(getIdentifiers(expr));
+			},
+			getObjectIdentifiers() {
+				return getObjectIdentifiers(expr);
+			},
+			compiled: expr,
 		};
 	};
 }

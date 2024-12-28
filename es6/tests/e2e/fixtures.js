@@ -378,6 +378,32 @@ const fixtures = [
 	},
 
 	{
+		it: "should not fail if calling expressionParser on nullish value",
+		contentText: "{#users}{name}{/}",
+		resultText: "undefined".repeat(9),
+		...noInternals,
+		options: {
+			parser: expressionParser,
+		},
+		scope: {
+			users: [undefined, false, true, 0, -1, null, [], {}, new Map()],
+		},
+	},
+
+	{
+		it: "should not fail if calling expressionParserIE11 on nullish value",
+		contentText: "{#users}{name}{/}",
+		resultText: "undefined".repeat(9),
+		...noInternals,
+		options: {
+			parser: expressionParserIE11,
+		},
+		scope: {
+			users: [undefined, false, true, 0, -1, null, [], {}, new Map()],
+		},
+	},
+
+	{
 		it: "should xmlparse strange tags",
 		content: "<w:t>{name} {</w:t>FOO<w:t>age</w:t>BAR<w:t>}</w:t>",
 		scope: {
@@ -2073,6 +2099,39 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		...noInternals,
 		options: {
 			parser: expressionParserIE11,
+		},
+	},
+
+	{
+		it: "should be possible to access '.compiled' with expressionParser",
+		contentText: "{a}",
+		resultText: "undefined",
+		...noInternals,
+		options: {
+			parser: (tag) => {
+				const result = expressionParser(tag);
+				const firstExpression = result.compiled.ast.body[0].expression;
+				expect(firstExpression.type).to.equal("Identifier");
+				expect(firstExpression.name).to.equal("a");
+				expect(firstExpression.constant).to.equal(false);
+				return result;
+			},
+		},
+	},
+	{
+		it: "should be possible to access '.compiled' with expressionParserIE11",
+		contentText: "{a}",
+		resultText: "undefined",
+		...noInternals,
+		options: {
+			parser: (tag) => {
+				const result = expressionParserIE11(tag);
+				const firstExpression = result.compiled.ast.body[0].expression;
+				expect(firstExpression.type).to.equal("Identifier");
+				expect(firstExpression.name).to.equal("a");
+				expect(firstExpression.constant).to.equal(false);
+				return result;
+			},
 		},
 	},
 

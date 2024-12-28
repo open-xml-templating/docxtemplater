@@ -9,8 +9,14 @@ interface ParserOptions {
   isIdentifierContinue?: (char: string) => boolean;
 }
 
+interface ExpressionParser extends DXT.Parser {
+  compiled: any;
+  getIdentifiers(): string[];
+  getObjectIdentifiers(): any;
+}
+
 type Parser = {
-  (tag: string): DXT.Parser;
+  (tag: string): ExpressionParser;
   filters: { [x: string]: (input: any, ...filters: any[]) => any };
   configure: (options: ParserOptions) => (tag: string) => DXT.Parser;
 };

@@ -140,12 +140,6 @@ function configuredParser(config = {}) {
 			expr.ast.body[0].expression.type === "AssignmentExpression";
 
 		return {
-			getIdentifiers() {
-				return uniq(getIdentifiers(expr));
-			},
-			getObjectIdentifiers() {
-				return getObjectIdentifiers(expr);
-			},
 			get(scope, context) {
 				let obj = {};
 				const scopeList = context.scopeList;
@@ -161,6 +155,13 @@ function configuredParser(config = {}) {
 				}
 				return result;
 			},
+			getIdentifiers() {
+				return uniq(getIdentifiers(expr));
+			},
+			getObjectIdentifiers() {
+				return getObjectIdentifiers(expr);
+			},
+			compiled: expr,
 		};
 	};
 }

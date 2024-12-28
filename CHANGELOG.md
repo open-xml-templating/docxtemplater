@@ -1,3 +1,30 @@
+### 3.55.9
+
+Fix small issues with expressions.js
+
+- Add `compiled` property to be able to access the internal expression :
+
+  If the tag is simply : `{myVal}`
+
+  In your code, you can use :
+
+  ```js
+  const expressionParser = require("docxtemplater/expressions.js");
+  const doc = new Docxtemplater(zip, {
+    parser: (tag) => {
+      const result = expressionParser(tag);
+      const firstExpression = result.compiled.ast.body[0].expression;
+      expect(firstExpression.type).to.equal("Identifier");
+      expect(firstExpression.name).to.equal("myVal");
+      expect(firstExpression.constant).to.equal(false);
+      return result;
+    },
+  });
+  ```
+
+- Use better error message if using non string value for expressions.js
+- Do not fail if trying to access property of null inside a loop with expressions.js
+
 ### 3.55.8
 
 Update to fix inspectModule.getAllTags() for all less used modules (qrcode, expand-loop for xlsx).
