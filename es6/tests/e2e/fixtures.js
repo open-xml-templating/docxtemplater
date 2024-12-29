@@ -322,6 +322,16 @@ const fixtures = [
 		},
 	},
 	{
+		it: "should not parse as loop a tag that starts with a space : { #foo}, the same for raw tags : { @raw}",
+		...noInternals,
+		contentText: "{ #foo} { @xx}",
+		resultText: "val val",
+		scope: {
+			" #foo": "val",
+			" @xx": "val",
+		},
+	},
+	{
 		it: "should be possible to add nullGetter to module (and use the first nullGetter result)",
 		...noInternals,
 		contentText: "{foo}",
