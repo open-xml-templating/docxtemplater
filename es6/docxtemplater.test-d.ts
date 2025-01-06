@@ -80,6 +80,20 @@ doc1.render();
 new Docxtemplater(
   {},
   {
+    stripInvalidXMLChars: true,
+  }
+);
+
+new Docxtemplater(
+  {},
+  {
+    stripInvalidXMLChars: false,
+  }
+);
+
+new Docxtemplater(
+  {},
+  {
     errorLogging: false,
   }
 );
@@ -102,6 +116,7 @@ expectError(doc1.foobar());
 expectError(new Docxtemplater(1, 2));
 expectError(new Docxtemplater({}, { delimiters: { start: 1, end: "]]" } }));
 expectError(new Docxtemplater({}, { delimiters: { start: "[[" } }));
+expectError(new Docxtemplater({}, { stripInvalidXMLChars: "yo" }));
 
 const doc2 = new Docxtemplater();
 doc2.loadZip(new PizZip("hello"));

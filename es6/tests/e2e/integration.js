@@ -1266,6 +1266,21 @@ describe("Add module to change justify alignment", () => {
 	});
 });
 
+describe("StripInvalidXml", () => {
+	it("should be possible to strip invalid xml chars", function () {
+		return this.render({
+			name: "tag-example.docx",
+			data: { first_name: "John" + String.fromCharCode(28) + " Doe" },
+			options: {
+				paragraphLoop: true,
+				errorLogging: false,
+				stripInvalidXMLChars: true,
+			},
+			expectedName: "expected-john-doe.pptx",
+		});
+	});
+});
+
 describe("OptionsTransformer", () => {
 	it("should be possible to change delimiter without side effects", () => {
 		/*

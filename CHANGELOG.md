@@ -1,3 +1,19 @@
+### 3.56.0
+
+When the data contains control characters, such as "U+0002" (Start of Text) or other control characters, the document would fail to generate.
+
+Docxtemplater now has an option called `stripInvalidXMLChars` which will strip the bad control characters automatically.
+
+Use it like this :
+
+```js
+const doc = new Docxtemplater(zip, {
+  stripInvalidXMLChars: true,
+  paragraphLoop: true,
+  linebreaks: true,
+});
+```
+
 ### 3.55.9
 
 Fix small issues with expressions.js

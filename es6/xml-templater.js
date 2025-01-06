@@ -158,6 +158,7 @@ module.exports = class XmlTemplater {
 			fileTypeConfig: this.fileTypeConfig,
 			fileType: this.fileType,
 			linebreaks: this.linebreaks,
+			stripInvalidXMLChars: this.stripInvalidXMLChars,
 		};
 	}
 	render(to) {

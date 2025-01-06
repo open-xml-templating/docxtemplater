@@ -118,6 +118,7 @@ function chunkBy(parsed, f) {
 function getDefaults() {
 	return {
 		errorLogging: "json",
+		stripInvalidXMLChars: false,
 		paragraphLoop: false,
 		nullGetter(part) {
 			return part.module ? "" : "undefined";
@@ -377,6 +378,10 @@ function hasCorruptCharacters(string) {
 	return corruptCharacters.test(string);
 }
 
+function removeCorruptCharacters(string) {
+	return string.replace(corruptCharacters, "");
+}
+
 function invertMap(map) {
 	const invertedMap = {};
 	for (const key in map) {
@@ -426,6 +431,7 @@ module.exports = {
 	convertSpaces,
 	charMapRegexes,
 	hasCorruptCharacters,
+	removeCorruptCharacters,
 	getDefaults,
 	wordToUtf8,
 	utf8ToWord,

@@ -1,6 +1,10 @@
 const wrapper = require("../module-wrapper.js");
 const { getScopeCompilationError } = require("../errors.js");
-const { utf8ToWord, hasCorruptCharacters } = require("../doc-utils.js");
+const {
+	utf8ToWord,
+	hasCorruptCharacters,
+	removeCorruptCharacters,
+} = require("../doc-utils.js");
 const { getCorruptCharactersException } = require("../errors.js");
 
 const {
@@ -59,7 +63,14 @@ class Render {
 	}
 	render(
 		part,
-		{ contentType, scopeManager, linebreaks, nullGetter, fileType }
+		{
+			contentType,
+			scopeManager,
+			linebreaks,
+			nullGetter,
+			fileType,
+			stripInvalidXMLChars,
+		}
 	) {
 		if (
 			linebreaks &&
@@ -86,7 +97,9 @@ class Render {
 			return { errors: [e] };
 		}
 		value ??= nullGetter(part);
-		if (hasCorruptCharacters(value)) {
+		if (stripInvalidXMLChars) {
+			value = removeCorruptCharacters(value);
+		} else if (hasCorruptCharacters(value)) {
 			return {
 				errors: [
 					getCorruptCharactersException({

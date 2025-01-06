@@ -94,6 +94,7 @@ declare namespace DXT {
     linebreaks?: boolean;
     nullGetter?(part: Part): any;
     syntax?: Syntax;
+    stripInvalidXMLChars?: boolean;
   }
 
   interface ConstructorOptions extends Options {
