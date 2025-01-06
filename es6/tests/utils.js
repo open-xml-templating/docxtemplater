@@ -153,7 +153,7 @@ function zipCompare(zip, expectedZip, expectedName) {
 		const file = zip.files[filePath];
 		const expectedFile = expectedZip.files[filePath];
 		if (file && file.options.dir && !expectedFile && filePath === "_rels/") {
-			return;
+			continue;
 		}
 		expect(expectedFile).to.be.an(
 			"object",
@@ -170,7 +170,7 @@ function zipCompare(zip, expectedZip, expectedName) {
 		);
 
 		if (file.options.dir) {
-			return;
+			continue;
 		}
 
 		if (isBinaryFile(file, expectedFile)) {
@@ -199,7 +199,7 @@ function zipCompare(zip, expectedZip, expectedName) {
 				);
 			}
 
-			return;
+			continue;
 		}
 		const actualText = getText(file);
 		const expectedText = getText(expectedFile);
@@ -212,7 +212,7 @@ function zipCompare(zip, expectedZip, expectedName) {
 			`The file ${filePath} has empty namespaces`
 		);
 		if (actualText === expectedText) {
-			return;
+			continue;
 		}
 		const prettyActualText = xmlPrettify(actualText);
 		const prettyExpectedText = xmlPrettify(expectedText);
