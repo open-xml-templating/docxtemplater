@@ -101,6 +101,7 @@ function startTest() {
 		require("./e2e/integration.js");
 		require("./e2e/doc-props.js");
 		require("./e2e/modules.js");
+		require("./e2e/traits.js");
 		require("./e2e/pptx.js");
 		require("./e2e/table.js");
 		require("./e2e/async.js");

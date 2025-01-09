@@ -205,14 +205,21 @@ function getExpandLimit(part, index, postparsed, options) {
 		right = getRight(postparsed, expandTo, index);
 	} catch (rootError) {
 		if (rootError instanceof XTTemplateError) {
-			throwExpandNotFound({
+			const errProps = {
 				part,
 				rootError,
 				postparsed,
 				expandTo,
 				index,
 				...options.error,
-			});
+			};
+			if (options.onError) {
+				const errorResult = options.onError(errProps);
+				if (errorResult === "ignore") {
+					return;
+				}
+			}
+			throwExpandNotFound(errProps);
 		}
 		throw rootError;
 	}
@@ -306,6 +313,18 @@ function expandToOne(postparsed, options) {
 				options
 			);
 		} catch (error) {
+			if (options.onError) {
+				const errorResult = options.onError({
+					part: limit.part,
+					rootError: error,
+					postparsed,
+					expandOne,
+					...options.errors,
+				});
+				if (errorResult === "ignore") {
+					continue;
+				}
+			}
 			if (error instanceof XTTemplateError) {
 				errors.push(error);
 			} else {
