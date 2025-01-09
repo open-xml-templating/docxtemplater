@@ -78,7 +78,11 @@ function TxtTemplater(text, options = {}) {
 			tags,
 			parser: xmlt.parser,
 		});
-		return utf8decode(xmlt.render().content);
+		xmlt.render();
+		if (xmlt.allErrors.length > 0) {
+			throwMultiError(xmlt.allErrors);
+		}
+		return utf8decode(xmlt.content);
 	};
 
 	return this;

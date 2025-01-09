@@ -98,4 +98,43 @@ describe("Text templating", () => {
 		});
 		expect(doc.render({ name: "John" })).to.be.equal("Hello John");
 	});
+
+	it("should throw error if rendering error occurs", () => {
+		const doc = new TxtTemplater("Hello <name>", {
+			delimiters: {
+				start: "<",
+				end: ">",
+			},
+			parser(tag) {
+				return {
+					get() {
+						throw new Error(`Error in get for ${tag}`);
+					},
+				};
+			},
+		});
+		const expectedError = {
+			name: "ScopeParserError",
+			message: "Scope parser execution failed",
+			properties: {
+				id: "scopeparser_execution_failed",
+				scope: {
+					name: "John",
+				},
+				xtag: "name",
+				offset: 6,
+				rootError: {
+					message: "Error in get for name",
+				},
+			},
+		};
+
+		expectToThrow(
+			() => {
+				doc.render({ name: "John" });
+			},
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
+	});
 });
