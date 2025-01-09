@@ -126,7 +126,7 @@ function unlinkFile(expectedName) {
 	}
 }
 function getText(file) {
-	return file.asText().replace(/\n|\t/g, "");
+	return file.asText();
 }
 
 function isBinaryFile(file1, file2) {
