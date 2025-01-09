@@ -123,6 +123,7 @@ function getNamespaces(attributes) {
 	return attributes.filter(({ key }) => key.indexOf("xmlns") !== -1);
 }
 
+/* eslint-disable-next-line complexity */
 function miniparser(xml) {
 	let cursor = 0;
 	let state = "outside";
@@ -131,6 +132,7 @@ function miniparser(xml) {
 	const renderedArray = [];
 	let level = 0;
 	const namespaces = [];
+	let currentTag = null;
 	while (cursor < xml.length) {
 		if (state === "outside") {
 			const opening = xml.indexOf("<", cursor);
@@ -138,13 +140,25 @@ function miniparser(xml) {
 				if (opening !== cursor) {
 					content = xml.substr(cursor, opening - cursor);
 					content = content.replace(/>/g, "&gt;");
-					renderedArray.push({ type: "content", value: content });
+					if (["w:t", "t", "a:t"].indexOf(currentTag) === -1) {
+						// For non text tags, strip newlines
+						content = content.replace(/\n/g, "").replace(/^\s+$/, "");
+					}
+					if (content.length > 0) {
+						renderedArray.push({ type: "content", value: content });
+					}
 				}
 				state = "inside";
 				cursor = opening;
 			} else {
-				const content = xml.substr(cursor);
-				renderedArray.push({ type: "content", value: content });
+				let content = xml.substr(cursor);
+				if (["w:t", "t", "a:t"].indexOf(currentTag) === -1) {
+					// For non text tags, strip newlines
+					content = content.replace(/\n/g, "").replace(/^\s+$/, "");
+				}
+				if (content.length > 0) {
+					renderedArray.push({ type: "content", value: content });
+				}
 				return renderedArray;
 			}
 		}
@@ -162,6 +176,12 @@ function miniparser(xml) {
 				closing = i;
 
 				let tag = xml.substr(cursor, closing - cursor + 1);
+				if (tag.indexOf(" ") !== -1) {
+					currentTag = tag.substr(1, tag.indexOf(" "));
+				} else {
+					currentTag = tag.substr(1, tag.indexOf(">") - 1);
+				}
+				// currentTag = tag;
 				const isSingle = Boolean(tag.match(/^<.+\/>/)); // is this line a single tag? ex. <br />
 				const isClosing = Boolean(tag.match(/^<\/.+>/)); // is this a closing tag? ex. </a>
 				const isProcessingInstruction = Boolean(tag.match(/^<\?.*\?>$/)); // is this an xml declaration tag? ex. <?xml version="1.0" encoding="UTF-8" standalone="yes"?> or <?mso-contentType?>
@@ -204,7 +224,11 @@ function miniparser(xml) {
 				}
 				renderedArray.push({ type: currentType, value: tag });
 			} else {
-				const content = xml.substr(cursor);
+				let content = xml.substr(cursor);
+				if (["w:t", "t", "a:t"].indexOf(currentTag) === -1) {
+					// For non text tags, strip newlines
+					content = content.replace(/\n/g, "").replace(/^\s+$/, "");
+				}
 				renderedArray.push({ type: "content", value: content });
 				return renderedArray;
 			}

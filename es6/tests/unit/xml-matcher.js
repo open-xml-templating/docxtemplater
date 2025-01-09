@@ -53,6 +53,43 @@ describe("XML prettify", () => {
 `);
 	});
 
+	it("should normalize space inside <w:rPr>", () => {
+		const str =
+			xmlprettify(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	  <w:rPr>
+
+</w:rPr>`);
+		expect(str).to.equal(`<?xml version="1.0" standalone="yes"?>
+<w:rPr>
+</w:rPr>
+`);
+	});
+
+	it("should not normalize space inside <w:t>, <t> or <a:t>", () => {
+		const str =
+			xmlprettify(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	  <w:t>
+
+</w:t>
+<a:t>
+
+</a:t>
+<t>
+
+</t>`);
+		expect(str).to.equal(`<?xml version="1.0" standalone="yes"?>
+<w:t>
+
+</w:t>
+<a:t>
+
+</a:t>
+<t>
+
+</t>
+`);
+	});
+
 	it("should deduplicate xmlns:w", () => {
 		let str =
 			'<w:sectPr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:t xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/></w:sectPr>';
