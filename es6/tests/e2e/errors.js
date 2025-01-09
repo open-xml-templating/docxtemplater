@@ -52,7 +52,6 @@ describe("Compilation errors", () => {
 	});
 
 	it("should fail when tag unclosed at end of document", () => {
-		const content = "<w:t>{unclosedtag my text</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unclosed tag",
@@ -65,14 +64,14 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:t>{unclosedtag my text</w:t>", { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
 	});
 
 	it("should be possible to not log error message", () => {
-		const content = "<w:t>{unclosedtag my text</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unclosed tag",
@@ -87,7 +86,7 @@ describe("Compilation errors", () => {
 		const capture = captureLogs();
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
+				makeDocxV4("<w:t>{unclosedtag my text</w:t>", {
 					errorLogging: false,
 				}),
 			Errors.XTTemplateError,
@@ -99,7 +98,6 @@ describe("Compilation errors", () => {
 	});
 
 	it("should fail when tag unclosed", () => {
-		const content = "<w:t>{user {name}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unclosed tag",
@@ -112,14 +110,13 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() => makeDocxV4("<w:t>{user {name}</w:t>", { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
 	});
 
 	it("should fail when tag unopened", () => {
-		const content = "<w:t>foobar}age</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unopened tag",
@@ -132,14 +129,13 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() => makeDocxV4("<w:t>foobar}age</w:t>", { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
 	});
 
 	it("should fail when closing {#users} with {/foo}", () => {
-		const content = "<w:t>{#users}User {name}{/foo}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Closing tag does not match opening tag",
@@ -151,14 +147,16 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:t>{#users}User {name}{/foo}</w:t>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
 	});
 
 	it("should fail when closing an unopened loop", () => {
-		const content = "<w:t>{/loop} {foobar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unopened loop",
@@ -170,14 +168,13 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() => makeDocxV4("<w:t>{/loop} {foobar}</w:t>", { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
 	});
 
 	it("should fail when a loop is never closed", () => {
-		const content = "<w:t>{#loop} {foobar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Unclosed loop",
@@ -189,31 +186,36 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() => makeDocxV4("<w:t>{#loop} {foobar}</w:t>", { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
 	});
 
 	it("should fail early when a loop closes the wrong loop", () => {
-		const content =
-			"<w:t>{#loop1}{#loop2}{/loop3}{/loop3}{/loop2}{/loop1}</w:t>";
-		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
+		expectToThrowSnapshot(() =>
+			makeDocxV4(
+				"<w:t>{#loop1}{#loop2}{/loop3}{/loop3}{/loop2}{/loop1}</w:t>",
+				{ errorLogging: false }
+			)
+		);
 	});
 
 	it("should fail when rawtag is not in paragraph", () => {
-		const content = "<w:t>{@myrawtag}</w:t>";
-		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
+		expectToThrowSnapshot(() =>
+			makeDocxV4("<w:t>{@myrawtag}</w:t>", { errorLogging: false })
+		);
 	});
 
 	it("should fail when rawtag is in table without paragraph", () => {
-		const content = "<w:tbl><w:t>{@myrawtag}</w:t></w:p></w:tbl>";
-
-		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
+		expectToThrowSnapshot(() =>
+			makeDocxV4("<w:tbl><w:t>{@myrawtag}</w:t></w:p></w:tbl>", {
+				errorLogging: false,
+			})
+		);
 	});
 
 	it("should fail when rawtag is not only text in paragraph", () => {
-		const content = "<w:p><w:t> {@myrawtag}</w:t><w:t>foobar</w:t></w:p>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Raw tag should be the only text in paragraph",
@@ -226,20 +228,24 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:p><w:t> {@myrawtag}</w:t><w:t>foobar</w:t></w:p>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
 	});
 
 	it("should count 3 errors when having rawxml and two other errors", () => {
-		const content = "<w:p><w:r><w:t>foo} {@bang} bar}</w:t></w:r></w:p>";
-
-		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
+		expectToThrowSnapshot(() =>
+			makeDocxV4("<w:p><w:r><w:t>foo} {@bang} bar}</w:t></w:r></w:p>", {
+				errorLogging: false,
+			})
+		);
 	});
 
 	it("should fail when customparser fails to compile", () => {
-		const content = "<w:t>{name++}</w:t>";
 		const expectedError = {
 			name: "ScopeParserError",
 			message: "Scope parser compilation failed",
@@ -255,7 +261,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
+				makeDocxV4("<w:t>{name++}</w:t>", {
 					parser: expressionParser,
 					errorLogging: false,
 				}),
@@ -267,7 +273,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 
 describe("Runtime errors", () => {
 	it("should fail when customparser fails to execute", () => {
-		const content = "<w:t> {name|upper}</w:t>";
 		function errorParser() {
 			return {
 				get() {
@@ -297,7 +302,7 @@ describe("Runtime errors", () => {
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
+				makeDocxV4("<w:t> {name|upper}</w:t>", {
 					parser: errorParser,
 					errorLogging: false,
 				}).render(),
@@ -308,7 +313,6 @@ describe("Runtime errors", () => {
 
 	it("should be possible to log the error", () => {
 		let errorStringified = "";
-		const content = "<w:t> {name|upper}</w:t>";
 		function errorParser() {
 			return {
 				get() {
@@ -327,7 +331,7 @@ describe("Runtime errors", () => {
 		}
 		const capture = captureLogs();
 		try {
-			makeDocxV4(content, { parser: errorParser }).render();
+			makeDocxV4("<w:t> {name|upper}</w:t>", { parser: errorParser }).render();
 			capture.stop();
 		} catch (e) {
 			capture.stop();
@@ -339,10 +343,6 @@ describe("Runtime errors", () => {
 	});
 
 	it("should fail with multi-error when customparser fails to execute on multiple raw tags", () => {
-		const content = `
-		<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
-		<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
-		`;
 		let count = 0;
 		function errorParser() {
 			return {
@@ -384,10 +384,16 @@ describe("Runtime errors", () => {
 			},
 		};
 
-		const doc = makeDocxV4(content, {
-			parser: errorParser,
-			errorLogging: false,
-		});
+		const doc = makeDocxV4(
+			`
+		<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
+		<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
+		`,
+			{
+				parser: errorParser,
+				errorLogging: false,
+			}
+		);
 		expectToThrow(() => doc.render(), Errors.XTTemplateError, expectedError);
 	});
 });
@@ -453,7 +459,6 @@ describe("Internal errors", () => {
 
 describe("Multi errors", () => {
 	it("should work with multiple errors simple", () => {
-		const content = "<w:t>foo} Hello {user, my age is {bar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -487,7 +492,10 @@ describe("Multi errors", () => {
 		};
 
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:t>foo} Hello {user, my age is {bar}</w:t>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -509,12 +517,6 @@ describe("Multi errors", () => {
 	});
 
 	it("should work with wrongly nested loops", () => {
-		const content = `
-		<w:t>
-			{#users}.........{/companies}
-			{#companies}.....{/users}
-		</w:t>
-		`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -543,18 +545,22 @@ describe("Multi errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4(
+					`
+		<w:t>
+			{#users}.........{/companies}
+			{#companies}.....{/users}
+		</w:t>
+		`,
+					{ errorLogging: false }
+				),
 			Errors.XTTemplateError,
 			expectedError
 		);
 	});
 
 	it("should work with loops", () => {
-		const content = `
-		<w:t>{#users}User name{/foo}
-		{#bang}User name{/baz}
-		</w:t>
-		`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -585,26 +591,35 @@ describe("Multi errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4(
+					`
+					<w:t>{#users}User name{/foo}
+					{#bang}User name{/baz}
+					</w:t>
+					`,
+					{ errorLogging: false }
+				),
 			Errors.XTTemplateError,
 			expectedError
 		);
 	});
 
 	it("should work with loops unopened", () => {
-		const content = `
-		<w:t>{/loop} {#users}User name{/foo}
-		{#bang}User name{/baz}
-		{/fff}
-		{#yum}
-		</w:t>
-		`;
-
-		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
+		expectToThrowSnapshot(() =>
+			makeDocxV4(
+				`<w:t>{/loop} {#users}User name{/foo}
+				{#bang}User name{/baz}
+				{/fff}
+				{#yum}
+				</w:t>
+				`,
+				{ errorLogging: false }
+			)
+		);
 	});
 
 	it("should fail when having multiple rawtags without a surrounding paragraph", () => {
-		const content = "<w:t>{@first}</w:t><w:p><w:t>foo{@second}</w:t></w:p>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -642,13 +657,15 @@ describe("Multi errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:t>{@first}</w:t><w:p><w:t>foo{@second}</w:t></w:p>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			expectedError
 		);
 	});
 	it("should fail when customparser fails to compile", () => {
-		const content = "<w:t>{name++} {foo|||bang}</w:t>";
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -688,7 +705,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
+				makeDocxV4("<w:t>{name++} {foo|||bang}</w:t>", {
 					parser: expressionParser,
 					errorLogging: false,
 				}),
@@ -698,7 +715,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 	});
 
 	it("should fail when customparser fails to compile 2", () => {
-		const content = "<w:t>{name++} {foo|||bang}</w:t>";
 		const expectedError = {
 			message: "Multi error",
 			name: "TemplateError",
@@ -736,7 +752,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
+				makeDocxV4("<w:t>{name++} {foo|||bang}</w:t>", {
 					parser: expressionParser,
 					errorLogging: false,
 				}),
@@ -746,7 +762,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=%7C&p1=not%20a%20
 	});
 
 	it("should work with lexer and customparser", () => {
-		const content = "<w:t>foo} Hello {name++}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -781,7 +796,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
+				makeDocxV4("<w:t>foo} Hello {name++}</w:t>", {
 					parser: expressionParser,
 					errorLogging: false,
 				}),
@@ -791,7 +806,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 	});
 
 	it("should work with lexer and loop", () => {
-		const content = "<w:t>foo} The users are {#users}{/bar}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -823,7 +837,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
+				makeDocxV4("<w:t>foo} The users are {#users}{/bar}</w:t>", {
 					parser: expressionParser,
 					errorLogging: false,
 				}),
@@ -833,8 +847,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 	});
 
 	it("should work with multiple errors", () => {
-		const content =
-			"<w:t>foo</w:t><w:t>} The users are {#users}{/bar} {@bang} </w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -882,18 +894,19 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
-					parser: expressionParser,
-					errorLogging: false,
-				}),
+				makeDocxV4(
+					"<w:t>foo</w:t><w:t>} The users are {#users}{/bar} {@bang} </w:t>",
+					{
+						parser: expressionParser,
+						errorLogging: false,
+					}
+				),
 			Errors.XTTemplateError,
 			expectedError
 		);
 	});
 
 	it("should work with multiple unclosed", () => {
-		const content = `<w:t>foo</w:t>
-		<w:t>{city, {state {zip </w:t>`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -938,18 +951,20 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
-					parser: expressionParser,
-					errorLogging: false,
-				}),
+				makeDocxV4(
+					`<w:t>foo</w:t>
+							<w:t>{city, {state {zip </w:t>`,
+					{
+						parser: expressionParser,
+						errorLogging: false,
+					}
+				),
 			Errors.XTTemplateError,
 			expectedError
 		);
 	});
 
 	it("should work with multiple unopened", () => {
-		const content = `<w:t>foo</w:t>
-			<w:t> city}, state} zip}</w:t>`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -991,29 +1006,20 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
-					parser: expressionParser,
-					errorLogging: false,
-				}),
+				makeDocxV4(
+					`<w:t>foo</w:t>
+							<w:t> city}, state} zip}</w:t>`,
+					{
+						parser: expressionParser,
+						errorLogging: false,
+					}
+				),
 			Errors.XTTemplateError,
 			expectedError
 		);
 	});
 
 	it("should show an error when loop tag are badly used (xml open count !== xml close count)", () => {
-		const content = `<w:tbl>
-		<w:tr>
-		<w:tc>
-		<w:p> <w:r> <w:t>{#users}</w:t> </w:r> <w:r> <w:t>test</w:t> </w:r> </w:p>
-		</w:tc>
-		<w:tc>
-		<w:p> <w:r> <w:t>test2</w:t> </w:r> </w:p>
-		</w:tc>
-		</w:tr>
-		</w:tbl>
-		<w:p>
-		<w:r> <w:t>{/users}</w:t> </w:r>
-		</w:p>`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -1036,19 +1042,44 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4(content, {
-					parser: expressionParser,
-					errorLogging: false,
-				}),
+				makeDocxV4(
+					`<w:tbl>
+						<w:tr>
+							<w:tc>
+								<w:p>
+									<w:r>
+										<w:t>{#users}</w:t>
+									</w:r>
+									<w:r>
+										<w:t>test</w:t>
+									</w:r>
+								</w:p>
+							</w:tc>
+							<w:tc>
+								<w:p>
+									<w:r>
+										<w:t>test2</w:t>
+									</w:r>
+								</w:p>
+							</w:tc>
+						</w:tr>
+					</w:tbl>
+					<w:p>
+						<w:r>
+							<w:t>{/users}</w:t>
+						</w:r>
+					</w:p>`,
+					{
+						parser: expressionParser,
+						errorLogging: false,
+					}
+				),
 			Errors.XTTemplateError,
 			expectedError
 		);
 	});
 
 	it("should show clean error message when using {{ with single delimiter", () => {
-		const content = `
-				<w:p><w:r><w:t>{{name}}</w:t></w:r></w:p>
-				`;
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -1081,7 +1112,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 		};
 
 		expectToThrow(
-			() => makeDocxV4(content, { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:p><w:r><w:t>{{name}}</w:t></w:r></w:p>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -1090,7 +1124,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 
 describe("Rendering error", () => {
 	it("should show an error when calling render twice", () => {
-		const content = "<w:t>{user}</w:t>";
 		const expectedError = {
 			name: "InternalError",
 			message:
@@ -1099,8 +1132,7 @@ describe("Rendering error", () => {
 				id: "render_twice",
 			},
 		};
-		const doc = makeDocxV4(content);
-		doc.render();
+		const doc = makeDocxV4("<w:t>{user}</w:t>").render();
 		expectToThrow(
 			() => {
 				doc.render();
@@ -1111,7 +1143,6 @@ describe("Rendering error", () => {
 	});
 
 	it("should show an error when using corrupt characters", () => {
-		const content = "<w:t> {user}</w:t>";
 		const expectedError = {
 			name: "RenderingError",
 			message: "There are some XML corrupt characters",
@@ -1125,7 +1156,7 @@ describe("Rendering error", () => {
 		};
 		expectToThrow(
 			() => {
-				makeDocxV4(content, {
+				makeDocxV4("<w:t> {user}</w:t>", {
 					parser: expressionParser,
 					errorLogging: false,
 				}).render({
@@ -1140,7 +1171,6 @@ describe("Rendering error", () => {
 
 describe("Async errors", () => {
 	it("should show error when having async promise", () => {
-		const content = "<w:t>{user}</w:t>";
 		const expectedError = {
 			name: "ScopeParserError",
 			message: "Scope parser execution failed",
@@ -1156,7 +1186,7 @@ describe("Async errors", () => {
 				},
 			},
 		};
-		const doc = makeDocxV4(content, {
+		const doc = makeDocxV4("<w:t>{user}</w:t>", {
 			errorLogging: false,
 		});
 		function create() {
@@ -1170,7 +1200,6 @@ describe("Async errors", () => {
 	});
 
 	it("should show error when having async reject within loop", () => {
-		const content = "<w:t>{#users}{user}{/}</w:t>";
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",
@@ -1225,7 +1254,7 @@ describe("Async errors", () => {
 				},
 			};
 		}
-		const doc = makeDocxV4(content, {
+		const doc = makeDocxV4("<w:t>{#users}{user}{/}</w:t>", {
 			parser: errorParser,
 			errorLogging: false,
 		});
@@ -1237,8 +1266,6 @@ describe("Async errors", () => {
 	});
 
 	it("should fail when customparser fails to execute on multiple tags", () => {
-		const content =
-			"<w:t>{#name|istrue}Name{/} {name|upper} {othername|upper}</w:t>";
 		let count = 0;
 		function errorParser() {
 			return {
@@ -1290,10 +1317,13 @@ describe("Async errors", () => {
 				id: "multi_error",
 			},
 		};
-		const doc = makeDocxV4(content, {
-			parser: errorParser,
-			errorLogging: false,
-		});
+		const doc = makeDocxV4(
+			"<w:t>{#name|istrue}Name{/} {name|upper} {othername|upper}</w:t>",
+			{
+				parser: errorParser,
+				errorLogging: false,
+			}
+		);
 		function create() {
 			return doc.renderAsync().then(() => doc.render());
 		}
@@ -1301,10 +1331,6 @@ describe("Async errors", () => {
 	});
 
 	it("should fail when customparser fails to execute on multiple raw tags", () => {
-		const content = `
-				<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
-				<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
-				`;
 		let count = 0;
 		function errorParser() {
 			return {
@@ -1348,10 +1374,16 @@ describe("Async errors", () => {
 				id: "multi_error",
 			},
 		};
-		const doc = makeDocxV4(content, {
-			parser: errorParser,
-			errorLogging: false,
-		});
+		const doc = makeDocxV4(
+			`
+				<w:p><w:r><w:t>{@raw|isfalse}</w:t></w:r></w:p>
+				<w:p><w:r><w:t>{@raw|istrue}</w:t></w:r></w:p>
+				`,
+			{
+				parser: errorParser,
+				errorLogging: false,
+			}
+		);
 		return expectToThrowAsync(
 			() => doc.renderAsync({ abc: true }),
 			Errors.XTTemplateError,

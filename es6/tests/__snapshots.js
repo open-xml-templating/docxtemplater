@@ -595,8 +595,8 @@ exports[`Multi errors should work with loops unopened`] = {
           "explanation": "The tag \"bang\" is closed by the tag \"baz\"",
           "openingtag": "bang",
           "offset": [
-            34,
-            50
+            36,
+            52
           ],
           "closingtag": "baz",
           "file": "word/document.xml"
@@ -610,7 +610,7 @@ exports[`Multi errors should work with loops unopened`] = {
           "id": "unopened_loop",
           "explanation": "The loop with tag \"fff\" is unopened",
           "xtag": "fff",
-          "offset": 59,
+          "offset": 63,
           "file": "word/document.xml"
         }
       },
@@ -622,7 +622,7 @@ exports[`Multi errors should work with loops unopened`] = {
           "id": "unclosed_loop",
           "explanation": "The loop with tag \"yum\" is unclosed",
           "xtag": "yum",
-          "offset": 68,
+          "offset": 74,
           "file": "word/document.xml"
         }
       }
