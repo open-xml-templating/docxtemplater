@@ -129,11 +129,13 @@ function configuredParser(config = {}) {
 			handleThis: false,
 			...config,
 		});
-		// isAssignment will be true if your tag contains an Assignment, for example
-		// when you write the following in your template :
-		// {full_name = first_name + last_name}
-		// In that case, it makes sense to return an empty string so
-		// that the tag does not write something to the generated document.
+		/*
+		 * isAssignment will be true if your tag contains an Assignment, for example
+		 * when you write the following in your template :
+		 * {full_name = first_name + last_name}
+		 * In that case, it makes sense to return an empty string so
+		 * that the tag does not write something to the generated document.
+		 */
 		const lastBody = expr.ast.body[expr.ast.body.length - 1];
 		const isAssignment =
 			lastBody && lastBody.expression.type === "AssignmentExpression";
@@ -141,9 +143,6 @@ function configuredParser(config = {}) {
 		return {
 			get(scope, context) {
 				const scopeList = context.scopeList;
-				if (tag.trim() === "this") {
-					return scope;
-				}
 
 				const px = new Proxy(
 					{},
