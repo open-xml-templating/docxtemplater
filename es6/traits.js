@@ -204,24 +204,21 @@ function getExpandLimit(part, index, postparsed, options) {
 		left = getLeft(postparsed, expandTo, index);
 		right = getRight(postparsed, expandTo, index);
 	} catch (rootError) {
-		if (rootError instanceof XTTemplateError) {
-			const errProps = {
-				part,
-				rootError,
-				postparsed,
-				expandTo,
-				index,
-				...options.error,
-			};
-			if (options.onError) {
-				const errorResult = options.onError(errProps);
-				if (errorResult === "ignore") {
-					return;
-				}
+		const errProps = {
+			part,
+			rootError,
+			postparsed,
+			expandTo,
+			index,
+			...options.error,
+		};
+		if (options.onError) {
+			const errorResult = options.onError(errProps);
+			if (errorResult === "ignore") {
+				return;
 			}
-			throwExpandNotFound(errProps);
 		}
-		throw rootError;
+		throwExpandNotFound(errProps);
 	}
 
 	return [left, right];
@@ -281,11 +278,8 @@ function expandToOne(postparsed, options) {
 					rightPart: postparsed[right],
 				});
 			} catch (error) {
-				if (error instanceof XTTemplateError) {
-					errors.push(error);
-				} else {
-					throw error;
-				}
+				// The Error can only be a
+				errors.push(error);
 			}
 		}
 	}
