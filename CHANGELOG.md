@@ -1,3 +1,11 @@
+### 3.57.0
+
+Add traits.expandToOne.onError for module API to be able to catch or ignore expansion errors.
+
+Provides moduleApiVersion 3.43.0 (please update the HTML module if you use it).
+
+For TxtTemplater, throw XtRenderingError on rendering Error (if the data resolver throws an error), previously a useless stacktrace would be thrown.
+
 ### 3.56.0
 
 When the data contains control characters, such as "U+0002" (Start of Text) or other control characters, the document would fail to generate.
