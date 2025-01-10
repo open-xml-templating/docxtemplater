@@ -80,10 +80,10 @@ describe("Api versioning", () => {
 
 	it("should fail with invalid versions", () => {
 		const doc = createDocV4("tag-example.docx");
-		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.0"));
-		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "5.6.0"));
-		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.44.0"));
-		expectToThrowSnapshot(doc.verifyApiVersion.bind(null, "3.43.100"));
+		expectToThrowSnapshot(() => doc.verifyApiVersion("5.0"));
+		expectToThrowSnapshot(() => doc.verifyApiVersion("5.6.0"));
+		expectToThrowSnapshot(() => doc.verifyApiVersion("3.44.0"));
+		expectToThrowSnapshot(() => doc.verifyApiVersion("3.43.100"));
 	});
 });
 
