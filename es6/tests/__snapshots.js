@@ -861,3 +861,309 @@ exports[`Pptx generation should work with loop table`] = [
   }
 ]
 
+exports[`Traits should just call onError but keep it if the return value is not a string`] = {
+  "_type": "XTTemplateError",
+  "name": "TemplateError",
+  "message": "Multi error",
+  "properties": {
+    "errors": [
+      {
+        "_type": "XTTemplateError",
+        "name": "TemplateError",
+        "message": "Raw tag not in paragraph",
+        "properties": {
+          "id": "raw_tag_outerxml_invalid",
+          "explanation": "The tag \"user\" is not inside a paragraph",
+          "rootError": {
+            "_type": "XTTemplateError",
+            "name": "TemplateError",
+            "message": "No tag \"w:p\" was found at the left",
+            "properties": {
+              "id": "no_xml_tag_found_at_left",
+              "explanation": "No tag \"w:p\" was found at the left",
+              "offset": 4,
+              "part": {
+                "type": "placeholder",
+                "module": "foo_module/foo",
+                "value": "user",
+                "offset": 4,
+                "endLindex": 4,
+                "lIndex": 4,
+                "raw": "__user"
+              },
+              "parsed": [
+                {
+                  "type": "tag",
+                  "position": "start",
+                  "text": true,
+                  "value": "<w:t xml:space=\"preserve\">",
+                  "tag": "w:t",
+                  "lIndex": 0
+                },
+                {
+                  "type": "content",
+                  "value": "Foo ",
+                  "position": "insidetag",
+                  "lIndex": 1
+                },
+                {
+                  "type": "placeholder",
+                  "module": "foo_module/foo",
+                  "value": "user",
+                  "offset": 4,
+                  "endLindex": 4,
+                  "lIndex": 4,
+                  "raw": "__user"
+                },
+                {
+                  "type": "content",
+                  "value": " ",
+                  "position": "insidetag",
+                  "lIndex": 5
+                },
+                {
+                  "type": "placeholder",
+                  "module": "foo_module/foo",
+                  "value": "bar",
+                  "offset": 13,
+                  "endLindex": 8,
+                  "lIndex": 8,
+                  "raw": "__bar"
+                },
+                {
+                  "type": "tag",
+                  "position": "end",
+                  "text": true,
+                  "value": "</w:t>",
+                  "tag": "w:t",
+                  "lIndex": 9
+                },
+                {
+                  "type": "tag",
+                  "position": "end",
+                  "text": false,
+                  "value": "</w:p>",
+                  "tag": "w:p",
+                  "lIndex": 10
+                }
+              ],
+              "index": 2,
+              "element": "w:p"
+            }
+          },
+          "xtag": "user",
+          "offset": 4,
+          "postparsed": [
+            {
+              "type": "tag",
+              "position": "start",
+              "text": true,
+              "value": "<w:t xml:space=\"preserve\">",
+              "tag": "w:t",
+              "lIndex": 0
+            },
+            {
+              "type": "content",
+              "value": "Foo ",
+              "position": "insidetag",
+              "lIndex": 1
+            },
+            {
+              "type": "placeholder",
+              "module": "foo_module/foo",
+              "value": "user",
+              "offset": 4,
+              "endLindex": 4,
+              "lIndex": 4,
+              "raw": "__user"
+            },
+            {
+              "type": "content",
+              "value": " ",
+              "position": "insidetag",
+              "lIndex": 5
+            },
+            {
+              "type": "placeholder",
+              "module": "foo_module/foo",
+              "value": "bar",
+              "offset": 13,
+              "endLindex": 8,
+              "lIndex": 8,
+              "raw": "__bar"
+            },
+            {
+              "type": "tag",
+              "position": "end",
+              "text": true,
+              "value": "</w:t>",
+              "tag": "w:t",
+              "lIndex": 9
+            },
+            {
+              "type": "tag",
+              "position": "end",
+              "text": false,
+              "value": "</w:p>",
+              "tag": "w:p",
+              "lIndex": 10
+            }
+          ],
+          "expandTo": "w:p",
+          "index": 2,
+          "file": "word/document.xml"
+        }
+      },
+      {
+        "_type": "XTTemplateError",
+        "name": "TemplateError",
+        "message": "Raw tag not in paragraph",
+        "properties": {
+          "id": "raw_tag_outerxml_invalid",
+          "explanation": "The tag \"bar\" is not inside a paragraph",
+          "rootError": {
+            "_type": "XTTemplateError",
+            "name": "TemplateError",
+            "message": "No tag \"w:p\" was found at the left",
+            "properties": {
+              "id": "no_xml_tag_found_at_left",
+              "explanation": "No tag \"w:p\" was found at the left",
+              "offset": 13,
+              "part": {
+                "type": "placeholder",
+                "module": "foo_module/foo",
+                "value": "bar",
+                "offset": 13,
+                "endLindex": 8,
+                "lIndex": 8,
+                "raw": "__bar"
+              },
+              "parsed": [
+                {
+                  "type": "tag",
+                  "position": "start",
+                  "text": true,
+                  "value": "<w:t xml:space=\"preserve\">",
+                  "tag": "w:t",
+                  "lIndex": 0
+                },
+                {
+                  "type": "content",
+                  "value": "Foo ",
+                  "position": "insidetag",
+                  "lIndex": 1
+                },
+                {
+                  "type": "placeholder",
+                  "module": "foo_module/foo",
+                  "value": "user",
+                  "offset": 4,
+                  "endLindex": 4,
+                  "lIndex": 4,
+                  "raw": "__user"
+                },
+                {
+                  "type": "content",
+                  "value": " ",
+                  "position": "insidetag",
+                  "lIndex": 5
+                },
+                {
+                  "type": "placeholder",
+                  "module": "foo_module/foo",
+                  "value": "bar",
+                  "offset": 13,
+                  "endLindex": 8,
+                  "lIndex": 8,
+                  "raw": "__bar"
+                },
+                {
+                  "type": "tag",
+                  "position": "end",
+                  "text": true,
+                  "value": "</w:t>",
+                  "tag": "w:t",
+                  "lIndex": 9
+                },
+                {
+                  "type": "tag",
+                  "position": "end",
+                  "text": false,
+                  "value": "</w:p>",
+                  "tag": "w:p",
+                  "lIndex": 10
+                }
+              ],
+              "index": 4,
+              "element": "w:p"
+            }
+          },
+          "xtag": "bar",
+          "offset": 13,
+          "postparsed": [
+            {
+              "type": "tag",
+              "position": "start",
+              "text": true,
+              "value": "<w:t xml:space=\"preserve\">",
+              "tag": "w:t",
+              "lIndex": 0
+            },
+            {
+              "type": "content",
+              "value": "Foo ",
+              "position": "insidetag",
+              "lIndex": 1
+            },
+            {
+              "type": "placeholder",
+              "module": "foo_module/foo",
+              "value": "user",
+              "offset": 4,
+              "endLindex": 4,
+              "lIndex": 4,
+              "raw": "__user"
+            },
+            {
+              "type": "content",
+              "value": " ",
+              "position": "insidetag",
+              "lIndex": 5
+            },
+            {
+              "type": "placeholder",
+              "module": "foo_module/foo",
+              "value": "bar",
+              "offset": 13,
+              "endLindex": 8,
+              "lIndex": 8,
+              "raw": "__bar"
+            },
+            {
+              "type": "tag",
+              "position": "end",
+              "text": true,
+              "value": "</w:t>",
+              "tag": "w:t",
+              "lIndex": 9
+            },
+            {
+              "type": "tag",
+              "position": "end",
+              "text": false,
+              "value": "</w:p>",
+              "tag": "w:p",
+              "lIndex": 10
+            }
+          ],
+          "expandTo": "w:p",
+          "index": 4,
+          "file": "word/document.xml"
+        }
+      }
+    ],
+    "id": "multi_error",
+    "explanation": "The template has multiple errors"
+  }
+}
+
