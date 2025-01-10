@@ -254,4 +254,106 @@ describe("Traits", () => {
 		);
 		capture.stop();
 	});
+
+	it("should just work if onError throws an error", () => {
+		const moduleName = "foo_module/foo";
+		const module = {
+			name: "FooModule",
+			requiredAPIVersion: "3.0.0",
+			matchers() {
+				return [["__", moduleName]];
+			},
+			postparse(parsed) {
+				parsed = traits.expandToOne(parsed, {
+					moduleName,
+					getInner: ({ part, left, right, postparsed, index }) => {
+						const paragraphParts = postparsed.slice(left + 1, right);
+						let error = false;
+						for (let i = 0, len = paragraphParts.length; i < len; i++) {
+							const p = paragraphParts[i];
+							if (i === index - left - 1) {
+								continue;
+							}
+							if (isContent(p)) {
+								error = true;
+							}
+						}
+						if (error === true) {
+							const err = new XTTemplateError(
+								"Foo tag should be the only text in a paragraph"
+							);
+							err.properties = {
+								explanation: "Foo tag",
+								id: "foo_id",
+							};
+							throw err;
+						}
+						return part;
+					},
+					expandTo: "w:p",
+					onError() {
+						throw new Error("Other error");
+					},
+				});
+				return parsed;
+			},
+			render(part) {
+				if (part.module === moduleName) {
+					return {
+						value: "MYVAL",
+					};
+				}
+			},
+		};
+		const capture = captureLogs();
+		let expectedError;
+		try {
+			makeDocxV4("<w:p><w:t>Foo {__user} {__bar}</w:t></w:p>", {
+				modules: [module],
+			}).render();
+		} catch (e) {
+			expectedError = e;
+		}
+		expect(expectedError.message).to.equal("Other error");
+		capture.stop();
+	});
+
+	it("should just work if getInner throws an error", () => {
+		const moduleName = "foo_module/foo";
+		const module = {
+			name: "FooModule",
+			requiredAPIVersion: "3.0.0",
+			matchers() {
+				return [["__", moduleName]];
+			},
+			postparse(parsed) {
+				parsed = traits.expandToOne(parsed, {
+					moduleName,
+					getInner: () => {
+						throw new Error("Error from inner");
+					},
+					expandTo: "w:p",
+				});
+				return parsed;
+			},
+			render(part) {
+				if (part.module === moduleName) {
+					return {
+						value: "MYVAL",
+					};
+				}
+			},
+		};
+		const capture = captureLogs();
+		let expectedError;
+		try {
+			makeDocxV4("<w:p><w:t>Foo {__user} {__bar}</w:t></w:p>", {
+				modules: [module],
+			}).render();
+		} catch (e) {
+			expectedError = e;
+		}
+		expect(expectedError.message).to.equal("Error from inner");
+		capture.stop();
+	});
 });
