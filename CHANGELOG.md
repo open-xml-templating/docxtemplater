@@ -1,3 +1,9 @@
+### 3.57.1
+
+Add postEvaluate API for expressionParser.
+
+Refactor expandToOne trait
+
 ### 3.57.0
 
 Add traits.expandToOne.onError for module API to be able to catch or ignore expansion errors.
