@@ -341,6 +341,23 @@ const Docxtemplater = class Docxtemplater {
 		});
 	}
 	reorderModules() {
+		/**
+		 * Modules will be sorted according to priority.
+		 *
+		 * Input example:
+		 * [
+		 *   { priority: 1, name: "FooMod" },
+		 *   { priority: -1, name: "XMod" },
+		 *   { priority: 4, name: "OtherMod" }
+		 * ]
+		 *
+		 * Output example (sorted by priority in descending order):
+		 * [
+		 *   { priority: 4, name: "OtherMod" },
+		 *   { priority: 1, name: "FooMod" },
+		 *   { priority: -1, name: "XMod" }
+		 * ]
+		 */
 		this.modules = stableSort(
 			this.modules,
 			(m1, m2) => (m2.priority || 0) - (m1.priority || 0)
