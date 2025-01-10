@@ -149,9 +149,12 @@ function configuredParser(config = {}) {
 					obj = assign(obj, scopeList[i]);
 				}
 				obj = assign(obj, { $index: index });
-				const result = expr(scope, obj);
+				let result = expr(scope, obj);
 				if (isAssignment) {
 					return "";
+				}
+				if (typeof config.postEvaluate === "function") {
+					result = config.postEvaluate(result, tag, scope);
 				}
 				return result;
 			},

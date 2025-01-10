@@ -1583,6 +1583,67 @@ const fixtures = [
 		resultText: "Hi 6",
 	},
 	{
+		it: "should be possible to customize using postEvaluate for property access",
+		scope: {
+			name: false,
+		},
+		...noInternals,
+		contentText: "Hi property access:{name}",
+		options: {
+			parser: expressionParser.configure({
+				postEvaluate(value, expr, scope) {
+					expect(expr).to.equal("name");
+					expect(scope).to.deep.equal({ name: false });
+					if (value === false) {
+						return "";
+					}
+					return value;
+				},
+			}),
+		},
+		resultText: "Hi property access:",
+	},
+	{
+		it: "should be possible to customize using postEvaluate for addition",
+		scope: {
+			name: false,
+		},
+		...noInternals,
+		contentText: "Hi addition:{name + name}",
+		options: {
+			parser: expressionParser.configure({
+				postEvaluate(value, expr) {
+					expect(expr).to.equal("name + name");
+					if (value === false) {
+						return "";
+					}
+					return value;
+				},
+			}),
+		},
+		resultText: "Hi addition:0",
+	},
+	{
+		it: "should be possible to customize using postEvaluate for addition for ie11",
+		scope: {
+			name: false,
+		},
+		...noInternals,
+		contentText: "Hi addition:{name + name}",
+		options: {
+			parser: expressionParserIE11.configure({
+				postEvaluate(value, expr) {
+					expect(expr).to.equal("name + name");
+					if (value === false) {
+						return "";
+					}
+					return value;
+				},
+			}),
+		},
+		resultText: "Hi addition:0",
+	},
+	{
 		it: 'should handle {this["a b"]} tag',
 		scope: {
 			"a b": "John",

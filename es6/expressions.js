@@ -300,9 +300,12 @@ function configuredParser(config = {}) {
 					}
 				);
 
-				const result = expr(px);
+				let result = expr(px);
 				if (isAssignment) {
 					return "";
+				}
+				if (typeof config.postEvaluate === "function") {
+					result = config.postEvaluate(result, tag, scope);
 				}
 				return result;
 			},

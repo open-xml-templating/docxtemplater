@@ -238,6 +238,18 @@ expressionParser.configure({
   },
 });
 
+expressionParser.configure({
+  postEvaluate(result: any, tag: string, scope: any) {
+    return result;
+  },
+});
+
+ieExpressionParser.configure({
+  postEvaluate(result: any, tag: string, scope: any) {
+    return result;
+  },
+});
+
 // Define the parameter type for getFileType
 interface FileTypeParams {
   doc: Docxtemplater;
