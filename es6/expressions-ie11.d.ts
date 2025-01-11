@@ -5,9 +5,14 @@ interface ParserOptions {
   csp?: boolean;
   cache?: any;
   literals?: { [x: string]: any };
-  postEvaluate?: (result: any, tag: string, scope: any) => any;
   isIdentifierStart?: (char: string) => boolean;
   isIdentifierContinue?: (char: string) => boolean;
+  postEvaluate?: (
+    result: any,
+    tag: string,
+    scope: any,
+    context: DXT.ParserContext
+  ) => any;
 }
 
 interface ExpressionParser extends DXT.Parser {

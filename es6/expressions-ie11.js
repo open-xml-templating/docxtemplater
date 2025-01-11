@@ -154,7 +154,7 @@ function configuredParser(config = {}) {
 					return "";
 				}
 				if (typeof config.postEvaluate === "function") {
-					result = config.postEvaluate(result, tag, scope);
+					result = config.postEvaluate(result, tag, scope, context);
 				}
 				return result;
 			},

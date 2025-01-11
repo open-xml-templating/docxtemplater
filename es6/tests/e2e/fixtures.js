@@ -1591,8 +1591,10 @@ const fixtures = [
 		contentText: "Hi property access:{name}",
 		options: {
 			parser: expressionParser.configure({
-				postEvaluate(value, expr, scope) {
+				postEvaluate(value, expr, scope, context) {
 					expect(expr).to.equal("name");
+					expect(context.meta.part.type).to.equal("placeholder");
+					expect(context.meta.part.value).to.equal("name");
 					expect(scope).to.deep.equal({ name: false });
 					if (value === false) {
 						return "";

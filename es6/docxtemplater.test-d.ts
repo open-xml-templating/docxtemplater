@@ -239,13 +239,23 @@ expressionParser.configure({
 });
 
 expressionParser.configure({
-  postEvaluate(result: any, tag: string, scope: any) {
+  postEvaluate(
+    result: any,
+    tag: string,
+    scope: any,
+    context: DXT.ParserContext
+  ) {
     return result;
   },
 });
 
 ieExpressionParser.configure({
-  postEvaluate(result: any, tag: string, scope: any) {
+  postEvaluate(
+    result: any,
+    tag: string,
+    scope: any,
+    context: DXT.ParserContext
+  ) {
     return result;
   },
 });

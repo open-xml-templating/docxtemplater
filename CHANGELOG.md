@@ -1,3 +1,17 @@
+### 3.57.2
+
+Add context parameter to expressionParser :
+
+```
+postEvaluate?: (
+    result: any,
+    tag: string,
+    scope: any,
+    context: DXT.ParserContext
+) => any;
+// context.meta.part will be equal to "name"
+```
+
 ### 3.57.1
 
 Add postEvaluate API for expressionParser.
