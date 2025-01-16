@@ -379,6 +379,9 @@ function hasCorruptCharacters(string) {
 }
 
 function removeCorruptCharacters(string) {
+	if (typeof string !== "string") {
+		string = String(string);
+	}
 	return string.replace(corruptCharacters, "");
 }
 

@@ -1279,6 +1279,19 @@ describe("StripInvalidXml", () => {
 			expectedName: "expected-john-doe.pptx",
 		});
 	});
+
+	it("should not throw stack trace if specifying stripInvalidXMLChars and using number or other object", function () {
+		return this.render({
+			name: "tag-example.docx",
+			data: { first_name: 12, last_name: /a/g, phone: false },
+			options: {
+				paragraphLoop: true,
+				errorLogging: false,
+				stripInvalidXMLChars: true,
+			},
+			expectedName: "expected-12.pptx",
+		});
+	});
 });
 
 describe("OptionsTransformer", () => {

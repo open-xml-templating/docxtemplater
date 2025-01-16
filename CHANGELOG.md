@@ -1,3 +1,24 @@
+### 3.57.3
+
+When using the `stripInvalidXMLChars:true` option, if passing a value of a non string, such as :
+
+```js
+doc.render({
+  first_name: 44,
+});
+```
+
+The following stacktrace would be shown :
+
+```log
+string.replace is not a function
+    at removeCorruptCharacters (es6/doc-utils.js:385:16)"
+    at Render.render (es6/modules/render.js:101:12)"
+    at moduleRender (es6/render.js:10:33)"
+```
+
+Now, the rendering works correctly.
+
 ### 3.57.2
 
 Add context parameter to expressionParser :
