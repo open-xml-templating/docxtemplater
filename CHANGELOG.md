@@ -1,3 +1,17 @@
+### 3.58.0
+
+Add `renderAsync` method to TxtTemplater, usage is like this :
+
+```js
+const TxtTemplater = require("docxtemplater/js/text.js");
+const doc = new TxtTemplater("Hello {user}, how are you ?");
+const result = doc.renderAsync({
+  user: new Promise((resolve) => {
+    resolve("John");
+  }),
+});
+```
+
 ### 3.57.3
 
 When using the `stripInvalidXMLChars:true` option, if passing a value of a non string, such as :

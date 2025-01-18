@@ -73,6 +73,19 @@ function TxtTemplater(text, options = {}) {
 		throwMultiError(xmlt.allErrors);
 	}
 
+	this.renderAsync = async function (tags) {
+		xmlt.scopeManager = createScope({
+			tags,
+			parser: xmlt.parser,
+		});
+		await xmlt.resolveTags(tags);
+		xmlt.render();
+		if (xmlt.allErrors.length > 0) {
+			throwMultiError(xmlt.allErrors);
+		}
+		return utf8decode(xmlt.content);
+	};
+
 	this.render = function (tags) {
 		xmlt.scopeManager = createScope({
 			tags,
