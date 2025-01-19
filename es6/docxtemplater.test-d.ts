@@ -3,11 +3,8 @@ import InspectModule from "./inspect-module";
 import expressionParser from "../expressions";
 import ieExpressionParser from "../expressions-ie11";
 import TxtTemplater from "./text";
-
-const tDoc = new TxtTemplater("Hello {#users}{name},{/users} how are you ?", {
-  parser: expressionParser,
-});
-tDoc.render({ users: [{ name: "John" }, { name: "Baz" }] });
+const PizZip: any = require("pizzip");
+import { expectType, expectError } from "tsd";
 
 expressionParser.filters.map = function (input: any, key: any): any {
   if (!input) {
@@ -33,8 +30,20 @@ ieExpressionParser.filters.map = function (input: any, key: any): any {
   }
 };
 
-const PizZip: any = require("pizzip");
-import { expectType, expectError } from "tsd";
+const tDoc = new TxtTemplater("Hello {#users}{name},{/users} how are you ?", {
+  parser: expressionParser,
+});
+tDoc.render({ users: [{ name: "John" }, { name: "Baz" }] });
+
+const tDoc2 = new TxtTemplater("Hello {#users}{name},{/users} how are you ?", {
+  parser: expressionParser,
+});
+tDoc2
+  .renderAsync({ users: [{ name: "John" }, { name: "Baz" }] })
+  .then(function (result: any) {
+    console.log(result.toUpperCase());
+  });
+
 const doc1 = new Docxtemplater(
   {},
   {

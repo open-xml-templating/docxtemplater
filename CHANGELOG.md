@@ -1,3 +1,7 @@
+### 3.58.1
+
+Add `renderAsync` typescript typing to TxtTemplater.
+
 ### 3.58.0
 
 Add `renderAsync` method to TxtTemplater, usage is like this :

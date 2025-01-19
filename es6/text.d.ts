@@ -11,6 +11,7 @@ declare class TxtTemplater {
   constructor(content: string, options?: DXT.ConstructorOptions);
 
   render(data?: any): string;
+  renderAsync(data?: any): Promise<string>;
 }
 
 export = TxtTemplater;
