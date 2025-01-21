@@ -36,7 +36,7 @@
     "url": "git+https://github.com/open-xml-templating/docxtemplater.git"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.9.6"
+    "@xmldom/xmldom": "^0.9.7"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.3",
@@ -72,7 +72,7 @@
     "playwright": "^1.49.1",
     "prettier": "^3.4.2",
     "rimraf": "^6.0.1",
-    "selenium-standalone": "^10.0.0",
+    "selenium-standalone": "^10.0.1",
     "serve-static": "^1.15.0",
     "stryker-cli": "^1.0.2",
     "tsd": "^0.31.2",
