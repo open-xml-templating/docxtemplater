@@ -53,9 +53,8 @@ postEvaluate?: (
 
 ### 3.57.1
 
-Add postEvaluate API for expressionParser.
-
-Refactor expandToOne trait
+- Add `postEvaluate` API to expressionParser.
+- Refactor `expandToOne` trait
 
 ### 3.57.0
 
