@@ -1032,11 +1032,7 @@ describe("ParagraphLoop", () => {
 
 describe("Prefixes", () => {
 	it("should be possible to change the prefix of the loop module", () => {
-		const content = "<w:t>{##tables}{user}{/tables}</w:t>";
-		const scope = {
-			tables: [{ user: "John" }, { user: "Jane" }],
-		};
-		const doc = makeDocxV4(content, {
+		const doc = makeDocxV4("<w:t>{##tables}{user}{/tables}</w:t>", {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
@@ -1050,40 +1046,63 @@ describe("Prefixes", () => {
 				},
 			],
 		});
-		doc.render(scope);
+		doc.render({
+			tables: [{ user: "John" }, { user: "Jane" }],
+		});
 		expect(doc.getFullText()).to.be.equal("JohnJane");
 	});
 
 	it("should be possible to change the prefix of the loop module to a regexp", () => {
-		const content =
-			"<w:t>{##tables}{user}{/tables}{#tables}{user}{/tables}</w:t>";
-		const scope = {
-			tables: [{ user: "A" }, { user: "B" }],
-		};
-		const doc = makeDocxV4(content, {
-			modules: [
-				{
-					optionsTransformer(options, doc) {
-						for (const module of doc.modules) {
-							if (module.name === "LoopModule") {
-								module.prefix.start = /^##?(.*)$/;
+		const doc = makeDocxV4(
+			"<w:t>{##tables}{user}{/tables}{#tables}{user}{/tables}</w:t>",
+			{
+				modules: [
+					{
+						optionsTransformer(options, doc) {
+							for (const module of doc.modules) {
+								if (module.name === "LoopModule") {
+									module.prefix.start = /^##?(.*)$/;
+								}
 							}
-						}
-						return options;
+							return options;
+						},
 					},
-				},
-			],
+				],
+			}
+		);
+		doc.render({
+			tables: [{ user: "A" }, { user: "B" }],
 		});
-		doc.render(scope);
+		expect(doc.getFullText()).to.be.equal("ABAB");
+	});
+
+	it("should be possible to use FOR and ENDFOR for the prefix of the loop module", () => {
+		const doc = makeDocxV4(
+			"<w:t>{FOR tables}{user}{ENDFOR tables}{FOR tables}{user}{ENDFOR}</w:t>",
+			{
+				modules: [
+					{
+						optionsTransformer(options, doc) {
+							for (const module of doc.modules) {
+								if (module.name === "LoopModule") {
+									module.prefix.start = "FOR ";
+									module.prefix.end = /^ENDFOR ?(.*)/;
+								}
+							}
+							return options;
+						},
+					},
+				],
+			}
+		);
+		doc.render({
+			tables: [{ user: "A" }, { user: "B" }],
+		});
 		expect(doc.getFullText()).to.be.equal("ABAB");
 	});
 
 	it("should be possible to change the prefix of the raw xml module to a regexp", () => {
-		const content = "<w:p><w:t>{!!raw}</w:t></w:p>";
-		const scope = {
-			raw: "<w:p><w:t>HoHo</w:t></w:p>",
-		};
-		const doc = makeDocxV4(content, {
+		const doc = makeDocxV4("<w:p><w:t>{!!raw}</w:t></w:p>", {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
@@ -1097,8 +1116,9 @@ describe("Prefixes", () => {
 				},
 			],
 		});
-		doc.render(scope);
-
+		doc.render({
+			raw: "<w:p><w:t>HoHo</w:t></w:p>",
+		});
 		expect(doc.getFullText()).to.be.equal("HoHo");
 	});
 
