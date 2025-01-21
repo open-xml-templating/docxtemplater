@@ -26,93 +26,94 @@ function lastTagIsOpenTag(tags, tag) {
 
 function getListXmlElements(parts) {
 	/*
-	Gets the list of closing and opening tags between two texts. It doesn't take
-	into account tags that are opened then closed. Those that are closed then
-	opened are kept
-
-	Example input :
-
-	[
-		{
-			"type": "placeholder",
-			"value": "table1",
-			...
-		},
-		{
-			"type": "placeholder",
-			"value": "t1data1",
-		},
-		{
-			"type": "tag",
-			"position": "end",
-			"text": true,
-			"value": "</w:t>",
-			"tag": "w:t",
-			"lIndex": 112
-		},
-		{
-			"type": "tag",
-			"value": "</w:r>",
-		},
-		{
-			"type": "tag",
-			"value": "</w:p>",
-		},
-		{
-			"type": "tag",
-			"value": "</w:tc>",
-		},
-		{
-			"type": "tag",
-			"value": "<w:tc>",
-		},
-		{
-			"type": "content",
-			"value": "<w:tcPr><w:tcW w:w="2444" w:type="dxa"/><w:tcBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/></w:tcPr>",
-		},
-		...
-		{
-			"type": "tag",
-			"value": "<w:r>",
-		},
-		{
-			"type": "tag",
-			"value": "<w:t xml:space="preserve">",
-		},
-		{
-			"type": "placeholder",
-			"value": "t1data4",
-		}
-	]
-
-	returns
-		[
-			{
-				"tag": "</w:t>",
-			},
-			{
-				"tag": "</w:r>",
-			},
-			{
-				"tag": "</w:p>",
-			},
-			{
-				"tag": "</w:tc>",
-			},
-			{
-				"tag": "<w:tc>",
-			},
-			{
-				"tag": "<w:p>",
-			},
-			{
-				"tag": "<w:r>",
-			},
-			{
-				"tag": "<w:t>",
-			},
-		]
-	*/
+	 * Gets the list of closing and opening tags between two texts. It doesn't take
+	 * into account tags that are opened then closed. Those that are closed then
+	 * opened are kept
+	 *
+	 * Example input :
+	 *
+	 * [
+	 * 	{
+	 * 		"type": "placeholder",
+	 * 		"value": "table1",
+	 * 		...
+	 * 	},
+	 * 	{
+	 * 		"type": "placeholder",
+	 * 		"value": "t1data1",
+	 * 	},
+	 * 	{
+	 * 		"type": "tag",
+	 * 		"position": "end",
+	 * 		"text": true,
+	 * 		"value": "</w:t>",
+	 * 		"tag": "w:t",
+	 * 		"lIndex": 112
+	 * 	},
+	 * 	{
+	 * 		"type": "tag",
+	 * 		"value": "</w:r>",
+	 * 	},
+	 * 	{
+	 * 		"type": "tag",
+	 * 		"value": "</w:p>",
+	 * 	},
+	 * 	{
+	 * 		"type": "tag",
+	 * 		"value": "</w:tc>",
+	 * 	},
+	 * 	{
+	 * 		"type": "tag",
+	 * 		"value": "<w:tc>",
+	 * 	},
+	 * 	{
+	 * 		"type": "content",
+	 * 		"value": "<w:tcPr><w:tcW w:w="2444" w:type="dxa"/><w:tcBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/></w:tcPr>",
+	 * 	},
+	 * 	...
+	 * 	{
+	 * 		"type": "tag",
+	 * 		"value": "<w:r>",
+	 * 	},
+	 * 	{
+	 * 		"type": "tag",
+	 * 		"value": "<w:t xml:space="preserve">",
+	 * 	},
+	 * 	{
+	 * 		"type": "placeholder",
+	 * 		"value": "t1data4",
+	 * 	}
+	 * ]
+	 *
+	 * Returns
+	 *
+	 * 	[
+	 * 		{
+	 * 			"tag": "</w:t>",
+	 * 		},
+	 * 		{
+	 * 			"tag": "</w:r>",
+	 * 		},
+	 * 		{
+	 * 			"tag": "</w:p>",
+	 * 		},
+	 * 		{
+	 * 			"tag": "</w:tc>",
+	 * 		},
+	 * 		{
+	 * 			"tag": "<w:tc>",
+	 * 		},
+	 * 		{
+	 * 			"tag": "<w:p>",
+	 * 		},
+	 * 		{
+	 * 			"tag": "<w:r>",
+	 * 		},
+	 * 		{
+	 * 			"tag": "<w:t>",
+	 * 		},
+	 * 	]
+	 */
 
 	const result = [];
 
@@ -258,8 +259,10 @@ function expandToOne(postparsed, options) {
 		if (
 			part.type === "placeholder" &&
 			part.module === options.moduleName &&
-			// The part.subparsed check is used to fix this github issue :
-			// https://github.com/open-xml-templating/docxtemplater/issues/671
+			/*
+			 * The part.subparsed check is used to fix this github issue :
+			 * https://github.com/open-xml-templating/docxtemplater/issues/671
+			 */
 			!part.subparsed &&
 			!part.expanded
 		) {

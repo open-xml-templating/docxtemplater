@@ -34,9 +34,11 @@ describe("getSingleAttribute", () => {
 
 describe("ChunkBy", () => {
 	it("should work", () => {
-		// This tests chunkBy, and in particular the fact that the chunking
-		// works even if the first function call does'nt return "start" (it
-		// returns undefined here)
+		/*
+		 * This tests chunkBy, and in particular the fact that the chunking
+		 * works even if the first function call does'nt return "start" (it
+		 * returns undefined here)
+		 */
 		const chunks = chunkBy(
 			[
 				{ type: "content", value: "Hello" },

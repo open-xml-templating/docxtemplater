@@ -46,9 +46,11 @@ module.exports = class XmlTemplater {
 						if (!(error instanceof Error)) {
 							error = new Error(error);
 						}
-						// error properties might not be defined if some foreign error
-						// (unhandled error not thrown by docxtemplater willingly) is
-						// thrown.
+						/*
+						 * error properties might not be defined if some foreign error
+						 * (unhandled error not thrown by docxtemplater willingly) is
+						 * thrown.
+						 */
 						error.properties ||= {};
 						error.properties.file = filePath;
 						return error;
@@ -122,9 +124,11 @@ module.exports = class XmlTemplater {
 	}
 	errorChecker(errors) {
 		for (const error of errors) {
-			// error properties might not be defined if some foreign
-			// (unhandled error not thrown by docxtemplater willingly) is
-			// thrown.
+			/*
+			 * error properties might not be defined if some foreign
+			 * (unhandled error not thrown by docxtemplater willingly) is
+			 * thrown.
+			 */
 			error.properties ||= {};
 			error.properties.file = this.filePath;
 		}

@@ -140,9 +140,11 @@ describe("Module xml parse", () => {
 					.file(/document.xml.rels/)
 					.map(({ name }) => name);
 
-				// This part tests that you can mutate the options here without
-				// mutating it for future documents
-				// Fixed since 3.55.0
+				/*
+				 * This part tests that you can mutate the options here without
+				 * mutating it for future documents
+				 * Fixed since 3.55.0
+				 */
 				options.xmlFileNames.push(...relsFiles);
 				return options;
 			},

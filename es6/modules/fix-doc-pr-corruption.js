@@ -1,13 +1,15 @@
 const { setSingleAttribute, isTagStart } = require("../doc-utils.js");
 
-// We use a class here because this object is storing "state" in this.Lexer,
-// this.zip, this.xmlDocuments
-//
-// In version 3.34.3 and before, the state could be overwritten if the module
-// was attached to two docxtemplater instances
-//
-// Now, since the module will be cloned if already attached, it should work
-// correctly even on multiple instances in parallel
+/*
+ * We use a class here because this object is storing "state" in this.Lexer,
+ * this.zip, this.xmlDocuments
+ *
+ * In version 3.34.3 and before, the state could be overwritten if the module
+ * was attached to two docxtemplater instances
+ *
+ * Now, since the module will be cloned if already attached, it should work
+ * correctly even on multiple instances in parallel
+ */
 class FixDocPRCorruptionModule {
 	constructor() {
 		this.name = "FixDocPRCorruptionModule";

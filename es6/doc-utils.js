@@ -211,18 +211,21 @@ function convertSpaces(s) {
 	return s.replace(spaceRegexp, " ");
 }
 function pregMatchAll(regex, content) {
-	/* regex is a string, content is the content. It returns an array of all matches with their offset, for example:
-
-		regex=la
-		content=lolalolilala
-
-		returns:
-			[
-				{array: {0: 'la'}, offset: 2},
-				{array: {0: 'la'}, offset: 8},
-				{array: {0: 'la'}, offset: 10}
-			]
-	*/
+	/*
+	 * Regex is a string, content is the content. It returns an array of all
+	 * matches with their offset, for example:
+	 *
+	 * regex=la
+	 * content=lolalolilala
+	 *
+	 * Returns:
+	 *
+	 * [
+	 *    {array: {0: 'la'}, offset: 2},
+	 *    {array: {0: 'la'}, offset: 8},
+	 *    {array: {0: 'la'}, offset: 10}
+	 * ]
+	 */
 	const matchArray = [];
 	let match;
 	while ((match = regex.exec(content)) != null) {
@@ -302,9 +305,11 @@ function getLeftOrNull(parsed, elements, index) {
 	return null;
 }
 
-// Stryker disable all : because those are functions that depend on the parsed
-// structure based and we don't want minimal code here, but rather code that
-// makes things clear.
+/*
+ * Stryker disable all : because those are functions that depend on the parsed
+ * structure based and we don't want minimal code here, but rather code that
+ * makes things clear.
+ */
 function isTagStart(tagType, { type, tag, position }) {
 	return (
 		type === "tag" &&
@@ -345,35 +350,37 @@ function isModule({ module, type }, modules) {
 // Stryker restore all
 
 const corruptCharacters = /[\x00-\x08\x0B\x0C\x0E-\x1F]/;
-// 00    NUL '\0' (null character)
-// 01    SOH (start of heading)
-// 02    STX (start of text)
-// 03    ETX (end of text)
-// 04    EOT (end of transmission)
-// 05    ENQ (enquiry)
-// 06    ACK (acknowledge)
-// 07    BEL '\a' (bell)
-// 08    BS  '\b' (backspace)
-// 0B    VT  '\v' (vertical tab)
-// 0C    FF  '\f' (form feed)
-// 0E    SO  (shift out)
-// 0F    SI  (shift in)
-// 10    DLE (data link escape)
-// 11    DC1 (device control 1)
-// 12    DC2 (device control 2)
-// 13    DC3 (device control 3)
-// 14    DC4 (device control 4)
-// 15    NAK (negative ack.)
-// 16    SYN (synchronous idle)
-// 17    ETB (end of trans. blk)
-// 18    CAN (cancel)
-// 19    EM  (end of medium)
-// 1A    SUB (substitute)
-// 1B    ESC (escape)
-// 1C    FS  (file separator)
-// 1D    GS  (group separator)
-// 1E    RS  (record separator)
-// 1F    US  (unit separator)
+/*
+ * 00    NUL '\0' (null character)
+ * 01    SOH (start of heading)
+ * 02    STX (start of text)
+ * 03    ETX (end of text)
+ * 04    EOT (end of transmission)
+ * 05    ENQ (enquiry)
+ * 06    ACK (acknowledge)
+ * 07    BEL '\a' (bell)
+ * 08    BS  '\b' (backspace)
+ * 0B    VT  '\v' (vertical tab)
+ * 0C    FF  '\f' (form feed)
+ * 0E    SO  (shift out)
+ * 0F    SI  (shift in)
+ * 10    DLE (data link escape)
+ * 11    DC1 (device control 1)
+ * 12    DC2 (device control 2)
+ * 13    DC3 (device control 3)
+ * 14    DC4 (device control 4)
+ * 15    NAK (negative ack.)
+ * 16    SYN (synchronous idle)
+ * 17    ETB (end of trans. blk)
+ * 18    CAN (cancel)
+ * 19    EM  (end of medium)
+ * 1A    SUB (substitute)
+ * 1B    ESC (escape)
+ * 1C    FS  (file separator)
+ * 1D    GS  (group separator)
+ * 1E    RS  (record separator)
+ * 1F    US  (unit separator)
+ */
 function hasCorruptCharacters(string) {
 	return corruptCharacters.test(string);
 }
@@ -394,9 +401,11 @@ function invertMap(map) {
 	}
 	return invertedMap;
 }
-// This ensures that the sort is stable. The default Array.sort of the browser
-// is not stable in firefox, as the JS spec does not enforce the sort to be
-// stable.
+/*
+ * This ensures that the sort is stable. The default Array.sort of the browser
+ * is not stable in firefox, as the JS spec does not enforce the sort to be
+ * stable.
+ */
 function stableSort(arr, compare) {
 	// Stryker disable all : in previous versions of Chrome, sort was not stable by itself, so we had to add this. This is to support older versions of JS runners.
 	return arr

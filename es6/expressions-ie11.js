@@ -130,11 +130,15 @@ function configuredParser(config = {}) {
 			...config,
 		});
 
-		// isAssignment will be true if your tag contains an Assignment, for example
-		// when you write the following in your template :
-		// {full_name = first_name + last_name}
-		// In that case, it makes sense to return an empty string so
-		// that the tag does not write something to the generated document.
+		/*
+		 * isAssignment will be true if your tag contains an Assignment, for example
+		 * when you write the following in your template :
+		 *
+		 * {full_name = first_name + last_name}
+		 *
+		 * In that case, it makes sense to return an empty string so
+		 * that the tag does not write something to the generated document.
+		 */
 		const isAssignment =
 			expr.ast.body[0] &&
 			expr.ast.body[0].expression.type === "AssignmentExpression";

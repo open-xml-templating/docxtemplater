@@ -391,8 +391,10 @@ const Docxtemplater = class Docxtemplater {
 			xmlDocuments: this.xmlDocuments,
 		});
 		this.getTemplatedFiles();
-		// Loop inside all templatedFiles (ie xml files with content).
-		// Sometimes they don't exist (footer.xml for example)
+		/*
+		 * Loop inside all templatedFiles (ie xml files with content).
+		 * Sometimes they don't exist (footer.xml for example)
+		 */
 		for (const fileName of this.templatedFiles) {
 			if (this.zip.files[fileName] != null) {
 				this.precompileFile(fileName);

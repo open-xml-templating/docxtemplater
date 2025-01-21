@@ -28,8 +28,10 @@ function logger(error, logging) {
 			.join("\n");
 		// eslint-disable-next-line no-console
 		console.log("errorMessages", errorMessages);
-		// errorMessages is a humanly readable message looking like this :
-		// 'The tag beginning with "foobar" is unopened'
+		/*
+		 * errorMessages is a humanly readable message looking like this :
+		 * 'The tag beginning with "foobar" is unopened'
+		 */
 	}
 }
 module.exports = logger;

@@ -3,6 +3,7 @@ import parser from "@babel/eslint-parser";
 import importPlugin from "eslint-plugin-import";
 import specificSortPlugin from "eslint-plugin-specific-sort";
 import sortClassMembers from "eslint-plugin-sort-class-members";
+import stylisticJs from "@stylistic/eslint-plugin-js";
 
 export default [
 	{
@@ -62,11 +63,13 @@ export default [
 			},
 		},
 		plugins: {
+			"@stylistic/js": stylisticJs,
 			import: importPlugin,
 			"specific-sort": specificSortPlugin,
 			"sort-class-members": sortClassMembers,
 		},
 		rules: {
+			"@stylistic/js/multiline-comment-style": ["error", "starred-block"],
 			"sort-class-members/sort-class-members": [
 				2,
 				{

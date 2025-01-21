@@ -1,7 +1,9 @@
-// convert string to array (typed, when possible)
-// Stryker disable all : because this is a utility function that was copied
-// from
-// https://github.com/open-xml-templating/pizzip/blob/34a840553c604980859dc6d0dcd1f89b6e5527b3/es6/utf8.js#L33
+/*
+ * Convert string to array (typed, when possible)
+ * Stryker disable all : because this is a utility function that was copied
+ * from
+ * https://github.com/open-xml-templating/pizzip/blob/34a840553c604980859dc6d0dcd1f89b6e5527b3/es6/utf8.js#L33
+ */
 function string2buf(str) {
 	let c,
 		c2,
@@ -78,9 +80,11 @@ function postrender(parts, options) {
 	for (let i = 0, len = newParts.length; i < len; i++) {
 		const part = newParts[i];
 
-		// This condition should be hit in the integration test at :
-		// it("should not regress with long file (hit maxCompact value of 65536)", function () {
-		// Stryker disable all : because this is an optimisation that won't make any tests fail
+		/*
+		 * This condition should be hit in the integration test at :
+		 * it("should not regress with long file (hit maxCompact value of 65536)", function () {
+		 * Stryker disable all : because this is an optimisation that won't make any tests fail
+		 */
 		if (part.length + lenStr > maxCompact) {
 			const arr = string2buf(longStr);
 			fullLength += arr.length;

@@ -67,7 +67,9 @@ describe("Simple templating", () => {
 			tag8: "resolvedvalue8",
 			tag9: "resolvedvalue9",
 		});
-		/* The order here is important !
+		/*
+		 * The order here is important !!
+		 *
 		 * We expect the word/settings.xml templating to happen before the
 		 * "word/document.xml"
 		 *

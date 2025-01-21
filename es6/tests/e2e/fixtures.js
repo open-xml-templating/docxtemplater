@@ -1539,12 +1539,14 @@ const fixtures = [
 		scope: 2,
 		...noInternals,
 		contentText: "Hi {((((.+.+.)*.*0.5)|sum:.)-.)/.}",
-		// = (((2 + 2 + 2)*2 * 0.5 | sum:2)-2)/2
-		// = (((6)*2 * 0.5 | sum:2)-2)/2
-		// = ((6 | sum:2)-2)/2
-		// = ((8)-2)/2
-		// = (6)/2
-		// = 3
+		/*
+		 * = (((2 + 2 + 2)*2 * 0.5 | sum:2)-2)/2
+		 * = (((6)*2 * 0.5 | sum:2)-2)/2
+		 * = ((6 | sum:2)-2)/2
+		 * = ((8)-2)/2
+		 * = (6)/2
+		 * = 3
+		 */
 		options: {
 			parser: expressionParser,
 		},
@@ -1716,8 +1718,10 @@ const fixtures = [
 			],
 		},
 		...noInternals,
-		// The space inside {# . } is important.
-		// It tests a regression that was fixed in version 3.37.12
+		/*
+		 * The space inside {# . } is important.
+		 * It tests a regression that was fixed in version 3.37.12
+		 */
 		contentText: "Hi {#products}{# .  }-{ . }-{/}{/}",
 		options: {
 			parser: expressionParser,
@@ -2679,8 +2683,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:p><w:r><w:t xml:space="preserve">xxgotnull</w:t></w:r></w:p>',
 	}),
 	{
-		// The specificity of this input is that it contains : <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
-		// So in the algorithm that updates the height of the table, those tags should be ignored
+		/*
+		 * The specificity of this input is that it contains : <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
+		 * So in the algorithm that updates the height of the table, those tags should be ignored
+		 */
 		it: "should work with table pptx nested and empty 'ext' element",
 		...noInternals,
 		content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

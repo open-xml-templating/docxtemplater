@@ -96,8 +96,10 @@ function joinUncorrupt(parts, options) {
 			if (
 				currentlyCollecting === -1 &&
 				isStarting(part, tag) &&
-				// to verify that the part doesn't have multiple tags,
-				// such as <w:tc><w:p>
+				/*
+				 * To verify that the part doesn't have multiple tags,
+				 * such as <w:tc><w:p>
+				 */
 				part.substr(1).indexOf("<") === -1
 			) {
 				// self-closing tag such as <w:t/>

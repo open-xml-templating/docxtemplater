@@ -1,6 +1,8 @@
-// Table with utf8 lengths (calculated by first byte of sequence)
-// Note, that 5 & 6-byte values and some 4-byte values can not be represented in JS,
-// because max possible codepoint is 0x10ffff
+/*
+ * Table with utf8 lengths (calculated by first byte of sequence)
+ * Note, that 5 & 6-byte values and some 4-byte values can not be represented in JS,
+ * because max possible codepoint is 0x10ffff
+ */
 const _utf8len = new Array(256);
 for (let i = 0; i < 256; i++) {
 	_utf8len[i] =
@@ -22,9 +24,11 @@ function buf2string(buf) {
 	let i, out, c, cLen;
 	const len = buf.length;
 
-	// Reserve max possible length (2 words per char)
-	// NB: by unknown reasons, Array is significantly faster for
-	//     String.fromCharCode.apply than Uint16Array.
+	/*
+	 * Reserve max possible length (2 words per char)
+	 * NB: by unknown reasons, Array is significantly faster for
+	 *     String.fromCharCode.apply than Uint16Array.
+	 */
 	let utf16buf = new Array(len * 2);
 
 	for (out = 0, i = 0; i < len; ) {
@@ -80,15 +84,17 @@ function buf2string(buf) {
 }
 
 function applyFromCharCode(array) {
-	// Performances notes :
-	// --------------------
-	// String.fromCharCode.apply(null, array) is the fastest, see
-	// see http://jsperf.com/converting-a-uint8array-to-a-string/2
-	// but the stack is limited (and we can get huge arrays !).
-	//
-	// result += String.fromCharCode(array[i]); generate too many strings !
-	//
-	// This code is inspired by http://jsperf.com/arraybuffer-to-string-apply-performance/2
+	/*
+	 * Performances notes :
+	 * --------------------
+	 * String.fromCharCode.apply(null, array) is the fastest, see
+	 * see http://jsperf.com/converting-a-uint8array-to-a-string/2
+	 * but the stack is limited (and we can get huge arrays !).
+	 *
+	 * result += String.fromCharCode(array[i]); generate too many strings !
+	 *
+	 * This code is inspired by http://jsperf.com/arraybuffer-to-string-apply-performance/2
+	 */
 	let chunk = 65536;
 	const result = [],
 		len = array.length;
@@ -125,14 +131,18 @@ function utf8border(buf, max) {
 		pos--;
 	}
 
-	// Fuckup - very small and broken sequence,
-	// return max, because we should return something anyway.
+	/*
+	 * Fuckup - very small and broken sequence,
+	 * return max, because we should return something anyway.
+	 */
 	if (pos < 0) {
 		return max;
 	}
 
-	// If we came to start of buffer - that means vuffer is too small,
-	// return max too.
+	/*
+	 * If we came to start of buffer - that means vuffer is too small,
+	 * return max too.
+	 */
 	if (pos === 0) {
 		return max;
 	}

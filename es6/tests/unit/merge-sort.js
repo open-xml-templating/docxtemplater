@@ -12,8 +12,10 @@ describe("Mergesort", () => {
 	});
 
 	it("should work even when having first array be the smallest values", () => {
-		// In previous versions, this simple example would fail with the
-		// message : `Cannot read property 'offset' of undefined`
+		/*
+		 * In previous versions, this simple example would fail with the
+		 * message : `Cannot read property 'offset' of undefined`
+		 */
 		const sorted = mergesort([
 			[{ offset: 1 }, { offset: 2 }],
 			[{ offset: 4 }, { offset: 5 }],

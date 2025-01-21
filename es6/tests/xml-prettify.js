@@ -22,9 +22,11 @@ function attributeSorter(ln, namespaces) {
 	let match = attrRegex.exec(rest);
 	const attributes = [];
 	while (match != null) {
-		// matched text: match[0]
-		// match start: match.index
-		// capturing group n: match[n]
+		/*
+		 * matched text: match[0]
+		 * match start: match.index
+		 * capturing group n: match[n]
+		 */
 		const key = match[1];
 		let value = match[2];
 
