@@ -1,3 +1,8 @@
+### 3.58.2
+
+Bugfix Inspectmodule so that it shows image tags inside xlsx files.
+Previously, those tags would not appear in the `getTags` result.
+
 ### 3.58.1
 
 Add `renderAsync` typescript typing to TxtTemplater.

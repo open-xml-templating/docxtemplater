@@ -82,10 +82,12 @@ function getTags(postParsed) {
 			if (part.cellParsed) {
 				for (const cp of part.cellPostParsed) {
 					if (cp.type === "placeholder") {
-						if (cp.module === "pro-xml-templating/xls-module-innerloop") {
+						if (cp.module === "pro-xml-templating/xls-module-loop") {
+							continue;
+						} else if (cp.subparsed) {
 							localTags[cp.value] ||= {};
 							processFiltered(cp, current, cp.subparsed.filter(isPlaceholder));
-						} else if (!cp.module) {
+						} else {
 							const sizeScope = getScopeSize(part, current.parents);
 							localTags = getLocalTags(tags, current.path, sizeScope);
 							localTags[cp.value] ||= {};
