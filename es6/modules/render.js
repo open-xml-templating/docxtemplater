@@ -1,11 +1,13 @@
 const wrapper = require("../module-wrapper.js");
-const { getScopeCompilationError } = require("../errors.js");
+const {
+	getScopeCompilationError,
+	getCorruptCharactersException,
+} = require("../errors.js");
 const {
 	utf8ToWord,
 	hasCorruptCharacters,
 	removeCorruptCharacters,
 } = require("../doc-utils.js");
-const { getCorruptCharactersException } = require("../errors.js");
 
 const {
 	settingsContentType,

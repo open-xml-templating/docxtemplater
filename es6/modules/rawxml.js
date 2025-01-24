@@ -5,8 +5,9 @@ const {
 	getInvalidRawXMLValueException,
 } = require("../errors.js");
 
-const moduleName = "rawxml";
 const wrapper = require("../module-wrapper.js");
+
+const moduleName = "rawxml";
 
 function getInner({ part, left, right, postparsed, index }) {
 	const paragraphParts = postparsed.slice(left + 1, right);

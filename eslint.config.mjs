@@ -125,6 +125,8 @@ export default [
 			"import/no-cycle": 2,
 			"import/no-unresolved": 2,
 			"import/extensions": [2, "always"],
+			"no-duplicate-imports": 2,
+			"import/no-duplicates": ["error", { considerQueryString: true }],
 			"dot-location": [2, "property"],
 			"dot-notation": 2,
 			"eol-last": 2,

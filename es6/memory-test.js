@@ -1,7 +1,8 @@
-const PizZip = require("pizzip");
-const Docxtemplater = require("./docxtemplater.js");
-
 const fs = require("fs");
+
+const PizZip = require("pizzip");
+
+const Docxtemplater = require("./docxtemplater.js");
 
 const zip = new PizZip(fs.readFileSync("examples/memory-stress.docx"));
 const doc = new Docxtemplater(zip, { paragraphLoop: true });
