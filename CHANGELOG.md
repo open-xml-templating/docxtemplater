@@ -1,3 +1,7 @@
+### 3.58.3
+
+Do not throw an error if sending xml invalid character such as "\u0002" when using TxtTemplater.
+
 ### 3.58.2
 
 Bugfix Inspectmodule so that it shows image tags inside xlsx files.

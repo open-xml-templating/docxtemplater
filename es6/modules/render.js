@@ -99,18 +99,23 @@ class Render {
 			return { errors: [e] };
 		}
 		value ??= nullGetter(part);
-		if (stripInvalidXMLChars) {
-			value = removeCorruptCharacters(value);
-		} else if (hasCorruptCharacters(value)) {
-			return {
-				errors: [
-					getCorruptCharactersException({
-						tag: part.value,
-						value,
-						offset: part.offset,
-					}),
-				],
-			};
+		if (typeof value === "string") {
+			if (stripInvalidXMLChars) {
+				value = removeCorruptCharacters(value);
+			} else if (
+				["docx", "pptx", "xlsx"].indexOf(fileType) !== -1 &&
+				hasCorruptCharacters(value)
+			) {
+				return {
+					errors: [
+						getCorruptCharactersException({
+							tag: part.value,
+							value,
+							offset: part.offset,
+						}),
+					],
+				};
+			}
 		}
 		if (fileType === "text") {
 			return { value };

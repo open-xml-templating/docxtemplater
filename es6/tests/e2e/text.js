@@ -12,6 +12,13 @@ describe("Text templating", () => {
 		);
 	});
 
+	it("should not regress if data contains XML corrupt characters", () => {
+		const doc = new TxtTemplater("Hello {user}, how are you ?");
+		expect(doc.render({ user: "John\u0002" })).to.be.equal(
+			"Hello John\u0002, how are you ?"
+		);
+	});
+
 	it("should be possible to template text files with expressionParser", () => {
 		const doc = new TxtTemplater("Hello {user + age}, how are you ?", {
 			parser: expressionParser,

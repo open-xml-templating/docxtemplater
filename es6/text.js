@@ -14,8 +14,11 @@ const XmlTemplater = require("./xml-templater.js");
 
 function TxtTemplater(text, options = {}) {
 	const filePath = "text";
-	const xmlt = new XmlTemplater(text, { modules: [] });
-	xmlt.fileType = "text";
+	const xmltOptions = {
+		fileType: "text",
+		modules: [],
+	};
+	const xmlt = new XmlTemplater(text, xmltOptions);
 	this.fileTypeConfig =
 		xmlt.fileTypeConfig =
 		options.fileTypeConfig =
@@ -33,6 +36,7 @@ function TxtTemplater(text, options = {}) {
 	for (const module of xmlt.modules) {
 		module.optionsTransformer(options, {
 			fileTypeConfig: xmlt.fileTypeConfig,
+			...xmltOptions,
 			parser: xmlt.parser,
 			options: xmlt,
 		});
