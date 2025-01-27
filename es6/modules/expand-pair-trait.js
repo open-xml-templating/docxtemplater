@@ -161,9 +161,13 @@ class ExpandPairTrait {
 			if (!expandTo || fileType === "text") {
 				const left = pair[0].offset;
 				const right = pair[1].offset;
-				if (left < lastRight) {
+				if (
+					left < lastRight &&
+					!this.docxtemplater.options.syntax.allowUnbalancedLoops
+				) {
 					errors.push(getUnbalancedLoopException(pair, lastPair));
 				}
+
 				lastPair = pair;
 				lastRight = right;
 				return [left, right];
@@ -179,7 +183,10 @@ class ExpandPairTrait {
 			} catch (e) {
 				errors.push(e);
 			}
-			if (left < lastRight) {
+			if (
+				left < lastRight &&
+				!this.docxtemplater.options.syntax.allowUnbalancedLoops
+			) {
 				errors.push(getUnbalancedLoopException(pair, lastPair));
 			}
 			lastRight = right;
@@ -192,7 +199,6 @@ class ExpandPairTrait {
 			return { postparsed, errors };
 		}
 		// Stryker restore all
-
 		let currentPairIndex = 0;
 		let innerParts;
 
@@ -207,13 +213,17 @@ class ExpandPairTrait {
 				newParsed.push(part);
 				return newParsed;
 			}
+			// We're inside the pair
 			if (expandedPair[0] === i) {
+				// Start pair
 				innerParts = [];
 			}
 			if (pair[0].offset !== i && pair[1].offset !== i) {
+				// Exclude inner pair indexes
 				innerParts.push(part);
 			}
 			if (expandedPair[1] === i) {
+				// End pair
 				const basePart = postparsed[pair[0].offset];
 				basePart.subparsed = postparse(innerParts, { basePart });
 				basePart.endLindex = pair[1].part.lIndex;
@@ -221,6 +231,17 @@ class ExpandPairTrait {
 				delete basePart.expandTo;
 				newParsed.push(basePart);
 				currentPairIndex++;
+				let expandedPair = expandedPairs[currentPairIndex];
+				while (expandedPair && expandedPair[0] < i) {
+					/*
+					 * If we have :
+					 * expandedPairs =[[5,72],[51,67],[90,106]]
+					 * Then after treating [5,72], we need to treat [90,106]
+					 * Fixed since v3.58.4
+					 */
+					currentPairIndex++;
+					expandedPair = expandedPairs[currentPairIndex];
+				}
 			}
 			return newParsed;
 		}, []);

@@ -1,3 +1,39 @@
+### 3.58.4
+
+Make it possible to write unbalanced loops, if specifying the following the option :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+const doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+  syntax: {
+    allowUnbalancedLoops: true,
+  },
+});
+doc.render(/* data */);
+```
+
+Then the following template in a table will work
+
+```docx
+-------------------------
+| {#a}   | {/a}{#b}{/b} |
+-------------------------
+```
+
+This template will normally throw an "unbalanced_loop_tags" exception.
+
+The correct fix is to move the {#b} to be inside the {#a} loop like this :
+
+```docx
+-------------------------
+| {#a}   | {#b}{/b}{/a} |
+-------------------------
+```
+
+However, if you have some templates that were used before v3.19.9 of docxtemplater, and can't change the templates, you can use the `allowUnbalancedLoops` option.
+
 ### 3.58.3
 
 Do not throw an error if sending xml invalid character such as "\u0002" when using TxtTemplater.

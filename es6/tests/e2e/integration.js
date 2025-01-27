@@ -1353,3 +1353,40 @@ describe("OptionsTransformer", () => {
 		);
 	});
 });
+
+describe("Syntax.allowUnbalancedLoops option", () => {
+	it("should work with unbalanced loop with allowUnbalancedLoops option", () => {
+		const doc = createDocV4("table-unbalanced-loop.docx", {
+			syntax: {
+				allowUnbalancedLoops: true,
+			},
+		});
+		doc.render({
+			a: [1, 2, 3],
+			b: [1, 2, 3],
+			c: [1, 2, 3],
+		});
+		shouldBeSame({
+			doc,
+			expectedName: "expected-table-unbalanced-loop.docx",
+		});
+	});
+
+	it("should work with unbalanced loop with allowUnbalancedLoops option (2)", () => {
+		const doc = createDocV4("table-unbalanced-loop-2.docx", {
+			syntax: {
+				allowUnbalancedLoops: true,
+			},
+		});
+
+		doc.render({
+			a: [1, 2, 3],
+			b: [1, 2, 3],
+			c: [1, 2, 3],
+		});
+		shouldBeSame({
+			doc,
+			expectedName: "expected-table-unbalanced-loop-2.docx",
+		});
+	});
+});
