@@ -1,3 +1,9 @@
+## 3.59.0
+
+Update internal preparse API in order to be able to return a new preparsed value (useful for the new ErrorLocationModule version 3.9.7).
+
+Provides moduleApiVersion 3.44.0 (please update the ErrorLocationModule if you use it).
+
 ### 3.58.4
 
 Make it possible to write unbalanced loops, if specifying the following the option :

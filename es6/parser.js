@@ -98,10 +98,11 @@ const parser = {
 	preparse(parsed, modules, options) {
 		function preparse(parsed, options) {
 			for (const module of modules) {
-				module.preparse(parsed, options);
+				parsed = module.preparse(parsed, options) || parsed;
 			}
+			return parsed;
 		}
-		return { preparsed: preparse(parsed, options) };
+		return preparse(parsed, options);
 	},
 	parse(lexed, modules, options) {
 		let inPlaceHolder = false;

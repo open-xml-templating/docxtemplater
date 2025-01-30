@@ -100,7 +100,7 @@ module.exports = class XmlTemplater {
 			inspect: { filePath: this.filePath, lexed: this.lexed },
 		});
 		const options = this.getOptions();
-		Parser.preparse(this.lexed, this.modules, options);
+		this.lexed = Parser.preparse(this.lexed, this.modules, options);
 	}
 	parse() {
 		this.setModules({ inspect: { filePath: this.filePath } });

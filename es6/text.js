@@ -71,7 +71,7 @@ function TxtTemplater(text, options = {}) {
 	pushArray(xmlt.allErrors, lexerErrors);
 	xmlt.lexed = lexed;
 	xmlt.setModules({ inspect: { filePath, lexed: xmlt.lexed } });
-	Parser.preparse(xmlt.lexed, xmlt.modules, xmlt.getOptions());
+	xmlt.lexed = Parser.preparse(xmlt.lexed, xmlt.modules, xmlt.getOptions());
 	xmlt.parse();
 	if (xmlt.allErrors.length > 0) {
 		throwMultiError(xmlt.allErrors);
