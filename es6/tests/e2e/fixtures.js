@@ -1818,6 +1818,19 @@ const fixtures = [
 		resultText: "FIRST Hello Other item ",
 	},
 	{
+		it: "should work well with $index and array lookup wiht expression parser",
+		contentText: "{#products}{productNames[$index]}-{/}",
+		...noInternals,
+		options: {
+			parser: expressionParser,
+		},
+		scope: {
+			products: [1, 2, 3],
+			productNames: ["PRO", "LIGHT", "ULTIMATE"],
+		},
+		resultText: "PRO-LIGHT-ULTIMATE-",
+	},
+	{
 		it: "should work well with $index inside condition expression parser",
 		contentText:
 			"{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}",
