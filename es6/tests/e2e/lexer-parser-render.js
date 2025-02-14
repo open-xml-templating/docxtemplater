@@ -25,7 +25,7 @@ function expectations(iModule, fixture) {
 			content = utf8decode(content);
 		}
 		content = content
-			.replace(/^<w:t xml:space="preserve">/, "")
+			.replace(/^<w:t( xml:space="preserve")?>/, "")
 			.replace(/<\/w:t>$/, "");
 		expect(content).to.be.deep.equal(fixture.resultText, "Content incorrect");
 	} else if (fixture.result !== null) {

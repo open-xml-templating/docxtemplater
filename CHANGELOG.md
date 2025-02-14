@@ -1,3 +1,20 @@
+## 3.60.0
+
+Make it possible to disable parsing of "{" and "}" completely by setting the delimiters.start and delimiters.end to null.
+
+```js
+const doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+  delimiters: {
+    start: null,
+    end: null,
+  },
+});
+```
+
+Fixed #777
+
 ## 3.59.0
 
 Update internal preparse API in order to be able to return a new preparsed value (useful for the new ErrorLocationModule version 3.9.7).

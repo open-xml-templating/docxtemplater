@@ -468,6 +468,21 @@ const fixtures = [
 		postparsed: null,
 	},
 	{
+		it: "should work with delimiters set to start:null, end:null",
+		contentText: "Hello {name}",
+		scope: {
+			name: "John Doe",
+		},
+		resultText: "Hello {name}",
+		delimiters: {
+			start: null,
+			end: null,
+		},
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
+	{
 		it: "should work with custom delimiters",
 		contentText: "Hello [[[name]]",
 		scope: {

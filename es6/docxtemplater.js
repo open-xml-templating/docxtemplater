@@ -244,8 +244,8 @@ const Docxtemplater = class Docxtemplater {
 				options[key] != null ? options[key] : this[key] || defaultValue;
 			this[key] = this.options[key];
 		}
-		this.delimiters.start = DocUtils.utf8ToWord(this.delimiters.start);
-		this.delimiters.end = DocUtils.utf8ToWord(this.delimiters.end);
+		this.delimiters.start &&= DocUtils.utf8ToWord(this.delimiters.start);
+		this.delimiters.end &&= DocUtils.utf8ToWord(this.delimiters.end);
 		return this;
 	}
 	loadZip(zip) {

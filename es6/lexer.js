@@ -255,6 +255,10 @@ function getAllDelimiterIndexes(fullText, delimiters, syntaxOptions) {
 	let { start, end } = delimiters;
 	let offset = -1;
 	let insideTag = false;
+	if (start == null && end == null) {
+		// Special case of delimiter set to null/null, no templating is done
+		return [];
+	}
 	while (true) {
 		const startOffset = fullText.indexOf(start, offset + 1);
 		const endOffset = fullText.indexOf(end, offset + 1);
