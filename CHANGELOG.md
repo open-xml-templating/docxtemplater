@@ -4,8 +4,6 @@ Make it possible to disable parsing of "{" and "}" completely by setting the del
 
 ```js
 const doc = new Docxtemplater(zip, {
-  paragraphLoop: true,
-  linebreaks: true,
   delimiters: {
     start: null,
     end: null,
