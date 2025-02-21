@@ -2165,6 +2165,29 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 	},
 	{
+		it: "should be possible to assign value inside rootScope",
+		contentText: "{last='foo'}{#l}{last}{last=l[$index].name}{/l}",
+		resultText: "fooJohnJackMary",
+		scope: {
+			l: [
+				{ name: "John" },
+				{ name: "Jack" },
+				{ name: "Mary" },
+				{ name: "Sean" },
+			],
+		},
+		...noInternals,
+		options: {
+			parser: expressionParser.configure({
+				csp: true,
+				setIdentifier(tag, value, xxx, scopeList) {
+					scopeList[0][tag] = value;
+					return true;
+				},
+			}),
+		},
+	},
+	{
 		it: "should not be possible to access __proto__ with expressionParser",
 		contentText: "{__proto__}",
 		resultText: "undefined",
