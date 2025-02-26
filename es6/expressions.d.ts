@@ -19,6 +19,13 @@ interface ParserOptions {
     scopeList: any[],
     context: DXT.ParserContext
   ) => any;
+  setIdentifier?: (
+    tag: string,
+    value: any,
+    scope: any,
+    scopeList: any[],
+    context: DXT.ParserContext
+  ) => any;
 }
 
 interface ExpressionParser extends DXT.Parser {

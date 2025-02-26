@@ -2180,7 +2180,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		options: {
 			parser: expressionParser.configure({
 				csp: true,
-				setIdentifier(tag, value, xxx, scopeList) {
+				setIdentifier(tag, value, scope, scopeList) {
 					scopeList[0][tag] = value;
 					return true;
 				},

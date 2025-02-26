@@ -1,3 +1,7 @@
+## 3.60.1
+
+Add typescript typings for `expressionParser.configure({setIdentifier: (tag, value, scope, scopeList, context) => true})`.
+
 ## 3.60.0
 
 Make it possible to disable parsing of "{" and "}" completely by setting the delimiters.start and delimiters.end to null.

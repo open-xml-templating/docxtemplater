@@ -248,6 +248,19 @@ expressionParser.configure({
 });
 
 expressionParser.configure({
+  setIdentifier(
+    tag: string,
+    value: any,
+    scope: any,
+    scopeList: any[],
+    context: any
+  ) {
+    scopeList[0][tag] = value;
+    return true;
+  },
+});
+
+expressionParser.configure({
   postEvaluate(
     result: any,
     tag: string,
