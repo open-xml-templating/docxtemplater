@@ -1,3 +1,7 @@
+## 3.60.2
+
+Throw specific error when trying to render a xlsx template to tell you that you have to use the [paid xlsx module](https://docxtemplater.com/modules/xlsx/) for that.
+
 ## 3.60.1
 
 Add typescript typings for `expressionParser.configure({setIdentifier: (tag, value, scope, scopeList, context) => true})`.

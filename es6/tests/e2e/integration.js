@@ -272,6 +272,21 @@ describe("Regression", () => {
 			expectedName: "expected-tag-in-title.pptx",
 		});
 	});
+
+	it("should fail with specific error message with xlsx file", () => {
+		/*
+		 * Error case handled since v3.60.2
+		 * Throw specific error when trying to template xlsx file without xlsxmodule
+		 */
+		const expectedError = {
+			message: 'Filetype "xlsx" is supported only with the paid XlsxModule',
+			name: "TemplateError",
+			properties: {
+				id: "xlsx_filetype_needs_xlsx_module",
+			},
+		};
+		expectToThrow(() => createDocV4("simple.xlsx"), Error, expectedError);
+	});
 });
 
 describe("Spacing/Linebreaks", () => {

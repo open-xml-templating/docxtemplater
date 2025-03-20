@@ -25,6 +25,11 @@ const pptxSlideLayout =
 const pptxPresentationContentType =
 	"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
 
+const xlsxContentType =
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
+const xlsmContentType = "application/vnd.ms-excel.sheet.macroEnabled.main+xml";
+const xlsxWorksheetContentType =
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
 /*
  * This is used for the main part of the document, ie usually that would be the
  * type of word/document.xml
@@ -51,6 +56,7 @@ const filetypes = {
 		pptxSlideLayout,
 		pptxPresentationContentType,
 	],
+	xlsx: [xlsxContentType, xlsmContentType, xlsxWorksheetContentType],
 };
 
 module.exports = filetypes;

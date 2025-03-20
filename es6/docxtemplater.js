@@ -29,6 +29,7 @@ const {
 	throwRenderInvalidTemplate,
 	throwRenderTwice,
 	XTInternalError,
+	XTTemplateError,
 	throwFileTypeNotIdentified,
 	throwFileTypeNotHandled,
 	throwApiVersionError,
@@ -485,10 +486,29 @@ const Docxtemplater = class Docxtemplater {
 		this.fileType = fileType;
 		dropUnsupportedFileTypesModules(this);
 
-		this.fileTypeConfig =
-			this.options.fileTypeConfig ||
-			this.fileTypeConfig ||
-			Docxtemplater.FileTypeConfig[this.fileType]();
+		this.fileTypeConfig = this.options.fileTypeConfig || this.fileTypeConfig;
+		if (!this.fileTypeConfig) {
+			if (Docxtemplater.FileTypeConfig[this.fileType]) {
+				this.fileTypeConfig = Docxtemplater.FileTypeConfig[this.fileType]();
+			} else {
+				/*
+				 * Error case handled since v3.60.2
+				 * Throw specific error when trying to template xlsx file without xlsxmodule
+				 */
+				let message = `Filetype "${this.fileType}" is not supported`;
+				let id = "filetype_not_supported";
+				if (this.fileType === "xlsx") {
+					message = `Filetype "${this.fileType}" is supported only with the paid XlsxModule`;
+					id = "xlsx_filetype_needs_xlsx_module";
+				}
+				const err = new XTTemplateError(message);
+				err.properties = {
+					id,
+					explanation: message,
+				};
+				throw err;
+			}
+		}
 		return this;
 	}
 	renderAsync(data) {

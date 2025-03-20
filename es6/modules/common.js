@@ -33,7 +33,7 @@ class Common {
 				Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
 			}
 		}
-		const keys = ["docx", "pptx"];
+		const keys = ["docx", "pptx", "xlsx"];
 		let ftCandidate;
 		for (const key of keys) {
 			const contentTypes = filetypes[key];
@@ -52,6 +52,9 @@ class Common {
 						ftCandidate = key;
 						if (filetypes.main.indexOf(ct) !== -1 || ct === filetypes.pptx[0]) {
 							doc.textTarget ||= target;
+						}
+						if (ftCandidate === "xlsx") {
+							continue;
 						}
 						doc.targets.push(target);
 					}
