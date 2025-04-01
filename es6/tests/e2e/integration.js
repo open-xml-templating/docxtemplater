@@ -1168,6 +1168,7 @@ describe("Prefixes", () => {
 		);
 	});
 });
+
 describe("Load Office 365 file", () => {
 	it("should handle files with word/document2.xml", function () {
 		return this.renderV4({
@@ -1402,6 +1403,47 @@ describe("Syntax.allowUnbalancedLoops option", () => {
 		shouldBeSame({
 			doc,
 			expectedName: "expected-table-unbalanced-loop-2.docx",
+		});
+	});
+});
+
+describe("Get Tags", () => {
+	it("should be possible to get the tags", () => {
+		const doc = createDocV4("tag-example.docx", {
+			syntax: {
+				allowUnbalancedLoops: true,
+			},
+		});
+
+		expect(doc.getTags()).to.deep.equal({
+			headers: [
+				{
+					target: "word/header1.xml",
+					tags: {
+						last_name: {},
+						first_name: {},
+						phone: {},
+						description: {},
+					},
+				},
+			],
+			footers: [
+				{
+					target: "word/footer1.xml",
+					tags: {
+						last_name: {},
+						first_name: {},
+						phone: {},
+					},
+				},
+			],
+			document: {
+				target: "word/document.xml",
+				tags: {
+					last_name: {},
+					first_name: {},
+				},
+			},
 		});
 	});
 });

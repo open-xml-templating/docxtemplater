@@ -4,6 +4,7 @@ DocUtils.moduleWrapper = require("./module-wrapper.js");
 const createScope = require("./scope-manager.js");
 const Lexer = require("./lexer.js");
 const commonModule = require("./modules/common.js");
+const { getTags } = require("./get-tags.js");
 
 function deprecatedMessage(obj, message) {
 	if (obj.hideDeprecations === true) {
@@ -619,6 +620,40 @@ const Docxtemplater = class Docxtemplater {
 		pushArray(this.templatedFiles, this.targets);
 		this.templatedFiles = uniq(this.templatedFiles);
 		return this.templatedFiles;
+	}
+	getTags() {
+		const result = { headers: [], footers: [] };
+		for (const key in this.compiled) {
+			const contentType = this.filesContentTypes[key];
+			if (
+				contentType ===
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+			) {
+				result.document = {
+					target: key,
+					tags: getTags(this.compiled[key].postparsed),
+				};
+			}
+			if (
+				contentType ===
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"
+			) {
+				result.headers.push({
+					target: key,
+					tags: getTags(this.compiled[key].postparsed),
+				});
+			}
+			if (
+				contentType ===
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
+			) {
+				result.footers.push({
+					target: key,
+					tags: getTags(this.compiled[key].postparsed),
+				});
+			}
+		}
+		return result;
 	}
 };
 

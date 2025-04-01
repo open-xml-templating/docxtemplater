@@ -1,3 +1,13 @@
+## 3.61.0
+
+Add `doc.getTags()` to get tags per document/header/footer.
+
+It works for docx files only
+
+For xlsx files, you need the paid version and use the `xlsxModule.getSheets()`.
+
+For pptx files, you need the paid version and use the `slidesModule.getSlides()`.
+
 ## 3.60.2
 
 Throw specific error when trying to render a xlsx template to tell you that you have to use the [paid xlsx module](https://docxtemplater.com/modules/xlsx/) for that.
