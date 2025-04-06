@@ -268,6 +268,8 @@ Bugfix issue introduced in 3.55.1 when using the XlsxModule and trying to load a
 
 Add internal xmlContentTypes API for setting xmlFileNames easily from modules.
 
+Update moduleApiVersion to 3.42.0
+
 ### 3.55.0
 
 - Performance improvements : docxtemplater now uses for of loops instead of forEach to avoid creating many anonymous functions.
