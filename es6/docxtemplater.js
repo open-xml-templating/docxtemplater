@@ -53,7 +53,7 @@ const {
 
 const ctXML = "[Content_Types].xml";
 const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 44, 0];
+const currentModuleApiVersion = [3, 45, 0];
 
 function dropUnsupportedFileTypesModules(doc) {
 	doc.modules = doc.modules.filter((module) => {

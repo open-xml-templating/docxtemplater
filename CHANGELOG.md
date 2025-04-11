@@ -1,3 +1,11 @@
+## 3.61.1
+
+Update moduleApiVersion to 3.45.0 (for being able to use `require("docxtemplater/js/get-tags.js");`).
+
+Please update xlsx module to 3.29.1 at least.
+
+Please update slides module to 3.7.1 at least.
+
 ## 3.61.0
 
 Add `doc.getTags()` to get tags per document/header/footer.
