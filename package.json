@@ -1,6 +1,6 @@
 {
   "name": "docxtemplater",
-  "version": "3.61.0",
+  "version": "3.61.1",
   "author": "Edgar Hipp",
   "description": "Generate docx, pptx, and xlsx from templates (Word, Powerpoint and Excel documents), from Node.js, the Browser and the command line",
   "contributors": [
