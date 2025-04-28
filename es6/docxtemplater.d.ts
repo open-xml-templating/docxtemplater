@@ -44,7 +44,7 @@ declare namespace DXT {
 
   interface Module {
     set?(options: any): void;
-    parse?(placeHolderContent: string): SimplePart | null;
+    clone?(): Module;
     matchers?(): [
       string,
       string,
@@ -59,9 +59,13 @@ declare namespace DXT {
     errorsTransformer?(errors: Error[]): Error[];
     getRenderedMap?(map: any): any;
     preparse?(parsed: any, options: any): any;
+    parse?(placeHolderContent: string): SimplePart | null;
     postparse?(postparsed: Part[], modules: Module[], options: any): Part[];
     on?(event: string): void;
+    preResolve?(options: any): void;
     resolve?(part: Part, options: any): null | Promise<any>;
+    preZip?(content: string, currentFile: string): null | string;
+
     [x: string]: any;
   }
 
