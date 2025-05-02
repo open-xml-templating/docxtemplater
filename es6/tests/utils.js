@@ -69,7 +69,7 @@ function walk(dir) {
 		file = dir + "/" + file;
 		const stat = fs.statSync(file);
 		if (stat && stat.isDirectory()) {
-			Array.prototype.push.apply(results, walk(file));
+			pushArray(results, walk(file));
 		} else {
 			results.push(file);
 		}

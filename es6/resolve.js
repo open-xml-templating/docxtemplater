@@ -1,3 +1,4 @@
+const { pushArray } = require("./doc-utils.js");
 const getResolvedId = require("./get-resolved-id.js");
 
 function moduleResolve(part, options) {
@@ -48,7 +49,7 @@ function resolve(options) {
 				promises.push(
 					result.catch((e) => {
 						if (e instanceof Array) {
-							errors.push(...e);
+							pushArray(errors, e);
 						} else {
 							errors.push(e);
 						}

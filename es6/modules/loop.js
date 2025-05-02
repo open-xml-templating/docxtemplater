@@ -376,7 +376,7 @@ class LoopModule {
 				return Promise.all(promises)
 					.then((r) =>
 						r.map(({ resolved, errors }) => {
-							errorList.push(...errors);
+							pushArray(errorList, errors);
 							return resolved;
 						})
 					)
@@ -461,7 +461,7 @@ class LoopModule {
 			for (const val of subRendered.parts) {
 				totalValue.push(val);
 			}
-			Array.prototype.push.apply(errors, subRendered.errors);
+			pushArray(errors, subRendered.errors);
 		}
 		const result = options.scopeManager.loopOver(
 			part.value,

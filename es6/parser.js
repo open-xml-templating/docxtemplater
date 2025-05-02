@@ -1,18 +1,18 @@
-const { wordToUtf8 } = require("./doc-utils.js");
+const { wordToUtf8, pushArray } = require("./doc-utils.js");
 const { match, getValue, getValues } = require("./prefix-matcher.js");
 
 function getMatchers(modules, options) {
-	const matchers = [];
+	const allMatchers = [];
 	for (const module of modules) {
 		if (module.matchers) {
-			const mmm = module.matchers(options);
-			if (!(mmm instanceof Array)) {
+			const matchers = module.matchers(options);
+			if (!(matchers instanceof Array)) {
 				throw new Error("module matcher returns a non array");
 			}
-			matchers.push(...mmm);
+			pushArray(allMatchers, matchers);
 		}
 	}
-	return matchers;
+	return allMatchers;
 }
 
 function getMatches(matchers, placeHolderContent, options) {
@@ -123,7 +123,7 @@ const parser = {
 							modules,
 						});
 					parsed.push(options.parse(wordToUtf8(placeHolderContent)));
-					Array.prototype.push.apply(parsed, tailParts);
+					pushArray(parsed, tailParts);
 					tailParts = [];
 				}
 				if (token.position === "start") {
@@ -166,7 +166,7 @@ const parser = {
 					return postparsed;
 				}
 				if (r.errors) {
-					Array.prototype.push.apply(errors, r.errors);
+					pushArray(errors, r.errors);
 					return r.postparsed;
 				}
 				return r;

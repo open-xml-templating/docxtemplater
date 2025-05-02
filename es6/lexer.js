@@ -7,7 +7,12 @@ const {
 	throwXmlInvalid,
 	XTTemplateError,
 } = require("./errors.js");
-const { isTextStart, isTextEnd, wordToUtf8 } = require("./doc-utils.js");
+const {
+	isTextStart,
+	isTextEnd,
+	wordToUtf8,
+	pushArray,
+} = require("./doc-utils.js");
 
 const DELIMITER_NONE = 0,
 	DELIMITER_EQUAL = 1,
@@ -451,7 +456,7 @@ module.exports = {
 					}
 					p.lIndex = lIndex++;
 				}
-				Array.prototype.push.apply(lexed, delimiterParsed[index]);
+				pushArray(lexed, delimiterParsed[index]);
 				index++;
 			} else {
 				part.lIndex = lIndex++;

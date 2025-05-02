@@ -326,7 +326,7 @@ const Docxtemplater = class Docxtemplater {
 								return result;
 							},
 							(errs) => {
-								Array.prototype.push.apply(errors, errs);
+								pushArray(errors, errs);
 							}
 						);
 					});

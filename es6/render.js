@@ -36,7 +36,7 @@ function render(options) {
 			}
 			if (moduleRendered) {
 				if (moduleRendered.errors) {
-					Array.prototype.push.apply(errors, moduleRendered.errors);
+					pushArray(errors, moduleRendered.errors);
 				}
 				return moduleRendered;
 			}

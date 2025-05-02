@@ -1,3 +1,4 @@
+const { pushArray } = require("../doc-utils.js");
 const wrapper = require("../module-wrapper.js");
 const filetypes = require("../filetypes.js");
 
@@ -30,7 +31,7 @@ class Common {
 		}
 		for (const ct of commonContentTypes) {
 			if (invertedContentTypes[ct]) {
-				Array.prototype.push.apply(doc.targets, invertedContentTypes[ct]);
+				pushArray(doc.targets, invertedContentTypes[ct]);
 			}
 		}
 		const keys = ["docx", "pptx", "xlsx"];

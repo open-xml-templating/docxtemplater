@@ -4,6 +4,7 @@ const {
 	isTextEnd,
 	endsWith,
 	startsWith,
+	pushArray,
 } = require("../doc-utils.js");
 const wTpreserve = '<w:t xml:space="preserve">';
 const wTpreservelen = wTpreserve.length;
@@ -64,7 +65,7 @@ class SpacePreserve {
 				if (endLindex !== 0) {
 					chunk[lastTextTag].value = addXMLPreserve(chunk, lastTextTag);
 				}
-				Array.prototype.push.apply(postparsed, chunk);
+				pushArray(postparsed, chunk);
 				chunk = [];
 				inTextTag = false;
 				endLindex = 0;
@@ -72,7 +73,7 @@ class SpacePreserve {
 			}
 			return postparsed;
 		}, []);
-		Array.prototype.push.apply(result, chunk);
+		pushArray(result, chunk);
 		return result;
 	}
 	postrender(parts) {

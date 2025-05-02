@@ -12,7 +12,7 @@ const inspectModule = require("../../inspect-module.js");
 
 const Docxtemplater = require("../../docxtemplater.js");
 const Errors = require("../../errors.js");
-const { traits, uniq } = require("../../doc-utils.js");
+const { pushArray, traits, uniq } = require("../../doc-utils.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
 
 describe("Verify apiversion", () => {
@@ -119,7 +119,7 @@ describe("Module xml parse", () => {
 				const relsFiles = docxtemplater.zip
 					.file(/document.xml.rels/)
 					.map((file) => file.name);
-				options.xmlFileNames.push(...relsFiles);
+				pushArray(options.xmlFileNames, relsFiles);
 				return options;
 			},
 		};
@@ -145,7 +145,7 @@ describe("Module xml parse", () => {
 				 * mutating it for future documents
 				 * Fixed since 3.55.0
 				 */
-				options.xmlFileNames.push(...relsFiles);
+				pushArray(options.xmlFileNames, relsFiles);
 				return options;
 			},
 			set(options) {
@@ -270,7 +270,7 @@ describe("Module errors", () => {
 				}
 			},
 			errorsTransformer(errors) {
-				myErrors.push(...errors);
+				pushArray(myErrors, errors);
 				return errors.map((e) => {
 					e.xyz = "xxx";
 					return e;
