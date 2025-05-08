@@ -349,7 +349,7 @@ function isModule({ module, type }, modules) {
 }
 // Stryker restore all
 
-const corruptCharacters = /[\x00-\x08\x0B\x0C\x0E-\x1F]/;
+const corruptCharacters = /[\x00-\x08\x0B\x0C\x0E-\x1F]/g;
 /*
  * 00    NUL '\0' (null character)
  * 01    SOH (start of heading)

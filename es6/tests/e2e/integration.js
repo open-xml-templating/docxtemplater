@@ -1318,6 +1318,23 @@ describe("StripInvalidXml", () => {
 		});
 	});
 
+	it("should be possible to strip multiple invalid xml chars in same string", function () {
+		// Regression fixed 3.61.2
+		return this.render({
+			name: "tag-example.docx",
+			data: {
+				first_name:
+					"John" + String.fromCharCode(28) + " Doe" + String.fromCharCode(28),
+			},
+			options: {
+				paragraphLoop: true,
+				errorLogging: false,
+				stripInvalidXMLChars: true,
+			},
+			expectedName: "expected-john-doe.pptx",
+		});
+	});
+
 	it("should not throw stack trace if specifying stripInvalidXMLChars and using number or other object", function () {
 		return this.render({
 			name: "tag-example.docx",

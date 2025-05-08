@@ -1,3 +1,9 @@
+## 3.61.2
+
+Correctly remove all corrupt characters when using the `stripInvalidXMLChars` option.
+
+Previously only the first occurence was removed.
+
 ## 3.61.1
 
 Update moduleApiVersion to 3.45.0 (for being able to use `require("docxtemplater/js/get-tags.js");`).
