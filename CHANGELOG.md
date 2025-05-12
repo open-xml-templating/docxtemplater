@@ -1,3 +1,40 @@
+## 3.62.0
+
+Also requires an update to pizzip to at least pizzip@3.2.0
+
+Add multiple export functions : `toBuffer`, `toBlob`, `toBase64`, `toUint8Array`, `toArrayBuffer`
+
+Instead of :
+
+```js
+const doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+});
+doc.render(/* data */);
+const buf = doc.getZip().generate({
+  type: "nodebuffer",
+  /*
+   * Compression: DEFLATE adds a compression step.
+   * For a 50MB document, expect 500ms additional CPU time.
+   */
+  compression: "DEFLATE",
+});
+```
+
+You can now write :
+
+```js
+const doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+});
+doc.render(/* data */);
+const buf = doc.toBuffer();
+```
+
+It automatically uses `"compression": "DEFLATE"` (which makes the docx file output smaller but takes a bit of CPU time for the zipping algorithm), and correctly writes the files in the correct order so that the mime type detection for unix systems recognizes the files as the correct mimetypes.
+
 ## 3.61.2
 
 Correctly remove all corrupt characters when using the `stripInvalidXMLChars` option.

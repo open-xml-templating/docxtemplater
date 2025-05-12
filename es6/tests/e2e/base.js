@@ -30,12 +30,107 @@ describe("Loading", () => {
 	describe("output and input", () => {
 		it("should be the same", () => {
 			const doc = createDocV4("tag-example.docx");
-			const output = doc.getZip().generate({ type: "base64" });
-			expect(output.length).to.be.equal(90732);
+			const output = doc.toBase64();
+			expect(output.length).to.be.equal(22808);
 			expect(output.substr(0, 50)).to.be.equal(
-				"UEsDBAoAAAAAAAAAIQAMTxYSlgcAAJYHAAATAAAAW0NvbnRlbn"
+				"UEsDBAoAAAAIAAAAIQAMTxYSigEAAJYHAAATAAAAW0NvbnRlbn"
 			);
 		});
+	});
+});
+
+describe("Zip output", () => {
+	if (typeof window === "undefined") {
+		it("should work with toBuffer and also verify that the fileorder contains [Content_Types].xml and _rels/.rels in first characters", () => {
+			const doc = createDocV4("tag-example.docx");
+			doc.render({});
+			const buf = doc.toBuffer();
+			expect(buf).to.be.instanceof(Buffer);
+
+			// Work on a copy to preserve the original buffer
+			const sanitizedBuf = Buffer.from(buf);
+
+			// Replace ZIP local file headers with PK@@ to stabilize snapshot
+			const HEADER_SIG = Buffer.from("504b0304", "hex"); // "PK\x03\x04"
+			let offset = 0;
+			while (offset < sanitizedBuf.length) {
+				const idx = sanitizedBuf.indexOf(HEADER_SIG, offset);
+				if (idx === -1) {
+					break;
+				}
+
+				// Zero out mod time + date
+				sanitizedBuf.writeUInt16LE(0, idx + 8);
+				sanitizedBuf.writeUInt16LE(0, idx + 10);
+
+				/*
+				 * Overwrite the 30-byte header with 'PK@@' followed by 26 dashes
+				 * This ensures exact replacement without affecting filename
+				 */
+				sanitizedBuf.write("PK@@--------------------------", idx, 30, "ascii");
+
+				offset = idx + 30;
+			}
+
+			// Now convert to safe printable string for snapshot testing
+			const allChars = sanitizedBuf
+				.toString()
+				.replace(/[^@a-zA-Z_1-9[\]./-]/g, "-");
+
+			// Get first ~1KB for snapshot
+			const firstChars = allChars.slice(0, 1100);
+			expect(firstChars).to.matchSnapshot();
+
+			// Check that expected files appear in expected order
+			const expectedFiles = [
+				"[Content_Types].xml",
+				"_rels/.rels",
+				"word/_rels/document.xml.rels",
+				"word/document.xml",
+				"word/footnotes.xml",
+				"word/endnotes.xml",
+				"word/header1.xml",
+				"word/footer1.xml",
+				"word/theme/theme1.xml",
+				"word/settings.xml",
+				"word/webSettings.xml",
+				"word/stylesWithEffects.xml",
+				"word/fontTable.xml",
+				"docProps/core.xml",
+				"word/styles.xml",
+				"docProps/app.xml",
+			];
+			expect(expectedFiles.map((file) => allChars.indexOf(file))).to.deep.equal(
+				[
+					30, 445, 708, 1094, 1741, 2233, 2764, 6425, 7028, 8678, 9677, 9956,
+					11905, 14516, 12426, 14861,
+				]
+			);
+		});
+	}
+	it("should work with toBlob", () => {
+		const doc = createDocV4("tag-example.docx");
+		doc.render({});
+		const buf = doc.toBlob();
+		expect(buf).to.be.instanceof(Blob);
+	});
+	it("should work with toBase64", () => {
+		const doc = createDocV4("tag-example.docx");
+		doc.render({});
+		const buf = doc.toBase64();
+		expect(buf).to.be.a("string");
+	});
+	it("should work with toUint8Array", () => {
+		const doc = createDocV4("tag-example.docx");
+		doc.render({});
+		const buf = doc.toUint8Array();
+		expect(buf).to.be.instanceof(Uint8Array);
+	});
+	it("should work with toArrayBuffer", () => {
+		const doc = createDocV4("tag-example.docx");
+		doc.render({});
+		const buf = doc.toArrayBuffer();
+		expect(buf).to.be.instanceof(ArrayBuffer);
 	});
 });
 

@@ -89,35 +89,27 @@ function createXmlTemplaterDocx(content, options = {}) {
 	return doc;
 }
 
-function writeFile(expectedName, zip) {
+function writeFile(expectedName, doc) {
 	if (path.resolve) {
 		if (fs.writeFileSync) {
-			const writeFile =
+			const file =
 				// eslint-disable-next-line no-process-env
 				process.env.UPDATE === "true"
 					? path.resolve(examplesDirectory, expectedName)
 					: path.resolve(examplesDirectory, "..", expectedName);
-			fs.writeFileSync(
-				writeFile,
-				zip.generate({ type: "nodebuffer", compression: "DEFLATE" })
-			);
+
+			fs.writeFileSync(file, doc.toBuffer());
 		}
 		if (typeof window !== "undefined" && window.saveAs) {
-			const out = zip.generate({
-				type: "blob",
-				mimeType:
-					"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-				compression: "DEFLATE",
-			});
-			saveAs(out, expectedName); // comment to see the error
+			saveAs(doc.toBlob(), expectedName);
 		}
 	}
 }
 function unlinkFile(expectedName) {
 	if (path.resolve) {
-		const writeFile = path.resolve(examplesDirectory, "..", expectedName);
+		const file = path.resolve(examplesDirectory, "..", expectedName);
 		try {
-			fs.unlinkSync(writeFile);
+			fs.unlinkSync(file);
 		} catch (e) {
 			if (e.code !== "ENOENT") {
 				throw e;
@@ -232,7 +224,7 @@ function shouldBeSame({ doc, expectedName }) {
 	const zip = doc.getZip();
 
 	if (!documentCache[expectedName]) {
-		writeFile(expectedName, zip);
+		writeFile(expectedName, doc);
 		console.log(
 			JSON.stringify({ msg: "Expected file does not exists", expectedName })
 		);
@@ -245,7 +237,7 @@ function shouldBeSame({ doc, expectedName }) {
 	try {
 		zipCompare(zip, expectedZip, expectedName);
 	} catch (e) {
-		writeFile(expectedName, zip);
+		writeFile(expectedName, doc);
 		console.log(
 			JSON.stringify({
 				msg: "Expected file differs from actual file",
@@ -842,14 +834,6 @@ const pptxContentTypeContent = `<?xml version="1.0" encoding="utf-8"?>
   <Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>
 </Types>`;
 
-function makePptx(name, content) {
-	const zip = new PizZip();
-	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
-	zip.file("[Content_Types].xml", pptxContentTypeContent);
-	zip.file("_rels/.rels", pptxRelsContent);
-	return load(name, zip.generate({ type: "string" }), documentCache);
-}
-
 function makePptxV4(content, options = {}) {
 	const zip = new PizZip();
 	zip.file("ppt/slides/slide1.xml", content, { createFolders: true });
@@ -1005,7 +989,6 @@ module.exports = {
 	loadImage,
 	makeDocxV3,
 	makeDocxV4,
-	makePptx,
 	makePptxV4,
 	removeSpaces,
 	setExamplesDirectory,

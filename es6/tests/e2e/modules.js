@@ -790,42 +790,45 @@ describe("Module call order", () => {
 });
 
 describe("Module priority", () => {
-	it("should reorder modules", () => {
-		const m1 = {
-			priority: 4,
-			name: "M1",
-			parse: (parsed) => parsed,
-		};
-		const m2 = {
-			priority: -1,
-			name: "M2",
-			parse: (parsed) => parsed,
-		};
-		const m3 = {
-			priority: 5,
-			name: "M3",
-			parse: (parsed) => parsed,
-		};
-		const m4 = {
-			priority: 5,
-			name: "M4",
-			parse: (parsed) => parsed,
-		};
-		const m5 = {
-			priority: 5,
-			name: "M5",
-			parse: (parsed) => parsed,
-		};
+	it("should reorder modules #test-reorder-modules", () => {
 		const doc = createDocV4("loop-image-footer.docx", {
-			modules: [m1, m2, m3, m4, m5],
+			modules: [
+				{
+					priority: 4,
+					name: "M1",
+					parse: (parsed) => parsed,
+				},
+				{
+					priority: -1,
+					name: "M2",
+					parse: (parsed) => parsed,
+				},
+				{
+					priority: 5,
+					name: "M3",
+					parse: (parsed) => parsed,
+				},
+				{
+					priority: 5,
+					name: "M4",
+					parse: (parsed) => parsed,
+				},
+				{
+					priority: 5,
+					name: "M5",
+					parse: (parsed) => parsed,
+				},
+			],
 		});
 
 		const orderedNames = doc.modules.map(({ name }) => name);
 		expect(orderedNames).to.deep.equal([
-			"M3",
-			"M4",
-			"M5",
-			"M1",
+			"M3", // Priority 5
+			"M4", // Priority 5
+			"M5", // Priority 5
+			"M1", // Priority 4
+
+			// All default modules have default priority of 0
 			"LoopModule",
 			"SpacePreserveModule",
 			"ExpandPairTrait",
@@ -833,7 +836,8 @@ describe("Module priority", () => {
 			"Render",
 			"Common",
 			"AssertionModule",
-			"M2",
+
+			"M2", // Priority -1
 		]);
 	});
 });

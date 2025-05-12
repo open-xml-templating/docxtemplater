@@ -1,10 +1,77 @@
 const DocUtils = require("./doc-utils.js");
 DocUtils.traits = require("./traits.js");
 DocUtils.moduleWrapper = require("./module-wrapper.js");
+const commonModule = require("./modules/common.js");
 const createScope = require("./scope-manager.js");
 const Lexer = require("./lexer.js");
-const commonModule = require("./modules/common.js");
 const { getTags } = require("./get-tags.js");
+const logErrors = require("./error-logger.js");
+const collectContentTypes = require("./collect-content-types.js");
+const {
+	throwMultiError,
+	throwResolveBeforeCompile,
+	throwRenderInvalidTemplate,
+	throwRenderTwice,
+	XTInternalError,
+	XTTemplateError,
+	throwFileTypeNotIdentified,
+	throwFileTypeNotHandled,
+	throwApiVersionError,
+} = require("./errors.js");
+
+const {
+	getDefaults,
+	str2xml,
+	xml2str,
+	moduleWrapper,
+	concatArrays,
+	uniq,
+	getDuplicates,
+	stableSort,
+	pushArray,
+} = DocUtils;
+
+const ctXML = "[Content_Types].xml";
+const relsFile = "_rels/.rels";
+const currentModuleApiVersion = [3, 45, 0];
+
+function zipFileOrder(files) {
+	const allFiles = [];
+	for (const name in files) {
+		allFiles.push(name);
+	}
+	/*
+	 * The first files that need to be put in the zip file are :
+	 * [Content_Types].xml and _rels/.rels
+	 */
+	const resultFiles = [ctXML, relsFile];
+
+	/*
+	 * The next files that should be in the zip file are :
+	 *
+	 * - word/* (ie word/document.xml, word/header1.xml, ...)
+	 * - xl/* (ie xl/worksheets/sheet1.xml)
+	 * - ppt/* (ie ppt/slides/slide1.xml)
+	 */
+	const prefixes = ["word/", "xl/", "ppt/"];
+	for (const name of allFiles) {
+		for (const prefix of prefixes) {
+			if (name.indexOf(`${prefix}`) === 0) {
+				resultFiles.push(name);
+			}
+		}
+	}
+
+	/*
+	 * Push the rest of files, such as docProps/core.xml and docProps/app.xml
+	 */
+	for (const name of allFiles) {
+		if (resultFiles.indexOf(name) === -1) {
+			resultFiles.push(name);
+		}
+	}
+	return resultFiles;
+}
 
 function deprecatedMessage(obj, message) {
 	if (obj.hideDeprecations === true) {
@@ -23,37 +90,6 @@ function deprecatedMethod(obj, method) {
 		`Deprecated method ".${method}", view upgrade guide : https://docxtemplater.com/docs/api/#upgrade-guide, stack : ${new Error().stack}`
 	);
 }
-
-const {
-	throwMultiError,
-	throwResolveBeforeCompile,
-	throwRenderInvalidTemplate,
-	throwRenderTwice,
-	XTInternalError,
-	XTTemplateError,
-	throwFileTypeNotIdentified,
-	throwFileTypeNotHandled,
-	throwApiVersionError,
-} = require("./errors.js");
-
-const logErrors = require("./error-logger.js");
-const collectContentTypes = require("./collect-content-types.js");
-
-const {
-	getDefaults,
-	str2xml,
-	xml2str,
-	moduleWrapper,
-	concatArrays,
-	uniq,
-	getDuplicates,
-	stableSort,
-	pushArray,
-} = DocUtils;
-
-const ctXML = "[Content_Types].xml";
-const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 45, 0];
 
 function dropUnsupportedFileTypesModules(doc) {
 	doc.modules = doc.modules.filter((module) => {
@@ -359,6 +395,7 @@ const Docxtemplater = class Docxtemplater {
 		 *   { priority: 1, name: "FooMod" },
 		 *   { priority: -1, name: "XMod" }
 		 * ]
+		 * Tested in #test-reorder-modules
 		 */
 		this.modules = stableSort(
 			this.modules,
@@ -654,6 +691,48 @@ const Docxtemplater = class Docxtemplater {
 			}
 		}
 		return result;
+	}
+
+	/* Export functions, present since 3.62.0 */
+	toBuffer(options) {
+		return this.getZip().generate({
+			compression: "DEFLATE",
+			fileOrder: zipFileOrder,
+			...options,
+			type: "nodebuffer",
+		});
+	}
+	toBlob(options) {
+		return this.getZip().generate({
+			compression: "DEFLATE",
+			fileOrder: zipFileOrder,
+			...options,
+			type: "blob",
+		});
+	}
+	toBase64(options) {
+		return this.getZip().generate({
+			compression: "DEFLATE",
+			fileOrder: zipFileOrder,
+			...options,
+			type: "base64",
+		});
+	}
+	toUint8Array(options) {
+		return this.getZip().generate({
+			compression: "DEFLATE",
+			fileOrder: zipFileOrder,
+			...options,
+			type: "uint8array",
+		});
+	}
+	toArrayBuffer(options) {
+		return this.getZip().generate({
+			compression: "DEFLATE",
+			fileOrder: zipFileOrder,
+			...options,
+			type: "arraybuffer",
+		});
 	}
 };
 

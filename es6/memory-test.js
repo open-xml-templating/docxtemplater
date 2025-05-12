@@ -17,7 +17,7 @@ for (let i = 0, len = 500; i < len; i++) {
 }
 
 doc.render({ a });
-const buf = doc.getZip().generate({ type: "nodebuffer" });
+const buf = doc.toBuffer();
 
 const minSize = 500;
 if (buf.length < minSize * 1000 * 1000) {
