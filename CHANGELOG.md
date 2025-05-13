@@ -1,3 +1,11 @@
+## 3.62.2
+
+Bugfix a regression of 3.61.2 when your data contains invalid xml characters.
+
+Since version 3.61.2, in some cases, if two tags contained invalid xml characters, in the Multi Error, only one would be shown.
+
+Now, all invalid xml characters of all tags are shown in the error (this was also the case in versions <= 3.61.1)
+
 ## 3.62.1
 
 Add correct typescript types for new export functions added in 3.62.0

@@ -1335,6 +1335,59 @@ describe("StripInvalidXml", () => {
 		});
 	});
 
+	it("should show two errors if there are two tags with invalid xml chars", function () {
+		// Regression fixed 3.62.2
+		const expectedError = {
+			name: "TemplateError",
+			message: "Multi error",
+			properties: {
+				errors: [
+					{
+						// There should be two errors, not just one !
+						name: "RenderingError",
+						message: "There are some XML corrupt characters",
+						properties: {
+							id: "invalid_xml_characters",
+							xtag: "first_name",
+							value: "John\u001cxxxxxxx",
+							file: "word/document.xml",
+						},
+					},
+					{
+						// There should be two errors, not just one !
+						name: "RenderingError",
+						message: "There are some XML corrupt characters",
+						properties: {
+							id: "invalid_xml_characters",
+							xtag: "last_name",
+							value: "XXX\u001cyyyy",
+							file: "word/document.xml",
+						},
+					},
+				],
+				id: "multi_error",
+			},
+		};
+
+		expectToThrow(
+			() =>
+				this.render({
+					name: "two-tags.docx",
+					data: {
+						first_name: "John" + String.fromCharCode(28) + "xxxxxxx",
+						last_name: "XXX" + String.fromCharCode(28) + "yyyy",
+					},
+					options: {
+						paragraphLoop: true,
+						errorLogging: false,
+					},
+					expectedName: "expected-john-doe.pptx",
+				}),
+			Errors.XTTemplateError,
+			expectedError
+		);
+	});
+
 	it("should not throw stack trace if specifying stripInvalidXMLChars and using number or other object", function () {
 		return this.render({
 			name: "tag-example.docx",
