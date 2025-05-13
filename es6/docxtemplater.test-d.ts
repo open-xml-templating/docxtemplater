@@ -86,6 +86,22 @@ const scope = nullValues.detail[0].scopeManager.scopeList[0];
 expectType<string>(firstTag);
 doc1.render();
 
+const buf: Buffer = doc1.toBuffer({
+  compression: "DEFLATE",
+});
+const blob: Blob = doc1.toBlob({
+  compression: "DEFLATE",
+});
+const str: string = doc1.toBase64({
+  compression: "DEFLATE",
+});
+const u8: Uint8Array = doc1.toUint8Array({
+  compression: "DEFLATE",
+});
+const ab: ArrayBuffer = doc1.toArrayBuffer({
+  compression: "DEFLATE",
+});
+
 new Docxtemplater(
   {},
   {

@@ -1,3 +1,7 @@
+## 3.62.1
+
+Add correct typescript types for new export functions added in 3.62.0
+
 ## 3.62.0
 
 Also requires an update to pizzip to at least pizzip@3.2.0
