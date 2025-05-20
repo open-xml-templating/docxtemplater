@@ -33,10 +33,10 @@ exports[`Api versioning should fail with invalid versions-1`] = {
     ],
     "currentModuleApiVersion": [
       3,
-      45,
+      46,
       0
     ],
-    "explanation": "moduleAPIVersionMismatch : needed=5.6.0, current=3.45.0"
+    "explanation": "moduleAPIVersionMismatch : needed=5.6.0, current=3.46.0"
   }
 }
 
@@ -48,15 +48,15 @@ exports[`Api versioning should fail with invalid versions-2`] = {
     "id": "api_version_error",
     "neededVersion": [
       3,
-      46,
+      47,
       0
     ],
     "currentModuleApiVersion": [
       3,
-      45,
+      46,
       0
     ],
-    "explanation": "moduleAPIVersionMismatch : needed=3.46.0, current=3.45.0"
+    "explanation": "moduleAPIVersionMismatch : needed=3.47.0, current=3.46.0"
   }
 }
 
@@ -68,15 +68,15 @@ exports[`Api versioning should fail with invalid versions-3`] = {
     "id": "api_version_error",
     "neededVersion": [
       3,
-      45,
+      46,
       100
     ],
     "currentModuleApiVersion": [
       3,
-      45,
+      46,
       0
     ],
-    "explanation": "moduleAPIVersionMismatch : needed=3.45.100, current=3.45.0"
+    "explanation": "moduleAPIVersionMismatch : needed=3.46.100, current=3.46.0"
   }
 }
 
@@ -1164,6 +1164,26 @@ exports[`Traits should just call onError but keep it if the return value is not 
     ],
     "id": "multi_error",
     "explanation": "The template has multiple errors"
+  }
+}
+
+exports[`Verify apiversion should fail with invalid api version`] = {
+  "_type": "XTAPIVersionError",
+  "name": "APIVersionError",
+  "message": "The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
+  "properties": {
+    "id": "api_version_error",
+    "neededVersion": [
+      3,
+      92,
+      0
+    ],
+    "currentModuleApiVersion": [
+      3,
+      46,
+      0
+    ],
+    "explanation": "moduleAPIVersionMismatch : needed=3.92.0, current=3.46.0"
   }
 }
 

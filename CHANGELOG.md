@@ -1,3 +1,69 @@
+## 3.63.0
+
+**Important** If you use one of these modules, please make sure to update to the latest version :
+
+- [table] v3.26.4
+- [qrcode] v3.5.2
+- [pptx-sub] v3.1.12
+- [image] v3.31.5
+- [html] v3.56.8
+
+Change the way `xmltemplater.parse` and `xmltemplater.postparse` are called.
+
+Previously, we did :
+
+```
+for (file of files) {
+    preparse(file)
+}
+for (file of files) {
+    parse(file)
+    postparse(file)
+}
+```
+
+Now we do :
+
+```
+for (file of files) {
+    preparse(file)
+}
+for (file of files) {
+    parse(file)
+}
+for (file of files) {
+    postparse(file)
+}
+```
+
+Add events for `before-preparse`, `after-preparse`, `after-parse`, `after-postparse` which run like this :
+
+- `before-preparse` : before doing all preparse calls
+- `after-preparse` : after doing all preparse calls (after the for loop)
+- `after-parse` : after doing all parse calls (after the for loop)
+- `after-postparse` : after doing all postparse calls (after the for loop)
+
+Update moduleApiVersion to 3.46.0.
+
+When a document had a header that contained a table, if the table rows were specified in the "percent" unit, the following stacktrace would be shown :
+
+```
+Cannot read properties of undefined (reading 'width')
+ at collectCellsDimensions (get-dimensions.js)
+ at Object.collect (get-dimensions.js)
+ at HtmlModule.preparse (index.js)
+ at preparse (parser.js)
+```
+
+This is fixed with the following versions : `docxtemplater-html-module@v3.56.8`, `docxtemplater-table-module@v3.26.4`, `docxtemplater-image-module@v3.31.5`
+
+The qrcode and pptx-subtemplate module incorrectly relied on the order of "parse/postparse". With older versions, the output will get quite messed up
+
+You have to update to these versions to make it work :
+
+- [qrcode] v3.5.2
+- [pptx-sub] v3.1.12
+
 ## 3.62.2
 
 Bugfix a regression of 3.61.2 when your data contains invalid xml characters.

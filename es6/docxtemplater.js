@@ -33,7 +33,7 @@ const {
 
 const ctXML = "[Content_Types].xml";
 const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 45, 0];
+const currentModuleApiVersion = [3, 46, 0];
 
 function zipFileOrder(files) {
 	const allFiles = [];
@@ -434,16 +434,25 @@ const Docxtemplater = class Docxtemplater {
 		 * Loop inside all templatedFiles (ie xml files with content).
 		 * Sometimes they don't exist (footer.xml for example)
 		 */
+		this.sendEvent("before-preparse");
 		for (const fileName of this.templatedFiles) {
 			if (this.zip.files[fileName] != null) {
 				this.precompileFile(fileName);
 			}
 		}
+		this.sendEvent("after-preparse");
 		for (const fileName of this.templatedFiles) {
 			if (this.zip.files[fileName] != null) {
-				this.compileFile(fileName);
+				this.compiled[fileName].parse({ noPostParse: true });
 			}
 		}
+		this.sendEvent("after-parse");
+		for (const fileName of this.templatedFiles) {
+			if (this.zip.files[fileName] != null) {
+				this.compiled[fileName].postparse();
+			}
+		}
+		this.sendEvent("after-postparse");
 		this.setModules({ compiled: this.compiled });
 		verifyErrors(this);
 		return this;
@@ -473,11 +482,8 @@ const Docxtemplater = class Docxtemplater {
 
 		return { overrides, defaults, contentTypes, contentTypeXml };
 	}
+
 	updateFileTypeConfig() {
-		let fileType;
-		if (this.zip.files.mimetype) {
-			fileType = "odt";
-		}
 		this.relsTypes = this.getRelsTypes();
 		const { overrides, defaults, contentTypes, contentTypeXml } =
 			this.getContentTypes();
@@ -494,6 +500,10 @@ const Docxtemplater = class Docxtemplater {
 			});
 		}
 
+		let fileType;
+		if (this.zip.files.mimetype) {
+			fileType = "odt";
+		}
 		for (const module of this.modules) {
 			fileType =
 				module.getFileType({

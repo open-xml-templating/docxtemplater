@@ -102,13 +102,21 @@ module.exports = class XmlTemplater {
 		const options = this.getOptions();
 		this.lexed = Parser.preparse(this.lexed, this.modules, options);
 	}
-	parse() {
+	parse({ noPostParse } = {}) {
 		this.setModules({ inspect: { filePath: this.filePath } });
 		const options = this.getOptions();
 		this.parsed = Parser.parse(this.lexed, this.modules, options);
 		this.setModules({
 			inspect: { filePath: this.filePath, parsed: this.parsed },
 		});
+		if (noPostParse) {
+			return this;
+		}
+		// In v4, we could remove this "this.postparse()" so that users have to call this manually.
+		return this.postparse();
+	}
+	postparse() {
+		const options = this.getOptions();
 		const { postparsed, errors: postparsedErrors } = Parser.postparse(
 			this.parsed,
 			this.modules,

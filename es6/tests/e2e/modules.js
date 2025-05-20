@@ -1,5 +1,6 @@
 const {
 	expectToThrow,
+	expectToThrowSnapshot,
 	shouldBeSame,
 	createDocV4,
 	captureLogs,
@@ -11,9 +12,25 @@ const proofStateModule = require("../../proof-state-module.js");
 const inspectModule = require("../../inspect-module.js");
 
 const Docxtemplater = require("../../docxtemplater.js");
-const Errors = require("../../errors.js");
 const { pushArray, traits, uniq } = require("../../doc-utils.js");
 const fixDocPrCorruption = require("../../modules/fix-doc-pr-corruption.js");
+
+function uniqTimes(arr) {
+	const times = {},
+		result = [];
+
+	for (const el of arr) {
+		if (times[el] == null) {
+			times[el] = 0;
+			result.push([el]);
+		}
+		times[el] += 1;
+	}
+	for (const item of result) {
+		item[1] = times[item[0]];
+	}
+	return result;
+}
 
 describe("Verify apiversion", () => {
 	it("should work with valid api version", () => {
@@ -36,19 +53,8 @@ describe("Verify apiversion", () => {
 			},
 		};
 
-		expectToThrow(
-			() => createDocV4("loop-valid.docx", { modules: [module] }),
-			Errors.XTAPIVersionError,
-			{
-				message:
-					"The minor api version is not uptodate, you probably have to update docxtemplater with npm install --save docxtemplater",
-				name: "APIVersionError",
-				properties: {
-					id: "api_version_error",
-					currentModuleApiVersion: [3, 45, 0],
-					neededVersion: [3, 92, 0],
-				},
-			}
+		expectToThrowSnapshot(() =>
+			createDocV4("loop-valid.docx", { modules: [module] })
 		);
 	});
 
@@ -393,15 +399,16 @@ describe("Module errors", () => {
 
 describe("Module should pass options to module.parse, module.postparse, module.render, module.postrender", () => {
 	it("should pass filePath and contentType options", () => {
-		const filePaths = [];
-		const relsType = [];
+		const filePaths = [],
+			relsType = [],
+			ct = [];
+
 		let renderFP = "",
 			renderCT = "",
 			postrenderFP = "",
 			postrenderCT = "",
 			postparseFP = "",
 			postparseCT = "";
-		const ct = [];
 
 		const module = {
 			name: "Test module",
@@ -426,8 +433,7 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 				return a;
 			},
 		};
-		const doc = createDocV4("tag-example.docx", { modules: [module] });
-		doc.render({});
+		createDocV4("tag-example.docx", { modules: [module] }).render({});
 		expect(renderFP).to.equal("word/footnotes.xml");
 		expect(renderCT).to.equal(
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"
@@ -441,7 +447,11 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"
 		);
 
-		// The order of the filePaths here is important, this has been fixed in version 3.37.8 : First headers are templated, than the document, than the footers.
+		/*
+		 * The order of the filePaths here is important, this has been fixed in
+		 * version 3.37.8 : First headers are templated, than the document,
+		 * than the footers.
+		 */
 		expect(filePaths).to.deep.equal([
 			// Header appears 4 times because there are 4 tags in the header
 			"word/header1.xml",
@@ -469,10 +479,16 @@ describe("Module should pass options to module.parse, module.postparse, module.r
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
 		]);
 
-		expect([relsType[3], relsType[4], relsType[5]]).to.deep.equal([
-			undefined,
-			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
-			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+		expect(relsType).to.deep.equal([
+			undefined, // match to header1.xml
+			undefined, // match to header1.xml
+			undefined, // match to header1.xml
+			undefined, // match to header1.xml
+			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", // match to document.xml
+			"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", // match to document.xml
+			undefined, // match to footer1.xml
+			undefined, // match to footer1.xml
+			undefined, // match to footer1.xml
 		]);
 	});
 });
@@ -635,22 +651,33 @@ describe("Proofstate module", () => {
 		});
 	});
 });
+
+describe("Module calls to on(eventName) to pass events", () => {
+	it("should work with v4 synchronously", () => {
+		const calls = [];
+		const mod = {
+			name: "TestModule",
+			on(eventName) {
+				calls.push(eventName);
+			},
+		};
+		createDocV4("loop-image-footer.docx", {
+			modules: [mod],
+		}).render({ loop: [1, 2, 3, 4] });
+		expect(calls).to.deep.equal([
+			"attached",
+			"before-preparse",
+			"after-preparse",
+			"after-parse",
+			"after-postparse",
+			"syncing-zip",
+			"synced-zip",
+		]);
+	});
+});
+
 describe("Module call order", () => {
-	const expectedCallOrder = [
-		"on",
-		"set",
-		"getFileType",
-		"optionsTransformer",
-		"preparse",
-		"getTraits",
-		"postparse",
-		"errorsTransformer",
-		"matchers",
-		"getRenderedMap",
-		"render",
-		"postrender",
-	];
-	it("should work with v4", () => {
+	it("should work with v4 synchronously", () => {
 		const calls = [];
 		const mod = {
 			name: "TestModule",
@@ -706,15 +733,171 @@ describe("Module call order", () => {
 				calls.push("on");
 			},
 			resolve() {
-				calls.push("on");
+				calls.push("resolve");
 			},
 		};
-		const doc = createDocV4("loop-image-footer.docx", {
+		createDocV4("loop-image-footer.docx", {
 			modules: [mod],
-		});
-		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
-		doc.render({ loop: [1, 2, 3, 4] });
-		expect(uniq(calls)).to.deep.equal(expectedCallOrder);
+		}).render({ loop: [1, 2, 3, 4] });
+		expect(uniq(calls)).to.deep.equal([
+			"on",
+			"set",
+			"getFileType",
+			"optionsTransformer",
+			"preparse",
+			"matchers",
+			"getTraits",
+			"postparse",
+			"errorsTransformer",
+			"getRenderedMap",
+			"render",
+			"postrender",
+		]);
+	});
+
+	it("should work with v4 async", () => {
+		const calls = [],
+			parseValues = [],
+			preparsedFilePaths = [];
+		const mod = {
+			name: "TestModule",
+			set() {
+				calls.push("set");
+				return null;
+			},
+			matchers() {
+				calls.push("matchers");
+				return [];
+			},
+			render() {
+				calls.push("render");
+				return null;
+			},
+			optionsTransformer(options) {
+				calls.push("optionsTransformer");
+				return options;
+			},
+			preparse(_, options) {
+				preparsedFilePaths.push(options.filePath);
+				calls.push("preparse");
+				return null;
+			},
+			parse(part) {
+				parseValues.push(part);
+				calls.push("parse");
+				return null;
+			},
+			postparse() {
+				calls.push("postparse");
+				return null;
+			},
+			getTraits() {
+				calls.push("getTraits");
+			},
+			getFileType() {
+				calls.push("getFileType");
+			},
+			nullGetter() {
+				calls.push("nullGetter");
+			},
+			postrender() {
+				calls.push("postrender");
+				return [];
+			},
+			errorsTransformer() {
+				calls.push("errorsTransformer");
+			},
+			getRenderedMap(obj) {
+				calls.push("getRenderedMap");
+				return obj;
+			},
+			on() {
+				calls.push("on");
+			},
+			resolve() {
+				calls.push("resolve");
+			},
+		};
+		return createDocV4("tag-example.docx", {
+			modules: [mod],
+		})
+			.renderAsync({ loop: [1, 2, 3, 4] })
+			.then(() => {
+				expect(parseValues).to.deep.equal([
+					"last_name",
+					"first_name",
+					"phone",
+					"description",
+					"last_name",
+					"first_name",
+					"last_name",
+					"first_name",
+					"phone",
+				]);
+				expect(parseValues.length).to.equal(9);
+				expect(preparsedFilePaths).to.deep.equal([
+					"word/settings.xml",
+					"docProps/core.xml",
+					"docProps/app.xml",
+					"word/header1.xml",
+					"word/document.xml",
+					"word/footer1.xml",
+					"word/footnotes.xml",
+				]);
+				expect(preparsedFilePaths.length).to.equal(7);
+				expect(uniqTimes(calls)).to.deep.equal([
+					// Runs on("attached") (module is attached), after-preparse, ...
+					["on", 7],
+
+					// Runs multiple times to set xmllexed, filePath, parsed
+					["set", 62],
+
+					/*
+					 * Runs Twice, it should theoretically run once
+					 * #tofix-getFileType-twice . However for some modules, if
+					 * you run it just once, the modules break (this is in
+					 * particular if you use const doc = new Docxtemplater();
+					 * doc.attachModule() which is now deprecated
+					 */
+					["getFileType", 2],
+
+					// Runs Once
+					["optionsTransformer", 1],
+
+					// Runs for each templatedFile
+					["preparse", 7],
+
+					// Runs for each tag
+					["matchers", 9],
+
+					// Runs for each tag
+					["parse", 9],
+
+					// Runs for each templatedFile
+					["getTraits", 7],
+
+					// Runs for each templatedFile
+					["postparse", 7],
+
+					// Runs for each templatedFile
+					["errorsTransformer", 7],
+
+					// Runs Once
+					["getRenderedMap", 1],
+
+					// Runs for each tag * data
+					["resolve", 9],
+
+					// Runs for each tag * data
+					["nullGetter", 9],
+
+					// Runs for each xml tag or placeholder tag
+					["render", 240],
+
+					// Runs for each templatedFile
+					["postrender", 7],
+				]);
+			});
 	});
 
 	it("should work with v3", function () {
@@ -777,7 +960,6 @@ describe("Module call order", () => {
 			},
 		};
 
-		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
 		this.render({
 			name: "loop-image-footer.docx",
 			options: {
@@ -785,7 +967,20 @@ describe("Module call order", () => {
 			},
 			data: { loop: [1, 2, 3, 4] },
 		});
-		expect(uniq(calls)).to.deep.equal(expectedCallOrder);
+		expect(uniq(calls)).to.deep.equal([
+			"on",
+			"set",
+			"getFileType",
+			"optionsTransformer",
+			"preparse",
+			"matchers",
+			"getTraits",
+			"postparse",
+			"errorsTransformer",
+			"getRenderedMap",
+			"render",
+			"postrender",
+		]);
 	});
 });
 
