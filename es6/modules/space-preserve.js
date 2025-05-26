@@ -30,6 +30,7 @@ function isInsideLoop(meta, chunk) {
 	return meta && meta.basePart && chunk.length > 1;
 }
 
+// This module is used only for `docx` files
 class SpacePreserve {
 	constructor() {
 		this.name = "SpacePreserveModule";

@@ -20,40 +20,46 @@ function render(options) {
 	const { compiled, scopeManager } = options;
 	options.nullGetter = (part, sm) => baseNullGetter(part, sm || scopeManager);
 	const errors = [];
-	const parts = compiled
-		.map((part, i) => {
-			options.index = i;
-			options.resolvedId = getResolvedId(part, options);
-			let moduleRendered;
-			try {
-				moduleRendered = moduleRender(part, options);
-			} catch (e) {
-				if (e instanceof XTScopeParserError) {
-					errors.push(e);
-					return part;
-				}
-				throw e;
+	const parts = [];
+	for (let i = 0, len = compiled.length; i < len; i++) {
+		const part = compiled[i];
+		options.index = i;
+		options.resolvedId = getResolvedId(part, options);
+		let moduleRendered;
+		try {
+			moduleRendered = moduleRender(part, options);
+		} catch (e) {
+			if (e instanceof XTScopeParserError) {
+				errors.push(e);
+				parts.push(part);
+				continue;
 			}
-			if (moduleRendered) {
-				if (moduleRendered.errors) {
-					pushArray(errors, moduleRendered.errors);
-				}
-				return moduleRendered;
+			throw e;
+		}
+		if (moduleRendered) {
+			if (moduleRendered.errors) {
+				pushArray(errors, moduleRendered.errors);
 			}
-			if (part.type === "content" || part.type === "tag") {
-				return part;
-			}
-			throwUnimplementedTagType(part, i);
-		})
-		.reduce((parts, { value }) => {
-			if (value instanceof Array) {
-				pushArray(parts, value);
-			} else if (value) {
-				parts.push(value);
-			}
-			return parts;
-		}, []);
-	return { errors, parts };
+			parts.push(moduleRendered);
+			continue;
+		}
+		if (part.type === "content" || part.type === "tag") {
+			parts.push(part);
+			continue;
+		}
+		throwUnimplementedTagType(part, i);
+	}
+
+	// This is done in two steps because for some files, it is possible to #edit-value-backwards
+	const totalParts = [];
+	for (const { value } of parts) {
+		if (value instanceof Array) {
+			pushArray(totalParts, value);
+		} else if (value) {
+			totalParts.push(value);
+		}
+	}
+	return { errors, parts: totalParts };
 }
 
 module.exports = render;

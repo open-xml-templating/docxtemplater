@@ -16,6 +16,13 @@ const {
 	customContentType,
 } = require("../content-types.js");
 
+const NON_LINE_BREAKS_CONTENT_TYPE = [
+	settingsContentType,
+	coreContentType,
+	appContentType,
+	customContentType,
+];
+
 const ftprefix = {
 	docx: "w",
 	pptx: "a",
@@ -28,8 +35,12 @@ class Render {
 		this.recordedRun = [];
 	}
 	optionsTransformer(options, docxtemplater) {
-		this.parser = docxtemplater.parser;
-		this.fileType = docxtemplater.fileType;
+		this.docxtemplater = docxtemplater;
+		this.brTag =
+			docxtemplater.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
+		this.prefix = ftprefix[docxtemplater.fileType];
+		this.runStartTag = `${this.prefix}:r`;
+		this.runPropsStartTag = `${this.prefix}:rPr`;
 		return options;
 	}
 	set(obj) {
@@ -41,19 +52,20 @@ class Render {
 		}
 	}
 	getRenderedMap(mapper) {
-		return Object.keys(this.compiled).reduce((mapper, from) => {
+		for (const from in this.compiled) {
 			mapper[from] = { from, data: this.data };
-			return mapper;
-		}, mapper);
+		}
+		return mapper;
 	}
-
 	postparse(postparsed, options) {
 		const errors = [];
 		for (const p of postparsed) {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {
-					options.cachedParsers[p.lIndex] = this.parser(tag, { tag: p });
+					options.cachedParsers[p.lIndex] = this.docxtemplater.parser(tag, {
+						tag: p,
+					});
 				} catch (rootError) {
 					errors.push(
 						getScopeCompilationError({ tag, rootError, offset: p.offset })
@@ -74,15 +86,7 @@ class Render {
 			stripInvalidXMLChars,
 		}
 	) {
-		if (
-			linebreaks &&
-			[
-				settingsContentType,
-				coreContentType,
-				appContentType,
-				customContentType,
-			].indexOf(contentType) !== -1
-		) {
+		if (NON_LINE_BREAKS_CONTENT_TYPE.indexOf(contentType) !== -1) {
 			// Fixes issue tested in #docprops-linebreak
 			linebreaks = false;
 		}
@@ -128,39 +132,35 @@ class Render {
 		};
 	}
 	recordRuns(part) {
-		if (part.tag === `${ftprefix[this.fileType]}:r`) {
-			this.recordedRun = [];
-		} else if (part.tag === `${ftprefix[this.fileType]}:rPr`) {
+		if (part.tag === this.runStartTag) {
+			this.recordedRun = "";
+		} else if (part.tag === this.runPropsStartTag) {
 			if (part.position === "start") {
 				this.recordRun = true;
-				this.recordedRun = [part.value];
+				this.recordedRun += part.value;
 			}
 			if (part.position === "end" || part.position === "selfclosing") {
-				this.recordedRun.push(part.value);
+				this.recordedRun += part.value;
 				this.recordRun = false;
 			}
 		} else if (this.recordRun) {
-			this.recordedRun.push(part.value);
+			this.recordedRun += part.value;
 		}
 	}
 	renderLineBreaks(value) {
-		const p = ftprefix[this.fileType];
-		const br = this.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
+		const result = [];
 		const lines = value.split("\n");
-		const runprops = this.recordedRun.join("");
-		return lines
-			.map((line) => utf8ToWord(line))
-			.reduce((result, line, i) => {
-				result.push(line);
-				if (i < lines.length - 1) {
-					result.push(
-						`</${p}:t></${p}:r>${br}<${p}:r>${runprops}<${p}:t${
-							this.fileType === "docx" ? ' xml:space="preserve"' : ""
-						}>`
-					);
-				}
-				return result;
-			}, []);
+		for (let i = 0, len = lines.length; i < len; i++) {
+			result.push(utf8ToWord(lines[i]));
+			if (i < lines.length - 1) {
+				result.push(
+					`</${this.prefix}:t></${this.prefix}:r>${this.brTag}<${this.prefix}:r>${this.recordedRun}<${this.prefix}:t${
+						this.docxtemplater.fileType === "docx" ? ' xml:space="preserve"' : ""
+					}>`
+				);
+			}
+		}
+		return result;
 	}
 }
 

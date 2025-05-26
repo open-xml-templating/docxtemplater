@@ -490,6 +490,10 @@ class LoopModule {
 		}
 		if (heightOffset !== 0) {
 			const cy = +getSingleAttribute(this.lastExt.value, "cy");
+			/*
+			 * We do edit the value of a previous result here
+			 * #edit-value-backwards
+			 */
 			this.lastExt.value = setSingleAttribute(
 				this.lastExt.value,
 				"cy",
