@@ -155,7 +155,9 @@ class Render {
 			if (i < lines.length - 1) {
 				result.push(
 					`</${this.prefix}:t></${this.prefix}:r>${this.brTag}<${this.prefix}:r>${this.recordedRun}<${this.prefix}:t${
-						this.docxtemplater.fileType === "docx" ? ' xml:space="preserve"' : ""
+						this.docxtemplater.fileType === "docx"
+							? ' xml:space="preserve"'
+							: ""
 					}>`
 				);
 			}

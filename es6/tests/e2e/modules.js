@@ -616,7 +616,7 @@ describe("Module Matcher API", () => {
 });
 
 describe("Fix doc pr corruption module", () => {
-	it("should work on multiple instances in parallel", () => {
+	it("should work on multiple instances in parallel (in footer)", () => {
 		const doc = createDocV4("loop-image-footer.docx", {
 			modules: [fixDocPrCorruption],
 		});

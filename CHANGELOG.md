@@ -1,3 +1,13 @@
+## 3.63.1
+
+Fix corruption when using the fix-doc-pr-corruption code :
+
+```
+const fixDocPrCorruption = require("docxtemplater/js/modules/fix-doc-pr-corruption.js");
+```
+
+For some very rare templates, that have an "customXml/item1.xml" that uses UTF16 encoding (which is very rare), the output would become corrupt (a dialog would show up to confirm if you want to open the document, and the document would then open correctly).
+
 ## 3.63.0
 
 **Important** If you use one of these modules, please make sure to update to the latest version :

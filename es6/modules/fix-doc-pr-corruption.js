@@ -1,4 +1,5 @@
 const { setSingleAttribute, isTagStart } = require("../doc-utils.js");
+const filetypes = require("../filetypes.js");
 
 /*
  * We use a class here because this object is storing "state" in this.Lexer,
@@ -13,6 +14,7 @@ const { setSingleAttribute, isTagStart } = require("../doc-utils.js");
 class FixDocPRCorruptionModule {
 	constructor() {
 		this.name = "FixDocPRCorruptionModule";
+		this.supportedFileTypes = ["docx"];
 	}
 	clone() {
 		return new FixDocPRCorruptionModule();
@@ -33,12 +35,21 @@ class FixDocPRCorruptionModule {
 		if (event !== "syncing-zip") {
 			return;
 		}
+		// Stryker disable all : because this is an optimisation that won't make any tests fail
+		if (this.docxtemplater.fileType !== "docx") {
+			return;
+		}
+		const { filesContentTypes } = this.docxtemplater;
 		this.attached = false;
 		// Stryker restore all
 		const zip = this.zip;
 		const Lexer = this.Lexer;
 		let prId = 1;
 		for (const f of zip.file(/.xml$/)) {
+			const ct = filesContentTypes[f.name];
+			if (filetypes.docx.indexOf(ct) === -1) {
+				continue;
+			}
 			const xmlDoc = this.xmlDocuments[f.name];
 			if (xmlDoc) {
 				for (const pr of xmlDoc.getElementsByTagName("wp:docPr")) {
