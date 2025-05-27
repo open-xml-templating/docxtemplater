@@ -47,7 +47,7 @@ class FixDocPRCorruptionModule {
 		let prId = 1;
 		for (const f of zip.file(/.xml$/)) {
 			const ct = filesContentTypes[f.name];
-			if (filetypes.docx.indexOf(ct) === -1) {
+			if (ct && filetypes.docx.indexOf(ct) === -1) {
 				continue;
 			}
 			const xmlDoc = this.xmlDocuments[f.name];

@@ -1,3 +1,7 @@
+## 3.63.2
+
+Improve patch of 3.63.1 when working with subtemplate module.
+
 ## 3.63.1
 
 Fix corruption when using the fix-doc-pr-corruption code :
