@@ -39,7 +39,7 @@
     "@xmldom/xmldom": "^0.9.8"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.18.1",
+    "@arethetypeswrong/cli": "^0.18.2",
     "@babel/cli": "^7.27.2",
     "@babel/core": "^7.27.4",
     "@babel/eslint-parser": "^7.27.5",
@@ -68,7 +68,7 @@
     "mocha": "^10.8.2",
     "nyc": "^17.1.0",
     "pizzip": "^3.2.0",
-    "playwright": "^1.52.0",
+    "playwright": "^1.53.0",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "selenium-standalone": "^10.0.1",
