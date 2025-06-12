@@ -1,3 +1,12 @@
+## 3.63.3
+
+For xlsx module and the error location module, add the "square" property so that the error "Closing tag does not match opening tag" will now correctly be shown by the error location module.
+
+This requires the latest xlsx module and error location module, ie :
+
+- Requires error-location-module>=3.9.9
+- Requires xlsx-module>=3.30.1
+
 ## 3.63.2
 
 Improve patch of 3.63.1 when working with subtemplate module.

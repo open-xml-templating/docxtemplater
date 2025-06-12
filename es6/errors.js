@@ -263,6 +263,9 @@ function getClosingTagNotMatchOpeningTag({ tags }) {
 		offset: [first(tags).offset, last(tags).offset],
 		closingtag: last(tags).value,
 	};
+	if (first(tags).square) {
+		err.properties.square = [first(tags).square, last(tags).square];
+	}
 	return err;
 }
 
