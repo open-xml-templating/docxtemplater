@@ -20,6 +20,7 @@ describe("Loading", () => {
 			expect(Object.keys(doc.zip.files).length).to.be.equal(16);
 		});
 	});
+
 	describe("basic loading", () => {
 		it("should load file tag-example.docx", () => {
 			const doc = createDocV4("tag-example.docx");
@@ -114,18 +115,21 @@ describe("Zip output", () => {
 		const buf = doc.toBlob();
 		expect(buf).to.be.instanceof(Blob);
 	});
+
 	it("should work with toBase64", () => {
 		const doc = createDocV4("tag-example.docx");
 		doc.render({});
 		const buf = doc.toBase64();
 		expect(buf).to.be.a("string");
 	});
+
 	it("should work with toUint8Array", () => {
 		const doc = createDocV4("tag-example.docx");
 		doc.render({});
 		const buf = doc.toUint8Array();
 		expect(buf).to.be.instanceof(Uint8Array);
 	});
+
 	it("should work with toArrayBuffer", () => {
 		const doc = createDocV4("tag-example.docx");
 		doc.render({});
@@ -141,6 +145,7 @@ describe("Retrieving text content", () => {
 		expect(fullText.length).not.to.be.equal(0);
 		expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
 	});
+
 	it("should work for the document", () => {
 		const doc = createDocV4("tag-example.docx");
 		const fullText = doc.getFullText();
@@ -374,6 +379,7 @@ describe("Docxtemplater loops", () => {
 			"Votre proposition commercialeHippPrix: 1260Titre titre1HippPrix: 2000Titre titre2OffrePrix: 1400Titre titre3HippEdgar"
 		);
 	});
+
 	it("should work with loops inside loops", () => {
 		const tags = {
 			products: [
@@ -431,6 +437,7 @@ describe("Docxtemplater loops", () => {
 		expect(text.length).to.be.equal(expectedText.length);
 		expect(text).to.be.equal(expectedText);
 	});
+
 	it("should work with object value", () => {
 		const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
 		const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
@@ -438,6 +445,7 @@ describe("Docxtemplater loops", () => {
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(getContent(xmlTemplater)).to.be.deep.equal(expectedContent);
 	});
+
 	it("should work with string value", () => {
 		const content = "<w:t>{#todo}{todo}{/todo}</w:t>";
 		const expectedContent = '<w:t xml:space="preserve">abc</w:t>';
@@ -446,6 +454,7 @@ describe("Docxtemplater loops", () => {
 		const c = getContent(xmlTemplater);
 		expect(c).to.be.deep.equal(expectedContent);
 	});
+
 	it("should not have sideeffects with inverted with array length 3", () => {
 		const content = `<w:t>{^todos}No {/todos}Todos</w:t>
 <w:t>{#todos}{.}{/todos}</w:t>`;
@@ -456,6 +465,7 @@ describe("Docxtemplater loops", () => {
 		const c = getContent(xmlTemplater);
 		expect(c).to.be.deep.equal(expectedContent);
 	});
+
 	it("should not have sideeffects with inverted with empty array", () => {
 		const content = `<w:t>{^todos}No {/todos}Todos</w:t>
 		<w:t>{#todos}{.}{/todos}</w:t>`;
@@ -906,6 +916,7 @@ describe("Special characters", () => {
 		expect(fullText.charCodeAt(6)).to.be.equal(1039);
 		expect(fullText.charCodeAt(7)).to.be.equal(1040);
 	});
+
 	it("should still read full text after applying tags", () => {
 		const doc = createDocV4("cyrillic.docx");
 		doc.render({ name: "Edgar" });
@@ -920,6 +931,7 @@ describe("Special characters", () => {
 		expect(fullText.charCodeAt(7)).to.be.equal(1040);
 		expect(fullText.indexOf("Edgar")).to.be.equal(9);
 	});
+
 	it("should insert russian characters", () => {
 		const russian = "Пупкина";
 		const doc = createDocV4("tag-example.docx");
@@ -987,6 +999,7 @@ describe("Complex table example", () => {
 		expect(c).to.be.equal(expected);
 	});
 });
+
 describe("Raw Xml Insertion", () => {
 	it("should work with simple example", () => {
 		const inner = "<w:p><w:r><w:t>{@complexXml}</w:t></w:r></w:p>";
@@ -1093,6 +1106,7 @@ describe("Raw Xml Insertion", () => {
 		const c = getContent(xmlTemplater);
 		expect(c).not.to.contain("</w:t></w:t>");
 	});
+
 	it("should work with simple example and given options", () => {
 		const doc = createDocV4("one-raw-xml-tag.docx", {
 			fileTypeConfig: assign({}, Docxtemplater.FileTypeConfig.docx(), {

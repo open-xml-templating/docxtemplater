@@ -38,6 +38,7 @@ describe("Docx document properties", () => {
 			expectedName: "expected-tag-docprops-in-doc.docx",
 		});
 	});
+
 	it("should be possible to ignore files in docProps/core.xml", () => {
 		const avoidRenderingCoreXMLModule = {
 			name: "avoidRenderingCoreXMLModule",

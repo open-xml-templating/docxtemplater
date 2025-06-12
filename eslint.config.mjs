@@ -1,7 +1,7 @@
 import globals from "globals";
 import parser from "@babel/eslint-parser";
 import importPlugin from "eslint-plugin-import";
-import specificSortPlugin from "eslint-plugin-specific-sort";
+import xtPlugin from "eslint-plugin-xt";
 import sortClassMembers from "eslint-plugin-sort-class-members";
 import stylisticJs from "@stylistic/eslint-plugin-js";
 
@@ -65,7 +65,7 @@ export default [
 		plugins: {
 			"@stylistic/js": stylisticJs,
 			import: importPlugin,
-			"specific-sort": specificSortPlugin,
+			xt: xtPlugin,
 			"sort-class-members": sortClassMembers,
 		},
 		rules: {
@@ -92,7 +92,8 @@ export default [
 					],
 				},
 			],
-			"specific-sort/specific-sort": 2,
+			"xt/specific-sort": 2,
+			"xt/newline-after-test-case": 2,
 			"accessor-pairs": 2,
 			"array-bracket-spacing": [2, "never"],
 			"arrow-parens": 0,

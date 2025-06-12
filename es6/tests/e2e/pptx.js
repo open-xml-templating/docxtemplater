@@ -15,6 +15,7 @@ describe("Pptx generation", () => {
 		con = doc.getZip().files["docProps/app.xml"].asText();
 		expect(con).to.contain("Edgar");
 	});
+
 	it("should work with simple pptx", () => {
 		const doc = createDocV4("simple-example.pptx");
 		doc.render({ name: "Edgar" });

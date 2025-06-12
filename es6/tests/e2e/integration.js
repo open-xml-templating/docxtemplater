@@ -533,6 +533,7 @@ describe("Section breaks inside loops", () => {
 			expectedName: "expected-with-page-break-3-els.docx",
 		});
 	});
+
 	it("should work at beginning of paragraph loop with false", function () {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		return this.renderV4({

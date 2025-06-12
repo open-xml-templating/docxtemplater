@@ -119,6 +119,7 @@ describe("XML prettify", () => {
 <foo uk="bar" zak="foo"/>
 `);
 	});
+
 	it("should remove space inside tags", () => {
 		const str = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	<sst count="9" uniqueCount="9" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">

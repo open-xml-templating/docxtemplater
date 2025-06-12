@@ -665,6 +665,7 @@ describe("Multi errors", () => {
 			expectedError
 		);
 	});
+
 	it("should fail when customparser fails to compile", () => {
 		const expectedError = {
 			message: "Multi error",

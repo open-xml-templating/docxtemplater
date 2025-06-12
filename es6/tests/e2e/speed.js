@@ -26,6 +26,7 @@ if (!process.env.SPEED_TEST) {
 			const duration = new Date() - time;
 			expect(duration).to.be.below(400);
 		});
+
 		it("should be fast for simple tags with huge content", () => {
 			let content = "<w:t>tag {age}</w:t>";
 			let i;
@@ -52,6 +53,7 @@ if (!process.env.SPEED_TEST) {
 			const duration = new Date() - time;
 			expect(duration).to.be.below(maxDuration);
 		});
+
 		it("should be fast for loop tags", () => {
 			const content = "<w:t>{#users}{name}{/users}</w:t>";
 			const users = [];
@@ -71,6 +73,7 @@ if (!process.env.SPEED_TEST) {
 			}
 			expect(duration).to.be.below(maxDuration);
 		});
+
 		it("should be fast for nested loop tags", () => {
 			const result = [];
 			for (let i = 1; i <= 300; i++) {
@@ -106,6 +109,7 @@ if (!process.env.SPEED_TEST) {
 			}
 			expect(duration).to.be.below(maxDuration);
 		});
+
 		/* eslint-disable-next-line no-process-env */
 		if (!process.env.FAST) {
 			it("should not exceed call stack size for big document with a few rawxml tags", function () {
