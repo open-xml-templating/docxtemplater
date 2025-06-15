@@ -1,4 +1,6 @@
+const { str2xml } = require("./doc-utils.js");
 const ctXML = "[Content_Types].xml";
+
 function collectContentTypes(overrides, defaults, zip) {
 	const partNames = {};
 	for (const override of overrides) {
@@ -22,4 +24,17 @@ function collectContentTypes(overrides, defaults, zip) {
 	return partNames;
 }
 
-module.exports = collectContentTypes;
+function getContentTypes(zip) {
+	const contentTypes = zip.files[ctXML];
+	const contentTypeXml = contentTypes ? str2xml(contentTypes.asText()) : null;
+	const overrides = contentTypeXml
+		? contentTypeXml.getElementsByTagName("Override")
+		: null;
+	const defaults = contentTypeXml
+		? contentTypeXml.getElementsByTagName("Default")
+		: null;
+
+	return { overrides, defaults, contentTypes, contentTypeXml };
+}
+
+module.exports = { collectContentTypes, getContentTypes };

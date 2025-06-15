@@ -1,12 +1,17 @@
 const DocUtils = require("./doc-utils.js");
-DocUtils.traits = require("./traits.js");
-DocUtils.moduleWrapper = require("./module-wrapper.js");
+const { getRelsTypes } = require("./get-relation-types.js");
+const {
+	collectContentTypes,
+	getContentTypes,
+} = require("./get-content-types.js");
+
+const moduleWrapper = require("./module-wrapper.js");
+const traits = require("./traits.js");
 const commonModule = require("./modules/common.js");
 const createScope = require("./scope-manager.js");
 const Lexer = require("./lexer.js");
 const { getTags } = require("./get-tags.js");
 const logErrors = require("./error-logger.js");
-const collectContentTypes = require("./collect-content-types.js");
 const {
 	throwMultiError,
 	throwResolveBeforeCompile,
@@ -19,21 +24,60 @@ const {
 	throwApiVersionError,
 } = require("./errors.js");
 
+DocUtils.getRelsTypes = getRelsTypes;
+DocUtils.traits = traits;
+DocUtils.moduleWrapper = moduleWrapper;
+DocUtils.collectContentTypes = collectContentTypes;
+DocUtils.getContentTypes = getContentTypes;
+
 const {
 	getDefaults,
 	str2xml,
 	xml2str,
-	moduleWrapper,
 	concatArrays,
 	uniq,
 	getDuplicates,
 	stableSort,
 	pushArray,
+	utf8ToWord,
+	invertMap,
 } = DocUtils;
 
 const ctXML = "[Content_Types].xml";
 const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 46, 0];
+const currentModuleApiVersion = [3, 47, 0];
+
+function throwIfDuplicateModules(modules) {
+	const duplicates = getDuplicates(modules.map(({ name }) => name));
+	if (duplicates.length > 0) {
+		throw new XTInternalError(`Detected duplicate module "${duplicates[0]}"`);
+	}
+}
+
+function reorderModules(modules) {
+	/**
+	 * Modules will be sorted according to priority.
+	 *
+	 * Input example:
+	 * [
+	 *   { priority: 1, name: "FooMod" },
+	 *   { priority: -1, name: "XMod" },
+	 *   { priority: 4, name: "OtherMod" }
+	 * ]
+	 *
+	 * Output example (sorted by priority in descending order):
+	 * [
+	 *   { priority: 4, name: "OtherMod" },
+	 *   { priority: 1, name: "FooMod" },
+	 *   { priority: -1, name: "XMod" }
+	 * ]
+	 * Tested in #test-reorder-modules
+	 */
+	return stableSort(
+		modules,
+		(m1, m2) => (m2.priority || 0) - (m1.priority || 0)
+	);
+}
 
 function zipFileOrder(files) {
 	const allFiles = [];
@@ -282,8 +326,8 @@ const Docxtemplater = class Docxtemplater {
 				options[key] != null ? options[key] : this[key] || defaultValue;
 			this[key] = this.options[key];
 		}
-		this.delimiters.start &&= DocUtils.utf8ToWord(this.delimiters.start);
-		this.delimiters.end &&= DocUtils.utf8ToWord(this.delimiters.end);
+		this.delimiters.start &&= utf8ToWord(this.delimiters.start);
+		this.delimiters.end &&= utf8ToWord(this.delimiters.end);
 		return this;
 	}
 	loadZip(zip) {
@@ -378,48 +422,19 @@ const Docxtemplater = class Docxtemplater {
 			});
 		});
 	}
-	reorderModules() {
-		/**
-		 * Modules will be sorted according to priority.
-		 *
-		 * Input example:
-		 * [
-		 *   { priority: 1, name: "FooMod" },
-		 *   { priority: -1, name: "XMod" },
-		 *   { priority: 4, name: "OtherMod" }
-		 * ]
-		 *
-		 * Output example (sorted by priority in descending order):
-		 * [
-		 *   { priority: 4, name: "OtherMod" },
-		 *   { priority: 1, name: "FooMod" },
-		 *   { priority: -1, name: "XMod" }
-		 * ]
-		 * Tested in #test-reorder-modules
-		 */
-		this.modules = stableSort(
-			this.modules,
-			(m1, m2) => (m2.priority || 0) - (m1.priority || 0)
-		);
-	}
-	throwIfDuplicateModules() {
-		const duplicates = getDuplicates(this.modules.map(({ name }) => name));
-		if (duplicates.length > 0) {
-			throw new XTInternalError(`Detected duplicate module "${duplicates[0]}"`);
-		}
-	}
 	compile() {
 		deprecatedMethod(this, "compile");
 		this.updateFileTypeConfig();
-		this.throwIfDuplicateModules();
-		this.reorderModules();
+		throwIfDuplicateModules(this.modules);
+		this.modules = reorderModules(this.modules);
 		if (Object.keys(this.compiled).length) {
 			return this;
 		}
-		this.options = this.modules.reduce(
-			(options, module) => module.optionsTransformer(options, this),
-			this.options
-		);
+		let options = this.options;
+		for (const module of this.modules) {
+			options = module.optionsTransformer(options, this);
+		}
+		this.options = options;
 		this.options.xmlFileNames = uniq(this.options.xmlFileNames);
 		for (const fileName of this.options.xmlFileNames) {
 			const content = this.zip.files[fileName].asText();
@@ -457,43 +472,17 @@ const Docxtemplater = class Docxtemplater {
 		verifyErrors(this);
 		return this;
 	}
-	getRelsTypes() {
-		const rootRels = this.zip.files[relsFile];
-		const rootRelsXml = rootRels ? str2xml(rootRels.asText()) : null;
-		const rootRelationships = rootRelsXml
-			? rootRelsXml.getElementsByTagName("Relationship")
-			: [];
-		const relsTypes = {};
-		for (const relation of rootRelationships) {
-			relsTypes[relation.getAttribute("Target")] =
-				relation.getAttribute("Type");
-		}
-		return relsTypes;
-	}
-	getContentTypes() {
-		const contentTypes = this.zip.files[ctXML];
-		const contentTypeXml = contentTypes ? str2xml(contentTypes.asText()) : null;
-		const overrides = contentTypeXml
-			? contentTypeXml.getElementsByTagName("Override")
-			: null;
-		const defaults = contentTypeXml
-			? contentTypeXml.getElementsByTagName("Default")
-			: null;
-
-		return { overrides, defaults, contentTypes, contentTypeXml };
-	}
-
 	updateFileTypeConfig() {
-		this.relsTypes = this.getRelsTypes();
+		this.relsTypes = getRelsTypes(this.zip);
 		const { overrides, defaults, contentTypes, contentTypeXml } =
-			this.getContentTypes();
+			getContentTypes(this.zip);
 		if (contentTypeXml) {
 			this.filesContentTypes = collectContentTypes(
 				overrides,
 				defaults,
 				this.zip
 			);
-			this.invertedContentTypes = DocUtils.invertMap(this.filesContentTypes);
+			this.invertedContentTypes = invertMap(this.filesContentTypes);
 			this.setModules({
 				contentTypes: this.contentTypes,
 				invertedContentTypes: this.invertedContentTypes,
@@ -705,39 +694,43 @@ const Docxtemplater = class Docxtemplater {
 
 	/* Export functions, present since 3.62.0 */
 	toBuffer(options) {
-		return this.getZip().generate({
+		return this.zip.generate({
 			compression: "DEFLATE",
 			fileOrder: zipFileOrder,
 			...options,
 			type: "nodebuffer",
 		});
 	}
+	/* Export functions, present since 3.62.0 */
 	toBlob(options) {
-		return this.getZip().generate({
+		return this.zip.generate({
 			compression: "DEFLATE",
 			fileOrder: zipFileOrder,
 			...options,
 			type: "blob",
 		});
 	}
+	/* Export functions, present since 3.62.0 */
 	toBase64(options) {
-		return this.getZip().generate({
+		return this.zip.generate({
 			compression: "DEFLATE",
 			fileOrder: zipFileOrder,
 			...options,
 			type: "base64",
 		});
 	}
+	/* Export functions, present since 3.62.0 */
 	toUint8Array(options) {
-		return this.getZip().generate({
+		return this.zip.generate({
 			compression: "DEFLATE",
 			fileOrder: zipFileOrder,
 			...options,
 			type: "uint8array",
 		});
 	}
+	/* Export functions, present since 3.62.0 */
 	toArrayBuffer(options) {
-		return this.getZip().generate({
+		return this.zip.generate({
 			compression: "DEFLATE",
 			fileOrder: zipFileOrder,
 			...options,
@@ -751,5 +744,6 @@ Docxtemplater.Errors = require("./errors.js");
 Docxtemplater.XmlTemplater = require("./xml-templater.js");
 Docxtemplater.FileTypeConfig = require("./file-type-config.js");
 Docxtemplater.XmlMatcher = require("./xml-matcher.js");
+
 module.exports = Docxtemplater;
 module.exports.default = Docxtemplater;

@@ -1,3 +1,9 @@
+## 3.63.4
+
+Move internal methods out of docxtemplater class, into docutils : `getRelsTypes`, `collectContentTypes`, `getContentTypes`.
+
+Upgrade moduleApiVersion to 3.47.0 (for subtemplate module version 3.20.0)
+
 ## 3.63.3
 
 For xlsx module and the error location module, add the "square" property so that the error "Closing tag does not match opening tag" will now correctly be shown by the error location module.

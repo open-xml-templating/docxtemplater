@@ -182,8 +182,8 @@ describe("Api versioning", () => {
 		const doc = createDocV4("tag-example.docx");
 		expectToThrowSnapshot(() => doc.verifyApiVersion("5.0"));
 		expectToThrowSnapshot(() => doc.verifyApiVersion("5.6.0"));
-		expectToThrowSnapshot(() => doc.verifyApiVersion("3.47.0"));
-		expectToThrowSnapshot(() => doc.verifyApiVersion("3.46.100"));
+		expectToThrowSnapshot(() => doc.verifyApiVersion("3.48.0"));
+		expectToThrowSnapshot(() => doc.verifyApiVersion("3.47.100"));
 	});
 });
 
