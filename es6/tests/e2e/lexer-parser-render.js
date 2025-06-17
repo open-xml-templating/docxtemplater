@@ -79,6 +79,9 @@ function runTest(fixture, async = false) {
 	if (fixture.contentText) {
 		fixture.content = `<w:t>${fixture.contentText}</w:t>`;
 	}
+	if (fixture.contentParagraph) {
+		fixture.content = `<w:p><w:r><w:t>${fixture.contentParagraph}</w:t></w:r></w:p>`;
+	}
 	try {
 		doc = fixture.pptx
 			? makePptxV4(fixture.content, {

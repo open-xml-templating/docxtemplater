@@ -118,25 +118,6 @@ describe("Table", () => {
 		});
 	});
 
-	it("should call nullGetter with empty rawxml", function () {
-		return this.renderV4({
-			name: "table-raw-xml.docx",
-			options: {
-				nullGetter: (part) => {
-					if (part.module === "rawxml") {
-						return `<w:p>
-                        <w:r>
-                            <w:rPr><w:color w:val="FF0000"/></w:rPr>
-                            <w:t>UNDEFINED</w:t>
-                        </w:r>
-                        </w:p>`;
-					}
-				},
-			},
-			expectedName: "expected-raw-xml-null.docx",
-		});
-	});
-
 	it("should not corrupt document with empty rawxml after a table, at the end of the document", function () {
 		return this.render({
 			name: "raw-xml-after-table.docx",

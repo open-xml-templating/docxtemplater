@@ -175,8 +175,12 @@ function wordToUtf8(string) {
 }
 
 function utf8ToWord(string) {
-	// To make sure that the object given is a string (this is a noop for strings).
-	string = string.toString();
+	if (string?.toString) {
+		// To make sure that the object given is a string (this is a noop for strings).
+		string = string.toString();
+	} else {
+		string = "";
+	}
 	let r;
 	for (let i = 0, l = charMapRegexes.length; i < l; i++) {
 		r = charMapRegexes[i];

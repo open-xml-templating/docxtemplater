@@ -105,6 +105,7 @@ function startTest() {
 		require("./e2e/pptx.js");
 		require("./e2e/table.js");
 		require("./e2e/async.js");
+		require("./e2e/null-getter.js");
 
 		require("./unit/xml-matcher.js");
 		require("./unit/doc-utils.js");

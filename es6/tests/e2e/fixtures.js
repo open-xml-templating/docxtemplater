@@ -332,6 +332,22 @@ const fixtures = [
 		},
 	},
 	{
+		it: "should not throw error if nullGetter returns null",
+		...noInternals,
+		contentText: "{#foo}{name}{/foo}",
+		resultText: "<w:t/>",
+		options: {
+			nullGetter: (part) => {
+				if (part.module === "loop") {
+					return [1];
+				}
+			},
+		},
+		data: {
+			test2: "Value2",
+		},
+	},
+	{
 		it: "should be possible to add nullGetter to module (and use the first nullGetter result)",
 		...noInternals,
 		contentText: "{foo}",

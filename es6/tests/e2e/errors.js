@@ -1276,6 +1276,10 @@ describe("Async errors", () => {
 				},
 			};
 		}
+		/*
+		 * In previous versions, the order was foo1, foo2, foo3.
+		 * Since version 3.64.0, the order is not guaranteed, because the loop module will call the nullGetter after the error.
+		 */
 		const expectedError = {
 			name: "TemplateError",
 			message: "Multi error",

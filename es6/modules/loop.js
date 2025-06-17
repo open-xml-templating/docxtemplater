@@ -345,6 +345,7 @@ class LoopModule {
 
 		const sm = options.scopeManager;
 		const promisedValue = sm.getValueAsync(part.value, { part });
+
 		const promises = [];
 		function loopOver(scope, i, length) {
 			const scopeManager = sm.createSubScopeManager(
@@ -364,8 +365,18 @@ class LoopModule {
 			);
 		}
 		const errorList = [];
-		return promisedValue.then((values) =>
-			new Promise((resolve) => {
+		return promisedValue.then((values) => {
+			values ??= options.nullGetter(part);
+			return new Promise((resolve) => {
+				if (values instanceof Promise) {
+					return values.then((values) => {
+						if (values instanceof Array) {
+							Promise.all(values).then(resolve);
+						} else {
+							resolve(values);
+						}
+					});
+				}
 				if (values instanceof Array) {
 					Promise.all(values).then(resolve);
 				} else {
@@ -386,8 +397,8 @@ class LoopModule {
 						}
 						return value;
 					});
-			})
-		);
+			});
+		});
 	}
 	render(part, options) {
 		if (part.tag === "p:xfrm") {
@@ -463,13 +474,12 @@ class LoopModule {
 			}
 			pushArray(errors, subRendered.errors);
 		}
-		const result = options.scopeManager.loopOver(
-			part.value,
+		let value = options.scopeManager.getValue(part.value, { part });
+		value ??= options.nullGetter(part);
+		const result = options.scopeManager.loopOverValue(
+			value,
 			loopOver,
-			part.inverted,
-			{
-				part,
-			}
+			part.inverted
 		);
 		// if the loop is showing empty content
 		if (result === false) {

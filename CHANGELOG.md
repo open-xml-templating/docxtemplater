@@ -1,3 +1,19 @@
+## 3.64.0
+
+Update in order to make sure that nullGetter is called for section tags (loops or conditions).
+
+The nullGetter will now be called if the template is this :
+
+```
+{#users}
+User {name}
+{/}
+```
+
+And the data is just `{}`.
+
+Previously, for loops and conditions, the nullGetter would not be called.
+
 ## 3.63.4
 
 Move internal methods out of docxtemplater class, into docutils : `getRelsTypes`, `collectContentTypes`, `getContentTypes`.
