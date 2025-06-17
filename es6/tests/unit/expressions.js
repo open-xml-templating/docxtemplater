@@ -3,6 +3,29 @@ const expressionParserIE11 = require("../../expressions-ie11.js");
 const { expect } = require("../utils.js");
 
 describe("Angular parser", () => {
+	it("should be possible to disable 'dot notation' with dot inside string : '(.)' ", () => {
+		expect(
+			expressionParser
+				.configure()("'(.)'", {
+					tag: 33,
+					scopePath: [],
+				})
+				.get(12, { scopePathItem: [], scopeList: [] })
+		).to.equal("(this)");
+		// This is usually not what we want, because here the expression is a string
+	});
+
+	it("should be possible to disable 'dot notation' with dot inside string : '(.)' ", () => {
+		expect(
+			expressionParser
+				.configure({ handleDotThis: false })("'(.)'", {
+					tag: 33,
+					scopePath: [],
+				})
+				.get(12, { scopePathItem: [], scopeList: [] })
+		).to.equal("(.)");
+	});
+
 	it("should work", () => {
 		expect(
 			expressionParser("x+x", {

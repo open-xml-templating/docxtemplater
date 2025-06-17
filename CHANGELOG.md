@@ -1,3 +1,33 @@
+## 3.65.0
+
+When using the angularparser, with the following tag :
+
+{'(.)'}
+
+The default behavior would be that this will return : `(this)`.
+
+It happens because in most expressions, "." is a synonym for this and we can only apply a regex to find all "." and replace them by "this".
+
+For cases where this is not what you want, you can now deactivate this special behavior, so that :
+
+{'(.)'}
+
+Will then show : `(.)` in the output.
+
+To deactivate the dot handling, use :
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+const doc = new Docxtemplater(zip, {
+  paragraphLoop: true,
+  linebreaks: true,
+  parser: expressionParser.configure({
+    handleDotThis: false,
+  }),
+});
+doc.render(/* data */);
+```
+
 ## 3.64.0
 
 Update in order to make sure that nullGetter is called for section tags (loops or conditions).

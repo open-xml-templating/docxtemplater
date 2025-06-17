@@ -119,8 +119,10 @@ function configuredParser(config = {}) {
 		}
 		tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
 
-		while (dotRegex.test(tag)) {
-			tag = tag.replace(dotRegex, "$1this$2");
+		if (config.handleDotThis !== false) {
+			while (dotRegex.test(tag)) {
+				tag = tag.replace(dotRegex, "$1this$2");
+			}
 		}
 
 		const expr = expressions.compile(tag, {

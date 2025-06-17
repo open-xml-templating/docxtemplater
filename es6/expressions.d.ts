@@ -7,6 +7,7 @@ interface ParserOptions {
   literals?: { [x: string]: any };
   isIdentifierStart?: (char: string) => boolean;
   isIdentifierContinue?: (char: string) => boolean;
+  handleDotThis?: boolean;
   postEvaluate?: (
     result: any,
     tag: string,
