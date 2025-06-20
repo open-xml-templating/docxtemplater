@@ -1517,4 +1517,28 @@ describe("Get Tags", () => {
 			},
 		});
 	});
+
+	it("should be possible to deactivate all modules and keep the template as is", () => {
+		const doc = createDocV4("loop-valid.docx", {
+			modules: [
+				{
+					name: "DeactivateAllModules",
+					optionsTransformer(options, docxtemplater) {
+						docxtemplater.modules = docxtemplater.modules.filter(
+							(mod) => mod.name === "Render" || mod.name === "Common"
+						);
+						return options;
+					},
+				},
+			],
+			priority: 100,
+			parser: (tag) => ({
+				get() {
+					return `{${tag}}`;
+				},
+			}),
+		});
+		doc.render();
+		shouldBeSame({ doc, expectedName: "loop-valid.docx" });
+	});
 });
