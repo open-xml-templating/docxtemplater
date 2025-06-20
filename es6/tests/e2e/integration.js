@@ -1523,6 +1523,7 @@ describe("Get Tags", () => {
 			modules: [
 				{
 					name: "DeactivateAllModules",
+					priority: 100,
 					optionsTransformer(options, docxtemplater) {
 						docxtemplater.modules = docxtemplater.modules.filter(
 							(mod) => mod.name === "Render" || mod.name === "Common"
@@ -1531,7 +1532,6 @@ describe("Get Tags", () => {
 					},
 				},
 			],
-			priority: 100,
 			parser: (tag) => ({
 				get() {
 					return `{${tag}}`;
