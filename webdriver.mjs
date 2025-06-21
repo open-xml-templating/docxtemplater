@@ -98,8 +98,11 @@ server.listen(port, async () => {
 				await page.goto(url.format(mochaUrl));
 
 				// Wait for tests to start
-				await page.waitForSelector("li.test", { timeout: 120000 });
+				await page.waitForSelector("li.test", {
+					timeout: 120000,
+				});
 
+				const myTests = [];
 				// Monitor test progress
 				const progressInterval = setInterval(async () => {
 					const results = await page.$$eval("li h1, li h2", (elements) =>
@@ -115,17 +118,31 @@ server.listen(port, async () => {
 							duration: el.querySelector(".duration")?.textContent || "",
 						}))
 					);
-
-					for (const { prefix, title, duration } of results) {
-						const line = `${prefix}${title} ${duration}`.replace(/\s+‣$/, ""); // Remove the replay arrow if present
-						console.log(line);
+					for (const item of results) {
+						let found = false;
+						for (const existingTest of myTests) {
+							if (item.title === existingTest.title) {
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							myTests.push(item);
+							const { prefix, title, duration } = item;
+							// Remove the replay arrow if present
+							console.log(`${prefix}${title} ${duration}`.replace(/\s+‣$/, ""));
+						}
 					}
 				}, 100);
 
 				// Wait for tests to complete
-				await page.waitForSelector("#status", { timeout: 120000 });
+				await page.waitForSelector("#status", {
+					timeout: 120000,
+				});
 				await page.waitForTimeout(5000);
-				await page.waitForSelector("li.failures a", { timeout: 5000 });
+				await page.waitForSelector("li.failures a", {
+					timeout: 5000,
+				});
 
 				clearInterval(progressInterval);
 
