@@ -1,3 +1,22 @@
+## 3.65.1
+
+For some files that are not created by Microsoft Word or Libreoffice, the following stacktrace would be shown :
+
+```log
+TypeError: Cannot read properties of undefined (reading 'asText')
+ at Docxtemplater.compile (node_modules/docxtemplater/js/docxtemplater.js:425:48)
+ at new Docxtemplater (node_modules/docxtemplater/js/docxtemplater.js:205:12)
+ at Object.<anonymous> (test.js:23:19)
+ at Module._compile (node:internal/modules/cjs/loader:1529:14)
+ at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+ at Module.load (node:internal/modules/cjs/loader:1275:32)
+ at Module._load (node:internal/modules/cjs/loader:1096:12)
+ at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+ at node:internal/main/run_main_module:28:49
+```
+
+This is now fixed by this version.
+
 ## 3.65.0
 
 When using the angularparser, with the following tag :

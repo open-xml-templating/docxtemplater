@@ -54,6 +54,19 @@ function throwIfDuplicateModules(modules) {
 	}
 }
 
+function addXmlFileNamesFromXmlContentType(doc) {
+	for (const module of doc.modules) {
+		for (const contentType of module.xmlContentTypes || []) {
+			const candidates = doc.invertedContentTypes[contentType] || [];
+			for (const candidate of candidates) {
+				if (doc.zip.files[candidate]) {
+					doc.options.xmlFileNames.push(candidate);
+				}
+			}
+		}
+	}
+}
+
 function reorderModules(modules) {
 	/**
 	 * Modules will be sorted according to priority.
@@ -504,6 +517,7 @@ const Docxtemplater = class Docxtemplater {
 					doc: this,
 				}) || fileType;
 		}
+		this.fileType = fileType;
 		if (fileType === "odt") {
 			throwFileTypeNotHandled(fileType);
 		}
@@ -511,16 +525,7 @@ const Docxtemplater = class Docxtemplater {
 			throwFileTypeNotIdentified(this.zip);
 		}
 
-		for (const module of this.modules) {
-			for (const contentType of module.xmlContentTypes || []) {
-				pushArray(
-					this.options.xmlFileNames,
-					this.invertedContentTypes[contentType] || []
-				);
-			}
-		}
-
-		this.fileType = fileType;
+		addXmlFileNamesFromXmlContentType(this);
 		dropUnsupportedFileTypesModules(this);
 
 		this.fileTypeConfig = this.options.fileTypeConfig || this.fileTypeConfig;
