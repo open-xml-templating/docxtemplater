@@ -1629,6 +1629,7 @@ const fixtures = [
 					expect(context.meta.part.type).to.equal("placeholder");
 					expect(context.meta.part.value).to.equal("name");
 					expect(scope).to.deep.equal({ name: false });
+					expect(context.meta.part.module).to.equal(undefined);
 					if (value === false) {
 						return "";
 					}
