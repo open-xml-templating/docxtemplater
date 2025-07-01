@@ -145,12 +145,13 @@ module.exports = class XmlTemplater {
 		}
 	}
 	baseNullGetter(part, sm) {
-		const value = this.modules.reduce((value, module) => {
+		let value = null;
+		for (const module of this.modules) {
 			if (value != null) {
-				return value;
+				continue;
 			}
-			return module.nullGetter(part, sm, this);
-		}, null);
+			value = module.nullGetter(part, sm, this);
+		}
 		if (value != null) {
 			return value;
 		}

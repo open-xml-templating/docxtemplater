@@ -155,22 +155,25 @@ const parser = {
 		}
 		const errors = [];
 		function postparse(postparsed, options) {
-			return modules.reduce((postparsed, module) => {
-				const r = module.postparse(postparsed, {
+			let newPostparsed = postparsed;
+			for (const module of modules) {
+				const postparseResult = module.postparse(newPostparsed, {
 					...options,
 					postparse: (parsed, opts) =>
 						postparse(parsed, { ...options, ...opts }),
 					getTraits,
 				});
-				if (r == null) {
-					return postparsed;
+				if (postparseResult == null) {
+					continue;
 				}
-				if (r.errors) {
-					pushArray(errors, r.errors);
-					return r.postparsed;
+				if (postparseResult.errors) {
+					pushArray(errors, postparseResult.errors);
+					newPostparsed = postparseResult.postparsed;
+					continue;
 				}
-				return r;
-			}, postparsed);
+				newPostparsed = postparseResult;
+			}
+			return newPostparsed;
 		}
 		return { postparsed: postparse(postparsed, options), errors };
 	},

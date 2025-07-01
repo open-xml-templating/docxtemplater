@@ -468,7 +468,8 @@ module.exports = {
 	xmlparse(content, xmltags) {
 		const matches = tagMatcher(content, xmltags.text, xmltags.other);
 		let cursor = 0;
-		const parsed = matches.reduce((parsed, match) => {
+		const parsed = [];
+		for (const match of matches) {
 			if (content.length > cursor && match.offset - cursor > 0) {
 				parsed.push({
 					type: "content",
@@ -478,8 +479,7 @@ module.exports = {
 			cursor = match.offset + match.value.length;
 			delete match.offset;
 			parsed.push(match);
-			return parsed;
-		}, []);
+		}
 		if (content.length > cursor) {
 			parsed.push({
 				type: "content",

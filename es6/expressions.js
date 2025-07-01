@@ -1,5 +1,6 @@
 const expressions = require("angular-expressions");
 
+const { pushArray } = require("./doc-utils.js");
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const dotRegex = /([\][\s+()*|:/-]+|^)\.([\][\s+()*|:/-]+|$)/g;
 // Inspired by : https://stackoverflow.com/a/9337047
@@ -83,14 +84,19 @@ function getIdentifiers(x) {
 		return getIdentifiers(x.expression);
 	}
 	if (x.body) {
-		return x.body.reduce((result, y) => result.concat(getIdentifiers(y)), []);
+		const result = [];
+		for (const arg of x.body) {
+			pushArray(result, getIdentifiers(arg));
+		}
+		return result;
 	}
 	if (x.type === "CallExpression") {
 		if (x.arguments) {
-			return x.arguments.reduce(
-				(result, y) => result.concat(getIdentifiers(y)),
-				[]
-			);
+			const result = [];
+			for (const arg of x.arguments) {
+				pushArray(result, getIdentifiers(arg));
+			}
+			return result;
 		}
 	}
 	if (x.ast) {

@@ -89,7 +89,8 @@ function addSectionBefore(parts, sect) {
 function addContinuousType(parts) {
 	let stop = false;
 	let inSectPr = false;
-	return parts.reduce((result, part) => {
+	const result = [];
+	for (const part of parts) {
 		if (stop === false && startsWith(part, "<w:sectPr")) {
 			inSectPr = true;
 		}
@@ -102,8 +103,8 @@ function addContinuousType(parts) {
 			}
 		}
 		result.push(part);
-		return result;
-	}, []);
+	}
+	return result;
 }
 
 function dropHeaderFooterRefs(parts) {
@@ -259,12 +260,14 @@ class LoopModule {
 		}
 		// Stryker restore all
 
-		return parsed.reduce((tags, part, offset) => {
+		const tags = [];
+		for (let offset = 0, len = parsed.length; offset < len; offset++) {
+			const part = parsed[offset];
 			if (isModule(part, moduleName) && part.subparsed == null) {
 				tags.push({ part, offset });
 			}
-			return tags;
-		}, []);
+		}
+		return tags;
 	}
 	postparse(parsed, { basePart }) {
 		if (

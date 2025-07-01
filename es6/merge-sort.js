@@ -15,7 +15,10 @@ function getMinFromArrays(arrays, state) {
 }
 
 module.exports = function (arrays) {
-	const totalLength = arrays.reduce((sum, array) => sum + array.length, 0);
+	let totalLength = 0;
+	for (const array of arrays) {
+		totalLength += array.length;
+	}
 	arrays = arrays.filter((array) => array.length > 0);
 
 	const resultArray = new Array(totalLength);

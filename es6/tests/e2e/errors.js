@@ -322,10 +322,11 @@ describe("Runtime errors", () => {
 		}
 		function replaceErrors(key, value) {
 			if (value instanceof Error) {
-				return Object.getOwnPropertyNames(value).reduce((error, key) => {
+				const error = {};
+				for (const key of Object.getOwnPropertyNames(value)) {
 					error[key] = value[key];
-					return error;
-				}, {});
+				}
+				return error;
 			}
 			return value;
 		}

@@ -38,13 +38,17 @@ function getTags(postParsed) {
 	}
 
 	function getScopeSize(part, parents) {
-		return parents.reduce((size, parent) => {
+		let size = parents.length;
+		for (const parent of parents) {
 			const lIndexLoop =
 				typeof parent.lIndex === "number"
 					? parent.lIndex
 					: parseInt(parent.lIndex.split("-")[0], 10);
-			return lIndexLoop > part.lIndex ? size - 1 : size;
-		}, parents.length);
+			if (lIndexLoop > part.lIndex) {
+				size--;
+			}
+		}
+		return size;
 	}
 
 	while (stack.length > 0) {

@@ -112,10 +112,11 @@ class InspectModule {
 		return getTags(inspected);
 	}
 	getAllTags() {
-		return Object.keys(this.fullInspected).reduce(
-			(result, file) => merge(result, this.getTags(file)),
-			{}
-		);
+		const result = {};
+		for (const file of Object.keys(this.fullInspected)) {
+			merge(result, this.getTags(file));
+		}
+		return result;
 	}
 	getStructuredTags(file) {
 		file ||= this.fileTypeConfig.textPath(this.docxtemplater);
@@ -123,10 +124,11 @@ class InspectModule {
 		return getStructuredTags(inspected);
 	}
 	getAllStructuredTags() {
-		return Object.keys(this.fullInspected).reduce(
-			(result, file) => pushArray(result, this.getStructuredTags(file)),
-			[]
-		);
+		const result = [];
+		for (const file in this.fullInspected) {
+			pushArray(result, this.getStructuredTags(file));
+		}
+		return result;
 	}
 	getFileType() {
 		return this.fileType;
