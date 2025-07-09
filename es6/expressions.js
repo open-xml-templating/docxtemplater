@@ -1,6 +1,14 @@
 const expressions = require("angular-expressions");
 
-const { pushArray } = require("./doc-utils.js");
+function pushArray(array1, array2) {
+	if (!array2) {
+		return array1;
+	}
+	for (let i = 0, len = array2.length; i < len; i++) {
+		array1.push(array2[i]);
+	}
+	return array1;
+}
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const dotRegex = /([\][\s+()*|:/-]+|^)\.([\][\s+()*|:/-]+|$)/g;
 // Inspired by : https://stackoverflow.com/a/9337047

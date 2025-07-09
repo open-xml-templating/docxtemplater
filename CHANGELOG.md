@@ -1,3 +1,7 @@
+## 3.65.2
+
+Bugfix rare issue with expressionparser getIdentifiers : pushArray was not defined correctly.
+
 ## 3.65.1
 
 For some files that are not created by Microsoft Word or Libreoffice, the following stacktrace would be shown :
