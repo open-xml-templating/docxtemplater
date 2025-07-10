@@ -1178,7 +1178,7 @@ describe("Constructor v4", () => {
 
 		if (typeof Buffer !== "undefined") {
 			expect(() => new Docxtemplater(Buffer.from("content"))).to.throw(
-				"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+				"You passed a Buffer to the Docxtemplater constructor. The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 			);
 		}
 	});

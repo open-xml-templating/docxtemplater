@@ -184,6 +184,14 @@ function verifyErrors(doc) {
 	}
 }
 
+function isBuffer(v) {
+	return (
+		typeof Buffer !== "undefined" &&
+		typeof Buffer.isBuffer === "function" &&
+		Buffer.isBuffer(v)
+	);
+}
+
 const Docxtemplater = class Docxtemplater {
 	constructor(zip, { modules = [], ...options } = {}) {
 		this.targets = [];
@@ -204,6 +212,12 @@ const Docxtemplater = class Docxtemplater {
 		} else {
 			this.hideDeprecations = true;
 			this.setOptions(options);
+			if (isBuffer(zip)) {
+				throw new Error(
+					"You passed a Buffer to the Docxtemplater constructor. The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+				);
+			}
+
 			if (!zip || !zip.files || typeof zip.file !== "function") {
 				throw new Error(
 					"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
