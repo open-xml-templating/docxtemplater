@@ -2806,7 +2806,6 @@ Revert : Add back lIndex to parsed in addition to endLindex : Fixes issue with a
 - Add nullGetter module API
 
 - Update inspectModule to have :
-
   - Unused variables (nullValues)
   - filetype
   - data from setData()
