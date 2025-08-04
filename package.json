@@ -71,7 +71,6 @@
     "playwright": "^1.54.1",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "selenium-standalone": "^10.0.2",
     "serve-static": "^2.2.0",
     "stryker-cli": "^1.0.2",
     "tsd": "^0.32.0",
