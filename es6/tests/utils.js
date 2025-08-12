@@ -297,7 +297,7 @@ function cleanRecursive(arr) {
 }
 
 function cleanError(e, expectedError) {
-	const message = e.message;
+	const { message } = e;
 	e = omit(e, ["line", "sourceURL", "stack"]);
 	e.message = message;
 	if (expectedError.properties && e.properties) {

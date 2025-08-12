@@ -20,7 +20,7 @@ function expectations(iModule, fixture) {
 		throw new Error("Fixture should have failed but did not fail");
 	}
 	if (fixture.resultText != null) {
-		let content = iModule.inspect.content;
+		let { content } = iModule.inspect;
 		if (iModule.inspect.content instanceof Uint8Array) {
 			content = utf8decode(content);
 		}
@@ -29,7 +29,7 @@ function expectations(iModule, fixture) {
 			.replace(/<\/w:t>$/, "");
 		expect(content).to.be.deep.equal(fixture.resultText, "Content incorrect");
 	} else if (fixture.result !== null) {
-		let content = iModule.inspect.content;
+		let { content } = iModule.inspect;
 		if (iModule.inspect.content instanceof Uint8Array) {
 			content = utf8decode(content);
 		}

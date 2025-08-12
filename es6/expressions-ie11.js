@@ -155,9 +155,9 @@ function configuredParser(config = {}) {
 		return {
 			get(scope, context) {
 				let obj = {};
-				const scopeList = context.scopeList;
+				const { scopeList } = context;
 				const index = getIndex(scope, context);
-				const num = context.num;
+				const { num } = context;
 				for (let i = 0, len = num + 1; i < len; i++) {
 					obj = assign(obj, scopeList[i]);
 				}

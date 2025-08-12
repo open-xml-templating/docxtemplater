@@ -1,7 +1,7 @@
 const path = require("path");
 /* eslint-disable no-process-env */
 const min = process.env.MIN === "true";
-const FILE = process.env.FILE;
+const { FILE } = process.env;
 const outputFilename =
 	FILE === "test" ? "test.js" : `docxtemplater.${min ? "min." : ""}js`;
 

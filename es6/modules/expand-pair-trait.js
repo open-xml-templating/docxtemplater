@@ -34,7 +34,7 @@ function transformer(traits) {
 	let i = 0;
 	const errors = [];
 	while (i < traits.length) {
-		const part = traits[i].part;
+		const { part } = traits[i];
 		if (part.location === "end") {
 			if (i === 0) {
 				traits.splice(0, 1);

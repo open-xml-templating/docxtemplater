@@ -271,8 +271,12 @@ export default [
 			"prefer-destructuring": [
 				2,
 				{
+					VariableDeclarator: {
+						array: false,
+						object: true,
+					},
 					AssignmentExpression: {
-						array: true,
+						array: false,
 						object: false,
 					},
 				},

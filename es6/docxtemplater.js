@@ -171,7 +171,7 @@ function dropUnsupportedFileTypesModules(doc) {
 }
 
 function verifyErrors(doc) {
-	const compiled = doc.compiled;
+	const { compiled } = doc;
 	doc.errors = concatArrays(
 		Object.keys(compiled).map((name) => compiled[name].allErrors)
 	);
@@ -457,7 +457,7 @@ const Docxtemplater = class Docxtemplater {
 		if (Object.keys(this.compiled).length) {
 			return this;
 		}
-		let options = this.options;
+		let { options } = this;
 		for (const module of this.modules) {
 			options = module.optionsTransformer(options, this);
 		}

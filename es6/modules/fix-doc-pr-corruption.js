@@ -42,8 +42,7 @@ class FixDocPRCorruptionModule {
 		const { filesContentTypes } = this.docxtemplater;
 		this.attached = false;
 		// Stryker restore all
-		const zip = this.zip;
-		const Lexer = this.Lexer;
+		const { zip, Lexer } = this;
 		let prId = 1;
 		for (const f of zip.file(/.xml$/)) {
 			const ct = filesContentTypes[f.name];

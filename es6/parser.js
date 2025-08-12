@@ -43,8 +43,7 @@ function getMatches(matchers, placeHolderContent, options) {
 }
 
 function moduleParse(placeHolderContent, options) {
-	const modules = options.modules;
-	const startOffset = options.startOffset;
+	const { modules, startOffset } = options;
 	const endLindex = options.lIndex;
 	let moduleParsed;
 	options.offset = startOffset;

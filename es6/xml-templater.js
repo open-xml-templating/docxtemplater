@@ -25,7 +25,7 @@ module.exports = class XmlTemplater {
 	resolveTags(tags) {
 		this.tags = tags;
 		const options = this.getOptions();
-		const filePath = this.filePath;
+		const { filePath } = this;
 		options.scopeManager = this.scopeManager;
 		options.resolve = resolve;
 		const errors = [];

@@ -117,7 +117,7 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 
 	const delimiterWithErrors = delimiterMatches.reduce(
 		(delimiterAcc, currDelimiterMatch) => {
-			const position = currDelimiterMatch.position;
+			const { position } = currDelimiterMatch;
 			const delimiterOffset = currDelimiterMatch.offset;
 			const lastDelimiterOffset = lastDelimiterMatch.offset;
 			const lastDelimiterLength = lastDelimiterMatch.length;

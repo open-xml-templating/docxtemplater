@@ -16,7 +16,7 @@ function moduleRender(part, options) {
 }
 
 function render(options) {
-	const baseNullGetter = options.baseNullGetter;
+	const { baseNullGetter } = options;
 	const { compiled, scopeManager } = options;
 	options.nullGetter = (part, sm) => baseNullGetter(part, sm || scopeManager);
 	const errors = [];

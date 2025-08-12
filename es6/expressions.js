@@ -9,7 +9,7 @@ function pushArray(array1, array2) {
 	}
 	return array1;
 }
-const hasOwnProperty = Object.prototype.hasOwnProperty;
+const { hasOwnProperty } = Object.prototype;
 const dotRegex = /([\][\s+()*|:/-]+|^)\.([\][\s+()*|:/-]+|$)/g;
 // Inspired by : https://stackoverflow.com/a/9337047
 const startRegex =
@@ -158,11 +158,12 @@ function configuredParser(config = {}) {
 
 		return {
 			get(scope, context) {
-				const scopeList = context.scopeList;
+				const { scopeList } = context;
 
 				const px = new Proxy(
 					{},
 					{
+						// eslint-disable-next-line complexity
 						get(target, name) {
 							// get(obj, "key") is called when running `obj["key"]` or `obj.key`
 							if (config.evaluateIdentifier) {
