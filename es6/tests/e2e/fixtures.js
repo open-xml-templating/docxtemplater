@@ -335,7 +335,7 @@ const fixtures = [
 		it: "should not throw error if nullGetter returns null",
 		...noInternals,
 		contentText: "{#foo}{name}{/foo}",
-		resultText: "<w:t/>",
+		resultText: "",
 		options: {
 			nullGetter: (part) => {
 				if (part.module === "loop") {
@@ -2119,11 +2119,88 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			resultText: "01201",
 		};
 	})(),
+	(() => {
+		let count = 0;
+		return {
+			assertBefore() {
+				count = 0;
+			},
+			assertAfter() {
+				expect(count).to.equal(1);
+			},
+			it: "should only call evaluateIdentifier once",
+			contentText: "{user_age}",
+			...noInternals,
+			options: {
+				parser: expressionParser.configure({
+					evaluateIdentifier() {
+						count++;
+						return null;
+					},
+				}),
+			},
+			scope: {
+				user_age: 21,
+			},
+			resultText: "21",
+		};
+	})(),
+	(() => {
+		let count = 0;
+		return {
+			assertBefore() {
+				count = 0;
+			},
+			assertAfter() {
+				expect(count).to.equal(1);
+			},
+			it: "should only call evaluateIdentifier once for tag {user.age}",
+			contentText: "{user.age}",
+			...noInternals,
+			options: {
+				parser: expressionParser.configure({
+					evaluateIdentifier() {
+						count++;
+						return null;
+					},
+				}),
+			},
+			scope: {
+				user: {
+					age: 21,
+				},
+			},
+			resultText: "21",
+		};
+	})(),
+	(() => {
+		let count = 0;
+		return {
+			it: "should only call setIdentifier once",
+			contentText: "{user_age=33}",
+			...noInternals,
+			options: {
+				parser: expressionParser.configure({
+					setIdentifier() {
+						count++;
+					},
+				}),
+			},
+			assertBefore() {
+				count = 0;
+			},
+			assertAfter() {
+				expect(count).to.equal(1);
+			},
+			scope: {},
+			resultText: "",
+		};
+	})(),
 	{
 		it: "should be possible to use parent scope together with expressionParser",
+		// __b means in this example "b" but from the rootscope
 		contentText: "{#loop}{__b|twice}{b|twice}{/loop}",
 		resultText: "2426",
-		// __b means in this context "b" but from the rootscope
 		scope: {
 			loop: [
 				{

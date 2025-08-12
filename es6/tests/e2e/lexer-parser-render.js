@@ -26,7 +26,8 @@ function expectations(iModule, fixture) {
 		}
 		content = content
 			.replace(/^<w:t( xml:space="preserve")?>/, "")
-			.replace(/<\/w:t>$/, "");
+			.replace(/<\/w:t>$/, "")
+			.replace(/<w:t\/>$/, "");
 		expect(content).to.be.deep.equal(fixture.resultText, "Content incorrect");
 	} else if (fixture.result !== null) {
 		let { content } = iModule.inspect;
@@ -59,6 +60,9 @@ function expectations(iModule, fixture) {
 			"Xmllexed incorrect"
 		);
 	}
+	if (fixture.assertAfter) {
+		fixture.assertAfter();
+	}
 }
 
 function getDoc() {
@@ -70,6 +74,9 @@ function runTest(fixture, async = false) {
 	const modules = [];
 	const iModule = inspectModule();
 	modules.push(iModule, new AssertionModule());
+	if (fixture.assertBefore) {
+		fixture.assertBefore();
+	}
 	if (fixture.options.modules) {
 		for (const mod of fixture.options.modules()) {
 			modules.push(mod);

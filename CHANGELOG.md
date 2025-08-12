@@ -1,3 +1,13 @@
+## 3.65.3
+
+Ensure that evaluateIdentifier is invoked only once for the tag `{name}`.
+
+In prior versions, the function was executed three times.
+
+This update eliminates one of those calls, and upgrading to
+angular-expressions@1.5.1 will remove an additional call, resulting in a single
+invocation.
+
 ## 3.65.2
 
 Bugfix rare issue with expressionparser getIdentifiers : pushArray was not defined correctly.

@@ -125,6 +125,7 @@ function getIdentifiers(x) {
 }
 
 function configuredParser(config = {}) {
+	let lastResult = null;
 	return function parser(tag) {
 		if (typeof tag !== "string") {
 			throw new Error(
@@ -167,12 +168,22 @@ function configuredParser(config = {}) {
 						get(target, name) {
 							// get(obj, "key") is called when running `obj["key"]` or `obj.key`
 							if (config.evaluateIdentifier) {
-								const fnResult = config.evaluateIdentifier(
-									name,
-									scope,
-									scopeList,
-									context
-								);
+								let fnResult;
+								if (
+									lastResult != null &&
+									lastResult[0] === name &&
+									lastResult[1] === target
+								) {
+									fnResult = lastResult[2];
+								} else {
+									fnResult = config.evaluateIdentifier(
+										name,
+										scope,
+										scopeList,
+										context
+									);
+								}
+								lastResult = [name, target, fnResult];
 								if (fnResult != null) {
 									return fnResult;
 								}
@@ -212,12 +223,22 @@ function configuredParser(config = {}) {
 						has(target, name) {
 							// has(obj, "key") is called when running ("key" in obj)
 							if (config.evaluateIdentifier) {
-								const fnResult = config.evaluateIdentifier(
-									name,
-									scope,
-									scopeList,
-									context
-								);
+								let fnResult;
+								if (
+									lastResult != null &&
+									lastResult[0] === name &&
+									lastResult[1] === target
+								) {
+									fnResult = lastResult[2];
+								} else {
+									fnResult = config.evaluateIdentifier(
+										name,
+										scope,
+										scopeList,
+										context
+									);
+								}
+								lastResult = [name, target, fnResult];
 								if (fnResult != null) {
 									return true;
 								}
@@ -271,12 +292,22 @@ function configuredParser(config = {}) {
 						getOwnPropertyDescriptor(target, name) {
 							// getOwnPropertyDescriptor(obj, "key") is called when running `obj.hasOwnProperty("key")`
 							if (config.evaluateIdentifier) {
-								const fnResult = config.evaluateIdentifier(
-									name,
-									scope,
-									scopeList,
-									context
-								);
+								let fnResult;
+								if (
+									lastResult != null &&
+									lastResult[0] === name &&
+									lastResult[1] === target
+								) {
+									fnResult = lastResult[2];
+								} else {
+									fnResult = config.evaluateIdentifier(
+										name,
+										scope,
+										scopeList,
+										context
+									);
+								}
+								lastResult = null;
 								if (fnResult != null) {
 									return {
 										writable: true,
