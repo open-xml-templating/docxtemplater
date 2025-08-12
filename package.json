@@ -47,7 +47,7 @@
     "@stryker-mutator/core": "^9.0.1",
     "@stryker-mutator/mocha-runner": "^9.0.1",
     "@stylistic/eslint-plugin-js": "^4.4.1",
-    "angular-expressions": "^1.5.0",
+    "angular-expressions": "^1.5.1",
     "babel-loader": "^10.0.0",
     "chai": "^4.5.0",
     "chalk": "^5.4.1",
