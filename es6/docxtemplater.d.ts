@@ -137,16 +137,18 @@ declare namespace DXT {
   interface Syntax {
     allowUnopenedTag?: boolean;
     allowUnclosedTag?: boolean;
+    allowUnbalancedLoops?: boolean;
     changeDelimiterPrefix?: string | null;
   }
 
   interface Options {
-    delimiters?: { start: string; end: string };
+    delimiters?: { start: string | null; end: string | null };
     paragraphLoop?: boolean;
     parser?(tag: string): Parser;
     errorLogging?: boolean | string;
     linebreaks?: boolean;
     nullGetter?(part: Part): any;
+    fileTypeConfig?: any;
     syntax?: Syntax;
     stripInvalidXMLChars?: boolean;
   }

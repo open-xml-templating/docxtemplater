@@ -1,4 +1,34 @@
 const DocUtils = require("./doc-utils.js");
+const z = require("./minizod.js");
+
+// Schema definitions for DXT.ConstructorOptions
+const dxtSyntaxSchema = z.object({
+	allowUnopenedTag: z.boolean().optional(),
+	allowUnclosedTag: z.boolean().optional(),
+	allowUnbalancedLoops: z.boolean().optional(),
+	changeDelimiterPrefix: z.string().optional().nullable(),
+});
+
+const dxtOptionsSchema = z
+	.object({
+		delimiters: z
+			.object({
+				start: z.string().nullable(),
+				end: z.string().nullable(),
+			})
+			.strict()
+			.optional(),
+		fileTypeConfig: z.object({}).optional(),
+		paragraphLoop: z.boolean().optional(),
+		parser: z.function().optional(),
+		errorLogging: z.union([z.boolean(), z.string()]).optional(),
+		linebreaks: z.boolean().optional(),
+		nullGetter: z.function().optional(),
+		syntax: dxtSyntaxSchema.optional(),
+		stripInvalidXMLChars: z.boolean().optional(),
+	})
+	.strict();
+
 const { getRelsTypes } = require("./get-relation-types.js");
 const {
 	collectContentTypes,
@@ -339,12 +369,17 @@ const Docxtemplater = class Docxtemplater {
 				"setOptions() should not be called manually when using the v4 constructor"
 			);
 		}
-		deprecatedMethod(this, "setOptions");
 		if (!options) {
 			throw new Error(
 				"setOptions should be called with an object as first parameter"
 			);
 		}
+		const result = dxtOptionsSchema.validate(options);
+		if (result.success === false) {
+			throw new Error(result.error);
+		}
+
+		deprecatedMethod(this, "setOptions");
 		this.options = {};
 		const defaults = getDefaults();
 		for (const key in defaults) {

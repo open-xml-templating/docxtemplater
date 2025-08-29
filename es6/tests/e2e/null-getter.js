@@ -84,7 +84,6 @@ describe("Nullgetter", () => {
 						]);
 					}
 				},
-				async: true,
 			},
 			expectedName: "expected-multi-loop.docx",
 			async: true,

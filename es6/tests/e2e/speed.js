@@ -15,13 +15,11 @@ if (!process.env.SPEED_TEST) {
 			const content = "<w:t>tag {age}</w:t>";
 			const docs = [];
 			for (let i = 0; i < 100; i++) {
-				docs.push(
-					createXmlTemplaterDocxNoRender(content, { tags: { age: 12 } })
-				);
+				docs.push(createXmlTemplaterDocxNoRender(content));
 			}
 			const time = new Date();
 			for (let i = 0; i < 100; i++) {
-				docs[i].render();
+				docs[i].render({ age: 12 });
 			}
 			const duration = new Date() - time;
 			expect(duration).to.be.below(400);
@@ -38,13 +36,11 @@ if (!process.env.SPEED_TEST) {
 			content = prepost + content + prepost;
 			const docs = [];
 			for (i = 0; i < 20; i++) {
-				docs.push(
-					createXmlTemplaterDocxNoRender(content, { tags: { age: 12 } })
-				);
+				docs.push(createXmlTemplaterDocxNoRender(content));
 			}
 			const time = new Date();
 			for (i = 0; i < 20; i++) {
-				docs[i].render();
+				docs[i].render({ age: 12 });
 			}
 			let maxDuration = 400;
 			if (browserMatches(/chrome (73|71)/)) {
@@ -60,9 +56,9 @@ if (!process.env.SPEED_TEST) {
 			for (let i = 1; i <= 1000; i++) {
 				users.push({ name: "foo" });
 			}
-			const doc = createXmlTemplaterDocxNoRender(content, { tags: { users } });
+			const doc = createXmlTemplaterDocxNoRender(content);
 			const time = new Date();
-			doc.render();
+			doc.render({ users });
 			const duration = new Date() - time;
 			let maxDuration = 100;
 			if (
@@ -93,10 +89,9 @@ if (!process.env.SPEED_TEST) {
 			}
 			const prepost = result.join("");
 			const content = `<w:p><w:r><w:t>{#foo}</w:t></w:r>${prepost}<w:r><w:t>{/}</w:t></w:r></w:p>`;
-			const users = [{ name: "John" }, { name: "Mary" }];
-			const doc = createXmlTemplaterDocxNoRender(content, { tags: { users } });
+			const doc = createXmlTemplaterDocxNoRender(content);
 			const time = new Date();
-			doc.render();
+			doc.render({ users: [{ name: "John" }, { name: "Mary" }] });
 			const duration = new Date() - time;
 			let maxDuration = 300;
 			if (
@@ -125,10 +120,7 @@ if (!process.env.SPEED_TEST) {
 					result.push(normalContent);
 				}
 				const content = result.join("");
-				const users = [];
-				const doc = createXmlTemplaterDocxNoRender(content, {
-					tags: { users },
-				});
+				const doc = createXmlTemplaterDocxNoRender(content, {});
 				let now = new Date();
 				doc.compile();
 				const compileDuration = new Date() - now;
@@ -137,7 +129,8 @@ if (!process.env.SPEED_TEST) {
 					expect(compileDuration).to.be.below(3000);
 				}
 				now = new Date();
-				doc.render();
+				const users = [];
+				doc.render({ users });
 				const renderDuration = new Date() - now;
 				expect(renderDuration).to.be.below(2000);
 			});

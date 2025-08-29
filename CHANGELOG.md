@@ -1,3 +1,7 @@
+## 3.66.0
+
+Verify that all options specified in the Docxtemplater constructor are valid by ensuring the types are accurate, using Minizod, a library akin to Zod for type verification.
+
 ## 3.65.3
 
 Ensure that evaluateIdentifier is invoked only once for the tag `{name}`.
