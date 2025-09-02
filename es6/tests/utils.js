@@ -733,6 +733,9 @@ function start() {
 			endsWithOne(fileName, [
 				".docm",
 				".docx",
+				".odt",
+				".ods",
+				".odp",
 				".dotm",
 				".dotx",
 				".potm",
