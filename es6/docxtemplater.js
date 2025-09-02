@@ -75,7 +75,7 @@ const {
 
 const ctXML = "[Content_Types].xml";
 const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 47, 0];
+const currentModuleApiVersion = [3, 47, 1];
 
 function throwIfDuplicateModules(modules) {
 	const duplicates = getDuplicates(modules.map(({ name }) => name));

@@ -1,3 +1,11 @@
+## 3.66.1
+
+Prepare docxtemplater in order to allow ODT module (paid module) available here : https://docxtemplater.com/modules/odt
+
+This new module allows to use docxtemplater on odt documents (Libreoffice Open Document file).
+
+Upgrade moduleApiVersion to 3.47.1
+
 ## 3.66.0
 
 Verify that all options specified in the Docxtemplater constructor are valid by ensuring the types are accurate, using Minizod, a library akin to Zod for type verification.
