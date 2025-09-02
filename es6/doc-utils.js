@@ -326,12 +326,16 @@ function isTagEnd(tagType, { type, tag, position }) {
 }
 function isParagraphStart({ type, tag, position }) {
 	return (
-		["w:p", "a:p"].indexOf(tag) !== -1 && type === "tag" && position === "start"
+		["w:p", "a:p", "text:p"].indexOf(tag) !== -1 &&
+		type === "tag" &&
+		position === "start"
 	);
 }
 function isParagraphEnd({ type, tag, position }) {
 	return (
-		["w:p", "a:p"].indexOf(tag) !== -1 && type === "tag" && position === "end"
+		["w:p", "a:p", "text:p"].indexOf(tag) !== -1 &&
+		type === "tag" &&
+		position === "end"
 	);
 }
 function isTextStart({ type, position, text }) {
