@@ -192,7 +192,10 @@ function configuredParser(config = {}) {
 								return scope;
 							}
 							if (name === "$index") {
-								return getIndex(scope, context);
+								const res = getIndex(scope, context);
+								if (res != null) {
+									return res;
+								}
 							}
 							if (scope == null) {
 								return;
@@ -243,8 +246,11 @@ function configuredParser(config = {}) {
 									return true;
 								}
 							}
-							if (["$index", "this"].indexOf(name) !== -1) {
-								return true;
+							if (name === "$index") {
+								const res = getIndex(scope, context);
+								if (res != null) {
+									return true;
+								}
 							}
 							if (scope == null) {
 								return false;

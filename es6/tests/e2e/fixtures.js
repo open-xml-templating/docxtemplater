@@ -3185,6 +3185,21 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 </p:sld>`,
 		pptx: true,
 	},
+	{
+		it: "should handle {$index} with tag at root level",
+		options: {
+			parser: expressionParser,
+		},
+		contentText: "Hi {$index}",
+		scope: {
+			$index: "xyz",
+		},
+		resultText: "Hi xyz",
+		xmllexed: null,
+		lexed: null,
+		parsed: null,
+		postparsed: null,
+	},
 ];
 
 const rawXmlTest = {

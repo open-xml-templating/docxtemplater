@@ -1,3 +1,7 @@
+## 3.66.2
+
+Make it possible to load $index from the render() method if using {$index} outside of a loop.
+
 ## 3.66.1
 
 Prepare docxtemplater in order to allow ODT module (paid module) available here : https://docxtemplater.com/modules/odt
