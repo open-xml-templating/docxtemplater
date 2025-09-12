@@ -103,7 +103,7 @@ declare namespace DXT {
     render?(part: Part): Rendered | null;
     getTraits?(traitName: string, parsed: any): any;
     getFileType?(opts: any): string | void;
-    nullGetter?(part: Part, scopeManager: any): any;
+    nullGetter?(part: Part, scopeManager: ScopeManager): any;
     optionsTransformer?(options: Options): Options;
     postrender?(parts: string[], options: any): string[];
     errorsTransformer?(errors: Error[]): Error[];
@@ -147,7 +147,7 @@ declare namespace DXT {
     parser?(tag: string): Parser;
     errorLogging?: boolean | string;
     linebreaks?: boolean;
-    nullGetter?(part: Part): any;
+    nullGetter?(part: Part, scopeManager: ScopeManager): any;
     fileTypeConfig?: any;
     syntax?: Syntax;
     stripInvalidXMLChars?: boolean;

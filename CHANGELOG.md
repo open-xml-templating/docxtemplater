@@ -1,3 +1,11 @@
+## 3.66.3
+
+Fix Typings : Add scopeManager as the second argument for nullGetter
+
+```ts
+nullGetter?(part: Part, scopeManager: ScopeManager): any;
+```
+
 ## 3.66.2
 
 Make it possible to load $index from the render() method if using {$index} outside of a loop.
