@@ -75,7 +75,7 @@ const {
 
 const ctXML = "[Content_Types].xml";
 const relsFile = "_rels/.rels";
-const currentModuleApiVersion = [3, 47, 1];
+const currentModuleApiVersion = [3, 47, 2];
 
 function throwIfDuplicateModules(modules) {
 	const duplicates = getDuplicates(modules.map(({ name }) => name));
@@ -363,6 +363,13 @@ const Docxtemplater = class Docxtemplater {
 		}
 		return this;
 	}
+	findModule(name) {
+		for (const module of this.modules) {
+			if (module.name === name) {
+				return module;
+			}
+		}
+	}
 	setOptions(options) {
 		if (this.v4Constructor) {
 			throw new Error(
@@ -414,9 +421,14 @@ const Docxtemplater = class Docxtemplater {
 		for (const module of this.modules) {
 			module.zip = this.zip;
 			module.docxtemplater = this;
+			module.fileTypeConfig = this.fileTypeConfig;
+			module.fileType = this.fileType;
+			module.xtOptions = this.options;
+			module.modules = this.modules;
 		}
 
 		dropUnsupportedFileTypesModules(this);
+
 		return this;
 	}
 	precompileFile(fileName) {
@@ -506,6 +518,9 @@ const Docxtemplater = class Docxtemplater {
 			zip: this.zip,
 			xmlDocuments: this.xmlDocuments,
 		});
+		for (const module of this.modules) {
+			module.xmlDocuments = this.xmlDocuments;
+		}
 		this.getTemplatedFiles();
 		/*
 		 * Loop inside all templatedFiles (ie xml files with content).

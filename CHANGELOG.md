@@ -1,3 +1,9 @@
+## 3.66.4
+
+Add module api so that modules can call `findModule()` to find a module by name.
+
+Also, auto add : fileTypeConfig, filetype, xtOptions, modules.
+
 ## 3.66.3
 
 Fix Typings : Add scopeManager as the second argument for nullGetter
