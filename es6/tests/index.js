@@ -112,6 +112,8 @@ function startTest() {
 		require("./unit/expressions.js");
 		require("./unit/merge-sort.js");
 		require("./unit/scope-manager.js");
+
+		require("./unit/minizod.js");
 	});
 }
 

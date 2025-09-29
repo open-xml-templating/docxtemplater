@@ -9,9 +9,7 @@ class MiniZod {
 			},
 			nullable() {
 				return MiniZod.createSchema((value) =>
-					value === null || value === undefined
-						? { success: true, value }
-						: validateFn(value)
+					value == null ? { success: true, value } : validateFn(value)
 				);
 			},
 		};
@@ -128,7 +126,13 @@ class MiniZod {
 
 	static object(shape) {
 		const schema = MiniZod.createSchema((value) => {
-			if (value === null || typeof value !== "object") {
+			if (value == null) {
+				return {
+					success: false,
+					error: `Expected object, received ${value}`,
+				};
+			}
+			if (typeof value !== "object") {
 				return {
 					success: false,
 					error: `Expected object, received ${typeof value}`,
@@ -162,7 +166,13 @@ class MiniZod {
 
 	static record(valueSchema) {
 		return MiniZod.createSchema((value) => {
-			if (value === null || typeof value !== "object") {
+			if (value === null) {
+				return {
+					success: false,
+					error: "Expected object, received null",
+				};
+			}
+			if (typeof value !== "object") {
 				return {
 					success: false,
 					error: `Expected object, received ${typeof value}`,
