@@ -319,7 +319,27 @@ const avoidRenderingCoreXMLModule = {
   },
 };
 new Docxtemplater(new PizZip("hello"), {
-  modules: [avoidRenderingCoreXMLModule],
+  modules: [
+    avoidRenderingCoreXMLModule,
+    {
+      optionsTransformer(options, doc) {
+        doc.modules.forEach(function (module) {
+          if (module.name === "LoopModule") {
+            module.prefix.start = "FOR ";
+            module.prefix.start = "ENDFOR ";
+          }
+        });
+        return options;
+      },
+      render(part, options) {
+        if (part.type === "placeholder") {
+          let value = options.scopeManager.getValue(part.value, { part });
+          return value;
+        }
+        return null;
+      },
+    },
+  ],
   paragraphLoop: true,
   linebreaks: true,
 });

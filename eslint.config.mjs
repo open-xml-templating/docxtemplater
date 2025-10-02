@@ -8,6 +8,7 @@ import stylisticJs from "@stylistic/eslint-plugin-js";
 export default [
 	{
 		ignores: [
+			".stryker-tmp/",
 			"**/.edb-*",
 			"*.sublime-project",
 			"*.sublime-workspace",

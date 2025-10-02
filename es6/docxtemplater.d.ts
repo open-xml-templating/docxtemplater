@@ -33,6 +33,7 @@ declare namespace DXT {
     resolved: any;
     cachedParsers: Record<string, (scope: any, context: ParserContext) => any>;
     parser(tag: string): Parser;
+    getValue(value: string, { part: Part }): any;
   }
 
   interface Rendered {
@@ -92,6 +93,24 @@ declare namespace DXT {
     fileOrder?(files: string[]): string[];
   }
 
+  interface RenderOptions {
+    joinUncorrupt(parts: Part[], options: RenderOptions): Part[];
+    render(part: Part, options: RenderOptions): Rendered | null;
+    nullGetter?(part: Part, scopeManager: ScopeManager): any;
+    resolvedId: string;
+    index: number;
+    scopeManager: ScopeManager;
+    stripInvalidXMLChars: boolean;
+    linebreaks: boolean;
+    fileType: string;
+    fileTypeConfig: any;
+    filePath: string;
+    contentType: string;
+    parser: Parser;
+    cachedParsers: Record<string, (scope: any, context: ParserContext) => any>;
+    compiled: Part[];
+  }
+
   interface Module {
     set?(options: any): void;
     clone?(): Module;
@@ -100,11 +119,11 @@ declare namespace DXT {
       string,
       { [x: string]: any } | ((part: SimplePart) => { [x: string]: any }),
     ][];
-    render?(part: Part): Rendered | null;
+    render?(part: Part, options: RenderOptions): Rendered | null;
     getTraits?(traitName: string, parsed: any): any;
     getFileType?(opts: any): string | void;
     nullGetter?(part: Part, scopeManager: ScopeManager): any;
-    optionsTransformer?(options: Options): Options;
+    optionsTransformer?(options: Options, doc: Docxtemplater): Options;
     postrender?(parts: string[], options: any): string[];
     errorsTransformer?(errors: Error[]): Error[];
     getRenderedMap?(map: any): any;
@@ -188,6 +207,7 @@ declare class Docxtemplater<TZip = any> {
   replaceLastSection?: boolean; // used for the subsection module
   includeSections?: boolean; // used for the subsection module
   keepStyles?: boolean; // used for the subtemplate module
+  modules: DXT.Module[];
 
   toBuffer(options?: DXT.ZipOptions): Buffer;
   toBlob(options?: DXT.ZipOptions): Blob;

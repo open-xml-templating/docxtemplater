@@ -1,3 +1,9 @@
+## 3.66.5
+
+Update typing files for `module.optionsTransformer` and `module.render`.
+
+Those methods were not correctly exposed in the type files. Fixes #792
+
 ## 3.66.4
 
 Add module api so that modules can call `findModule()` to find a module by name.
