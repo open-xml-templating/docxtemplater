@@ -1,3 +1,13 @@
+## 3.66.6
+
+Previous versions generated an empty paragraph for all tables.
+
+This intended behavior also occurred in headers and footers, even when the last element was a table.
+
+Consequently, an unintended new line appeared in the header/footer.
+
+This issue has now been addressed.
+
 ## 3.66.5
 
 Update typing files for `module.optionsTransformer` and `module.render`.

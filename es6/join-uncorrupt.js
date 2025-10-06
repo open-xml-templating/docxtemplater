@@ -20,7 +20,10 @@ function addEmptyParagraphAfterTable(parts) {
 			if (
 				!startsWith(p, "<w:p") &&
 				!startsWith(p, "<w:tbl") &&
-				!startsWith(p, "<w:sectPr")
+				!startsWith(p, "<w:sectPr") &&
+				// Tested by #regression-paragraph-after-table-header-footer
+				!startsWith(p, "</w:ftr>") &&
+				!startsWith(p, "</w:hdr>")
 			) {
 				p = `<w:p/>${p}`;
 			}

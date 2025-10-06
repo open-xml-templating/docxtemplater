@@ -548,7 +548,7 @@ describe("Module Matcher API", () => {
 					modules: [module1()],
 				},
 				data: { first_name: "John" },
-				expectedText: "l28!! John",
+				expectedText: "l29!! John",
 			})
 		);
 	});
@@ -892,7 +892,7 @@ describe("Module call order", () => {
 					["nullGetter", 9],
 
 					// Runs for each xml tag or placeholder tag
-					["render", 240],
+					["render", 242],
 
 					// Runs for each templatedFile
 					["postrender", 7],

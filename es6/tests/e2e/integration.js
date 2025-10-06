@@ -287,6 +287,14 @@ describe("Regression", () => {
 		};
 		expectToThrow(() => createDocV4("simple.xlsx"), Error, expectedError);
 	});
+
+	it("should not add a paragraph after a table if at end of footer / header", () => {
+		// Tested #regression-paragraph-after-table-header-footer
+		shouldBeSame({
+			doc: createDocV4("tbl-without-sibling.docx").render({}),
+			expectedName: "expected-tbl-without-sibling.docx",
+		});
+	});
 });
 
 describe("Spacing/Linebreaks", () => {

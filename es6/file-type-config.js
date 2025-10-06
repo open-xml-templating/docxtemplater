@@ -35,6 +35,8 @@ function DocXFileTypeConfig() {
 			"w:tc",
 			"w:tr",
 			"w:tbl",
+			"w:ftr",
+			"w:hdr",
 			"w:body",
 			"w:document",
 			"w:p",
