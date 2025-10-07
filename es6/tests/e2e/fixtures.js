@@ -1660,6 +1660,49 @@ const fixtures = [
 		resultText: "Hi addition:0",
 	},
 	{
+		it: "should be possible to block access of parent scope with expressionParser",
+		scope: {
+			name: "John",
+			companies: [
+				{
+					revenue: 30,
+					name: "Acme",
+				},
+				{
+					revenue: 30,
+				},
+			],
+		},
+		...noInternals,
+		contentText: "{name} {#companies}{name}-{revenue}{/}",
+		resultText: "John Acme-30undefined-30",
+		options: {
+			// https://docxtemplater.com/docs/deep-dive-into-the-parser-option/#parser-example-to-avoid-using-the-parent-scope-if-a-value-is-null-on-the-main-scope
+			parser: (tag) => {
+				const evaluator = expressionParser(tag);
+				return {
+					get(scope, context) {
+						if (context.num < context.scopePath.length) {
+							return null;
+						}
+						const contextProxy = new Proxy(
+							{},
+							{
+								get(target, name) {
+									if (name === "scopeList") {
+										return [];
+									}
+									return context[name];
+								},
+							}
+						);
+						return evaluator.get(scope, contextProxy);
+					},
+				};
+			},
+		},
+	},
+	{
 		it: "should be possible to customize using postEvaluate for addition for ie11",
 		scope: {
 			name: false,
