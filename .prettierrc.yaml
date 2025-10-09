@@ -1,1 +1,26 @@
-trailingComma: es5
+tabWidth: 4
+overrides:
+  - files: "*.eslintrc"
+    options:
+      parser: json
+
+  - files:
+      - "*.js"
+      - "*.ts"
+    options:
+      trailingComma: es5
+      useTabs: true
+      printWidth: 80
+
+  - files:
+      - "*.md"
+      - "*.mjs"
+    options:
+      trailingComma: es5
+      printWidth: 65
+
+  - files: "*.html"
+    options:
+      trailingComma: es5
+
+
