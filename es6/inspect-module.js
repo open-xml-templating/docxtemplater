@@ -17,7 +17,9 @@ function getStructuredTags(postParsed) {
 			if (part.attrParsed) {
 				part.subparsed = [];
 				for (const key in part.attrParsed) {
-					part.subparsed = part.subparsed.concat(part.attrParsed[key]);
+					part.subparsed = part.subparsed.concat(
+						part.attrParsed[key]
+					);
 				}
 				return part;
 			}

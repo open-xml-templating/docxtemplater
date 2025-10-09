@@ -83,7 +83,9 @@ class AssertionModule {
 			throw new Error("parsed contains part without type");
 		}
 		if (type !== "delimiter") {
-			throw new Error(`parsed contains part with invalid type : '${type}'`);
+			throw new Error(
+				`parsed contains part with invalid type : '${type}'`
+			);
 		}
 		if (position !== "end") {
 			throw new Error(

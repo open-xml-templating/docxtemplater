@@ -6,24 +6,24 @@
 
 import { DXT } from "./docxtemplater";
 export default class InspectModule implements DXT.Module {
-  constructor();
-  getAllTags(): Record<string, unknown>;
-  getTags(file?: string): Record<string, unknown>;
-  fullInspected: Record<
-    string,
-    {
-      nullValues: {
-        detail: {
-          part: DXT.Part;
-          scopeManager: DXT.ScopeManager;
-        }[];
-        summary: string[][];
-      };
-    }
-  >;
+	constructor();
+	getAllTags(): Record<string, unknown>;
+	getTags(file?: string): Record<string, unknown>;
+	fullInspected: Record<
+		string,
+		{
+			nullValues: {
+				detail: {
+					part: DXT.Part;
+					scopeManager: DXT.ScopeManager;
+				}[];
+				summary: string[][];
+			};
+		}
+	>;
 
-  getStructuredTags(file?: string): DXT.Part[];
-  getAllStructuredTags(): DXT.Part[];
-  getFileType(): string;
-  getTemplatedFiles(): string[];
+	getStructuredTags(file?: string): DXT.Part[];
+	getAllStructuredTags(): DXT.Part[];
+	getFileType(): string;
+	getTemplatedFiles(): string[];
 }

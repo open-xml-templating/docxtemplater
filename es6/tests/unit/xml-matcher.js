@@ -12,7 +12,9 @@ describe("XmlMatcher", () => {
 	});
 
 	it("should work with multiple tags", () => {
-		const matcher = xmlMatcher("<w:t>Text</w:t> TAG <w:t>Text2</w:t>", ["w:t"]);
+		const matcher = xmlMatcher("<w:t>Text</w:t> TAG <w:t>Text2</w:t>", [
+			"w:t",
+		]);
 		expect(matcher.matches[1].array[0]).to.be.equal("<w:t>Text2</w:t>");
 		expect(matcher.matches[1].array[1]).to.be.equal("<w:t>");
 		expect(matcher.matches[1].array[2]).to.be.equal("Text2");
@@ -20,9 +22,10 @@ describe("XmlMatcher", () => {
 	});
 
 	it("should work with selfclosing tag", () => {
-		const matcher = xmlMatcher(' <w:spacing w:before="0" w:after="200"/> ', [
-			"w:spacing",
-		]);
+		const matcher = xmlMatcher(
+			' <w:spacing w:before="0" w:after="200"/> ',
+			["w:spacing"]
+		);
 		expect(matcher.matches.length).to.be.equal(1);
 		expect(matcher.matches[0].array[0]).to.be.equal(
 			'<w:spacing w:before="0" w:after="200"/>'

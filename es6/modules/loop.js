@@ -43,7 +43,9 @@ function getPageBreakIfApplies(part) {
 
 function isEnclosedByParagraphs(parsed) {
 	return (
-		parsed.length && isParagraphStart(parsed[0]) && isParagraphEnd(last(parsed))
+		parsed.length &&
+		isParagraphStart(parsed[0]) &&
+		isParagraphEnd(last(parsed))
 	);
 }
 
@@ -67,7 +69,8 @@ function addPageBreakAtBeginning(subRendered) {
 function isContinuous(parts) {
 	return parts.some(
 		(part) =>
-			isTagStart("w:type", part) && part.value.indexOf("continuous") !== -1
+			isTagStart("w:type", part) &&
+			part.value.indexOf("continuous") !== -1
 	);
 }
 
@@ -81,7 +84,9 @@ function isNextPage(parts) {
 
 function addSectionBefore(parts, sect) {
 	return pushArray(
-		[`<w:p><w:pPr>${sect.map(({ value }) => value).join("")}</w:pPr></w:p>`],
+		[
+			`<w:p><w:pPr>${sect.map(({ value }) => value).join("")}</w:pPr></w:p>`,
+		],
 		parts
 	);
 }
@@ -117,7 +122,8 @@ function dropHeaderFooterRefs(parts) {
 
 function hasPageBreak(chunk) {
 	return chunk.some(
-		(part) => part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1
+		(part) =>
+			part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1
 	);
 }
 
@@ -281,7 +287,10 @@ class LoopModule {
 			const { sects } = this;
 			sects.some((sect, index) => {
 				if (basePart.lIndex < sect[0].lIndex) {
-					if (index + 1 < sects.length && isContinuous(sects[index + 1])) {
+					if (
+						index + 1 < sects.length &&
+						isContinuous(sects[index + 1])
+					) {
 						basePart.addContinuousType = true;
 					}
 					return true;
@@ -438,7 +447,8 @@ class LoopModule {
 			);
 			for (const pp of part.subparsed) {
 				if (isTagStart("a16:rowId", pp)) {
-					const val = +getSingleAttribute(pp.value, "val") + a16RowIdOffset;
+					const val =
+						+getSingleAttribute(pp.value, "val") + a16RowIdOffset;
 					a16RowIdOffset = 1;
 					pp.value = setSingleAttribute(pp.value, "val", val);
 				}
@@ -514,7 +524,10 @@ class LoopModule {
 			);
 		}
 		return {
-			value: options.joinUncorrupt(totalValue, { ...options, basePart: part }),
+			value: options.joinUncorrupt(totalValue, {
+				...options,
+				basePart: part,
+			}),
 			errors,
 		};
 	}

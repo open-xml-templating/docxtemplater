@@ -148,7 +148,13 @@ const ScopeManager = class ScopeManager {
 		if (type === "[object Array]") {
 			this.scopeType = "array";
 			for (let i = 0; i < value.length; i++) {
-				this.functorIfInverted(!inverted, functor, value[i], i, value.length);
+				this.functorIfInverted(
+					!inverted,
+					functor,
+					value[i],
+					i,
+					value.length
+				);
 			}
 			return true;
 		}
@@ -165,7 +171,12 @@ const ScopeManager = class ScopeManager {
 		);
 	}
 	getValue(tag, meta) {
-		const result = getValue.call(this, tag, meta, this.scopeList.length - 1);
+		const result = getValue.call(
+			this,
+			tag,
+			meta,
+			this.scopeList.length - 1
+		);
 		if (typeof result === "function") {
 			return result(this.scopeList[this.scopeList.length - 1], this);
 		}
@@ -176,7 +187,10 @@ const ScopeManager = class ScopeManager {
 			.call(this, tag, meta, this.scopeList.length - 1)
 			.then((result) => {
 				if (typeof result === "function") {
-					return result(this.scopeList[this.scopeList.length - 1], this);
+					return result(
+						this.scopeList[this.scopeList.length - 1],
+						this
+					);
 				}
 				return result;
 			});

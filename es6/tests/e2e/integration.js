@@ -103,7 +103,8 @@ describe("Docxtemplater internal properties", () => {
 	it("should calculate filesContentTypes and invertedContentTypes", () => {
 		const doc = createDocV4("tag-example.docx");
 		expect(doc.filesContentTypes).to.deep.equal({
-			"_rels/.rels": "application/vnd.openxmlformats-package.relationships+xml",
+			"_rels/.rels":
+				"application/vnd.openxmlformats-package.relationships+xml",
 			"word/_rels/document.xml.rels":
 				"application/vnd.openxmlformats-package.relationships+xml",
 			"docProps/app.xml":
@@ -142,9 +143,8 @@ describe("Docxtemplater internal properties", () => {
 			"application/vnd.ms-word.stylesWithEffects+xml": [
 				"word/stylesWithEffects.xml",
 			],
-			"application/vnd.openxmlformats-officedocument.extended-properties+xml": [
-				"docProps/app.xml",
-			],
+			"application/vnd.openxmlformats-officedocument.extended-properties+xml":
+				["docProps/app.xml"],
 			"application/vnd.openxmlformats-officedocument.theme+xml": [
 				"word/theme/theme1.xml",
 			],
@@ -279,7 +279,8 @@ describe("Regression", () => {
 		 * Throw specific error when trying to template xlsx file without xlsxmodule
 		 */
 		const expectedError = {
-			message: 'Filetype "xlsx" is supported only with the paid XlsxModule',
+			message:
+				'Filetype "xlsx" is supported only with the paid XlsxModule',
 			name: "TemplateError",
 			properties: {
 				id: "xlsx_filetype_needs_xlsx_module",
@@ -299,7 +300,9 @@ describe("Regression", () => {
 
 describe("Spacing/Linebreaks", () => {
 	it("should show spaces with linebreak option", () => {
-		const doc = createDocV4("tag-multiline.docx", { linebreaks: true }).render({
+		const doc = createDocV4("tag-multiline.docx", {
+			linebreaks: true,
+		}).render({
 			description: `hello there
     deep indentation
        goes here
@@ -826,7 +829,9 @@ describe("ParagraphLoop", () => {
 								filePath = obj.inspect.filePath;
 							}
 							if (obj.inspect.postparsed) {
-								printedPostparsed[filePath] = printy(obj.inspect.postparsed);
+								printedPostparsed[filePath] = printy(
+									obj.inspect.postparsed
+								);
 							}
 						}
 					},
@@ -837,7 +842,10 @@ describe("ParagraphLoop", () => {
 				get: () => "foo",
 			}),
 		}).render();
-		shouldBeSame({ doc, expectedName: "expected-rendered-par-in-par.docx" });
+		shouldBeSame({
+			doc,
+			expectedName: "expected-rendered-par-in-par.docx",
+		});
 		expect(printedPostparsed["word/document.xml"]).to.matchSnapshot();
 	});
 
@@ -1047,7 +1055,10 @@ describe("ParagraphLoop", () => {
 			},
 		};
 		expectToThrow(
-			() => createDocV4("paragraph-loop-error.docx", { errorLogging: false }),
+			() =>
+				createDocV4("paragraph-loop-error.docx", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -1147,7 +1158,8 @@ describe("Prefixes", () => {
 	});
 
 	it("should be possible to change the prefix of the raw xml module to a function", () => {
-		const content = "<w:p><w:t>{raw}</w:t></w:p><w:p><w:t> {text}</w:t></w:p>";
+		const content =
+			"<w:p><w:t>{raw}</w:t></w:p><w:p><w:t> {text}</w:t></w:p>";
 		const scope = {
 			raw: "<w:p><w:t>HoHo</w:t></w:p>",
 			text: "Huhu",
@@ -1333,7 +1345,10 @@ describe("StripInvalidXml", () => {
 			name: "tag-example.docx",
 			data: {
 				first_name:
-					"John" + String.fromCharCode(28) + " Doe" + String.fromCharCode(28),
+					"John" +
+					String.fromCharCode(28) +
+					" Doe" +
+					String.fromCharCode(28),
 			},
 			options: {
 				paragraphLoop: true,
@@ -1383,7 +1398,8 @@ describe("StripInvalidXml", () => {
 				this.render({
 					name: "two-tags.docx",
 					data: {
-						first_name: "John" + String.fromCharCode(28) + "xxxxxxx",
+						first_name:
+							"John" + String.fromCharCode(28) + "xxxxxxx",
 						last_name: "XXX" + String.fromCharCode(28) + "yyyy",
 					},
 					options: {
@@ -1534,7 +1550,8 @@ describe("Get Tags", () => {
 					priority: 100,
 					optionsTransformer(options, docxtemplater) {
 						docxtemplater.modules = docxtemplater.modules.filter(
-							(mod) => mod.name === "Render" || mod.name === "Common"
+							(mod) =>
+								mod.name === "Render" || mod.name === "Common"
 						);
 						return options;
 					},

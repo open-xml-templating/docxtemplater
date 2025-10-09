@@ -127,10 +127,16 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 			);
 
 			if (inDelimiter && position === "start") {
-				if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
+				if (
+					lastDelimiterOffset + lastDelimiterLength ===
+					delimiterOffset
+				) {
 					xtag = fullText.substr(
 						lastDelimiterOffset,
-						delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
+						delimiterOffset -
+							lastDelimiterOffset +
+							lastDelimiterLength +
+							4
 					);
 					if (!syntaxOptions.allowUnclosedTag) {
 						errors.push(
@@ -140,7 +146,10 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 							})
 						);
 						lastDelimiterMatch = currDelimiterMatch;
-						delimiterAcc.push({ ...currDelimiterMatch, error: true });
+						delimiterAcc.push({
+							...currDelimiterMatch,
+							error: true,
+						});
 						return delimiterAcc;
 					}
 				}
@@ -162,10 +171,16 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 				if (syntaxOptions.allowUnopenedTag) {
 					return delimiterAcc;
 				}
-				if (lastDelimiterOffset + lastDelimiterLength === delimiterOffset) {
+				if (
+					lastDelimiterOffset + lastDelimiterLength ===
+					delimiterOffset
+				) {
 					xtag = fullText.substr(
 						lastDelimiterOffset - 4,
-						delimiterOffset - lastDelimiterOffset + lastDelimiterLength + 4
+						delimiterOffset -
+							lastDelimiterOffset +
+							lastDelimiterLength +
+							4
 					);
 					errors.push(
 						getDuplicateCloseTagException({
@@ -304,7 +319,8 @@ function getAllDelimiterIndexes(fullText, delimiters, syntaxOptions) {
 		if (
 			syntaxOptions.changeDelimiterPrefix &&
 			compareResult === DELIMITER_START &&
-			fullText[offset + start.length] === syntaxOptions.changeDelimiterPrefix
+			fullText[offset + start.length] ===
+				syntaxOptions.changeDelimiterPrefix
 		) {
 			indexes.push({
 				offset: startOffset,
@@ -386,7 +402,10 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 						parts.push({ type: "content", value });
 					}
 				} else {
-					cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
+					cursor =
+						delimiterInOffset.offset -
+						offset +
+						delimiterInOffset.length;
 				}
 				continue;
 			}
@@ -400,7 +419,8 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 				offset: cursor + offset,
 			};
 			parts.push(delimiterPart);
-			cursor = delimiterInOffset.offset - offset + delimiterInOffset.length;
+			cursor =
+				delimiterInOffset.offset - offset + delimiterInOffset.length;
 		}
 		cutNext = cursor - partContent.length;
 		const value = partContent.substr(cursor);

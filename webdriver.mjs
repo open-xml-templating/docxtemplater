@@ -78,8 +78,13 @@ server.listen(port, async () => {
 		// Main test function
 		async function runTests() {
 			try {
-				if (+new Date() - startTime > timeoutConnection * second) {
-					throw new Error(`Aborting after ${timeoutConnection} seconds`);
+				if (
+					+new Date() - startTime >
+					timeoutConnection * second
+				) {
+					throw new Error(
+						`Aborting after ${timeoutConnection} seconds`
+					);
 				}
 
 				// Configure test URL
@@ -92,7 +97,8 @@ server.listen(port, async () => {
 					mochaUrl.query.grep = process.env.filter;
 					mochaUrl.query.invert = "true";
 				}
-				mochaUrl.query.browser = browserConfig[BROWSER].name;
+				mochaUrl.query.browser =
+					browserConfig[BROWSER].name;
 
 				// Navigate to test page
 				await page.goto(url.format(mochaUrl));
@@ -104,36 +110,73 @@ server.listen(port, async () => {
 
 				const myTests = [];
 				// Monitor test progress
-				const progressInterval = setInterval(async () => {
-					const results = await page.$$eval("li h1, li h2", (elements) =>
-						elements.map((el) => ({
-							prefix: el.tagName.toLowerCase() === "h1" ? "# " : "    ",
-							title:
-								el.tagName.toLowerCase() === "h1"
-									? el.querySelector("a")?.textContent || el.textContent
-									: Array.from(el.childNodes)
-											.filter((node) => node.nodeType === Node.TEXT_NODE)
-											.map((node) => node.textContent.trim())
-											.join(""),
-							duration: el.querySelector(".duration")?.textContent || "",
-						}))
-					);
-					for (const item of results) {
-						let found = false;
-						for (const existingTest of myTests) {
-							if (item.title === existingTest.title) {
-								found = true;
-								break;
+				const progressInterval = setInterval(
+					async () => {
+						const results = await page.$$eval(
+							"li h1, li h2",
+							(elements) =>
+								elements.map((el) => ({
+									prefix:
+										el.tagName.toLowerCase() ===
+										"h1"
+											? "# "
+											: "    ",
+									title:
+										el.tagName.toLowerCase() ===
+										"h1"
+											? el.querySelector(
+													"a"
+												)?.textContent ||
+												el.textContent
+											: Array.from(
+													el.childNodes
+												)
+													.filter(
+														(node) =>
+															node.nodeType ===
+															Node.TEXT_NODE
+													)
+													.map(
+														(node) =>
+															node.textContent.trim()
+													)
+													.join(""),
+									duration:
+										el.querySelector(
+											".duration"
+										)?.textContent || "",
+								}))
+						);
+						for (const item of results) {
+							let found = false;
+							for (const existingTest of myTests) {
+								if (
+									item.title ===
+									existingTest.title
+								) {
+									found = true;
+									break;
+								}
+							}
+							if (!found) {
+								myTests.push(item);
+								const {
+									prefix,
+									title,
+									duration,
+								} = item;
+								// Remove the replay arrow if present
+								console.log(
+									`${prefix}${title} ${duration}`.replace(
+										/\s+‣$/,
+										""
+									)
+								);
 							}
 						}
-						if (!found) {
-							myTests.push(item);
-							const { prefix, title, duration } = item;
-							// Remove the replay arrow if present
-							console.log(`${prefix}${title} ${duration}`.replace(/\s+‣$/, ""));
-						}
-					}
-				}, 100);
+					},
+					100
+				);
 
 				// Wait for tests to complete
 				await page.waitForSelector("#status", {
@@ -151,16 +194,27 @@ server.listen(port, async () => {
 					"#mocha-stats",
 					(el) => el.textContent
 				);
-				const passes = parseInt(statsText.replace(passesRegex, "$1"), 10);
-				const failures = parseInt(statsText.replace(failuresRegex, "$1"), 10);
+				const passes = parseInt(
+					statsText.replace(passesRegex, "$1"),
+					10
+				);
+				const failures = parseInt(
+					statsText.replace(failuresRegex, "$1"),
+					10
+				);
 
 				if (failures > 0) {
 					await sleep(1000);
-					const failedTests = await page.$$eval("li.test.fail", (elements) =>
-						elements.map((el) => ({
-							title: el.querySelector("h2").textContent,
-							error: el.querySelector("pre.error").textContent,
-						}))
+					const failedTests = await page.$$eval(
+						"li.test.fail",
+						(elements) =>
+							elements.map((el) => ({
+								title: el.querySelector("h2")
+									.textContent,
+								error: el.querySelector(
+									"pre.error"
+								).textContent,
+							}))
 					);
 
 					for (const { title, error } of failedTests) {

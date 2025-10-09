@@ -6,7 +6,8 @@ function getMinFromArrays(arrays, state) {
 		}
 		if (
 			minIndex === -1 ||
-			arrays[i][state[i]].offset < arrays[minIndex][state[minIndex]].offset
+			arrays[i][state[i]].offset <
+				arrays[minIndex][state[minIndex]].offset
 		) {
 			minIndex = i;
 		}

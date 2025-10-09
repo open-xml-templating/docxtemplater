@@ -14,7 +14,9 @@ describe("Uniq", () => {
 
 describe("setSingleAttribute", () => {
 	it("should work with self closing", () => {
-		expect(setSingleAttribute("<a/>", "b", "true")).to.equal('<a b="true"/>');
+		expect(setSingleAttribute("<a/>", "b", "true")).to.equal(
+			'<a b="true"/>'
+		);
 	});
 
 	it("should work with starting tag", () => {

@@ -201,7 +201,10 @@ function configuredParser(config = {}) {
 								return;
 							}
 
-							if (hasOwnProperty.call(scope, name) && scope[name] != null) {
+							if (
+								hasOwnProperty.call(scope, name) &&
+								scope[name] != null
+							) {
 								const property = scope[name];
 
 								return typeof property === "function"
@@ -256,12 +259,18 @@ function configuredParser(config = {}) {
 								return false;
 							}
 
-							if (hasOwnProperty.call(scope, name) && scope[name] != null) {
+							if (
+								hasOwnProperty.call(scope, name) &&
+								scope[name] != null
+							) {
 								return true;
 							}
 							for (let i = scopeList.length - 1; i >= 0; i--) {
 								const s = scopeList[i];
-								if (hasOwnProperty.call(s, name) && s[name] != null) {
+								if (
+									hasOwnProperty.call(s, name) &&
+									s[name] != null
+								) {
 									return true;
 								}
 							}

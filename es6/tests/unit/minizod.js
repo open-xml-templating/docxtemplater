@@ -239,14 +239,18 @@ describe("MiniZod", () => {
 		});
 
 		it("should validate object with correct shape", () => {
-			expect(objectSchema.validate({ name: "John", age: 30 })).to.deep.equal({
+			expect(
+				objectSchema.validate({ name: "John", age: 30 })
+			).to.deep.equal({
 				success: true,
 				value: { name: "John", age: 30 },
 			});
 		});
 
 		it("should fail for invalid object shape", () => {
-			expect(objectSchema.validate({ name: "John", age: "30" })).to.deep.equal({
+			expect(
+				objectSchema.validate({ name: "John", age: "30" })
+			).to.deep.equal({
 				success: false,
 				error: "Expected number, received string at age",
 			});
@@ -306,7 +310,9 @@ describe("MiniZod", () => {
 
 		it("strict mode should work with normal", () => {
 			const strictSchema = objectSchema.strict();
-			expect(strictSchema.validate({ name: "John", age: 30 })).to.deep.equal({
+			expect(
+				strictSchema.validate({ name: "John", age: 30 })
+			).to.deep.equal({
 				success: true,
 				value: { name: "John", age: 30 },
 			});

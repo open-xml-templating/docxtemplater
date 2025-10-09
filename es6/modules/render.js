@@ -37,7 +37,9 @@ class Render {
 	optionsTransformer(options, docxtemplater) {
 		this.docxtemplater = docxtemplater;
 		this.brTag =
-			docxtemplater.fileType === "docx" ? "<w:r><w:br/></w:r>" : "<a:br/>";
+			docxtemplater.fileType === "docx"
+				? "<w:r><w:br/></w:r>"
+				: "<a:br/>";
 		this.prefix = ftprefix[docxtemplater.fileType];
 		this.runStartTag = `${this.prefix}:r`;
 		this.runPropsStartTag = `${this.prefix}:rPr`;
@@ -63,12 +65,19 @@ class Render {
 			if (p.type === "placeholder") {
 				const tag = p.value;
 				try {
-					options.cachedParsers[p.lIndex] = this.docxtemplater.parser(tag, {
-						tag: p,
-					});
+					options.cachedParsers[p.lIndex] = this.docxtemplater.parser(
+						tag,
+						{
+							tag: p,
+						}
+					);
 				} catch (rootError) {
 					errors.push(
-						getScopeCompilationError({ tag, rootError, offset: p.offset })
+						getScopeCompilationError({
+							tag,
+							rootError,
+							offset: p.offset,
+						})
 					);
 				}
 			}

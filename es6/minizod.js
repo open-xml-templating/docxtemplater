@@ -4,7 +4,9 @@ class MiniZod {
 			validate: validateFn,
 			optional() {
 				return MiniZod.createSchema((value) =>
-					value === undefined ? { success: true, value } : validateFn(value)
+					value === undefined
+						? { success: true, value }
+						: validateFn(value)
 				);
 			},
 			nullable() {
@@ -86,7 +88,10 @@ class MiniZod {
 			for (let i = 0; i < value.length; i++) {
 				const result = itemSchema.validate(value[i]);
 				if (!result.success) {
-					return { success: false, error: `${result.error} at index ${i}` };
+					return {
+						success: false,
+						error: `${result.error} at index ${i}`,
+					};
 				}
 			}
 			return { success: true, value };
@@ -141,7 +146,10 @@ class MiniZod {
 			for (const [key, validator] of Object.entries(shape)) {
 				const result = validator.validate(value[key]);
 				if (!result.success) {
-					return { success: false, error: `${result.error} at ${key}` };
+					return {
+						success: false,
+						error: `${result.error} at ${key}`,
+					};
 				}
 			}
 			return { success: true, value };
@@ -152,7 +160,9 @@ class MiniZod {
 				if (!baseResult.success) {
 					return baseResult;
 				}
-				const extraKeys = Object.keys(value).filter((key) => !(key in shape));
+				const extraKeys = Object.keys(value).filter(
+					(key) => !(key in shape)
+				);
 				if (extraKeys.length > 0) {
 					return {
 						success: false,
@@ -187,7 +197,10 @@ class MiniZod {
 				}
 				const result = valueSchema.validate(value[key]);
 				if (!result.success) {
-					return { success: false, error: `${result.error} at key ${key}` };
+					return {
+						success: false,
+						error: `${result.error} at key ${key}`,
+					};
 				}
 			}
 			return { success: true, value };

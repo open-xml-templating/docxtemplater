@@ -144,7 +144,12 @@ function zipCompare(zip, expectedZip, expectedName) {
 		const suffix = `for "${filePath}"`;
 		const file = zip.files[filePath];
 		const expectedFile = expectedZip.files[filePath];
-		if (file && file.options.dir && !expectedFile && filePath === "_rels/") {
+		if (
+			file &&
+			file.options.dir &&
+			!expectedFile &&
+			filePath === "_rels/"
+		) {
 			continue;
 		}
 		expect(expectedFile).to.be.an(
@@ -155,7 +160,10 @@ function zipCompare(zip, expectedZip, expectedName) {
 			"object",
 			`The file ${filePath} doesn't exist on ${expectedName}`
 		);
-		expect(file.name).to.be.equal(expectedFile.name, `Name differs ${suffix}`);
+		expect(file.name).to.be.equal(
+			expectedFile.name,
+			`Name differs ${suffix}`
+		);
 		expect(file.options.dir).to.be.equal(
 			expectedFile.options.dir,
 			`IsDir differs ${suffix}`
@@ -210,7 +218,10 @@ function zipCompare(zip, expectedZip, expectedName) {
 		const prettyExpectedText = xmlPrettify(expectedText);
 
 		if (prettyActualText !== prettyExpectedText) {
-			const prettyDiff = unifiedDiff(prettyActualText, prettyExpectedText);
+			const prettyDiff = unifiedDiff(
+				prettyActualText,
+				prettyExpectedText
+			);
 			expect(prettyActualText).to.be.equal(
 				prettyExpectedText,
 				"Content differs \n" + suffix + "\n" + prettyDiff
@@ -226,7 +237,10 @@ function shouldBeSame({ doc, expectedName }) {
 	if (!documentCache[expectedName]) {
 		writeFile(expectedName, doc);
 		console.log(
-			JSON.stringify({ msg: "Expected file does not exists", expectedName })
+			JSON.stringify({
+				msg: "Expected file does not exists",
+				expectedName,
+			})
 		);
 		throw new Error(
 			`File ${expectedName} does not exist in examples directory`
@@ -331,7 +345,10 @@ function cleanError(e, expectedError) {
 			expect(
 				expectedError.properties.rootError,
 				JSON.stringify(expectedError.properties)
-			).to.be.instanceOf(Object, "expectedError doesn't have a rootError");
+			).to.be.instanceOf(
+				Object,
+				"expectedError doesn't have a rootError"
+			);
 			if (expectedError) {
 				expect(e.properties.rootError.message).to.equal(
 					expectedError.properties.rootError.message,
@@ -434,7 +451,10 @@ function errorVerifier(e, type, expectedError) {
 				msg
 		);
 		e.properties.errors = e.properties.errors.map((suberror, i) => {
-			const cleaned = cleanError(suberror, expectedError.properties.errors[i]);
+			const cleaned = cleanError(
+				suberror,
+				expectedError.properties.errors[i]
+			);
 			const jsonified = jsonifyError(cleaned);
 			return jsonified;
 		});
@@ -499,7 +519,9 @@ function expectToThrowAsyncSnapshot(fn, update) {
 		})
 		.then(() => {
 			if (!myErr) {
-				throw new Error("No error was thrown in this expectToThrowSnapshot");
+				throw new Error(
+					"No error was thrown in this expectToThrowSnapshot"
+				);
 			}
 			expect(errToObject(myErr)).to.matchSnapshot(update);
 		});
@@ -646,7 +668,8 @@ function setStartFunction(sf, snapshots = {}) {
 			}
 			return "";
 		}
-		fullTestName = getParentsTitle(this.currentTest) + this.currentTest.title;
+		fullTestName =
+			getParentsTitle(this.currentTest) + this.currentTest.title;
 		fullTestName = fullTestName.trim().replace(/\s+/g, " ");
 	});
 	after(() => {
@@ -663,7 +686,12 @@ function setStartFunction(sf, snapshots = {}) {
 						if (typeof snap === "string") {
 							return "exports[`" + key + "`] = `" + snap + "`";
 						}
-						return "exports[`" + key + "`] = " + JSON.stringify(snap, null, 2);
+						return (
+							"exports[`" +
+							key +
+							"`] = " +
+							JSON.stringify(snap, null, 2)
+						);
 					})
 					.join("\n\n") +
 				"\n\n";
@@ -675,7 +703,10 @@ function setStartFunction(sf, snapshots = {}) {
 	});
 
 	if (typeof window !== "undefined" && window.addEventListener) {
-		window.addEventListener("unhandledrejection", unhandledRejectionHandler);
+		window.addEventListener(
+			"unhandledrejection",
+			unhandledRejectionHandler
+		);
 	} else {
 		process.on("unhandledRejection", unhandledRejectionHandler);
 	}

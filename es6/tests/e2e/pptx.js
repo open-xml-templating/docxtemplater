@@ -120,7 +120,10 @@ describe("Pptx generation", () => {
 			expect(meta.part).to.be.an("object");
 			expect(meta.part.expanded).to.be.an("array");
 			expect(doc.getFullText()).to.be.equal("Hello World");
-			shouldBeSame({ doc, expectedName: "expected-raw-xml-example.pptx" });
+			shouldBeSame({
+				doc,
+				expectedName: "expected-raw-xml-example.pptx",
+			});
 		});
 	});
 });

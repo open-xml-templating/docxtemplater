@@ -28,7 +28,10 @@ function expectations(iModule, fixture) {
 			.replace(/^<w:t( xml:space="preserve")?>/, "")
 			.replace(/<\/w:t>$/, "")
 			.replace(/<w:t\/>$/, "");
-		expect(content).to.be.deep.equal(fixture.resultText, "Content incorrect");
+		expect(content).to.be.deep.equal(
+			fixture.resultText,
+			"Content incorrect"
+		);
 	} else if (fixture.result !== null) {
 		let { content } = iModule.inspect;
 		if (iModule.inspect.content instanceof Uint8Array) {

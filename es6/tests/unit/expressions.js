@@ -66,7 +66,9 @@ describe("Angular parser", () => {
 			expressionParser("(x.y.z + x.m) / a").getObjectIdentifiers()
 		).to.deep.equal({ a: {}, x: { m: {}, y: { z: {} } } });
 
-		expect(expressionParser("x(a.b.c)").getObjectIdentifiers()).to.deep.equal({
+		expect(
+			expressionParser("x(a.b.c)").getObjectIdentifiers()
+		).to.deep.equal({
 			x: {},
 			a: { b: { c: {} } },
 		});

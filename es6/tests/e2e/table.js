@@ -29,10 +29,26 @@ describe("Table", () => {
 		return this.render({
 			data: {
 				clients: [
-					{ first_name: "John", last_name: "Doe", phone: "+33647874513" },
-					{ first_name: "Jane", last_name: "Doe", phone: "+33454540124" },
-					{ first_name: "Phil", last_name: "Kiel", phone: "+44578451245" },
-					{ first_name: "Dave", last_name: "Sto", phone: "+44548787984" },
+					{
+						first_name: "John",
+						last_name: "Doe",
+						phone: "+33647874513",
+					},
+					{
+						first_name: "Jane",
+						last_name: "Doe",
+						phone: "+33454540124",
+					},
+					{
+						first_name: "Phil",
+						last_name: "Kiel",
+						phone: "+44578451245",
+					},
+					{
+						first_name: "Dave",
+						last_name: "Sto",
+						phone: "+44548787984",
+					},
 				],
 			},
 			name: "tag-intelligent-loop-table.docx",

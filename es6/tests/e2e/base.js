@@ -68,7 +68,12 @@ describe("Zip output", () => {
 				 * Overwrite the 30-byte header with 'PK@@' followed by 26 dashes
 				 * This ensures exact replacement without affecting filename
 				 */
-				sanitizedBuf.write("PK@@--------------------------", idx, 30, "ascii");
+				sanitizedBuf.write(
+					"PK@@--------------------------",
+					idx,
+					30,
+					"ascii"
+				);
 
 				offset = idx + 30;
 			}
@@ -101,12 +106,12 @@ describe("Zip output", () => {
 				"word/styles.xml",
 				"docProps/app.xml",
 			];
-			expect(expectedFiles.map((file) => allChars.indexOf(file))).to.deep.equal(
-				[
-					30, 445, 708, 1094, 1741, 2233, 2764, 6425, 7028, 8678, 9677, 9956,
-					11905, 14516, 12426, 14861,
-				]
-			);
+			expect(
+				expectedFiles.map((file) => allChars.indexOf(file))
+			).to.deep.equal([
+				30, 445, 708, 1094, 1741, 2233, 2764, 6425, 7028, 8678, 9677,
+				9956, 11905, 14516, 12426, 14861,
+			]);
 		});
 	}
 	it("should work with toBlob", () => {
@@ -393,7 +398,9 @@ describe("Docxtemplater loops", () => {
 							proof: [
 								{ reason: "it is quite cheap" },
 								{ reason: "it is quit simple" },
-								{ reason: "it works on a lot of different Hardware" },
+								{
+									reason: "it works on a lot of different Hardware",
+								},
 							],
 						},
 					],
@@ -421,7 +428,9 @@ describe("Docxtemplater loops", () => {
 						{
 							title: "It's very easy",
 							proof: [
-								{ reason: "you can do a lot just with the mouse" },
+								{
+									reason: "you can do a lot just with the mouse",
+								},
 								{ reason: "It's nicely designed" },
 							],
 						},
@@ -509,7 +518,8 @@ describe("Docxtemplater loops", () => {
 	});
 
 	it("should be possible to close double loops with {/}", () => {
-		const content = "<w:t>{#companies}{#products}Product {name}{/}{/}</w:t>";
+		const content =
+			"<w:t>{#companies}{#products}Product {name}{/}{/}</w:t>";
 		const tags = { companies: [{ products: [{ name: "Bread" }] }] };
 		const doc = createXmlTemplaterDocx(content, { tags });
 		expect(doc.getFullText()).to.be.equal("Product Bread");
@@ -626,14 +636,20 @@ describe("Changing the parser", () => {
 						}
 						if (tag === "$isLast") {
 							const totalLength =
-								context.scopePathLength[context.scopePathLength.length - 1];
+								context.scopePathLength[
+									context.scopePathLength.length - 1
+								];
 							const index =
-								context.scopePathItem[context.scopePathItem.length - 1];
+								context.scopePathItem[
+									context.scopePathItem.length - 1
+								];
 							return index === totalLength - 1;
 						}
 						if (tag === "$isFirst") {
 							const index =
-								context.scopePathItem[context.scopePathItem.length - 1];
+								context.scopePathItem[
+									context.scopePathItem.length - 1
+								];
 							return index === 0;
 						}
 						return scope[tag];
@@ -641,7 +657,9 @@ describe("Changing the parser", () => {
 				};
 			},
 		});
-		expect(xmlTemplater.getFullText()).to.be.equal("Hello 0 @Jane 1 !Mary ");
+		expect(xmlTemplater.getFullText()).to.be.equal(
+			"Hello 0 @Jane 1 !Mary "
+		);
 	});
 
 	it("should be able to disable parent scope inheritance", () => {
@@ -707,7 +725,10 @@ describe("Changing the parser", () => {
 				}
 				return {
 					get(scope, context) {
-						if (context.scopePath.length - context.num < parentCount) {
+						if (
+							context.scopePath.length - context.num <
+							parentCount
+						) {
 							return null;
 						}
 						return scope[tag];
@@ -825,7 +846,11 @@ describe("Changing the parser", () => {
 		]);
 
 		expect(
-			pX.map(({ tag: { type, value, module } }) => ({ type, value, module }))
+			pX.map(({ tag: { type, value, module } }) => ({
+				type,
+				value,
+				module,
+			}))
 		).to.be.deep.equal([
 			{
 				type: "placeholder",
@@ -883,7 +908,9 @@ describe("Special characters", () => {
 		const scope = { ">name": "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		const c = getContent(xmlTemplater);
-		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello Edgar</w:t>');
+		expect(c).to.be.deep.equal(
+			'<w:t xml:space="preserve">Hello Edgar</w:t>'
+		);
 	});
 
 	it("should not decode xml entities recursively", () => {
@@ -891,7 +918,9 @@ describe("Special characters", () => {
 		const scope = { "&lt;": "good", "<": "bad!!" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		const c = getContent(xmlTemplater);
-		expect(c).to.be.deep.equal('<w:t xml:space="preserve">Hello good</w:t>');
+		expect(c).to.be.deep.equal(
+			'<w:t xml:space="preserve">Hello good</w:t>'
+		);
 	});
 
 	it("should render placeholder containing special characters", () => {
@@ -1011,7 +1040,10 @@ describe("Raw Xml Insertion", () => {
 		const doc = createXmlTemplaterDocx(content, { tags: scope });
 		const c = getContent(doc);
 		expect(c.length).to.be.equal(
-			content.length + scope.complexXml.length - inner.length + "<w:p/>".length
+			content.length +
+				scope.complexXml.length -
+				inner.length +
+				"<w:p/>".length
 		);
 		expect(c).to.contain(scope.complexXml);
 	});
@@ -1093,7 +1125,9 @@ describe("Raw Xml Insertion", () => {
 			<w:p><w:r><w:t>{@rawXML}</w:t></w:r></w:p>
 			<w:p><w:r><w:t>Hi</w:t></w:r></w:p>
 		`;
-		const doc = createXmlTemplaterDocx(content, { tags: { rawXML: false } });
+		const doc = createXmlTemplaterDocx(content, {
+			tags: { rawXML: false },
+		});
 		expect(doc.getFullText()).to.be.equal("Hi");
 	});
 
@@ -1114,8 +1148,7 @@ describe("Raw Xml Insertion", () => {
 			}),
 		});
 		doc.render({
-			xmlTag:
-				'<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>',
+			xmlTag: '<w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r>',
 		});
 		expect(doc.getFullText()).to.be.equal("asdfMy customXMLqwery");
 	});

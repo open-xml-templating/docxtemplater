@@ -25,9 +25,16 @@ describe("Traits", () => {
 				parsed = traits.expandToOne(parsed, {
 					moduleName,
 					getInner: ({ part, left, right, postparsed, index }) => {
-						const paragraphParts = postparsed.slice(left + 1, right);
+						const paragraphParts = postparsed.slice(
+							left + 1,
+							right
+						);
 						let error = false;
-						for (let i = 0, len = paragraphParts.length; i < len; i++) {
+						for (
+							let i = 0, len = paragraphParts.length;
+							i < len;
+							i++
+						) {
 							const p = paragraphParts[i];
 							if (i === index - left - 1) {
 								continue;
@@ -99,7 +106,8 @@ describe("Traits", () => {
 						}
 					},
 					error: {
-						message: "FooModule tag should be the only text in a paragraph",
+						message:
+							"FooModule tag should be the only text in a paragraph",
 						id: "foo_tag_w_p_noexpand",
 					},
 				});
@@ -136,9 +144,16 @@ describe("Traits", () => {
 				parsed = traits.expandToOne(parsed, {
 					moduleName,
 					getInner: ({ part, left, right, postparsed, index }) => {
-						const paragraphParts = postparsed.slice(left + 1, right);
+						const paragraphParts = postparsed.slice(
+							left + 1,
+							right
+						);
 						let error = false;
-						for (let i = 0, len = paragraphParts.length; i < len; i++) {
+						for (
+							let i = 0, len = paragraphParts.length;
+							i < len;
+							i++
+						) {
 							const p = paragraphParts[i];
 							if (i === index - left - 1) {
 								continue;
@@ -206,9 +221,16 @@ describe("Traits", () => {
 				parsed = traits.expandToOne(parsed, {
 					moduleName,
 					getInner: ({ part, left, right, postparsed, index }) => {
-						const paragraphParts = postparsed.slice(left + 1, right);
+						const paragraphParts = postparsed.slice(
+							left + 1,
+							right
+						);
 						let error = false;
-						for (let i = 0, len = paragraphParts.length; i < len; i++) {
+						for (
+							let i = 0, len = paragraphParts.length;
+							i < len;
+							i++
+						) {
 							const p = paragraphParts[i];
 							if (i === index - left - 1) {
 								continue;
@@ -267,9 +289,16 @@ describe("Traits", () => {
 				parsed = traits.expandToOne(parsed, {
 					moduleName,
 					getInner: ({ part, left, right, postparsed, index }) => {
-						const paragraphParts = postparsed.slice(left + 1, right);
+						const paragraphParts = postparsed.slice(
+							left + 1,
+							right
+						);
 						let error = false;
-						for (let i = 0, len = paragraphParts.length; i < len; i++) {
+						for (
+							let i = 0, len = paragraphParts.length;
+							i < len;
+							i++
+						) {
 							const p = paragraphParts[i];
 							if (i === index - left - 1) {
 								continue;

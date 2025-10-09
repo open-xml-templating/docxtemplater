@@ -152,7 +152,11 @@ class ExpandPairTrait {
 		const expandedPairs = pairs.map((pair) => {
 			let { expandTo } = pair[0].part;
 			if (expandTo === "auto" && fileType !== "text") {
-				const result = getExpandToDefault(postparsed, pair, this.expandTags);
+				const result = getExpandToDefault(
+					postparsed,
+					pair,
+					this.expandTags
+				);
 				if (result.error) {
 					errors.push(result.error);
 				}

@@ -65,7 +65,9 @@ describe("Compilation errors", () => {
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4("<w:t>{unclosedtag my text</w:t>", { errorLogging: false }),
+				makeDocxV4("<w:t>{unclosedtag my text</w:t>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -110,7 +112,8 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4("<w:t>{user {name}</w:t>", { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:t>{user {name}</w:t>", { errorLogging: false }),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -168,7 +171,10 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4("<w:t>{/loop} {foobar}</w:t>", { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:t>{/loop} {foobar}</w:t>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -186,7 +192,10 @@ describe("Compilation errors", () => {
 			},
 		};
 		expectToThrow(
-			() => makeDocxV4("<w:t>{#loop} {foobar}</w:t>", { errorLogging: false }),
+			() =>
+				makeDocxV4("<w:t>{#loop} {foobar}</w:t>", {
+					errorLogging: false,
+				}),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -229,9 +238,12 @@ describe("Compilation errors", () => {
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4("<w:p><w:t> {@myrawtag}</w:t><w:t>foobar</w:t></w:p>", {
-					errorLogging: false,
-				}),
+				makeDocxV4(
+					"<w:p><w:t> {@myrawtag}</w:t><w:t>foobar</w:t></w:p>",
+					{
+						errorLogging: false,
+					}
+				),
 			Errors.XTTemplateError,
 			wrapMultiError(expectedError)
 		);
@@ -316,7 +328,9 @@ describe("Runtime errors", () => {
 		function errorParser() {
 			return {
 				get() {
-					throw new Error("foo bar 6aaef652-8525-4442-b9b8-5ab942b2c476");
+					throw new Error(
+						"foo bar 6aaef652-8525-4442-b9b8-5ab942b2c476"
+					);
 				},
 			};
 		}
@@ -332,7 +346,9 @@ describe("Runtime errors", () => {
 		}
 		const capture = captureLogs();
 		try {
-			makeDocxV4("<w:t> {name|upper}</w:t>", { parser: errorParser }).render();
+			makeDocxV4("<w:t> {name|upper}</w:t>", {
+				parser: errorParser,
+			}).render();
 			capture.stop();
 		} catch (e) {
 			capture.stop();
@@ -395,7 +411,11 @@ describe("Runtime errors", () => {
 				errorLogging: false,
 			}
 		);
-		expectToThrow(() => doc.render(), Errors.XTTemplateError, expectedError);
+		expectToThrow(
+			() => doc.render(),
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 });
 
@@ -514,7 +534,9 @@ describe("Multi errors", () => {
 			.split("\n")
 			.join("!");
 
-		expectToThrowSnapshot(() => makeDocxV4(content, { errorLogging: false }));
+		expectToThrowSnapshot(() =>
+			makeDocxV4(content, { errorLogging: false })
+		);
 	});
 
 	it("should work with wrongly nested loops", () => {
@@ -659,9 +681,12 @@ describe("Multi errors", () => {
 		};
 		expectToThrow(
 			() =>
-				makeDocxV4("<w:t>{@first}</w:t><w:p><w:t>foo{@second}</w:t></w:p>", {
-					errorLogging: false,
-				}),
+				makeDocxV4(
+					"<w:t>{@first}</w:t><w:p><w:t>foo{@second}</w:t></w:p>",
+					{
+						errorLogging: false,
+					}
+				),
 			Errors.XTTemplateError,
 			expectedError
 		);
@@ -1333,7 +1358,11 @@ describe("Async errors", () => {
 		function create() {
 			return doc.renderAsync().then(() => doc.render());
 		}
-		return expectToThrowAsync(create, Errors.XTTemplateError, expectedError);
+		return expectToThrowAsync(
+			create,
+			Errors.XTTemplateError,
+			expectedError
+		);
 	});
 
 	it("should fail when customparser fails to execute on multiple raw tags", () => {

@@ -80,7 +80,9 @@ function getUnopenedTagException(options) {
 }
 
 function getDuplicateOpenTagException(options) {
-	const err = new XTTemplateError("Duplicate open tag, expected one open tag");
+	const err = new XTTemplateError(
+		"Duplicate open tag, expected one open tag"
+	);
 	err.properties = {
 		xtag: first(options.xtag.split(" ")),
 		id: "duplicate_open_tag",
@@ -336,7 +338,8 @@ function throwResolveBeforeCompile() {
 	);
 	err.properties = {
 		id: "resolve_before_compile",
-		explanation: "You must run `.compile()` before running `.resolveData()`",
+		explanation:
+			"You must run `.compile()` before running `.resolveData()`",
 	};
 	throw err;
 }

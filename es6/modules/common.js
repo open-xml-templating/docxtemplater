@@ -51,7 +51,10 @@ class Common {
 							continue;
 						}
 						ftCandidate = key;
-						if (filetypes.main.indexOf(ct) !== -1 || ct === filetypes.pptx[0]) {
+						if (
+							filetypes.main.indexOf(ct) !== -1 ||
+							ct === filetypes.pptx[0]
+						) {
 							doc.textTarget ||= target;
 						}
 						if (ftCandidate === "xlsx") {

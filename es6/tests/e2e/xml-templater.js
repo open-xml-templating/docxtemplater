@@ -81,7 +81,9 @@ describe("XmlTemplater", () => {
 			names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }],
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
-		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
+		expect(xmlTemplater.getFullText()).to.be.equal(
+			"Hello Edgar,Mary,John,"
+		);
 	});
 
 	it("should work with simple Loop with boolean value truthy", () => {
@@ -99,7 +101,8 @@ describe("XmlTemplater", () => {
 	});
 
 	it("should work with dash Loop", () => {
-		const content = "<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>";
+		const content =
+			"<w:p><w:t>Hello {-w:p names}{name},{/names}</w:t></w:p>";
 		const scope = {
 			names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }],
 		};
@@ -148,9 +151,12 @@ describe("XmlTemplater", () => {
 	});
 
 	it("should work with not w:t tag (if the for loop is like {#forloop} text {/forloop}) ", () => {
-		const content = "<w:t>{#loop}Hello {#names}{name},{/names}{/loop}</w:t>";
+		const content =
+			"<w:t>{#loop}Hello {#names}{name},{/names}{/loop}</w:t>";
 		const scope = {
-			loop: { names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }] },
+			loop: {
+				names: [{ name: "Edgar" }, { name: "Mary" }, { name: "John" }],
+			},
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(getContent(xmlTemplater)).to.be.equal(
@@ -168,7 +174,11 @@ describe("XmlTemplater", () => {
 	it("should work with delimiter in value with loop)", () => {
 		const content = "<w:t>Hello {#names}{name},{/names}</w:t>";
 		const scope = {
-			names: [{ name: "{John}" }, { name: "M}}{ary" }, { name: "Di{{{gory" }],
+			names: [
+				{ name: "{John}" },
+				{ name: "M}}{ary" },
+				{ name: "Di{{{gory" },
+			],
 		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal(
@@ -177,7 +187,8 @@ describe("XmlTemplater", () => {
 	});
 
 	it("should work when replacing with exact same value", () => {
-		const content = '<w:p><w:t xml:space="preserve">Hello {name}</w:t></w:p>';
+		const content =
+			'<w:p><w:t xml:space="preserve">Hello {name}</w:t></w:p>';
 		const scope = { name: "{name}" };
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		xmlTemplater.getFullText();
@@ -224,7 +235,12 @@ describe("XmlTemplater", () => {
 		<w:t>}</w:t>
 		</w:p>
 		`;
-		const scope = { name: "John", foo: "MyFoo", bar: "MyBar", baz: "MyBaz" };
+		const scope = {
+			name: "John",
+			foo: "MyFoo",
+			bar: "MyBar",
+			baz: "MyBaz",
+		};
 		const xmlTemplater = createXmlTemplaterDocx(content, { tags: scope });
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"yMyBar*cos⁡( MyFoo+MyBaz)Hello John"
@@ -415,7 +431,9 @@ describe("Custom delimiters", () => {
 			tags: scope,
 			delimiters,
 		});
-		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar,Mary,John,");
+		expect(xmlTemplater.getFullText()).to.be.equal(
+			"Hello Edgar,Mary,John,"
+		);
 	});
 
 	it("should work with loops", () => {

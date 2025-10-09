@@ -31,7 +31,9 @@ describe("V3 API", () => {
 					}
 				});
 				if (!found) {
-					throw new Error(`Expected to get deprecation '${deprecation}'`);
+					throw new Error(
+						`Expected to get deprecation '${deprecation}'`
+					);
 				}
 			}
 		}
@@ -117,7 +119,10 @@ describe("V3 API", () => {
 			expect(meta.part).to.be.an("object");
 			expect(meta.part.expanded).to.be.an("array");
 			expect(doc.getFullText()).to.be.equal("Hello World");
-			shouldBeSame({ doc, expectedName: "expected-raw-xml-example.pptx" });
+			shouldBeSame({
+				doc,
+				expectedName: "expected-raw-xml-example.pptx",
+			});
 		});
 	});
 
@@ -146,7 +151,8 @@ describe("V3 API", () => {
 		const content = "<w:t>{#users}{user}{/}</w:t>";
 		const expectedError = {
 			name: "InternalError",
-			message: "You must run `.compile()` before running `.resolveData()`",
+			message:
+				"You must run `.compile()` before running `.resolveData()`",
 			properties: {
 				id: "resolve_before_compile",
 			},

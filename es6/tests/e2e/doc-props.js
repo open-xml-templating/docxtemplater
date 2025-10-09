@@ -21,7 +21,9 @@ describe("Docx document properties", () => {
 		expect(doc.getFullText("word/footer1.xml")).to.be.equal(
 			"EdgarHipp0652455478"
 		);
-		expect(doc.getFullText("docProps/app.xml")).to.be.equal("TitleName: Hipp");
+		expect(doc.getFullText("docProps/app.xml")).to.be.equal(
+			"TitleName: Hipp"
+		);
 		shouldBeSame({ doc, expectedName: "expected-tag-docprops.docx" });
 	});
 
@@ -44,7 +46,10 @@ describe("Docx document properties", () => {
 			name: "avoidRenderingCoreXMLModule",
 			getFileType({ doc }) {
 				doc.targets = doc.targets.filter((file) => {
-					if (file === "docProps/core.xml" || file === "docProps/app.xml") {
+					if (
+						file === "docProps/core.xml" ||
+						file === "docProps/app.xml"
+					) {
 						return false;
 					}
 					return true;

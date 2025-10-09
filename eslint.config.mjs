@@ -70,7 +70,10 @@ export default [
 			"sort-class-members": sortClassMembers,
 		},
 		rules: {
-			"@stylistic/js/multiline-comment-style": ["error", "starred-block"],
+			"@stylistic/js/multiline-comment-style": [
+				"error",
+				"starred-block",
+			],
 			"sort-class-members/sort-class-members": [
 				2,
 				{
@@ -128,14 +131,20 @@ export default [
 			"import/no-unresolved": 2,
 			"import/extensions": [2, "always"],
 			"no-duplicate-imports": 2,
-			"import/no-duplicates": ["error", { considerQueryString: true }],
+			"import/no-duplicates": [
+				"error",
+				{ considerQueryString: true },
+			],
 			"dot-location": [2, "property"],
 			"dot-notation": 2,
 			"eol-last": 2,
 			eqeqeq: [2, "smart"],
 			"func-names": 0,
 			"func-style": [2, "declaration"],
-			"generator-star-spacing": [2, { before: false, after: true }],
+			"generator-star-spacing": [
+				2,
+				{ before: false, after: true },
+			],
 			"global-require": 0,
 			"guard-for-in": 0,
 			"handle-callback-err": 2,
@@ -144,7 +153,11 @@ export default [
 			"init-declarations": 0,
 			"key-spacing": [
 				2,
-				{ beforeColon: false, afterColon: true, mode: "strict" },
+				{
+					beforeColon: false,
+					afterColon: true,
+					mode: "strict",
+				},
 			],
 			"linebreak-style": 0,
 			"lines-around-comment": 0,
@@ -258,7 +271,10 @@ export default [
 			"no-void": 2,
 			"no-warning-comments": [
 				2,
-				{ terms: ["todo", "fixme"], location: "anywhere" },
+				{
+					terms: ["todo", "fixme"],
+					location: "anywhere",
+				},
 			],
 			"no-with": 2,
 			"object-curly-spacing": 0,

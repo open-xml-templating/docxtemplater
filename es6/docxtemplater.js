@@ -80,7 +80,9 @@ const currentModuleApiVersion = [3, 47, 2];
 function throwIfDuplicateModules(modules) {
 	const duplicates = getDuplicates(modules.map(({ name }) => name));
 	if (duplicates.length > 0) {
-		throw new XTInternalError(`Detected duplicate module "${duplicates[0]}"`);
+		throw new XTInternalError(
+			`Detected duplicate module "${duplicates[0]}"`
+		);
 	}
 }
 
@@ -190,7 +192,9 @@ function dropUnsupportedFileTypesModules(doc) {
 			);
 		}
 
-		const isSupportedModule = module.supportedFileTypes.includes(doc.fileType);
+		const isSupportedModule = module.supportedFileTypes.includes(
+			doc.fileType
+		);
 
 		if (!isSupportedModule) {
 			module.on("detached");
@@ -415,7 +419,9 @@ const Docxtemplater = class Docxtemplater {
 		this.updateFileTypeConfig();
 
 		this.modules = concatArrays([
-			this.fileTypeConfig.baseModules.map((moduleFunction) => moduleFunction()),
+			this.fileTypeConfig.baseModules.map((moduleFunction) =>
+				moduleFunction()
+			),
 			this.modules,
 		]);
 		for (const module of this.modules) {
@@ -592,10 +598,12 @@ const Docxtemplater = class Docxtemplater {
 		addXmlFileNamesFromXmlContentType(this);
 		dropUnsupportedFileTypesModules(this);
 
-		this.fileTypeConfig = this.options.fileTypeConfig || this.fileTypeConfig;
+		this.fileTypeConfig =
+			this.options.fileTypeConfig || this.fileTypeConfig;
 		if (!this.fileTypeConfig) {
 			if (Docxtemplater.FileTypeConfig[this.fileType]) {
-				this.fileTypeConfig = Docxtemplater.FileTypeConfig[this.fileType]();
+				this.fileTypeConfig =
+					Docxtemplater.FileTypeConfig[this.fileType]();
 			} else {
 				/*
 				 * Error case handled since v3.60.2
@@ -650,7 +658,11 @@ const Docxtemplater = class Docxtemplater {
 		for (const to in this.mapper) {
 			const { from, data } = this.mapper[to];
 			const currentFile = this.compiled[from];
-			currentFile.scopeManager = this.getScopeManager(to, currentFile, data);
+			currentFile.scopeManager = this.getScopeManager(
+				to,
+				currentFile,
+				data
+			);
 			currentFile.render(to);
 			output.push([to, currentFile.content, currentFile]);
 			delete currentFile.content;

@@ -29,12 +29,18 @@ function resolve(options) {
 				let result;
 				if (moduleResolved) {
 					result = moduleResolved.then((value) => {
-						resolved.push({ tag: part.value, lIndex: part.lIndex, value });
+						resolved.push({
+							tag: part.value,
+							lIndex: part.lIndex,
+							value,
+						});
 					});
 				} else if (part.type === "placeholder") {
 					result = scopeManager
 						.getValueAsync(part.value, { part })
-						.then((value) => (value == null ? options.nullGetter(part) : value))
+						.then((value) =>
+							value == null ? options.nullGetter(part) : value
+						)
 						.then((value) => {
 							resolved.push({
 								tag: part.value,

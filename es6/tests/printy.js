@@ -16,7 +16,9 @@ module.exports = function printy(parsed, indent = 0) {
 				indentWasNegative = true;
 			}
 			const i =
-				indent < 0 ? `(${indent})` : `(${indent})` + repeat("   ", indent);
+				indent < 0
+					? `(${indent})`
+					: `(${indent})` + repeat("   ", indent);
 			if (p.subparsed) {
 				indent++;
 				const stars = i.replace(/./g, "*");

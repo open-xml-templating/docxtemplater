@@ -39,7 +39,9 @@ function setSingleAttribute(partValue, attr, attrValue) {
 		end = partValue.lastIndexOf(">");
 	}
 	return (
-		partValue.substr(0, end) + ` ${attr}="${attrValue}"` + partValue.substr(end)
+		partValue.substr(0, end) +
+		` ${attr}="${attrValue}"` +
+		partValue.substr(end)
 	);
 }
 
@@ -346,7 +348,8 @@ function isTextEnd({ type, position, text }) {
 }
 function isContent({ type, position }) {
 	return (
-		type === "placeholder" || (type === "content" && position === "insidetag")
+		type === "placeholder" ||
+		(type === "content" && position === "insidetag")
 	);
 }
 function isModule({ module, type }, modules) {

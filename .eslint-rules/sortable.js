@@ -198,7 +198,11 @@ module.exports = {
 									part.sort((p1, p2) => {
 										const n1 = getPropertyName(p1);
 										const n2 = getPropertyName(p2);
-										if (insensitive && n1.toLowerCase() === n2.toLowerCase()) {
+										if (
+											insensitive &&
+											n1.toLowerCase() ===
+												n2.toLowerCase()
+										) {
 											return 0;
 										}
 										return isValidOrder(n1, n2) ? -1 : 1;

@@ -144,7 +144,9 @@ function miniparser(xml) {
 					content = content.replace(/>/g, "&gt;");
 					if (["w:t", "t", "a:t"].indexOf(currentTag) === -1) {
 						// For non text tags, strip newlines
-						content = content.replace(/\n/g, "").replace(/^\s+$/, "");
+						content = content
+							.replace(/\n/g, "")
+							.replace(/^\s+$/, "");
 					}
 					if (content.length > 0) {
 						renderedArray.push({ type: "content", value: content });
@@ -186,7 +188,9 @@ function miniparser(xml) {
 				// currentTag = tag;
 				const isSingle = Boolean(tag.match(/^<.+\/>/)); // is this line a single tag? ex. <br />
 				const isClosing = Boolean(tag.match(/^<\/.+>/)); // is this a closing tag? ex. </a>
-				const isProcessingInstruction = Boolean(tag.match(/^<\?.*\?>$/)); // is this an xml declaration tag? ex. <?xml version="1.0" encoding="UTF-8" standalone="yes"?> or <?mso-contentType?>
+				const isProcessingInstruction = Boolean(
+					tag.match(/^<\?.*\?>$/)
+				); // is this an xml declaration tag? ex. <?xml version="1.0" encoding="UTF-8" standalone="yes"?> or <?mso-contentType?>
 
 				state = "outside";
 				cursor = closing + 1;

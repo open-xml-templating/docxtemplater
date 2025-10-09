@@ -34,12 +34,17 @@ module.exports = {
 				const linesBetween = nextLine - endLine;
 
 				// ✅ Skip if next token is a closing brace (})
-				if (nextToken.type === "Punctuator" && nextToken.value === "}") {
+				if (
+					nextToken.type === "Punctuator" &&
+					nextToken.value === "}"
+				) {
 					return;
 				}
 
 				// ✅ Skip if next is another it/describe
-				const nextNode = sourceCode.getNodeByRangeIndex(nextToken.range[0]);
+				const nextNode = sourceCode.getNodeByRangeIndex(
+					nextToken.range[0]
+				);
 				if (
 					nextNode?.type === "ExpressionStatement" &&
 					nextNode.expression?.type === "CallExpression" &&

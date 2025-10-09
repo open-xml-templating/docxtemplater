@@ -67,7 +67,9 @@ function DocXFileTypeConfig() {
 			"w:bookmarkEnd",
 		],
 		expandTags: [{ contains: "w:tc", expand: "w:tr" }],
-		onParagraphLoop: [{ contains: "w:p", expand: "w:p", onlyTextInTag: true }],
+		onParagraphLoop: [
+			{ contains: "w:p", expand: "w:p", onlyTextInTag: true },
+		],
 		tagRawXml: "w:p",
 		baseModules: [
 			loopModule,
@@ -133,11 +135,17 @@ function PptXFileTypeConfig() {
 		],
 		droppedTagsInsidePlaceholder: ["a:p", "a:endParaRPr"],
 		expandTags: [{ contains: "a:tc", expand: "a:tr" }],
-		onParagraphLoop: [{ contains: "a:p", expand: "a:p", onlyTextInTag: true }],
+		onParagraphLoop: [
+			{ contains: "a:p", expand: "a:p", onlyTextInTag: true },
+		],
 		tagRawXml: "p:sp",
 		baseModules: [loopModule, expandPairTrait, rawXmlModule, render],
 		tagShouldContain: [
-			{ tag: "a:tbl", shouldContain: ["a:tr"], dropParent: "p:graphicFrame" },
+			{
+				tag: "a:tbl",
+				shouldContain: ["a:tr"],
+				dropParent: "p:graphicFrame",
+			},
 			{ tag: "p:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 			{ tag: "a:txBody", shouldContain: ["a:p"], value: "<a:p></a:p>" },
 		],

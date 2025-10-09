@@ -65,7 +65,10 @@ class FixDocPRCorruptionModule {
 				/* eslint-disable-next-line no-loop-func */
 				text = xmllexed.reduce((fullText, part) => {
 					if (isTagStart("wp:docPr", part)) {
-						return fullText + setSingleAttribute(part.value, "id", prId++);
+						return (
+							fullText +
+							setSingleAttribute(part.value, "id", prId++)
+						);
 					}
 					return fullText + part.value;
 				}, "");

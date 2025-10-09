@@ -164,8 +164,16 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 	for (const { contains, expand, onlyTextInTag } of expandTags) {
 		if (has(contains, xmlElements)) {
 			if (onlyTextInTag) {
-				const left = getLeftOrNull(postparsed, contains, pair[0].offset);
-				const right = getRightOrNull(postparsed, contains, pair[1].offset);
+				const left = getLeftOrNull(
+					postparsed,
+					contains,
+					pair[0].offset
+				);
+				const right = getRightOrNull(
+					postparsed,
+					contains,
+					pair[1].offset
+				);
 				if (left === null || right === null) {
 					continue;
 				}

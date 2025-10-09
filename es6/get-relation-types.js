@@ -9,7 +9,8 @@ function getRelsTypes(zip) {
 		: [];
 	const relsTypes = {};
 	for (const relation of rootRelationships) {
-		relsTypes[relation.getAttribute("Target")] = relation.getAttribute("Type");
+		relsTypes[relation.getAttribute("Target")] =
+			relation.getAttribute("Type");
 	}
 	return relsTypes;
 }

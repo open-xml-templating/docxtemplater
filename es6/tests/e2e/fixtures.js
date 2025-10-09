@@ -181,7 +181,10 @@ const fixtures = [
 		...noInternals,
 		scope: {
 			userGreeting: (scope, sm) =>
-				"How is it going, " + scope.name + " ? " + sm.scopeLindex.length,
+				"How is it going, " +
+				scope.name +
+				" ? " +
+				sm.scopeLindex.length,
 			users: [
 				{
 					name: "John",
@@ -264,13 +267,19 @@ const fixtures = [
 						if (options.match(":foo  ", placeHolderContent)) {
 							return {
 								type: "placeholder",
-								value: options.getValue(":foo  ", placeHolderContent),
+								value: options.getValue(
+									":foo  ",
+									placeHolderContent
+								),
 							};
 						}
 						if (options.match(/^:zing +(.*)/, placeHolderContent)) {
 							return {
 								type: "placeholder",
-								value: options.getValue(/^:zing +(.*)/, placeHolderContent),
+								value: options.getValue(
+									/^:zing +(.*)/,
+									placeHolderContent
+								),
 							};
 						}
 					},
@@ -436,8 +445,7 @@ const fixtures = [
 			name: "Foo",
 			age: 12,
 		},
-		result:
-			'<w:t xml:space="preserve">Foo 12</w:t>FOO<w:t></w:t>BAR<w:t></w:t>',
+		result: '<w:t xml:space="preserve">Foo 12</w:t>FOO<w:t></w:t>BAR<w:t></w:t>',
 		xmllexed: [
 			startText,
 			{ type: "content", value: "{name} {" },
@@ -531,8 +539,7 @@ const fixtures = [
 		scope: {
 			name: "John Doe",
 		},
-		result:
-			'<w:t xml:space="preserve">Hello John Doe</w:t><w:t foo="bar">, how is it ?</w:t>',
+		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t foo="bar">, how is it ?</w:t>',
 		delimiters: {
 			start: "{",
 			end: "}}",
@@ -578,8 +585,7 @@ const fixtures = [
 		scope: {
 			name: "John Doe",
 		},
-		result:
-			'<w:t xml:space="preserve">Hello John Doe</w:t><w:t></w:t>TAG<w:t></w:t><w:t>foobar</w:t>',
+		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t></w:t>TAG<w:t></w:t><w:t>foobar</w:t>',
 		delimiters: {
 			start: "{",
 			end: "}}}}}",
@@ -724,7 +730,11 @@ const fixtures = [
 		it: "should work with loops",
 		contentText: "Hello {#users}{name}, {/users}",
 		scope: {
-			users: [{ name: "John Doe" }, { name: "Jane Doe" }, { name: "Wane Doe" }],
+			users: [
+				{ name: "John Doe" },
+				{ name: "Jane Doe" },
+				{ name: "Wane Doe" },
+			],
 		},
 		resultText: "Hello John Doe, Jane Doe, Wane Doe, ",
 		lexed: [
@@ -755,7 +765,12 @@ const fixtures = [
 			},
 			{ type: "placeholder", value: "name" },
 			content(", "),
-			{ type: "placeholder", value: "users", location: "end", module: "loop" },
+			{
+				type: "placeholder",
+				value: "users",
+				location: "end",
+				module: "loop",
+			},
 			endText,
 		],
 		postparsed: [
@@ -767,7 +782,10 @@ const fixtures = [
 				module: "loop",
 				inverted: false,
 				sectPrCount: 0,
-				subparsed: [{ type: "placeholder", value: "name" }, content(", ")],
+				subparsed: [
+					{ type: "placeholder", value: "name" },
+					content(", "),
+				],
 			},
 			endText,
 		],
@@ -782,8 +800,7 @@ const fixtures = [
 		scope: {
 			users: ["John Doe", "Jane Doe", "Wane Doe"],
 		},
-		result:
-			'<w:p><w:t>Hello </w:t></w:p><w:p><w:t xml:space="preserve">User John Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Jane Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Wane Doe</w:t></w:p>',
+		result: '<w:p><w:t>Hello </w:t></w:p><w:p><w:t xml:space="preserve">User John Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Jane Doe</w:t></w:p><w:p><w:t xml:space="preserve">User Wane Doe</w:t></w:p>',
 		lexed: [
 			startParagraph,
 			startText,
@@ -839,7 +856,12 @@ const fixtures = [
 			endParagraph,
 			startParagraph,
 			startText,
-			{ type: "placeholder", value: "users", location: "end", module: "loop" },
+			{
+				type: "placeholder",
+				value: "users",
+				location: "end",
+				module: "loop",
+			},
 			endText,
 			endParagraph,
 		],
@@ -900,12 +922,12 @@ const fixtures = [
 				},
 			],
 		},
-		result:
-			'<w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t/></w:p>',
+		result: '<w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t xml:space="preserve"> </w:t></w:p><w:p><w:t xml:space="preserve">Pet Cat</w:t></w:p><w:p><w:t/></w:p><w:p><w:t xml:space="preserve">Pet Dog</w:t></w:p><w:p><w:t/></w:p>',
 	},
 	{
 		it: "should work with spacing loops",
-		content: "<w:t>{#condition</w:t><w:t>} hello{/</w:t><w:t>condition}</w:t>",
+		content:
+			"<w:t>{#condition</w:t><w:t>} hello{/</w:t><w:t>condition}</w:t>",
 		scope: {
 			condition: true,
 		},
@@ -991,10 +1013,13 @@ const fixtures = [
 		it: "should work with dashloops",
 		content: "<w:p><w:t>Hello {-w:p users}{name}, {/users}</w:t></w:p>",
 		scope: {
-			users: [{ name: "John Doe" }, { name: "Jane Doe" }, { name: "Wane Doe" }],
+			users: [
+				{ name: "John Doe" },
+				{ name: "Jane Doe" },
+				{ name: "Wane Doe" },
+			],
 		},
-		result:
-			'<w:p><w:t xml:space="preserve">Hello John Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Jane Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Wane Doe, </w:t></w:p>',
+		result: '<w:p><w:t xml:space="preserve">Hello John Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Jane Doe, </w:t></w:p><w:p><w:t xml:space="preserve">Hello Wane Doe, </w:t></w:p>',
 		lexed: [
 			startParagraph,
 			startText,
@@ -1026,7 +1051,12 @@ const fixtures = [
 			},
 			{ type: "placeholder", value: "name" },
 			content(", "),
-			{ type: "placeholder", value: "users", location: "end", module: "loop" },
+			{
+				type: "placeholder",
+				value: "users",
+				location: "end",
+				module: "loop",
+			},
 			endText,
 			endParagraph,
 		],
@@ -1072,8 +1102,7 @@ const fixtures = [
 				},
 			],
 		},
-		result:
-			'<w:tr><w:tc><w:p><w:t xml:space="preserve"> Hello John Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Jane Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Wane Doe, </w:t><w:t/></w:p></w:tc></w:tr>',
+		result: '<w:tr><w:tc><w:p><w:t xml:space="preserve"> Hello John Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Jane Doe, </w:t><w:t/></w:p><w:p><w:t xml:space="preserve"> Hello Wane Doe, </w:t><w:t/></w:p></w:tc></w:tr>',
 		lexed: [
 			tableRowStart,
 			tableColStart,
@@ -1127,7 +1156,12 @@ const fixtures = [
 			},
 			{ type: "placeholder", value: "name" },
 			content(", "),
-			{ type: "placeholder", value: "users", location: "end", module: "loop" },
+			{
+				type: "placeholder",
+				value: "users",
+				location: "end",
+				module: "loop",
+			},
 			endText,
 			startText,
 			{
@@ -1965,8 +1999,7 @@ const fixtures = [
 			cond: true,
 			val: "yep",
 		},
-		result:
-			'<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
+		result: '<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
 	},
 	{
 		it: "should work well with nested expressions parser",
@@ -2046,7 +2079,8 @@ const fixtures = [
 			name: "ScopeParserError",
 			message: "Scope parser compilation failed",
 			properties: {
-				explanation: 'The scope parser for the tag "hello€" failed to compile',
+				explanation:
+					'The scope parser for the tag "hello€" failed to compile',
 				rootError: {
 					message: `[$parse:lexerr] Lexer Error: Unexpected next character  at columns 5-5 [€] in expression [hello€].
 http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next%20character%20&p1=s%205-5%20%5B%E2%82%AC%5D&p2=hello%E2%82%AC`,
@@ -2098,8 +2132,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			parser: expressionParser,
 		},
 		scope: { b: "Hello\n\nFoo\n\nBar\n\n" },
-		result:
-			'<w:t xml:space="preserve">Hello</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Foo</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Bar</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t/>',
+		result: '<w:t xml:space="preserve">Hello</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Foo</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Bar</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t/>',
 	},
 	{
 		it: "should not fail with no scope on expressionParser",
@@ -2129,7 +2162,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		const globalData = { val: 0 };
 		return {
 			it: "should be possible to configure expressionParser with set command",
-			contentText: "{#loop}{$$val = (cond ? 0 : $$val + 1); $$val}{/loop}",
+			contentText:
+				"{#loop}{$$val = (cond ? 0 : $$val + 1); $$val}{/loop}",
 			...noInternals,
 			options: {
 				parser: expressionParser.configure({
@@ -2143,7 +2177,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 					evaluateIdentifier(tag) {
 						const matchGlobal = /^\$\$/g;
 						if (matchGlobal.test(tag)) {
-							if (globalData.hasOwnProperty(tag) && globalData[tag] != null) {
+							if (
+								globalData.hasOwnProperty(tag) &&
+								globalData[tag] != null
+							) {
 								return globalData[tag];
 							}
 						}
@@ -2262,10 +2299,15 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 					const matchesParent = /^(_{2,})(.*)/g;
 					expect(context.num).to.be.a("number");
 					if (matchesParent.test(tag)) {
-						const parentCount = tag.replace(matchesParent, "$1").length - 1;
+						const parentCount =
+							tag.replace(matchesParent, "$1").length - 1;
 						tag = tag.replace(matchesParent, "$2");
 						if (parentCount >= 1) {
-							for (let i = scopeList.length - 1 - parentCount; i >= 0; i--) {
+							for (
+								let i = scopeList.length - 1 - parentCount;
+								i >= 0;
+								i--
+							) {
 								const s = scopeList[i];
 								if (s[tag] != null) {
 									const property = s[tag];
@@ -2476,7 +2518,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			name: "TemplateError",
 			message: "Closing tag does not match opening tag",
 			properties: {
-				explanation: 'The tag "Hi&&Ho" is closed by the tag "%%><&&bar"',
+				explanation:
+					'The tag "Hi&&Ho" is closed by the tag "%%><&&bar"',
 				file: "word/document.xml",
 				openingtag: "Hi&&Ho",
 				closingtag: "%%><&&bar",
@@ -2501,7 +2544,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 						properties: {
 							context: "{Hi&&",
 							xtag: "Hi&&",
-							explanation: 'The tag beginning with "{Hi&&" is unclosed',
+							explanation:
+								'The tag beginning with "{Hi&&" is unclosed',
 							file: "word/document.xml",
 							id: "unclosed_tag",
 							offset: null,
@@ -2513,7 +2557,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 						properties: {
 							context: "{foo",
 							xtag: "foo",
-							explanation: 'The tag beginning with "{foo" is unclosed',
+							explanation:
+								'The tag beginning with "{foo" is unclosed',
 							file: "word/document.xml",
 							id: "unclosed_tag",
 							offset: null,
@@ -2759,8 +2804,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 			},
 		},
 		scope: { name: "John", "$[[ ]]$": "Match ! " },
-		result:
-			'<w:p><w:r><w:t xml:space="preserve">Match ! [[name]]</w:t></w:r></w:p>',
+		result: '<w:p><w:r><w:t xml:space="preserve">Match ! [[name]]</w:t></w:r></w:p>',
 	},
 	{
 		it: "should add space=preserve to last tag when having middle tag",
@@ -3249,11 +3293,9 @@ const rawXmlTest = {
 	it: "should work with rawxml",
 	content: "BEFORE<w:p><w:t>{@rawxml}</w:t></w:p>AFTER",
 	scope: {
-		rawxml:
-			'<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>',
+		rawxml: '<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>',
 	},
-	result:
-		'BEFORE<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>AFTER',
+	result: 'BEFORE<w:p><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:color w:val="FF0000"/></w:rPr><w:t>My custom</w:t></w:r><w:r><w:rPr><w:color w:val="00FF00"/></w:rPr><w:t>XML</w:t></w:r></w:p>AFTER',
 	lexed: [
 		externalContent("BEFORE"),
 		startParagraph,

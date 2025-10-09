@@ -60,7 +60,10 @@ describe("Verify apiversion", () => {
 
 	it("should fail when trying to attach null module", () => {
 		expectToThrow(
-			() => new Docxtemplater(getZip("loop-valid.docx"), { modules: [null] }),
+			() =>
+				new Docxtemplater(getZip("loop-valid.docx"), {
+					modules: [null],
+				}),
 			Error,
 			{
 				message: "Cannot attachModule with a falsy value",
@@ -210,9 +213,12 @@ describe("Module traits", () => {
 	it("should not cause an issue if using traits.expandTo containing loop", () => {
 		const moduleName = "comment-module";
 		function getInner({ part, leftParts, rightParts, postparse }) {
-			part.subparsed = postparse([].concat(leftParts).concat(rightParts), {
-				basePart: part,
-			});
+			part.subparsed = postparse(
+				[].concat(leftParts).concat(rightParts),
+				{
+					basePart: part,
+				}
+			);
 			return part;
 		}
 		const module = {
@@ -246,7 +252,9 @@ describe("Module traits", () => {
 			},
 		};
 
-		const doc = createDocV4("comment-with-loop.docx", { modules: [module] });
+		const doc = createDocV4("comment-with-loop.docx", {
+			modules: [module],
+		});
 		doc.render({});
 		shouldBeSame({ doc, expectedName: "expected-comment-example.docx" });
 	});
@@ -337,7 +345,9 @@ describe("Module errors", () => {
 			"word/document.xml"
 		);
 		expect(error.properties.errors[4].message).to.equal("foobar last_name");
-		expect(error.properties.errors[5].message).to.equal("foobar first_name");
+		expect(error.properties.errors[5].message).to.equal(
+			"foobar first_name"
+		);
 		// expect(error.properties.errors[2].message).to.equal("foobar phone");
 
 		const logs = capture.logs();
@@ -361,7 +371,9 @@ describe("Module errors", () => {
 			"word/header1.xml"
 		);
 		expect(error.properties.errors[0].message).to.equal("foobar last_name");
-		expect(error.properties.errors[1].message).to.equal("foobar first_name");
+		expect(error.properties.errors[1].message).to.equal(
+			"foobar first_name"
+		);
 		expect(error.properties.errors[2].message).to.equal("foobar phone");
 
 		expect(error.properties.errors[6].properties.file).to.equal(
@@ -386,7 +398,10 @@ describe("Module errors", () => {
 
 		// This test will test the case where the fixDocPrCorruption is used on two different instances of the docxtemplater library
 		expectToThrow(
-			() => createDocV4("loop-image-footer.docx", { modules: [mod1, mod2] }),
+			() =>
+				createDocV4("loop-image-footer.docx", {
+					modules: [mod1, mod2],
+				}),
 			Error,
 			{
 				message: 'Detected duplicate module "TestModule"',

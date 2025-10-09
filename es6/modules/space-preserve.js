@@ -64,7 +64,10 @@ class SpacePreserve {
 			}
 			if (isTextEnd(part) && part.lIndex > endLindex) {
 				if (endLindex !== 0) {
-					chunk[lastTextTag].value = addXMLPreserve(chunk, lastTextTag);
+					chunk[lastTextTag].value = addXMLPreserve(
+						chunk,
+						lastTextTag
+					);
 				}
 				pushArray(postparsed, chunk);
 				chunk = [];
@@ -88,8 +91,10 @@ class SpacePreserve {
 			}
 			if (endsWith(lastNonEmpty, wTpreserve) && startsWith(p, wtEnd)) {
 				parts[lastNonEmptyIndex] =
-					lastNonEmpty.substr(0, lastNonEmpty.length - wTpreservelen) +
-					"<w:t/>";
+					lastNonEmpty.substr(
+						0,
+						lastNonEmpty.length - wTpreservelen
+					) + "<w:t/>";
 				p = p.substr(wtEndlen);
 			}
 

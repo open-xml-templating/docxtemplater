@@ -7,7 +7,8 @@ function match(condition, placeHolderContent) {
 	const type = typeof condition;
 	if (type === "string") {
 		return (
-			replaceNbsps(placeHolderContent.substr(0, condition.length)) === condition
+			replaceNbsps(placeHolderContent.substr(0, condition.length)) ===
+			condition
 		);
 	}
 	if (condition instanceof RegExp) {

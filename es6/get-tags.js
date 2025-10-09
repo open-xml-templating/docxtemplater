@@ -70,21 +70,38 @@ function getTags(postParsed) {
 				if (part.dataBound !== false) {
 					localTags[part.value] ||= {};
 				}
-				processFiltered(part, current, part.subparsed.filter(isPlaceholder));
+				processFiltered(
+					part,
+					current,
+					part.subparsed.filter(isPlaceholder)
+				);
 				continue;
 			}
 
 			if (part.cellParsed) {
 				for (const cp of part.cellPostParsed) {
 					if (cp.type === "placeholder") {
-						if (cp.module === "pro-xml-templating/xls-module-loop") {
+						if (
+							cp.module === "pro-xml-templating/xls-module-loop"
+						) {
 							continue;
 						} else if (cp.subparsed) {
 							localTags[cp.value] ||= {};
-							processFiltered(cp, current, cp.subparsed.filter(isPlaceholder));
+							processFiltered(
+								cp,
+								current,
+								cp.subparsed.filter(isPlaceholder)
+							);
 						} else {
-							const sizeScope = getScopeSize(part, current.parents);
-							localTags = getLocalTags(tags, current.path, sizeScope);
+							const sizeScope = getScopeSize(
+								part,
+								current.parents
+							);
+							localTags = getLocalTags(
+								tags,
+								current.path,
+								sizeScope
+							);
 							localTags[cp.value] ||= {};
 						}
 					}
