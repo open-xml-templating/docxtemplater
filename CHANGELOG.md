@@ -1,3 +1,13 @@
+## 3.66.7
+
+Fixes #798
+
+Fix Inspect Module to correctly retrieve the tag list of sections in a pptx document when using a named section :
+
+[The feature for looping over multiple slides is documented here](https://docxtemplater.com/modules/slides/#looping-over-multiple-slides).
+
+It needs version 3.8.2 of the slides module or a newer version.
+
 ## 3.66.6
 
 Previous versions generated an empty paragraph for all tables.

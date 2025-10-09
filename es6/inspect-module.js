@@ -53,6 +53,9 @@ class InspectModule {
 		if (obj.pptxCustomMap) {
 			this.pptxCustomMap = obj.pptxCustomMap;
 		}
+		if (obj.pptxSectionMap) {
+			this.pptxSectionMap = obj.pptxSectionMap;
+		}
 		if (obj.inspect) {
 			if (obj.inspect.filePath) {
 				this.filePath = obj.inspect.filePath;
@@ -85,24 +88,37 @@ class InspectModule {
 	}
 
 	getInspected(file) {
-		const si = getSlideIndex(file);
 		let inspected = cloneDeep(this.fullInspected[file].postparsed);
-		if (
-			si != null &&
-			!isNaN(si) &&
-			this.pptxCustomMap &&
-			this.pptxCustomMap[si]
-		) {
-			const map = this.pptxCustomMap[si];
-			if (map) {
-				inspected = [
-					{
-						...map,
-						type: "placeholder",
-						module: "pro-xml-templating/slides-module-repeat",
-						subparsed: inspected,
-					},
-				];
+
+		const si = getSlideIndex(file);
+		if (si != null && !isNaN(si)) {
+			if (this.pptxCustomMap && this.pptxCustomMap[si]) {
+				const map = this.pptxCustomMap[si];
+				if (map) {
+					inspected = [
+						{
+							...map,
+							type: "placeholder",
+							module: "pro-xml-templating/slides-module-repeat",
+							subparsed: inspected,
+						},
+					];
+				}
+			}
+			if (this.pptxSectionMap) {
+				for (const section of this.pptxSectionMap) {
+					if (section.slideIndexes.indexOf(si) !== -1) {
+						inspected = [
+							{
+								...section.part,
+								module: "pro-xml-templating/slides-module-section",
+								subparsed: inspected,
+								slideIndexes: section.slideIndexes,
+								subIds: section.subIds,
+							},
+						];
+					}
+				}
 			}
 		}
 		return inspected;
