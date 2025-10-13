@@ -149,9 +149,9 @@ const parser = {
 	},
 
 	postparse(postparsed, modules, options) {
-		function getTraits(traitName, postparsed) {
+		function getTraits(traitName, postparsed, options) {
 			return modules.map((module) =>
-				module.getTraits(traitName, postparsed)
+				module.getTraits(traitName, postparsed, options)
 			);
 		}
 		const errors = [];

@@ -126,7 +126,7 @@ declare namespace DXT {
 			{ [x: string]: any } | ((part: SimplePart) => { [x: string]: any }),
 		][];
 		render?(part: Part, options: RenderOptions): Rendered | null;
-		getTraits?(traitName: string, parsed: any): any;
+		getTraits?(traitName: string, parsed: Part[], options: any): any;
 		getFileType?(opts: any): string | void;
 		nullGetter?(part: Part, scopeManager: ScopeManager): any;
 		optionsTransformer?(options: Options, doc: Docxtemplater): Options;

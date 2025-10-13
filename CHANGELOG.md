@@ -1,3 +1,9 @@
+## Unreleased
+
+Add options argument to `module.getTraits`.
+
+New signature : `module.getTraits(traitName, parsed, options)`
+
 ## 3.66.7
 
 Fixes #798

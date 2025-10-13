@@ -142,8 +142,9 @@ class ExpandPairTrait {
 		this.expandTags = docxtemplater.fileTypeConfig.expandTags;
 		return options;
 	}
-	postparse(postparsed, { getTraits, postparse, fileType }) {
-		let traits = getTraits(traitName, postparsed);
+	postparse(postparsed, options) {
+		const { getTraits, postparse, fileType } = options;
+		let traits = getTraits(traitName, postparsed, options);
 		traits = traits.map((trait) => trait || []);
 		traits = mergeSort(traits);
 		const { pairs, errors } = getPairs(traits);
