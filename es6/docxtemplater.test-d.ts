@@ -328,12 +328,10 @@ new Docxtemplater(new PizZip("hello"), {
 		avoidRenderingCoreXMLModule,
 		{
 			optionsTransformer(options, doc) {
-				doc.modules.forEach(function (module) {
-					if (module.name === "LoopModule") {
-						module.prefix.start = "FOR ";
-						module.prefix.start = "ENDFOR ";
-					}
-				});
+				const loopModule = doc.findModule("LoopModule");
+				if (loopModule) {
+					loopModule.prefix.start = "##";
+				}
 				return options;
 			},
 			render(part, options) {

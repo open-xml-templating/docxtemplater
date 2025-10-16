@@ -214,6 +214,7 @@ declare class Docxtemplater<TZip = any> {
 	includeSections?: boolean; // used for the subsection module
 	keepStyles?: boolean; // used for the subtemplate module
 	modules: DXT.Module[];
+	findModule(name: string): DXT.Module | null;
 
 	toBuffer(options?: DXT.ZipOptions): Buffer;
 	toBlob(options?: DXT.ZipOptions): Blob;

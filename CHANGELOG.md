@@ -2,7 +2,9 @@
 
 Add options argument to `module.getTraits`.
 
-New signature : `module.getTraits(traitName, parsed, options)`
+New signature : `module.getTraits(traitName, parsed, options)`.
+
+Add typescript signature for `doc.findModule(name: string) : DXT.Module | null`.
 
 ## 3.66.7
 

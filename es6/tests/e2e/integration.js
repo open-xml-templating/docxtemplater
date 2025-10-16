@@ -1071,11 +1071,8 @@ describe("Prefixes", () => {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
-						for (const module of doc.modules) {
-							if (module.name === "LoopModule") {
-								module.prefix.start = "##";
-							}
-						}
+						const loopModule = doc.findModule("LoopModule");
+						loopModule.prefix.start = "##";
 						return options;
 					},
 				},
@@ -1094,11 +1091,8 @@ describe("Prefixes", () => {
 				modules: [
 					{
 						optionsTransformer(options, doc) {
-							for (const module of doc.modules) {
-								if (module.name === "LoopModule") {
-									module.prefix.start = /^##?(.*)$/;
-								}
-							}
+							const loopModule = doc.findModule("LoopModule");
+							loopModule.prefix.start = /^##?(.*)$/;
 							return options;
 						},
 					},
@@ -1118,12 +1112,9 @@ describe("Prefixes", () => {
 				modules: [
 					{
 						optionsTransformer(options, doc) {
-							for (const module of doc.modules) {
-								if (module.name === "LoopModule") {
-									module.prefix.start = "FOR ";
-									module.prefix.end = /^ENDFOR ?(.*)/;
-								}
-							}
+							const loopModule = doc.findModule("LoopModule");
+							loopModule.prefix.start = "FOR ";
+							loopModule.prefix.end = /^ENDFOR ?(.*)/;
 							return options;
 						},
 					},
@@ -1141,11 +1132,8 @@ describe("Prefixes", () => {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
-						for (const module of doc.modules) {
-							if (module.name === "RawXmlModule") {
-								module.prefix = /^!!?(.*)$/;
-							}
-						}
+						const rawXmlModule = doc.findModule("RawXmlModule");
+						rawXmlModule.prefix = /^!!?(.*)$/;
 						return options;
 					},
 				},
@@ -1168,15 +1156,12 @@ describe("Prefixes", () => {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
-						for (const module of doc.modules) {
-							if (module.name === "RawXmlModule") {
-								module.prefix = function (placeholderContent) {
-									if (placeholderContent === "raw") {
-										return "raw";
-									}
-								};
+						const rawXmlModule = doc.findModule("RawXmlModule");
+						rawXmlModule.prefix = function (placeholderContent) {
+							if (placeholderContent === "raw") {
+								return "raw";
 							}
-						}
+						};
 						return options;
 					},
 				},
