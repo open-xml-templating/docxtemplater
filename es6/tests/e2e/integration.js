@@ -6,6 +6,7 @@ const {
 	makeDocxV4,
 	captureLogs,
 } = require("../utils.js");
+const inspectModule = require("../../inspect-module.js");
 
 const printy = require("../printy.js");
 
@@ -1550,5 +1551,114 @@ describe("Get Tags", () => {
 		});
 		doc.render();
 		shouldBeSame({ doc, expectedName: "loop-valid.docx" });
+	});
+
+	it("should correctly get the tags recursively using getObjectIdentifiers", () => {
+		const iModule = inspectModule();
+		makeDocxV4(
+			"<w:p><w:r><w:t>A{#user.age > 12}{user.name}{/}{x+y}{#company.name === 'Acme'}Hi Acme{/}{#list}{priority}{/}</w:t></w:r></w:p>",
+			{ modules: [iModule] }
+		);
+
+		function addIdentifiers(tags) {
+			tags.forEach((tag) => {
+				if (tag.module === "pro-xml-templating/xls-module-sheetname") {
+					return;
+				}
+				if (tag.cellParsed) {
+					tag.cellParsed.forEach((cp) => {
+						if (
+							cp.type === "placeholder" &&
+							cp.module !== "pro-xml-templating/xls-module-loop"
+						) {
+							addIdentifiers([cp]);
+						}
+					});
+					return tags;
+				}
+
+				if (
+					tag.type === "placeholder" &&
+					typeof tag.value === "string"
+				) {
+					if (tag.attrParsed) {
+						Object.keys(tag.attrParsed).forEach((key) => {
+							addIdentifiers(tag.attrParsed[key]);
+						});
+						// Skip parsing of value in this case, because the tag is like <v:shape...>
+						return;
+					}
+					const identifiers = expressionParser(
+						tag.value
+					).getObjectIdentifiers();
+					tag.identifiers = identifiers;
+				}
+				if (tag.expanded instanceof Array) {
+					addIdentifiers(tag.expanded);
+				}
+				if (tag.subparsed instanceof Array) {
+					addIdentifiers(tag.subparsed);
+				}
+			});
+			return tags;
+		}
+
+		function simplifyTags(tags) {
+			const result = [];
+			for (const tag of tags) {
+				let part = null;
+				if (tag.module === "pro-xml-templating/xls-module-sheetname") {
+					continue;
+				}
+				if (tag.cellParsed) {
+					part = {
+						sub: tag.cellParsed
+							.map((cp) => {
+								if (
+									cp.type === "placeholder" &&
+									cp.module !==
+										"pro-xml-templating/xls-module-loop"
+								) {
+									simplifyTags([cp]);
+								}
+							})
+							.filter((r) => r),
+					};
+					result.push(part);
+					continue;
+				}
+
+				if (
+					tag.type === "placeholder" &&
+					typeof tag.value === "string"
+				) {
+					if (tag.attrParsed) {
+						part = {};
+						part.sub = Object.keys(tag.attrParsed).map((key) =>
+							simplifyTags(tag.attrParsed[key])
+						);
+						result.push(part);
+						// Skip parsing of value in this case, because the tag is like <v:shape...>
+						return;
+					}
+					part = {
+						value: tag.value,
+						identifiers: tag.identifiers,
+					};
+				}
+				if (tag.expanded instanceof Array) {
+					part.sub = simplifyTags(tag.expanded);
+				}
+				if (tag.subparsed instanceof Array) {
+					part.sub = simplifyTags(tag.subparsed);
+				}
+				result.push(part);
+			}
+			return result;
+		}
+
+		const withIdentifiers = addIdentifiers(iModule.getStructuredTags());
+		const simplified = simplifyTags(withIdentifiers);
+		expect(simplified).to.matchSnapshot();
 	});
 });

@@ -490,6 +490,57 @@ exports[`Compilation errors should fail when rawtag is not in paragraph`] = {
   }
 }
 
+exports[`Get Tags should correctly get the tags recursively using getObjectIdentifiers`] = [
+  {
+    "value": "user.age > 12",
+    "identifiers": {
+      "user": {
+        "age": {}
+      }
+    },
+    "sub": [
+      {
+        "value": "user.name",
+        "identifiers": {
+          "user": {
+            "name": {}
+          }
+        }
+      }
+    ]
+  },
+  {
+    "value": "x+y",
+    "identifiers": {
+      "x": {},
+      "y": {}
+    }
+  },
+  {
+    "value": "company.name === 'Acme'",
+    "identifiers": {
+      "company": {
+        "name": {}
+      }
+    },
+    "sub": []
+  },
+  {
+    "value": "list",
+    "identifiers": {
+      "list": {}
+    },
+    "sub": [
+      {
+        "value": "priority",
+        "identifiers": {
+          "priority": {}
+        }
+      }
+    ]
+  }
+]
+
 exports[`Inspect module should get all tags (pptx file)`] = [
   {
     "type": "placeholder",
