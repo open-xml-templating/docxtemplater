@@ -126,7 +126,7 @@ function getIdentifiers(x) {
 
 function configuredParser(config = {}) {
 	let lastResult = null;
-	return function parser(tag) {
+	return function parser(tag, meta) {
 		if (typeof tag !== "string") {
 			throw new Error(
 				"The angular parser was used incorrectly, please refer to the documentation of docxtemplater."
@@ -157,9 +157,14 @@ function configuredParser(config = {}) {
 		const isAssignment =
 			lastBody && lastBody.expression.type === "AssignmentExpression";
 
+		if (config.postCompile) {
+			config.postCompile(tag, meta, expr);
+		}
+
 		return {
 			get(scope, context) {
 				const { scopeList } = context;
+				const promises = [];
 
 				const px = new Proxy(
 					{},
@@ -278,6 +283,47 @@ function configuredParser(config = {}) {
 						},
 						set(target, name, value) {
 							// set(obj, "key", value) is called when running `obj.key = value` or `obj["key"] = value;`
+							if (value instanceof Promise) {
+								promises.push(
+									value.then((value) => {
+										if (config.setIdentifier) {
+											const fnResult =
+												config.setIdentifier(
+													name,
+													value,
+													scope,
+													scopeList,
+													context
+												);
+											if (fnResult != null) {
+												if (fnResult.then) {
+													promises.push(fnResult);
+												}
+												return true;
+											}
+										}
+										if (
+											typeof scope === "object" &&
+											scope
+										) {
+											scope[name] = value;
+											return;
+										}
+										for (
+											let i = scopeList.length - 1;
+											i >= 0;
+											i--
+										) {
+											const s = scopeList[i];
+											if (typeof s === "object" && s) {
+												s[name] = value;
+												return;
+											}
+										}
+									})
+								);
+								return true;
+							}
 							if (config.setIdentifier) {
 								const fnResult = config.setIdentifier(
 									name,
@@ -287,6 +333,9 @@ function configuredParser(config = {}) {
 									context
 								);
 								if (fnResult != null) {
+									if (fnResult.then) {
+										promises.push(fnResult);
+									}
 									return true;
 								}
 							}
@@ -365,6 +414,9 @@ function configuredParser(config = {}) {
 
 				let result = expr(px);
 				if (isAssignment) {
+					if (promises.length > 0) {
+						return Promise.all(promises).then(() => "");
+					}
 					return "";
 				}
 				if (typeof config.postEvaluate === "function") {

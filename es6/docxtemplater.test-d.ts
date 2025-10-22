@@ -250,10 +250,30 @@ function validContinuationChars(ch: string): boolean {
 expressionParser.configure({
 	isIdentifierStart: validStartChars,
 	isIdentifierContinue: validContinuationChars,
+	postCompile(tag: string, meta: any, expr: any) {
+		meta.tag.resolveFirst = true;
+	},
+	setIdentifier(
+		tag: string,
+		value: any,
+		scope: any,
+		scopeList: any[],
+		context: any
+	) {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				scopeList[0][tag] = value;
+				resolve(true);
+			}, 100);
+		});
+	},
 });
 ieExpressionParser.configure({
 	isIdentifierStart: validStartChars,
 	isIdentifierContinue: validContinuationChars,
+	postCompile(tag: string, meta: any, expr: any) {
+		meta.tag.resolveFirst = true;
+	},
 });
 
 expressionParser.configure({

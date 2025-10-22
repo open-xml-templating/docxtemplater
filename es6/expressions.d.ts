@@ -27,6 +27,7 @@ interface ParserOptions {
 		scopeList: any[],
 		context: DXT.ParserContext
 	) => any;
+	postCompile?: (tag: string, meta: any, expr: any) => void;
 }
 
 interface ExpressionParser extends DXT.Parser {

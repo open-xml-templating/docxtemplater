@@ -321,7 +321,7 @@ function cleanError(e, expectedError) {
 		if (expectedError.properties.explanation != null) {
 			const e1 = e.properties.explanation;
 			const e2 = expectedError.properties.explanation;
-			expect(e1).to.be.deep.equal(
+			expect(e1).to.deep.equal(
 				e2,
 				`Explanations differ '${e1}' != '${e2}': for ${JSON.stringify(
 					expectedError

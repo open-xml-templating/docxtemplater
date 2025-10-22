@@ -119,7 +119,7 @@ function getIdentifiers(x) {
 }
 
 function configuredParser(config = {}) {
-	return function expressionParser(tag) {
+	return function expressionParser(tag, meta) {
 		if (typeof tag !== "string") {
 			throw new Error(
 				"The angular parser was used incorrectly, please refer to the documentation of docxtemplater."
@@ -151,6 +151,10 @@ function configuredParser(config = {}) {
 		const isAssignment =
 			expr.ast.body[0] &&
 			expr.ast.body[0].expression.type === "AssignmentExpression";
+
+		if (config.postCompile) {
+			config.postCompile(tag, meta, expr);
+		}
 
 		return {
 			get(scope, context) {

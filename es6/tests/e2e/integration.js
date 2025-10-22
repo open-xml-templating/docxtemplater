@@ -440,6 +440,61 @@ describe("Assignment", () => {
 			expectedName: "expected-assignment.docx",
 		});
 	});
+
+	it("should be possible to resolve assignments first", () => {
+		const doc = makeDocxV4(
+			paragraph("{@client=(22|getClient)}") +
+				paragraph("{@company=(client|getCompany)}") +
+				paragraph("{company.name}") +
+				"{xx}",
+			{
+				modules: [],
+				parser: expressionParser.configure({
+					postCompile(tag, meta, expr) {
+						const lastBody =
+							expr.ast.body[expr.ast.body.length - 1];
+						const isAssignment =
+							lastBody &&
+							lastBody.expression.type === "AssignmentExpression";
+						if (isAssignment) {
+							meta.tag.resolveFirst = true;
+						}
+					},
+					filters: {
+						getClient() {
+							return new Promise((resolve) => {
+								setTimeout(() => {
+									resolve({ name: "John" });
+								}, 60);
+							});
+						},
+						getCompany(client) {
+							return new Promise((resolve) => {
+								setTimeout(() => {
+									resolve({ name: "ACME " + client.name });
+								}, 30);
+							});
+						},
+					},
+				}),
+			}
+		);
+		return doc.renderAsync({}).then(() => {
+			expect(doc.getFullText()).to.be.equal("ACME John");
+		});
+	});
+
+	it("should work with assignments without angular parser", () => {
+		const doc = makeDocxV4(
+			paragraph("{@client=(22|getClient)}") +
+				paragraph("{@company=(client|getCompany)}") +
+				paragraph("{company.name}") +
+				"{xx}"
+		);
+		return doc.renderAsync({}).then(() => {
+			expect(doc.getFullText()).to.be.equal("undefined");
+		});
+	});
 });
 
 describe("Unusual document extensions", () => {

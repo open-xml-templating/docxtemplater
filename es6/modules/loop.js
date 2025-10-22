@@ -18,7 +18,12 @@ const wrapper = require("../module-wrapper.js");
 const moduleName = "loop";
 
 function hasContent(parts) {
-	return parts.some((part) => isContent(part));
+	for (const part of parts) {
+		if (isContent(part)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function getFirstMeaningFulPart(parsed) {
@@ -67,83 +72,102 @@ function addPageBreakAtBeginning(subRendered) {
 }
 
 function isContinuous(parts) {
-	return parts.some(
-		(part) =>
+	for (const part of parts) {
+		if (
 			isTagStart("w:type", part) &&
 			part.value.indexOf("continuous") !== -1
-	);
+		) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function isNextPage(parts) {
-	return parts.some(
-		(part) =>
+	for (const part of parts) {
+		if (
 			isTagStart("w:type", part) &&
 			part.value.indexOf('w:val="nextPage"') !== -1
-	);
+		) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function addSectionBefore(parts, sect) {
-	return pushArray(
-		[
-			`<w:p><w:pPr>${sect.map(({ value }) => value).join("")}</w:pPr></w:p>`,
-		],
-		parts
+	parts.unshift(
+		`<w:p><w:pPr>${sect.map(({ value }) => value).join("")}</w:pPr></w:p>`
 	);
 }
 
 function addContinuousType(parts) {
 	let stop = false;
 	let inSectPr = false;
-	const result = [];
-	for (const part of parts) {
-		if (stop === false && startsWith(part, "<w:sectPr")) {
+	for (let i = 0; i < parts.length; i++) {
+		const part = parts[i];
+		if (!stop && startsWith(part, "<w:sectPr")) {
 			inSectPr = true;
 		}
 		if (inSectPr) {
 			if (startsWith(part, "<w:type")) {
 				stop = true;
 			}
-			if (stop === false && startsWith(part, "</w:sectPr")) {
-				result.push('<w:type w:val="continuous"/>');
+			if (!stop && startsWith(part, "</w:sectPr")) {
+				parts.splice(i, 0, '<w:type w:val="continuous"/>');
+				i++; // Skip re-processing the now-shifted closing tag to avoid infinite insertion
 			}
 		}
-		result.push(part);
 	}
-	return result;
+	return parts;
 }
 
 function dropHeaderFooterRefs(parts) {
-	return parts.filter(
-		(text) =>
-			!startsWith(text, "<w:headerReference") &&
-			!startsWith(text, "<w:footerReference")
-	);
+	let writeIndex = 0;
+	for (let readIndex = 0; readIndex < parts.length; readIndex++) {
+		if (
+			!startsWith(parts[readIndex], "<w:headerReference") &&
+			!startsWith(parts[readIndex], "<w:footerReference")
+		) {
+			parts[writeIndex] = parts[readIndex];
+			writeIndex++;
+		}
+	}
+	parts.length = writeIndex;
+	return parts;
 }
 
 function hasPageBreak(chunk) {
-	return chunk.some(
-		(part) =>
-			part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1
-	);
+	for (const part of chunk) {
+		if (part.tag === "w:br" && part.value.indexOf('w:type="page"') !== -1) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function hasImage(chunk) {
-	return chunk.some(({ tag }) => tag === "w:drawing");
+	for (const el of chunk) {
+		if (el.tag === "w:drawing") {
+			return true;
+		}
+	}
+	return false;
 }
 
 function getSectPr(chunks) {
-	let collectSectPr = false;
 	const sectPrs = [];
+	let currentSectPr = null;
 	for (const part of chunks) {
 		if (isTagStart("w:sectPr", part)) {
-			sectPrs.push([]);
-			collectSectPr = true;
+			currentSectPr = [];
+			sectPrs.push(currentSectPr);
 		}
-		if (collectSectPr) {
-			sectPrs[sectPrs.length - 1].push(part);
+		if (currentSectPr !== null) {
+			currentSectPr.push(part);
 		}
 		if (isTagEnd("w:sectPr", part)) {
-			collectSectPr = false;
+			currentSectPr = null;
 		}
 	}
 	return sectPrs;
@@ -178,6 +202,11 @@ function getLastSectPr(parsed) {
 	for (let i = parsed.length - 1; i >= 0; i--) {
 		const part = parsed[i];
 
+		/*
+		 * Since we try to get the last sectPr, we traverse the parsed array
+		 * from the end to beginning, this is why inSectPr becomes true when we
+		 * we see a </w:sectPr> closing tag
+		 */
 		if (isTagEnd("w:sectPr", part)) {
 			inSectPr = true;
 		}
@@ -275,6 +304,7 @@ class LoopModule {
 		}
 		return tags;
 	}
+	/* eslint-disable-next-line complexity */
 	postparse(parsed, { basePart }) {
 		if (
 			basePart &&
@@ -285,7 +315,8 @@ class LoopModule {
 			this.totalSectPr += basePart.sectPrCount;
 
 			const { sects } = this;
-			sects.some((sect, index) => {
+			for (let index = 0, len = sects.length; index < len; index++) {
+				const sect = sects[index];
 				if (basePart.lIndex < sect[0].lIndex) {
 					if (
 						index + 1 < sects.length &&
@@ -293,7 +324,7 @@ class LoopModule {
 					) {
 						basePart.addContinuousType = true;
 					}
-					return true;
+					break;
 				}
 				if (
 					parsed[0].lIndex < sect[0].lIndex &&
@@ -302,9 +333,9 @@ class LoopModule {
 					if (isNextPage(sects[index])) {
 						basePart.addNextPage = { index };
 					}
-					return true;
+					break;
 				}
-			});
+			}
 			basePart.lastParagrapSectPr = getLastSectPr(parsed);
 		}
 		if (
@@ -351,6 +382,7 @@ class LoopModule {
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}
 	resolve(part, options) {
+		const self = this;
 		if (!isModule(part, moduleName)) {
 			return null;
 		}
@@ -359,6 +391,10 @@ class LoopModule {
 		const promisedValue = sm.getValueAsync(part.value, { part });
 
 		const promises = [];
+		let lastPromise;
+		if (self.resolveSerially) {
+			lastPromise = Promise.resolve(null);
+		}
 		function loopOver(scope, i, length) {
 			const scopeManager = sm.createSubScopeManager(
 				scope,
@@ -367,34 +403,45 @@ class LoopModule {
 				part,
 				length
 			);
-			promises.push(
-				options.resolve({
-					...options,
-					compiled: part.subparsed,
-					tags: {},
-					scopeManager,
-				})
-			);
+			if (self.resolveSerially) {
+				lastPromise = lastPromise.then(() =>
+					options.resolve({
+						...options,
+						compiled: part.subparsed,
+						tags: {},
+						scopeManager,
+					})
+				);
+				promises.push(lastPromise);
+			} else {
+				promises.push(
+					options.resolve({
+						...options,
+						compiled: part.subparsed,
+						tags: {},
+						scopeManager,
+					})
+				);
+			}
 		}
 		const errorList = [];
-		return promisedValue.then((values) => {
-			values ??= options.nullGetter(part);
-			return new Promise((resolve) => {
+		return promisedValue
+			.then((values) => {
+				values ??= options.nullGetter(part);
 				if (values instanceof Promise) {
 					return values.then((values) => {
 						if (values instanceof Array) {
-							Promise.all(values).then(resolve);
-						} else {
-							resolve(values);
+							return Promise.all(values);
 						}
+						return values;
 					});
 				}
 				if (values instanceof Array) {
-					Promise.all(values).then(resolve);
-				} else {
-					resolve(values);
+					return Promise.all(values);
 				}
-			}).then((values) => {
+				return values;
+			})
+			.then((values) => {
 				sm.loopOverValue(values, loopOver, part.inverted);
 				return Promise.all(promises)
 					.then((r) =>
@@ -410,14 +457,14 @@ class LoopModule {
 						return value;
 					});
 			});
-		});
 	}
 	render(part, options) {
+		const self = this;
 		if (part.tag === "p:xfrm") {
-			this.inXfrm = part.position === "start";
+			self.inXfrm = part.position === "start";
 		}
-		if (part.tag === "a:ext" && this.inXfrm) {
-			this.lastExt = part;
+		if (part.tag === "a:ext" && self.inXfrm) {
+			self.lastExt = part;
 			return part;
 		}
 		if (!isModule(part, moduleName)) {
@@ -426,7 +473,6 @@ class LoopModule {
 		const totalValue = [];
 		const errors = [];
 		let heightOffset = 0;
-		const self = this;
 		const firstTag = part.subparsed[0];
 		let tagHeight = 0;
 		if (firstTag?.tag === "a:tr") {
@@ -471,7 +517,7 @@ class LoopModule {
 					subRendered.parts = addContinuousType(subRendered.parts);
 				}
 			} else if (part.addNextPage) {
-				subRendered.parts = addSectionBefore(
+				addSectionBefore(
 					subRendered.parts,
 					self.sects[part.addNextPage.index]
 				);
@@ -512,13 +558,13 @@ class LoopModule {
 			};
 		}
 		if (heightOffset !== 0) {
-			const cy = +getSingleAttribute(this.lastExt.value, "cy");
+			const cy = +getSingleAttribute(self.lastExt.value, "cy");
 			/*
 			 * We do edit the value of a previous result here
 			 * #edit-value-backwards
 			 */
-			this.lastExt.value = setSingleAttribute(
-				this.lastExt.value,
+			self.lastExt.value = setSingleAttribute(
+				self.lastExt.value,
 				"cy",
 				cy + heightOffset
 			);

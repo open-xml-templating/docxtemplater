@@ -212,20 +212,23 @@ if (!process.env.SPEED_TEST) {
 			it("should not be slow when having many loops with resolveData", function () {
 				this.timeout(30000);
 				const OldPromise = global.Promise;
-				let resolveCount = 0;
-				let allCount = 0;
-				let parserCount = 0;
-				let parserGetCount = 0;
+				const all = OldPromise.all.bind(OldPromise);
+				const resolve = OldPromise.resolve.bind(OldPromise);
+
+				let promiseResolveCount = 0,
+					promiseAllCount = 0,
+					parserCount = 0,
+					parserGetCount = 0;
 				global.Promise = function (arg1, arg2) {
 					return new OldPromise(arg1, arg2);
 				};
 				global.Promise.resolve = function (arg1) {
-					resolveCount++;
-					return OldPromise.resolve(arg1);
+					promiseResolveCount++;
+					return resolve(arg1);
 				};
 				global.Promise.all = function (arg1) {
-					allCount++;
-					return OldPromise.all(arg1);
+					promiseAllCount++;
+					return all(arg1);
 				};
 				let start = +new Date();
 				const doc = createDocV4("multi-level.docx", {
@@ -249,36 +252,48 @@ if (!process.env.SPEED_TEST) {
 					l2: times(multiplier),
 					l3: times(multiplier, () => ({ content: "Hello" })),
 				};
-				return doc.resolveData(data).then(() => {
-					const stepResolve = +new Date() - start;
-					start = +new Date();
-					doc.render();
-					const stepRender = +new Date() - start;
-					expect(stepCompile).to.be.below(100);
-					let maxResolveTime = 2000;
-					if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
-						maxResolveTime = 20000;
-					}
-					if (browserMatches(/firefox (55|89)/)) {
-						maxResolveTime = 4000;
-					}
-					expect(stepResolve).to.be.below(maxResolveTime);
-					let maxRenderTime = 1000;
-					if (
-						browserMatches(/firefox (55|60|64|65|66|67)/) ||
-						browserMatches(/iphone 10.3/) ||
-						browserMatches(/MicrosoftEdge (16|17|18)/)
-					) {
-						maxRenderTime = 2000;
-					}
-					expect(stepRender).to.be.below(maxRenderTime);
-					expect(parserCount).to.be.equal(4);
-					// 20**3 + 20**2 *3 + 20 * 2 + 1  = 9241
-					expect(parserGetCount).to.be.equal(9241);
-					expect(resolveCount).to.be.within(total, total * 1.2);
-					expect(allCount).to.be.within(total, total * 1.2);
-					global.Promise = OldPromise;
-				});
+				return doc
+					.resolveData(data)
+					.then(() => {
+						const stepResolve = +new Date() - start;
+						start = +new Date();
+						doc.render();
+						global.Promise = OldPromise;
+						const stepRender = +new Date() - start;
+						let maxResolveTime = 2000;
+						if (browserMatches(/MicrosoftEdge (16|17|18)/)) {
+							maxResolveTime = 20000;
+						}
+						if (browserMatches(/firefox (55|89)/)) {
+							maxResolveTime = 4000;
+						}
+						expect(stepCompile).to.be.below(100);
+						expect(stepResolve).to.be.below(maxResolveTime);
+						let maxRenderTime = 1000;
+						if (
+							browserMatches(/firefox (55|60|64|65|66|67)/) ||
+							browserMatches(/iphone 10.3/) ||
+							browserMatches(/MicrosoftEdge (16|17|18)/)
+						) {
+							maxRenderTime = 2000;
+						}
+						expect(stepRender).to.be.below(maxRenderTime);
+						expect(parserCount).to.be.equal(4);
+						// 20**3 + 20**2 *3 + 20 * 2 + 1  = 9241
+						expect(parserGetCount).to.be.equal(9241);
+						expect(promiseResolveCount).to.be.within(
+							total,
+							total * 1.2
+						);
+						expect(promiseAllCount).to.be.within(
+							total,
+							total * 1.2
+						);
+					})
+					.catch((e) => {
+						global.Promise = OldPromise;
+						throw e;
+					});
 			});
 		}
 	});

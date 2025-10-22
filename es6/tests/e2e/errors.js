@@ -1292,7 +1292,7 @@ describe("Async errors", () => {
 		);
 	});
 
-	it("should fail when customparser fails to execute on multiple tags", () => {
+	it("should fail when customparser fails to execute on multiple tags", async () => {
 		let count = 0;
 		function errorParser() {
 			return {
@@ -1303,51 +1303,10 @@ describe("Async errors", () => {
 			};
 		}
 		/*
-		 * In previous versions, the order was foo1, foo2, foo3.
-		 * Since version 3.64.0, the order is not guaranteed, because the loop module will call the nullGetter after the error.
+		 * The order of the errors is not the same as the order of the tags in
+		 * the template, because each promise could resolve at a different
+		 * time.
 		 */
-		const expectedError = {
-			name: "TemplateError",
-			message: "Multi error",
-			properties: {
-				errors: [
-					{
-						name: "ScopeParserError",
-						message: "Scope parser execution failed",
-						properties: {
-							id: "scopeparser_execution_failed",
-							file: "word/document.xml",
-							xtag: "name|istrue",
-							rootError: { message: "foo 1" },
-							offset: 0,
-						},
-					},
-					{
-						name: "ScopeParserError",
-						message: "Scope parser execution failed",
-						properties: {
-							id: "scopeparser_execution_failed",
-							file: "word/document.xml",
-							xtag: "name|upper",
-							rootError: { message: "foo 2" },
-							offset: 22,
-						},
-					},
-					{
-						name: "ScopeParserError",
-						message: "Scope parser execution failed",
-						properties: {
-							id: "scopeparser_execution_failed",
-							file: "word/document.xml",
-							xtag: "othername|upper",
-							rootError: { message: "foo 3" },
-							offset: 35,
-						},
-					},
-				],
-				id: "multi_error",
-			},
-		};
 		const doc = makeDocxV4(
 			"<w:t>{#name|istrue}Name{/} {name|upper} {othername|upper}</w:t>",
 			{
@@ -1358,11 +1317,24 @@ describe("Async errors", () => {
 		function create() {
 			return doc.renderAsync().then(() => doc.render());
 		}
-		return expectToThrowAsync(
-			create,
-			Errors.XTTemplateError,
-			expectedError
-		);
+		let myError;
+		try {
+			await create();
+		} catch (e) {
+			myError = e;
+		}
+		expect(myError.message).to.equal("Multi error");
+		const sortedErrors = myError.properties.errors.sort((x, y) => {
+			if (x.properties.offset > y.properties.offset) {
+				return 1;
+			}
+			return -1;
+		});
+		const rootErrorMessages = [];
+		for (const err of sortedErrors) {
+			rootErrorMessages.push(err.properties.rootError.message);
+		}
+		expect(rootErrorMessages).to.deep.equal(["foo 1", "foo 2", "foo 3"]);
 	});
 
 	it("should fail when customparser fails to execute on multiple raw tags", () => {

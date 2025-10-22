@@ -2344,8 +2344,58 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 	},
 	{
-		it: "should be possible to assign value inside rootScope",
+		it: "should be possible to assign value inside rootScope (async)",
 		contentText: "{last='foo'}{#l}{last}{last=l[$index].name}{/l}",
+		// Don't run this test synchronously
+		sync: false,
+		resultText: "fooJohnJackMary",
+		scope: {
+			l: [
+				{ name: "John" },
+				{ name: "Jack" },
+				{ name: "Mary" },
+				{ name: "Sean" },
+			],
+		},
+		...noInternals,
+		options: {
+			modules: () => [
+				{
+					name: "AddResolveSerially",
+					optionsTransformer(options, doc) {
+						const loopMod = doc.findModule("LoopModule");
+						loopMod.resolveSerially = true;
+						return options;
+					},
+				},
+			],
+			parser: expressionParser.configure({
+				csp: true,
+				postCompile(tag, meta, expr) {
+					const lastBody = expr.ast.body[expr.ast.body.length - 1];
+					const isAssignment =
+						lastBody &&
+						lastBody.expression.type === "AssignmentExpression";
+					if (tag === "last='foo'" && isAssignment) {
+						meta.tag.resolveFirst = true;
+					}
+				},
+				setIdentifier(tag, value, scope, scopeList) {
+					return new Promise((resolve) => {
+						setTimeout(() => {
+							scopeList[0][tag] = value;
+							resolve(true);
+						}, 100);
+					});
+				},
+			}),
+		},
+	},
+	{
+		it: "should be possible to assign value inside rootScope (sync)",
+		contentText: "{last='foo'}{#l}{last}{last=l[$index].name}{/l}",
+		// Don't run this test asynchronously
+		async: false,
 		resultText: "fooJohnJackMary",
 		scope: {
 			l: [
@@ -2358,7 +2408,6 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		...noInternals,
 		options: {
 			parser: expressionParser.configure({
-				csp: true,
 				setIdentifier(tag, value, scope, scopeList) {
 					scopeList[0][tag] = value;
 					return true;

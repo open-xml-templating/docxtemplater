@@ -1,10 +1,51 @@
-## Unreleased
+## 3.67.0
 
-Add options argument to `module.getTraits`.
+- When using `renderAsync`, add mechanism to allow to define the order in which the tags are resolved.
+  In previous versions, when resolving the tags in a document, all tags would be resolved in parallel, and the contents of a loop tag would also all be resolved in parallel.
+  You can now define some tags that should be resolved first, and those will be resolved in the order as they appear in in the document. You can for example, force all {@raw} tags to be resolved first by using following code :
 
-New signature : `module.getTraits(traitName, parsed, options)`.
+    ```js
+    const doc = new Docxtemplater(zip, {
+        parser: expressionParser.configure({
+            postCompile(tag, meta, expr) {
+                const lastBody =
+                    expr.ast.body[expr.ast.body.length - 1];
+                const isAssignment =
+                    lastBody &&
+                    lastBody.expression.type ===
+                        "AssignmentExpression";
+                if (isAssignment) {
+                    meta.tag.resolveFirst = true;
+                }
+            },
+        }),
+    });
+    ```
 
-Add typescript signature for `doc.findModule(name: string) : DXT.Module | null`.
+    You can now also make sure that each iteration in a loop waits for the previous iteration to completely resolve with following option :
+
+    ```js
+    const doc = new Docxtemplater(zip, {
+        modules: () => [
+            {
+                name: "AddResolveSerially",
+                optionsTransformer(options, doc) {
+                    const loopModule =
+                        doc.findModule("LoopModule");
+                    loopModule.resolveSerially = true;
+                    return options;
+                },
+            },
+        ],
+    });
+    ```
+
+    These options are beneficial when utilizing the expressionParser in asynchronous mode (with `renderAsync`). They are particularly useful if you employ assignments like `{@client=id|fetchClient}` and need to ensure that this assignment is resolved prior to proceeding with the remainder of the template.
+
+- Add options argument to `module.getTraits`.
+  New signature : `module.getTraits(traitName, parsed, options)`.
+
+- Add typescript signature for `doc.findModule(name: string) : DXT.Module | null`.
 
 ## 3.66.7
 
