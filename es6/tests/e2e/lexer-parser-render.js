@@ -155,12 +155,16 @@ describe("Algorithm", () => {
 			fixture = fixture({ getDoc });
 		}
 
-		(fixture.onlySync ? it.only : it)(fixture.it, () =>
-			runTest(fixture, false)
-		);
-		(fixture.only ? it.only : it)(`Async ${fixture.it}`, () =>
-			// Return is important to make the test fail if there is an async error
-			runTest(fixture, true)
-		);
+		if (fixture.async ?? true) {
+			(fixture.only ? it.only : it)(`Async ${fixture.it}`, () =>
+				// Return is important to make the test fail if there is an async error
+				runTest(fixture, true)
+			);
+		}
+		if (fixture.sync ?? true) {
+			(fixture.onlySync ? it.only : it)(fixture.it, () =>
+				runTest(fixture, false)
+			);
+		}
 	}
 });

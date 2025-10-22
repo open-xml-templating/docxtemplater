@@ -5,6 +5,7 @@ const {
 	expect,
 	makeDocxV4,
 	captureLogs,
+	paragraph,
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 
@@ -485,8 +486,7 @@ describe("Dash Loop", () => {
 			],
 		});
 		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
+		expect(doc.getFullText()).to.be.equal(expectedText);
 	});
 
 	it("should work on simple table -> w:table", () => {
@@ -498,8 +498,7 @@ describe("Dash Loop", () => {
 			],
 		});
 		const expectedText = "linux0Ubuntu10DOS500Win7apple1200MACOSX";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
+		expect(doc.getFullText()).to.be.equal(expectedText);
 	});
 
 	it("should work on simple list -> w:p", () => {
@@ -511,8 +510,7 @@ describe("Dash Loop", () => {
 			],
 		});
 		const expectedText = "linux 0 Ubuntu10 DOS 500 Win7 apple 1200 MACOSX ";
-		const text = doc.getFullText();
-		expect(text).to.be.equal(expectedText);
+		expect(doc.getFullText()).to.be.equal(expectedText);
 	});
 
 	it("should not corrupt document if using empty {-a:p} inside table cell", function () {
@@ -1129,7 +1127,7 @@ describe("Prefixes", () => {
 	});
 
 	it("should be possible to change the prefix of the raw xml module to a regexp", () => {
-		const doc = makeDocxV4("<w:p><w:t>{!!raw}</w:t></w:p>", {
+		const doc = makeDocxV4(paragraph("{!!raw}"), {
 			modules: [
 				{
 					optionsTransformer(options, doc) {
@@ -1141,16 +1139,15 @@ describe("Prefixes", () => {
 			],
 		});
 		doc.render({
-			raw: "<w:p><w:t>HoHo</w:t></w:p>",
+			raw: paragraph("HoHo"),
 		});
 		expect(doc.getFullText()).to.be.equal("HoHo");
 	});
 
 	it("should be possible to change the prefix of the raw xml module to a function", () => {
-		const content =
-			"<w:p><w:t>{raw}</w:t></w:p><w:p><w:t> {text}</w:t></w:p>";
+		const content = paragraph("{raw}") + paragraph(" {text}");
 		const scope = {
-			raw: "<w:p><w:t>HoHo</w:t></w:p>",
+			raw: paragraph("HoHo"),
 			text: "Huhu",
 		};
 		const doc = makeDocxV4(content, {
@@ -1169,9 +1166,8 @@ describe("Prefixes", () => {
 			],
 		});
 		doc.render(scope);
-
 		expect(doc.zip.file("word/document.xml").asText()).to.be.equal(
-			'<w:p><w:t>HoHo</w:t></w:p><w:p><w:t xml:space="preserve"> Huhu</w:t></w:p>'
+			paragraph("HoHo") + paragraph(" Huhu")
 		);
 	});
 });
@@ -1556,7 +1552,9 @@ describe("Get Tags", () => {
 	it("should correctly get the tags recursively using getObjectIdentifiers", () => {
 		const iModule = inspectModule();
 		makeDocxV4(
-			"<w:p><w:r><w:t>A{#user.age > 12}{user.name}{/}{x+y}{#company.name === 'Acme'}Hi Acme{/}{#list}{priority}{/}</w:t></w:r></w:p>",
+			paragraph(
+				"{#user.age > 12}{user.name}{/}{x+y}{#company.name === 'Acme'}Hi Acme{/}{#list}{priority}{/}"
+			),
 			{ modules: [iModule] }
 		);
 

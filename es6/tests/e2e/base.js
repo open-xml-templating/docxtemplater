@@ -10,6 +10,8 @@ const {
 	expectToThrowSnapshot,
 	getContent,
 	getZip,
+	paragraph,
+	cell,
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 
@@ -146,15 +148,14 @@ describe("Zip output", () => {
 describe("Retrieving text content", () => {
 	it("should work for the footer", () => {
 		const doc = createDocV4("tag-example.docx");
-		const fullText = doc.getFullText("word/footer1.xml");
-		expect(fullText.length).not.to.be.equal(0);
-		expect(fullText).to.be.equal("{last_name}{first_name}{phone}");
+		expect(doc.getFullText("word/footer1.xml")).to.be.equal(
+			"{last_name}{first_name}{phone}"
+		);
 	});
 
 	it("should work for the document", () => {
 		const doc = createDocV4("tag-example.docx");
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("{last_name} {first_name}");
+		expect(doc.getFullText()).to.be.equal("{last_name} {first_name}");
 	});
 });
 
@@ -739,8 +740,7 @@ describe("Changing the parser", () => {
 		};
 
 		const doc = createXmlTemplaterDocx(content, options);
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal(
+		expect(doc.getFullText()).to.be.equal(
 			"Root company ACME Company The other Company Root company ACME Company Foobar Company "
 		);
 	});
@@ -882,8 +882,7 @@ describe("Change the delimiters", () => {
 		doc.render({
 			user: "John",
 		});
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("Hello John");
+		expect(doc.getFullText()).to.be.equal("Hello John");
 	});
 
 	it("should work with delimiter % both sides", () => {
@@ -897,8 +896,7 @@ describe("Change the delimiters", () => {
 			user: "John",
 			company: "PCorp",
 		});
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("Hello John from PCorp");
+		expect(doc.getFullText()).to.be.equal("Hello John from PCorp");
 	});
 });
 
@@ -936,28 +934,26 @@ describe("Special characters", () => {
 	it("should read full text correctly", () => {
 		const doc = createDocV4("cyrillic.docx");
 		const fullText = doc.getFullText();
-		expect(fullText.charCodeAt(0)).to.be.equal(1024);
-		expect(fullText.charCodeAt(1)).to.be.equal(1050);
-		expect(fullText.charCodeAt(2)).to.be.equal(1048);
-		expect(fullText.charCodeAt(3)).to.be.equal(1046);
-		expect(fullText.charCodeAt(4)).to.be.equal(1044);
-		expect(fullText.charCodeAt(5)).to.be.equal(1045);
-		expect(fullText.charCodeAt(6)).to.be.equal(1039);
-		expect(fullText.charCodeAt(7)).to.be.equal(1040);
+		const charcodes = [];
+		for (let i = 0, len = fullText.length; i < len; i++) {
+			charcodes[i] = fullText.charCodeAt(i);
+		}
+		expect(charcodes.slice(0, 8)).to.be.deep.equal([
+			1024, 1050, 1048, 1046, 1044, 1045, 1039, 1040,
+		]);
 	});
 
 	it("should still read full text after applying tags", () => {
 		const doc = createDocV4("cyrillic.docx");
 		doc.render({ name: "Edgar" });
 		const fullText = doc.getFullText();
-		expect(fullText.charCodeAt(0)).to.be.equal(1024);
-		expect(fullText.charCodeAt(1)).to.be.equal(1050);
-		expect(fullText.charCodeAt(2)).to.be.equal(1048);
-		expect(fullText.charCodeAt(3)).to.be.equal(1046);
-		expect(fullText.charCodeAt(4)).to.be.equal(1044);
-		expect(fullText.charCodeAt(5)).to.be.equal(1045);
-		expect(fullText.charCodeAt(6)).to.be.equal(1039);
-		expect(fullText.charCodeAt(7)).to.be.equal(1040);
+		const charcodes = [];
+		for (let i = 0, len = fullText.length; i < len; i++) {
+			charcodes[i] = fullText.charCodeAt(i);
+		}
+		expect(charcodes.slice(0, 8)).to.be.deep.equal([
+			1024, 1050, 1048, 1046, 1044, 1045, 1039, 1040,
+		]);
 		expect(fullText.indexOf("Edgar")).to.be.equal(9);
 	});
 
@@ -965,8 +961,7 @@ describe("Special characters", () => {
 		const russian = "Пупкина";
 		const doc = createDocV4("tag-example.docx");
 		doc.render({ last_name: russian });
-		const outputText = doc.getFullText();
-		expect(outputText.substr(0, 7)).to.be.equal(russian);
+		expect(doc.getFullText().substr(0, 7)).to.be.equal(russian);
 	});
 });
 
@@ -1001,37 +996,34 @@ describe("Complex table example", () => {
 			key: "value",
 		};
 		const template = `<w:tr>
-		<w:tc><w:p><w:t>{#table1}Hi</w:t></w:p></w:tc>
-		<w:tc><w:p><w:t>{/table1}</w:t></w:p> </w:tc>
+		${cell("{#table1}Hi")}
+		${cell("{/table1}")}
 		</w:tr>
 		<w:tr>
-		<w:tc><w:p><w:t>{#table1}Ho</w:t></w:p></w:tc>
-		<w:tc><w:p><w:t>{/table1}</w:t></w:p></w:tc>
+		${cell("{#table1}Ho")}
+		${cell("{/table1}")}
 		</w:tr>
-		<w:p><w:t>{key}</w:t></w:p>
+		${paragraph("{key}")}
 		`;
 		const doc = createXmlTemplaterDocx(template, { tags });
-		const fullText = doc.getFullText();
-
-		expect(fullText).to.be.equal("HiHovalue");
+		expect(doc.getFullText()).to.be.equal("HiHovalue");
 		const expected = `<w:tr>
-		<w:tc><w:p><w:t xml:space="preserve">Hi</w:t></w:p></w:tc>
-		<w:tc><w:p><w:t/></w:p> </w:tc>
+		${cell("Hi")}
+		${cell("")}
 		</w:tr>
 		<w:tr>
-		<w:tc><w:p><w:t xml:space="preserve">Ho</w:t></w:p></w:tc>
-		<w:tc><w:p><w:t/></w:p></w:tc>
+		${cell("Ho")}
+		${cell("")}
 		</w:tr>
-		<w:p><w:t xml:space="preserve">value</w:t></w:p>
+		${paragraph("value")}
 		`;
-		const c = getContent(doc);
-		expect(c).to.be.equal(expected);
+		expect(getContent(doc)).to.be.equal(expected);
 	});
 });
 
 describe("Raw Xml Insertion", () => {
 	it("should work with simple example", () => {
-		const inner = "<w:p><w:r><w:t>{@complexXml}</w:t></w:r></w:p>";
+		const inner = paragraph("{@complexXml}");
 		const content = `<w:document>${inner}</w:document>`;
 		const scope = {
 			complexXml:
@@ -1051,59 +1043,23 @@ describe("Raw Xml Insertion", () => {
 	it("should work even when tags are after the xml", () => {
 		const content = `<w:tbl>
 		<w:tr>
-		<w:tc>
-		<w:p>
-		<w:r>
-		<w:t>{@complexXml}</w:t>
-		</w:r>
-		</w:p>
-		</w:tc>
+		${cell("{@complexXml}")}
 		</w:tr>
 		<w:tr>
-		<w:tc>
-		<w:p>
-		<w:r>
-		<w:t>{name}</w:t>
-		</w:r>
-		</w:p>
-		</w:tc>
+		${cell("{name}")}
 		</w:tr>
 		<w:tr>
-		<w:tc>
-		<w:p>
-		<w:r>
-		<w:t>{first_name}</w:t>
-		</w:r>
-		</w:p>
-		</w:tc>
+		${cell("{first_name}")}
 		</w:tr>
 		<w:tr>
-		<w:tc>
-		<w:p>
-		<w:r>
-		<w:t>{#products} {year}</w:t>
-		</w:r>
-		</w:p>
-		</w:tc>
-		<w:tc>
-		<w:p>
-		<w:r>
-		<w:t>{name}</w:t>
-		</w:r>
-		</w:p>
-		</w:tc>
-		<w:tc>
-		<w:p>
-		<w:r>
-		<w:t>{company}{/products}</w:t>
-		</w:r>
-		</w:p>
-		</w:tc>
+		${cell("{#products} {year}")}
+		${cell("{name}")}
+		${cell("{company}{/products}")}
 		</w:tr>
 		</w:tbl>
 		`;
 		const scope = {
-			complexXml: "<w:p><w:r><w:t>Hello</w:t></w:r></w:p>",
+			complexXml: paragraph("Hello"),
 			name: "John",
 			first_name: "Doe",
 			products: [
@@ -1121,10 +1077,7 @@ describe("Raw Xml Insertion", () => {
 	});
 
 	it("should work with false value", () => {
-		const content = `
-			<w:p><w:r><w:t>{@rawXML}</w:t></w:r></w:p>
-			<w:p><w:r><w:t>Hi</w:t></w:r></w:p>
-		`;
+		const content = paragraph("{@rawXML}") + paragraph("Hi");
 		const doc = createXmlTemplaterDocx(content, {
 			tags: { rawXML: false },
 		});
@@ -1227,8 +1180,7 @@ describe("Constructor v4", () => {
 		doc.render({
 			user: "John",
 		});
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("Hello John");
+		expect(doc.getFullText()).to.be.equal("Hello John");
 	});
 
 	it("should work when both modules and delimiters are passed and modules should have access to options object", () => {
@@ -1261,9 +1213,7 @@ describe("Constructor v4", () => {
 			user: "John",
 			company: "Acme",
 		});
-
-		const fullText = doc.getFullText();
-		expect(fullText).to.be.equal("Hello John from Acme");
+		expect(doc.getFullText()).to.be.equal("Hello John from Acme");
 	});
 
 	class MyTestModule {

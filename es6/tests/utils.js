@@ -1002,11 +1002,23 @@ function captureLogs() {
 	};
 }
 
+function paragraph(content) {
+	if (content === "") {
+		return "<w:p><w:r><w:t/></w:r></w:p>";
+	}
+	return `<w:p><w:r><w:t xml:space="preserve">${content}</w:t></w:r></w:p>`;
+}
+
+function cell(content) {
+	return `<w:tc>${paragraph(content)}</w:tc>`;
+}
+
 module.exports = {
 	chai,
 	cleanError,
 	cleanRecursive,
 	createDocV3,
+	cell,
 	getLoadedContent,
 	createXmlTemplaterDocx,
 	createXmlTemplaterDocxNoRender,
@@ -1017,6 +1029,7 @@ module.exports = {
 	expectToThrowAsyncSnapshot,
 	getContent,
 	imageData,
+	paragraph,
 	loadDocument,
 	loadDocumentV4,
 	loadFile,
