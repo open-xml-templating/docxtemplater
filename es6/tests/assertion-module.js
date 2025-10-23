@@ -1,7 +1,14 @@
+/* eslint-disable no-console */
+
+const util = require("util");
 function logContext(parsed, i) {
 	const context = parsed.slice(i - 2, i + 2);
-	// eslint-disable-next-line no-console
-	console.log(JSON.stringify({ context }));
+	console.log(
+		JSON.stringify({
+			msg: "inspect-context",
+			inspect: util.inspect(context, { showHidden: true, depth: 2 }),
+		})
+	);
 }
 function isArray(thing) {
 	return thing instanceof Array;
@@ -14,19 +21,30 @@ function isString(thing) {
 }
 
 function verifyPart(part) {
+	let errMessage = "";
 	if (part == null) {
-		throw new Error("postparsed contains nullish value");
+		errMessage = "part is nullish value";
 	}
 	if (!part) {
-		throw new Error("postparsed contains falsy value");
+		errMessage = "part is falsy value";
 	}
 	if (typeof part.type !== "string") {
-		throw new Error("postparsed contains part without type");
+		errMessage = "part has no type";
 	}
 	if (["content", "tag", "placeholder"].indexOf(part.type) === -1) {
-		throw new Error(
-			`postparsed contains part with invalid type : '${part.type}'`
+		errMessage = `part has invalid type : '${part.type}'`;
+	}
+	if (errMessage) {
+		console.log(
+			JSON.stringify({
+				msg: "inspect-part",
+				inspect: util.inspect(part, {
+					showHidden: true,
+					depth: 2,
+				}),
+			})
 		);
+		throw new Error(errMessage);
 	}
 }
 
@@ -62,6 +80,26 @@ class AssertionModule {
 	}
 	clone() {
 		return new AssertionModule();
+	}
+	on(eventName) {
+		if (eventName === "after-parse" && this.docxtemplater) {
+			const { compiled } = this.docxtemplater;
+			for (const key in compiled) {
+				const { parsed } = compiled[key];
+				for (let i = 0, len = parsed.length; i < len; i++) {
+					const part = parsed[i];
+					try {
+						verifyPart(part);
+					} catch (e) {
+						console.log(
+							JSON.stringify({ msg: "Error before postparse" })
+						);
+						logContext(parsed, i);
+						throw e;
+					}
+				}
+			}
+		}
 	}
 	preparse(parsed) {
 		if (!isArray(parsed)) {
@@ -112,6 +150,7 @@ class AssertionModule {
 			try {
 				verifyPart(part);
 			} catch (e) {
+				console.log(JSON.stringify({ msg: "Error after postparse" }));
 				logContext(parsed, i);
 				throw e;
 			}
@@ -122,7 +161,12 @@ class AssertionModule {
 	}
 
 	render(part, options) {
-		verifyPart(part);
+		try {
+			verifyPart(part);
+		} catch (e) {
+			console.log(JSON.stringify({ msg: "Error in render" }));
+			throw e;
+		}
 		verifyOptions(options);
 		if (!isObject(part)) {
 			throw new Error("part should be an object");
