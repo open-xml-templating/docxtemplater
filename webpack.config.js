@@ -36,7 +36,7 @@ module.exports = {
 			),
 			fs: path.resolve(__dirname, "es6/browser-versions/fs.js"),
 		},
-		fallback: { path: false },
+		fallback: { path: false, util: false },
 	},
 	module: {
 		rules: [

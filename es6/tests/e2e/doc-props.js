@@ -68,4 +68,10 @@ describe("Docx document properties", () => {
 		});
 		shouldBeSame({ doc, expectedName: "expected-core-xml.docx" });
 	});
+
+	it("should work with cover-page-data", () => {
+		const doc = createDocV4("cover-page-data.docx");
+		doc.render({ TODAY: "2015/01/01" });
+		shouldBeSame({ doc, expectedName: "expected-cover-page-data.docx" });
+	});
 });

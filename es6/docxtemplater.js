@@ -735,6 +735,19 @@ const Docxtemplater = class Docxtemplater {
 	getTemplatedFiles() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
 		pushArray(this.templatedFiles, this.targets);
+		const templatedNs = this.fileTypeConfig.templatedNs || [];
+		if (templatedNs.length > 0) {
+			for (const key in this.filesContentTypes) {
+				if (/^customXml\/item\d+\.xml$/.test(key)) {
+					for (const ns of templatedNs) {
+						const text = this.zip.file(key).asText();
+						if (text.indexOf(`xmlns="${ns}"`) !== -1) {
+							this.templatedFiles.push(key);
+						}
+					}
+				}
+			}
+		}
 		this.templatedFiles = uniq(this.templatedFiles);
 		return this.templatedFiles;
 	}

@@ -150,9 +150,11 @@ const parser = {
 
 	postparse(postparsed, modules, options) {
 		function getTraits(traitName, postparsed, options) {
-			return modules.map((module) =>
-				module.getTraits(traitName, postparsed, options)
-			);
+			const result = [];
+			for (const module of modules) {
+				result.push(module.getTraits(traitName, postparsed, options));
+			}
+			return result;
 		}
 		const errors = [];
 		function postparse(postparsed, options) {

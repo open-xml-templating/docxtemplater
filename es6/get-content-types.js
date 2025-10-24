@@ -8,10 +8,10 @@ function collectContentTypes(overrides, defaults, zip) {
 		const partName = override.getAttribute("PartName").substr(1);
 		partNames[partName] = contentType;
 	}
-	for (const def of defaults) {
-		const contentType = def.getAttribute("ContentType");
-		const extension = def.getAttribute("Extension");
-		zip.file(/./).map(({ name }) => {
+	zip.file(/./).map(({ name }) => {
+		for (const def of defaults) {
+			const contentType = def.getAttribute("ContentType");
+			const extension = def.getAttribute("Extension");
 			if (
 				name.slice(name.length - extension.length) === extension &&
 				!partNames[name] &&
@@ -19,8 +19,9 @@ function collectContentTypes(overrides, defaults, zip) {
 			) {
 				partNames[name] = contentType;
 			}
-		});
-	}
+		}
+		partNames[name] ||= "";
+	});
 	return partNames;
 }
 

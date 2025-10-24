@@ -9,6 +9,9 @@ function DocXFileTypeConfig() {
 		getTemplatedFiles() {
 			return [];
 		},
+		templatedNs: [
+			"http://schemas.microsoft.com/office/2006/coverPageProps",
+		],
 		textPath(doc) {
 			return doc.textTarget;
 		},
@@ -23,6 +26,13 @@ function DocXFileTypeConfig() {
 			"dc:subject",
 			"dc:title",
 			"cp:contentStatus",
+
+			"PublishDate",
+			"Abstract",
+			"CompanyAddress",
+			"CompanyPhone",
+			"CompanyFax",
+			"CompanyEmail",
 
 			"w:t",
 			"a:t",

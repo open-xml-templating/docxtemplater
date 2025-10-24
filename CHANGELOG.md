@@ -1,3 +1,7 @@
+## 3.67.1
+
+Automatically template coverpagedata, such as "PublishDate", "Abstract", ...
+
 ## 3.67.0
 
 - When using `renderAsync`, add mechanism to allow to define the order in which the tags are resolved.

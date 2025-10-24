@@ -65,7 +65,7 @@ class Common {
 				}
 			}
 			if (ftCandidate) {
-				return ftCandidate;
+				continue;
 			}
 		}
 		return ftCandidate;

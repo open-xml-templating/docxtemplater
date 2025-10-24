@@ -105,6 +105,7 @@ describe("Docxtemplater internal properties", () => {
 	it("should calculate filesContentTypes and invertedContentTypes", () => {
 		const doc = createDocV4("tag-example.docx");
 		expect(doc.filesContentTypes).to.deep.equal({
+			"[Content_Types].xml": "",
 			"_rels/.rels":
 				"application/vnd.openxmlformats-package.relationships+xml",
 			"word/_rels/document.xml.rels":
@@ -138,6 +139,7 @@ describe("Docxtemplater internal properties", () => {
 		});
 
 		expect(doc.invertedContentTypes).to.deep.equal({
+			"": ["[Content_Types].xml"],
 			"application/vnd.openxmlformats-package.relationships+xml": [
 				"_rels/.rels",
 				"word/_rels/document.xml.rels",
