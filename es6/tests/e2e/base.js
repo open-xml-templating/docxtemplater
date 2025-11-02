@@ -1147,18 +1147,17 @@ describe("Constructor v4", () => {
 	});
 
 	it("should throw an error when an invalid zip is passed", () => {
-		const zip = getZip("tag-example.docx");
-		zip.files = null;
-
-		expect(() => new Docxtemplater(zip)).to.throw(
-			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
-		);
-
 		expect(() => new Docxtemplater("content")).to.throw(
 			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 		);
 
 		expect(() => new Docxtemplater({ files: [] })).to.throw(
+			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
+		);
+
+		const zip = getZip("tag-example.docx");
+		zip.files = null;
+		expect(() => new Docxtemplater(zip)).to.throw(
 			"The first argument of docxtemplater's constructor must be a valid zip file (jszip v2 or pizzip v3)"
 		);
 
@@ -1216,15 +1215,15 @@ describe("Constructor v4", () => {
 		expect(doc.getFullText()).to.be.equal("Hello John from Acme");
 	});
 
-	class MyTestModule {
-		render(part) {
-			return {
-				value: part.value,
-			};
-		}
-	}
-
 	it("should throw error when using a non-instanciated class as a module", () => {
+		class MyTestModule {
+			render(part) {
+				return {
+					value: part.value,
+				};
+			}
+		}
+
 		const options = {
 			delimiters: {
 				start: "%",
