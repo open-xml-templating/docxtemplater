@@ -12,6 +12,7 @@ const {
 	getZip,
 	paragraph,
 	cell,
+	captureLogs,
 } = require("../utils.js");
 const inspectModule = require("../../inspect-module.js");
 
@@ -1144,6 +1145,35 @@ describe("Constructor v4", () => {
 		).to.throw(
 			"The modules argument of docxtemplater's constructor must be an array"
 		);
+	});
+
+	it("should warn if trying to reuse same zip for two docxtemplater templates", () => {
+		const zip = getZip("tag-example.docx");
+		const doc = new Docxtemplater(zip);
+		const capture = captureLogs();
+		doc.render();
+		/* eslint-disable-next-line no-unused-vars */
+		const otherDoc = new Docxtemplater(zip);
+		capture.stop();
+		const logs = capture.logs();
+		expect(logs).to.deep.equal([
+			"Warning : This zip file appears to be the outcome of a previous docxtemplater generation. This typically indicates that docxtemplater was integrated by reusing the same zip file. It is recommended to create a new Pizzip instance for each docxtemplater generation.",
+		]);
+	});
+
+	it("should be possible to customize warnFn", () => {
+		const zip = getZip("tag-example.docx");
+		const doc = new Docxtemplater(zip);
+		doc.render();
+		let myErrors = [];
+		/* eslint-disable-next-line no-unused-vars */
+		const otherDoc = new Docxtemplater(zip, {
+			warnFn: (errors) => {
+				myErrors = errors;
+			},
+		});
+		expect(myErrors.length).to.deep.equal(1);
+		expect(myErrors[0]).to.be.instanceof(Error);
 	});
 
 	it("should throw an error when an invalid zip is passed", () => {

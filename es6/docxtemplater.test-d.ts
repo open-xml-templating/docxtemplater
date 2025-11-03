@@ -369,6 +369,14 @@ new Docxtemplater(new PizZip("hello"), {
 	linebreaks: true,
 });
 
+new Docxtemplater(new PizZip("hello"), {
+	warnFn: (errors: Error[]) => {
+		for (const error of errors) {
+			console.log(error.message);
+		}
+	},
+});
+
 interface SetOptions {
 	Lexer: any;
 	zip: any;

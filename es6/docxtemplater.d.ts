@@ -174,6 +174,7 @@ declare namespace DXT {
 		linebreaks?: boolean;
 		nullGetter?(part: Part, scopeManager: ScopeManager): any;
 		fileTypeConfig?: any;
+		warnFn?(errors: Error[]): any;
 		syntax?: Syntax;
 		stripInvalidXMLChars?: boolean;
 	}

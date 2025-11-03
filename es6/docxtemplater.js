@@ -26,6 +26,7 @@ const dxtOptionsSchema = z
 		nullGetter: z.function().optional(),
 		syntax: dxtSyntaxSchema.optional(),
 		stripInvalidXMLChars: z.boolean().optional(),
+		warnFn: z.function().optional(),
 	})
 	.strict();
 
@@ -415,6 +416,13 @@ const Docxtemplater = class Docxtemplater {
 				"Docxtemplater doesn't handle JSZip version >=3, please use pizzip"
 			);
 		}
+		if (zip.xtRendered) {
+			this.options.warnFn([
+				new Error(
+					"This zip file appears to be the outcome of a previous docxtemplater generation. This typically indicates that docxtemplater was integrated by reusing the same zip file. It is recommended to create a new Pizzip instance for each docxtemplater generation."
+				),
+			]);
+		}
 		this.zip = zip;
 		this.updateFileTypeConfig();
 
@@ -629,9 +637,11 @@ const Docxtemplater = class Docxtemplater {
 		this.hideDeprecations = true;
 		const promise = this.resolveData(data);
 		this.hideDeprecations = false;
+		this.zip.xtRendered = true;
 		return promise.then(() => this.render());
 	}
 	render(data) {
+		this.zip.xtRendered = true;
 		if (this.rendered) {
 			throwRenderTwice();
 		}

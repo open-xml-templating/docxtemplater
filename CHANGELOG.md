@@ -1,3 +1,9 @@
+## 3.67.2
+
+Detect if trying to template the same zip file with two different docxtemplater instances.
+
+In this case, docxtemplater will now show a warning in the console.
+
 ## 3.67.1
 
 Automatically template coverpagedata, such as "PublishDate", "Abstract", ...

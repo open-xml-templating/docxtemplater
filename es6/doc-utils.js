@@ -20,6 +20,15 @@ function parser(tag) {
 	};
 }
 
+function defaultWarnFn(errors) {
+	for (const error of errors) {
+		if (error.message) {
+			/* eslint-disable-next-line no-console */
+			console.warn("Warning : " + error.message);
+		}
+	}
+}
+
 const attrToRegex = {};
 
 function setSingleAttribute(partValue, attr, attrValue) {
@@ -127,6 +136,7 @@ function getDefaults() {
 		},
 		xmlFileNames: ["[Content_Types].xml"],
 		parser,
+		warnFn: defaultWarnFn,
 		linebreaks: false,
 		fileTypeConfig: null,
 		delimiters: {
