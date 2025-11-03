@@ -1,3 +1,13 @@
+## 3.67.3
+
+In previous versions, if placing a starting loop tag in a Word field inside a table, and the ending loop tag as plain text, it would trigger the following error, even if the loop was expanding to the nearest "<w:tr>" :
+
+```
+The position of the loop tags "loop" would produce invalid XML
+```
+
+This particular case is now fixed, the template is generated.
+
 ## 3.67.2
 
 Detect if trying to template the same zip file with two different docxtemplater instances.

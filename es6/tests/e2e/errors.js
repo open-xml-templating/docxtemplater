@@ -4,6 +4,7 @@ const {
 	rejectSoon,
 	expect,
 	loadDocumentV4,
+	createDocV4,
 	makeDocxV4,
 	wrapMultiError,
 	expectToThrow,
@@ -1104,6 +1105,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 			Errors.XTTemplateError,
 			expectedError
 		);
+	});
+
+	it("should show an error when having table inside table", () => {
+		expectToThrowSnapshot(() => createDocV4("error-table-tags.docx"));
 	});
 
 	it("should show clean error message when using {{ with single delimiter", () => {

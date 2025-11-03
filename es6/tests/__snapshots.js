@@ -603,6 +603,33 @@ exports[`Inspect module should get main tags`] = [
   }
 ]
 
+exports[`Multi errors should show an error when having table inside table`] = {
+  "_type": "XTTemplateError",
+  "name": "TemplateError",
+  "message": "Multi error",
+  "properties": {
+    "errors": [
+      {
+        "_type": "XTTemplateError",
+        "name": "TemplateError",
+        "message": "The position of the loop tags \"loop\" would produce invalid XML",
+        "properties": {
+          "xtag": "loop",
+          "id": "loop_position_invalid",
+          "explanation": "The tags \"loop\" are misplaced in the document, for example one of them is in a table and the other one outside the table",
+          "offset": [
+            0,
+            10
+          ],
+          "file": "word/document.xml"
+        }
+      }
+    ],
+    "id": "multi_error",
+    "explanation": "The template has multiple errors"
+  }
+}
+
 exports[`Multi errors should work with loops unopened`] = {
   "_type": "XTTemplateError",
   "name": "TemplateError",

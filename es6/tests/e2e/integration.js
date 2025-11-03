@@ -300,6 +300,31 @@ describe("Regression", () => {
 			expectedName: "expected-tbl-without-sibling.docx",
 		});
 	});
+
+	it("should work even if having a {#loop} tag inside a Word Field, and the closing tag not in a field", () => {
+		/*
+		 * Fixed since v3.67.3
+		 * #regression-loop-with-field-and-nofield
+		 */
+		const doc = createDocV4("loop-with-field-and-nofield.docx");
+		doc.render({
+			loop: [
+				{
+					data: "John Doe",
+				},
+				{
+					data: "Nick Foo",
+				},
+				{
+					data: "Jack Domery",
+				},
+			],
+		});
+		shouldBeSame({
+			doc,
+			expectedName: "expected-loop-with-field-and-nofield.docx",
+		});
+	});
 });
 
 describe("Spacing/Linebreaks", () => {

@@ -147,20 +147,9 @@ function has(name, xmlElements) {
 }
 
 function getExpandToDefault(postparsed, pair, expandTags) {
-	const parts = postparsed.slice(pair[0].offset, pair[1].offset);
-	const xmlElements = getListXmlElements(parts);
-	const closingTagCount = xmlElements.filter((tag) => tag[1] === "/").length;
-	const startingTagCount = xmlElements.filter(
-		(tag) => tag[1] !== "/" && tag[tag.length - 2] !== "/"
-	).length;
-	if (closingTagCount !== startingTagCount) {
-		return {
-			error: getLoopPositionProducesInvalidXMLError({
-				tag: first(pair).part.value,
-				offset: [first(pair).part.offset, last(pair).part.offset],
-			}),
-		};
-	}
+	const xmlElements = getListXmlElements(
+		postparsed.slice(pair[0].offset, pair[1].offset)
+	);
 	for (const { contains, expand, onlyTextInTag } of expandTags) {
 		if (has(contains, xmlElements)) {
 			if (onlyTextInTag) {
@@ -178,7 +167,8 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 					continue;
 				}
 
-				const chunks = chunkBy(postparsed.slice(left, right), (p) =>
+				const subparsed = postparsed.slice(left, right);
+				const chunks = chunkBy(subparsed, (p) =>
 					isTagStart(contains, p)
 						? "start"
 						: isTagEnd(contains, p)
@@ -195,10 +185,73 @@ function getExpandToDefault(postparsed, pair, expandTags) {
 					continue;
 				}
 			}
+			const structured = getStructuredTagPositions(xmlElements);
+			let openCount = 0;
+			for (const { tag, position } of structured) {
+				if (tag === expand) {
+					if (position === "start") {
+						openCount++;
+					}
+					if (position === "end") {
+						openCount--;
+					}
+				}
+			}
+			if (openCount !== 0) {
+				// Tested by #regression-loop-with-field-and-nofield
+				return {
+					error: getLoopPositionProducesInvalidXMLError({
+						tag: first(pair).part.value,
+						offset: [
+							first(pair).part.offset,
+							last(pair).part.offset,
+						],
+					}),
+				};
+			}
+
 			return { value: expand };
 		}
 	}
+	if (!checkStartEnd(xmlElements)) {
+		return {
+			error: getLoopPositionProducesInvalidXMLError({
+				tag: first(pair).part.value,
+				offset: [first(pair).part.offset, last(pair).part.offset],
+			}),
+		};
+	}
 	return {};
+}
+
+function getStructuredTagPositions(xmlElements) {
+	const result = [];
+	for (const el of xmlElements) {
+		const tag = getTagName(el);
+		const position = /^\s*<\//.test(el) ? "end" : "start";
+		result.push({ tag, position });
+	}
+	return result;
+}
+
+function getTagName(tag) {
+	return tag.replace(/^\s*<\/?([a-zA-Z:]+).*/, "$1");
+}
+
+function checkStartEnd(xmlElements) {
+	if (xmlElements.length % 2 === 1) {
+		return false;
+	}
+	for (let i = 0, len = xmlElements.length / 2; i < len; i++) {
+		const start = xmlElements[i];
+		const end = xmlElements[xmlElements.length - i - 1];
+		const tagNameStart = getTagName(start);
+		const tagNameEnd = getTagName(end);
+		if (tagNameStart !== tagNameEnd) {
+			return false;
+		}
+	}
+	return true;
 }
 
 function getExpandLimit(part, index, postparsed, options) {
