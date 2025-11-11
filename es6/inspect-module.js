@@ -64,7 +64,7 @@ class InspectModule {
 			if (obj.inspect.content) {
 				this.inspect.content = obj.inspect.content;
 			} else if (obj.inspect.postparsed) {
-				this.inspect.postparsed = cloneDeep(obj.inspect.postparsed);
+				this.inspect.postparsed = obj.inspect.postparsed;
 			} else if (obj.inspect.parsed) {
 				this.inspect.parsed = cloneDeep(obj.inspect.parsed);
 			} else if (obj.inspect.lexed) {
@@ -88,7 +88,7 @@ class InspectModule {
 	}
 
 	getInspected(file) {
-		let inspected = cloneDeep(this.fullInspected[file].postparsed);
+		let inspected = this.fullInspected[file].postparsed;
 
 		const si = getSlideIndex(file);
 		if (si != null && !isNaN(si)) {
@@ -131,15 +131,14 @@ class InspectModule {
 	}
 	getAllTags() {
 		const result = {};
-		for (const file of Object.keys(this.fullInspected)) {
+		for (const file in this.fullInspected) {
 			merge(result, this.getTags(file));
 		}
 		return result;
 	}
 	getStructuredTags(file) {
 		file ||= this.fileTypeConfig.textPath(this.docxtemplater);
-		const inspected = this.getInspected(file);
-		return getStructuredTags(inspected);
+		return getStructuredTags(this.getInspected(file));
 	}
 	getAllStructuredTags() {
 		const result = [];

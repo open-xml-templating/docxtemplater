@@ -1,3 +1,7 @@
+## 3.67.4
+
+In previous versions, if using the paid chart module together with the inspect module, the code when calling `const tags = iModule.getAllTags();` could take too much time. This is now fixed, we do not try to cloneDeep this very nested value.
+
 ## 3.67.3
 
 In previous versions, if placing a starting loop tag in a Word field inside a table, and the ending loop tag as plain text, it would trigger the following error, even if the loop was expanding to the nearest "<w:tr>" :

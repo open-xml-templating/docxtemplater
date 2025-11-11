@@ -1108,7 +1108,9 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/ueoe?p0=name%2B%2B`,
 	});
 
 	it("should show an error when having table inside table", () => {
-		expectToThrowSnapshot(() => createDocV4("error-table-tags.docx"));
+		expectToThrowSnapshot(() =>
+			createDocV4("error-table-tags.docx", { errorLogging: false })
+		);
 	});
 
 	it("should show clean error message when using {{ with single delimiter", () => {
