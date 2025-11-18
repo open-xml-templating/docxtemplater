@@ -551,6 +551,86 @@ exports[`Inspect module should get all tags (pptx file)`] = [
   }
 ]
 
+exports[`Inspect module should get all tags with additional data`] = [
+  {
+    "type": "placeholder",
+    "module": "loop",
+    "inverted": false,
+    "value": "products",
+    "offset": 0,
+    "endLindex": 216,
+    "lIndex": 17,
+    "raw": "#products",
+    "sectPrCount": 0,
+    "lastParagrapSectPr": "",
+    "subparsed": [
+      {
+        "type": "placeholder",
+        "value": "title",
+        "offset": 11,
+        "endLindex": 33,
+        "lIndex": 33
+      },
+      {
+        "type": "placeholder",
+        "value": "name",
+        "offset": 33,
+        "endLindex": 57,
+        "lIndex": 57
+      },
+      {
+        "type": "placeholder",
+        "value": "reference",
+        "offset": 59,
+        "endLindex": 74,
+        "lIndex": 74
+      },
+      {
+        "type": "placeholder",
+        "module": "loop",
+        "inverted": false,
+        "value": "avantages",
+        "offset": 70,
+        "endLindex": 192,
+        "lIndex": 92,
+        "raw": "#avantages",
+        "sectPrCount": 0,
+        "lastParagrapSectPr": "",
+        "subparsed": [
+          {
+            "type": "placeholder",
+            "value": "title",
+            "offset": 82,
+            "endLindex": 108,
+            "lIndex": 108
+          },
+          {
+            "type": "placeholder",
+            "module": "loop",
+            "inverted": false,
+            "value": "proof",
+            "offset": 117,
+            "endLindex": 174,
+            "lIndex": 136,
+            "raw": "#proof",
+            "sectPrCount": 0,
+            "lastParagrapSectPr": "",
+            "subparsed": [
+              {
+                "type": "placeholder",
+                "value": "reason",
+                "offset": 143,
+                "endLindex": 158,
+                "lIndex": 158
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
 exports[`Inspect module should get main tags`] = [
   {
     "type": "placeholder",
