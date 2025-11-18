@@ -100,11 +100,11 @@ describe("Module attachment", () => {
 		const module = {
 			name: "TestModule",
 			requiredAPIVersion: "3.0.0",
-			render(part) {
-				return part.value;
-			},
 			clone() {
 				return this;
+			},
+			render(part) {
+				return part.value;
 			},
 		};
 		createDocV4("loop-valid.docx", { modules: [module] });
@@ -144,6 +144,11 @@ describe("Module xml parse", () => {
 		const module = {
 			name: "ParseXMLModule",
 			requiredAPIVersion: "3.0.0",
+			set(options) {
+				if (options.xmlDocuments) {
+					xmlDocuments = options.xmlDocuments;
+				}
+			},
 			optionsTransformer(options, docxtemplater) {
 				const relsFiles = docxtemplater.zip
 					.file(/document.xml.rels/)
@@ -157,17 +162,11 @@ describe("Module xml parse", () => {
 				pushArray(options.xmlFileNames, relsFiles);
 				return options;
 			},
-			set(options) {
-				if (options.xmlDocuments) {
-					xmlDocuments = options.xmlDocuments;
-				}
-			},
 		};
 
 		const doc = createDocV4("tag-example.docx", { modules: [module] });
 
-		const xmlKeys = Object.keys(xmlDocuments);
-		expect(xmlKeys).to.deep.equal([
+		expect(Object.keys(xmlDocuments)).to.deep.equal([
 			"[Content_Types].xml",
 			"word/_rels/document.xml.rels",
 		]);
@@ -254,8 +253,7 @@ describe("Module traits", () => {
 
 		const doc = createDocV4("comment-with-loop.docx", {
 			modules: [module],
-		});
-		doc.render({});
+		}).render({});
 		shouldBeSame({ doc, expectedName: "expected-comment-example.docx" });
 	});
 });
@@ -276,19 +274,19 @@ describe("Module errors", () => {
 					module: moduleName,
 				};
 			},
-			render(part) {
-				if (part.module === moduleName) {
-					return {
-						errors: [new Error(`foobar ${part.value}`)],
-					};
-				}
-			},
 			errorsTransformer(errors) {
 				pushArray(myErrors, errors);
 				return errors.map((e) => {
 					e.xyz = "xxx";
 					return e;
 				});
+			},
+			render(part) {
+				if (part.module === moduleName) {
+					return {
+						errors: [new Error(`foobar ${part.value}`)],
+					};
+				}
 			},
 		};
 
@@ -692,21 +690,20 @@ describe("Module calls to on(eventName) to pass events", () => {
 });
 
 describe("Module call order", () => {
-	it("should work with v4 synchronously", () => {
+	it.only("should work with v4 synchronously", () => {
 		const calls = [];
 		const mod = {
 			name: "TestModule",
+			on() {
+				calls.push("on");
+			},
 			set() {
 				calls.push("set");
 				return null;
 			},
-			matchers() {
-				calls.push("matchers");
-				return [];
-			},
-			render() {
-				calls.push("render");
-				return null;
+			getFileType({ doc }) {
+				doc.targets.unshift("word/document.xml");
+				calls.push("getFileType");
 			},
 			optionsTransformer(options) {
 				calls.push("optionsTransformer");
@@ -716,19 +713,34 @@ describe("Module call order", () => {
 				calls.push("preparse");
 				return null;
 			},
+			matchers() {
+				calls.push("matchers");
+				return [];
+			},
 			parse() {
 				calls.push("parse");
-				return null;
-			},
-			postparse() {
-				calls.push("postparse");
 				return null;
 			},
 			getTraits() {
 				calls.push("getTraits");
 			},
-			getFileType() {
-				calls.push("getFileType");
+			postparse() {
+				calls.push("postparse");
+				return null;
+			},
+			errorsTransformer() {
+				calls.push("errorsTransformer");
+			},
+			resolve() {
+				calls.push("resolve");
+			},
+			getRenderedMap(obj) {
+				calls.push("getRenderedMap");
+				return obj;
+			},
+			render() {
+				calls.push("render");
+				return null;
 			},
 			nullGetter() {
 				calls.push("nullGetter");
@@ -737,35 +749,31 @@ describe("Module call order", () => {
 				calls.push("postrender");
 				return [];
 			},
-			errorsTransformer() {
-				calls.push("errorsTransformer");
-			},
-			getRenderedMap(obj) {
-				calls.push("getRenderedMap");
-				return obj;
-			},
-			on() {
-				calls.push("on");
-			},
-			resolve() {
-				calls.push("resolve");
-			},
 		};
-		createDocV4("loop-image-footer.docx", {
+		const doc = createDocV4("tag-example.docx", {
 			modules: [mod],
-		}).render({ loop: [1, 2, 3, 4] });
-		expect(uniq(calls)).to.deep.equal([
+		});
+		const uniqCalls = uniq(calls);
+		expect(uniqCalls).to.deep.equal([
+			// Before render
 			"on",
 			"set",
 			"getFileType",
 			"optionsTransformer",
 			"preparse",
 			"matchers",
+			"parse",
 			"getTraits",
 			"postparse",
 			"errorsTransformer",
+		]);
+		const uCallCount = uniqCalls.length;
+		doc.render({ loop: [1, 2, 3, 4] });
+		expect(uniq(calls).slice(uCallCount)).to.deep.equal([
+			// After render :
 			"getRenderedMap",
 			"render",
+			"nullGetter",
 			"postrender",
 		]);
 	});
@@ -776,17 +784,15 @@ describe("Module call order", () => {
 			preparsedFilePaths = [];
 		const mod = {
 			name: "TestModule",
+			on() {
+				calls.push("on");
+			},
 			set() {
 				calls.push("set");
 				return null;
 			},
-			matchers() {
-				calls.push("matchers");
-				return [];
-			},
-			render() {
-				calls.push("render");
-				return null;
+			getFileType() {
+				calls.push("getFileType");
 			},
 			optionsTransformer(options) {
 				calls.push("optionsTransformer");
@@ -797,20 +803,35 @@ describe("Module call order", () => {
 				calls.push("preparse");
 				return null;
 			},
+			matchers() {
+				calls.push("matchers");
+				return [];
+			},
 			parse(part) {
 				parseValues.push(part);
 				calls.push("parse");
 				return null;
 			},
+			getTraits() {
+				calls.push("getTraits");
+			},
 			postparse() {
 				calls.push("postparse");
 				return null;
 			},
-			getTraits() {
-				calls.push("getTraits");
+			errorsTransformer() {
+				calls.push("errorsTransformer");
 			},
-			getFileType() {
-				calls.push("getFileType");
+			resolve() {
+				calls.push("resolve");
+			},
+			getRenderedMap(obj) {
+				calls.push("getRenderedMap");
+				return obj;
+			},
+			render() {
+				calls.push("render");
+				return null;
 			},
 			nullGetter() {
 				calls.push("nullGetter");
@@ -818,19 +839,6 @@ describe("Module call order", () => {
 			postrender() {
 				calls.push("postrender");
 				return [];
-			},
-			errorsTransformer() {
-				calls.push("errorsTransformer");
-			},
-			getRenderedMap(obj) {
-				calls.push("getRenderedMap");
-				return obj;
-			},
-			on() {
-				calls.push("on");
-			},
-			resolve() {
-				calls.push("resolve");
 			},
 		};
 		return createDocV4("tag-example.docx", {
@@ -919,17 +927,15 @@ describe("Module call order", () => {
 		const calls = [];
 		const mod = {
 			name: "TestModule",
+			on() {
+				calls.push("on");
+			},
 			set() {
 				calls.push("set");
 				return null;
 			},
-			matchers() {
-				calls.push("matchers");
-				return [];
-			},
-			render() {
-				calls.push("render");
-				return null;
+			getFileType() {
+				calls.push("getFileType");
 			},
 			optionsTransformer(options) {
 				calls.push("optionsTransformer");
@@ -939,19 +945,34 @@ describe("Module call order", () => {
 				calls.push("preparse");
 				return null;
 			},
+			matchers() {
+				calls.push("matchers");
+				return [];
+			},
 			parse() {
 				calls.push("parse");
-				return null;
-			},
-			postparse() {
-				calls.push("postparse");
 				return null;
 			},
 			getTraits() {
 				calls.push("getTraits");
 			},
-			getFileType() {
-				calls.push("getFileType");
+			postparse() {
+				calls.push("postparse");
+				return null;
+			},
+			errorsTransformer() {
+				calls.push("errorsTransformer");
+			},
+			resolve() {
+				calls.push("on");
+			},
+			getRenderedMap(obj) {
+				calls.push("getRenderedMap");
+				return obj;
+			},
+			render() {
+				calls.push("render");
+				return null;
 			},
 			nullGetter() {
 				calls.push("nullGetter");
@@ -959,19 +980,6 @@ describe("Module call order", () => {
 			postrender() {
 				calls.push("postrender");
 				return [];
-			},
-			errorsTransformer() {
-				calls.push("errorsTransformer");
-			},
-			getRenderedMap(obj) {
-				calls.push("getRenderedMap");
-				return obj;
-			},
-			on() {
-				calls.push("on");
-			},
-			resolve() {
-				calls.push("on");
 			},
 		};
 

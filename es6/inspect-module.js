@@ -35,17 +35,11 @@ class InspectModule {
 		this.fullInspected = {};
 		this.filePath = null;
 	}
+
 	clone() {
 		return new InspectModule();
 	}
-	optionsTransformer(options, docxtemplater) {
-		this.fileTypeConfig = docxtemplater.fileTypeConfig;
-		this.zip = docxtemplater.zip;
-		this.targets = docxtemplater.targets;
-		this.fileType = docxtemplater.fileType;
-		this.docxtemplater = docxtemplater;
-		return options;
-	}
+
 	set(obj) {
 		if (obj.data) {
 			this.inspect.tags = obj.data;
@@ -78,6 +72,20 @@ class InspectModule {
 			this.fullInspected[this.filePath] = this.inspect;
 		}
 	}
+
+	getFileType() {
+		return this.fileType;
+	}
+
+	optionsTransformer(options, docxtemplater) {
+		this.fileTypeConfig = docxtemplater.fileTypeConfig;
+		this.zip = docxtemplater.zip;
+		this.targets = docxtemplater.targets;
+		this.fileType = docxtemplater.fileType;
+		this.docxtemplater = docxtemplater;
+		return options;
+	}
+
 	nullGetter(part, scopeManager, xt) {
 		const inspected = this.fullInspected[xt.filePath];
 		inspected.nullValues ||= { summary: [], detail: [] };
@@ -129,6 +137,7 @@ class InspectModule {
 		const inspected = this.getInspected(file);
 		return getTags(inspected);
 	}
+
 	getAllTags() {
 		const result = {};
 		for (const file in this.fullInspected) {
@@ -136,10 +145,12 @@ class InspectModule {
 		}
 		return result;
 	}
+
 	getStructuredTags(file) {
 		file ||= this.fileTypeConfig.textPath(this.docxtemplater);
 		return getStructuredTags(this.getInspected(file));
 	}
+
 	getAllStructuredTags() {
 		const result = [];
 		for (const file in this.fullInspected) {
@@ -147,9 +158,7 @@ class InspectModule {
 		}
 		return result;
 	}
-	getFileType() {
-		return this.fileType;
-	}
+
 	getTemplatedFiles() {
 		return this.docxtemplater.templatedFiles;
 	}

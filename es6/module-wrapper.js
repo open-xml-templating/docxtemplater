@@ -6,22 +6,22 @@ function identity(i) {
 }
 module.exports = function (module) {
 	const defaults = {
+		on: emptyFun,
 		set: emptyFun,
+		getFileType: emptyFun,
+		optionsTransformer: identity,
+		preparse: identity,
 		matchers: () => [],
 		parse: emptyFun,
-		render: emptyFun,
 		getTraits: emptyFun,
-		getFileType: emptyFun,
-		nullGetter: emptyFun,
-		optionsTransformer: identity,
-		postrender: identity,
-		errorsTransformer: identity,
-		getRenderedMap: identity,
-		preparse: identity,
 		postparse: identity,
-		on: emptyFun,
-		resolve: emptyFun,
+		errorsTransformer: identity,
 		preResolve: emptyFun,
+		resolve: emptyFun,
+		getRenderedMap: identity,
+		render: emptyFun,
+		nullGetter: emptyFun,
+		postrender: identity,
 	};
 	if (Object.keys(defaults).every((key) => !module[key])) {
 		const err = new XTInternalError(

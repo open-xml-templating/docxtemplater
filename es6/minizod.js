@@ -29,6 +29,7 @@ class MiniZod {
 			return { success: true, value };
 		});
 	}
+
 	static date() {
 		return MiniZod.createSchema((value) => {
 			if (!(value instanceof Date)) {

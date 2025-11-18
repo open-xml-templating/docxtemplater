@@ -38,6 +38,7 @@ describe("V3 API", () => {
 			}
 		}
 	});
+
 	it("should work with setOptions", function () {
 		this.deprecations = [
 			"Deprecated docxtemplater constructor with no arguments, view upgrade guide : https://docxtemplater.com/docs/api/#upgrade-guide",

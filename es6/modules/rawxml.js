@@ -28,13 +28,16 @@ class RawXmlModule {
 		this.name = "RawXmlModule";
 		this.prefix = "@";
 	}
+
 	optionsTransformer(options, docxtemplater) {
 		this.fileTypeConfig = docxtemplater.fileTypeConfig;
 		return options;
 	}
+
 	matchers() {
 		return [[this.prefix, moduleName]];
 	}
+
 	postparse(postparsed) {
 		return traits.expandToOne(postparsed, {
 			moduleName,
@@ -48,6 +51,7 @@ class RawXmlModule {
 			},
 		});
 	}
+
 	render(part, options) {
 		if (part.module !== moduleName) {
 			return null;

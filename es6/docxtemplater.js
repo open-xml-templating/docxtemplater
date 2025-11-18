@@ -272,6 +272,7 @@ const Docxtemplater = class Docxtemplater {
 		}
 		this.hideDeprecations = false;
 	}
+
 	verifyApiVersion(neededVersion) {
 		neededVersion = neededVersion.split(".").map((i) => parseInt(i, 10));
 		if (neededVersion.length !== 3) {
@@ -321,16 +322,19 @@ const Docxtemplater = class Docxtemplater {
 		}
 		return true;
 	}
+
 	setModules(obj) {
 		for (const module of this.modules) {
 			module.set(obj);
 		}
 	}
+
 	sendEvent(eventName) {
 		for (const module of this.modules) {
 			module.on(eventName);
 		}
 	}
+
 	attachModule(module) {
 		if (this.v4Constructor) {
 			throw new XTInternalError(
@@ -368,6 +372,7 @@ const Docxtemplater = class Docxtemplater {
 		}
 		return this;
 	}
+
 	findModule(name) {
 		for (const module of this.modules) {
 			if (module.name === name) {
@@ -375,6 +380,7 @@ const Docxtemplater = class Docxtemplater {
 			}
 		}
 	}
+
 	setOptions(options) {
 		if (this.v4Constructor) {
 			throw new Error(
@@ -404,6 +410,7 @@ const Docxtemplater = class Docxtemplater {
 		this.delimiters.end &&= utf8ToWord(this.delimiters.end);
 		return this;
 	}
+
 	loadZip(zip) {
 		if (this.v4Constructor) {
 			throw new Error(
@@ -445,14 +452,17 @@ const Docxtemplater = class Docxtemplater {
 
 		return this;
 	}
+
 	precompileFile(fileName) {
 		const currentFile = this.createTemplateClass(fileName);
 		currentFile.preparse();
 		this.compiled[fileName] = currentFile;
 	}
+
 	compileFile(fileName) {
 		this.compiled[fileName].parse();
 	}
+
 	getScopeManager(to, currentFile, tags) {
 		this.scopeManagers[to] ||= createScope({
 			tags,
@@ -461,6 +471,7 @@ const Docxtemplater = class Docxtemplater {
 		});
 		return this.scopeManagers[to];
 	}
+
 	resolveData(data) {
 		deprecatedMethod(this, "resolveData");
 		const errors = [];
@@ -510,6 +521,7 @@ const Docxtemplater = class Docxtemplater {
 			});
 		});
 	}
+
 	compile() {
 		deprecatedMethod(this, "compile");
 		this.updateFileTypeConfig();
@@ -563,6 +575,7 @@ const Docxtemplater = class Docxtemplater {
 		verifyErrors(this);
 		return this;
 	}
+
 	updateFileTypeConfig() {
 		this.relsTypes = getRelsTypes(this.zip);
 		const { overrides, defaults, contentTypes, contentTypeXml } =
@@ -633,6 +646,7 @@ const Docxtemplater = class Docxtemplater {
 		}
 		return this;
 	}
+
 	renderAsync(data) {
 		this.hideDeprecations = true;
 		const promise = this.resolveData(data);
@@ -640,6 +654,7 @@ const Docxtemplater = class Docxtemplater {
 		this.zip.xtRendered = true;
 		return promise.then(() => this.render());
 	}
+
 	render(data) {
 		this.zip.xtRendered = true;
 		if (this.rendered) {
@@ -699,6 +714,7 @@ const Docxtemplater = class Docxtemplater {
 		this.sendEvent("synced-zip");
 		return this;
 	}
+
 	syncZip() {
 		for (const fileName in this.xmlDocuments) {
 			this.zip.remove(fileName);
@@ -706,18 +722,22 @@ const Docxtemplater = class Docxtemplater {
 			this.zip.file(fileName, content, { createFolders: true });
 		}
 	}
+
 	setData(data) {
 		deprecatedMethod(this, "setData");
 		this.data = data;
 		return this;
 	}
+
 	getZip() {
 		return this.zip;
 	}
+
 	createTemplateClass(path) {
 		const content = this.zip.files[path].asText();
 		return this.createTemplateClassFromContent(content, path);
 	}
+
 	createTemplateClassFromContent(content, filePath) {
 		const xmltOptions = {
 			filePath,
@@ -737,11 +757,13 @@ const Docxtemplater = class Docxtemplater {
 
 		return new Docxtemplater.XmlTemplater(content, xmltOptions);
 	}
+
 	getFullText(path) {
 		return this.createTemplateClass(
 			path || this.fileTypeConfig.textPath(this)
 		).getFullText();
 	}
+
 	getTemplatedFiles() {
 		this.templatedFiles = this.fileTypeConfig.getTemplatedFiles(this.zip);
 		pushArray(this.templatedFiles, this.targets);
@@ -761,6 +783,7 @@ const Docxtemplater = class Docxtemplater {
 		this.templatedFiles = uniq(this.templatedFiles);
 		return this.templatedFiles;
 	}
+
 	getTags() {
 		const result = { headers: [], footers: [] };
 		for (const key in this.compiled) {
@@ -805,6 +828,7 @@ const Docxtemplater = class Docxtemplater {
 			type: "nodebuffer",
 		});
 	}
+
 	/* Export functions, present since 3.62.0 */
 	toBlob(options) {
 		return this.zip.generate({
@@ -814,6 +838,7 @@ const Docxtemplater = class Docxtemplater {
 			type: "blob",
 		});
 	}
+
 	/* Export functions, present since 3.62.0 */
 	toBase64(options) {
 		return this.zip.generate({
@@ -823,6 +848,7 @@ const Docxtemplater = class Docxtemplater {
 			type: "base64",
 		});
 	}
+
 	/* Export functions, present since 3.62.0 */
 	toUint8Array(options) {
 		return this.zip.generate({
@@ -832,6 +858,7 @@ const Docxtemplater = class Docxtemplater {
 			type: "uint8array",
 		});
 	}
+
 	/* Export functions, present since 3.62.0 */
 	toArrayBuffer(options) {
 		return this.zip.generate({

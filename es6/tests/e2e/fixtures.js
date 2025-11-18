@@ -103,9 +103,7 @@ const fixtures = [
 	{
 		it: "should handle {user} with tag",
 		contentText: "Hi {user}",
-		scope: {
-			user: "Foo",
-		},
+		scope: { user: "Foo" },
 		resultText: "Hi Foo",
 		xmllexed: [
 			{
@@ -196,8 +194,8 @@ const fixtures = [
 		},
 	},
 	{
-		it: "should not add a new paragraph after a table if there is a bookmarkEnd after the table",
 		...noInternals,
+		it: "should not add a new paragraph after a table if there is a bookmarkEnd after the table",
 		content: `
     <w:tbl>
       <w:tr>
@@ -224,9 +222,7 @@ const fixtures = [
       </w:r>
     </w:p>
 		`,
-		scope: {
-			users: [{ name: "John" }],
-		},
+		scope: { users: [{ name: "John" }] },
 		result: `
     <w:tbl>
       <w:tr>
@@ -255,10 +251,9 @@ const fixtures = [
 		`,
 	},
 	{
-		it: "should handle non breaking space in tag",
 		...noInternals,
+		it: "should handle non breaking space in tag",
 		contentText: `{:foo${nbsp}${nbsp}bar${nbsp}bar} {:zing${nbsp}${nbsp}${nbsp}bang}`,
-		resultText: "Hey Ho",
 		options: {
 			modules: () => [
 				{
@@ -299,6 +294,7 @@ const fixtures = [
 				};
 			},
 		},
+		resultText: "Hey Ho",
 	},
 	{
 		it: "should be possible to implement a parser that loads nested data using {user.name}",
@@ -331,20 +327,16 @@ const fixtures = [
 		},
 	},
 	{
-		it: "should not parse as loop a tag that starts with a space : { #foo}, the same for raw tags : { @raw}",
 		...noInternals,
+		it: "should not parse as loop a tag that starts with a space : { #foo}, the same for raw tags : { @raw}",
 		contentText: "{ #foo} { @xx}",
+		scope: { " #foo": "val", " @xx": "val" },
 		resultText: "val val",
-		scope: {
-			" #foo": "val",
-			" @xx": "val",
-		},
 	},
 	{
-		it: "should not throw error if nullGetter returns null",
 		...noInternals,
+		it: "should not throw error if nullGetter returns null",
 		contentText: "{#foo}{name}{/foo}",
-		resultText: "",
 		options: {
 			nullGetter: (part) => {
 				if (part.module === "loop") {
@@ -352,15 +344,12 @@ const fixtures = [
 				}
 			},
 		},
-		data: {
-			test2: "Value2",
-		},
+		resultText: "",
 	},
 	{
-		it: "should be possible to add nullGetter to module (and use the first nullGetter result)",
 		...noInternals,
+		it: "should be possible to add nullGetter to module (and use the first nullGetter result)",
 		contentText: "{foo}",
-		resultText: "foo",
 		options: {
 			modules: () => [
 				{
@@ -377,6 +366,7 @@ const fixtures = [
 				},
 			],
 		},
+		resultText: "foo",
 	},
 
 	{
@@ -441,10 +431,7 @@ const fixtures = [
 	{
 		it: "should xmlparse strange tags",
 		content: "<w:t>{name} {</w:t>FOO<w:t>age</w:t>BAR<w:t>}</w:t>",
-		scope: {
-			name: "Foo",
-			age: 12,
-		},
+		scope: { name: "Foo", age: 12 },
 		result: '<w:t xml:space="preserve">Foo 12</w:t>FOO<w:t></w:t>BAR<w:t></w:t>',
 		xmllexed: [
 			startText,
@@ -492,31 +479,25 @@ const fixtures = [
 		postparsed: null,
 	},
 	{
+		...noInternals,
 		it: "should work with delimiters set to start:null, end:null",
 		contentText: "Hello {name}",
-		scope: {
-			name: "John Doe",
-		},
-		resultText: "Hello {name}",
 		delimiters: {
 			start: null,
 			end: null,
 		},
-		lexed: null,
-		parsed: null,
-		postparsed: null,
+		scope: { name: "John Doe" },
+		resultText: "Hello {name}",
 	},
 	{
 		it: "should work with custom delimiters",
 		contentText: "Hello [[[name]]",
-		scope: {
-			name: "John Doe",
-		},
-		resultText: "Hello John Doe",
 		delimiters: {
 			start: "[[[",
 			end: "]]",
 		},
+		scope: { name: "John Doe" },
+		resultText: "Hello John Doe",
 		lexed: [
 			startText,
 			content("Hello "),
@@ -536,14 +517,12 @@ const fixtures = [
 	{
 		it: "should work with custom delimiters splitted",
 		content: '<w:t>Hello {name}</w:t><w:t foo="bar">}, how is it ?</w:t>',
-		scope: {
-			name: "John Doe",
-		},
-		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t foo="bar">, how is it ?</w:t>',
 		delimiters: {
 			start: "{",
 			end: "}}",
 		},
+		scope: { name: "John Doe" },
+		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t foo="bar">, how is it ?</w:t>',
 		lexed: [
 			startText,
 			content("Hello "),
@@ -582,14 +561,12 @@ const fixtures = [
 		it: "should work with custom delimiters splitted over > 2 tags",
 		content:
 			"<w:t>Hello {name}</w:t><w:t>}</w:t>TAG<w:t>}</w:t><w:t>}}foobar</w:t>",
-		scope: {
-			name: "John Doe",
-		},
-		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t></w:t>TAG<w:t></w:t><w:t>foobar</w:t>',
 		delimiters: {
 			start: "{",
 			end: "}}}}}",
 		},
+		scope: { name: "John Doe" },
+		result: '<w:t xml:space="preserve">Hello John Doe</w:t><w:t></w:t>TAG<w:t></w:t><w:t>foobar</w:t>',
 		lexed: [
 			startText,
 			content("Hello "),
@@ -623,12 +600,10 @@ const fixtures = [
 		postparsed: null,
 	},
 	{
+		...noInternals,
 		it: "should work when having equal sign after closing tag",
 		content: "<w:r><w:t>{foo}====</w:t></w:r>",
-		scope: {
-			foo: "FOO",
-		},
-		...noInternals,
+		scope: { foo: "FOO" },
 		result: '<w:r><w:t xml:space="preserve">FOO====</w:t></w:r>',
 	},
 	{
@@ -660,9 +635,9 @@ const fixtures = [
 		errorType: Errors.XTInternalError,
 	},
 	{
+		...noInternals,
 		it: "should show multierror with loops",
 		contentText: "{#a}{b}{/a}",
-		...noInternals,
 		options: {
 			parser() {
 				return {
@@ -689,9 +664,9 @@ const fixtures = [
 		errorType: Errors.XTTemplateError,
 	},
 	{
+		...noInternals,
 		it: "should show multierror with loops",
 		contentText: "{#a}{b}{/a}",
-		...noInternals,
 		options: {
 			parser(tag) {
 				return {
@@ -705,9 +680,7 @@ const fixtures = [
 				};
 			},
 		},
-		scope: {
-			a: [1],
-		},
+		scope: { a: [1] },
 		error: wrapMultiError({
 			name: "ScopeParserError",
 			message: "Scope parser execution failed",
@@ -892,23 +865,21 @@ const fixtures = [
 		],
 	},
 	{
-		it: "should work with paragraph loops and selfclosing paragraphs",
 		...noInternals,
+		it: "should work with paragraph loops and selfclosing paragraphs",
 		content:
 			"<w:p><w:t>{#foo}</w:t></w:p><w:p/><w:xxx></w:xxx><w:p><w:t>{/}</w:t></w:p>",
 		options: {
 			paragraphLoop: true,
 		},
-		scope: {
-			foo: true,
-		},
+		scope: { foo: true },
 		result: "<w:p/><w:xxx></w:xxx>",
 	},
 	{
+		...noInternals,
 		it: "should not fail with nested loops if using paragraphLoop",
 		content:
 			"<w:p><w:t>{#users} {#pets}</w:t></w:p><w:p><w:t>Pet {.}</w:t></w:p><w:p><w:t>{/pets}{/users}</w:t></w:p>",
-		...noInternals,
 		options: {
 			paragraphLoop: true,
 		},
@@ -928,9 +899,7 @@ const fixtures = [
 		it: "should work with spacing loops",
 		content:
 			"<w:t>{#condition</w:t><w:t>} hello{/</w:t><w:t>condition}</w:t>",
-		scope: {
-			condition: true,
-		},
+		scope: { condition: true },
 		result: '<w:t/><w:t xml:space="preserve"> hello</w:t><w:t></w:t>',
 		lexed: [
 			startText,
@@ -974,39 +943,31 @@ const fixtures = [
 		postparsed: null,
 	},
 	{
+		...noInternals,
 		it: "should work with spacing loops 2",
-		...noInternals,
 		contentText: "{#condition}{text}{/condition}",
+		scope: { condition: [{ text: " hello " }] },
 		resultText: " hello ",
-		scope: {
-			condition: [{ text: " hello " }],
-		},
 	},
 	{
+		...noInternals,
 		it: "should work with empty condition",
-		...noInternals,
 		contentText: "{#a}A{/a}{^b}{/b}",
+		scope: { a: true },
 		resultText: "A",
-		scope: {
-			a: true,
-		},
 	},
 	{
-		it: "should work with spacing loops 3",
 		...noInternals,
+		it: "should work with spacing loops 3",
 		content: "<w:t>{#condition}</w:t><w:t>{/condition} foo</w:t>",
-		scope: {
-			condition: false,
-		},
+		scope: { condition: false },
 		result: '<w:t xml:space="preserve"> foo</w:t>',
 	},
 	{
-		it: "should work with spacing loops 4",
 		...noInternals,
+		it: "should work with spacing loops 4",
 		contentText: "{#condition}foo{/condition}",
-		scope: {
-			condition: false,
-		},
+		scope: { condition: false },
 		result: "<w:t/>",
 	},
 	{
@@ -1080,8 +1041,8 @@ const fixtures = [
 		],
 	},
 	{
-		it: "should drop table if it has no tc",
 		...noInternals,
+		it: "should drop table if it has no tc",
 		content:
 			"<w:tbl><w:tr><w:tc><w:p><w:t>{-w:tr columns} Hello {-w:p users}{name}, {/users}</w:t><w:t>{/columns}</w:t></w:p></w:tc></w:tr></w:tbl>Other",
 		scope: {},
@@ -1180,9 +1141,7 @@ const fixtures = [
 	{
 		it: "should handle selfclose tag",
 		content: "<w:t />",
-		scope: {
-			user: "Foo",
-		},
+		scope: { user: "Foo" },
 		result: "<w:t />",
 		lexed: [
 			{
@@ -1215,9 +1174,7 @@ const fixtures = [
 	{
 		it: "should handle {user} with tag with selfclosing",
 		content: "<w:t /><w:t>Hi {user}</w:t>",
-		scope: {
-			user: "Foo",
-		},
+		scope: { user: "Foo" },
 		result: '<w:t /><w:t xml:space="preserve">Hi Foo</w:t>',
 		lexed: [
 			{
@@ -1264,10 +1221,7 @@ const fixtures = [
 	{
 		it: "should be possible to change the delimiters",
 		contentText: "Hi {=[[ ]]=}[[user]][[={ }=]] and {user2}",
-		scope: {
-			user: "John",
-			user2: "Jane",
-		},
+		scope: { user: "John", user2: "Jane" },
 		resultText: "Hi John and Jane",
 		lexed: [
 			startText,
@@ -1349,10 +1303,7 @@ const fixtures = [
 	{
 		it: "should be possible to change the delimiters with complex example",
 		contentText: "Hi {={{[ ]}}=}{{[user]}}{{[={{ ]=]}} and {{user2]",
-		scope: {
-			user: "John",
-			user2: "Jane",
-		},
+		scope: { user: "John", user2: "Jane" },
 		resultText: "Hi John and Jane",
 		lexed: [
 			startText,
@@ -1384,13 +1335,10 @@ const fixtures = [
 		],
 	},
 	{
-		it: "should resolve the data correctly",
 		...noInternals,
+		it: "should resolve the data correctly",
 		contentText: "{test}{#test}{label}{/test}{test}",
-		scope: {
-			label: "T1",
-			test: true,
-		},
+		scope: { label: "T1", test: true },
 		resolved: [
 			{
 				tag: "test",
@@ -1419,12 +1367,10 @@ const fixtures = [
 		resultText: "trueT1true",
 	},
 	{
-		it: "should resolve 2 the data correctly",
 		...noInternals,
+		it: "should resolve 2 the data correctly",
 		contentText: "{^a}{label}{/a}",
-		scope: {
-			a: true,
-		},
+		scope: { a: true },
 		resolved: [
 			{
 				tag: "a",
@@ -1435,11 +1381,10 @@ const fixtures = [
 		result: "<w:t/>",
 	},
 	{
-		it: "should resolve 3 the data correctly",
 		...noInternals,
+		it: "should resolve 3 the data correctly",
 		contentText:
 			"{#frames}{#true}{label}{#false}{label}{/false}{/true}{#false}{label}{/false}{/frames}",
-		resultText: "T1",
 		scope: {
 			frames: [
 				{
@@ -1481,6 +1426,7 @@ const fixtures = [
 				],
 			},
 		],
+		resultText: "T1",
 	},
 	{
 		it: "should resolve truthy data correctly",
@@ -1499,10 +1445,10 @@ const fixtures = [
 		},
 	},
 	{
+		...noInternals,
 		it: "should resolve truthy multi data correctly",
 		contentText:
 			"{#loop}L{#cond2}{label}{/cond2}{#cond3}{label}{/cond3}{/loop}",
-		...noInternals,
 		scope: {
 			label: "outer",
 			loop: [
@@ -1527,9 +1473,9 @@ const fixtures = [
 		resultText: "LinnerLinnerLinnerLouterouter",
 	},
 	{
+		...noInternals,
 		it: "should resolve async loop",
 		contentText: "{#loop}{#cond1}{label}{/}{#cond2}{label}{/}{/loop}",
-		...noInternals,
 		scope: {
 			label: "outer",
 			loop: [
@@ -1546,64 +1492,55 @@ const fixtures = [
 		resultText: "innerouterouter",
 	},
 	{
+		...noInternals,
 		it: "should work well with inversed loop simple",
 		contentText: "{^b}{label}{/}",
-		...noInternals,
-		scope: {
-			b: false,
-			label: "hi",
-		},
+		scope: { b: false, label: "hi" },
 		resultText: "hi",
 	},
 	{
+		...noInternals,
 		it: "should work well with nested inversed loop",
 		contentText: "{#a}{^b}{label}{/}{/}",
-		...noInternals,
-		scope: {
-			a: [{ b: false, label: "hi" }],
-		},
+		scope: { a: [{ b: false, label: "hi" }] },
 		resultText: "hi",
 	},
 	{
+		...noInternals,
 		it: "should work well with deeply nested inversed loop nested",
 		contentText: "{#a}{^b}{^c}{label}{/}{/}{/}",
-		...noInternals,
-		scope: {
-			a: [{ b: false, label: "hi" }],
-		},
+		scope: { a: [{ b: false, label: "hi" }] },
 		resultText: "hi",
 	},
 	{
+		...noInternals,
 		it: "should work well with true value for condition",
 		contentText:
 			"{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
-		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
-		scope: {
-			cond: true,
-			product: {
-				price: 2,
-			},
-		},
+		scope: { cond: true, product: { price: 2 } },
 		resultText: "low",
 	},
 	{
-		it: "should handle {this+this+this} tag",
-		scope: "Foo",
 		...noInternals,
+		it: "should handle {this+this+this} tag",
 		contentText: "Hi {this+this+this}",
 		options: {
 			parser: expressionParser,
 		},
+		scope: "Foo",
 		resultText: "Hi FooFooFoo",
 	},
 	{
-		it: "should handle {((.+.+.)*.*0.5)|sum:.} tag",
-		scope: 2,
 		...noInternals,
+		it: "should handle {((.+.+.)*.*0.5)|sum:.} tag",
 		contentText: "Hi {((((.+.+.)*.*0.5)|sum:.)-.)/.}",
+		options: {
+			parser: expressionParser,
+		},
+		scope: 2,
 		/*
 		 * = (((2 + 2 + 2)*2 * 0.5 | sum:2)-2)/2
 		 * = (((6)*2 * 0.5 | sum:2)-2)/2
@@ -1612,29 +1549,21 @@ const fixtures = [
 		 * = (6)/2
 		 * = 3
 		 */
-		options: {
-			parser: expressionParser,
-		},
 		resultText: "Hi 3",
 	},
 	{
-		it: "should handle {.['user-name']} tag",
-		scope: {
-			"user-name": "John",
-		},
 		...noInternals,
+		it: "should handle {.['user-name']} tag",
 		contentText: "Hi {.['user-name']}",
 		options: {
 			parser: expressionParser,
 		},
+		scope: { "user-name": "John" },
 		resultText: "Hi John",
 	},
 	{
-		it: "should handle {#loop}{. | myFilter}{/loop} tag",
-		scope: {
-			loop: [3],
-		},
 		...noInternals,
+		it: "should handle {#loop}{. | myFilter}{/loop} tag",
 		contentText: "Hi {#loop}{. | myFilter}{/loop}",
 		options: {
 			parser: expressionParser.configure({
@@ -1647,14 +1576,12 @@ const fixtures = [
 				},
 			}),
 		},
+		scope: { loop: [3] },
 		resultText: "Hi 6",
 	},
 	{
-		it: "should be possible to customize using postEvaluate for property access",
-		scope: {
-			name: false,
-		},
 		...noInternals,
+		it: "should be possible to customize using postEvaluate for property access",
 		contentText: "Hi property access:{name}",
 		options: {
 			parser: expressionParser.configure({
@@ -1671,14 +1598,12 @@ const fixtures = [
 				},
 			}),
 		},
+		scope: { name: false },
 		resultText: "Hi property access:",
 	},
 	{
-		it: "should be possible to customize using postEvaluate for addition",
-		scope: {
-			name: false,
-		},
 		...noInternals,
+		it: "should be possible to customize using postEvaluate for addition",
 		contentText: "Hi addition:{name + name}",
 		options: {
 			parser: expressionParser.configure({
@@ -1691,25 +1616,13 @@ const fixtures = [
 				},
 			}),
 		},
+		scope: { name: false },
 		resultText: "Hi addition:0",
 	},
 	{
-		it: "should be possible to block access of parent scope with expressionParser",
-		scope: {
-			name: "John",
-			companies: [
-				{
-					revenue: 30,
-					name: "Acme",
-				},
-				{
-					revenue: 30,
-				},
-			],
-		},
 		...noInternals,
+		it: "should be possible to block access of parent scope with expressionParser",
 		contentText: "{name} {#companies}{name}-{revenue}{/}",
-		resultText: "John Acme-30undefined-30",
 		options: {
 			// https://docxtemplater.com/docs/deep-dive-into-the-parser-option/#parser-example-to-avoid-using-the-parent-scope-if-a-value-is-null-on-the-main-scope
 			parser: (tag) => {
@@ -1735,13 +1648,23 @@ const fixtures = [
 				};
 			},
 		},
+		scope: {
+			name: "John",
+			companies: [
+				{
+					revenue: 30,
+					name: "Acme",
+				},
+				{
+					revenue: 30,
+				},
+			],
+		},
+		resultText: "John Acme-30undefined-30",
 	},
 	{
-		it: "should be possible to customize using postEvaluate for addition for ie11",
-		scope: {
-			name: false,
-		},
 		...noInternals,
+		it: "should be possible to customize using postEvaluate for addition for ie11",
 		contentText: "Hi addition:{name + name}",
 		options: {
 			parser: expressionParserIE11.configure({
@@ -1754,157 +1677,115 @@ const fixtures = [
 				},
 			}),
 		},
+		scope: { name: false },
 		resultText: "Hi addition:0",
 	},
 	{
-		it: 'should handle {this["a b"]} tag',
-		scope: {
-			"a b": "John",
-		},
 		...noInternals,
+		it: 'should handle {this["a b"]} tag',
 		contentText: 'Hi {this["a b"]}',
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
+		scope: { "a b": "John" },
 		resultText: "Hi John",
 	},
 	{
-		it: 'should handle {this["length"]} tag',
-		scope: "John",
 		...noInternals,
+		it: 'should handle {this["length"]} tag',
 		contentText: 'Hi { this["length"]}',
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
+		scope: "John",
 		resultText: "Hi 4",
 	},
 	{
+		...noInternals,
 		it: 'should handle {this["split"]} tag',
-		scope: "John",
-		...noInternals,
 		contentText: 'Hi {this["split"]}',
-		options: {
-			parser: expressionParser,
-		},
-		resultText: "Hi undefined",
-	},
-	{
-		it: "should handle {this.split} tag",
+		options: { parser: expressionParser },
 		scope: "John",
-		...noInternals,
-		contentText: "Hi {this.split}",
-		options: {
-			parser: expressionParser,
-		},
 		resultText: "Hi undefined",
 	},
 	{
-		it: "should handle {(this+this+this)*this} tag",
-		scope: 1,
 		...noInternals,
+		it: "should handle {this.split} tag",
+		contentText: "Hi {this.split}",
+		options: { parser: expressionParser },
+		scope: "John",
+		resultText: "Hi undefined",
+	},
+	{
+		...noInternals,
+		it: "should handle {(this+this+this)*this} tag",
 		contentText: "Hi {(this+this+this)*(this+this)}",
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
+		scope: 1,
 		resultText: "Hi 6",
 	},
 	{
-		it: "should handle {(this+this+this)*(this+this)}, this=0 tag",
-		scope: 0,
 		...noInternals,
+		it: "should handle {(this+this+this)*(this+this)}, this=0 tag",
 		contentText: "Hi {(   this + this + this)*(this+this)}",
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
+		scope: 0,
 		resultText: "Hi 0",
 	},
 	{
+		...noInternals,
 		it: "should handle {#products}{# .  }-{ . }-{/}{/}",
+		/*
+		 * The space inside {# . } is important.
+		 * It tests a regression that was fixed in version 3.37.12
+		 */
+		contentText: "Hi {#products}{# .  }-{ . }-{/}{/}",
+		options: { parser: expressionParser },
 		scope: {
 			products: [
 				[1, 2, 3, 4],
 				[4, 5, 6, 7],
 			],
 		},
-		...noInternals,
-		/*
-		 * The space inside {# . } is important.
-		 * It tests a regression that was fixed in version 3.37.12
-		 */
-		contentText: "Hi {#products}{# .  }-{ . }-{/}{/}",
-		options: {
-			parser: expressionParser,
-		},
 		resultText: "Hi -1--2--3--4--4--5--6--7-",
 	},
 	{
+		...noInternals,
 		it: "should work well with int value for condition",
 		contentText:
 			"{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
-		scope: {
-			cond: 10,
-			product: {
-				price: 2,
-			},
-		},
+		options: { parser: expressionParser },
+		scope: { cond: 10, product: { price: 2 } },
 		resultText: "low",
 	},
 	{
+		...noInternals,
 		it: "should work well with empty string as result",
 		contentText: "{foo}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
-		scope: {
-			foo: "",
-		},
+		options: { parser: expressionParser },
+		scope: { foo: "" },
 		result: "<w:t/>",
 	},
 	{
+		...noInternals,
 		it: "should work well with str value for condition",
 		contentText:
 			"{#cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
-		scope: {
-			cond: "cond",
-			product: {
-				price: 2,
-			},
-		},
+		options: { parser: expressionParser },
+		scope: { cond: "cond", product: { price: 2 } },
 		resultText: "low",
 	},
 	{
+		...noInternals,
 		it: "should work well with false value for condition",
 		contentText:
 			"{^cond}{#product.price &gt; 10}high{/}{#product.price &lt;= 10}low{/}{/cond}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
-		scope: {
-			cond: false,
-			product: {
-				price: 2,
-			},
-		},
+		options: { parser: expressionParser },
+		scope: { cond: false, product: { price: 2 } },
 		resultText: "low",
 	},
 	{
+		...noInternals,
 		it: "should work well with multi level expression parser",
 		// This tag was designed to match /-([^\s]+)\s(.+)$/ which is the prefix of the dash loop
 		contentText: "{#users}{name} {date-age+ offset} {/}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: {
 			date: 2019,
 			offset: 1,
@@ -1917,22 +1798,18 @@ const fixtures = [
 		resultText: "John 1976 Mary 1998 Walt 2079 ",
 	},
 	{
+		...noInternals,
 		it: "should work well with $index expression parser",
 		contentText: "{#list}{#$index==0}FIRST {/}{text} {/list}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: { list: [{ text: "Hello" }, { text: "Other item" }] },
 		resultText: "FIRST Hello Other item ",
 	},
 	{
+		...noInternals,
 		it: "should work well with $index and array lookup wiht expression parser",
 		contentText: "{#products}{productNames[$index]}-{/}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: {
 			products: [1, 2, 3],
 			productNames: ["PRO", "LIGHT", "ULTIMATE"],
@@ -1940,13 +1817,11 @@ const fixtures = [
 		resultText: "PRO-LIGHT-ULTIMATE-",
 	},
 	{
+		...noInternals,
 		it: "should work well with $index inside condition expression parser",
 		contentText:
 			"{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: {
 			list: [
 				{ important: true, text: "Hello" },
@@ -1957,10 +1832,10 @@ const fixtures = [
 		resultText: "!!1Hello?2Other item!!3Bye",
 	},
 	{
+		...noInternals,
 		it: "should work well with $index inside condition expression parser",
 		contentText:
 			"{#list}{#important}!!{$index+1}{text}{/}{^important}?{$index+1}{text}{/}{/}",
-		...noInternals,
 		options: {
 			parser: expressionParserIE11,
 		},
@@ -1974,40 +1849,32 @@ const fixtures = [
 		resultText: "!!1Hello?2Other item!!3Bye",
 	},
 	{
-		it: "should work well with nested conditions inside table",
 		...noInternals,
+		it: "should work well with nested conditions inside table",
 		content:
 			"<w:tbl><w:tr><w:tc><w:p><w:r><w:t>{#cond}{#cond2}{name}</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>{/}{/}</w:t></w:r></w:p></w:tc></w:tr></w:tbl>",
 		options: {
 			paragraphLoop: true,
 		},
-		scope: {
-			cond: true,
-			cond2: false,
-		},
+		scope: { cond: true, cond2: false },
 		result: "",
 	},
 	{
-		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
 		...noInternals,
+		it: "should work well with -w:tr conditions inside table inside paragraphLoop condition",
 		content:
 			"<w:p><w:r><w:t>{#cond}</w:t></w:r></w:p><w:tbl><w:tr><w:tc><w:p><w:r><w:t>{-w:tc cond}{val}{/}</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p><w:r><w:t>{/}</w:t></w:r></w:p>",
 		options: {
 			paragraphLoop: true,
 		},
-		scope: {
-			cond: true,
-			val: "yep",
-		},
+		scope: { cond: true, val: "yep" },
 		result: '<w:tbl><w:tr><w:tc><w:p><w:r><w:t xml:space="preserve">yep</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
 	},
 	{
+		...noInternals,
 		it: "should work well with nested expressions parser",
 		contentText: "{v}{#c1}{v}{#c2}{v}{#c3}{v}{/}{/}{/}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: {
 			v: "0",
 			c1: {
@@ -2023,58 +1890,48 @@ const fixtures = [
 		resultText: "0123",
 	},
 	{
+		...noInternals,
 		it: "should work with this with expressions parser",
 		contentText: "{#hello}{this}{/hello}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: { hello: ["world"] },
 		resultText: "world",
 	},
 	{
+		...noInternals,
 		it: "should be possible to close loops with {/}",
 		contentText: "{#products}Product {name}{/}",
-		...noInternals,
 		scope: { products: [{ name: "Bread" }] },
 		resultText: "Product Bread",
 	},
 	{
+		...noInternals,
 		it: "should get parent prop if child is null",
 		contentText: "{#c}{label}{/c}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: { c: { label: null }, label: "hello" },
 		resultText: "hello",
 	},
 	{
+		...noInternals,
 		it: "should work when using double nested arrays",
 		content: "<w:t>{#a}</w:t><w:t>{this}</w:t><w:t>{/}</w:t>",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: { a: [["first-part", "other-part"]] },
 		result: '<w:t/><w:t xml:space="preserve">first-part,other-part</w:t><w:t/>',
 	},
 	{
+		...noInternals,
 		it: "should work when using accents or numbers in variable names, ...",
 		contentText: "{êtreîöò12áeêëẽ}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		resultText: "undefined",
 	},
 	{
+		...noInternals,
 		it: "should fail when using € sign",
 		contentText: "{hello€}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		error: wrapMultiError({
 			name: "ScopeParserError",
 			message: "Scope parser compilation failed",
@@ -2095,38 +1952,32 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		resultText: "undefined",
 	},
 	{
+		...noInternals,
 		it: "should disallow access to internal property",
 		contentText: '{"".split.toString()}',
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		resultText: "undefined",
 	},
 	{
+		...noInternals,
 		it: "should allow filters like | upper",
 		contentText: "{name | upper}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: { name: "john" },
 		resultText: "JOHN",
 	},
 	{
+		...noInternals,
 		it: "should work when using assignment that is already in the scope",
 		contentText: "{b=a}{b}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		scope: { a: 10, b: 5 },
 		resultText: "10",
 	},
 	{
+		...noInternals,
 		it: "should work with linebreaks",
 		contentText: "{b}",
-		...noInternals,
 		options: {
 			linebreaks: true,
 			parser: expressionParser,
@@ -2135,18 +1986,16 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:t xml:space="preserve">Hello</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Foo</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">Bar</w:t></w:r><w:r><w:br/></w:r><w:r><w:t/></w:r><w:r><w:br/></w:r><w:r><w:t/>',
 	},
 	{
+		...noInternals,
 		it: "should not fail with no scope on expressionParser",
 		contentText: "{b}",
-		...noInternals,
-		options: {
-			parser: expressionParser,
-		},
+		options: { parser: expressionParser },
 		resultText: "undefined",
 	},
 	{
+		...noInternals,
 		it: "should be possible to add filter for one instance of the expressionParser",
 		contentText: "{b|foo}",
-		...noInternals,
 		options: {
 			parser: expressionParser.configure({
 				filters: {
@@ -2161,10 +2010,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	(() => {
 		const globalData = { val: 0 };
 		return {
+			...noInternals,
 			it: "should be possible to configure expressionParser with set command",
 			contentText:
 				"{#loop}{$$val = (cond ? 0 : $$val + 1); $$val}{/loop}",
-			...noInternals,
 			options: {
 				parser: expressionParser.configure({
 					setIdentifier(tag, value) {
@@ -2202,15 +2051,9 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	(() => {
 		let count = 0;
 		return {
-			assertBefore() {
-				count = 0;
-			},
-			assertAfter() {
-				expect(count).to.equal(1);
-			},
+			...noInternals,
 			it: "should only call evaluateIdentifier once",
 			contentText: "{user_age}",
-			...noInternals,
 			options: {
 				parser: expressionParser.configure({
 					evaluateIdentifier() {
@@ -2219,24 +2062,22 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 					},
 				}),
 			},
-			scope: {
-				user_age: 21,
-			},
+			scope: { user_age: 21 },
 			resultText: "21",
-		};
-	})(),
-	(() => {
-		let count = 0;
-		return {
 			assertBefore() {
 				count = 0;
 			},
 			assertAfter() {
 				expect(count).to.equal(1);
 			},
+		};
+	})(),
+	(() => {
+		let count = 0;
+		return {
+			...noInternals,
 			it: "should only call evaluateIdentifier once for tag {user.age}",
 			contentText: "{user.age}",
-			...noInternals,
 			options: {
 				parser: expressionParser.configure({
 					evaluateIdentifier() {
@@ -2245,20 +2086,22 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 					},
 				}),
 			},
-			scope: {
-				user: {
-					age: 21,
-				},
-			},
+			scope: { user: { age: 21 } },
 			resultText: "21",
+			assertBefore() {
+				count = 0;
+			},
+			assertAfter() {
+				expect(count).to.equal(1);
+			},
 		};
 	})(),
 	(() => {
 		let count = 0;
 		return {
+			...noInternals,
 			it: "should only call setIdentifier once",
 			contentText: "{user_age=33}",
-			...noInternals,
 			options: {
 				parser: expressionParser.configure({
 					setIdentifier() {
@@ -2266,33 +2109,21 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 					},
 				}),
 			},
+			scope: {},
+			resultText: "",
 			assertBefore() {
 				count = 0;
 			},
 			assertAfter() {
 				expect(count).to.equal(1);
 			},
-			scope: {},
-			resultText: "",
 		};
 	})(),
 	{
+		...noInternals,
 		it: "should be possible to use parent scope together with expressionParser",
 		// __b means in this example "b" but from the rootscope
 		contentText: "{#loop}{__b|twice}{b|twice}{/loop}",
-		resultText: "2426",
-		scope: {
-			loop: [
-				{
-					b: 2,
-				},
-				{
-					b: 3,
-				},
-			],
-			b: 1,
-		},
-		...noInternals,
 		options: {
 			parser: expressionParser.configure({
 				evaluateIdentifier(tag, scope, scopeList, context) {
@@ -2326,6 +2157,18 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				},
 			}),
 		},
+		scope: {
+			loop: [
+				{
+					b: 2,
+				},
+				{
+					b: 3,
+				},
+			],
+			b: 1,
+		},
+		resultText: "2426",
 	},
 	{
 		it: "should be possible to add filter for one instance of the ie11 parser",
@@ -2344,11 +2187,10 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 	},
 	{
-		it: "should be possible to assign value inside rootScope (async)",
-		contentText: "{last='foo'}{#l}{last}{last=l[$index].name}{/l}",
 		// Don't run this test synchronously
 		sync: false,
-		resultText: "fooJohnJackMary",
+		it: "should be possible to assign value inside rootScope (async)",
+		contentText: "{last='foo'}{#l}{last}{last=l[$index].name}{/l}",
 		scope: {
 			l: [
 				{ name: "John" },
@@ -2357,6 +2199,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				{ name: "Sean" },
 			],
 		},
+		resultText: "fooJohnJackMary",
 		...noInternals,
 		options: {
 			modules: () => [
@@ -2392,20 +2235,11 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 	},
 	{
+		...noInternals,
 		it: "should be possible to assign value inside rootScope (sync)",
 		contentText: "{last='foo'}{#l}{last}{last=l[$index].name}{/l}",
 		// Don't run this test asynchronously
 		async: false,
-		resultText: "fooJohnJackMary",
-		scope: {
-			l: [
-				{ name: "John" },
-				{ name: "Jack" },
-				{ name: "Mary" },
-				{ name: "Sean" },
-			],
-		},
-		...noInternals,
 		options: {
 			parser: expressionParser.configure({
 				setIdentifier(tag, value, scope, scopeList) {
@@ -2414,6 +2248,15 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 				},
 			}),
 		},
+		scope: {
+			l: [
+				{ name: "John" },
+				{ name: "Jack" },
+				{ name: "Mary" },
+				{ name: "Sean" },
+			],
+		},
+		resultText: "fooJohnJackMary",
 	},
 	{
 		it: "should not be possible to access __proto__ with expressionParser",
@@ -2425,37 +2268,37 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 	},
 	{
+		...noInternals,
 		it: "should not be possible to run arbitrary code with expressionParser",
 		contentText:
 			"{__proto__.constructor.getPrototypeOf(toString).constructor('return process')()}",
-		scope: {},
-		resultText: "undefined",
-		...noInternals,
 		options: {
 			parser: expressionParser,
 		},
+		scope: {},
+		resultText: "undefined",
 	},
 
 	{
+		...noInternals,
 		it: "should not be possible to access __proto__ with expressionParserIE11",
 		contentText: "{__proto__}",
-		resultText: "undefined",
-		scope: {},
-		...noInternals,
 		options: {
 			parser: expressionParserIE11,
 		},
+		scope: {},
+		resultText: "undefined",
 	},
 	{
+		...noInternals,
 		it: "should not be possible to run arbitrary code with expressionParserIE11",
 		contentText:
 			"{__proto__.constructor.getPrototypeOf(toString).constructor('return process')()}",
-		scope: {},
-		resultText: "undefined",
-		...noInternals,
 		options: {
 			parser: expressionParserIE11,
 		},
+		scope: {},
+		resultText: "undefined",
 	},
 
 	{
@@ -2645,8 +2488,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
-		it: "should not fail on triple open tag if allowUnclosedTag is true",
 		...noInternals,
+		it: "should not fail on triple open tag if allowUnclosedTag is true",
 		content: `<w:p>
       <w:r>
         <w:t>Hello {{{</w:t>
@@ -2677,8 +2520,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
-		it: "should not fail on SPACED unclosed tag if allowUnclosedTag is true",
 		...noInternals,
+		it: "should not fail on SPACED unclosed tag if allowUnclosedTag is true",
 		content: `<w:p>
       <w:r>
         <w:t>Hello {firstName {</w:t>
@@ -2709,8 +2552,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
-		it: "should not fail on SPACED unopened tag if allowUnopenedTag is true",
 		...noInternals,
+		it: "should not fail on SPACED unopened tag if allowUnopenedTag is true",
 		content: `<w:p>
       <w:r>
         <w:t>Hello firstName} {</w:t>
@@ -2741,8 +2584,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
-		it: "should not fail if allowUnclosedTag on 'Hello {' string",
 		...noInternals,
+		it: "should not fail if allowUnclosedTag on 'Hello {' string",
 		content: "<w:p><w:r><w:t>Hello {</w:t></w:r></w:p>",
 		options: {
 			syntax: {
@@ -2754,8 +2597,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: "<w:p><w:r><w:t>Hello {</w:t></w:r></w:p>",
 	},
 	{
-		it: "should not fail if allowUnclosedTag on 'Hello }' string",
 		...noInternals,
+		it: "should not fail if allowUnclosedTag on 'Hello }' string",
 		content: "<w:p><w:r><w:t>Hello }</w:t></w:r></w:p>",
 		options: {
 			syntax: {
@@ -2767,8 +2610,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: "<w:p><w:r><w:t>Hello }</w:t></w:r></w:p>",
 	},
 	{
-		it: "should not fail on double delimiters if allowUnclosedTag and allowUnopenedTag is true",
 		...noInternals,
+		it: "should not fail on double delimiters if allowUnclosedTag and allowUnopenedTag is true",
 		content: `<w:p>
       <w:r>
         <w:t>Hello {{</w:t>
@@ -2800,8 +2643,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
-		it: "should not fail on unopened tag if allowUnopenedTag is true",
 		...noInternals,
+		it: "should not fail on unopened tag if allowUnopenedTag is true",
 		content: `<w:p>
       <w:r>
         <w:t>Hello firstName} {</w:t>
@@ -2832,8 +2675,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>}`,
 	},
 	{
-		it: "should be possible to set another change delimiter prefix (use $)",
 		...noInternals,
+		it: "should be possible to set another change delimiter prefix (use $)",
 		content: "<w:p><w:r><w:t>{$[[ ]]$}[[name]]</w:t></w:r></w:p>",
 		options: {
 			syntax: {
@@ -2844,8 +2687,8 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:p><w:r><w:t xml:space="preserve">John</w:t></w:r></w:p>',
 	},
 	{
-		it: "should be possible to set change delimiter prefix to null",
 		...noInternals,
+		it: "should be possible to set change delimiter prefix to null",
 		content: "<w:p><w:r><w:t>{$[[ ]]$}[[name]]</w:t></w:r></w:p>",
 		options: {
 			syntax: {
@@ -2894,9 +2737,9 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     </w:p>`,
 	},
 	{
+		...noInternals,
 		it: "should parse self closing tags",
 		content: '<w:pPr><w:spacing w:line="360" w:lineRule="auto"/></w:pPr>',
-		...noInternals,
 		result: null,
 		xmllexed: [
 			{
@@ -2930,9 +2773,9 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:p><w:r><w:t xml:space="preserve">A</w:t></w:r></w:p>',
 	},
 	({ getDoc }) => ({
+		...noInternals,
 		it: "should be possible to use nullgetter inside the evaluateIdentifier configuration",
 		content: "<w:p><w:r><w:t>{#loop}{val}{/loop}</w:t></w:r></w:p>",
-		...noInternals,
 		options: {
 			nullGetter: () => "gotnull",
 			parser: expressionParser.configure({
@@ -2964,12 +2807,12 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		result: '<w:p><w:r><w:t xml:space="preserve">xxgotnull</w:t></w:r></w:p>',
 	}),
 	{
+		...noInternals,
 		/*
 		 * The specificity of this input is that it contains : <a:ext uri="{9D8B030D-6E8A-4147-A177-3AD203B41FA5}">
 		 * So in the algorithm that updates the height of the table, those tags should be ignored
 		 */
 		it: "should work with table pptx nested and empty 'ext' element",
-		...noInternals,
 		content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
   <p:cSld>
@@ -3099,6 +2942,7 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     <a:masterClrMapping/>
   </p:clrMapOvr>
 </p:sld>`,
+		pptx: true,
 		scope: { loop1: [1, 2, 3], loop2: [1, 2, 3] },
 		result: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
@@ -3319,17 +3163,14 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
     <a:masterClrMapping/>
   </p:clrMapOvr>
 </p:sld>`,
-		pptx: true,
 	},
 	{
 		it: "should handle {$index} with tag at root level",
+		contentText: "Hi {$index}",
 		options: {
 			parser: expressionParser,
 		},
-		contentText: "Hi {$index}",
-		scope: {
-			$index: "xyz",
-		},
+		scope: { $index: "xyz" },
 		resultText: "Hi xyz",
 		xmllexed: null,
 		lexed: null,

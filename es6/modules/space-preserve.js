@@ -35,6 +35,7 @@ class SpacePreserve {
 	constructor() {
 		this.name = "SpacePreserveModule";
 	}
+
 	postparse(postparsed, meta) {
 		let chunk = [],
 			inTextTag = false,
@@ -80,6 +81,7 @@ class SpacePreserve {
 		pushArray(result, chunk);
 		return result;
 	}
+
 	postrender(parts) {
 		let lastNonEmpty = "";
 		let lastNonEmptyIndex = 0;

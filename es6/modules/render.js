@@ -34,6 +34,16 @@ class Render {
 		this.recordRun = false;
 		this.recordedRun = [];
 	}
+
+	set(obj) {
+		if (obj.compiled) {
+			this.compiled = obj.compiled;
+		}
+		if (obj.data != null) {
+			this.data = obj.data;
+		}
+	}
+
 	optionsTransformer(options, docxtemplater) {
 		this.docxtemplater = docxtemplater;
 		this.brTag =
@@ -45,20 +55,7 @@ class Render {
 		this.runPropsStartTag = `${this.prefix}:rPr`;
 		return options;
 	}
-	set(obj) {
-		if (obj.compiled) {
-			this.compiled = obj.compiled;
-		}
-		if (obj.data != null) {
-			this.data = obj.data;
-		}
-	}
-	getRenderedMap(mapper) {
-		for (const from in this.compiled) {
-			mapper[from] = { from, data: this.data };
-		}
-		return mapper;
-	}
+
 	postparse(postparsed, options) {
 		const errors = [];
 		for (const p of postparsed) {
@@ -84,6 +81,14 @@ class Render {
 		}
 		return { postparsed, errors };
 	}
+
+	getRenderedMap(mapper) {
+		for (const from in this.compiled) {
+			mapper[from] = { from, data: this.data };
+		}
+		return mapper;
+	}
+
 	render(
 		part,
 		{
@@ -140,6 +145,7 @@ class Render {
 					: utf8ToWord(value),
 		};
 	}
+
 	recordRuns(part) {
 		if (part.tag === this.runStartTag) {
 			this.recordedRun = "";
@@ -156,6 +162,7 @@ class Render {
 			this.recordedRun += part.value;
 		}
 	}
+
 	renderLineBreaks(value) {
 		const result = [];
 		const lines = value.split("\n");

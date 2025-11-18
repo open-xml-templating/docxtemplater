@@ -22,6 +22,7 @@ module.exports = class XmlTemplater {
 		}
 		this.setModules({ inspect: { filePath: options.filePath } });
 	}
+
 	resolveTags(tags) {
 		this.tags = tags;
 		const options = this.getOptions();
@@ -71,14 +72,17 @@ module.exports = class XmlTemplater {
 				});
 		});
 	}
+
 	getFullText() {
 		return getFullText(this.content, this.fileTypeConfig.tagsXmlTextArray);
 	}
+
 	setModules(obj) {
 		for (const module of this.modules) {
 			module.set(obj);
 		}
 	}
+
 	preparse() {
 		this.allErrors = [];
 		this.xmllexed = Lexer.xmlparse(this.content, {
@@ -102,6 +106,7 @@ module.exports = class XmlTemplater {
 		const options = this.getOptions();
 		this.lexed = Parser.preparse(this.lexed, this.modules, options);
 	}
+
 	parse({ noPostParse } = {}) {
 		this.setModules({ inspect: { filePath: this.filePath } });
 		const options = this.getOptions();
@@ -115,6 +120,7 @@ module.exports = class XmlTemplater {
 		// In v4, we could remove this "this.postparse()" so that users have to call this manually.
 		return this.postparse();
 	}
+
 	postparse() {
 		const options = this.getOptions();
 		const { postparsed, errors: postparsedErrors } = Parser.postparse(
@@ -130,6 +136,7 @@ module.exports = class XmlTemplater {
 		this.errorChecker(this.allErrors);
 		return this;
 	}
+
 	errorChecker(errors) {
 		for (const error of errors) {
 			/*
@@ -144,6 +151,7 @@ module.exports = class XmlTemplater {
 			errors = module.errorsTransformer(errors);
 		}
 	}
+
 	baseNullGetter(part, sm) {
 		let value = null;
 		for (const module of this.modules) {
@@ -157,6 +165,7 @@ module.exports = class XmlTemplater {
 		}
 		return this.nullGetter(part, sm);
 	}
+
 	getOptions() {
 		return {
 			compiled: this.postparsed,
@@ -174,6 +183,7 @@ module.exports = class XmlTemplater {
 			stripInvalidXMLChars: this.stripInvalidXMLChars,
 		};
 	}
+
 	render(to) {
 		this.filePath = to;
 		const options = this.getOptions();

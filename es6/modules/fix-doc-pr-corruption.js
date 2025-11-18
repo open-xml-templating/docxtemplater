@@ -16,20 +16,11 @@ class FixDocPRCorruptionModule {
 		this.name = "FixDocPRCorruptionModule";
 		this.supportedFileTypes = ["docx"];
 	}
+
 	clone() {
 		return new FixDocPRCorruptionModule();
 	}
-	set(options) {
-		if (options.Lexer) {
-			this.Lexer = options.Lexer;
-		}
-		if (options.zip) {
-			this.zip = options.zip;
-		}
-		if (options.xmlDocuments) {
-			this.xmlDocuments = options.xmlDocuments;
-		}
-	}
+
 	on(event) {
 		// Stryker disable all : because this is an optimisation that won't make any tests fail
 		if (event !== "syncing-zip") {
@@ -74,6 +65,18 @@ class FixDocPRCorruptionModule {
 				}, "");
 			}
 			zip.file(f.name, text);
+		}
+	}
+
+	set(options) {
+		if (options.Lexer) {
+			this.Lexer = options.Lexer;
+		}
+		if (options.zip) {
+			this.zip = options.zip;
+		}
+		if (options.xmlDocuments) {
+			this.xmlDocuments = options.xmlDocuments;
 		}
 	}
 }

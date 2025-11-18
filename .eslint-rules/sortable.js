@@ -1,5 +1,10 @@
 const naturalCompare = require("natural-compare");
 
+function difference(a, b) {
+	const setB = new Set(b);
+	return a.filter((x) => !setB.has(x));
+}
+
 function intersectSafe(a, b) {
 	let ai = 0,
 		bi = 0;
@@ -57,6 +62,7 @@ module.exports = {
 		messages: {
 			sortKeys:
 				"Expected object keys to be in {{natural}}{{insensitive}}{{order}}ending order. '{{thisName}}' should be before '{{prevName}}'.",
+			disallowedKey: "Object literal contains disallowed key '{{key}}'.",
 		},
 	},
 
@@ -67,18 +73,292 @@ module.exports = {
 		const insensitive = (options && options.caseSensitive) === false;
 		const natural = Boolean(options && options.natural);
 		const minKeys = Number(options && options.minKeys) || 2;
+		const sortedVars = [
+			[
+				"rawXmlTest",
+				"noInternals",
+				"it",
+				"content",
+				"contentText",
+				"async",
+				"pptx",
+				"options",
+				"delimiters",
+				"scope",
+				"error",
+				"errorType",
+				"resolved",
+				"result",
+				"resultText",
+				"assertBefore",
+				"assertAfter",
+				"xmllexed",
+				"lexed",
+				"parsed",
+				"postparsed",
+			],
+			[
+				"constructor",
+				"name",
+				"requiredAPIVersion",
+				"clone",
+				// Before render
+				"on",
+				"set",
+				"getFileType",
+				"optionsTransformer",
+				"preparse",
+				"matchers",
+				"parse",
+				"getTraits",
+				"postparse",
+				"errorsTransformer",
+				// After render :
+				"preResolve",
+				"resolve",
+				"getRenderedMap",
+				"render",
+				"nullGetter",
+				"postrender",
+				"*",
+			],
+		];
+		const allowedVars = sortedVars.flat();
+
 		// The stack to save the previous property's name for each object literals
 		let stack = null;
-		// Shared SpreadElement for ExperimentalSpreadProperty
-		const SpreadElement = (node) => {
-			if (node.parent.type === "ObjectExpression") {
-				stack.prevName = null;
+		function checkAndReport(
+			node,
+			stack,
+			ctx,
+			order,
+			insensitive,
+			natural,
+			minKeys,
+			sortedVars,
+			allowedVars
+		) {
+			const isObject = node.parent.type === "ObjectExpression";
+			const isClass = node.parent.type === "ClassBody";
+			if (!isObject && !isClass) return;
+			const members = isObject
+				? node.parent.properties
+				: node.parent.body;
+			if (members.length < minKeys) return;
+			function getNames(mems) {
+				const names = [];
+				for (const mem of mems) {
+					const name = getPropertyName(mem);
+					if (name) {
+						names.push(name);
+					}
+				}
+				return names;
 			}
-		};
-		return {
-			ExperimentalSpreadProperty: SpreadElement,
-			SpreadElement,
+			const names = getNames(members);
+			let hasRelevantIntersect = false;
+			let specialMatched = false;
+			for (const vars of sortedVars) {
+				const intersect = intersectSafe(names, vars);
+				if (intersect.length > 1) {
+					hasRelevantIntersect = true;
+					if (vars.includes("*")) {
+						specialMatched = true;
+					}
+				}
+			}
+			// Check for disallowed keys (extras) only if relevant intersect and not special matched
+			if (
+				hasRelevantIntersect &&
+				!specialMatched &&
+				!node.parent.__reportedExtras
+			) {
+				node.parent.__reportedExtras = true;
+				const extras = difference(names, allowedVars);
+				if (extras.length > 0) {
+					for (const mem of members) {
+						const name = getPropertyName(mem);
+						if (name && extras.includes(name)) {
+							ctx.report({
+								node: mem,
+								loc:
+									mem.type === "SpreadElement" ||
+									mem.type === "ExperimentalSpreadProperty"
+										? mem.argument.loc
+										: mem.key
+											? mem.key.loc
+											: mem.loc,
+								messageId: "disallowedKey",
+								data: {
+									key: name,
+								},
+							});
+						}
+					}
+				}
+			}
+			for (const vars of sortedVars) {
+				const intersect = intersectSafe(names, vars);
+				if (intersect.length <= 1) {
+					continue;
+				}
+				const prevName = stack.prevName;
+				const prevNode = stack.prevNode;
+				const thisName = getPropertyName(node);
+				if (thisName !== null) {
+					stack.prevName = thisName;
+					stack.prevNode = node || prevNode;
+				}
+				if (prevName === null || thisName === null) {
+					continue;
+				}
+				const isValidOrder = function (prevName, thisName) {
+					const indexPrev = vars.indexOf(prevName);
+					const indexThis = vars.indexOf(thisName);
+					if (indexPrev === -1 || indexThis === -1) {
+						return true;
+					}
+					if (indexPrev < indexThis) {
+						return true;
+					}
+					return false;
+				};
+				if (!isValidOrder(prevName, thisName)) {
+					ctx.report({
+						node,
+						loc:
+							node.type === "SpreadElement" ||
+							node.type === "ExperimentalSpreadProperty"
+								? node.argument.loc
+								: node.key
+									? node.key.loc
+									: node.loc,
+						messageId: "sortKeys",
+						data: {
+							thisName,
+							prevName,
+							order,
+							insensitive: insensitive ? "insensitive " : "",
+							natural: natural ? "natural " : "",
+						},
+						fix(fixer) {
+							// Check if already sorted
+							if (
+								node.parent.__alreadySorted ||
+								(isObject
+									? node.parent.properties.__alreadySorted
+									: node.parent.body.__alreadySorted)
+							) {
+								return [];
+							}
+							node.parent.__alreadySorted = true;
+							if (isObject) {
+								node.parent.properties.__alreadySorted = true;
+							} else {
+								node.parent.body.__alreadySorted = true;
+							}
+							//
+							const src = ctx.getSourceCode();
+							const originalMembers = members;
+							// Split into parts on each spread operator (empty key), but include special spread
+							const parts = [];
+							let part = [];
+							for (const p of originalMembers) {
+								const isSpread =
+									p.type === "SpreadElement" ||
+									p.type === "ExperimentalSpreadProperty";
+								const isSpecialSpread =
+									isSpread &&
+									p.argument &&
+									p.argument.name === "noInternals";
+								if (isSpread && !isSpecialSpread) {
+									parts.push(part);
+									part = [];
+								} else {
+									part.push(p);
+								}
+							}
+							parts.push(part);
+							// Sort all parts
+							for (const part of parts) {
+								part.sort((p1, p2) => {
+									const n1 = getPropertyName(p1);
+									const n2 = getPropertyName(p2);
+									if (
+										insensitive &&
+										n1.toLowerCase() === n2.toLowerCase()
+									) {
+										return 0;
+									}
+									const index1 = vars.indexOf(n1);
+									const index2 = vars.indexOf(n2);
+									if (index1 === -1 && index2 === -1) {
+										return 0;
+									}
+									if (index1 === -1) {
+										return 1;
+									}
+									if (index2 === -1) {
+										return -1;
+									}
+									return index1 < index2
+										? -1
+										: index1 > index2
+											? 1
+											: 0;
+								});
+							}
+							// Perform fixes
+							const fixes = [];
+							let newIndex = 0;
+							for (let i = 0; i < parts.length; i++) {
+								const part = parts[i];
+								for (const p of part) {
+									for (const f of moveProperty(
+										p,
+										originalMembers[newIndex],
+										fixer,
+										src
+									)) {
+										fixes.push(f);
+									}
+									newIndex++;
+								}
+								if (i < parts.length - 1) {
+									newIndex++; // skip spread
+								}
+							}
+							return fixes;
+						},
+					});
+				}
+			}
+		}
 
+		const handleSpread = (node) => {
+			if (node.parent.type !== "ObjectExpression") return;
+			const isSpecial =
+				node.argument && node.argument.name === "noInternals";
+			if (!isSpecial) {
+				stack.prevName = null;
+				return;
+			}
+			checkAndReport(
+				node,
+				stack,
+				ctx,
+				order,
+				insensitive,
+				natural,
+				minKeys,
+				sortedVars,
+				allowedVars
+			);
+		};
+
+		return {
+			ExperimentalSpreadProperty: handleSpread,
+			SpreadElement: handleSpread,
 			ObjectExpression() {
 				stack = {
 					upper: stack,
@@ -89,147 +369,63 @@ module.exports = {
 			"ObjectExpression:exit"() {
 				stack = stack.upper;
 			},
-
 			Property(node) {
 				if (node.parent.type === "ObjectPattern") {
 					return;
 				}
-				if (node.parent.properties.length < minKeys) {
+				checkAndReport(
+					node,
+					stack,
+					ctx,
+					order,
+					insensitive,
+					natural,
+					minKeys,
+					sortedVars,
+					allowedVars
+				);
+			},
+			ClassBody() {
+				stack = {
+					upper: stack,
+					prevName: null,
+					prevNode: null,
+				};
+			},
+			"ClassBody:exit"() {
+				stack = stack.upper;
+			},
+			MethodDefinition(node) {
+				if (node.parent.type !== "ClassBody") {
 					return;
 				}
-				function getNames(node) {
-					const { properties } = node;
-					const names = [];
-					for (const prop of properties) {
-						if (prop.key && prop.key.name) {
-							names.push(prop.key.name);
-						}
-					}
-					return names;
+				checkAndReport(
+					node,
+					stack,
+					ctx,
+					order,
+					insensitive,
+					natural,
+					minKeys,
+					sortedVars,
+					allowedVars
+				);
+			},
+			ClassProperty(node) {
+				if (node.parent.type !== "ClassBody") {
+					return;
 				}
-				const names = getNames(node.parent);
-				const sortedVars = [
-					[
-						"it",
-						"content",
-						"options",
-						"scope",
-						"error",
-						"errorType",
-						"resolved",
-						"result",
-						"xmllexed",
-						"lexed",
-						"parsed",
-						"postparsed",
-					],
-					["preparse", "parse", "postparse", "constructor"],
-				];
-				for (const vars of sortedVars) {
-					const intersect = intersectSafe(names, vars);
-					if (intersect.length <= 1) {
-						continue;
-					}
-
-					const prevName = stack.prevName;
-					const prevNode = stack.prevNode;
-					const thisName = getPropertyName(node);
-
-					if (thisName !== null) {
-						stack.prevName = thisName;
-						stack.prevNode = node || prevNode;
-					}
-
-					if (prevName === null || thisName === null) {
-						continue;
-					}
-
-					const isValidOrder = function (prevName, thisName) {
-						const indexPrev = vars.indexOf(prevName);
-						const indexThis = vars.indexOf(thisName);
-						if (indexPrev === -1 || indexThis === -1) {
-							return true;
-						}
-						if (indexPrev < indexThis) {
-							return true;
-						}
-						return false;
-					};
-
-					if (!isValidOrder(prevName, thisName)) {
-						ctx.report({
-							node,
-							loc: node.key.loc,
-							messageId: "sortKeys",
-							data: {
-								thisName,
-								prevName,
-								order,
-								insensitive: insensitive ? "insensitive " : "",
-								natural: natural ? "natural " : "",
-							},
-							fix(fixer) {
-								// Check if already sorted
-								if (
-									node.parent.__alreadySorted ||
-									node.parent.properties.__alreadySorted
-								) {
-									return [];
-								}
-								node.parent.__alreadySorted = true;
-								node.parent.properties.__alreadySorted = true;
-								//
-								const src = ctx.getSourceCode();
-								const props = node.parent.properties;
-								// Split into parts on each spread operator (empty key)
-								const parts = [];
-								let part = [];
-								for (const p of props) {
-									if (!p.key) {
-										parts.push(part);
-										part = [];
-									} else {
-										part.push(p);
-									}
-								}
-								parts.push(part);
-								// Sort all parts
-								for (const part of parts) {
-									part.sort((p1, p2) => {
-										const n1 = getPropertyName(p1);
-										const n2 = getPropertyName(p2);
-										if (
-											insensitive &&
-											n1.toLowerCase() ===
-												n2.toLowerCase()
-										) {
-											return 0;
-										}
-										return isValidOrder(n1, n2) ? -1 : 1;
-									});
-								}
-								// Perform fixes
-								const fixes = [];
-								let newIndex = 0;
-								for (const part of parts) {
-									for (const p of part) {
-										for (const f of moveProperty(
-											p,
-											props[newIndex],
-											fixer,
-											src
-										)) {
-											fixes.push(f);
-										}
-										newIndex++;
-									}
-									newIndex++;
-								}
-								return fixes;
-							},
-						});
-					}
-				}
+				checkAndReport(
+					node,
+					stack,
+					ctx,
+					order,
+					insensitive,
+					natural,
+					minKeys,
+					sortedVars,
+					allowedVars
+				);
 			},
 		};
 	},
@@ -239,11 +435,19 @@ const moveProperty = (thisNode, toNode, fixer, src) => {
 	if (thisNode === toNode) {
 		return [];
 	}
+	const isObject = thisNode.parent.type === "ObjectExpression";
+	const sep = isObject ? "," : ";";
+	const findSepSameLine = (node, s) => {
+		const t = s.getTokenAfter(node);
+		return t && t.value === sep && node.loc.end.line === t.loc.start.line
+			? t
+			: null;
+	};
 	const fixes = [];
 	// Move property
 	fixes.push(fixer.replaceText(toNode, src.getText(thisNode)));
 	// Move comments on top of this property, but do not move comments
-	//    on the same line with the previous property
+	// on the same line with the previous property
 	const prev = findTokenPrevLine(thisNode, src);
 	const cond = (c) => !prev || prev.loc.end.line !== c.loc.start.line;
 	const commentsBefore = src.getCommentsBefore(thisNode).filter(cond);
@@ -263,7 +467,7 @@ const moveProperty = (thisNode, toNode, fixer, src) => {
 		fixes.push(fixer.insertTextAfter(toPrev, txt));
 	}
 	// Move comments on the same line with this property
-	const next = findCommaSameLine(thisNode, src) || thisNode;
+	const next = findSepSameLine(thisNode, src) || thisNode;
 	const commentsAfter = src
 		.getCommentsAfter(next)
 		.filter((c) => thisNode.loc.end.line === c.loc.start.line);
@@ -271,7 +475,7 @@ const moveProperty = (thisNode, toNode, fixer, src) => {
 		const b = next.range[1];
 		const e = commentsAfter[commentsAfter.length - 1].range[1];
 		fixes.push(fixer.replaceTextRange([b, e], ""));
-		const toNext = findCommaSameLine(toNode, src) || toNode;
+		const toNext = findSepSameLine(toNode, src) || toNode;
 		const txt = src.text.substring(b, e);
 		fixes.push(fixer.insertTextAfter(toNext, txt));
 	}
@@ -289,13 +493,6 @@ const findTokenPrevLine = (node, src) => {
 		t = src.getTokenBefore(t);
 	}
 };
-const findCommaSameLine = (node, src) => {
-	const t = src.getTokenAfter(node);
-	return t && t.value === "," && node.loc.end.line === t.loc.start.line
-		? t
-		: null;
-};
-
 const isValidOrders = {
 	asc: (a, b) => a <= b,
 	ascI: (a, b) => a.toLowerCase() <= b.toLowerCase(),
@@ -306,17 +503,20 @@ const isValidOrders = {
 	descN: (a, b) => isValidOrders.ascN(b, a),
 	descIN: (a, b) => isValidOrders.ascIN(b, a),
 };
-
 const getPropertyName = (node) => {
 	let prop;
 	switch (node && node.type) {
 		case "Property":
 		case "MethodDefinition":
+		case "ClassProperty":
 			prop = node.key;
 			break;
 		case "MemberExpression":
 			prop = node.property;
 			break;
+		case "SpreadElement":
+		case "ExperimentalSpreadProperty":
+			return node.argument.name;
 	}
 	switch (prop && prop.type) {
 		case "Literal":

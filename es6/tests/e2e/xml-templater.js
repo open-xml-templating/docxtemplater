@@ -277,17 +277,18 @@ describe("Change the nullGetter", () => {
 			}
 			return "";
 		}
-		const data = {
-			hobby: "diving",
-		};
 		const xmlTemplater = createXmlTemplaterDocxNoRender(content, {
 			nullGetter,
 		});
-		return xmlTemplater.renderAsync(data).then(() => {
-			expect(xmlTemplater.getFullText()).to.be.equal(
-				"Hello {name}, your hobby is diving"
-			);
-		});
+		return xmlTemplater
+			.renderAsync({
+				hobby: "diving",
+			})
+			.then(() => {
+				expect(xmlTemplater.getFullText()).to.be.equal(
+					"Hello {name}, your hobby is diving"
+				);
+			});
 	});
 
 	it("should work with null in resolve", () => {
@@ -299,16 +300,17 @@ describe("Change the nullGetter", () => {
 			expect(scopeManager.scopePathItem).to.deep.equal([0, 0]);
 			return "null";
 		}
-		const data = {
-			names: [{ foo: [{}] }],
-		};
 		const xmlTemplater = createXmlTemplaterDocxNoRender(content, {
 			nullGetter,
 		});
-		return xmlTemplater.renderAsync(data).then(() => {
-			expect(calls).to.be.equal(1);
-			expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
-		});
+		return xmlTemplater
+			.renderAsync({
+				names: [{ foo: [{}] }],
+			})
+			.then(() => {
+				expect(calls).to.be.equal(1);
+				expect(xmlTemplater.getFullText()).to.be.equal("Hello null");
+			});
 	});
 });
 
@@ -379,57 +381,53 @@ describe("Automatic expansion to table row (intelligent tagging)", () => {
 
 describe("Custom delimiters", () => {
 	it("should work with custom tags", () => {
-		const delimiters = {
-			start: "[",
-			end: "]",
-		};
 		const content = "<w:t>Hello [name]</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
-			delimiters,
+			delimiters: {
+				start: "[",
+				end: "]",
+			},
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Edgar");
 	});
 
 	it("should work with custom delimiters with two chars", () => {
-		const delimiters = {
-			start: "[[",
-			end: "]]",
-		};
 		const content = "<w:t>Hello [[name]]</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
-			delimiters,
+			delimiters: {
+				start: "[[",
+				end: "]]",
+			},
 		});
 		expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 	});
 
 	it("should work with custom delimiters as strings with different length", () => {
-		const delimiters = {
-			start: "[[[",
-			end: "]]",
-		};
 		const content = "<w:t>Hello [[[name]]</w:t>";
 		const scope = { name: "Edgar" };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
-			delimiters,
+			delimiters: {
+				start: "[[[",
+				end: "]]",
+			},
 		});
 		expect(xmlTemplater.getFullText()).to.be.eql("Hello Edgar");
 	});
 
 	it("should work with custom tags and loops", () => {
-		const delimiters = {
-			start: "[[[",
-			end: "]]",
-		};
 		const content = "<w:t>Hello [[[#names]][[[.]],[[[/names]]</w:t>";
 		const scope = { names: ["Edgar", "Mary", "John"] };
 		const xmlTemplater = createXmlTemplaterDocx(content, {
 			tags: scope,
-			delimiters,
+			delimiters: {
+				start: "[[[",
+				end: "]]",
+			},
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal(
 			"Hello Edgar,Mary,John,"
@@ -441,8 +439,7 @@ describe("Custom delimiters", () => {
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { loop: [{ innertag: 10 }, { innertag: 5 }] },
 		});
-		const c = getContent(xmlt);
-		expect(c).to.be.equal(
+		expect(getContent(xmlt)).to.be.equal(
 			'<w:t xml:space="preserve">10</w:t><w:t xml:space="preserve"> 5</w:t><w:t xml:space="preserve"> </w:t>'
 		);
 	});
@@ -474,8 +471,9 @@ describe("getting parents context", () => {
 		const xmlt = createXmlTemplaterDocx(content, {
 			tags: { loop: [1], name: "Henry" },
 		});
-		const c = getContent(xmlt);
-		expect(c).to.be.equal('<w:t xml:space="preserve">Henry</w:t>');
+		expect(getContent(xmlt)).to.be.equal(
+			'<w:t xml:space="preserve">Henry</w:t>'
+		);
 	});
 
 	it("should work with double loops", () => {
@@ -488,7 +486,8 @@ describe("getting parents context", () => {
 				name_outer: "Henry",
 			},
 		});
-		const c = getContent(xmlt);
-		expect(c).to.be.equal('<w:t xml:space="preserve">John Henry</w:t>');
+		expect(getContent(xmlt)).to.be.equal(
+			'<w:t xml:space="preserve">John Henry</w:t>'
+		);
 	});
 });

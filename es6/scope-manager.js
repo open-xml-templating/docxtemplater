@@ -114,15 +114,18 @@ const ScopeManager = class ScopeManager {
 		this.resolved = options.resolved;
 		this.cachedParsers = options.cachedParsers;
 	}
+
 	loopOver(tag, functor, inverted, meta) {
 		return this.loopOverValue(this.getValue(tag, meta), functor, inverted);
 	}
+
 	functorIfInverted(inverted, functor, value, i, length) {
 		if (inverted) {
 			functor(value, i, length);
 		}
 		return inverted;
 	}
+
 	isValueFalsy(value, type) {
 		return (
 			value == null ||
@@ -130,6 +133,7 @@ const ScopeManager = class ScopeManager {
 			(type === "[object Array]" && value.length === 0)
 		);
 	}
+
 	loopOverValue(value, functor, inverted) {
 		if (this.root.finishedResolving) {
 			inverted = false;
@@ -170,6 +174,7 @@ const ScopeManager = class ScopeManager {
 			1
 		);
 	}
+
 	getValue(tag, meta) {
 		const result = getValue.call(
 			this,
@@ -182,6 +187,7 @@ const ScopeManager = class ScopeManager {
 		}
 		return result;
 	}
+
 	getValueAsync(tag, meta) {
 		return getValueAsync
 			.call(this, tag, meta, this.scopeList.length - 1)
@@ -195,6 +201,7 @@ const ScopeManager = class ScopeManager {
 				return result;
 			});
 	}
+
 	getContext(meta, num) {
 		return {
 			num,
@@ -207,6 +214,7 @@ const ScopeManager = class ScopeManager {
 			scopePathLength: this.scopePathLength,
 		};
 	}
+
 	createSubScopeManager(scope, tag, i, part, length) {
 		return new ScopeManager({
 			root: this.root,

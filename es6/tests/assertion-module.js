@@ -70,6 +70,7 @@ class AssertionModule {
 	constructor() {
 		this.name = "AssertionModule";
 	}
+
 	optionsTransformer(options, docxtemplater) {
 		for (const module of docxtemplater.modules) {
 			if (!module.name) {
@@ -78,9 +79,11 @@ class AssertionModule {
 		}
 		return options;
 	}
+
 	clone() {
 		return new AssertionModule();
 	}
+
 	on(eventName) {
 		if (eventName === "after-parse" && this.docxtemplater) {
 			const { compiled } = this.docxtemplater;
@@ -101,17 +104,20 @@ class AssertionModule {
 			}
 		}
 	}
+
 	preparse(parsed) {
 		if (!isArray(parsed)) {
 			throw new Error("Parsed should be an array");
 		}
 	}
+
 	matchers(options) {
 		if (!isArray(options.modules)) {
 			throw new Error("Options.modules should be an array");
 		}
 		return [];
 	}
+
 	parse(placeholderContent, options) {
 		if (!isString(placeholderContent)) {
 			throw new Error("placeholderContent should be a string");
@@ -140,6 +146,7 @@ class AssertionModule {
 			throw new Error("parsed contains part without lIndex");
 		}
 	}
+
 	postparse(parsed, options) {
 		verifyOptions(options);
 		if (!isArray(parsed)) {
@@ -156,6 +163,7 @@ class AssertionModule {
 			}
 		}
 	}
+
 	resolve(part, options) {
 		verifyOptions(options);
 	}
@@ -172,6 +180,7 @@ class AssertionModule {
 			throw new Error("part should be an object");
 		}
 	}
+
 	postrender(parts) {
 		if (!isArray(parts)) {
 			throw new Error("Parts should be an array");

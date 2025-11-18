@@ -239,15 +239,18 @@ class LoopModule {
 			inverted: "^",
 		};
 	}
+
 	optionsTransformer(opts, docxtemplater) {
 		this.docxtemplater = docxtemplater;
 		return opts;
 	}
+
 	preparse(parsed, { contentType }) {
 		if (filetypes.main.indexOf(contentType) !== -1) {
 			this.sects = getSectPr(parsed);
 		}
 	}
+
 	matchers() {
 		const module = moduleName;
 		return [
@@ -288,6 +291,7 @@ class LoopModule {
 			],
 		];
 	}
+
 	getTraits(traitName, parsed) {
 		// Stryker disable all : because getTraits should disappear in v4
 		if (traitName !== "expandPair") {
@@ -304,6 +308,7 @@ class LoopModule {
 		}
 		return tags;
 	}
+
 	/* eslint-disable-next-line complexity */
 	postparse(parsed, { basePart }) {
 		if (
@@ -381,6 +386,7 @@ class LoopModule {
 		}
 		return parsed.slice(firstOffset, parsed.length - lastOffset);
 	}
+
 	resolve(part, options) {
 		const self = this;
 		if (!isModule(part, moduleName)) {
@@ -458,6 +464,7 @@ class LoopModule {
 					});
 			});
 	}
+
 	render(part, options) {
 		const self = this;
 		if (part.tag === "p:xfrm") {

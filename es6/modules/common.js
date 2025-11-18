@@ -24,6 +24,7 @@ class Common {
 	constructor() {
 		this.name = "Common";
 	}
+
 	getFileType({ doc }) {
 		const { invertedContentTypes } = doc;
 		if (!invertedContentTypes) {

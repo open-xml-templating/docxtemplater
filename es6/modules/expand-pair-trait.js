@@ -132,6 +132,7 @@ class ExpandPairTrait {
 	constructor() {
 		this.name = "ExpandPairTrait";
 	}
+
 	optionsTransformer(options, docxtemplater) {
 		if (docxtemplater.options.paragraphLoop) {
 			pushArray(
@@ -142,6 +143,7 @@ class ExpandPairTrait {
 		this.expandTags = docxtemplater.fileTypeConfig.expandTags;
 		return options;
 	}
+
 	postparse(postparsed, options) {
 		const { getTraits, postparse, fileType } = options;
 		let traits = getTraits(traitName, postparsed, options);
