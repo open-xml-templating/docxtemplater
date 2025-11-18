@@ -1,3 +1,18 @@
+## 3.67.5
+
+Throw error for Inspectmodule if trying to call inspectModule.getAllTags, inspectModule.getTags, ... without attaching the module to a docxtemplater instance.
+
+You always should attach your module like this :
+
+```js
+const iModule = inspectModule();
+new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+    modules: [iModule],
+});
+```
+
 ## 3.67.4
 
 In previous versions, if using the paid chart module together with the inspect module, the code when calling `const tags = iModule.getAllTags();` could take too much time. This is now fixed, we do not try to cloneDeep this very nested value.

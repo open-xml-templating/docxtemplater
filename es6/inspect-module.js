@@ -4,6 +4,12 @@ const { isPlaceholder, getTags } = require("./get-tags.js");
 
 const slideNumRegex = /ppt\/slides\/slide([0-9]+).xml/;
 
+function throwUnattached(method) {
+	throw new Error(
+		`You can not call Inspectmodule@${method} if the module was not attached. Please make sure to attach the module to a Docxtemplater instance with new Docxtemplater(zip, { modules: [inspectModule, ...]})`
+	);
+}
+
 function getSlideIndex(path) {
 	return parseInt(path.replace(slideNumRegex, "$1"), 10) - 1;
 }
@@ -96,6 +102,9 @@ class InspectModule {
 	}
 
 	getInspected(file) {
+		if (!this.attached) {
+			throwUnattached("getInspected");
+		}
 		let inspected = this.fullInspected[file].postparsed;
 
 		const si = getSlideIndex(file);
@@ -133,12 +142,18 @@ class InspectModule {
 	}
 
 	getTags(file) {
+		if (!this.attached) {
+			throwUnattached("getTags");
+		}
 		file ||= this.fileTypeConfig.textPath(this.docxtemplater);
 		const inspected = this.getInspected(file);
 		return getTags(inspected);
 	}
 
 	getAllTags() {
+		if (!this.attached) {
+			throwUnattached("getAllTags");
+		}
 		const result = {};
 		for (const file in this.fullInspected) {
 			merge(result, this.getTags(file));
@@ -147,11 +162,17 @@ class InspectModule {
 	}
 
 	getStructuredTags(file) {
+		if (!this.attached) {
+			throwUnattached("getStructuredTags");
+		}
 		file ||= this.fileTypeConfig.textPath(this.docxtemplater);
 		return getStructuredTags(this.getInspected(file));
 	}
 
 	getAllStructuredTags() {
+		if (!this.attached) {
+			throwUnattached("getAllStructuredTags");
+		}
 		const result = [];
 		for (const file in this.fullInspected) {
 			pushArray(result, this.getStructuredTags(file));
@@ -160,6 +181,9 @@ class InspectModule {
 	}
 
 	getTemplatedFiles() {
+		if (!this.attached) {
+			throwUnattached("getTemplatedFiles");
+		}
 		return this.docxtemplater.templatedFiles;
 	}
 }

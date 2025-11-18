@@ -93,6 +93,7 @@ function startTest() {
 	describe("", () => {
 		require("./e2e/text.js");
 		require("./e2e/base.js");
+		require("./e2e/inspect.js");
 		require("./e2e/xml-templater.js");
 		require("./e2e/v3.js");
 		require("./e2e/errors.js");

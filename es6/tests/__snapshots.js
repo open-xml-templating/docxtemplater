@@ -683,6 +683,41 @@ exports[`Inspect module should get main tags`] = [
   }
 ]
 
+exports[`Inspect module should show throw error if calling getAllTags, getAllStructuredTags without attaching the module`] = {
+  "name": "Error",
+  "message": "You can not call Inspectmodule@getAllTags if the module was not attached. Please make sure to attach the module to a Docxtemplater instance with new Docxtemplater(zip, { modules: [inspectModule, ...]})"
+}
+
+exports[`Inspect module should show throw error if calling getAllTags, getAllStructuredTags without attaching the module-1`] = {
+  "name": "Error",
+  "message": "You can not call Inspectmodule@getTags if the module was not attached. Please make sure to attach the module to a Docxtemplater instance with new Docxtemplater(zip, { modules: [inspectModule, ...]})"
+}
+
+exports[`Inspect module should show throw error if calling getAllTags, getAllStructuredTags without attaching the module-2`] = {
+  "name": "Error",
+  "message": "You can not call Inspectmodule@getInspected if the module was not attached. Please make sure to attach the module to a Docxtemplater instance with new Docxtemplater(zip, { modules: [inspectModule, ...]})"
+}
+
+exports[`Inspect module should show throw error if calling getAllTags, getAllStructuredTags without attaching the module-3`] = {
+  "name": "Error",
+  "message": "You can not call Inspectmodule@getAllStructuredTags if the module was not attached. Please make sure to attach the module to a Docxtemplater instance with new Docxtemplater(zip, { modules: [inspectModule, ...]})"
+}
+
+exports[`Inspect module should show throw error if calling getAllTags, getAllStructuredTags without attaching the module-4`] = {
+  "name": "Error",
+  "message": "You can not call Inspectmodule@getTemplatedFiles if the module was not attached. Please make sure to attach the module to a Docxtemplater instance with new Docxtemplater(zip, { modules: [inspectModule, ...]})"
+}
+
+exports[`Inspect module should show throw error if calling getAllTags, getAllStructuredTags without attaching the module-5`] = {
+  "name": "Error",
+  "message": "You can not call Inspectmodule@getStructuredTags if the module was not attached. Please make sure to attach the module to a Docxtemplater instance with new Docxtemplater(zip, { modules: [inspectModule, ...]})"
+}
+
+exports[`Inspect module should show throw error if calling getStructuredTags without attaching the module`] = {
+  "name": "TypeError",
+  "message": "Cannot read properties of undefined (reading 'textPath')"
+}
+
 exports[`Multi errors should show an error when having table inside table`] = {
   "_type": "XTTemplateError",
   "name": "TemplateError",

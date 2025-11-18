@@ -690,7 +690,7 @@ describe("Module calls to on(eventName) to pass events", () => {
 });
 
 describe("Module call order", () => {
-	it.only("should work with v4 synchronously", () => {
+	it("should work with v4 synchronously", () => {
 		const calls = [];
 		const mod = {
 			name: "TestModule",
