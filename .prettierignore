@@ -41,3 +41,9 @@ reports
 /text.js
 /expressions.js
 *.pdf
+vendor
+LICENSE.md
+package.json
+package-lock.json
+test/mocha.html
+examples/
