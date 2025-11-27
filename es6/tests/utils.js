@@ -411,8 +411,8 @@ function jsonifyError(e) {
 }
 
 function errorVerifier(e, type, expectedError) {
-	const toShowOnFail = e.stack;
 	expect(e, "No error has been thrown").not.to.be.equal(null);
+	const toShowOnFail = e.stack;
 	expect(e, toShowOnFail).to.be.instanceOf(
 		Error,
 		"error is not a Javascript error"
