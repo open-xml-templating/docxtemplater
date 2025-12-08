@@ -1,3 +1,11 @@
+## 3.67.6
+
+Fix bug when using inspectModule.getAllStructuredTags() if you call `.render()` on the same instance.
+
+This could produce corrupt documents (if using with table module for example), or it could produce incomplete output.
+
+The inspectModule.getAllStructuredTags function can now be called before `.render()` without any side-effect.
+
 ## 3.67.5
 
 Throw error for Inspectmodule if trying to call inspectModule.getAllTags, inspectModule.getTags, ... without attaching the module to a docxtemplater instance.

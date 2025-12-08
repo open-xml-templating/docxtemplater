@@ -16,10 +16,24 @@ function getSlideIndex(path) {
 
 function getStructuredTags(postParsed) {
 	return postParsed.filter(isPlaceholder).map((part) => {
-		part.subparsed &&= getStructuredTags(part.subparsed);
+		if (!part.subparsed && !part.attrParsed) {
+			return part;
+		}
+		/*
+		 * #regression-postparsed-after-inspect-modified
+		 *
+		 * Copy the part instead of modifying it.
+		 * This fixes bugs when calling render after getStructuredTags for templates that contain loops.
+		 *
+		 * Fixed since v3.67.6
+		 */
+		part = { ...part };
+
+		if (part.subparsed) {
+			part.subparsed &&= getStructuredTags(part.subparsed);
+		}
 		if (part.attrParsed) {
 			part.subparsed = [];
-
 			if (part.attrParsed) {
 				part.subparsed = [];
 				for (const key in part.attrParsed) {

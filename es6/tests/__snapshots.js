@@ -551,7 +551,7 @@ exports[`Inspect module should get all tags (pptx file)`] = [
   }
 ]
 
-exports[`Inspect module should get all tags with additional data`] = [
+exports[`Inspect module should get all tags with additional data, and then render correctly`] = [
   {
     "type": "placeholder",
     "module": "loop",

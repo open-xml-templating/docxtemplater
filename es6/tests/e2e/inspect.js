@@ -1,5 +1,10 @@
 const inspectModule = require("../../inspect-module.js");
-const { expectToThrowSnapshot, createDocV4, expect } = require("../utils.js");
+const {
+	expectToThrowSnapshot,
+	createDocV4,
+	expect,
+	shouldBeSame,
+} = require("../utils.js");
 
 describe("Inspect module", () => {
 	it("should get main tags", () => {
@@ -88,12 +93,31 @@ describe("Inspect module", () => {
 		});
 	});
 
-	it("should get all tags with additional data", () => {
+	it("should get all tags with additional data, and then render correctly", () => {
 		const iModule = inspectModule();
-		createDocV4("tag-product-loop.docx", {
+		const doc = createDocV4("tag-product-loop.docx", {
 			modules: [iModule],
 		});
 		expect(iModule.getAllStructuredTags()).to.matchSnapshot();
+
+		// Tests #regression-postparsed-after-inspect-modified
+		doc.render({
+			products: [
+				{
+					title: "Lorem",
+					name: "ipsum",
+					reference: "0000",
+				},
+			],
+		});
+		const expectedName = "expected-tag-product.docx";
+		expect(doc.getFullText()).to.deep.equal(
+			"LoremProduct name : ipsumProduct reference : 0000"
+		);
+		shouldBeSame({
+			doc,
+			expectedName,
+		});
 	});
 
 	it("should show throw error if calling getAllTags, getAllStructuredTags without attaching the module", () => {
