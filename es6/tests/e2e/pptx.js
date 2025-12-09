@@ -25,13 +25,13 @@ describe("Pptx generation", () => {
 	it("should work with table pptx", function () {
 		return this.render({
 			name: "table-example.pptx",
+			expectedName: "expected-table-example.pptx",
 			data: {
 				users: [
 					{ msg: "hello", name: "mary" },
 					{ msg: "hello", name: "john" },
 				],
 			},
-			expectedName: "expected-table-example.pptx",
 		});
 	});
 
@@ -66,9 +66,9 @@ describe("Pptx generation", () => {
 	it("should work with loop pptx", function () {
 		return this.render({
 			name: "loop-example.pptx",
-			data: { users: [{ name: "Doe" }, { name: "John" }] },
 			expectedName: "expected-loop-example.pptx",
 			expectedText: " Doe  John ",
+			data: { users: [{ name: "Doe" }, { name: "John" }] },
 		});
 	});
 

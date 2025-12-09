@@ -122,6 +122,14 @@ module.exports = {
 				"postrender",
 				"*",
 			],
+			[
+				"async",
+				"name",
+				"expectedName",
+				"expectedText",
+				"data",
+				"options",
+			],
 		];
 		const allowedVars = sortedVars.flat();
 

@@ -938,13 +938,13 @@ describe("Multi line", () => {
 	it("should work when tag spans multiple lines (paragraphs)", function () {
 		return this.render({
 			name: "tag-spanning-multiline.docx",
+			expectedName: "expected-tag-spanning-multiline.docx",
 			data: {
 				first_name: "Hipp",
 				last_name: "Edgar",
 				phone: "0652455478",
 				description: "New Website",
 			},
-			expectedName: "expected-tag-spanning-multiline.docx",
 		});
 	});
 });

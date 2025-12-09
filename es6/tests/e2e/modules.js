@@ -557,11 +557,11 @@ describe("Module Matcher API", () => {
 		expect(
 			this.renderV4({
 				name: "tag-example.docx",
+				expectedText: "l29!! John",
+				data: { first_name: "John" },
 				options: {
 					modules: [module1()],
 				},
-				data: { first_name: "John" },
-				expectedText: "l29!! John",
 			})
 		);
 	});
@@ -985,10 +985,10 @@ describe("Module call order", () => {
 
 		this.render({
 			name: "loop-image-footer.docx",
+			data: { loop: [1, 2, 3, 4] },
 			options: {
 				modules: [mod],
 			},
-			data: { loop: [1, 2, 3, 4] },
 		});
 		expect(uniq(calls)).to.deep.equal([
 			"on",

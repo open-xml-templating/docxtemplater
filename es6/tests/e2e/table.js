@@ -4,7 +4,7 @@ describe("Table", () => {
 	it("should work with selfclosing tag inside table with paragraphLoop", function () {
 		return this.renderV4({
 			name: "loop-valid.docx",
-			options: { paragraphLoop: true },
+			expectedName: "expected-loop-valid.docx",
 			data: {
 				a: [
 					{
@@ -21,12 +21,16 @@ describe("Table", () => {
 					},
 				],
 			},
-			expectedName: "expected-loop-valid.docx",
+			options: { paragraphLoop: true },
 		});
 	});
 
 	it("should work with tables", function () {
 		return this.render({
+			name: "tag-intelligent-loop-table.docx",
+			expectedName: "expected-tag-intelligent-loop-table.docx",
+			expectedText:
+				"JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984",
 			data: {
 				clients: [
 					{
@@ -51,10 +55,6 @@ describe("Table", () => {
 					},
 				],
 			},
-			name: "tag-intelligent-loop-table.docx",
-			expectedName: "expected-tag-intelligent-loop-table.docx",
-			expectedText:
-				"JohnDoe+33647874513JaneDoe+33454540124PhilKiel+44578451245DaveSto+44548787984",
 		});
 	});
 
@@ -148,6 +148,7 @@ describe("Table", () => {
 	it("should not corrupt loop containing section", function () {
 		return this.render({
 			name: "loop-with-section.docx",
+			expectedName: "expected-multi-section.docx",
 			data: {
 				loop1: [
 					{
@@ -161,42 +162,41 @@ describe("Table", () => {
 					},
 				],
 			},
-			expectedName: "expected-multi-section.docx",
 		});
 	});
 
 	it("should repeat section break if the section break is inside a loop", function () {
 		return this.render({
 			name: "loop-with-page-section-break.docx",
-			data: { loop: [1, 2, 3] },
 			expectedName: "expected-page-section-break.docx",
+			data: { loop: [1, 2, 3] },
 		});
 	});
 
 	it("should not corrupt sdtcontent", function () {
 		return this.render({
 			name: "regression-sdtcontent-paragraph.docx",
+			expectedName: "expected-sdtcontent-valid.docx",
 			data: {
 				loop: {
 					name: "foo",
 					Id: "bar",
 				},
 			},
-			expectedName: "expected-sdtcontent-valid.docx",
 		});
 	});
 
 	it("should not corrupt table with empty rawxml within loop", function () {
 		return this.render({
 			name: "loops-with-table-raw-xml.docx",
-			options: { paragraphLoop: true },
+			expectedName: "expected-loop-raw-xml.docx",
 			data: {
 				loop: [
 					{ loop2: [] },
 					{ loop2: {}, raw: "<w:p><w:r><w:t>RAW</w:t></w:r></w:p>" },
 				],
 			},
-			expectedName: "expected-loop-raw-xml.docx",
+			options: { paragraphLoop: true },
 		});
 	});
 
@@ -210,8 +210,8 @@ describe("Table", () => {
 	it("should not corrupt table because of missing <w:p> after table", function () {
 		return this.renderV4({
 			name: "table-in-table-corruption.docx",
-			options: { paragraphLoop: true },
 			expectedName: "expected-table-in-table-corruption.docx",
+			options: { paragraphLoop: true },
 		});
 	});
 

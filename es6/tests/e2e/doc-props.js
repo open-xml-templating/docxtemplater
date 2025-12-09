@@ -30,6 +30,7 @@ describe("Docx document properties", () => {
 	it("should change custom values inside '<vt:lpwstr>' in file docProps/custom.xml", function () {
 		return this.render({
 			name: "tag-docprops-in-doc.docx",
+			expectedName: "expected-tag-docprops-in-doc.docx",
 			data: {
 				first_name: "Hipp",
 				email: "john@acme.com",
@@ -37,7 +38,6 @@ describe("Docx document properties", () => {
 				phone: "0652455478",
 				description: "New Website",
 			},
-			expectedName: "expected-tag-docprops-in-doc.docx",
 		});
 	});
 

@@ -221,6 +221,7 @@ describe("Special characters", () => {
 	it("should not double escape loop containing hebrew", function () {
 		return this.renderV4({
 			name: "loop-hebrew.docx",
+			expectedName: "expected-loop-hebrew.docx",
 			data: {
 				title: "Default title",
 				products: [
@@ -246,7 +247,6 @@ describe("Special characters", () => {
 					},
 				],
 			},
-			expectedName: "expected-loop-hebrew.docx",
 		});
 	});
 });
@@ -255,25 +255,25 @@ describe("Regression", () => {
 	it("should not corrupt when having sdt content", function () {
 		return this.renderV4({
 			name: "sdt-content.docx",
-			data: {},
 			expectedName: "expected-sdt-content.docx",
+			data: {},
 		});
 	});
 
 	it("should not corrupt document with tag inside title with linebreaks #docprops-linebreak", function () {
 		// Fixed in version 3.40.3
 		return this.render({
+			name: "tag-in-title.pptx",
+			expectedName: "expected-tag-in-title.pptx",
 			data: {
 				title: "Foo\nBar\nBaz",
 				creator: "Foo\nBar\nBaz",
 				lmb: "Foo\nBar\nBaz",
 			},
-			name: "tag-in-title.pptx",
 			options: {
 				paragraphLoop: true,
 				linebreaks: true,
 			},
-			expectedName: "expected-tag-in-title.pptx",
 		});
 	});
 
@@ -343,9 +343,9 @@ describe("Spacing/Linebreaks", () => {
 	it("should be possible to have linebreaks if setting the option", function () {
 		return this.render({
 			name: "tag-multiline.docx",
-			options: { linebreaks: true },
-			data: { description: "The description,\nmultiline" },
 			expectedName: "expected-multiline.docx",
+			data: { description: "The description,\nmultiline" },
+			options: { linebreaks: true },
 		});
 	});
 
@@ -362,80 +362,80 @@ describe("Spacing/Linebreaks", () => {
 	it("should not remove section if having paragraph loop just before", function () {
 		return this.render({
 			name: "paragraph-loop-with-section-break-after.docx",
-			options: { paragraphLoop: true, linebreaks: true },
 			expectedName: "expected-paragraph-loop-kept-section.docx",
+			options: { paragraphLoop: true, linebreaks: true },
 		});
 	});
 
 	it("should work with linebreaks and copy the run style onto new lines in docx", function () {
 		return this.renderV4({
+			async: true,
 			name: "multi-tags.docx",
-			options: { linebreaks: true },
+			expectedName: "expected-two-multiline.docx",
 			data: {
 				test: "The tag1,\nmultiline\nfoobaz",
 				test2: "The tag2,\nmultiline\nfoobar",
 			},
-			async: true,
-			expectedName: "expected-two-multiline.docx",
+			options: { linebreaks: true },
 		});
 	});
 
 	it("should work with linebreaks and copy the run style onto new lines in pptx", function () {
 		return this.render({
 			name: "tag-multiline.pptx",
-			options: { linebreaks: true },
+			expectedName: "expected-multiline.pptx",
 			data: {
 				description: "The description,\nmultiline",
 			},
-			expectedName: "expected-multiline.pptx",
+			options: { linebreaks: true },
 		});
 	});
 
 	it("should not fail when using linebreaks and tagvalue not a string", function () {
 		return this.render({
 			name: "tag-multiline.pptx",
-			options: { linebreaks: true },
+			expectedName: "expected-regression-multiline.pptx",
 			data: {
 				description: true,
 			},
-			expectedName: "expected-regression-multiline.pptx",
+			options: { linebreaks: true },
 		});
 	});
 
 	it("should drop empty lines found inside the tags", function () {
 		return this.renderV4({
 			name: "tag-spanning-multiple-lines.docx",
+			expectedName: "expected-no-multiline.docx",
 			options: {
 				parser: () => ({
 					get: () => "",
 				}),
 			},
-			expectedName: "expected-no-multiline.docx",
 		});
 	});
 
 	it("should drop empty lines found inside the tags", function () {
 		return this.renderV4({
 			name: "tag-spanning-multiple-lines.pptx",
+			expectedName: "expected-no-multiline.pptx",
 			options: {
 				parser: () => ({
 					get: () => "",
 				}),
 			},
-			expectedName: "expected-no-multiline.pptx",
 		});
 	});
 
 	it("should keep run props (font-size) for pptx file", function () {
 		return this.renderV4({
 			name: "run-props-linebreak.pptx",
+			expectedName: "expected-run-props-linebreak.pptx",
 			data: {
 				data: "blabla\nbloblo\nblublu",
 			},
 			options: {
 				linebreaks: true,
 			},
-			expectedName: "expected-run-props-linebreak.pptx",
 		});
 	});
 });
@@ -444,10 +444,10 @@ describe("Comments", () => {
 	it("should be possible to template values in comments", function () {
 		return this.renderV4({
 			name: "with-comments.docx",
+			expectedName: "expected-comments.docx",
 			data: {
 				name: "John",
 			},
-			expectedName: "expected-comments.docx",
 		});
 	});
 });
@@ -456,6 +456,7 @@ describe("Assignment", () => {
 	it("should be possible to assign a value from the template", function () {
 		return this.render({
 			name: "assignment.docx",
+			expectedName: "expected-assignment.docx",
 			data: {
 				first_name: "Jane",
 				last_name: "Doe",
@@ -464,7 +465,6 @@ describe("Assignment", () => {
 				paragraphLoop: true,
 				parser: expressionParser,
 			},
-			expectedName: "expected-assignment.docx",
 		});
 	});
 
@@ -528,32 +528,32 @@ describe("Unusual document extensions", () => {
 	it("should work with docm", function () {
 		return this.render({
 			name: "input.docm",
-			data: { user: "John" },
 			expectedName: "expected-docm.docm",
+			data: { user: "John" },
 		});
 	});
 
 	it("should work with pptm", function () {
 		return this.render({
 			name: "input.pptm",
-			data: { user: "John" },
 			expectedName: "expected-pptm.pptm",
+			data: { user: "John" },
 		});
 	});
 
 	it("should work with dotx", function () {
 		return this.render({
 			name: "input.dotx",
-			data: { user: "John" },
 			expectedName: "expected-dotx.dotx",
+			data: { user: "John" },
 		});
 	});
 
 	it("should work with dotm", function () {
 		return this.render({
 			name: "input.dotm",
-			data: { user: "John" },
 			expectedName: "expected-dotm.dotm",
+			data: { user: "John" },
 		});
 	});
 });
@@ -605,10 +605,10 @@ describe("Dash Loop", () => {
 	it("should not corrupt document if using empty {-a:p} inside table cell", function () {
 		return this.render({
 			name: "regression-dash-loop-in-table-cell.pptx",
+			expectedName: "expected-table-3-true-cells.pptx",
 			data: {
 				cond: [1, 2, 3],
 			},
-			expectedName: "expected-table-3-true-cells.pptx",
 		});
 	});
 });
@@ -618,11 +618,11 @@ describe("Section breaks inside loops", () => {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		return this.renderV4({
 			name: "page-break-inside-condition.docx",
+			expectedName: "expected-with-page-break-3-els.docx",
 			data: { cond: [1, 2, 3] },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-with-page-break-3-els.docx",
 		});
 	});
 
@@ -630,11 +630,11 @@ describe("Section breaks inside loops", () => {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		return this.renderV4({
 			name: "page-break-inside-condition.docx",
+			expectedName: "expected-with-page-break-falsy.docx",
 			data: { cond: false },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-with-page-break-falsy.docx",
 		});
 	});
 
@@ -642,10 +642,10 @@ describe("Section breaks inside loops", () => {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		return this.render({
 			name: "page-break-inside-condition.docx",
+			expectedName: "expected-page-break-falsy-std-loop.docx",
 			data: {
 				cond: false,
 			},
-			expectedName: "expected-page-break-falsy-std-loop.docx",
 		});
 	});
 
@@ -653,10 +653,10 @@ describe("Section breaks inside loops", () => {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		return this.render({
 			name: "page-break-inside-condition.docx",
+			expectedName: "expected-page-break-3-els-std-loop.docx",
 			data: {
 				cond: [1, 2, 3],
 			},
-			expectedName: "expected-page-break-3-els-std-loop.docx",
 		});
 	});
 
@@ -664,63 +664,64 @@ describe("Section breaks inside loops", () => {
 		// Warning : In libreoffice, this is not rendered correctly, use WPS or Word
 		return this.render({
 			name: "page-break-inside-condition.docx",
+			expectedName: "expected-page-break-truthy-std-loop.docx",
 			data: {
 				cond: true,
 			},
-			expectedName: "expected-page-break-truthy-std-loop.docx",
 		});
 	});
 
 	it("should work with table inside paragraph loop", function () {
 		return this.renderV4({
 			name: "pagebreak-table-loop.docx",
+			expectedName: "expected-pagebreak-table-loop.docx",
+			data: { loop: [1, 2, 3] },
 			options: {
 				paragraphLoop: true,
 			},
-			data: { loop: [1, 2, 3] },
-			expectedName: "expected-pagebreak-table-loop.docx",
 		});
 	});
 
 	it("should work at end of std loop", function () {
 		return this.render({
 			name: "paragraph-loop-with-pagebreak.docx",
+			expectedName: "expected-noparagraph-loop-with-pagebreak.docx",
 			data: {
 				users: [{ name: "Bar" }, { name: "John" }, { name: "Baz" }],
 			},
-			expectedName: "expected-noparagraph-loop-with-pagebreak.docx",
 		});
 	});
 
 	it("should work at end of paragraph loop", function () {
 		return this.renderV4({
 			name: "paragraph-loop-with-pagebreak.docx",
-			options: {
-				paragraphLoop: true,
-			},
+			expectedName: "expected-paragraph-loop-with-pagebreak.docx",
 			data: {
 				users: [{ name: "Bar" }, { name: "John" }, { name: "Baz" }],
 			},
-			expectedName: "expected-paragraph-loop-with-pagebreak.docx",
+			options: {
+				paragraphLoop: true,
+			},
 		});
 	});
 
 	it("should work with pagebreak afterwards with falsy value", function () {
 		return this.renderV4({
 			name: "paragraph-loop-with-pagebreak.docx",
-			options: {
-				paragraphLoop: true,
-			},
+			expectedName: "expected-paragraph-loop-empty-with-pagebreak.docx",
 			data: {
 				users: false,
 			},
-			expectedName: "expected-paragraph-loop-empty-with-pagebreak.docx",
+			options: {
+				paragraphLoop: true,
+			},
 		});
 	});
 
 	it("should make first section break of the file continuous", function () {
 		return this.renderV4({
 			name: "loop-with-continuous-section-break.docx",
+			expectedName: "expected-loop-with-continuous-section-break.docx",
 			data: {
 				loop: [1, 2, 3],
 			},
@@ -728,13 +729,13 @@ describe("Section breaks inside loops", () => {
 				paragraphLoop: true,
 				parser: expressionParser,
 			},
-			expectedName: "expected-loop-with-continuous-section-break.docx",
 		});
 	});
 
 	it("should work with delimiters << >> when saved in word as &gt;&gt;test>>", function () {
 		return this.renderV4({
 			name: "gt-delimiters.docx",
+			expectedName: "expected-rendered-hello.docx",
 			data: {
 				my_tag: "Hello John",
 			},
@@ -742,13 +743,13 @@ describe("Section breaks inside loops", () => {
 				parser: expressionParser,
 				delimiters: { start: "<<", end: ">>" },
 			},
-			expectedName: "expected-rendered-hello.docx",
 		});
 	});
 
 	it("should work with quotes in tag with angular parser", function () {
 		return this.renderV4({
 			name: "quotes-in-tag.docx",
+			expectedName: "expected-quotes-in-tag.docx",
 			data: {
 				user: "John",
 				hobbies: ["hiking", "reading"],
@@ -757,31 +758,30 @@ describe("Section breaks inside loops", () => {
 				parser: expressionParser,
 				paragraphLoop: true,
 			},
-			expectedName: "expected-quotes-in-tag.docx",
 		});
 	});
 
 	it("should make first section break of the file continuous", function () {
 		return this.renderV4({
 			name: "loop-with-continuous-section-break.docx",
+			expectedName: "expected-loop-with-continuous-section-break-2.docx",
 			data: {
 				loop: [1, 2, 3],
 			},
 			options: {
 				parser: expressionParser,
 			},
-			expectedName: "expected-loop-with-continuous-section-break-2.docx",
 		});
 	});
 
 	it('should work with w:type val="nextPage" section break', function () {
 		return this.render({
 			name: "nextpage-section-break.docx",
+			expectedName: "expected-nextpage-section-break.docx",
 			data: { items: [1, 2, 3, 4] },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-nextpage-section-break.docx",
 		});
 	});
 });
@@ -790,50 +790,51 @@ describe("ParagraphLoop", () => {
 	it("should work with docx", function () {
 		return this.render({
 			name: "users.docx",
+			expectedName: "expected-users.docx",
 			data: { users: ["John", "Jane", "Louis"] },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-users.docx",
 		});
 	});
 
 	it("should not drop image with text", function () {
 		return this.render({
 			name: "cond-image.docx",
+			expectedName: "expected-cond-image.docx",
 			data: { cond: true },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-cond-image.docx",
 		});
 	});
 
 	it("should not drop image without text", function () {
 		return this.render({
 			name: "cond-image-no-innertext.docx",
+			expectedName: "expected-cond-image-no-innertext.docx",
 			data: { cond: true },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-cond-image-no-innertext.docx",
 		});
 	});
 
 	it("should not drop image without text at beginning", function () {
 		return this.render({
 			name: "cond-image-no-innertext-before.docx",
+			expectedName: "expected-cond-image-no-innertext-before.docx",
 			data: { cond: true },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-cond-image-no-innertext-before.docx",
 		});
 	});
 
 	it("should work without removing extra text", function () {
 		return this.render({
 			name: "paragraph-loops.docx",
+			expectedName: "expected-paragraph-loop.docx",
 			data: {
 				condition: [1, 2],
 				l1: [
@@ -849,13 +850,13 @@ describe("ParagraphLoop", () => {
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-paragraph-loop.docx",
 		});
 	});
 
 	it("should work with pptx", function () {
 		return this.render({
 			name: "paragraph-loop.pptx",
+			expectedName: "expected-paragraph-loop.pptx",
 			data: {
 				users: [
 					{ age: 10, name: "Bar" },
@@ -866,7 +867,6 @@ describe("ParagraphLoop", () => {
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-paragraph-loop.pptx",
 		});
 	});
 
@@ -933,11 +933,11 @@ describe("ParagraphLoop", () => {
 	it("should work with spacing at the end", function () {
 		return this.render({
 			name: "spacing-end.docx",
+			expectedName: "expected-spacing-end.docx",
 			data: { name: "John" },
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-spacing-end.docx",
 		});
 	});
 
@@ -1258,6 +1258,8 @@ describe("Load Office 365 file", () => {
 	it("should handle files with word/document2.xml", function () {
 		return this.renderV4({
 			name: "office365.docx",
+			expectedName: "expected-office365.docx",
+			expectedText: "Value Value2",
 			data: {
 				test: "Value",
 				test2: "Value2",
@@ -1265,18 +1267,16 @@ describe("Load Office 365 file", () => {
 			options: {
 				paragraphLoop: true,
 			},
-			expectedName: "expected-office365.docx",
-			expectedText: "Value Value2",
 		});
 	});
 
 	it("should template header.xml (without digit like header1.xml)", function () {
 		return this.render({
 			name: "header-without-digit.docx",
+			expectedName: "expected-header-without-digit.docx",
 			data: {
 				name: "John",
 			},
-			expectedName: "expected-header-without-digit.docx",
 		});
 	});
 });
@@ -1285,10 +1285,10 @@ describe("Loops", () => {
 	it("should work with template", function () {
 		return this.renderV4({
 			name: "empty-loop-regression.docx",
+			expectedName: "expected-loop-regression.docx",
 			data: {
 				ice: [1, 2, 3],
 			},
-			expectedName: "expected-loop-regression.docx",
 		});
 	});
 });
@@ -1393,13 +1393,13 @@ describe("StripInvalidXml", () => {
 	it("should be possible to strip invalid xml chars", function () {
 		return this.render({
 			name: "tag-example.docx",
+			expectedName: "expected-john-doe.pptx",
 			data: { first_name: "John" + String.fromCharCode(28) + " Doe" },
 			options: {
 				paragraphLoop: true,
 				errorLogging: false,
 				stripInvalidXMLChars: true,
 			},
-			expectedName: "expected-john-doe.pptx",
 		});
 	});
 
@@ -1407,6 +1407,7 @@ describe("StripInvalidXml", () => {
 		// Regression fixed 3.61.2
 		return this.render({
 			name: "tag-example.docx",
+			expectedName: "expected-john-doe.pptx",
 			data: {
 				first_name:
 					"John" +
@@ -1419,7 +1420,6 @@ describe("StripInvalidXml", () => {
 				errorLogging: false,
 				stripInvalidXMLChars: true,
 			},
-			expectedName: "expected-john-doe.pptx",
 		});
 	});
 
@@ -1461,6 +1461,7 @@ describe("StripInvalidXml", () => {
 			() =>
 				this.render({
 					name: "two-tags.docx",
+					expectedName: "expected-john-doe.pptx",
 					data: {
 						first_name:
 							"John" + String.fromCharCode(28) + "xxxxxxx",
@@ -1470,7 +1471,6 @@ describe("StripInvalidXml", () => {
 						paragraphLoop: true,
 						errorLogging: false,
 					},
-					expectedName: "expected-john-doe.pptx",
 				}),
 			Errors.XTTemplateError,
 			expectedError
@@ -1480,13 +1480,13 @@ describe("StripInvalidXml", () => {
 	it("should not throw stack trace if specifying stripInvalidXMLChars and using number or other object", function () {
 		return this.render({
 			name: "tag-example.docx",
+			expectedName: "expected-12.pptx",
 			data: { first_name: 12, last_name: /a/g, phone: false },
 			options: {
 				paragraphLoop: true,
 				errorLogging: false,
 				stripInvalidXMLChars: true,
 			},
-			expectedName: "expected-12.pptx",
 		});
 	});
 });

@@ -4,6 +4,7 @@ describe("Nullgetter", () => {
 	it("should call nullgetter for loops synchonously", function () {
 		return this.render({
 			name: "multi-loop.docx",
+			expectedName: "expected-multi-loop.docx",
 			data: {
 				test2: "Value2",
 			},
@@ -38,13 +39,14 @@ describe("Nullgetter", () => {
 					}
 				},
 			},
-			expectedName: "expected-multi-loop.docx",
 		});
 	});
 
 	it("should call nullgetter for loops async", function () {
 		return this.render({
+			async: true,
 			name: "multi-loop.docx",
+			expectedName: "expected-multi-loop.docx",
 			data: {
 				test2: "Value2",
 			},
@@ -85,14 +87,13 @@ describe("Nullgetter", () => {
 					}
 				},
 			},
-			expectedName: "expected-multi-loop.docx",
-			async: true,
 		});
 	});
 
 	it("should call nullGetter with empty rawxml", function () {
 		return this.renderV4({
 			name: "table-raw-xml.docx",
+			expectedName: "expected-raw-xml-null.docx",
 			options: {
 				nullGetter: (part) => {
 					if (part.module === "rawxml") {
@@ -105,7 +106,6 @@ describe("Nullgetter", () => {
 					}
 				},
 			},
-			expectedName: "expected-raw-xml-null.docx",
 		});
 	});
 });

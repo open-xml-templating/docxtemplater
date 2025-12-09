@@ -1410,6 +1410,7 @@ describe("Syntax option", () => {
 	it("should be possible to allow unopened tag if syntax.allowUnopenedTag is true", function () {
 		return this.renderV4({
 			name: "bug-closing-placeholder-orphan.docx",
+			expectedName: "expected-bug-closing-placeholder-orphan.docx",
 			data: {
 				first_name: "John",
 				last_name: "Doe",
@@ -1423,7 +1424,6 @@ describe("Syntax option", () => {
 					allowUnopenedTag: true,
 				},
 			},
-			expectedName: "expected-bug-closing-placeholder-orphan.docx",
 		});
 	});
 });
