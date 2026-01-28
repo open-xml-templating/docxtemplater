@@ -63,7 +63,7 @@
     "eslint-plugin-xt": "file:.eslint-rules",
     "finalhandler": "^2.1.0",
     "globals": "^16.3.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "mkdirp": "^3.0.1",
     "mocha": "^10.8.2",
     "nyc": "^17.1.0",
