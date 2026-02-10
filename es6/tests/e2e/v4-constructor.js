@@ -146,21 +146,21 @@ describe("Constructor v4", () => {
 	});
 
 	it("should throw if using v4 constructor and setOptions", () => {
-		const doc = createDocV4("tag-multiline.docx");
+		const doc = createDocV4("tag-example.docx");
 		expect(() => doc.setOptions({ linebreaks: true })).to.throw(
 			"setOptions() should not be called manually when using the v4 constructor"
 		);
 	});
 
 	it("should throw if using v4 constructor and attachModule", () => {
-		const doc = createDocV4("tag-multiline.docx");
+		const doc = createDocV4("tag-example.docx");
 		expect(() => doc.attachModule({ render() {} })).to.throw(
 			"attachModule() should not be called manually when using the v4 constructor"
 		);
 	});
 
 	it("should throw if using v4 constructor and loadZip", () => {
-		const doc = createDocV4("tag-multiline.docx");
+		const doc = createDocV4("tag-example.docx");
 		expect(() => doc.loadZip()).to.throw(
 			"loadZip() should not be called manually when using the v4 constructor"
 		);
