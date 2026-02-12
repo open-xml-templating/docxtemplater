@@ -1581,6 +1581,54 @@ const fixtures = [
 	},
 	{
 		...noInternals,
+		it: "should be possible to use expressionParser preCompile",
+		contentText: "Hi {_name}, you are {age}",
+		options: {
+			parser: expressionParser.configure({
+				preCompile(tag, meta) {
+					if (tag[0] === "_") {
+						meta.tag.specialKey = "bold";
+						return tag.replace(/_/, "");
+					}
+					return tag;
+				},
+				postEvaluate(value, expr, scope, context) {
+					if (context.meta.part.specialKey === "bold") {
+						return `**${value}**`;
+					}
+					return value;
+				},
+			}),
+		},
+		scope: { name: "John", age: 12 },
+		resultText: "Hi **John**, you are 12",
+	},
+	{
+		...noInternals,
+		it: "should be possible to use expressionParserIE11 preCompile",
+		contentText: "Hi {_name}, you are {age}",
+		options: {
+			parser: expressionParserIE11.configure({
+				preCompile(tag, meta) {
+					if (tag[0] === "_") {
+						meta.tag.specialKey = "bold";
+						return tag.replace(/_/, "");
+					}
+					return tag;
+				},
+				postEvaluate(value, expr, scope, context) {
+					if (context.meta.part.specialKey === "bold") {
+						return `**${value}**`;
+					}
+					return value;
+				},
+			}),
+		},
+		scope: { name: "John", age: 12 },
+		resultText: "Hi **John**, you are 12",
+	},
+	{
+		...noInternals,
 		it: "should be possible to customize using postEvaluate for property access",
 		contentText: "Hi property access:{name}",
 		options: {

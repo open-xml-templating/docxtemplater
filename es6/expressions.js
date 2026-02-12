@@ -125,19 +125,27 @@ function getIdentifiers(x) {
 }
 
 function configuredParser(config = {}) {
+	config.normalizeQuotes ??= true;
+	config.handleDotThis ??= true;
+
 	let lastResult = null;
+
 	return function parser(tag, meta) {
 		if (typeof tag !== "string") {
 			throw new Error(
 				"The angular parser was used incorrectly, please refer to the documentation of docxtemplater."
 			);
 		}
-		tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
-
-		if (config.handleDotThis !== false) {
+		if (config.normalizeQuotes) {
+			tag = tag.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
+		}
+		if (config.handleDotThis) {
 			while (dotRegex.test(tag)) {
 				tag = tag.replace(dotRegex, "$1this$2");
 			}
+		}
+		if (config.preCompile) {
+			tag = config.preCompile(tag, meta);
 		}
 
 		const expr = expressions.compile(tag, {
@@ -146,6 +154,7 @@ function configuredParser(config = {}) {
 			handleThis: false,
 			...config,
 		});
+
 		/*
 		 * isAssignment will be true if your tag contains an Assignment, for example
 		 * when you write the following in your template :
@@ -155,7 +164,7 @@ function configuredParser(config = {}) {
 		 */
 		const lastBody = expr.ast.body[expr.ast.body.length - 1];
 		const isAssignment =
-			lastBody && lastBody.expression.type === "AssignmentExpression";
+			lastBody?.expression?.type === "AssignmentExpression";
 
 		if (config.postCompile) {
 			config.postCompile(tag, meta, expr);
