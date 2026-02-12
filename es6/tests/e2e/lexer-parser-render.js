@@ -72,10 +72,32 @@ function getDoc() {
 	return doc;
 }
 
+function normalizeFixture(fixture) {
+	if (fixture.contentText) {
+		if (fixture.content) {
+			throw new Error(
+				"invalid fixture : content and contentText cannot both be set"
+			);
+		}
+		fixture.content = `<w:t>${fixture.contentText}</w:t>`;
+		delete fixture.contentText;
+	}
+	if (fixture.contentParagraph) {
+		if (fixture.content) {
+			throw new Error(
+				"invalid fixture : content and contentParagraph cannot both be set"
+			);
+		}
+		fixture.content = `<w:p><w:r><w:t>${fixture.contentParagraph}</w:t></w:r></w:p>`;
+		delete fixture.contentParagraph;
+	}
+}
+
 function runTest(fixture, async = false) {
 	fixture.options ||= {};
 	const modules = [];
 	const iModule = inspectModule();
+	normalizeFixture(fixture);
 	modules.push(iModule, new AssertionModule());
 	if (fixture.assertBefore) {
 		fixture.assertBefore();
@@ -86,12 +108,6 @@ function runTest(fixture, async = false) {
 		}
 	}
 	const capture = captureLogs();
-	if (fixture.contentText) {
-		fixture.content = `<w:t>${fixture.contentText}</w:t>`;
-	}
-	if (fixture.contentParagraph) {
-		fixture.content = `<w:p><w:r><w:t>${fixture.contentParagraph}</w:t></w:r></w:p>`;
-	}
 	try {
 		doc = fixture.pptx
 			? makePptxV4(fixture.content, {
@@ -157,7 +173,7 @@ describe("Algorithm", () => {
 
 		if (fixture.async ?? true) {
 			(fixture.only ? it.only : it)(`Async ${fixture.it}`, () =>
-				// Return is important to make the test fail if there is an async error
+				// Return value is important to make the test fail if there is an async error
 				runTest(fixture, true)
 			);
 		}

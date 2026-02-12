@@ -164,6 +164,7 @@ declare namespace DXT {
 		allowUnclosedTag?: boolean;
 		allowUnbalancedLoops?: boolean;
 		changeDelimiterPrefix?: string | null;
+		preserveNewlinesInTags?: boolean;
 	}
 
 	interface Options {

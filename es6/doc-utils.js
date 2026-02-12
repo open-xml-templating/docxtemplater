@@ -145,6 +145,10 @@ function getDefaults() {
 		},
 		syntax: {
 			changeDelimiterPrefix: "=",
+			preserveNewlinesInTags: false,
+			allowUnopenedTag: false,
+			allowUnclosedTag: false,
+			allowUnbalancedLoops: false,
 		},
 	};
 }
@@ -350,6 +354,14 @@ function isParagraphEnd({ type, tag, position }) {
 		position === "end"
 	);
 }
+
+function isBreakTag({ type, tag, position }) {
+	return (
+		["w:br", "a:br"].indexOf(tag) !== -1 &&
+		type === "tag" &&
+		(position === "start" || position === "selfclosing")
+	);
+}
 function isTextStart({ type, position, text }) {
 	return text && type === "tag" && position === "start";
 }
@@ -443,6 +455,7 @@ module.exports = {
 	isContent,
 	isParagraphStart,
 	isParagraphEnd,
+	isBreakTag,
 	isTagStart,
 	isTagEnd,
 	isTextStart,

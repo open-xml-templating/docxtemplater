@@ -1,3 +1,119 @@
+## 3.68.0
+
+This new option allows newline characters to become part of the parsed
+tag name, enabling more advanced or custom syntaxes.
+
+---
+
+**Default behavior (unchanged)**
+
+Newlines inside tags are ignored:
+
+```txt
+Hello {first
+name}
+```
+
+Is parsed as:
+
+“firstname”
+
+---
+
+**New behavior (when enabled)**
+
+When `preserveNewlinesInTags` is set to true, newline characters are preserved
+and represented as \n in the parsed placeholder name.
+
+**Example**:
+
+```js
+const doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+    syntax: { preserveNewlinesInTags: true },
+});
+doc.render({ "first\nname": "John" });
+```
+
+Now:
+
+```txt
+Hello {first
+name}
+```
+
+Is parsed as:
+
+“first\nname”
+
+This makes it possible to distinguish:
+
+- {firstname}
+- {first\nname}
+
+---
+
+Important notes
+
+- This option only affects newline characters (\n).
+- Spaces inside tags are not modified.
+- The option is disabled by default.
+
+⚠️ Angular parser users: If you are using the Angular parser,
+`{first
+name}` becomes the literal expression "first\nname", which is not a
+valid Angular expression.
+
+You must either:
+
+- Avoid multiline tags, or
+- Preprocess the tag before Angular compiles it (see preCompile below)
+
+This feature is primarily intended for advanced users building custom
+syntaxes or integrating alternative expression parsers.
+
+---
+
+**Expression Parser: preCompile hook**
+
+Add a new preCompile hook to the expression parser configuration.
+
+This function allows you to transform the raw tag string before it is
+compiled by angular-expressions.
+
+**Example:**
+
+```js
+const expressionParser = require("docxtemplater/expressions.js");
+expressionParser.configure({
+    preCompile: function (tag) {
+        return tag.replace(/^\_/, ““);
+    }
+});
+```
+
+In this example:
+
+```txt
+{\_name} {name}
+```
+
+Both resolve to the key “name”.
+
+---
+
+**Use cases**
+
+The preCompile hook can be used for:
+
+- Custom syntaxes
+- Backward compatibility layers
+- Tag normalization
+- DSL-like behavior
+- Mapping legacy tag formats
+- Transforming multiline tags
+
 ## 3.67.6
 
 Fix bug when using inspectModule.getAllStructuredTags() if you call `.render()` on the same instance.

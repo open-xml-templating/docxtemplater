@@ -6,7 +6,9 @@ const {
 	makeDocxV4,
 	captureLogs,
 	paragraph,
+	wrapMultiError,
 } = require("../utils.js");
+
 const inspectModule = require("../../inspect-module.js");
 
 const printy = require("../printy.js");
@@ -1740,5 +1742,69 @@ describe("Get Tags", () => {
 		const withIdentifiers = addIdentifiers(iModule.getStructuredTags());
 		const simplified = simplifyTags(withIdentifiers);
 		expect(simplified).to.matchSnapshot();
+	});
+});
+
+describe("preserveNewlinesInTags option", () => {
+	it("should be possible to get splitted tag", () => {
+		const iModule = inspectModule();
+		createDocV4("tag-splitted-multiline.docx", {
+			modules: [iModule],
+			syntax: {
+				preserveNewlinesInTags: true,
+			},
+		});
+		const allTags = iModule.getAllTags();
+		expect(Object.keys(allTags)).to.deep.equal(["l1\nl2\n\nl3\n\nl4"]);
+	});
+
+	it("should be possible to render template with multiline tag", () => {
+		const doc = createDocV4("tag-splitted-multiline.docx", {
+			syntax: {
+				preserveNewlinesInTags: true,
+			},
+		});
+		doc.render({
+			"l1\nl2\n\nl3\n\nl4": "John",
+		});
+		shouldBeSame({ doc, expectedName: "expected-john.docx" });
+	});
+
+	it("should fail with angular parser with multiline template", () => {
+		const capture = captureLogs();
+		const expectedError = {
+			name: "ScopeParserError",
+			message: "Scope parser compilation failed",
+			properties: {
+				file: "word/document.xml",
+				id: "scopeparser_compilation_failed",
+				xtag: "l1\nl2\n\nl3\n\nl4",
+				rootError: {
+					message: `[$parse:syntax] Syntax Error: Token 'l2' is an unexpected token at column 4 of the expression [l1
+l2
+
+l3
+
+l4] starting at [l2
+
+l3
+
+l4].
+http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/syntax?p0=l2&p1=is%20an%20unexpected%20token&p2=4&p3=l1%0Al2%0A%0Al3%0A%0Al4&p4=l2%0A%0Al3%0A%0Al4`,
+				},
+			},
+		};
+		expectToThrow(
+			() =>
+				createDocV4("tag-splitted-multiline.docx", {
+					parser: expressionParser,
+					syntax: {
+						preserveNewlinesInTags: true,
+					},
+				}),
+			Errors.XTTemplateError,
+			wrapMultiError(expectedError)
+		);
+		capture.stop();
 	});
 });

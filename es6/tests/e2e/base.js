@@ -933,6 +933,22 @@ describe("Raw Xml Insertion", () => {
 
 describe("Multi line", () => {
 	it("should work when tag spans multiple lines (paragraphs)", function () {
+		/*
+		 * If a tag spans multiple lines, like in :
+		 *
+		 * {
+		 *
+		 * last_name
+		 * }
+		 *
+		 * Then docxtemplater will by default ignore all new lines (it does'nt take into account the fact that there are multiple paragraphs (<w:p> elements) , or that there are some linebreaks inside the paragraphs (<w:br/> tags)
+		 *
+		 * It is possible to change this behavior so that the tag will be parsed as :
+		 *
+		 * "\n\nlast_name\n" by setting the option :
+		 *
+		 * syntax.preserveNewlinesInTags = true; (the default is falw)
+		 */
 		return this.render({
 			name: "tag-spanning-multiline.docx",
 			expectedName: "expected-tag-spanning-multiline.docx",

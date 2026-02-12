@@ -2736,6 +2736,32 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		...noInternals,
+		it: "should be possible to render template with multiline tag (multiple paragraphs) with syntax.preserveNewlinesInTags = true",
+		content:
+			"<w:p><w:r><w:t>zozo{ab</w:t></w:r></w:p><w:p><w:r><w:t>cde}</w:t></w:r></w:p>",
+		options: {
+			syntax: {
+				preserveNewlinesInTags: true,
+			},
+		},
+		scope: { "ab\ncde": "John" },
+		result: '<w:p><w:r><w:t xml:space="preserve">zozoJohn</w:t></w:r><w:r><w:t></w:t></w:r></w:p>',
+	},
+	{
+		...noInternals,
+		it: "should be possible to render template with multiline tag (w:br) with syntax.preserveNewlinesInTags = true",
+		content:
+			'<w:r><w:t xml:space="preserve">Hello {first</w:t></w:r><w:r><w:br/></w:r><w:r><w:t xml:space="preserve">name}</w:t></w:r>',
+		options: {
+			syntax: {
+				preserveNewlinesInTags: true,
+			},
+		},
+		scope: { "first\nname": "John" },
+		result: '<w:r><w:t xml:space="preserve">Hello John</w:t></w:r><w:r></w:r><w:r><w:t/></w:r>',
+	},
+	{
+		...noInternals,
 		it: "should be possible to set change delimiter prefix to null",
 		content: "<w:p><w:r><w:t>{$[[ ]]$}[[name]]</w:t></w:r></w:p>",
 		options: {

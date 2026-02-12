@@ -1,4 +1,10 @@
-const { wordToUtf8, pushArray } = require("./doc-utils.js");
+const {
+	wordToUtf8,
+	pushArray,
+	isParagraphStart,
+	isBreakTag,
+} = require("./doc-utils.js");
+
 const { match, getValue, getValues } = require("./prefix-matcher.js");
 
 function getMatchers(modules, options) {
@@ -137,6 +143,12 @@ const parser = {
 				return parsed;
 			}
 			if (token.type !== "content" || token.position !== "insidetag") {
+				if (
+					options.syntax.preserveNewlinesInTags &&
+					(isBreakTag(token) || isParagraphStart(token))
+				) {
+					placeHolderContent += "\n";
+				}
 				if (droppedTags.indexOf(token.tag) !== -1) {
 					return parsed;
 				}

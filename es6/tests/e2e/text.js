@@ -145,13 +145,15 @@ describe("Text templating", () => {
 		);
 	});
 
-	describe("should work asynchronously", async () => {
-		const doc = new TxtTemplater("Hello {name}", {});
-		const result = await doc.renderAsync({
-			name: new Promise((resolve) => {
-				resolve("John");
-			}),
+	describe("Async", () => {
+		it("should work", async () => {
+			const doc = new TxtTemplater("Hello {name}", {});
+			const result = await doc.renderAsync({
+				name: new Promise((resolve) => {
+					resolve("John");
+				}),
+			});
+			expect(result).to.equal("Hello John");
 		});
-		expect(result).to.equal("Hello John");
 	});
 });
