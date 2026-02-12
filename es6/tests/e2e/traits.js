@@ -209,7 +209,7 @@ describe("Traits", () => {
 		capture.stop();
 	});
 
-	it("should just call onError but keep it if the return value is not a string", () => {
+	it("should just call onError", () => {
 		const moduleName = "foo_module/foo";
 		const module = {
 			name: "FooModule",
@@ -240,7 +240,6 @@ describe("Traits", () => {
 							}
 						}
 						if (error === true) {
-							// This error wil be catched by onError and then ignored (and put into ignoredErrs)
 							const err = new XTTemplateError(
 								"Foo tag should be the only text in a paragraph"
 							);
@@ -253,9 +252,6 @@ describe("Traits", () => {
 						return part;
 					},
 					expandTo: "w:p",
-					onError() {
-						return "";
-					},
 				});
 				return parsed;
 			},
@@ -270,9 +266,9 @@ describe("Traits", () => {
 
 		const capture = captureLogs();
 		expectToThrowSnapshot(() =>
-			makeDocxV4("<w:t>Foo {__user} {__bar}</w:t></w:p>", {
+			makeDocxV4("<w:p><w:t>Foo {__user} {__bar}</w:t></w:p>", {
 				modules: [module],
-			}).render()
+			})
 		);
 		capture.stop();
 	});

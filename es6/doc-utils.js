@@ -449,7 +449,12 @@ function stableSort(arr, compare) {
 	// Stryker restore all
 }
 
+function getPartWithDelimiters(part, options) {
+	return options.delimiters.start + part.raw + options.delimiters.end;
+}
+
 module.exports = {
+	getPartWithDelimiters,
 	endsWith,
 	startsWith,
 	isContent,

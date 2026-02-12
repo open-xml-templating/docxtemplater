@@ -1,3 +1,7 @@
+## 3.68.1
+
+Update `explanation` of some errors to have more context (up to 30 chars instead of 10 chars for unclosed loops for example).
+
 ## 3.68.0
 
 This new option allows newline characters to become part of the parsed

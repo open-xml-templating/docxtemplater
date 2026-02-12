@@ -3310,7 +3310,8 @@ fixtures.push({
 		name: "RenderingError",
 		message: "Non string values are not allowed for rawXML tags",
 		properties: {
-			explanation: "The value of the raw tag : 'rawxml' is not a string",
+			explanation:
+				'The value of the raw tag : "{@rawxml}" is not a string',
 			file: "word/document.xml",
 			id: "invalid_raw_xml_value",
 			value: 11,

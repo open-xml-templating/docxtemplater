@@ -73,7 +73,7 @@ function getUnopenedTagException(options) {
 		lIndex: options.lIndex,
 		explanation: `The tag beginning with "${options.xtag.substr(
 			0,
-			10
+			30
 		)}" is unopened`,
 	};
 	return err;
@@ -91,7 +91,7 @@ function getDuplicateOpenTagException(options) {
 		lIndex: options.lIndex,
 		explanation: `The tag beginning with "${options.xtag.substr(
 			0,
-			10
+			30
 		)}" has duplicate open tags`,
 	};
 	return err;
@@ -109,7 +109,7 @@ function getDuplicateCloseTagException(options) {
 		lIndex: options.lIndex,
 		explanation: `The tag ending with "${options.xtag.substr(
 			0,
-			10
+			30
 		)}" has duplicate close tags`,
 	};
 	return err;
@@ -125,7 +125,7 @@ function getUnclosedTagException(options) {
 		lIndex: options.lIndex,
 		explanation: `The tag beginning with "${options.xtag.substr(
 			0,
-			10
+			30
 		)}" is unclosed`,
 	};
 	return err;
@@ -155,12 +155,12 @@ function getCorruptCharactersException({ tag, value, offset }) {
 		xtag: tag,
 		value,
 		offset,
-		explanation: `There are some corrupt characters for the field ${tag}`,
+		explanation: `There are some corrupt characters for the field "${tag}"`,
 	};
 	return err;
 }
 
-function getInvalidRawXMLValueException({ tag, value, offset }) {
+function getInvalidRawXMLValueException({ tag, value, offset, partDelims }) {
 	const err = new XTRenderingError(
 		"Non string values are not allowed for rawXML tags"
 	);
@@ -169,7 +169,7 @@ function getInvalidRawXMLValueException({ tag, value, offset }) {
 		xtag: tag,
 		value,
 		offset,
-		explanation: `The value of the raw tag : '${tag}' is not a string`,
+		explanation: `The value of the raw tag : "${partDelims}" is not a string`,
 	};
 	return err;
 }

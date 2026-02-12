@@ -1,5 +1,5 @@
 const traits = require("../traits.js");
-const { isContent } = require("../doc-utils.js");
+const { isContent, getPartWithDelimiters } = require("../doc-utils.js");
 const {
 	throwRawTagShouldBeOnlyTextInParagraph,
 	getInvalidRawXMLValueException,
@@ -47,7 +47,7 @@ class RawXmlModule {
 				message: "Raw tag not in paragraph",
 				id: "raw_tag_outerxml_invalid",
 				explanation: (part) =>
-					`The tag "${part.value}" is not inside a paragraph, putting raw tags inside an inline loop is disallowed.`,
+					`The tag "${getPartWithDelimiters(part, this.docxtemplater)}" is not inside a paragraph, putting raw tags inside an inline loop is disallowed.`,
 			},
 		});
 	}
@@ -69,11 +69,14 @@ class RawXmlModule {
 		if (typeof value === "string") {
 			return { value };
 		}
+
 		return {
 			errors: [
 				getInvalidRawXMLValueException({
 					tag: part.value,
 					value,
+					partDelims: getPartWithDelimiters(part, this.docxtemplater),
+					part,
 					offset: part.offset,
 				}),
 			],
