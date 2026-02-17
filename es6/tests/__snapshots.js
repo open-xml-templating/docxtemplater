@@ -718,6 +718,350 @@ exports[`Inspect module should show throw error if calling getStructuredTags wit
   "message": "Cannot read properties of undefined (reading 'textPath')"
 }
 
+exports[`Keep Postparse valid XML when having error in lexing should work when having duplicate tags`] = `<w:p>
+    <w:r>
+        <w:t xml:space="preserve">name</w:t>
+    </w:r>
+</w:p>
+`
+
+exports[`Keep Postparse valid XML when having error in lexing should work when having multiple unclosed tags`] = `<?xml version="1.0" standalone="yes"?>
+<w:document mc:Ignorable="w14 wp14 w15" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
+    <w:body>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t>
+{firstName
+</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t>
+{lastName
+</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t>
+{%image
+</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:drawing>
+                    <wp:inline distB="0" distL="0" distR="0" distT="0">
+                        <wp:extent cx="3543300" cy="1866900"/>
+                        <wp:effectExtent b="0" l="0" r="0" t="0"/>
+                        <wp:docPr id="1" name="Chart 1"/>
+                        <wp:cNvGraphicFramePr/>
+                        <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+                            <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart">
+                                <c:chart r:id="rId2" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"/>
+                            </a:graphicData>
+                        </a:graphic>
+                    </wp:inline>
+                </w:drawing>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:br/>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+            </w:r>
+        </w:p>
+        <w:sectPr>
+            <w:type w:val="nextPage"/>
+            <w:pgSz w:h="15840" w:w="12240"/>
+            <w:pgMar w:bottom="1440" w:footer="0" w:gutter="0" w:header="0" w:left="1440" w:right="1440" w:top="1440"/>
+            <w:pgNumType w:fmt="decimal"/>
+            <w:formProt w:val="false"/>
+            <w:textDirection w:val="lrTb"/>
+            <w:docGrid w:charSpace="0" w:linePitch="360" w:type="default"/>
+        </w:sectPr>
+    </w:body>
+</w:document>
+`
+
+exports[`Keep Postparse valid XML when having error in lexing should work when having one unclosed tag`] = `<?xml version="1.0" standalone="yes"?>
+<w:document mc:Ignorable="w14 wp14 w15" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
+    <w:body>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t>
+{lastName
+</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:drawing>
+                    <wp:inline distB="0" distL="0" distR="0" distT="0">
+                        <wp:extent cx="3543300" cy="1866900"/>
+                        <wp:effectExtent b="0" l="0" r="0" t="0"/>
+                        <wp:docPr id="1" name="Chart 1"/>
+                        <wp:cNvGraphicFramePr/>
+                        <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+                            <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart">
+                                <c:chart r:id="rId2" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"/>
+                            </a:graphicData>
+                        </a:graphic>
+                    </wp:inline>
+                </w:drawing>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:br/>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t>
+Rest of doc
+</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t>
+End of doc
+</w:t>
+            </w:r>
+        </w:p>
+        <w:sectPr>
+            <w:type w:val="nextPage"/>
+            <w:pgSz w:h="15840" w:w="12240"/>
+            <w:pgMar w:bottom="1440" w:footer="0" w:gutter="0" w:header="0" w:left="1440" w:right="1440" w:top="1440"/>
+            <w:pgNumType w:fmt="decimal"/>
+            <w:formProt w:val="false"/>
+            <w:textDirection w:val="lrTb"/>
+            <w:docGrid w:charSpace="0" w:linePitch="360" w:type="default"/>
+        </w:sectPr>
+    </w:body>
+</w:document>
+`
+
+exports[`Keep Postparse valid XML when having error in lexing should work when having one unopened tag`] = `<?xml version="1.0" standalone="yes"?>
+<w:document mc:Ignorable="w14 wp14 w15" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
+    <w:body>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t xml:space="preserve">Doc</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t xml:space="preserve">loop</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t>
+End of doc
+</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+                <w:t xml:space="preserve">xy</w:t>
+            </w:r>
+        </w:p>
+        <w:p>
+            <w:pPr>
+                <w:pStyle w:val="Normal"/>
+                <w:widowControl/>
+                <w:bidi w:val="0"/>
+                <w:spacing w:after="160" w:before="0" w:line="278" w:lineRule="auto"/>
+                <w:jc w:val="start"/>
+                <w:rPr>
+                </w:rPr>
+            </w:pPr>
+            <w:r>
+                <w:rPr>
+                </w:rPr>
+            </w:r>
+        </w:p>
+        <w:sectPr>
+            <w:type w:val="nextPage"/>
+            <w:pgSz w:h="15840" w:w="12240"/>
+            <w:pgMar w:bottom="1440" w:footer="0" w:gutter="0" w:header="0" w:left="1440" w:right="1440" w:top="1440"/>
+            <w:pgNumType w:fmt="decimal"/>
+            <w:formProt w:val="false"/>
+            <w:textDirection w:val="lrTb"/>
+            <w:docGrid w:charSpace="0" w:linePitch="360" w:type="default"/>
+        </w:sectPr>
+    </w:body>
+</w:document>
+`
+
+exports[`Keep Postparse valid XML when having error in lexing should work when having raw tags outside paragraph`] = `<w:t xml:space="preserve">myrawtag</w:t>
+`
+
 exports[`Multi errors should show an error when having table inside table`] = {
   "_type": "XTTemplateError",
   "name": "TemplateError",

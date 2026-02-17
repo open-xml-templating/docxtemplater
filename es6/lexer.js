@@ -160,9 +160,6 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 							offset: lastDelimiterOffset,
 						})
 					);
-					lastDelimiterMatch = currDelimiterMatch;
-					delimiterAcc.push({ ...currDelimiterMatch, error: true });
-					return delimiterAcc;
 				}
 				delimiterAcc.pop();
 			}
@@ -224,9 +221,8 @@ function getDelimiterErrors(delimiterMatches, fullText, syntaxOptions) {
 					offset: lastDelimiterOffset,
 				})
 			);
-		} else {
-			delimiterWithErrors.pop();
 		}
+		delimiterWithErrors.pop();
 	}
 
 	return {

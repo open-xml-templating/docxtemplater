@@ -13,6 +13,7 @@ const {
 	captureLogs,
 } = require("../utils.js");
 const expressionParser = require("../../expressions.js");
+const xmlPrettify = require("../xml-prettify.js");
 
 describe("Compilation errors", () => {
 	it("should fail when parsing invalid xml (1)", () => {
@@ -1425,5 +1426,96 @@ describe("Syntax option", () => {
 				},
 			},
 		});
+	});
+});
+
+describe("Keep Postparse valid XML when having error in lexing", () => {
+	/*
+	 * These types of tests have been added in version 3.68.2 and make sure that the postparsed is still complete after having a lexer error.
+	 *
+	 * In previous versions, the following template :
+	 *
+	 * ```docx
+	 * Hello {name
+	 *
+	 * Some other text
+	 * Foo bar
+	 * ```
+	 *
+	 * Would have its postparsed value set to :
+	 *
+	 * `[ { type: content, value: Hello}]`
+	 * __Note there is no content after the Hello in the postparsed value__
+	 *
+	 * This is clearly incorrect and removed the possibility for other modules to find other errors in the template (chart module for example in version 3.20.2 had this issue when having a template that has unclosed tags).
+	 */
+	function getXmlPostparsedWithErrors(name, xml) {
+		let pp = null;
+		const ppModule = {
+			name: "ppmodule",
+			postparse(postparsed) {
+				pp = postparsed;
+			},
+		};
+		let hasError = false;
+		try {
+			if (name) {
+				createDocV4(name, {
+					modules: [ppModule],
+					errorLogging: false,
+				});
+			} else {
+				makeDocxV4(xml, {
+					modules: [ppModule],
+					errorLogging: false,
+				});
+			}
+		} catch {
+			hasError = true;
+		}
+		if (!hasError) {
+			throw new Error(
+				`Expected to throw an error for this document '${name}'`
+			);
+		}
+
+		let xmlPostparsed = "";
+		for (const p of pp) {
+			xmlPostparsed += p.value + "\n";
+		}
+		return xmlPrettify(xmlPostparsed);
+	}
+
+	it("should work when having one unclosed tag", () => {
+		const xmlPostparsed = getXmlPostparsedWithErrors("one-unclosed.docx");
+		expect(xmlPrettify(xmlPostparsed)).to.matchSnapshot();
+	});
+
+	it("should work when having multiple unclosed tags", () => {
+		const xmlPostparsed = getXmlPostparsedWithErrors(
+			"multiple-unclosed.docx"
+		);
+		expect(xmlPrettify(xmlPostparsed)).to.matchSnapshot();
+	});
+
+	it("should work when having one unopened tag", () => {
+		const xmlPostparsed = getXmlPostparsedWithErrors("one-unopened.docx");
+		expect(xmlPrettify(xmlPostparsed)).to.matchSnapshot();
+	});
+
+	it("should work when having duplicate tags", () => {
+		const xmlPostparsed = getXmlPostparsedWithErrors(
+			false,
+			"<w:p><w:r><w:t>{{name}}</w:t></w:r></w:p>"
+		);
+		expect(xmlPrettify(xmlPostparsed)).to.matchSnapshot();
+	});
+
+	it("should work when having raw tags outside paragraph", () => {
+		const xmlPostparsed = getXmlPostparsedWithErrors(
+			false,
+			"<w:t>{@myrawtag}</w:t>"
+		);
+		expect(xmlPrettify(xmlPostparsed)).to.matchSnapshot();
 	});
 });

@@ -1,3 +1,36 @@
+## 3.68.2
+
+### Bugfix: Preserve full postparsed output after lexer error
+
+Add regression tests to ensure that `postparsed` remains complete even when a lexer error occurs (for example with unclosed tags).
+
+Previously, given the following invalid template:
+
+```docx
+Hello {name
+
+Some other text
+[[A chart here]]
+Foo bar
+```
+
+The resulting `postparsed` value was incorrectly truncated to:
+
+```js
+[{ type: "content", value: "Hello" }];
+```
+
+All content after `Hello` was discarded.
+
+This behavior was incorrect and prevented other modules from properly detecting
+additional template errors. For example, the chart module (notably in version
+3.20.2) could fail to report errors in charts when templates contained unclosed
+tags before that chart.
+
+The parser now preserves the full document structure in `postparsed`, even when a lexer error is thrown, allowing other modules to continue validation correctly.
+
+This allows to be sure to show all errors when having such an unclosed tag.
+
 ## 3.68.1
 
 Update `explanation` of some errors to have more context (up to 30 chars instead of 10 chars for unclosed loops for example).
