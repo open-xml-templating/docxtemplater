@@ -388,22 +388,21 @@ function getUnbalancedLoopException(pair, lastPair) {
 	/*
 	 * This error happens if you create a table and misplace tags inside the table :
 	 *
-	 * ```docx
-	 * -------------------------------
-	 * | {#a}X       | {/a}{#b}Y{/b} |
-	 * -------------------------------
+	 * ```docx-md
+	 * | Head1    | Head2         |
+	 * | -------- | ------------  |
+	 * | {#a}X    | {/a}{#b}Y{/b} |
 	 * ```
 	 *
 	 *  In the case above, the {#a} and {/a} will expand to the whole loop, but this is not possible because of the other loop in {#b}Y{/b}
 	 *
 	 *  Instead, you should usually write :
 	 *
-	 * ```docx
-	 * -------------------------------
-	 * | {#a}X       | {#b}Y{/b}{/a} |
-	 * -------------------------------
+	 * ```docx-md
+	 * | Head1    | Head2         |
+	 * | -------- | ------------  |
+	 * | {#a}X    | {#b}Y{/b}{/a} |
 	 * ```
-	 *
 	 */
 	err.properties = {
 		id: "unbalanced_loop_tags",
@@ -534,12 +533,10 @@ function getLoopPositionProducesInvalidXMLError({ tag, offset }) {
 	 *
 	 * For example, if you write:
 	 *
-	 * ```docx
-	 * ======================
-	 * | header1  | header2 |
-	 * ----------------------
-	 * | {#users} | content |
-	 * ======================
+	 * ```docx-md
+	 * | Head1    | Head2         |
+	 * | -------- | ------------  |
+	 * | {#users} | content       |
 	 *
 	 * {/users}
 	 * ```
