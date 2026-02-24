@@ -167,7 +167,6 @@ function getUnclosedTagException(options) {
 	 * ```docx
 	 * Hello {name !
 	 * ```
-	 *
 	 */
 	err.properties = {
 		xtag: first(options.xtag.split(" ")).substr(1), // name
