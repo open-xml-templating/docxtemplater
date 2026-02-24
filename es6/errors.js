@@ -527,8 +527,6 @@ function getLoopPositionProducesInvalidXMLError({ tag, offset }) {
 		`The position of the loop tags "${tag}" would produce invalid XML`
 	);
 	/*
-	 * ### loop_position_invalid
-	 *
 	 * This happens when a loop would produce invalid XML.
 	 *
 	 * For example, if you write:
