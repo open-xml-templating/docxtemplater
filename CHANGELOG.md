@@ -1,3 +1,46 @@
+## 3.68.3
+
+If you use the following template :
+
+```docx
+{fn}
+```
+
+And your code is :
+
+```js
+const doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+});
+doc.render({
+    fn: (x) => {
+        throw new Error("foobar");
+    },
+});
+```
+
+In previous versions, this error would not be wrapped at all, and you would not be able to access `error.properties.xtag`.
+
+Since this version, we now throw a "ScopeParserError".
+
+The following will be thrown :
+
+```js
+const err = {
+    name: "ScopeParserError",
+    message: "Scope parser execution failed",
+    properties: {
+        id: "scopeparser_execution_failed",
+        file: "word/document.xml",
+        xtag: "fn",
+        scope: {},
+        rootError: { message: "foobar" },
+        offset: 0,
+    },
+};
+```
+
 ## 3.68.2
 
 ### Bugfix: Preserve full postparsed output after lexer error

@@ -419,6 +419,76 @@ describe("Runtime errors", () => {
 			expectedError
 		);
 	});
+
+	it("should fail if having error in function", () => {
+		expectToThrow(
+			() =>
+				makeDocxV4("<w:p><w:r><w:t>{fn}</w:t></w:r></w:p>", {
+					errorLogging: false,
+				}).render({
+					fn: () => {
+						throw new Error("foobar");
+					},
+				}),
+			Errors.XTTemplateError,
+			{
+				name: "TemplateError",
+				message: "Multi error",
+				properties: {
+					errors: [
+						{
+							name: "ScopeParserError",
+							message: "Scope parser execution failed",
+							properties: {
+								id: "scopeparser_execution_failed",
+								file: "word/document.xml",
+								xtag: "fn",
+								scope: {},
+								rootError: { message: "foobar" },
+								offset: 0,
+							},
+						},
+					],
+					id: "multi_error",
+				},
+			}
+		);
+	});
+
+	it("should fail if having error in function async", () => {
+		expectToThrowAsync(
+			() =>
+				makeDocxV4("<w:p><w:r><w:t>{fn}</w:t></w:r></w:p>", {
+					errorLogging: false,
+				}).renderAsync({
+					fn: () => {
+						throw new Error("foobar");
+					},
+				}),
+			Errors.XTTemplateError,
+			{
+				name: "TemplateError",
+				message: "Multi error",
+				properties: {
+					errors: [
+						{
+							name: "ScopeParserError",
+							message: "Scope parser execution failed",
+							properties: {
+								id: "scopeparser_execution_failed",
+								file: "word/document.xml",
+								xtag: "fn",
+								scope: {},
+								rootError: { message: "foobar" },
+								offset: 0,
+							},
+						},
+					],
+					id: "multi_error",
+				},
+			}
+		);
+	});
 });
 
 describe("Internal errors", () => {

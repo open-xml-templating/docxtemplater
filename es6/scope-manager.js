@@ -17,6 +17,7 @@ function find(list, fn) {
 
 function getValue(tag, meta, num) {
 	const scope = this.scopeList[num];
+	const lastScope = this.scopeList[this.scopeList.length - 1];
 	if (this.root.finishedResolving) {
 		let w = this.resolved;
 		for (
@@ -60,11 +61,25 @@ function getValue(tag, meta, num) {
 	if (result == null && num > 0) {
 		return getValue.call(this, tag, meta, num - 1);
 	}
+
+	if (typeof result === "function") {
+		try {
+			result = result(lastScope, this);
+		} catch (error) {
+			throw getScopeParserExecutionError({
+				tag,
+				scope,
+				error,
+				offset: meta.part.offset,
+			});
+		}
+	}
 	return result;
 }
 
 function getValueAsync(tag, meta, num) {
 	const scope = this.scopeList[num];
+	const lastScope = this.scopeList[this.scopeList.length - 1];
 	// search in the scopes (in reverse order) and keep the first defined value
 	let parser;
 	if (!this.cachedParsers || !meta.part) {
@@ -94,6 +109,21 @@ function getValueAsync(tag, meta, num) {
 		.then((result) => {
 			if (result == null && num > 0) {
 				return getValueAsync.call(this, tag, meta, num - 1);
+			}
+			return result;
+		})
+		.then((result) => {
+			if (typeof result === "function") {
+				try {
+					result = result(lastScope, this);
+				} catch (error) {
+					throw getScopeParserExecutionError({
+						tag,
+						scope,
+						error,
+						offset: meta.part.offset,
+					});
+				}
 			}
 			return result;
 		});
@@ -182,24 +212,11 @@ const ScopeManager = class ScopeManager {
 			meta,
 			this.scopeList.length - 1
 		);
-		if (typeof result === "function") {
-			return result(this.scopeList[this.scopeList.length - 1], this);
-		}
 		return result;
 	}
 
 	getValueAsync(tag, meta) {
-		return getValueAsync
-			.call(this, tag, meta, this.scopeList.length - 1)
-			.then((result) => {
-				if (typeof result === "function") {
-					return result(
-						this.scopeList[this.scopeList.length - 1],
-						this
-					);
-				}
-				return result;
-			});
+		return getValueAsync.call(this, tag, meta, this.scopeList.length - 1);
 	}
 
 	getContext(meta, num) {
