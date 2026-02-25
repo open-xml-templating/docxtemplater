@@ -216,6 +216,7 @@ function throwXmlTagNotFoundLeft(options) {
 		index: options.index,
 		element: options.element,
 	};
+	throw err;
 }
 
 function throwXmlTagNotFoundRight(options) {
@@ -229,14 +230,15 @@ function throwXmlTagNotFoundRight(options) {
 	 * accessed from the current node.
 	 */
 	err.properties = {
-		id: "no_xml_tag_found_at_left",
-		explanation: `No tag "${options.element}" was found at the left`,
+		id: "no_xml_tag_found_at_right",
+		explanation: `No tag "${options.element}" was found at the right`,
 		offset: part.offset,
 		part,
 		parsed: options.parsed,
 		index: options.index,
 		element: options.element,
 	};
+	throw err;
 }
 
 function getCorruptCharactersException({ tag, value, offset }) {
