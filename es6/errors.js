@@ -44,6 +44,11 @@ function XTAPIVersionError(message) {
 }
 XTAPIVersionError.prototype = new XTError();
 
+/*
+ * Version/Compatibility Errors
+ * ============================
+ */
+
 function throwApiVersionError(msg, properties) {
 	const err = new XTAPIVersionError(msg);
 	/*
@@ -60,6 +65,53 @@ function throwApiVersionError(msg, properties) {
 	};
 	throw err;
 }
+
+function throwFileTypeNotIdentified(zip) {
+	const files = Object.keys(zip.files).slice(0, 10);
+	let msg = "";
+	if (files.length === 0) {
+		msg = "Empty zip file";
+	} else {
+		msg = `Zip file contains : ${files.join(",")}`;
+	}
+
+	const err = new XTInternalError(
+		`The filetype for this file could not be identified, is this file corrupted ? ${msg}`
+	);
+	/*
+	 * This error happens if you're creating docxtemplater with a zip file, but that file is not recognized as a docx/pptx/xlsx or odt file.
+	 *
+	 * Note that xlsx files and odt files need a paid module to be templated.
+	 *
+	 * Other zip files (zip, odp, ods) will trigger the same error.
+	 */
+	err.properties = {
+		id: "filetype_not_identified",
+		explanation: `The filetype for this file could not be identified, is this file corrupted ? ${msg}`,
+	};
+	throw err;
+}
+
+function throwFileTypeNotHandled(fileType) {
+	const err = new XTInternalError(
+		`The filetype "${fileType}" is not handled by docxtemplater`
+	);
+	/*
+	 * This error happens if the filetype was recognized (xlsx, odt), but
+	 * without the correct module, this file cannot be templated
+	 */
+	err.properties = {
+		id: "filetype_not_handled",
+		explanation: `The file you are trying to generate is of type "${fileType}", but only docx and pptx formats are handled`,
+		fileType,
+	};
+	throw err;
+}
+
+/*
+ * Template Errors
+ * ===============
+ */
 
 function throwMultiError(errors) {
 	const err = new XTTemplateError("Multi error");
@@ -100,10 +152,7 @@ function getUnopenedTagException(options) {
 		context: options.xtag,
 		offset: options.offset,
 		lIndex: options.lIndex,
-		explanation: `The tag beginning with "${options.xtag.substr(
-			0,
-			30
-		)}" is unopened`,
+		explanation: `The tag beginning with "${options.xtag.substr(0, 30)}" is unopened`,
 	};
 	return err;
 }
@@ -125,10 +174,7 @@ function getDuplicateOpenTagException(options) {
 		context: options.xtag,
 		offset: options.offset,
 		lIndex: options.lIndex,
-		explanation: `The tag beginning with "${options.xtag.substr(
-			0,
-			30
-		)}" has duplicate open tags`,
+		explanation: `The tag beginning with "${options.xtag.substr(0, 30)}" has duplicate open tags`,
 	};
 	return err;
 }
@@ -150,10 +196,7 @@ function getDuplicateCloseTagException(options) {
 		context: options.xtag,
 		offset: options.offset,
 		lIndex: options.lIndex,
-		explanation: `The tag ending with "${options.xtag.substr(
-			0,
-			30
-		)}" has duplicate close tags`,
+		explanation: `The tag ending with "${options.xtag.substr(0, 30)}" has duplicate close tags`,
 	};
 	return err;
 }
@@ -174,10 +217,7 @@ function getUnclosedTagException(options) {
 		context: options.xtag,
 		offset: options.offset,
 		lIndex: options.lIndex,
-		explanation: `The tag beginning with "${options.xtag.substr(
-			0,
-			30
-		)}" is unclosed`,
+		explanation: `The tag beginning with "${options.xtag.substr(0, 30)}" is unclosed`,
 	};
 	return err;
 }
@@ -189,6 +229,11 @@ function throwXmlTagNotFound(options) {
 		throwXmlTagNotFoundRight(options);
 	}
 }
+
+/*
+ * Raw XML / XML Expansion Errors
+ * ==============================
+ */
 
 function throwXmlTagNotFoundLeft(options) {
 	const err = new XTTemplateError(
@@ -355,6 +400,11 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	throw err;
 }
 
+/*
+ * Loop / Table Structure Errors
+ * =============================
+ */
+
 function getUnmatchedLoopException(part) {
 	const { location, offset, square } = part;
 	const t = location === "start" ? "unclosed" : "unopened";
@@ -448,6 +498,40 @@ function getClosingTagNotMatchOpeningTag({ tags }) {
 	return err;
 }
 
+function getLoopPositionProducesInvalidXMLError({ tag, offset }) {
+	const err = new XTTemplateError(
+		`The position of the loop tags "${tag}" would produce invalid XML`
+	);
+	/*
+	 * This happens when a loop would produce invalid XML.
+	 *
+	 * For example, if you write:
+	 *
+	 * ```docx-md
+	 * | Head1    | Head2         |
+	 * | -------- | ------------  |
+	 * | {#users} | content       |
+	 *
+	 * {/users}
+	 * ```
+	 *
+	 * this is not allowed since a loop that starts in a table must also end
+	 * in that table.
+	 */
+	err.properties = {
+		xtag: tag,
+		id: "loop_position_invalid",
+		explanation: `The tags "${tag}" are misplaced in the document, for example one of them is in a table and the other one outside the table`,
+		offset,
+	};
+	return err;
+}
+
+/*
+ * Scope Parser Errors
+ * ===================
+ */
+
 function getScopeCompilationError({ tag, rootError, offset }) {
 	const err = new XTScopeParserError("Scope parser compilation failed");
 	/*
@@ -524,34 +608,10 @@ function getScopeParserExecutionError({ tag, scope, error, offset }) {
 	return err;
 }
 
-function getLoopPositionProducesInvalidXMLError({ tag, offset }) {
-	const err = new XTTemplateError(
-		`The position of the loop tags "${tag}" would produce invalid XML`
-	);
-	/*
-	 * This happens when a loop would produce invalid XML.
-	 *
-	 * For example, if you write:
-	 *
-	 * ```docx-md
-	 * | Head1    | Head2         |
-	 * | -------- | ------------  |
-	 * | {#users} | content       |
-	 *
-	 * {/users}
-	 * ```
-	 *
-	 * this is not allowed since a loop that starts in a table must also end
-	 * in that table.
-	 */
-	err.properties = {
-		xtag: tag,
-		id: "loop_position_invalid",
-		explanation: `The tags "${tag}" are misplaced in the document, for example one of them is in a table and the other one outside the table`,
-		offset,
-	};
-	return err;
-}
+/*
+ * Internal / API Misuse Errors
+ * ============================
+ */
 
 function throwUnimplementedTagType(part, index) {
 	let errorMsg = `Unimplemented tag type "${part.type}"`;
@@ -636,32 +696,6 @@ function throwRenderTwice() {
 	throw err;
 }
 
-function throwFileTypeNotIdentified(zip) {
-	const files = Object.keys(zip.files).slice(0, 10);
-	let msg = "";
-	if (files.length === 0) {
-		msg = "Empty zip file";
-	} else {
-		msg = `Zip file contains : ${files.join(",")}`;
-	}
-
-	const err = new XTInternalError(
-		`The filetype for this file could not be identified, is this file corrupted ? ${msg}`
-	);
-	/*
-	 * This error happens if you're creating docxtemplater with a zip file, but that file is not recognized as a docx/pptx/xlsx or odt file.
-	 *
-	 * Note that xlsx files and odt files need a paid module to be templated.
-	 *
-	 * Other zip files (zip, odp, ods) will trigger the same error.
-	 */
-	err.properties = {
-		id: "filetype_not_identified",
-		explanation: `The filetype for this file could not be identified, is this file corrupted ? ${msg}`,
-	};
-	throw err;
-}
-
 function throwXmlInvalid(content, offset) {
 	const err = new XTTemplateError("An XML file has invalid xml");
 	/*
@@ -676,22 +710,6 @@ function throwXmlInvalid(content, offset) {
 		content,
 		offset,
 		explanation: "The docx contains invalid XML, it is most likely corrupt",
-	};
-	throw err;
-}
-
-function throwFileTypeNotHandled(fileType) {
-	const err = new XTInternalError(
-		`The filetype "${fileType}" is not handled by docxtemplater`
-	);
-	/*
-	 * This error happens if the filetype was recognized (xlsx, odt), but
-	 * without the correct module, this file cannot be templated
-	 */
-	err.properties = {
-		id: "filetype_not_handled",
-		explanation: `The file you are trying to generate is of type "${fileType}", but only docx and pptx formats are handled`,
-		fileType,
 	};
 	throw err;
 }
