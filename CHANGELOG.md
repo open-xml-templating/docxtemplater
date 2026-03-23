@@ -346,6 +346,23 @@ Upgrade moduleApiVersion to 3.47.1
 
 Verify that all options specified in the Docxtemplater constructor are valid by ensuring the types are accurate, using Minizod, a library akin to Zod for type verification.
 
+If you use Docxtemplater with the wrong arguments, like below, you'll see an error :
+
+```log
+Error: Unexpected properties: myCustomOption
+    at Docxtemplater.setOptions
+```
+
+If you for example write :
+
+```js
+const doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    myCustomOption: true,
+    linebreaks: true,
+});
+```
+
 ## 3.65.3
 
 Ensure that evaluateIdentifier is invoked only once for the tag `{name}`.
