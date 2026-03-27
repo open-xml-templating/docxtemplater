@@ -644,7 +644,7 @@ function setStartFunction(sf, snapshots = {}) {
 			ftn = fullTestName + "-" + i;
 		}
 		runnedSnapshots[ftn] = true;
-		const obj = JSON.parse(safeStringify(this.__flags.object));
+		const obj = JSON.parse(JSON.stringify(this.__flags.object));
 		if (!snapshots[ftn]) {
 			snapshots[ftn] = obj;
 			if (!writeSnapshots) {
