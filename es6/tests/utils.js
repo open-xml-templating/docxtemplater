@@ -692,7 +692,7 @@ function setStartFunction(sf, snapshots = {}) {
 							"exports[`" +
 							key +
 							"`] = " +
-							safeStringify(snap, null, 2)
+							JSON.stringify(snap, null, 2)
 						);
 					})
 					.join("\n\n") +
@@ -807,7 +807,7 @@ function setExamplesDirectory(ed) {
 		);
 		fs.writeFileSync(
 			path.resolve(__dirname, "filenames.js"),
-			"module.exports=" + safeStringify(fileNames)
+			"module.exports=" + JSON.stringify(fileNames)
 		);
 		global.fileNames = fileNames;
 	}
