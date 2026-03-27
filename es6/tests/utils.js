@@ -232,12 +232,15 @@ function zipCompare(zip, expectedZip, expectedName) {
 	}
 }
 
+const failedTests = [];
+
 /* eslint-disable no-console */
 function shouldBeSame({ doc, expectedName }) {
 	const zip = doc.getZip();
 
 	if (!documentCache[expectedName]) {
 		writeFile(expectedName, doc);
+		failedTests.push(expectedName);
 		console.log(
 			safeStringify({
 				msg: "Expected file does not exists",
@@ -253,6 +256,7 @@ function shouldBeSame({ doc, expectedName }) {
 	try {
 		zipCompare(zip, expectedZip, expectedName);
 	} catch (e) {
+		failedTests.push(expectedName);
 		writeFile(expectedName, doc);
 		console.log(
 			safeStringify({
@@ -262,7 +266,13 @@ function shouldBeSame({ doc, expectedName }) {
 		);
 		throw e;
 	}
-	unlinkFile(expectedName);
+	/*
+	 * If two tests share the same docx expected file, and one of them fails,
+	 * we should not drop the expected file in $XT/expected-foo.docx
+	 */
+	if (failedTests.indexOf(expectedName) === -1) {
+		unlinkFile(expectedName);
+	}
 }
 /* eslint-enable no-console */
 
