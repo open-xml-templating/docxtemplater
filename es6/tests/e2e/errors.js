@@ -12,6 +12,8 @@ const {
 	expectToThrowAsync,
 	captureLogs,
 } = require("../utils.js");
+const safeStringify = require("../../safe-json-stringify.js");
+
 const expressionParser = require("../../expressions.js");
 const xmlPrettify = require("../xml-prettify.js");
 
@@ -354,7 +356,7 @@ describe("Runtime errors", () => {
 			capture.stop();
 		} catch (e) {
 			capture.stop();
-			errorStringified = JSON.stringify(e, replaceErrors, 2);
+			errorStringified = safeStringify(e, replaceErrors, 2);
 		}
 		expect(errorStringified).to.contain(
 			"foo bar 6aaef652-8525-4442-b9b8-5ab942b2c476"

@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 
+const safeStringify = require("../safe-json-stringify.js");
 const util = require("util");
 function logContext(parsed, i) {
 	const context = parsed.slice(i - 2, i + 2);
 	console.log(
-		JSON.stringify({
+		safeStringify({
 			msg: "inspect-context",
 			inspect: util.inspect(context, { showHidden: true, depth: 2 }),
 		})
@@ -36,7 +37,7 @@ function verifyPart(part) {
 	}
 	if (errMessage) {
 		console.log(
-			JSON.stringify({
+			safeStringify({
 				msg: "inspect-part",
 				inspect: util.inspect(part, {
 					showHidden: true,
@@ -95,7 +96,7 @@ class AssertionModule {
 						verifyPart(part);
 					} catch (e) {
 						console.log(
-							JSON.stringify({ msg: "Error before postparse" })
+							safeStringify({ msg: "Error before postparse" })
 						);
 						logContext(parsed, i);
 						throw e;
@@ -157,7 +158,7 @@ class AssertionModule {
 			try {
 				verifyPart(part);
 			} catch (e) {
-				console.log(JSON.stringify({ msg: "Error after postparse" }));
+				console.log(safeStringify({ msg: "Error after postparse" }));
 				logContext(parsed, i);
 				throw e;
 			}
@@ -172,7 +173,7 @@ class AssertionModule {
 		try {
 			verifyPart(part);
 		} catch (e) {
-			console.log(JSON.stringify({ msg: "Error in render" }));
+			console.log(safeStringify({ msg: "Error in render" }));
 			throw e;
 		}
 		verifyOptions(options);

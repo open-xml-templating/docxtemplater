@@ -15,6 +15,8 @@ const Errors = require("../errors.js");
 const errorLogger = require("../error-logger.js");
 const AssertionModule = require("./assertion-module.js");
 const Docxtemplater = require("../docxtemplater.js");
+const safeStringify = require("../safe-json-stringify.js");
+
 const { first } = require("../utils.js");
 const xmlPrettify = require("./xml-prettify.js");
 
@@ -237,7 +239,7 @@ function shouldBeSame({ doc, expectedName }) {
 	if (!documentCache[expectedName]) {
 		writeFile(expectedName, doc);
 		console.log(
-			JSON.stringify({
+			safeStringify({
 				msg: "Expected file does not exists",
 				expectedName,
 			})
@@ -253,7 +255,7 @@ function shouldBeSame({ doc, expectedName }) {
 	} catch (e) {
 		writeFile(expectedName, doc);
 		console.log(
-			JSON.stringify({
+			safeStringify({
 				msg: "Expected file differs from actual file",
 				expectedName,
 			})
@@ -271,7 +273,7 @@ function checkLength(e, expectedError, propertyPath) {
 	if (property && expectedPropertyLength) {
 		expect(expectedPropertyLength).to.be.a(
 			"number",
-			JSON.stringify(expectedError.properties)
+			safeStringify(expectedError.properties)
 		);
 		expect(expectedPropertyLength).to.equal(property.length);
 		unset(e, propertyPath);
@@ -323,7 +325,7 @@ function cleanError(e, expectedError) {
 			const e2 = expectedError.properties.explanation;
 			expect(e1).to.deep.equal(
 				e2,
-				`Explanations differ '${e1}' != '${e2}': for ${JSON.stringify(
+				`Explanations differ '${e1}' != '${e2}': for ${safeStringify(
 					expectedError
 				)}`
 			);
@@ -340,11 +342,11 @@ function cleanError(e, expectedError) {
 		if (e.properties.rootError) {
 			expect(
 				e.properties.rootError,
-				JSON.stringify(e.properties)
+				safeStringify(e.properties)
 			).to.be.instanceOf(Error, "rootError doesn't have correct type");
 			expect(
 				expectedError.properties.rootError,
-				JSON.stringify(expectedError.properties)
+				safeStringify(expectedError.properties)
 			).to.be.instanceOf(
 				Object,
 				"expectedError doesn't have a rootError"
@@ -364,7 +366,7 @@ function cleanError(e, expectedError) {
 			// offset can be arrays, so deep compare
 			expect(o1).to.be.deep.equal(
 				o2,
-				`Offset differ ${o1} != ${o2}: for ${JSON.stringify(expectedError)}`
+				`Offset differ ${o1} != ${o2}: for ${safeStringify(expectedError)}`
 			);
 		}
 		delete expectedError.properties.offset;
@@ -401,7 +403,7 @@ function wrapMultiError(error) {
 
 function jsonifyError(e) {
 	return JSON.parse(
-		JSON.stringify(e, (key, value) => {
+		safeStringify(e, (key, value) => {
 			if (value instanceof Promise) {
 				return {};
 			}
@@ -438,9 +440,9 @@ function errorVerifier(e, type, expectedError) {
 	if (e.properties.errors) {
 		const msg =
 			"expected : \n" +
-			JSON.stringify(expectedError.properties.errors) +
+			safeStringify(expectedError.properties.errors) +
 			"\nactual : \n" +
-			JSON.stringify(e.properties.errors);
+			safeStringify(e.properties.errors);
 		expect(expectedError.properties.errors).to.be.an("array", msg);
 
 		const l1 = e.properties.errors.length;
@@ -642,7 +644,7 @@ function setStartFunction(sf, snapshots = {}) {
 			ftn = fullTestName + "-" + i;
 		}
 		runnedSnapshots[ftn] = true;
-		const obj = JSON.parse(JSON.stringify(this.__flags.object));
+		const obj = JSON.parse(safeStringify(this.__flags.object));
 		if (!snapshots[ftn]) {
 			snapshots[ftn] = obj;
 			if (!writeSnapshots) {
@@ -690,7 +692,7 @@ function setStartFunction(sf, snapshots = {}) {
 							"exports[`" +
 							key +
 							"`] = " +
-							JSON.stringify(snap, null, 2)
+							safeStringify(snap, null, 2)
 						);
 					})
 					.join("\n\n") +
@@ -805,7 +807,7 @@ function setExamplesDirectory(ed) {
 		);
 		fs.writeFileSync(
 			path.resolve(__dirname, "filenames.js"),
-			"module.exports=" + JSON.stringify(fileNames)
+			"module.exports=" + safeStringify(fileNames)
 		);
 		global.fileNames = fileNames;
 	}
