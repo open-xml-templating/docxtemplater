@@ -1,3 +1,7 @@
+## 3.68.4
+
+Internal change : when having a loop with the paragraphLoop option set to true, if the loop is expanded, then the subparsed array will start with a `<w:p>` and end with a `</w:p>` (or selfclosing tag)
+
 ## 3.68.3
 
 If you use the following template :

@@ -14,6 +14,7 @@ const {
 } = require("../doc-utils.js");
 const filetypes = require("../filetypes.js");
 const wrapper = require("../module-wrapper.js");
+const { isWhiteSpace } = require("../doc-utils.js");
 
 const moduleName = "loop";
 
@@ -374,6 +375,21 @@ class LoopModule {
 		const lastChunk = last(chunks);
 		let firstOffset = getOffset(firstChunk);
 		let lastOffset = getOffset(lastChunk);
+
+		if (
+			firstOffset > 0 &&
+			chunks[1][0].type === "content" &&
+			isWhiteSpace(chunks[1][0].value)
+		) {
+			firstOffset += 1;
+		}
+		if (
+			lastOffset > 0 &&
+			last(chunks[chunks.length - 2]).type === "content" &&
+			isWhiteSpace(last(chunks[chunks.length - 2]).value)
+		) {
+			lastOffset += 1;
+		}
 
 		basePart.hasPageBreakBeginning = hasPageBreak(firstChunk);
 		basePart.hasPageBreak = hasPageBreak(lastChunk);
