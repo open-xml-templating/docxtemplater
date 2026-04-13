@@ -441,11 +441,20 @@ function invertMap(map) {
  * stable.
  */
 function stableSort(arr, compare) {
-	// Stryker disable all : in previous versions of Chrome, sort was not stable by itself, so we had to add this. This is to support older versions of JS runners.
-	return arr
-		.map((item, index) => ({ item, index }))
-		.sort((a, b) => compare(a.item, b.item) || a.index - b.index)
-		.map(({ item }) => item);
+	// Stryker disable all
+	const withIndex = [];
+	for (let i = 0; i < arr.length; i++) {
+		withIndex.push({ item: arr[i], index: i });
+	}
+
+	withIndex.sort((a, b) => compare(a.item, b.item) || a.index - b.index);
+
+	const result = [];
+	for (let i = 0; i < withIndex.length; i++) {
+		result.push(withIndex[i].item);
+	}
+
+	return result;
 	// Stryker restore all
 }
 

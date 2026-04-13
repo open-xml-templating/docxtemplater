@@ -644,13 +644,15 @@ describe("Changing the parser", () => {
 			},
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello Jane");
-		const values = contexts.map(
-			({
+		const values = [];
+		for (const context of contexts) {
+			const {
 				meta: {
 					part: { type, value, module },
 				},
-			}) => ({ type, value, module })
-		);
+			} = context;
+			values.push({ type, value, module });
+		}
 		expect(values).to.be.deep.equal([
 			{
 				type: "placeholder",

@@ -79,7 +79,11 @@ const relsFile = "_rels/.rels";
 const currentModuleApiVersion = [3, 47, 2];
 
 function throwIfDuplicateModules(modules) {
-	const duplicates = getDuplicates(modules.map(({ name }) => name));
+	const names = [];
+	for (const mod of modules) {
+		names.push(mod.name);
+	}
+	const duplicates = getDuplicates(names);
 	if (duplicates.length > 0) {
 		throw new XTInternalError(
 			`Detected duplicate module "${duplicates[0]}"`
@@ -274,7 +278,10 @@ const Docxtemplater = class Docxtemplater {
 	}
 
 	verifyApiVersion(neededVersion) {
-		neededVersion = neededVersion.split(".").map((i) => parseInt(i, 10));
+		neededVersion = neededVersion.split(".");
+		for (let i = 0; i < neededVersion.length; i++) {
+			neededVersion[i] = parseInt(neededVersion[i], 10);
+		}
 		if (neededVersion.length !== 3) {
 			throwApiVersionError("neededVersion is not a valid version", {
 				neededVersion,
@@ -488,10 +495,11 @@ const Docxtemplater = class Docxtemplater {
 				(value, module) => module.getRenderedMap(value),
 				{}
 			);
-			return Promise.all(
-				Object.keys(this.mapper).map((to) => {
-					const { from, data } = this.mapper[to];
-					return Promise.resolve(data).then((data) => {
+			const promises = [];
+			for (const to of Object.keys(this.mapper)) {
+				const { from, data } = this.mapper[to];
+				promises.push(
+					Promise.resolve(data).then((data) => {
 						const currentFile = this.compiled[from];
 						currentFile.filePath = to;
 						currentFile.scopeManager = this.getScopeManager(
@@ -508,9 +516,10 @@ const Docxtemplater = class Docxtemplater {
 								pushArray(errors, errs);
 							}
 						);
-					});
-				})
-			).then((resolved) => {
+					})
+				);
+			}
+			return Promise.all(promises).then((resolved) => {
 				if (errors.length !== 0) {
 					if (this.options.errorLogging) {
 						logErrors(errors, this.options.errorLogging);

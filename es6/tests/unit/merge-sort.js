@@ -7,7 +7,10 @@ describe("Mergesort", () => {
 			[{ offset: 1 }, { offset: 4 }],
 			[{ offset: 2 }, { offset: 3 }],
 		]);
-		const offsets = sorted.map(({ offset }) => offset);
+		const offsets = [];
+		for (const item of sorted) {
+			offsets.push(item.offset);
+		}
 		expect(offsets).to.deep.equal([1, 2, 3, 4]);
 	});
 
@@ -21,7 +24,10 @@ describe("Mergesort", () => {
 			[{ offset: 4 }, { offset: 5 }],
 			[{ offset: 3 }, { offset: 6 }],
 		]);
-		const offsets = sorted.map(({ offset }) => offset);
+		const offsets = [];
+		for (const item of sorted) {
+			offsets.push(item.offset);
+		}
 		expect(offsets).to.deep.equal([1, 2, 3, 4, 5, 6]);
 	});
 

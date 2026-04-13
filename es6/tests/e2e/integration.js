@@ -1643,20 +1643,20 @@ describe("Get Tags", () => {
 		);
 
 		function addIdentifiers(tags) {
-			tags.forEach((tag) => {
+			for (const tag of tags) {
 				if (tag.module === "pro-xml-templating/xls-module-sheetname") {
-					return;
+					continue;
 				}
 				if (tag.cellParsed) {
-					tag.cellParsed.forEach((cp) => {
+					for (const cp of tag.cellParsed) {
 						if (
 							cp.type === "placeholder" &&
 							cp.module !== "pro-xml-templating/xls-module-loop"
 						) {
 							addIdentifiers([cp]);
 						}
-					});
-					return tags;
+					}
+					continue;
 				}
 
 				if (
@@ -1664,11 +1664,11 @@ describe("Get Tags", () => {
 					typeof tag.value === "string"
 				) {
 					if (tag.attrParsed) {
-						Object.keys(tag.attrParsed).forEach((key) => {
+						for (const key in tag.attrParsed) {
 							addIdentifiers(tag.attrParsed[key]);
-						});
+						}
 						// Skip parsing of value in this case, because the tag is like <v:shape...>
-						return;
+						continue;
 					}
 					const identifiers = expressionParser(
 						tag.value
@@ -1681,7 +1681,7 @@ describe("Get Tags", () => {
 				if (tag.subparsed instanceof Array) {
 					addIdentifiers(tag.subparsed);
 				}
-			});
+			}
 			return tags;
 		}
 
@@ -1715,10 +1715,10 @@ describe("Get Tags", () => {
 					typeof tag.value === "string"
 				) {
 					if (tag.attrParsed) {
-						part = {};
-						part.sub = Object.keys(tag.attrParsed).map((key) =>
-							simplifyTags(tag.attrParsed[key])
-						);
+						part = { sub: [] };
+						for (const key in tag.attrParsed) {
+							part.sub.push(simplifyTags(tag.attrParsed[key]));
+						}
 						result.push(part);
 						// Skip parsing of value in this case, because the tag is like <v:shape...>
 						return;

@@ -97,9 +97,11 @@ function isNextPage(parts) {
 }
 
 function addSectionBefore(parts, sect) {
-	parts.unshift(
-		`<w:p><w:pPr>${sect.map(({ value }) => value).join("")}</w:pPr></w:p>`
-	);
+	let result = "";
+	for (const { value } of sect) {
+		result += value;
+	}
+	parts.unshift(`<w:p><w:pPr>${result}</w:pPr></w:p>`);
 }
 
 function addContinuousType(parts) {
@@ -466,12 +468,14 @@ class LoopModule {
 			.then((values) => {
 				sm.loopOverValue(values, loopOver, part.inverted);
 				return Promise.all(promises)
-					.then((r) =>
-						r.map(({ resolved, errors }) => {
+					.then((r) => {
+						const result = [];
+						for (const { resolved, errors } of r) {
 							pushArray(errorList, errors);
-							return resolved;
-						})
-					)
+							result.push(resolved);
+						}
+						return result;
+					})
 					.then((value) => {
 						if (errorList.length > 0) {
 							throw errorList;

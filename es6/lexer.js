@@ -349,7 +349,10 @@ function getAllDelimiterIndexes(fullText, delimiters, syntaxOptions) {
 }
 
 function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
-	const full = innerContentParts.map((p) => p.value).join("");
+	let full = "";
+	for (const p of innerContentParts) {
+		full += p.value;
+	}
 	const delimiterMatches = getAllDelimiterIndexes(
 		full,
 		delimiters,
@@ -357,10 +360,14 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 	);
 
 	let offset = 0;
-	const ranges = innerContentParts.map((part) => {
+	const ranges = [];
+	for (const part of innerContentParts) {
 		offset += part.value.length;
-		return { offset: offset - part.value.length, lIndex: part.lIndex };
-	});
+		ranges.push({
+			offset: offset - part.value.length,
+			lIndex: part.lIndex,
+		});
+	}
 	const { delimiterWithErrors, errors } = getDelimiterErrors(
 		delimiterMatches,
 		full,
@@ -369,10 +376,13 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 	let cutNext = 0;
 	let delimiterIndex = 0;
 
-	const parsed = ranges.map((p, i) => {
+	const parsed = [];
+	for (let i = 0; i < ranges.length; i++) {
+		const p = ranges[i];
+		const innerContentPart = innerContentParts[i];
 		const { offset } = p;
-		const range = [offset, offset + innerContentParts[i].value.length];
-		const partContent = innerContentParts[i].value;
+		const range = [offset, offset + innerContentPart.value.length];
+		const partContent = innerContentPart.value;
 		const delimitersInOffset = [];
 		while (
 			delimiterIndex < delimiterWithErrors.length &&
@@ -423,8 +433,8 @@ function parseDelimiters(innerContentParts, delimiters, syntaxOptions) {
 		if (value.length > 0) {
 			parts.push({ type: "content", value });
 		}
-		return parts;
-	}, this);
+		parsed.push(parts);
+	}
 	return { parsed, errors };
 }
 

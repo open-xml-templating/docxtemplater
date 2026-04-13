@@ -276,10 +276,12 @@ describe("Module errors", () => {
 			},
 			errorsTransformer(errors) {
 				pushArray(myErrors, errors);
-				return errors.map((e) => {
+				const result = [];
+				for (const e of errors) {
 					e.xyz = "xxx";
-					return e;
-				});
+					result.push(e);
+				}
+				return result;
 			},
 			render(part) {
 				if (part.module === moduleName) {
@@ -1039,7 +1041,10 @@ describe("Module priority", () => {
 			],
 		});
 
-		const orderedNames = doc.modules.map(({ name }) => name);
+		const orderedNames = [];
+		for (const { name } of doc.modules) {
+			orderedNames.push(name);
+		}
 		expect(orderedNames).to.deep.equal([
 			"M3", // Priority 5
 			"M4", // Priority 5

@@ -9,7 +9,10 @@ const joinUncorrupt = require("./join-uncorrupt.js");
 
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);
-	const result = matcher.matches.map((match) => match.array[2]);
+	const result = [];
+	for (const match of matcher.matches) {
+		result.push(match.array[2]);
+	}
 	return wordToUtf8(convertSpaces(result.join("")));
 }
 
@@ -30,19 +33,22 @@ module.exports = class XmlTemplater {
 		options.scopeManager = this.scopeManager;
 		options.resolve = resolve;
 		const errors = [];
-		return Promise.all(
-			this.modules.map((module) =>
+		const promises = [];
+		for (const module of this.modules) {
+			promises.push(
 				Promise.resolve(module.preResolve(options)).catch((e) => {
 					errors.push(e);
 				})
-			)
-		).then(() => {
+			);
+		}
+		return Promise.all(promises).then(() => {
 			if (errors.length !== 0) {
 				throw errors;
 			}
 			return resolve(options)
 				.then(({ resolved, errors }) => {
-					errors = errors.map((error) => {
+					for (let i = 0; i < errors.length; i++) {
+						let error = errors[i];
 						// If a string is thrown, convert it to a real Error
 						if (!(error instanceof Error)) {
 							error = new Error(error);
@@ -54,8 +60,8 @@ module.exports = class XmlTemplater {
 						 */
 						error.properties ||= {};
 						error.properties.file = filePath;
-						return error;
-					});
+						errors[i] = error;
+					}
 					if (errors.length !== 0) {
 						throw errors;
 					}

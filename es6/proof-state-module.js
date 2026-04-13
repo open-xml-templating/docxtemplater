@@ -11,11 +11,14 @@ module.exports = {
 		if (contentType !== settingsContentType) {
 			return null;
 		}
-		return postparsed.map((part) => {
+		const result = [];
+		for (const part of postparsed) {
 			if (part.type === "tag" && part.tag === "w:proofState") {
-				return { type: "content", value: "" };
+				result.push({ type: "content", value: "" });
+			} else {
+				result.push(part);
 			}
-			return part;
-		});
+		}
+		return result;
 	},
 };
