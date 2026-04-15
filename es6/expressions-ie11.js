@@ -1,7 +1,15 @@
 const expressions = require("angular-expressions");
 const assign = require("lodash/assign.js");
 
-const { pushArray } = require("./doc-utils.js");
+function pushArray(array1, array2) {
+	if (!array2) {
+		return array1;
+	}
+	for (let i = 0, len = array2.length; i < len; i++) {
+		array1.push(array2[i]);
+	}
+	return array1;
+}
 
 const dotRegex = /([\][\s+()*|:/-]+|^)\.([\][\s+()*|:/-]+|$)/g;
 

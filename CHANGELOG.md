@@ -1,3 +1,13 @@
+## 3.68.5
+
+Some performance improvements by using for loops instead of `map`, `reduce`, `forEach` where it is possible.
+
+We also fixed the following error when using expressions-ie11 :
+
+```log
+Error: Could not resolve "./doc-utils.js" node_modules/docxtemplater/expressions-ie11.js:5:12:
+```
+
 ## 3.68.4
 
 Internal change : when having a loop with the paragraphLoop option set to true, if the loop is expanded, then the subparsed array will start with a `<w:p>` and end with a `</w:p>` (or selfclosing tag)
