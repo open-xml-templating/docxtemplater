@@ -65,7 +65,7 @@ function unifiedDiff(actual, expected) {
 					result += cleaned;
 				}
 			}
-			return result.join("\n");
+			return result;
 		})()
 	);
 }
