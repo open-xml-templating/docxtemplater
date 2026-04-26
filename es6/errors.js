@@ -599,7 +599,7 @@ function getScopeParserExecutionError({ tag, scope, error, offset }) {
 	 */
 	err.properties = {
 		id: "scopeparser_execution_failed",
-		explanation: `The scope parser for the tag ${tag} failed to execute`,
+		explanation: `The scope parser for the tag "${tag}" failed to execute`,
 		scope,
 		offset,
 		xtag: tag,

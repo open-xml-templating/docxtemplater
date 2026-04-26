@@ -651,7 +651,8 @@ const fixtures = [
 			name: "ScopeParserError",
 			message: "Scope parser execution failed",
 			properties: {
-				explanation: "The scope parser for the tag a failed to execute",
+				explanation:
+					'The scope parser for the tag "a" failed to execute',
 				rootError: {
 					message: "Foobar",
 				},
@@ -685,7 +686,8 @@ const fixtures = [
 			name: "ScopeParserError",
 			message: "Scope parser execution failed",
 			properties: {
-				explanation: "The scope parser for the tag b failed to execute",
+				explanation:
+					'The scope parser for the tag "b" failed to execute',
 				rootError: {
 					message: "Foobar",
 				},
@@ -1560,6 +1562,47 @@ const fixtures = [
 		},
 		scope: { "user-name": "John" },
 		resultText: "Hi John",
+	},
+	{
+		...noInternals,
+		it: "should not look in __proto__ for filters",
+		contentText: "{name | x}",
+		options: {
+			parser: expressionParser.configure({
+				filters: {
+					__proto__: {
+						x: () => {
+							throw new Error("should never be thrown");
+						},
+					},
+				},
+			}),
+		},
+		error: (error, { errorVerifier }) => {
+			expect(error.properties.errors.length).to.equal(1);
+			expect(
+				error.properties.errors[0].properties.rootError.message
+			).to.equal("Filter 'x' is not defined");
+			errorVerifier(
+				error,
+				Errors.XTTemplateError,
+				wrapMultiError({
+					name: "ScopeParserError",
+					message: "Scope parser compilation failed",
+					properties: {
+						explanation:
+							'The scope parser for the tag "name | x" failed to compile',
+						rootError: {
+							message: "Filter 'x' is not defined",
+						},
+						file: "word/document.xml",
+						id: "scopeparser_compilation_failed",
+						xtag: "name | x",
+						offset: 0,
+					},
+				})
+			);
+		},
 	},
 	{
 		...noInternals,

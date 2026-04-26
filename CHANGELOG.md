@@ -1,3 +1,15 @@
+## 3.68.6
+
+Update error explanation when parser fails to execute.
+
+Previous explanation for the template : `{user}` :
+
+`The scope parser for the tag user failed to execute`
+
+New error explanation :
+
+`The scope parser for the tag "user" failed to execute`
+
 ## 3.68.5
 
 Some performance improvements by using for loops instead of `map`, `reduce`, `forEach` where it is possible.

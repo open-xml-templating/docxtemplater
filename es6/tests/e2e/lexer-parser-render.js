@@ -124,7 +124,11 @@ function runTest(fixture, async = false) {
 		if (!fixture.error) {
 			throw error;
 		}
-		errorVerifier(error, fixture.errorType, fixture.error);
+		if (typeof fixture.error === "function") {
+			fixture.error(error, { fixture, errorVerifier });
+		} else {
+			errorVerifier(error, fixture.errorType, fixture.error);
+		}
 		return;
 	}
 	const capture2 = captureLogs();
