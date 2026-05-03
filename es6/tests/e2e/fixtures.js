@@ -2059,6 +2059,28 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		...noInternals,
+		it: "should foobar",
+		contentText:
+			'{{% {}["constructor" + ""].getPrototypeOf({}).hasOwnProperty = returnsOne %}}',
+		options: { parser: expressionParser },
+		delimiters: {
+			start: "{{%",
+			end: "%}}",
+		},
+		scope: {
+			returnsOne: () => 1,
+		},
+		result: null,
+		resultText: null,
+		assertAfter() {
+			const hasO = {}.hasOwnProperty("foo");
+			const hasO2 = Object.prototype.hasOwnProperty.call({}, "foo");
+			expect(hasO).to.equal(false);
+			expect(hasO2).to.equal(false);
+		},
+	},
+	{
+		...noInternals,
 		it: "should work when using assignment that is already in the scope",
 		contentText: "{b=a}{b}",
 		options: { parser: expressionParser },

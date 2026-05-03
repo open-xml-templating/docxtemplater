@@ -152,6 +152,7 @@ function configuredParser(config = {}) {
 			isIdentifierStart: validStartChars,
 			isIdentifierContinue: validContinuationChars,
 			handleThis: false,
+			csp: true,
 			...config,
 		});
 
@@ -333,6 +334,7 @@ function configuredParser(config = {}) {
 								);
 								return true;
 							}
+							lastResult = null;
 							if (config.setIdentifier) {
 								const fnResult = config.setIdentifier(
 									name,
@@ -380,7 +382,7 @@ function configuredParser(config = {}) {
 										context
 									);
 								}
-								lastResult = null;
+								lastResult = [name, target, fnResult];
 								if (fnResult != null) {
 									return {
 										writable: true,
