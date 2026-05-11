@@ -1813,6 +1813,30 @@ const fixtures = [
 	},
 	{
 		...noInternals,
+		it: "should handle {x=y+z} {x} tag",
+		contentText: "Hi {x=y+z;x}",
+		options: {
+			parser: expressionParser.configure({
+				csp: true,
+			}),
+		},
+		scope: {},
+		resultText: "Hi undefined",
+	},
+	{
+		...noInternals,
+		it: "should handle {x=y+z} {x} tag",
+		contentText: "Hi {x=y+z;x}",
+		options: {
+			parser: expressionParser.configure({
+				csp: false,
+			}),
+		},
+		scope: {},
+		resultText: "Hi undefined",
+	},
+	{
+		...noInternals,
 		it: "should handle {(this+this+this)*(this+this)}, this=0 tag",
 		contentText: "Hi {(   this + this + this)*(this+this)}",
 		options: { parser: expressionParser },
