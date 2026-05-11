@@ -2307,6 +2307,45 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 		resultText: "2426",
 	},
+	({}) => {
+		function isLast(scope, context) {
+			let index = null;
+			for (let i = context.scopePathItem.length - 1; i >= 0; i--) {
+				if (index == null && context.scopeTypes[i] === "array") {
+					const length = context.scopePathLength[i];
+					index = context.scopePathItem[i];
+					return index === length - 1;
+				}
+			}
+			return index;
+		}
+
+		return {
+			...noInternals,
+			it: "should be possible to implement $last with evaluateIdentifier",
+			contentText: "{#loop}{#x.length > 0}{x[0]}{$last}{/}{/loop}",
+			options: {
+				parser: expressionParser.configure({
+					evaluateIdentifier(tag, scope, scopeList, context) {
+						if (tag === "$last") {
+							return isLast(scope, context);
+						}
+					},
+				}),
+			},
+			scope: {
+				loop: [
+					{
+						x: [1, 2, 3],
+					},
+					{
+						x: [1, 2, 3],
+					},
+				],
+			},
+			resultText: "1false1true",
+		};
+	},
 	{
 		it: "should be possible to add filter for one instance of the ie11 parser",
 		contentText: "{b|foo}",
