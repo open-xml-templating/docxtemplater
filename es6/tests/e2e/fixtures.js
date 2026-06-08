@@ -6,6 +6,12 @@ const { wrapMultiError } = require("../utils.js");
 const nbsp = String.fromCharCode(160);
 const { expect } = require("../utils.js");
 
+const nativeHasOwn = Object.prototype.hasOwnProperty;
+const nativeBind = Function.prototype.bind;
+const nativeCall = Function.prototype.call;
+const bind = nativeCall.bind(nativeCall, nativeBind);
+const hasOwn = bind(nativeCall, nativeCall, nativeHasOwn);
+
 expressionParser.filters.upper = function (str) {
 	if (!str) {
 		return str;
@@ -2307,6 +2313,41 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 		},
 		resultText: "2426",
 	},
+	({ getDoc }) => ({
+		...noInternals,
+		it: "should be possible to force usage of current scope for some tags",
+		// _$b means in this example "b" but only from this scope
+		contentText: "{#loop}b:{_$b}/a:{a}/{/loop}",
+		options: {
+			parser: expressionParser.configure({
+				evaluateIdentifier(tag, scope, scopeList, context) {
+					const onlyCurrentScope = /^(_\$)(.*)/g;
+					if (onlyCurrentScope.test(tag)) {
+						tag = tag.replace(onlyCurrentScope, "$2");
+						const deepestScope = scopeList[scopeList.length - 1];
+						if (hasOwn(deepestScope, tag) && deepestScope[tag]) {
+							return deepestScope[tag];
+						}
+						return getDoc().options.nullGetter(context.meta.part);
+					}
+				},
+			}),
+		},
+		scope: {
+			loop: [
+				{
+					b: "in",
+					a: "in",
+				},
+				{},
+			],
+			b: "out",
+			a: "out",
+			_$b: "$$$$",
+			_$a: "$$$$",
+		},
+		resultText: "b:in/a:in/b:undefined/a:out/",
+	}),
 	({}) => {
 		function isLast(scope, context) {
 			let index = null;
