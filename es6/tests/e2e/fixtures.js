@@ -2802,6 +2802,26 @@ http://errors.angularjs.org/"NG_VERSION_FULL"/$parse/lexerr?p0=Unexpected%20next
 	},
 	{
 		...noInternals,
+		it: "should allow duplicate open tags",
+		content: "<w:p><w:r><w:t>Hello {{signature}}</w:t></w:r></w:p>",
+		options: {
+			syntax: {
+				allowUnclosedTag: true,
+				allowUnopenedTag: true,
+			},
+			parser: expressionParser.configure({
+				evaluateIdentifier(name) {
+					if (name === "signature") {
+						return "{signature}";
+					}
+				},
+			}),
+		},
+		scope: { firstName: "John", lastName: "Doe" },
+		result: '<w:p><w:r><w:t xml:space="preserve">Hello {{signature}}</w:t></w:r></w:p>',
+	},
+	{
+		...noInternals,
 		it: "should not fail if allowUnclosedTag on 'Hello {' string",
 		content: "<w:p><w:r><w:t>Hello {</w:t></w:r></w:p>",
 		options: {
