@@ -36,7 +36,7 @@
     "url": "git+https://github.com/open-xml-templating/docxtemplater.git"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.9.8"
+    "@xmldom/xmldom": "^0.9.10"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",

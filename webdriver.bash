@@ -2,6 +2,9 @@
 
 set -euo pipefail
 export TZ='Europe/Paris'
+if grep '26\.04' -q </etc/issue; then
+	export PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64
+fi
 
 if ! [ -f test/mocha.html ]; then
 	echo "test/mocha.html does not exist" 1>&2

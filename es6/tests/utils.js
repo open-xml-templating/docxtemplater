@@ -1046,6 +1046,14 @@ function cell(content) {
 	return `<w:tc>${paragraph(content)}</w:tc>`;
 }
 
+function runWithoutProxy(fn) {
+	const previousProxy = global.Proxy;
+	global.Proxy = undefined;
+	const res = fn();
+	global.Proxy = previousProxy;
+	return res;
+}
+
 module.exports = {
 	chai,
 	cleanError,
@@ -1086,4 +1094,5 @@ module.exports = {
 	errorVerifier,
 	getLength,
 	captureLogs,
+	runWithoutProxy,
 };

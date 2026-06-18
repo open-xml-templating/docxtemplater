@@ -53,11 +53,11 @@ function throwApiVersionError(msg, properties) {
 	const err = new XTAPIVersionError(msg);
 	/*
 	 * This error arises when a recent module version necessitates a more
-	 * current version of the docxtemplater core. Docxtemplater specifies an
+	 * current version of the Docxtemplater core. Docxtemplater specifies an
 	 * "APIVersion," and if a module requires API Version 3.55 or higher,
-	 * but the docxtemplater instance provides API 3.52, this error will
+	 * but the Docxtemplater instance provides API 3.52, this error will
 	 * occur. To resolve this issue, please update to the latest version of
-	 * docxtemplater.
+	 * Docxtemplater.
 	 */
 	err.properties = {
 		id: "api_version_error",
@@ -79,7 +79,7 @@ function throwFileTypeNotIdentified(zip) {
 		`The filetype for this file could not be identified, is this file corrupted ? ${msg}`
 	);
 	/*
-	 * This error happens if you're creating docxtemplater with a zip file, but that file is not recognized as a docx/pptx/xlsx or odt file.
+	 * This error happens if you're creating Docxtemplater with a zip file, but that file is not recognized as a docx/pptx/xlsx or odt file.
 	 *
 	 * Note that xlsx files and odt files need a paid module to be templated.
 	 *
@@ -94,7 +94,7 @@ function throwFileTypeNotIdentified(zip) {
 
 function throwFileTypeNotHandled(fileType) {
 	const err = new XTInternalError(
-		`The filetype "${fileType}" is not handled by docxtemplater`
+		`The filetype "${fileType}" is not handled by Docxtemplater`
 	);
 	/*
 	 * This error happens if the filetype was recognized (xlsx, odt), but
@@ -368,7 +368,7 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	 * because the spaces "disappeared".
 	 *
 	 * To correct this error, you have to add manually the text that you want
-	 * in your raw tag. (Or you can use the [docxtemplater word-run
+	 * in your raw tag. (Or you can use the [Docxtemplater word-run
 	 * module](/modules/word-run/) which adds a tag
 	 * that can replace rawXML inside a tag).
 	 *
@@ -384,7 +384,7 @@ function throwRawTagShouldBeOnlyTextInParagraph(options) {
 	 * Hello {@my_first_tag}
 	 * ```
 	 *
-	 * Is misusing docxtemplater.
+	 * Is misusing Docxtemplater.
 	 *
 	 * The `@` at the beginning means "replace the xml of **the
 	 * current paragraph** with scope.my_first_tag" so that means that
@@ -621,7 +621,7 @@ function throwUnimplementedTagType(part, index) {
 	const err = new XTTemplateError(errorMsg);
 	/*
 	 * This happens when a tag type is not implemented. It should normally not happen,
-	 * unless you changed docxtemplater code or created your own module and didn't
+	 * unless you changed Docxtemplater code or created your own module and didn't
 	 * implement the `render` function of your module correctly.
 	 */
 	err.properties = {
@@ -681,17 +681,17 @@ function throwRenderInvalidTemplate() {
 
 function throwRenderTwice() {
 	const err = new XTInternalError(
-		"You should not call .render twice on the same docxtemplater instance"
+		"You should not call .render twice on the same Docxtemplater instance"
 	);
 	/*
 	 * This happens if you're calling `render()` on a document twice.
 	 *
-	 * You should always create a new docxtemplater instance if you need to create two output documents.
+	 * You should always create a new Docxtemplater instance if you need to create two output documents.
 	 */
 	err.properties = {
 		id: "render_twice",
 		explanation:
-			"You should not call .render twice on the same docxtemplater instance",
+			"You should not call .render twice on the same Docxtemplater instance",
 	};
 	throw err;
 }

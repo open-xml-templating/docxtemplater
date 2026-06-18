@@ -1,5 +1,34 @@
 const expressions = require("angular-expressions");
 
+const nativeHasOwn = Object.prototype.hasOwnProperty;
+const nativeBind = Function.prototype.bind;
+const nativeCall = Function.prototype.call;
+const bind = nativeCall.bind(nativeCall, nativeBind);
+const hasOwn = bind(nativeCall, nativeCall, nativeHasOwn);
+
+function assign(target) {
+	if (target == null) {
+		throw new TypeError("Cannot convert undefined or null to object");
+	}
+
+	const to = Object(target);
+
+	for (let index = 1; index < arguments.length; index++) {
+		const nextSource = arguments[index];
+
+		if (nextSource != null) {
+			// Skip over if undefined or null
+			for (const nextKey in nextSource) {
+				// Avoid bugs when hasOwnProperty is shadowed
+				if (hasOwn(nextSource, nextKey)) {
+					to[nextKey] = nextSource[nextKey];
+				}
+			}
+		}
+	}
+	return to;
+}
+
 function pushArray(array1, array2) {
 	if (!array2) {
 		return array1;
@@ -9,7 +38,6 @@ function pushArray(array1, array2) {
 	}
 	return array1;
 }
-const { hasOwnProperty } = Object.prototype;
 const dotRegex = /([\][\s+()*|:/-]+|^)\.([\][\s+()*|:/-]+|$)/g;
 // Inspired by : https://stackoverflow.com/a/9337047
 const startRegex =
@@ -125,8 +153,25 @@ function getIdentifiers(x) {
 }
 
 function configuredParser(config = {}) {
+	let hasProxy;
+	hasProxy = typeof Proxy !== "undefined";
+	if (config.useProxy != null) {
+		hasProxy = !!config.useProxy;
+	}
 	config.normalizeQuotes ??= true;
 	config.handleDotThis ??= true;
+	if (!hasProxy) {
+		if (config.evaluateIdentifier) {
+			throw new Error(
+				"evaluateIdentifier is not supported because your environment does not have Proxy"
+			);
+		}
+		if (config.setIdentifier) {
+			throw new Error(
+				"setIdentifier is not supported because your environment does not have Proxy"
+			);
+		}
+	}
 
 	let lastResult = null;
 
@@ -157,7 +202,7 @@ function configuredParser(config = {}) {
 		});
 
 		/*
-		 * isAssignment will be true if your tag contains an Assignment, for example
+		 * isAssignment will be true if your tag ends with an Assignment, for example
 		 * when you write the following in your template :
 		 * {full_name = first_name + last_name}
 		 * In that case, it makes sense to return an empty string so
@@ -173,234 +218,225 @@ function configuredParser(config = {}) {
 
 		return {
 			get(scope, context) {
+				if (!hasProxy) {
+					let obj = Object.create(null);
+					const { scopeList } = context;
+					const index = getIndex(scope, context);
+					const { num } = context;
+					for (let i = 0, len = num + 1; i < len; i++) {
+						obj = assign(obj, scopeList[i]);
+					}
+					obj = assign(obj, { $index: index });
+					let result = expr(scope, obj);
+					if (isAssignment) {
+						return "";
+					}
+					if (typeof config.postEvaluate === "function") {
+						result = config.postEvaluate(
+							result,
+							tag,
+							scope,
+							context
+						);
+					}
+					return result;
+				}
 				const { scopeList } = context;
 				const promises = [];
 
-				const px = new Proxy(
-					{},
-					{
-						// eslint-disable-next-line complexity
-						get(target, name) {
-							// get(obj, "key") is called when running `obj["key"]` or `obj.key`
-							if (config.evaluateIdentifier) {
-								let fnResult;
-								if (
-									lastResult != null &&
-									lastResult[0] === name &&
-									lastResult[1] === target
-								) {
-									fnResult = lastResult[2];
-								} else {
-									fnResult = config.evaluateIdentifier(
-										name,
-										scope,
-										scopeList,
-										context
-									);
-								}
-								lastResult = [name, target, fnResult];
-								if (fnResult != null) {
-									return fnResult;
-								}
-							}
-							if (name === "this") {
-								return scope;
-							}
-							if (name === "$index") {
-								const res = getIndex(scope, context);
-								if (res != null) {
-									return res;
-								}
-							}
-							if (scope == null) {
-								return;
-							}
-
+				const px = new Proxy(Object.create(null), {
+					// get(obj, "key") is called when running `obj["key"]` or `obj.key`
+					// eslint-disable-next-line complexity
+					get(target, name) {
+						if (config.evaluateIdentifier) {
+							let fnResult;
 							if (
-								hasOwnProperty.call(scope, name) &&
-								scope[name] != null
+								lastResult != null &&
+								lastResult[0] === name &&
+								lastResult[1] === target
 							) {
-								const property = scope[name];
-
-								return typeof property === "function"
-									? property.bind(scope)
-									: property;
-							}
-							for (let i = scopeList.length - 1; i >= 0; i--) {
-								const s = scopeList[i];
-								if (
-									s != null &&
-									hasOwnProperty.call(s, name) &&
-									s[name] != null
-								) {
-									const property = s[name];
-									return typeof property === "function"
-										? property.bind(s)
-										: property;
-								}
-							}
-							return null;
-						},
-						has(target, name) {
-							// has(obj, "key") is called when running ("key" in obj)
-							if (config.evaluateIdentifier) {
-								let fnResult;
-								if (
-									lastResult != null &&
-									lastResult[0] === name &&
-									lastResult[1] === target
-								) {
-									fnResult = lastResult[2];
-								} else {
-									fnResult = config.evaluateIdentifier(
-										name,
-										scope,
-										scopeList,
-										context
-									);
-								}
-								lastResult = [name, target, fnResult];
-								if (fnResult != null) {
-									return true;
-								}
-							}
-							if (name === "$index") {
-								const res = getIndex(scope, context);
-								if (res != null) {
-									return true;
-								}
-							}
-							if (scope == null) {
-								return false;
-							}
-
-							if (
-								hasOwnProperty.call(scope, name) &&
-								scope[name] != null
-							) {
-								return true;
-							}
-							for (let i = scopeList.length - 1; i >= 0; i--) {
-								const s = scopeList[i];
-								if (
-									hasOwnProperty.call(s, name) &&
-									s[name] != null
-								) {
-									return true;
-								}
-							}
-							return false;
-						},
-						set(target, name, value) {
-							// set(obj, "key", value) is called when running `obj.key = value` or `obj["key"] = value;`
-							if (value instanceof Promise) {
-								promises.push(
-									value.then((value) => {
-										if (config.setIdentifier) {
-											const fnResult =
-												config.setIdentifier(
-													name,
-													value,
-													scope,
-													scopeList,
-													context
-												);
-											if (fnResult != null) {
-												if (fnResult.then) {
-													promises.push(fnResult);
-												}
-												return true;
-											}
-										}
-										if (
-											typeof scope === "object" &&
-											scope
-										) {
-											scope[name] = value;
-											return;
-										}
-										for (
-											let i = scopeList.length - 1;
-											i >= 0;
-											i--
-										) {
-											const s = scopeList[i];
-											if (typeof s === "object" && s) {
-												s[name] = value;
-												return;
-											}
-										}
-									})
-								);
-								return true;
-							}
-							lastResult = null;
-							if (config.setIdentifier) {
-								const fnResult = config.setIdentifier(
+								fnResult = lastResult[2];
+							} else {
+								fnResult = config.evaluateIdentifier(
 									name,
-									value,
 									scope,
 									scopeList,
 									context
 								);
-								if (fnResult != null) {
-									if (fnResult.then) {
-										promises.push(fnResult);
-									}
-									return true;
-								}
 							}
+							lastResult = [name, target, fnResult];
+							if (fnResult != null) {
+								return fnResult;
+							}
+						}
+						if (name === "this") {
+							return scope;
+						}
+						if (name === "$index") {
+							const res = getIndex(scope, context);
+							if (res != null) {
+								return res;
+							}
+						}
+						if (scope == null) {
+							return;
+						}
 
-							if (typeof scope === "object" && scope) {
-								scope[name] = value;
+						if (hasOwn(scope, name) && scope[name] != null) {
+							const property = scope[name];
+
+							return typeof property === "function"
+								? bind(property, scope)
+								: property;
+						}
+						for (let i = scopeList.length - 1; i >= 0; i--) {
+							const s = scopeList[i];
+							if (
+								s != null &&
+								hasOwn(s, name) &&
+								s[name] != null
+							) {
+								const property = s[name];
+								return typeof property === "function"
+									? bind(property, s)
+									: property;
+							}
+						}
+						return null;
+					},
+					// has(obj, "key") is called when running ("key" in obj)
+					has(target, name) {
+						if (config.evaluateIdentifier) {
+							let fnResult;
+							if (
+								lastResult != null &&
+								lastResult[0] === name &&
+								lastResult[1] === target
+							) {
+								fnResult = lastResult[2];
+							} else {
+								fnResult = config.evaluateIdentifier(
+									name,
+									scope,
+									scopeList,
+									context
+								);
+							}
+							lastResult = [name, target, fnResult];
+							if (fnResult != null) {
 								return true;
 							}
-							for (let i = scopeList.length - 1; i >= 0; i--) {
-								const s = scopeList[i];
-								if (typeof s === "object" && s) {
-									s[name] = value;
-									return true;
-								}
+						}
+						if (name === "$index") {
+							const res = getIndex(scope, context);
+							if (res != null) {
+								return true;
 							}
+						}
+						if (scope == null) {
+							return false;
+						}
+
+						if (hasOwn(scope, name) && scope[name] != null) {
 							return true;
-						},
-						getOwnPropertyDescriptor(target, name) {
-							// getOwnPropertyDescriptor(obj, "key") is called when running `obj.hasOwnProperty("key")`
-							if (config.evaluateIdentifier) {
-								let fnResult;
-								if (
-									lastResult != null &&
-									lastResult[0] === name &&
-									lastResult[1] === target
-								) {
-									fnResult = lastResult[2];
-								} else {
-									fnResult = config.evaluateIdentifier(
-										name,
-										scope,
-										scopeList,
-										context
-									);
-								}
-								lastResult = [name, target, fnResult];
-								if (fnResult != null) {
-									return {
-										writable: true,
-										enumerable: true,
-										configurable: true,
-										value: true,
-									};
-								}
+						}
+						for (let i = scopeList.length - 1; i >= 0; i--) {
+							const s = scopeList[i];
+							if (hasOwn(s, name) && s[name] != null) {
+								return true;
 							}
-							if (["$index", "this"].indexOf(name) !== -1) {
-								return {
-									writable: true,
-									enumerable: true,
-									configurable: true,
-									value: scope,
-								};
+						}
+						return false;
+					},
+					// set(obj, "key", value) is called when running `obj.key = value` or `obj["key"] = value;`
+					set(target, name, value) {
+						if (value instanceof Promise) {
+							promises.push(
+								value.then((value) => {
+									if (config.setIdentifier) {
+										const fnResult = config.setIdentifier(
+											name,
+											value,
+											scope,
+											scopeList,
+											context
+										);
+										if (fnResult != null) {
+											if (fnResult.then) {
+												promises.push(fnResult);
+											}
+											return true;
+										}
+									}
+									if (typeof scope === "object" && scope) {
+										scope[name] = value;
+										return;
+									}
+									for (
+										let i = scopeList.length - 1;
+										i >= 0;
+										i--
+									) {
+										const s = scopeList[i];
+										if (typeof s === "object" && s) {
+											s[name] = value;
+											return;
+										}
+									}
+								})
+							);
+							return true;
+						}
+						lastResult = null;
+						if (config.setIdentifier) {
+							const fnResult = config.setIdentifier(
+								name,
+								value,
+								scope,
+								scopeList,
+								context
+							);
+							if (fnResult != null) {
+								if (fnResult.then) {
+									promises.push(fnResult);
+								}
+								return true;
 							}
-							if (scope && hasOwnProperty.call(scope, name)) {
+						}
+
+						if (typeof scope === "object" && scope) {
+							scope[name] = value;
+							return true;
+						}
+						for (let i = scopeList.length - 1; i >= 0; i--) {
+							const s = scopeList[i];
+							if (typeof s === "object" && s) {
+								s[name] = value;
+								return true;
+							}
+						}
+						return true;
+					},
+					// getOwnPropertyDescriptor(obj, "key") is called when running `obj.hasOwnProperty("key")`
+					getOwnPropertyDescriptor(target, name) {
+						if (config.evaluateIdentifier) {
+							let fnResult;
+							if (
+								lastResult != null &&
+								lastResult[0] === name &&
+								lastResult[1] === target
+							) {
+								fnResult = lastResult[2];
+							} else {
+								fnResult = config.evaluateIdentifier(
+									name,
+									scope,
+									scopeList,
+									context
+								);
+							}
+							lastResult = [name, target, fnResult];
+							if (fnResult != null) {
 								return {
 									writable: true,
 									enumerable: true,
@@ -408,20 +444,36 @@ function configuredParser(config = {}) {
 									value: true,
 								};
 							}
-							for (let i = scopeList.length - 1; i >= 0; i--) {
-								const s = scopeList[i];
-								if (s && hasOwnProperty.call(s, name)) {
-									return {
-										writable: true,
-										enumerable: true,
-										configurable: true,
-										value: true,
-									};
-								}
+						}
+						if (["$index", "this"].indexOf(name) !== -1) {
+							return {
+								writable: true,
+								enumerable: true,
+								configurable: true,
+								value: scope,
+							};
+						}
+						if (scope && hasOwn(scope, name)) {
+							return {
+								writable: true,
+								enumerable: true,
+								configurable: true,
+								value: true,
+							};
+						}
+						for (let i = scopeList.length - 1; i >= 0; i--) {
+							const s = scopeList[i];
+							if (s && hasOwn(s, name)) {
+								return {
+									writable: true,
+									enumerable: true,
+									configurable: true,
+									value: true,
+								};
 							}
-						},
-					}
-				);
+						}
+					},
+				});
 
 				let result = expr(px);
 				if (isAssignment) {

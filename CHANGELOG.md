@@ -1,3 +1,14 @@
+## 3.69.0
+
+Enhance the library's security by implementing a defense-in-depth strategy, incorporating multiple layers of security to mitigate potential attacks.
+
+We have introduced the use of `hasOwn` functions, defined at the point when the
+docxtemplater code is required, to ensure that Object prototype modifications
+do not impact docxtemplater's runtime if some other library could change the prototype.
+
+The `docxtemplater/expressions-ie11.js` now invokes the `expressions.js` code
+with the `useProxy: false` option. This deduplicates a lot of code.
+
 ## 3.68.6
 
 Update error explanation when parser fails to execute.

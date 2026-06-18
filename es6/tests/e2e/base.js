@@ -5,6 +5,7 @@ const Docxtemplater = require("../../docxtemplater.js");
 const { last } = require("../../utils.js");
 const {
 	createDocV4,
+	runWithoutProxy,
 	createXmlTemplaterDocx,
 	expect,
 	expectToThrowSnapshot,
@@ -438,9 +439,12 @@ describe("Changing the parser", () => {
 	it("should work with loops with expressionParser for ie 11", () => {
 		const content = "<w:t>Hello {#person.adult}you{/person.adult}</w:t>";
 		const scope = { person: { name: "Edgar", adult: true } };
-		const xmlTemplater = createXmlTemplaterDocx(content, {
-			tags: scope,
-			parser: expressionParserIE11,
+		let xmlTemplater;
+		runWithoutProxy(() => {
+			xmlTemplater = createXmlTemplaterDocx(content, {
+				tags: scope,
+				parser: expressionParserIE11.configure(),
+			});
 		});
 		expect(xmlTemplater.getFullText()).to.be.equal("Hello you");
 	});

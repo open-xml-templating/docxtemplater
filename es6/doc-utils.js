@@ -2,6 +2,12 @@ const { DOMParser, XMLSerializer } = require("@xmldom/xmldom");
 const { throwXmlTagNotFound } = require("./errors.js");
 const { last, first } = require("./utils.js");
 
+const nativeHasOwn = Object.prototype.hasOwnProperty;
+const nativeBind = Function.prototype.bind;
+const nativeCall = Function.prototype.call;
+const bind = nativeCall.bind(nativeCall, nativeBind);
+const hasOwn = bind(nativeCall, nativeCall, nativeHasOwn);
+
 function isWhiteSpace(value) {
 	return /^[ \n\r\t]+$/.test(value);
 }
@@ -13,7 +19,10 @@ function parser(tag) {
 				return scope;
 			}
 			if (scope) {
-				return scope[tag];
+				if (hasOwn(scope, tag)) {
+					return scope[tag];
+				}
+				return undefined;
 			}
 			return scope;
 		},

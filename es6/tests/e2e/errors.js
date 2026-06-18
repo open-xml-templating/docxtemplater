@@ -496,7 +496,7 @@ describe("Internal errors", () => {
 	it("should fail if using odt format", (done) => {
 		const expectedError = {
 			name: "InternalError",
-			message: 'The filetype "odt" is not handled by docxtemplater',
+			message: 'The filetype "odt" is not handled by Docxtemplater',
 			properties: {
 				id: "filetype_not_handled",
 				fileType: "odt",
@@ -1233,7 +1233,7 @@ describe("Rendering error", () => {
 		const expectedError = {
 			name: "InternalError",
 			message:
-				"You should not call .render twice on the same docxtemplater instance",
+				"You should not call .render twice on the same Docxtemplater instance",
 			properties: {
 				id: "render_twice",
 			},

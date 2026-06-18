@@ -7,6 +7,10 @@ const postrender = require("./postrender.js");
 const resolve = require("./resolve.js");
 const joinUncorrupt = require("./join-uncorrupt.js");
 
+const nativeBind = Function.prototype.bind;
+const nativeCall = Function.prototype.call;
+const bind = nativeCall.bind(nativeCall, nativeBind);
+
 function getFullText(content, tagsXmlArray) {
 	const matcher = xmlMatcher(content, tagsXmlArray);
 	const result = [];
@@ -181,7 +185,7 @@ module.exports = class XmlTemplater {
 			parser: this.parser,
 			contentType: this.contentType,
 			relsType: this.relsType,
-			baseNullGetter: this.baseNullGetter.bind(this),
+			baseNullGetter: bind(this.baseNullGetter, this),
 			filePath: this.filePath,
 			syntax: this.syntax,
 			fileTypeConfig: this.fileTypeConfig,

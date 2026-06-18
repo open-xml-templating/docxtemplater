@@ -1395,7 +1395,7 @@ describe("StripInvalidXml", () => {
 	it("should be possible to strip invalid xml chars", function () {
 		return this.render({
 			name: "tag-example.docx",
-			expectedName: "expected-john-doe.pptx",
+			expectedName: "expected-john-doe.docx",
 			data: { first_name: "John" + String.fromCharCode(28) + " Doe" },
 			options: {
 				paragraphLoop: true,
@@ -1409,7 +1409,7 @@ describe("StripInvalidXml", () => {
 		// Regression fixed 3.61.2
 		return this.render({
 			name: "tag-example.docx",
-			expectedName: "expected-john-doe.pptx",
+			expectedName: "expected-john-doe.docx",
 			data: {
 				first_name:
 					"John" +
@@ -1463,7 +1463,6 @@ describe("StripInvalidXml", () => {
 			() =>
 				this.render({
 					name: "two-tags.docx",
-					expectedName: "expected-john-doe.pptx",
 					data: {
 						first_name:
 							"John" + String.fromCharCode(28) + "xxxxxxx",
@@ -1482,7 +1481,7 @@ describe("StripInvalidXml", () => {
 	it("should not throw stack trace if specifying stripInvalidXMLChars and using number or other object", function () {
 		return this.render({
 			name: "tag-example.docx",
-			expectedName: "expected-12.pptx",
+			expectedName: "expected-result-normal.docx",
 			data: { first_name: 12, last_name: /a/g, phone: false },
 			options: {
 				paragraphLoop: true,

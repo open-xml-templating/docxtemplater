@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The latest 3.x version of docxtemplater is the one that will be supported.
+The latest 3.x version of Docxtemplater is the one that will be supported.
 
 This version will have security bugfixes until at least 31/12/2025.
 
