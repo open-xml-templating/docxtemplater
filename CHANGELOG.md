@@ -1,3 +1,7 @@
+## 3.70.0
+
+Add support for [exporting zip file to a Stream](https://docxtemplater.com/faq/#streaming-export) (uses less memory than storing it into a buffer)
+
 ## 3.69.3
 
 Make library compatible with angular-expressions 1.6.0 (upcoming release of angular-expressions).
@@ -18,19 +22,19 @@ With the following code :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    parser: (tag) => ({
-        get(scope, context) {
-            console.log(context.scopeTypes);
-            // This will log : ["array", true]
-            // Because for the names tag, the return value is an array, and for the
-            // cond tag, the return value is true.
-            return scope[tag];
-        },
-    }),
+  parser: (tag) => ({
+    get(scope, context) {
+      console.log(context.scopeTypes);
+      // This will log : ["array", true]
+      // Because for the names tag, the return value is an array, and for the
+      // cond tag, the return value is true.
+      return scope[tag];
+    },
+  }),
 });
 doc.render({
-    names: [{ foo: [{}] }],
-    cond: true,
+  names: [{ foo: [{}] }],
+  cond: true,
 });
 ```
 
@@ -88,13 +92,13 @@ And your code is :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
+  paragraphLoop: true,
+  linebreaks: true,
 });
 doc.render({
-    fn: (x) => {
-        throw new Error("foobar");
-    },
+  fn: (x) => {
+    throw new Error("foobar");
+  },
 });
 ```
 
@@ -106,16 +110,16 @@ The following will be thrown :
 
 ```js
 const err = {
-    name: "ScopeParserError",
-    message: "Scope parser execution failed",
-    properties: {
-        id: "scopeparser_execution_failed",
-        file: "word/document.xml",
-        xtag: "fn",
-        scope: {},
-        rootError: { message: "foobar" },
-        offset: 0,
-    },
+  name: "ScopeParserError",
+  message: "Scope parser execution failed",
+  properties: {
+    id: "scopeparser_execution_failed",
+    file: "word/document.xml",
+    xtag: "fn",
+    scope: {},
+    rootError: { message: "foobar" },
+    offset: 0,
+  },
 };
 ```
 
@@ -187,9 +191,9 @@ and represented as \n in the parsed placeholder name.
 
 ```js
 const doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
-    syntax: { preserveNewlinesInTags: true },
+  paragraphLoop: true,
+  linebreaks: true,
+  syntax: { preserveNewlinesInTags: true },
 });
 doc.render({ "first\nname": "John" });
 ```
@@ -289,9 +293,9 @@ You always should attach your module like this :
 ```js
 const iModule = inspectModule();
 new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
-    modules: [iModule],
+  paragraphLoop: true,
+  linebreaks: true,
+  modules: [iModule],
 });
 ```
 
@@ -325,43 +329,39 @@ Automatically template coverpagedata, such as "PublishDate", "Abstract", ...
   In previous versions, when resolving the tags in a document, all tags would be resolved in parallel, and the contents of a loop tag would also all be resolved in parallel.
   You can now define some tags that should be resolved first, and those will be resolved in the order as they appear in in the document. You can for example, force all {@raw} tags to be resolved first by using following code :
 
-    ```js
-    const doc = new Docxtemplater(zip, {
-        parser: expressionParser.configure({
-            postCompile(tag, meta, expr) {
-                const lastBody =
-                    expr.ast.body[expr.ast.body.length - 1];
-                const isAssignment =
-                    lastBody &&
-                    lastBody.expression.type ===
-                        "AssignmentExpression";
-                if (isAssignment) {
-                    meta.tag.resolveFirst = true;
-                }
-            },
-        }),
-    });
-    ```
+  ```js
+  const doc = new Docxtemplater(zip, {
+    parser: expressionParser.configure({
+      postCompile(tag, meta, expr) {
+        const lastBody = expr.ast.body[expr.ast.body.length - 1];
+        const isAssignment =
+          lastBody && lastBody.expression.type === "AssignmentExpression";
+        if (isAssignment) {
+          meta.tag.resolveFirst = true;
+        }
+      },
+    }),
+  });
+  ```
 
-    You can now also make sure that each iteration in a loop waits for the previous iteration to completely resolve with following option :
+  You can now also make sure that each iteration in a loop waits for the previous iteration to completely resolve with following option :
 
-    ```js
-    const doc = new Docxtemplater(zip, {
-        modules: () => [
-            {
-                name: "AddResolveSerially",
-                optionsTransformer(options, doc) {
-                    const loopModule =
-                        doc.findModule("LoopModule");
-                    loopModule.resolveSerially = true;
-                    return options;
-                },
-            },
-        ],
-    });
-    ```
+  ```js
+  const doc = new Docxtemplater(zip, {
+    modules: () => [
+      {
+        name: "AddResolveSerially",
+        optionsTransformer(options, doc) {
+          const loopModule = doc.findModule("LoopModule");
+          loopModule.resolveSerially = true;
+          return options;
+        },
+      },
+    ],
+  });
+  ```
 
-    These options are beneficial when utilizing the expressionParser in asynchronous mode (with `renderAsync`). They are particularly useful if you employ assignments like `{@client=id|fetchClient}` and need to ensure that this assignment is resolved prior to proceeding with the remainder of the template.
+  These options are beneficial when utilizing the expressionParser in asynchronous mode (with `renderAsync`). They are particularly useful if you employ assignments like `{@client=id|fetchClient}` and need to ensure that this assignment is resolved prior to proceeding with the remainder of the template.
 
 - Add options argument to `module.getTraits`.
   New signature : `module.getTraits(traitName, parsed, options)`.
@@ -435,9 +435,9 @@ If you for example write :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    myCustomOption: true,
-    linebreaks: true,
+  paragraphLoop: true,
+  myCustomOption: true,
+  linebreaks: true,
 });
 ```
 
@@ -495,11 +495,11 @@ To deactivate the dot handling, use :
 ```js
 const expressionParser = require("docxtemplater/expressions.js");
 const doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
-    parser: expressionParser.configure({
-        handleDotThis: false,
-    }),
+  paragraphLoop: true,
+  linebreaks: true,
+  parser: expressionParser.configure({
+    handleDotThis: false,
+  }),
 });
 doc.render(/* data */);
 ```
@@ -637,17 +637,17 @@ Instead of :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
+  paragraphLoop: true,
+  linebreaks: true,
 });
 doc.render(/* data */);
 const buf = doc.getZip().generate({
-    type: "nodebuffer",
-    /*
-     * Compression: DEFLATE adds a compression step.
-     * For a 50MB document, expect 500ms additional CPU time.
-     */
-    compression: "DEFLATE",
+  type: "nodebuffer",
+  /*
+   * Compression: DEFLATE adds a compression step.
+   * For a 50MB document, expect 500ms additional CPU time.
+   */
+  compression: "DEFLATE",
 });
 ```
 
@@ -655,8 +655,8 @@ You can now write :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
+  paragraphLoop: true,
+  linebreaks: true,
 });
 doc.render(/* data */);
 const buf = doc.toBuffer();
@@ -702,10 +702,10 @@ Make it possible to disable parsing of "{" and "}" completely by setting the del
 
 ```js
 const doc = new Docxtemplater(zip, {
-    delimiters: {
-        start: null,
-        end: null,
-    },
+  delimiters: {
+    start: null,
+    end: null,
+  },
 });
 ```
 
@@ -724,11 +724,11 @@ Make it possible to write unbalanced loops, if specifying the following the opti
 ```js
 const expressionParser = require("docxtemplater/expressions.js");
 const doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
-    syntax: {
-        allowUnbalancedLoops: true,
-    },
+  paragraphLoop: true,
+  linebreaks: true,
+  syntax: {
+    allowUnbalancedLoops: true,
+  },
 });
 doc.render(/* data */);
 ```
@@ -774,9 +774,9 @@ Add `renderAsync` method to TxtTemplater, usage is like this :
 const TxtTemplater = require("docxtemplater/js/text.js");
 const doc = new TxtTemplater("Hello {user}, how are you ?");
 const result = doc.renderAsync({
-    user: new Promise((resolve) => {
-        resolve("John");
-    }),
+  user: new Promise((resolve) => {
+    resolve("John");
+  }),
 });
 ```
 
@@ -786,7 +786,7 @@ When using the `stripInvalidXMLChars:true` option, if passing a value of a non s
 
 ```js
 doc.render({
-    first_name: 44,
+  first_name: 44,
 });
 ```
 
@@ -838,9 +838,9 @@ Use it like this :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    stripInvalidXMLChars: true,
-    paragraphLoop: true,
-    linebreaks: true,
+  stripInvalidXMLChars: true,
+  paragraphLoop: true,
+  linebreaks: true,
 });
 ```
 
@@ -850,24 +850,23 @@ Fix small issues with expressions.js
 
 - Add `compiled` property to be able to access the internal expression :
 
-    If the tag is simply : `{myVal}`
+  If the tag is simply : `{myVal}`
 
-    In your code, you can use :
+  In your code, you can use :
 
-    ```js
-    const expressionParser = require("docxtemplater/expressions.js");
-    const doc = new Docxtemplater(zip, {
-        parser: (tag) => {
-            const result = expressionParser(tag);
-            const firstExpression =
-                result.compiled.ast.body[0].expression;
-            expect(firstExpression.type).to.equal("Identifier");
-            expect(firstExpression.name).to.equal("myVal");
-            expect(firstExpression.constant).to.equal(false);
-            return result;
-        },
-    });
-    ```
+  ```js
+  const expressionParser = require("docxtemplater/expressions.js");
+  const doc = new Docxtemplater(zip, {
+    parser: (tag) => {
+      const result = expressionParser(tag);
+      const firstExpression = result.compiled.ast.body[0].expression;
+      expect(firstExpression.type).to.equal("Identifier");
+      expect(firstExpression.name).to.equal("myVal");
+      expect(firstExpression.constant).to.equal(false);
+      return result;
+    },
+  });
+  ```
 
 - Use better error message if using non string value for expressions.js
 - Do not fail if trying to access property of null inside a loop with expressions.js
@@ -957,13 +956,13 @@ Update moduleApiVersion to 3.42.0
 
 - Options immutability : in previous versions, when changing the delimiters.start from the optionsTransformer for one instance, it would change the options for all future doc instances.
 
-    If for some reason, you were changing the DocUtils.defaults, like this, this is no longer possible : (This was not documented anywhere so it is very unlikely that you're doing this).
+  If for some reason, you were changing the DocUtils.defaults, like this, this is no longer possible : (This was not documented anywhere so it is very unlikely that you're doing this).
 
-    ```js
-    require("docxtemplater").DocUtils.defaults.paragraphLoop = true;
-    ```
+  ```js
+  require("docxtemplater").DocUtils.defaults.paragraphLoop = true;
+  ```
 
-    This code will not have any effect starting from 3.55.0, you have to pass the options in the constructor.
+  This code will not have any effect starting from 3.55.0, you have to pass the options in the constructor.
 
 - Refactor InspectModule.getAllTags() to work correctly on xlsx files to properly show nesting of data.
 
@@ -1037,21 +1036,21 @@ const expressionParser = require("docxtemplater/expressions.js");
 
 const globalData = {};
 const doc = new Docxtemplater(zip, {
-    parser: expressionParser.configure({
-        setIdentifier(tag, value) {
-            const matchGlobal = /^\$\$/g;
-            if (matchGlobal.test(tag)) {
-                globalData[tag] = value;
-                return true;
-            }
-        },
-        evaluateIdentifier(tag) {
-            const matchGlobal = /^\$\$/g;
-            if (matchGlobal.test(tag)) {
-                return globalData[tag];
-            }
-        },
-    }),
+  parser: expressionParser.configure({
+    setIdentifier(tag, value) {
+      const matchGlobal = /^\$\$/g;
+      if (matchGlobal.test(tag)) {
+        globalData[tag] = value;
+        return true;
+      }
+    },
+    evaluateIdentifier(tag) {
+      const matchGlobal = /^\$\$/g;
+      if (matchGlobal.test(tag)) {
+        return globalData[tag];
+      }
+    },
+  }),
 });
 
 doc.render(/* data */);
@@ -1111,41 +1110,35 @@ This will retrieve the "val" value from the scope that is above the current scop
 ```js
 const expressionParser = require("docxtemplater/expressions.js");
 const doc = new Docxtemplater(zip, {
-    parser: expressionParser.configure({
-        evaluateIdentifier(tag, scope, scopeList, context) {
-            const matchesParent = /^(_{2,})(.*)/g;
-            if (matchesParent.test(tag)) {
-                const parentCount =
-                    tag.replace(matchesParent, "$1").length - 1;
-                tag = tag.replace(matchesParent, "$2");
-                if (parentCount >= 1) {
-                    for (
-                        let i =
-                            scopeList.length - 1 - parentCount;
-                        i >= 0;
-                        i--
-                    ) {
-                        const s = scopeList[i];
-                        if (s[tag] != null) {
-                            const property = s[tag];
-                            return typeof property === "function"
-                                ? property.bind(s)
-                                : property;
-                        }
-                    }
-                }
+  parser: expressionParser.configure({
+    evaluateIdentifier(tag, scope, scopeList, context) {
+      const matchesParent = /^(_{2,})(.*)/g;
+      if (matchesParent.test(tag)) {
+        const parentCount = tag.replace(matchesParent, "$1").length - 1;
+        tag = tag.replace(matchesParent, "$2");
+        if (parentCount >= 1) {
+          for (let i = scopeList.length - 1 - parentCount; i >= 0; i--) {
+            const s = scopeList[i];
+            if (s[tag] != null) {
+              const property = s[tag];
+              return typeof property === "function"
+                ? property.bind(s)
+                : property;
             }
-        },
-    }),
+          }
+        }
+      }
+    },
+  }),
 });
 
 doc.render({
-    loop: [
-        {
-            val: "This value",
-        },
-    ],
-    val: "Other value", // <= This value will be retrieved
+  loop: [
+    {
+      val: "This value",
+    },
+  ],
+  val: "Other value", // <= This value will be retrieved
 });
 ```
 
@@ -1172,9 +1165,9 @@ For example :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    syntax: {
-        changeDelimiterPrefix: null,
-    },
+  syntax: {
+    changeDelimiterPrefix: null,
+  },
 });
 ```
 
@@ -1182,9 +1175,9 @@ or
 
 ```js
 const doc = new Docxtemplater(zip, {
-    syntax: {
-        changeDelimiterPrefix: "$",
-    },
+  syntax: {
+    changeDelimiterPrefix: "$",
+  },
 });
 ```
 
@@ -1226,29 +1219,25 @@ For example, you can write :
 
 ```js
 const doc = new Docxtemplater(zip, {
-    modules: [
-        {
-            optionsTransformer(options, doc) {
-                for (module of doc.modules) {
-                    if (module.name === "RawXmlModule") {
-                        module.prefix = function (
-                            placeholderContent
-                        ) {
-                            if (placeholderContent === "raw") {
-                                return "raw";
-                            }
-                            if (placeholderContent[0] === "@") {
-                                return placeholderContent.substr(
-                                    1
-                                );
-                            }
-                        };
-                    }
-                }
-                return options;
-            },
-        },
-    ],
+  modules: [
+    {
+      optionsTransformer(options, doc) {
+        for (module of doc.modules) {
+          if (module.name === "RawXmlModule") {
+            module.prefix = function (placeholderContent) {
+              if (placeholderContent === "raw") {
+                return "raw";
+              }
+              if (placeholderContent[0] === "@") {
+                return placeholderContent.substr(1);
+              }
+            };
+          }
+        }
+        return options;
+      },
+    },
+  ],
 });
 ```
 
@@ -1297,17 +1286,17 @@ Use following code :
 ```js
 const expressionParser = require("docxtemplater/expressions.js");
 new Docxtemplater(zip, {
-    parser: expressionParser.configure({
-        csp: true, // this disables the use of "new Function", useful for Vercel, Deno, ...
-        filters: {
-            uppercase: (input) => {
-                if (typeof input === "string") {
-                    return input.toUpperCase();
-                }
-                return input;
-            },
-        },
-    }),
+  parser: expressionParser.configure({
+    csp: true, // this disables the use of "new Function", useful for Vercel, Deno, ...
+    filters: {
+      uppercase: (input) => {
+        if (typeof input === "string") {
+          return input.toUpperCase();
+        }
+        return input;
+      },
+    },
+  }),
 });
 ```
 
@@ -1466,51 +1455,51 @@ This could also lead to some other bugs that were happening only when having som
 
 - In previous versions the following code will throw an error:
 
-    ```js
-    new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-        delimiters: {
-            start: "$(",
-            end: ")",
-        },
-    });
-    ```
+  ```js
+  new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+    delimiters: {
+      start: "$(",
+      end: ")",
+    },
+  });
+  ```
 
-    ```template
-    $(last_name) $(first_name)
+  ```template
+  $(last_name) $(first_name)
 
-    Some text (Some text)  Some text
+  Some text (Some text)  Some text
 
-    $(last_name) $(first_name)
+  $(last_name) $(first_name)
 
-    ```
+  ```
 
-    ```js
-    MultiError
-    {
-      name: "TemplateError",
-      id: "unopened_tag",
-      explanation: "The tag beginning with \") Some text\" is unopened"
-    }
-    ```
+  ```js
+  MultiError
+  {
+    name: "TemplateError",
+    id: "unopened_tag",
+    explanation: "The tag beginning with \") Some text\" is unopened"
+  }
+  ```
 
-    The syntax can now be made more lenient to permit closing tags even when there are no corresponding opening tags. In your code, write :
+  The syntax can now be made more lenient to permit closing tags even when there are no corresponding opening tags. In your code, write :
 
-    ```js
-    new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
+  ```js
+  new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
 
-        syntax: {
-            allowUnopenedTag: true,
-        },
-    });
-    ```
+    syntax: {
+      allowUnopenedTag: true,
+    },
+  });
+  ```
 
-    For now, the only available property for `syntax` object is `allowUnopenedTag` (it makes it possible to use the end delimiter tag as a text and not to parse it as a closing tag and cause syntax error). Fixes https://github.com/open-xml-templating/docxtemplater/issues/726.
+  For now, the only available property for `syntax` object is `allowUnopenedTag` (it makes it possible to use the end delimiter tag as a text and not to parse it as a closing tag and cause syntax error). Fixes https://github.com/open-xml-templating/docxtemplater/issues/726.
 
-    The default behavior for the parser without setting the syntax option is the same as in 3.39.2, meaning without the `syntax.allowUnopenedTag: true` option, placeholders that are closed but not opened will throw an error.
+  The default behavior for the parser without setting the syntax option is the same as in 3.39.2, meaning without the `syntax.allowUnopenedTag: true` option, placeholders that are closed but not opened will throw an error.
 
 - Internal: Refactor `getDelimiterErrors` function to be cleaner and more performant
 - Internal: Add tests for new functionality
@@ -1587,10 +1576,10 @@ This did not work correctly with following data with expressions parser :
 
 ```js
 doc.render({
-    products: [
-        [1, 2, 3, 4],
-        [4, 5, 6, 7],
-    ],
+  products: [
+    [1, 2, 3, 4],
+    [4, 5, 6, 7],
+  ],
 });
 ```
 
@@ -1717,8 +1706,7 @@ Add support to get identifiers when using the `docxtemplater/expressions.js` pac
 
 ```js
 const expressionParser = require("docxtemplater/expressions.js");
-const identifiers =
-    expressionParser("x+0+users").getIdentifiers();
+const identifiers = expressionParser("x+0+users").getIdentifiers();
 // identifiers will be : ["x", "users"]
 ```
 
@@ -1766,7 +1754,7 @@ With following file :
 
 ```js
 doc.render({
-    "first name": "John",
+  "first name": "John",
 });
 ```
 
@@ -1790,26 +1778,26 @@ Update moduleApiVersion to version 3.36.0
 
 - Bugfix in FixDocPRCorruptionModule : when using the following code :
 
-    ```js
-    const fixDocPrCorruption = require("docxtemplater/js/modules/fix-doc-pr-corruption.js");
-    const doc = new Docxtemplater(zip, {
-        modules: [fixDocPrCorruption],
-    });
-    ```
+  ```js
+  const fixDocPrCorruption = require("docxtemplater/js/modules/fix-doc-pr-corruption.js");
+  const doc = new Docxtemplater(zip, {
+    modules: [fixDocPrCorruption],
+  });
+  ```
 
-    The issue was that if you attached the same module to multiple docxtemplater instances in parallel, because of badly handled state, the state for the fixDocPrCorruption was overwritten
+  The issue was that if you attached the same module to multiple docxtemplater instances in parallel, because of badly handled state, the state for the fixDocPrCorruption was overwritten
 
-    ```js
-    const doc1 = new Docxtemplater(zip, {
-        modules: [fixDocPrCorruption],
-    });
-    const doc2 = new Docxtemplater(zip, {
-        modules: [fixDocPrCorruption],
-    });
-    doc1.render(); // In this situation, the fixDocPrCorruption would use data from the doc2, which is incorrect, and could result in a corrupt document
-    ```
+  ```js
+  const doc1 = new Docxtemplater(zip, {
+    modules: [fixDocPrCorruption],
+  });
+  const doc2 = new Docxtemplater(zip, {
+    modules: [fixDocPrCorruption],
+  });
+  doc1.render(); // In this situation, the fixDocPrCorruption would use data from the doc2, which is incorrect, and could result in a corrupt document
+  ```
 
-    Now, the fixDocPrCorruption can be used on multiple docxtemplater instances without causing any issue.
+  Now, the fixDocPrCorruption can be used on multiple docxtemplater instances without causing any issue.
 
 ### 3.34.3
 
@@ -2067,14 +2055,14 @@ Hello {name}
 
 ```js
 doc.renderAsync({
-    users: [
-        new Promise((resolve, reject) => {
-            resolve({ name: "John" });
-        }),
-        new Promise((resolve, reject) => {
-            resolve({ name: "Mary" });
-        }),
-    ],
+  users: [
+    new Promise((resolve, reject) => {
+      resolve({ name: "John" });
+    }),
+    new Promise((resolve, reject) => {
+      resolve({ name: "Mary" });
+    }),
+  ],
 });
 ```
 
@@ -2090,10 +2078,10 @@ You can use the previous behavior (one big JSON line) by writing the following :
 
 ```js
 var doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
-    errorLogging: "jsonl", // JSONL stands for JSON Line, one big JSON entry on a single line
-    // Other options for errorLogging are false which means do not log anything, or "json" (which is now the default)
+  paragraphLoop: true,
+  linebreaks: true,
+  errorLogging: "jsonl", // JSONL stands for JSON Line, one big JSON entry on a single line
+  // Other options for errorLogging are false which means do not log anything, or "json" (which is now the default)
 });
 ```
 
@@ -2131,7 +2119,7 @@ For example, if you do the following :
 
 ```js
 doc.render({
-    raw: 42,
+  raw: 42,
 });
 ```
 
@@ -2251,7 +2239,7 @@ Add code for fix-doc-pr-corruption accessible by doing :
 ```js
 const fixDocPrCorruption = require("docxtemplater/js/modules/fix-doc-pr-corruption.js");
 const doc = new Docxtemplater(zip, {
-    modules: [fixDocPrCorruption],
+  modules: [fixDocPrCorruption],
 });
 ```
 
@@ -2265,64 +2253,58 @@ You can replace the following code :
 // The error object contains additional information when logged
 // with JSON.stringify (it contains a properties object containing all suberrors).
 function replaceErrors(key, value) {
-    if (value instanceof Error) {
-        return Object.getOwnPropertyNames(value).reduce(
-            function (error, key) {
-                error[key] = value[key];
-                return error;
-            },
-            {}
-        );
-    }
-    return value;
+  if (value instanceof Error) {
+    return Object.getOwnPropertyNames(value).reduce(function (error, key) {
+      error[key] = value[key];
+      return error;
+    }, {});
+  }
+  return value;
 }
 
 function errorHandler(error) {
-    console.log(JSON.stringify({ error: error }, replaceErrors));
+  console.log(JSON.stringify({ error: error }, replaceErrors));
 
-    if (
-        error.properties &&
-        error.properties.errors instanceof Array
-    ) {
-        const errorMessages = error.properties.errors
-            .map(function (error) {
-                return error.properties.explanation;
-            })
-            .join("\n");
-        console.log("errorMessages", errorMessages);
-        // errorMessages is a humanly readable message looking like this:
-        // 'The tag beginning with "foobar" is unopened'
-    }
-    throw error;
+  if (error.properties && error.properties.errors instanceof Array) {
+    const errorMessages = error.properties.errors
+      .map(function (error) {
+        return error.properties.explanation;
+      })
+      .join("\n");
+    console.log("errorMessages", errorMessages);
+    // errorMessages is a humanly readable message looking like this:
+    // 'The tag beginning with "foobar" is unopened'
+  }
+  throw error;
 }
 
 var zip = new PizZip(content);
 var doc;
 try {
-    doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-    });
+  doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
 } catch (error) {
-    // Catch compilation errors
-    // (errors caused by the compilation of the template: misplaced tags)
-    errorHandler(error);
+  // Catch compilation errors
+  // (errors caused by the compilation of the template: misplaced tags)
+  errorHandler(error);
 }
 
 try {
-    // render the document
-    // (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-    doc.render({
-        first_name: "John",
-        last_name: "Doe",
-        phone: "0652455478",
-        description: "New Website",
-    });
+  // render the document
+  // (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+  doc.render({
+    first_name: "John",
+    last_name: "Doe",
+    phone: "0652455478",
+    description: "New Website",
+  });
 } catch (error) {
-    // Catch rendering errors
-    // (errors relating to the rendering of the template:
-    // for example when the expressionParser throws an error)
-    errorHandler(error);
+  // Catch rendering errors
+  // (errors relating to the rendering of the template:
+  // for example when the expressionParser throws an error)
+  errorHandler(error);
 }
 ```
 
@@ -2331,17 +2313,17 @@ to this :
 ```js
 var zip = new PizZip(content);
 var doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
+  paragraphLoop: true,
+  linebreaks: true,
 });
 
 // render the document
 // (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
 doc.render({
-    first_name: "John",
-    last_name: "Doe",
-    phone: "0652455478",
-    description: "New Website",
+  first_name: "John",
+  last_name: "Doe",
+  phone: "0652455478",
+  description: "New Website",
 });
 ```
 
@@ -2349,9 +2331,9 @@ To disable this automatic errorLogging, use :
 
 ```js
 var doc = new Docxtemplater(zip, {
-    paragraphLoop: true,
-    linebreaks: true,
-    errorLogging: false,
+  paragraphLoop: true,
+  linebreaks: true,
+  errorLogging: false,
 });
 ```
 
@@ -2377,7 +2359,7 @@ If you get this error, you should simply write :
 ```js
 const HtmlModule = require("docxtemplater-html-module");
 const doc = new Docxtemplater(zip, {
-    modules: [new HtmlModule()],
+  modules: [new HtmlModule()],
 });
 ```
 
@@ -2446,17 +2428,17 @@ You now can write :
 ```js
 const doc = new Docxtemplater(zip);
 doc.render({
-    userGreeting: (scope) => {
-        return "How is it going, " + scope.user + " ? ";
+  userGreeting: (scope) => {
+    return "How is it going, " + scope.user + " ? ";
+  },
+  users: [
+    {
+      name: "John",
     },
-    users: [
-        {
-            name: "John",
-        },
-        {
-            name: "Mary",
-        },
-    ],
+    {
+      name: "Mary",
+    },
+  ],
 });
 ```
 
@@ -2479,7 +2461,7 @@ You can now do :
 ```js
 const doc = new Docxtemplater(zip, { linebreaks: true });
 doc.render({
-    user: "John",
+  user: "John",
 });
 ```
 
@@ -2487,16 +2469,18 @@ or, in the async version :
 
 ```js
 const doc = new Docxtemplater(zip, { linebreaks: true });
-doc.renderAsync({
+doc
+  .renderAsync({
     user: new Promise(function (resolve, reject) {
-        resolve("John");
+      resolve("John");
     }),
-}).then(function () {
+  })
+  .then(function () {
     const zip = doc.getZip().generate({
-        type: "nodebuffer",
-        compression: "DEFLATE",
+      type: "nodebuffer",
+      compression: "DEFLATE",
     });
-});
+  });
 ```
 
 ### 3.23.2
@@ -3285,11 +3269,11 @@ Revert : Add back lIndex to parsed in addition to endLindex : Fixes issue with a
 - Add nullGetter module API
 
 - Update inspectModule to have :
-    - Unused variables (nullValues)
-    - filetype
-    - data from setData()
-    - templatedFiles
-    - list of tags
+  - Unused variables (nullValues)
+  - filetype
+  - data from setData()
+  - templatedFiles
+  - list of tags
 
 ### 3.6.8
 
@@ -3583,18 +3567,18 @@ This release was published by error, and should not be used at all.
 
 - The constructor arguments have been removed, and you are responsible to load the JSZip.
 
-    Instead of :
+  Instead of :
 
-    ```
-    var doc = new Docxtemplater(content);
-    ```
+  ```
+  var doc = new Docxtemplater(content);
+  ```
 
-    You now should do :
+  You now should do :
 
-    ```
-    var zip = new JSZip(content);
-    var doc=new Docxtemplater().loadZip(zip)
-    ```
+  ```
+  var zip = new JSZip(content);
+  var doc=new Docxtemplater().loadZip(zip)
+  ```
 
 - getTags() has been removed. It is now not easily possible to get the tags. See https://github.com/open-xml-templating/docxtemplater/issues/258 for a alternate solution
 
