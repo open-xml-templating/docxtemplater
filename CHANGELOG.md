@@ -1,3 +1,7 @@
+## 3.70.1
+
+Fix @xmldom/xmldom to 0.9.12 in package.json
+
 ## 3.70.0
 
 Add support for [exporting zip file to a Stream](https://docxtemplater.com/faq/#streaming-export) (uses less memory than storing it into a buffer)
