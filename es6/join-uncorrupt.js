@@ -12,6 +12,9 @@ function addEmptyParagraphAfterTable(parts) {
 
 	for (let i = 0, len = parts.length; i < len; i++) {
 		let p = parts[i];
+		if (p instanceof Uint8Array) {
+			continue;
+		}
 		if (isWhiteSpace(p) || startsWith(p, "<w:bookmarkEnd")) {
 			continue;
 		}
@@ -48,17 +51,24 @@ function joinUncorrupt(parts, options) {
 	 * | {-w:p falsy}My para{/falsy}   |              |
 	 * ------------------------------------------------
 	 */
-	let collecting = "";
+	// @probe before join uncorrupt
 	let currentlyCollecting = -1;
 	if (filetypes.docx.indexOf(options.contentType) !== -1) {
 		parts = addEmptyParagraphAfterTable(parts);
 	}
+
+	// @probe after addEmptyParagraphAfterTable
 	let startIndex = -1;
 
 	for (let j = 0, len2 = contains.length; j < len2; j++) {
 		const { tag, shouldContain, value, drop, dropParent } = contains[j];
+		let collectedParts = null;
+
 		for (let i = 0, len = parts.length; i < len; i++) {
 			const part = parts[i];
+			if (part instanceof Uint8Array) {
+				continue;
+			}
 			if (currentlyCollecting === j) {
 				if (isEnding(part, tag)) {
 					currentlyCollecting = -1;
@@ -82,16 +92,24 @@ function joinUncorrupt(parts, options) {
 							parts[k] = "";
 						}
 						if (!drop) {
-							parts[i] = collecting + value + part;
+							parts[i] = collectedParts.join("") + value + part;
 						}
 					}
-				}
-				collecting += part;
-				for (let k = 0, len3 = shouldContain.length; k < len3; k++) {
-					const sc = shouldContain[k];
-					if (isStarting(part, sc)) {
-						currentlyCollecting = -1;
-						break;
+					collectedParts = null;
+				} else {
+					if (collectedParts) {
+						collectedParts.push(part);
+					}
+					for (
+						let k = 0, len3 = shouldContain.length;
+						k < len3;
+						k++
+					) {
+						if (isStarting(part, shouldContain[k])) {
+							currentlyCollecting = -1;
+							collectedParts = null;
+							break;
+						}
 					}
 				}
 			}
@@ -103,7 +121,7 @@ function joinUncorrupt(parts, options) {
 				 * To verify that the part doesn't have multiple tags,
 				 * such as <w:tc><w:p>
 				 */
-				part.substr(1).indexOf("<") === -1
+				part.indexOf("<", 1) === -1
 			) {
 				// self-closing tag such as <w:t/>
 				if (part[part.length - 2] === "/") {
@@ -111,11 +129,13 @@ function joinUncorrupt(parts, options) {
 				} else {
 					startIndex = i;
 					currentlyCollecting = j;
-					collecting = part;
+					collectedParts = drop || dropParent ? null : [part];
 				}
 			}
 		}
 	}
+
+	// @probe after join uncorrupt
 	return parts;
 }
 

@@ -83,26 +83,26 @@ class SpacePreserve {
 	}
 
 	postrender(parts) {
-		let lastNonEmpty = "";
-		let lastNonEmptyIndex = 0;
+		let lastNonEmptyIndex = 0,
+			endsWithWtPreserve = false;
 
 		for (let i = 0, len = parts.length; i < len; i++) {
-			let p = parts[i];
-			if (p === "") {
+			if (parts[i] === "" || parts[i] instanceof Uint8Array) {
 				continue;
 			}
-			if (endsWith(lastNonEmpty, wTpreserve) && startsWith(p, wtEnd)) {
+			let p = parts[i];
+			if (endsWithWtPreserve && startsWith(p, wtEnd)) {
 				parts[lastNonEmptyIndex] =
-					lastNonEmpty.substr(
+					parts[lastNonEmptyIndex].substr(
 						0,
-						lastNonEmpty.length - wTpreservelen
+						parts[lastNonEmptyIndex].length - wTpreservelen
 					) + "<w:t/>";
 				p = p.substr(wtEndlen);
+				parts[i] = p;
 			}
 
-			lastNonEmpty = p;
+			endsWithWtPreserve = endsWith(p, wTpreserve);
 			lastNonEmptyIndex = i;
-			parts[i] = p;
 		}
 
 		return parts;

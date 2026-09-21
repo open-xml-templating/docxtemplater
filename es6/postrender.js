@@ -1,119 +1,172 @@
 /*
- * Convert string to array (typed, when possible)
- * Stryker disable all : because this is a utility function that was copied
- * from
- * https://github.com/open-xml-templating/pizzip/blob/34a840553c604980859dc6d0dcd1f89b6e5527b3/es6/utf8.js#L33
+ * UTF-8 helpers avoid retaining one Uint8Array per part before creating the
+ * final output buffer. A pending high surrogate preserves pairs split across
+ * adjacent string parts.
+ *
+ * Parts can be either strings or Uint8Arrays.
  */
-function string2buf(str) {
-	let c,
-		c2,
-		mPos,
-		i,
-		bufLen = 0;
 
-	const strLen = str.length;
+function utf8Length(parts) {
+	let length = 0;
+	let pendingHighSurrogate = -1;
 
-	// count binary size
-	for (mPos = 0; mPos < strLen; mPos++) {
-		c = str.charCodeAt(mPos);
-		if ((c & 0xfc00) === 0xd800 && mPos + 1 < strLen) {
-			c2 = str.charCodeAt(mPos + 1);
-			if ((c2 & 0xfc00) === 0xdc00) {
-				c = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
-				mPos++;
+	for (const part of parts) {
+		if (part instanceof Uint8Array) {
+			if (pendingHighSurrogate !== -1) {
+				length += 3;
+				pendingHighSurrogate = -1;
 			}
+
+			length += part.length;
+			continue;
 		}
-		bufLen += c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4;
-	}
 
-	// allocate buffer
-	const buf = new Uint8Array(bufLen);
+		for (let i = 0; i < part.length; i++) {
+			const codePoint = part.charCodeAt(i);
 
-	// convert
-	for (i = 0, mPos = 0; i < bufLen; mPos++) {
-		c = str.charCodeAt(mPos);
-		if ((c & 0xfc00) === 0xd800 && mPos + 1 < strLen) {
-			c2 = str.charCodeAt(mPos + 1);
-			if ((c2 & 0xfc00) === 0xdc00) {
-				c = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
-				mPos++;
+			if (pendingHighSurrogate !== -1) {
+				if ((codePoint & 0xfc00) === 0xdc00) {
+					length += 4;
+					pendingHighSurrogate = -1;
+					continue;
+				}
+
+				length += 3;
+				pendingHighSurrogate = -1;
 			}
-		}
-		if (c < 0x80) {
-			/* one byte */
-			buf[i++] = c;
-		} else if (c < 0x800) {
-			/* two bytes */
-			buf[i++] = 0xc0 | (c >>> 6);
-			buf[i++] = 0x80 | (c & 0x3f);
-		} else if (c < 0x10000) {
-			/* three bytes */
-			buf[i++] = 0xe0 | (c >>> 12);
-			buf[i++] = 0x80 | ((c >>> 6) & 0x3f);
-			buf[i++] = 0x80 | (c & 0x3f);
-		} else {
-			/* four bytes */
-			buf[i++] = 0xf0 | (c >>> 18);
-			buf[i++] = 0x80 | ((c >>> 12) & 0x3f);
-			buf[i++] = 0x80 | ((c >>> 6) & 0x3f);
-			buf[i++] = 0x80 | (c & 0x3f);
+
+			if ((codePoint & 0xfc00) === 0xd800) {
+				if (i + 1 < part.length) {
+					const next = part.charCodeAt(i + 1);
+
+					if ((next & 0xfc00) === 0xdc00) {
+						length += 4;
+						i++;
+						continue;
+					}
+				} else {
+					pendingHighSurrogate = codePoint;
+					continue;
+				}
+			}
+
+			length += codePoint < 0x80 ? 1 : codePoint < 0x800 ? 2 : 3;
 		}
 	}
 
-	return buf;
+	return length + (pendingHighSurrogate === -1 ? 0 : 3);
 }
-// Stryker restore all
+
+function writeUtf8(parts, output) {
+	let offset = 0;
+	let pendingHighSurrogate = -1;
+
+	function writeCodePoint(codePoint) {
+		if (codePoint < 0x80) {
+			output[offset++] = codePoint;
+		} else if (codePoint < 0x800) {
+			output[offset++] = 0xc0 | (codePoint >>> 6);
+			output[offset++] = 0x80 | (codePoint & 0x3f);
+		} else if (codePoint < 0x10000) {
+			output[offset++] = 0xe0 | (codePoint >>> 12);
+			output[offset++] = 0x80 | ((codePoint >>> 6) & 0x3f);
+			output[offset++] = 0x80 | (codePoint & 0x3f);
+		} else {
+			output[offset++] = 0xf0 | (codePoint >>> 18);
+			output[offset++] = 0x80 | ((codePoint >>> 12) & 0x3f);
+			output[offset++] = 0x80 | ((codePoint >>> 6) & 0x3f);
+			output[offset++] = 0x80 | (codePoint & 0x3f);
+		}
+	}
+
+	for (const part of parts) {
+		if (part instanceof Uint8Array) {
+			if (pendingHighSurrogate !== -1) {
+				writeCodePoint(pendingHighSurrogate);
+				pendingHighSurrogate = -1;
+			}
+
+			output.set(part, offset);
+			offset += part.length;
+			continue;
+		}
+
+		for (let i = 0; i < part.length; i++) {
+			let codePoint = part.charCodeAt(i);
+
+			if (pendingHighSurrogate !== -1) {
+				if ((codePoint & 0xfc00) === 0xdc00) {
+					writeCodePoint(
+						0x10000 +
+							((pendingHighSurrogate - 0xd800) << 10) +
+							(codePoint - 0xdc00)
+					);
+					pendingHighSurrogate = -1;
+					continue;
+				}
+
+				writeCodePoint(pendingHighSurrogate);
+				pendingHighSurrogate = -1;
+			}
+
+			if ((codePoint & 0xfc00) === 0xd800) {
+				if (i + 1 < part.length) {
+					const next = part.charCodeAt(i + 1);
+
+					if ((next & 0xfc00) === 0xdc00) {
+						codePoint =
+							0x10000 +
+							((codePoint - 0xd800) << 10) +
+							(next - 0xdc00);
+						i++;
+					} else {
+						writeCodePoint(codePoint);
+						continue;
+					}
+				} else {
+					pendingHighSurrogate = codePoint;
+					continue;
+				}
+			}
+
+			writeCodePoint(codePoint);
+		}
+	}
+
+	if (pendingHighSurrogate !== -1) {
+		writeCodePoint(pendingHighSurrogate);
+	}
+}
 
 function postrender(parts, options) {
-	for (const module of options.modules) {
-		parts = module.postrender(parts, options);
-	}
-	let fullLength = 0;
-	const newParts = options.joinUncorrupt(parts, options);
-
-	let longStr = "";
-	let lenStr = 0;
-	const maxCompact = 65536;
-
-	const uintArrays = [];
-
-	for (let i = 0, len = newParts.length; i < len; i++) {
-		const part = newParts[i];
-
-		/*
-		 * This condition should be hit in the integration test at :
-		 * it("should not regress with long file (hit maxCompact value of 65536)", function () {
-		 * Stryker disable all : because this is an optimisation that won't make any tests fail
-		 */
-		if (part.length + lenStr > maxCompact) {
-			const arr = string2buf(longStr);
-			fullLength += arr.length;
-			uintArrays.push(arr);
-			longStr = "";
+	for (let i = 0, len = parts.length; i < len; i++) {
+		if (typeof parts[i] === "number") {
+			parts[i] = parts[i].toString();
 		}
-		// Stryker restore all
+	}
+	// @probe 01 before for loop
+	for (const module of options.modules) {
+		// @probe 01.x before ${module.name}.postrender
+		parts = module.postrender(parts, options);
+		// @probe 01.x after ${module.name}.postrender
+	}
 
-		longStr += part;
-		lenStr += part.length;
+	// @probe 02 after for loop
+	const newParts = options.joinUncorrupt(parts, options);
+	// @probe 03 after joinUncorrupt
+
+	const output = new Uint8Array(utf8Length(newParts));
+
+	// @probe 04 after Uint8Array
+	writeUtf8(newParts, output);
+	// @probe 05 after writeUtf8
+
+	for (let i = 0; i < newParts.length; i++) {
 		delete newParts[i];
 	}
-	const arr = string2buf(longStr);
-	fullLength += arr.length;
-	uintArrays.push(arr);
 
-	const array = new Uint8Array(fullLength);
-
-	let j = 0;
-
-	// Stryker disable all : because this is an optimisation that won't make any tests fail
-	for (const buf of uintArrays) {
-		for (let i = 0; i < buf.length; ++i) {
-			array[i + j] = buf[i];
-		}
-		j += buf.length;
-	}
-	// Stryker restore all
-	return array;
+	// @probe 06 after loop-delete
+	return output;
 }
 
 module.exports = postrender;
