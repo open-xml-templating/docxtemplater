@@ -1,3 +1,15 @@
+## 3.71.0
+
+Add support for modules returning `Uint8Array` parts during rendering, alongside string parts. The byte arrays are copied directly into the rendered output without being converted to strings.
+
+Bump the module API version to `3.48.0`.
+
+Reduce intermediate allocations during postrender by calculating the UTF-8 output size and writing directly into a single buffer. Preserve Unicode surrogate pairs split across adjacent string parts.
+
+Improve performance of prefix and suffix checks, whitespace preservation, and XML repair in `joinUncorrupt`.
+
+Add internal `@probe` comments for profiling and debugging the rendering and zip synchronization steps.
+
 ## 3.70.1
 
 Fix @xmldom/xmldom to 0.9.12 in package.json
