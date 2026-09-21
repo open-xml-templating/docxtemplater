@@ -74,10 +74,11 @@ function getSingleAttribute(value, attributeName) {
 }
 
 function endsWith(str, suffix) {
-	return str.indexOf(suffix, str.length - suffix.length) !== -1;
+	const subLen = str.length - suffix.length;
+	return subLen >= 0 && str.lastIndexOf(suffix, subLen) === subLen;
 }
 function startsWith(str, prefix) {
-	return str.substring(0, prefix.length) === prefix;
+	return str.lastIndexOf(prefix, 0) === 0;
 }
 
 function getDuplicates(arr) {

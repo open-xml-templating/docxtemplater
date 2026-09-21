@@ -757,13 +757,14 @@ function endLoadFile(change) {
 }
 
 function endsWith(str, suffix) {
-	return str.indexOf(suffix, str.length - suffix.length) !== -1;
+	const subLen = str.length - suffix.length;
+	return subLen >= 0 && str.lastIndexOf(suffix, subLen) === subLen;
 }
 function endsWithOne(str, suffixes) {
 	return suffixes.some((suffix) => endsWith(str, suffix));
 }
 function startsWith(str, prefix) {
-	return str.indexOf(prefix) === 0;
+	return str.lastIndexOf(prefix, 0) === 0;
 }
 
 /* eslint-disable no-console */
