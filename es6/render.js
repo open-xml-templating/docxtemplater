@@ -7,7 +7,9 @@ const getResolvedId = require("./get-resolved-id.js");
 
 function moduleRender(part, options) {
 	for (const module of options.modules) {
+		// @probe module-before-render ${module.name}
 		const moduleRendered = module.render(part, options);
+		// @probe module-after-render ${module.name}
 		if (moduleRendered) {
 			return moduleRendered;
 		}
