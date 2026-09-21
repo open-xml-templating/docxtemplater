@@ -338,7 +338,9 @@ const Docxtemplater = class Docxtemplater {
 
 	sendEvent(eventName) {
 		for (const module of this.modules) {
+			// @probe pre-ev.${eventName}.${module.name}
 			module.on(eventName);
+			// @probe post-ev.${eventName}.${module.name}
 		}
 	}
 
@@ -701,34 +703,50 @@ const Docxtemplater = class Docxtemplater {
 			output.push([to, currentFile.content, currentFile]);
 			delete currentFile.content;
 		}
+
+		// @probe preZip
 		for (const outputPart of output) {
 			const [, content, currentFile] = outputPart;
 			for (const module of this.modules) {
 				if (module.preZip) {
+					// @probe pre-preZip-m.${module.name}
 					const result = module.preZip(content, currentFile);
 					if (typeof result === "string") {
 						outputPart[1] = result;
 					}
+					// @probe post-preZip-m.${module.name}
 				}
 			}
 		}
 		for (const [to, content] of output) {
+			// @probe pre-this.zip.file-to.${to}
 			this.zip.file(to, content, { createFolders: true });
+			// @probe post-this.zip.file-to.${to}
 		}
 
 		verifyErrors(this);
+		// @probe post-verify-errors
 		this.sendEvent("syncing-zip");
+		// @probe pre-sync-zip
 		this.syncZip();
+
 		// The synced-zip event is used in the subtemplate module for example
+
+		// @probe post-sync-zip
 		this.sendEvent("synced-zip");
+		// @probe post-synced-zip
 		return this;
 	}
 
 	syncZip() {
 		for (const fileName in this.xmlDocuments) {
+			// @probe pre-remove-${fileName}
 			this.zip.remove(fileName);
+			// @probe pre-xml2str-${fileName}
 			const content = xml2str(this.xmlDocuments[fileName]);
+			// @probe post-xml2str-${fileName}-${content.length}
 			this.zip.file(fileName, content, { createFolders: true });
+			// @probe post-this.zip.file-${fileName}
 		}
 	}
 

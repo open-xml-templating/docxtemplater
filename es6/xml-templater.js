@@ -209,7 +209,10 @@ module.exports = class XmlTemplater {
 			return this;
 		}
 
+		// @probe before postrender ${to}
 		this.content = postrender(parts, options);
+		// @probe after postrender ${to}
+
 		this.setModules({
 			inspect: { filePath: this.filePath, content: this.content },
 		});
