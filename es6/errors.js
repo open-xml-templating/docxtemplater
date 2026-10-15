@@ -312,7 +312,7 @@ function getInvalidRawXMLValueException({ tag, value, offset, partDelims }) {
 	 * This error happens if you try to render a rawXml tag, such as : {@raw}
 	 * And the value of the data for "raw" is truthy but not a string.
 	 *
-	 * (If the value of the data is falsy, than the tag is simply dropped and
+	 * (If the value of the data is falsy, then the tag is simply dropped and
 	 * no error is thrown)
 	 */
 	err.properties = {
@@ -592,7 +592,7 @@ function getScopeParserExecutionError({ tag, scope, error, offset }) {
 	 * });
 	 * ```
 	 *
-	 * Since false.toFixed() triggers an error in Javascript, this will then throw an error "Scope parser execution failed".
+	 * Since false.toFixed() triggers an error in JavaScript, this will then throw an error "Scope parser execution failed".
 	 *
 	 * You can either fix your data or make your toFixed function more robust
 	 * by returning "input" if the input is not a number.
