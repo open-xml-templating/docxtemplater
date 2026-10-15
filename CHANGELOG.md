@@ -1,3 +1,7 @@
+## 3.71.1
+
+Bug fix for the Subtemplate module: when a tag such as `{:include xxx}` appeared inside a table in a template, the included document was not displayed in the generated document.
+
 ## 3.71.0
 
 Add support for modules returning `Uint8Array` parts during rendering, alongside string parts. The byte arrays are copied directly into the rendered output without being converted to strings.

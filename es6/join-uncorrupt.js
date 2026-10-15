@@ -66,9 +66,6 @@ function joinUncorrupt(parts, options) {
 
 		for (let i = 0, len = parts.length; i < len; i++) {
 			const part = parts[i];
-			if (part instanceof Uint8Array) {
-				continue;
-			}
 			if (currentlyCollecting === j) {
 				if (isEnding(part, tag)) {
 					currentlyCollecting = -1;
@@ -105,7 +102,10 @@ function joinUncorrupt(parts, options) {
 						k < len3;
 						k++
 					) {
-						if (isStarting(part, shouldContain[k])) {
+						if (
+							(part instanceof Uint8Array && part.length > 0) ||
+							isStarting(part, shouldContain[k])
+						) {
 							currentlyCollecting = -1;
 							collectedParts = null;
 							break;
