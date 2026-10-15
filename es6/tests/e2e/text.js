@@ -88,7 +88,6 @@ describe("Text templating", () => {
 
 	it("should be possible to render special characters in the output", () => {
 		const doc = new TxtTemplater("Text {name}", {
-			paragraphLoop: true,
 			linebreaks: true,
 		});
 		expect(doc.render({ name: "&& <n>Baz</n> &nbsp;" })).to.be.equal(
